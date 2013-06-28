@@ -1,10 +1,29 @@
 terminus
 ========
 
-A Drush-bases CLI interface to the existing pseudoproxy into the Pantheon core API. This is being developed initially to support some enterprise and partner edge cases (Vodaware, Kalabox), but we would like to implement it for public release on drupal.org.
+A Drush-based CLI interface into the Pantheon core API via a pseudoproxy.
+
+This is being developed initially to support some engineering and partner edge cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool for all command-line and script-savvy developers.
+
+See the "terminus" section in `drush help` for a list of commands.
+
+Quick Demo
+==========
+
+    git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
+    drush pantheon-auth
+    drush pantheon-sites
+    drush pantheon-aliases
+
+You'll find many more fun commands in "drush help".
 
 TODO
 ====
 
-- Implement rate-metering on site creation.
-- Implement limits on hostname creation.
+- Site creation
+- Site import
+- Workflow operations
+- Team management
+- In-progress job status
+- Websockets support for real-time status info?
+- A "pantheon shell" option to keep you in context for interactive use
