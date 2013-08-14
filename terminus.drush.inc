@@ -452,7 +452,7 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
  * Make a backup. Uses more generic backup api.
  */
 function drush_terminus_pantheon_site_make_backup($site_uuid, $environment) {
-  $data = terminus_session_data();
+  $data = terminus_bootstrap();
   if (!$data) {
     drush_log('You are not authenticated', 'failed');
     return FALSE;
