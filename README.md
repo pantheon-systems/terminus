@@ -11,6 +11,7 @@ Quick Demo
 ==========
 
     git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
+    drush cc drush
     drush pantheon-auth
     drush pantheon-sites
     drush pantheon-aliases
