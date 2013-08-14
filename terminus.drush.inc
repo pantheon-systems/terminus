@@ -250,6 +250,7 @@ function drush_terminus_pantheon_whoami() {
  */
 function drush_terminus_pantheon_sites() {
   $session_data = terminus_bootstrap();
+  $json_output = drush_get_option('json');
 
   if ($session_data === FALSE) {
     return FALSE;
