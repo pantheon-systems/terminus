@@ -150,6 +150,7 @@ function terminus_drush_command() {
     'description' => "List site backups (and exports).",
     'arguments' => array(
       'site' => 'UUID of the site you want to get backups for.',
+      'environment' => 'The environment (e.g. "live") you want to back up.',
     ),
     'aliases' => array('psite-backups'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -393,6 +394,10 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
 
   if (!$site_uuid) {
     drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  if (!$environment) {
+    drush_log('You must supply a specific environment', 'failed');
     return FALSE;
   }
 
