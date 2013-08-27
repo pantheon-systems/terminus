@@ -270,7 +270,7 @@ function drush_terminus_pantheon_sites() {
     drush_log('Loaded site data from cache.', 'notice');
     $sites = $cache->data;
   }
-  if ($json_output) {
+  if ($json) {
     drush_print($sites);
     return TRUE;
   }
