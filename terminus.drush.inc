@@ -178,6 +178,18 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+  $items['pantheon-site-download-backup'] = array(
+    'description' => "Download a backup file from a specific site.",
+    'arguments' => array(
+      'site' => 'UUID of the site you want to get backups for.',
+      'environment' => 'The environment (e.g. "live") you want to back up.',
+      'bucket' => 'Bucket for the backup.',
+      'element' => 'Which part of the backup do you want?',
+      'destination' => 'Where would you like the backup?'
+    ),
+    'aliases' => array('psite-dl-backup'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
 
   /**
    * Utility Functions.
@@ -473,6 +485,88 @@ function drush_terminus_pantheon_site_make_backup($site_uuid, $environment) {
 
   $result = terminus_api_site_make_backup($site_uuid, $environment, 'backup');
   drush_print("Backup initiated.");
+  return TRUE;
+}
+
+/**
+ * Download a backup from a site.
+ */
+function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE, $element = FALSE, $destination = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  // If $site_uuid is not a uuid, lookup by name.
+  if (strlen($site_uuid) != 36) {
+    $site_uuid = terminus_get_site_uuid_by_name($site_uuid);
+  }
+
+  // Retrieve the latest bucket
+  if ($bucket == 'latest') {
+    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
+  }
+
+  $prompt = FALSE;
+  if (!$site_uuid) {
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
+  }
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment');
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+  if ($prompt && !$element) {
+    $element = terminus_session_select_data('element');
+    if (!$element) {
+      drush_log('You must supply an element', 'failed');
+      return FALSE;
+    }
+  }
+  if ($prompt && !$bucket) {
+    $bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element);
+    if (!$bucket) {
+      drush_log('You must supply a bucket', 'failed');
+      return FALSE;
+    }
+  }
+  if (!$destination) {
+    $destination = terminus_session_select_data('destination');
+    if (!$destination) {
+      drush_log('You must supply a destination', 'failed');
+      return FALSE;
+    }
+  }
+
+  $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
+  $data = json_decode($result['json']);
+  $filename = strstr(basename($data->url), '?', '_');
+
+  // Display command if they build this from the command prompt.
+  if ($prompt) {
+    drush_log("Cmd: drush psite-dl-backup " . $site_uuid . " " . $environment . " " . $bucket . " " . $element . " \"" . $destination . "\"", 'ok');
+  }
+
+  drush_log("Downloading " . $filename . "...");
+
+  // Copied from pm code
+  $cache_duration = 86400*365;
+  $path = _drush_download_file($data->url, $destination . DIRECTORY_SEPARATOR . $filename, $cache_duration);
+  if ($path || drush_get_context('DRUSH_SIMULATE')) {
+    drush_log("Downloading " . $filename . " was successful.");
+  }
+  else {
+    return drush_set_error('DRUSH_PM_DOWNLOAD_FAILED', 'Unable to download ' . $filename . ' to ' . $destination . ' from '. $data->url);
+  }
+
   return TRUE;
 }
 
@@ -880,5 +974,135 @@ function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
     return $headers[$target_header];
   }
 
+  return FALSE;
+}
+
+/**
+ * Provides user prompt for missing data.
+ * @param $key string Required data name. i.e. site_uuid, environment, etc..
+ * @return string input data
+ */
+function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  switch ($key) {
+    case 'site_uuid':
+      $cid = 'terminus-sites';
+      drush_log('Loading site data from Pantheon.', 'notice');
+      $result = terminus_api_user_site_list($user_uuid);
+      if ($result === FALSE) {
+        return FALSE;
+      }
+      $sites = json_decode($result['json']);
+      drush_cache_set($cid, $sites, 'pantheon');
+
+      $choices = array();
+      foreach ($sites as $site_uuid => $data) {
+        $i = $data->information;
+        $choices[$site_uuid] = array($i->name, $i->service_level, $site_uuid);
+      }
+
+      $val = drush_choice($choices, 'Select a site.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'environment':
+      // Is there a way to get official environment data?
+      $choices = array('dev' => 'dev', 'test' => 'test', 'live' => 'live');
+      $val = drush_choice($choices, 'Select an environment.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'element':
+      $choices = array('database' => 'database', 'files' => 'files', 'code' => 'code');
+      $val = drush_choice($choices, 'Backup type.', '!key');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'bucket':
+      $result = terminus_api_backup_catalog($site_uuid, $environment);
+      date_default_timezone_set('UTC');
+      $choices = array();
+      $buckets = array();
+      $backups = json_decode($result['json']);
+
+      foreach ($backups as $id => $a) {
+        $parts = explode('_', $id);
+
+        if (!isset($a->filename) || $parts[2] != $element) {
+          continue;
+        }
+        $size = round($a->size/(1024*1024), 2) .' MB';
+        $choices[$a->filename] = $a->filename . ' ' . $size; //$type . ' ' . date(DATE_RFC822, $a->timestamp) . ' ' . $parts[2] . ' ' . $parts[0] .'_'. $parts[1] . ' ' . $size;
+        $buckets[$a->filename] = $parts[0] .'_'. $parts[1];
+      }
+      krsort($choices);
+      $val = drush_choice($choices, 'Select a backup.');
+      if ($val !== FALSE) {
+        return $buckets[$val];
+      }
+      break;
+
+    case 'destination':
+      $val = drush_prompt('Select a destination', $default = './');
+      if ($val !== false) {
+        return $val;
+      }
+      break;
+  }
+}
+
+/**
+ * Helper function to return the "latest" bucket for a given site_uuid, environment, and element
+ */
+function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
+  $result = terminus_api_backup_catalog($site_uuid, $environment);
+  $buckets = array();
+  $backups = json_decode($result['json']);
+  foreach ($backups as $id => $a) {
+    $parts = explode('_', $id);
+    if (!isset($a->filename) || $parts[2] != $element) {
+      continue;
+    }
+    $buckets[$a->filename] = $parts[0] .'_'. $parts[1];
+  }
+  krsort($buckets);
+  return reset($buckets);
+}
+
+/**
+ * Helper function to return the site_uuid from the name.
+ */
+function terminus_get_site_uuid_by_name($site_name) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  $cid = 'terminus-sites';
+  drush_log('Loading site data from Pantheon.', 'notice');
+  $result = terminus_api_user_site_list($user_uuid);
+  if ($result === FALSE) {
+    return FALSE;
+  }
+  $sites = json_decode($result['json']);
+  drush_cache_set($cid, $sites, 'pantheon');
+  foreach ($sites as $site_uuid => $data) {
+    $i = $data->information;
+    if ($i->name == $site_name) {
+      return $site_uuid;
+    }
+  }
   return FALSE;
 }
