@@ -351,10 +351,16 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
     return FALSE;
   }
   extract($session_data);
+
   if (!$site_uuid) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
   }
+
   $confirm = drush_confirm("Are you sure you want to delete?");
   if (!$confirm) {
     return TRUE;
@@ -405,12 +411,20 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
   extract($session_data);
 
   if (!$site_uuid) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
   }
+
   if (!$environment) {
-    drush_log('You must supply a specific environment', 'failed');
-    return FALSE;
+    $environment = terminus_session_select_data('environment');
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
   }
 
   $result = terminus_api_backup_catalog($site_uuid, $environment);
@@ -446,12 +460,20 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
   extract($session_data);
 
   if (!$site_uuid) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
   }
+
   if (!$environment) {
-    drush_log('You must supply a specific environment', 'failed');
-    return FALSE;
+    $environment = terminus_session_select_data('environment');
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
   }
 
   $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
@@ -474,15 +496,24 @@ function drush_terminus_pantheon_site_make_backup($site_uuid, $environment) {
     drush_log('You are not authenticated', 'failed');
     return FALSE;
   }
+  extract($session_data);
+
   if (!$site_uuid) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
-  }
-  if (!$environment) {
-    drush_log('You must supply an environment', 'failed');
-    return FALSE;
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
   }
 
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment');
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
   $result = terminus_api_site_make_backup($site_uuid, $environment, 'backup');
   drush_print("Backup initiated.");
   return TRUE;
@@ -499,7 +530,7 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
   extract($session_data);
 
   // If $site_uuid is not a uuid, lookup by name.
-  if (strlen($site_uuid) != 36) {
+  if (!terminus_validate_uuid($site_uuid)) {
     $site_uuid = terminus_get_site_uuid_by_name($site_uuid);
   }
 
@@ -1105,4 +1136,14 @@ function terminus_get_site_uuid_by_name($site_name) {
     }
   }
   return FALSE;
+}
+
+/**
+ * UUID Validating Regex.
+ */
+/**
+ * Atlas UUID Generation Validation
+ */
+function terminus_validate_uuid($uuid) {
+  return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid);
 }
