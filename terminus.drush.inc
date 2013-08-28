@@ -98,7 +98,7 @@ function terminus_drush_command() {
       'environment' => 'The environemnt (e.g. "live").',
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
-    'aliases' => array('phost-add'),
+    'aliases' => array('psite-hostname-add'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -109,7 +109,7 @@ function terminus_drush_command() {
       'environment' => 'The environemnt (e.g. "live").',
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
-    'aliases' => array('phost-remove'),
+    'aliases' => array('psite-hostname-remove'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -379,9 +379,35 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
  * Add a hostname.
  */
 function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
-  $data = array('site' => $site_uuid, 'environment' => $environment);
-  $path = 'environments/'. $environment .'/hostnames/'. rawurlencode($hostname);
-  $result = terminus_request('site', $site_uuid, $path, 'PUT', $data);
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid) {
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+
+  $hostname = drush_prompt(dt('Hostname (e.g. "www.mysite.com") you would like to add'), NULL, TRUE);
+  if (!preg_match('/(?=^.{1,254}$)(^(?:(?!\d|-)[a-z0-9\-]{1,63}(?<!-)\.)+(?:[a-z]{2,})$)/i', $hostname)) {
+    drush_log("'$hostname' is not a valid hostname.", 'failed');
+    return FALSE;
+  }
+  $result = terminus_api_site_environment_add_hostname($site_uuid, $environment, $hostname);
   if ($result === FALSE) {
     return FALSE;
   }
@@ -393,8 +419,37 @@ function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment =
  * Remove a hostname.
  */
 function drush_terminus_pantheon_hostname_remove($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
-  $path = 'environments/'. $environment .'/hostnames/'. rawurlencode($hostname);
-  $result = terminus_request('site', $site_uuid, $path, 'DELETE');
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid) {
+    $site_uuid = terminus_session_select_data('site_uuid');
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!$hostname) {
+    $hostname = terminus_session_select_data('hostname', $site_uuid, $environment);
+    if (!$hostname) {
+      drush_log('You must choose a hostname', 'failed');
+      return FALSE;
+    }
+  }
+
+  $result = terminus_api_site_environment_delete_hostname($site_uuid, $environment, $hostname);
   if ($result === FALSE) {
     return FALSE;
   }
@@ -414,7 +469,6 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
 
   if (!$site_uuid) {
     $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
     if (!$site_uuid) {
       drush_log('You must supply a site UUID', 'failed');
       return FALSE;
@@ -462,7 +516,6 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
 
   if (!$site_uuid) {
     $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
     if (!$site_uuid) {
       drush_log('You must supply a site UUID', 'failed');
       return FALSE;
@@ -501,7 +554,6 @@ function drush_terminus_pantheon_site_make_backup($site_uuid = FALSE, $environme
 
   if (!$site_uuid) {
     $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
     if (!$site_uuid) {
       drush_log('You must supply a site UUID', 'failed');
       return FALSE;
@@ -556,14 +608,14 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
       return FALSE;
     }
   }
-  if ($prompt && !$element) {
+  if (!$element) {
     $element = terminus_session_select_data('element');
     if (!$element) {
       drush_log('You must supply an element', 'failed');
       return FALSE;
     }
   }
-  if ($prompt && !$bucket) {
+  if (!$bucket) {
     $bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element);
     if (!$bucket) {
       drush_log('You must supply a bucket', 'failed');
@@ -1102,7 +1154,12 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
 
     case 'hostname':
       if ($site_uuid && $environment) {
-        $choices = terminus_api_site_environment_hostnames($site_uuid, $environment);
+        $result = terminus_api_site_environment_hostnames($site_uuid, $environment);
+        $hostnames = json_decode($result['json']);
+        $choices = array();
+        foreach ($hostnames as $hostname => $data) {
+          $choices[$hostname] = $hostname;
+        }
         krsort($choices);
         $val = drush_choice($choices, 'Select a hostname.');
         if ($val !== FALSE) {
