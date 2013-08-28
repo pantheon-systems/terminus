@@ -184,12 +184,23 @@ function terminus_drush_command() {
     'description' => "Download a backup file from a specific site.",
     'arguments' => array(
       'site' => 'UUID of the site you want to get backups for.',
-      'environment' => 'The environment (e.g. "live") you want to back up.',
-      'bucket' => 'Bucket for the backup.',
-      'element' => 'Which part of the backup do you want?',
+      'environment' => 'The environment (e.g. "live") you want to download a back up from.',
+      'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
+      'element' => 'Which part of the backup do you want? (e.g. database, files, code)',
       'destination' => 'Where would you like the backup?'
     ),
     'aliases' => array('psite-dl-backup'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-load-backup'] = array(
+    'description' => "Load db with a backup file from a specific site.",
+    'arguments' => array(
+      'site' => 'UUID of the site you want to get backups for.',
+      'environment' => 'The environment (e.g. "live") you want to back up.',
+      'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
+    ),
+    'aliases' => array('psite-load-backup'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -648,8 +659,84 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
     drush_log("Downloading " . $filename . " was successful.");
   }
   else {
-    return drush_set_error('DRUSH_PM_DOWNLOAD_FAILED', 'Unable to download ' . $filename . ' to ' . $destination . ' from '. $data->url);
+    return drush_set_error('DRUSH_PSITE_DOWNLOAD_FAILED', 'Unable to download ' . $filename . ' to ' . $destination . ' from '. $data->url);
   }
+
+  return TRUE;
+}
+
+/**
+ * Load a database with a backup from a site.
+ */
+function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $element = 'database';
+
+  // If $site_uuid is not a uuid, lookup by name.
+  if (strlen($site_uuid) != 36) {
+    $site_uuid = terminus_get_site_uuid_by_name($site_uuid);
+  }
+
+  // Retrieve the latest bucket
+  if ($bucket == 'latest') {
+    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
+  }
+
+  $prompt = FALSE;
+  if (!$site_uuid) {
+    $site_uuid = terminus_session_select_data('site_uuid');
+    $prompt = TRUE;
+    if (!$site_uuid) {
+      drush_log('You must supply a site UUID', 'failed');
+      return FALSE;
+    }
+  }
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment');
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+  if ($prompt && !$bucket) {
+    $bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element);
+    if (!$bucket) {
+      drush_log('You must supply a bucket', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!drush_confirm('Overwrite this database with ' . $environment . '.' . $site_uuid . '?')) {
+    drush_log('Cancelled', 'failed');
+    return FALSE;
+  }
+
+  $destination = drush_tempdir();
+  $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
+  $data = json_decode($result['json']);
+  $filename = strstr(basename($data->url), '?', '_');
+
+  $cache_duration = 86400*365;
+  $path = _drush_download_file($data->url, $destination . DIRECTORY_SEPARATOR . $filename, $cache_duration);
+  if (!$path && !drush_get_context('DRUSH_SIMULATE')) {
+    return drush_set_error('DRUSH_PSITE_DOWNLOAD_FAILED', 'Unable to download ' . $filename . ' to ' . $destination . ' from '. $data->url);
+  }
+
+  drush_log("Downloading " . $filename . " was successful.");
+
+  // TODO: There's got to be a better way to handle a .gz file here
+  shell_exec('gunzip ' . $path);
+  $path = strstr($path, '.gz', TRUE);
+
+  drush_set_option('file', $path);
+  drush_sql_query();
+
+  drush_log("Database load complete.");
+  drush_delete_dir($path);
 
   return TRUE;
 }
