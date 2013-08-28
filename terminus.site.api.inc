@@ -345,3 +345,27 @@ function terminus_api_site_environment_lock_delete($site_uuid, $env) {
 
   return terminus_request($realm, $uuid, $path, $method);
 }
+
+/**
+ * API Function to get hostnames for an Environment
+ */
+function terminus_api_site_environment_hostnames($site_uuid, $env) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments/' . $env . '/hostnames';
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
+ * API Function to get environments for an site!
+ */
+function terminus_api_site_environments($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments';
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}

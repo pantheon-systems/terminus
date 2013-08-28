@@ -9,6 +9,8 @@
  */
 define('TERMINUS_HOST', 'terminus.getpantheon.com');
 define('TERMINUS_PORT', 443);
+date_default_timezone_set('UTC');
+
 
 /**
  * An easy function to override constants to allow development internally.
@@ -376,10 +378,10 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
 /**
  * Add a hostname.
  */
-function drush_terminus_pantheon_hostname_add($site, $environment, $hostname) {
-  $data = array('site' => $site, 'environment' => $environment);
+function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
+  $data = array('site' => $site_uuid, 'environment' => $environment);
   $path = 'environments/'. $environment .'/hostnames/'. rawurlencode($hostname);
-  $result = terminus_request('site', $site, $path, 'PUT', $data);
+  $result = terminus_request('site', $site_uuid, $path, 'PUT', $data);
   if ($result === FALSE) {
     return FALSE;
   }
@@ -390,9 +392,9 @@ function drush_terminus_pantheon_hostname_add($site, $environment, $hostname) {
 /**
  * Remove a hostname.
  */
-function drush_terminus_pantheon_hostname_remove($site, $environment, $hostname) {
+function drush_terminus_pantheon_hostname_remove($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
   $path = 'environments/'. $environment .'/hostnames/'. rawurlencode($hostname);
-  $result = terminus_request('site', $site, $path, 'DELETE');
+  $result = terminus_request('site', $site_uuid, $path, 'DELETE');
   if ($result === FALSE) {
     return FALSE;
   }
@@ -420,7 +422,7 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
   }
 
   if (!$environment) {
-    $environment = terminus_session_select_data('environment');
+    $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
       drush_log('You must supply an environment', 'failed');
       return FALSE;
@@ -428,7 +430,6 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
   }
 
   $result = terminus_api_backup_catalog($site_uuid, $environment);
-  date_default_timezone_set('UTC');
   $rows = array();
   $backups = json_decode($result['json']);
   foreach ($backups as $id => $a) {
@@ -469,7 +470,7 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
   }
 
   if (!$environment) {
-    $environment = terminus_session_select_data('environment');
+    $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
       drush_log('You must supply an environment', 'failed');
       return FALSE;
@@ -491,8 +492,8 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
  * Make a backup. Uses more generic backup api.
  */
 function drush_terminus_pantheon_site_make_backup($site_uuid = FALSE, $environment = FALSE) {
-  $data = terminus_bootstrap();
-  if (!$data) {
+  $session_data = terminus_bootstrap();
+  if (!$session_data) {
     drush_log('You are not authenticated', 'failed');
     return FALSE;
   }
@@ -508,7 +509,7 @@ function drush_terminus_pantheon_site_make_backup($site_uuid = FALSE, $environme
   }
 
   if (!$environment) {
-    $environment = terminus_session_select_data('environment');
+    $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
       drush_log('You must supply an environment', 'failed');
       return FALSE;
@@ -549,7 +550,7 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
     }
   }
   if (!$environment) {
-    $environment = terminus_session_select_data('environment');
+    $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
       drush_log('You must supply an environment', 'failed');
       return FALSE;
@@ -816,7 +817,7 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   $result = curl_exec($ch);
   list($headers_text, $json) = explode("\r\n\r\n", $result, 2);
   // Work around extra 100 Continue headers - http://stackoverflow.com/a/2964710/1895669
-  if(strpos($headers_text," 100 Continue")!==false){
+  if(strpos($headers_text," 100 Continue") !== FALSE){
     list($headers_text, $json) = explode( "\r\n\r\n", $json , 2);
   }
 
@@ -986,7 +987,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
 function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
   // Check that we have a 302 and a session.
   list ($headers_text, $html) = explode("\r\n\r\n", $result, 2);
-  if (strpos($headers_text, "100 Continue") !== false) {
+  if (strpos($headers_text, "100 Continue") !== FALSE) {
     list ($headers_text, $html) = explode("\r\n\r\n", $html , 2);
   }
   $header_lines = explode("\r\n", $headers_text);
@@ -1044,8 +1045,17 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'environment':
-      // Is there a way to get official environment data?
-      $choices = array('dev' => 'dev', 'test' => 'test', 'live' => 'live');
+      if ($site_uuid) {
+        $request = terminus_api_site_environments($site_uuid);
+        $environments = json_decode($request['json']);
+        $choices = array();
+        foreach ($environments as $env => $data) {
+          $choices[$env] = $env;
+        }
+      }
+      else {
+        $choices = array('dev' => 'dev', 'test' => 'test', 'live' => 'live');
+      }
       $val = drush_choice($choices, 'Select an environment.');
       if ($val !== FALSE) {
         return $val;
@@ -1062,7 +1072,6 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
 
     case 'bucket':
       $result = terminus_api_backup_catalog($site_uuid, $environment);
-      date_default_timezone_set('UTC');
       $choices = array();
       $buckets = array();
       $backups = json_decode($result['json']);
@@ -1086,9 +1095,21 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
 
     case 'destination':
       $val = drush_prompt('Select a destination', $default = './');
-      if ($val !== false) {
+      if ($val !== FALSE) {
         return $val;
       }
+      break;
+
+    case 'hostname':
+      if ($site_uuid && $environment) {
+        $choices = terminus_api_site_environment_hostnames($site_uuid, $environment);
+        krsort($choices);
+        $val = drush_choice($choices, 'Select a hostname.');
+        if ($val !== FALSE) {
+          return $val;
+        }
+      }
+
       break;
   }
 }
