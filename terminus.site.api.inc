@@ -224,10 +224,10 @@ function terminus_api_site_screenshots($site_uuid) {
 /**
  * API Function Get Events
  */
-function terminus_api_site_events($site_uuid, $env, $limit = 100) {
+function terminus_api_site_events($site_uuid, $environment, $limit = 100) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/events/?limit=' . $limit;
+  $path = 'environments/' . $environment . '/events/?limit=' . $limit;
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -252,10 +252,10 @@ function terminus_api_site_environment_bindings($site_uuid, $environment, $type 
 /**
  * API Function to Clear Caches
  */
-function terminus_api_site_clearcache($site_uuid, $env) {
+function terminus_api_site_clearcache($site_uuid, $environment) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env. '/clear-cache';
+  $path = 'environments/' . $environment. '/clear-cache';
   $method = 'POST';
   $data = '';
   return terminus_request($realm, $uuid, $path, $method, $data);
@@ -264,10 +264,10 @@ function terminus_api_site_clearcache($site_uuid, $env) {
 /**
  * API Function to Get On Server Development Status
  */
-function terminus_api_site_environment_onserverdev_get($site_uuid, $env) {
+function terminus_api_site_environment_onserverdev_get($site_uuid, $environment) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/on-server-development';
+  $path = 'environments/' . $environment . '/on-server-development';
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -276,10 +276,10 @@ function terminus_api_site_environment_onserverdev_get($site_uuid, $env) {
 /**
  * API Function to Set Server Development Status
  */
-function terminus_api_site_environment_onserverdev_set($site_uuid, $env, $onserverdevstatus) {
+function terminus_api_site_environment_onserverdev_set($site_uuid, $environment, $onserverdevstatus) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/on-server-development';
+  $path = 'environments/' . $environment . '/on-server-development';
   $method = 'PUT';
   $data = array('enabled' => $onserverdevstatus);
   return terminus_request($realm, $uuid, $path, $method, $data);
@@ -288,10 +288,10 @@ function terminus_api_site_environment_onserverdev_set($site_uuid, $env, $onserv
 /**
  * API Function to Do a Git Commit
  */
-function terminus_api_site_environment_onserverdev_commit($site_uuid, $env, $message, $user_uuid) {
+function terminus_api_site_environment_onserverdev_commit($site_uuid, $environment, $message, $user_uuid) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/on-server-development/commit';
+  $path = 'environments/' . $environment . '/on-server-development/commit';
   $method = 'POST';
   $data = ($message) ? array('message' => $message, 'user' => $user_uuid) : NULL;
   return terminus_request($realm, $uuid, $path, $method, $data);
@@ -300,10 +300,10 @@ function terminus_api_site_environment_onserverdev_commit($site_uuid, $env, $mes
 /**
  * API Function to Get a Git Diff of a path
  */
-function terminus_api_site_environment_onserverdev_diff_get($site_uuid, $env, $file_path = "") {
+function terminus_api_site_environment_onserverdev_diff_get($site_uuid, $environment, $file_path = "") {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/on-server-development/diff?path=' . rawurlencode($file_path);
+  $path = 'environments/' . $environment . '/on-server-development/diff?path=' . rawurlencode($file_path);
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -312,10 +312,10 @@ function terminus_api_site_environment_onserverdev_diff_get($site_uuid, $env, $f
 /**
  * API Function to Get a Git Diff --numstat
  */
-function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $env) {
+function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $environment) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/on-server-development/diffstat';
+  $path = 'environments/' . $environment . '/on-server-development/diffstat';
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -324,10 +324,10 @@ function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $e
 /**
  * API Function to Lock an Environment
  */
-function terminus_api_site_environment_lock($site_uuid, $env, $username, $password) {
+function terminus_api_site_environment_lock($site_uuid, $environment, $username, $password) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/lock';
+  $path = 'environments/' . $environment . '/lock';
   $method = 'PUT';
   $data = array('username' => $username, 'password' => $password);
 
@@ -337,10 +337,10 @@ function terminus_api_site_environment_lock($site_uuid, $env, $username, $passwo
 /**
  * API Function to Delete a Lock on an Environment
  */
-function terminus_api_site_environment_lock_delete($site_uuid, $env) {
+function terminus_api_site_environment_lock_delete($site_uuid, $environment) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/lock';
+  $path = 'environments/' . $environment . '/lock';
   $method = 'DELETE';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -349,11 +349,35 @@ function terminus_api_site_environment_lock_delete($site_uuid, $env) {
 /**
  * API Function to get hostnames for an Environment
  */
-function terminus_api_site_environment_hostnames($site_uuid, $env) {
+function terminus_api_site_environment_hostnames($site_uuid, $environment) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'environments/' . $env . '/hostnames';
+  $path = 'environments/' . $environment . '/hostnames';
   $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
+ * API Function to add a hostname for an Environment
+ */
+function terminus_api_site_environment_add_hostname($site_uuid, $environment, $hostname) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments/' . $environment . '/hostnames/'. rawurlencode($hostname);
+  $method = 'PUT';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
+ * API Function to remove a hostname for an Environment
+ */
+function terminus_api_site_environment_delete_hostname($site_uuid, $environment, $hostname) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments/' . $environment . '/hostnames/'. rawurlencode($hostname);
+  $method = 'DELETE';
 
   return terminus_request($realm, $uuid, $path, $method);
 }
