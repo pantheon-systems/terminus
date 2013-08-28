@@ -198,7 +198,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID of the site you want to get backups for.',
       'environment' => 'The environment (e.g. "live") you want to back up.',
-      'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
+      'bucket' => 'Bucket for the backup. Use "latest" or leave empty for the most recent.',
     ),
     'aliases' => array('psite-load-backup'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -682,7 +682,7 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
   }
 
   // Retrieve the latest bucket
-  if ($bucket == 'latest') {
+  if ($bucket == 'latest' || (!$bucket && $site_uuid && $environment)) {
     $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
   }
 
