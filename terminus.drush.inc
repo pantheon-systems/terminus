@@ -365,13 +365,9 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
   }
   extract($session_data);
 
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   $confirm = drush_confirm("Are you sure you want to delete?");
@@ -396,13 +392,9 @@ function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment =
   }
   extract($session_data);
 
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   if (!$environment) {
@@ -478,12 +470,9 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
   }
   extract($session_data);
 
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   if (!$environment) {
@@ -525,12 +514,9 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
   }
   extract($session_data);
 
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   if (!$environment) {
@@ -563,12 +549,9 @@ function drush_terminus_pantheon_site_make_backup($site_uuid = FALSE, $environme
   }
   extract($session_data);
 
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   if (!$environment) {
@@ -593,25 +576,11 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
   }
   extract($session_data);
 
-  // If $site_uuid is not a uuid, lookup by name.
-  if (!terminus_validate_uuid($site_uuid)) {
-    $site_uuid = terminus_get_site_uuid_by_name($site_uuid);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
-  // Retrieve the latest bucket
-  if ($bucket == 'latest') {
-    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
-  }
-
-  $prompt = FALSE;
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
-  }
   if (!$environment) {
     $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
@@ -625,6 +594,11 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
       drush_log('You must supply an element', 'failed');
       return FALSE;
     }
+  }
+
+  // Retrieve the latest bucket
+  if ($bucket == 'latest') {
+    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
   }
   if (!$bucket) {
     $bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element);
@@ -644,11 +618,6 @@ function drush_terminus_pantheon_site_download_backup($site_uuid = FALSE, $envir
   $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
   $data = json_decode($result['json']);
   $filename = strstr(basename($data->url), '?', '_');
-
-  // Display command if they build this from the command prompt.
-  if ($prompt) {
-    drush_log("Cmd: drush psite-dl-backup " . $site_uuid . " " . $environment . " " . $bucket . " " . $element . " \"" . $destination . "\"", 'ok');
-  }
 
   drush_log("Downloading " . $filename . "...");
 
@@ -676,25 +645,16 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
   extract($session_data);
   $element = 'database';
 
-  // If $site_uuid is not a uuid, lookup by name.
-  if (strlen($site_uuid) != 36) {
-    $site_uuid = terminus_get_site_uuid_by_name($site_uuid);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
   }
 
   // Retrieve the latest bucket
-  if ($bucket == 'latest') {
+  if ($bucket == 'latest' || (!$bucket && $site_uuid && $environment)) {
     $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
   }
 
-  $prompt = FALSE;
-  if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site_uuid');
-    $prompt = TRUE;
-    if (!$site_uuid) {
-      drush_log('You must supply a site UUID', 'failed');
-      return FALSE;
-    }
-  }
   if (!$environment) {
     $environment = terminus_session_select_data('environment');
     if (!$environment) {
@@ -702,7 +662,7 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
       return FALSE;
     }
   }
-  if ($prompt && !$bucket) {
+  if (!$bucket) {
     $bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element);
     if (!$bucket) {
       drush_log('You must supply a bucket', 'failed');
@@ -1274,6 +1234,22 @@ function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
   }
   krsort($buckets);
   return reset($buckets);
+}
+
+/**
+ * Helper function to handle site uuid input.
+ */
+function terminus_site_input($site_input, $prompt = TRUE, $uuid_only = FALSE) {
+  if (!$site_input && $prompt) {
+    $site_input = terminus_session_select_data('site_uuid');
+  }
+  if (terminus_validate_uuid($site_input)) {
+    return $site_input;
+  }
+  if (empty($site_input) || $uuid_only) {
+    return FALSE;
+  }
+  return terminus_get_site_uuid_by_name($site_input);
 }
 
 /**
