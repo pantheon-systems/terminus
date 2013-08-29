@@ -196,11 +196,22 @@ function terminus_drush_command() {
   $items['pantheon-site-load-backup'] = array(
     'description' => "Load db with a backup file from a specific site.",
     'arguments' => array(
-      'site' => 'UUID of the site you want to get backups for.',
-      'environment' => 'The environment (e.g. "live") you want to back up.',
+      'site' => 'UUID or name of the site you want to get backups for.',
+      'environment' => 'The environment (e.g. "live") you want to use a backup from.',
       'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
     ),
     'aliases' => array('psite-load-backup'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-connection-mode'] = array(
+    'description' => "Set or retrieve the connection mode of a specific site/environment.",
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'The environment (e.g. "live") you would like to target.',
+      'mode' => 'Connection mode like to set. (e.g. "sftp" or "git") Leave blank to retrieve the current mode.',
+    ),
+    'aliases' => array('psite-cmode'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -656,7 +667,7 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
   }
 
   if (!$environment) {
-    $environment = terminus_session_select_data('environment');
+    $environment = terminus_session_select_data('environment', $site_uuid);
     if (!$environment) {
       drush_log('You must supply an environment', 'failed');
       return FALSE;
@@ -699,6 +710,50 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
   drush_delete_dir($path);
 
   return TRUE;
+}
+
+/**
+ * Set or retrieve the connection mode for a site/environment.
+ */
+function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $environment = FALSE, $cmode = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  // Only prompt for $cmode if the command is run without a site or environment
+  $prompt_cmode = !$site_uuid || !$environment;
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+
+  if ($prompt_cmode && !$cmode) {
+    $cmode = terminus_session_select_data('cmode', $site_uuid);
+  }
+
+  if (!$cmode) {
+    $result = terminus_api_site_environment_onserverdev_get($site_uuid, $environment);
+    $data = json_decode($result['json']);
+    $mode = $data->enabled? 'SFTP' : 'Git';
+    drush_log("Connection mode: " . $mode, 'ok');
+    return TRUE;
+  }
+
+  $onserverdevstatus = $cmode == 'sftp' ? TRUE : FALSE;
+  terminus_api_site_environment_onserverdev_set($site_uuid, $environment, $onserverdevstatus);
+
+  drush_log('Connection mode set to: ' . $cmode, 'ok');
 }
 
 /**
@@ -1190,6 +1245,11 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       if ($val !== FALSE) {
         return $buckets[$val];
       }
+      break;
+
+    case 'cmode':
+      $choices = array(0 => 'Retrieve connection mode', 'sftp' => 'SFTP', 'git' => 'Git');
+      return drush_choice($choices, 'Connection mode');
       break;
 
     case 'destination':
