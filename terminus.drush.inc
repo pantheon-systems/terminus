@@ -750,10 +750,12 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
     return TRUE;
   }
 
+  $cmode = strtolower($cmode);
   $onserverdevstatus = $cmode == 'sftp' ? TRUE : FALSE;
   terminus_api_site_environment_onserverdev_set($site_uuid, $environment, $onserverdevstatus);
 
-  drush_log('Connection mode set to: ' . $cmode, 'ok');
+  $mode = $onserverdevstatus ? 'SFTP' : 'Git';
+  drush_log('Connection mode set to: ' . $mode, 'ok');
 }
 
 /**
