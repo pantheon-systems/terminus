@@ -24,6 +24,7 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.backup.api.inc');
   include_once('terminus.site.api.inc');
   include_once('terminus.user.api.inc');
+  include_once('terminus.tunnel.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -79,7 +80,6 @@ function terminus_drush_command() {
     'aliases' => array('pauth'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
-
 
   // The 'pantheon-sitelist' command
   $items['pantheon-sites'] = array(
@@ -213,6 +213,68 @@ function terminus_drush_command() {
     ),
     'aliases' => array('psite-cmode'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  /**
+   * Tunnel Functions.
+   */
+  $items['pantheon-site-tunnels'] = array(
+    'description' => "Get a list of open tunnels.",
+    'aliases' => array('psite-tunnels'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-tunnel'] = array(
+    'description' => "Opens a tunnel to a specific site/environment/service.",
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'The target environment (e.g. "live").',
+      'service' => 'The service (e.g. "db" or "redis") to open a tunnel for. This defaults to "db".',
+      'port' => 'Local port to connect to.'
+    ),
+    'aliases' => array('psite-tunnel'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-tunnel-close'] = array(
+    'description' => "Closes the tunnel to a specific site/environment/service.",
+    'arguments' => array(
+      'site' => 'UUID or name of the site. If left empty, all tunnels will be closed.',
+      'environment' => 'The target environment (e.g. "live"). If left empty, all site tunnels will be closed.',
+      'service' => 'The service (e.g. "mysql" or "redis") to open a tunnel for. If empty, all site/environment tunnels will be closed.'
+    ),
+    'aliases' => array('psite-tclose'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-sql-dump'] = array(
+    'callback' => 'drush_sql_dump_execute',
+    'description' => 'Exports the Drupal DB as SQL using mysqldump or equivalent.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'examples' => array(
+      'drush sql-dump --result-file=../18.sql' => 'Save SQL dump to the directory above Drupal root.',
+      'drush sql-dump --skip-tables-key=common' => 'Skip standard tables. @see example.drushrc.php',
+    ),
+    'options' => array(
+      'result-file' => array(
+        'description' => 'Save to a file. The file should be relative to Drupal root. If --result-file is provided with no value, then date based filename will be created under ~/drush-backups directory.',
+        'example-value' => '/path/to/file',
+        'value' => 'optional',
+      ),
+      'skip-tables-key' => 'A key in the $skip_tables array. @see example.drushrc.php. Optional.',
+      'structure-tables-key' => 'A key in the $structure_tables array. @see example.drushrc.php. Optional.',
+      'tables-key' => 'A key in the $tables array. Optional.',
+      'skip-tables-list' => 'A comma-separated list of tables to exclude completely. Optional.',
+      'structure-tables-list' => 'A comma-separated list of tables to include for structure, but not data. Optional.',
+      'tables-list' => 'A comma-separated list of tables to transfer. Optional.',
+      'ordered-dump' => 'Use this option to output ordered INSERT statements in the sql-dump.Useful when backups are managed in a Version Control System. Optional.',
+      'create-db' => array('hidden' => TRUE, 'description' => 'Omit DROP TABLE statements. Postgres and Oracle only.  Used by sql-sync, since including the DROP TABLE statements interfere with the import when the database is created.'),
+      'data-only' => 'Dump data without statements to create any of the schema.',
+      'ordered-dump' => 'Order by primary key and add line breaks for efficient diff in revision control. Also, faster rsync. Slows down the dump. Mysql only.',
+      'gzip' => 'Compress the dump using the gzip program which must be in your $PATH.',
+    ),
+    'aliases' => array('psite-sql-dump'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   /**
@@ -756,6 +818,67 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 
   $mode = $onserverdevstatus ? 'SFTP' : 'Git';
   drush_log('Connection mode set to: ' . $mode, 'ok');
+}
+
+/**
+ * Displays a list of open tunnels
+ */
+function drush_terminus_pantheon_site_tunnels() {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $tunnels = terminus_tunnel_get_all();
+  terminus_tunnel_print_info_table($tunnels['data']);
+}
+
+/**
+ * Opens a tunnel for a specific site/environment/service
+ */
+function drush_terminus_pantheon_site_tunnel($site_uuid = FALSE, $environment = FALSE, $service = 'mysql', $port = NULL, $print_info = TRUE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+
+  $types = array(
+    'mysql' => 'dbserver',
+    'redis' => 'cacheserver'
+  );
+
+  if (!isset($types[$service])) {
+    return drush_set_error('TERMINUS_TUNNEL_ERROR', dt('Invlalid service: @service. Try "mysql" or "redis".', array('@service' => $service)));
+  }
+
+  return terminus_tunnel_open($site_uuid, $environment, $types[$service], $port, $print_info);
+}
+
+/**
+ * Close tunnels
+ */
+function drush_terminus_pantheon_site_tunnel_close($pid = NULL) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  terminus_tunnel_close($pid);
 }
 
 /**
@@ -1339,6 +1462,39 @@ function terminus_get_site_uuid_by_name($site_name) {
     }
   }
   return FALSE;
+}
+
+/**
+ * Helper function to leverage cache and static sites array.
+ */
+function terminus_user_site_list($reset = FALSE) {
+  static $asites;
+  if (isset($asites) && !$reset) {
+    return $asites;
+  }
+
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  $cid = 'terminus-sites';
+  if ($reset || !$cache = drush_cache_get($cid, 'pantheon')) {
+    drush_log('Loading site data from Pantheon.', 'notice');
+    $result = terminus_api_user_site_list($user_uuid);
+    if ($result === FALSE) {
+      return FALSE;
+    }
+    $asites = json_decode($result['json']);
+  }
+  else {
+    drush_log('Loaded site data from cache.', 'notice');
+    $asites = $cache->data;
+  }
+
+  drush_cache_set($cid, $asites, 'pantheon');
+  return $asites;
 }
 
 /**
