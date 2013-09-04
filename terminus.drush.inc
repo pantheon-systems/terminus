@@ -196,15 +196,9 @@ function terminus_drush_command() {
   $items['pantheon-site-load-backup'] = array(
     'description' => "Load db with a backup file from a specific site.",
     'arguments' => array(
-<<<<<<< HEAD
-      'site' => 'UUID of the site you want to get backups for.',
-      'environment' => 'The environment (e.g. "live") you want to back up.',
-      'bucket' => 'Bucket for the backup. Use "latest" or leave empty for the most recent.',
-=======
       'site' => 'UUID or name of the site you want to get backups for.',
       'environment' => 'The environment (e.g. "live") you want to use a backup from.',
       'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
->>>>>>> e82d04d... psite-connection-mode command
     ),
     'aliases' => array('psite-load-backup'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
