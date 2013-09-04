@@ -17,7 +17,7 @@ function terminus_tunnel_get_all() {
     // tunnels are keyed by port, ports are keyed by env.site for mapping.
     foreach ($lines as $line) {
       $matches = array();
-      if (preg_match('/([0-9]{1,8}) ([0-9]{1,2}:[0-9]{2})(PM|AM) ([0-9]{1,7}):(localhost):([0-9]{1,7}) ([A-z0-9_]{3,16}\.[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})@(([A-z0-9_]{3,16})\.([A-z0-9_]{3,16})\.([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\.drush.in)/', $line, $matches)) {
+      if (preg_match('/([0-9]{1,8}) ([0-9]{1,2}:[0-9]{2})(PM|AM) ([0-9]{1,7}):(127.0.0.1):([0-9]{1,7}) ([A-z0-9_]{3,16}\.[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})@(([A-z0-9_]{3,16})\.([A-z0-9_]{3,16})\.([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\.drush.in)/', $line, $matches)) {
         $tunnel = array_combine($keys, $matches);
         $tunnel['site'] = isset($sites[$tunnel['site_uuid']]) ? $sites[$tunnel['site_uuid']]['information']['name'] : $tunnel['site_uuid'];
         $tunnels['data'][$tunnel['port']] = $tunnel;
@@ -56,7 +56,7 @@ function terminus_tunnel_open($site_uuid, $environment, $type = 'dbserver', $por
   }
   else {
 
-    $cmd = "ssh -f -N -L {$port}:localhost:{$binding->port} -p 2222 {$environment}.{$site_uuid}@{$rhost}";
+    $cmd = "ssh -f -N -L {$port}:127.0.0.1:{$binding->port} -p 2222 {$environment}.{$site_uuid}@{$rhost}";
     $status = drush_shell_proc_open($cmd);
     if ($status != 0) {
       return drush_set_error('TERMINUS_SSH_ERROR', dt('An error @code occurred while opening a tunnel with the command `@command`', array('@command' => $cmd, '@code' => $status)));
