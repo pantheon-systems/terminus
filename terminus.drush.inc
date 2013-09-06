@@ -396,9 +396,13 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     return FALSE;
   }
   extract($session_data);
+
   if (!$name) {
-    drush_log('You must supply a site name', 'failed');
-    return FALSE;
+    $name = terminus_session_select_data('site_name');
+    if (!$name) {
+      drush_log('You must supply a site name!', 'failed');
+      return FALSE;
+    }
   }
 
   // Construct payload. We don't want empty/null values.
@@ -407,11 +411,24 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   if (drush_get_option('label')) {
     $site_data['label'] = drush_get_option('label');
   }
+  else {
+    $site_data['label'] = terminus_session_select_data('site_label');
+  }
   if (drush_get_option('organization')) {
     $site_data['organization'] = drush_get_option('organization');
   }
+  else {
+    $site_data['organization'] = terminus_session_select_data('organization');
+  }
   if (drush_get_option('product')) {
     $site_data['product'] = drush_get_option('product');
+  }
+  else {
+    $site_data['product'] = terminus_session_select_data('product');
+  }
+  if (!$site_data['product']) {
+    drush_log('You must specify a starting state!', 'failed');
+    return FALSE;
   }
 
   $result = terminus_request('user', $user_uuid, 'sites', 'POST', $site_data);
@@ -419,7 +436,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (drush_get_option('json')) {
+  if ($json_output) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1398,8 +1415,58 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
           return $val;
         }
       }
-
       break;
+
+    case 'site_name':
+      $val = drush_prompt('Provide a name for the site. This will be part of the default URL');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'site_label':
+      $val = drush_prompt('Human-fiendly name for the site?');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'organization':
+      $result = terminus_api_user_organizations_get($user_uuid);
+      $organizations = json_decode($result['json']);
+      if (count($organizations) == 0) {
+        return NULL;
+      }
+      $choices = array('none' => dt('None'));
+      foreach ($organizations as $organization => $data) {
+        $choices[$organization] = $data->name;
+      }
+      $val = drush_choice($choices, 'Organizational affiliation');
+      if ($val == 'none') {
+        return NULL;
+      }
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'product':
+      $result = terminus_request('public', 'public', 'products');
+      $products = json_decode($result['json']);
+      $choices = array();
+      foreach ($products as $product_uuid => $data) {
+        $i = $data->attributes;
+        $choices[$product_uuid] = $i->longname;
+        if ($i->author != '') {
+          $choices[$product_uuid] .= ' (by '. $i->author .')';
+        }
+      }
+      $val = drush_choice($choices, 'Select your starting state.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
   }
 }
 
