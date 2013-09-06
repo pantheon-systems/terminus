@@ -1013,11 +1013,6 @@ function terminus_session_data($key = FALSE) {
   static $cache = FALSE;
   if (!$cache) {
     $cache = drush_cache_get('terminus-current-session', 'pantheon');
-    if ($cache && time() - $cache->created > 3600) {
-      // Only allow cached auth for an hour.
-      drush_cache_clear_all('*', 'pantheon', TRUE);
-      return FALSE;
-    }
   }
   if (!$cache) {
     // No session data. That's not good.
