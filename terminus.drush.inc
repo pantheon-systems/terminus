@@ -334,7 +334,7 @@ function terminus_drush_command() {
  * User data about self.
  */
 function drush_terminus_pantheon_whoami() {
-  $session_data = terminus_session_data();
+  $session_data = terminus_bootstrap();
   // import to local scope variables
   extract($session_data);
   drush_print(dt("User UUID: !uuid", array('!uuid' => $user_uuid)));
@@ -885,7 +885,7 @@ function drush_terminus_pantheon_site_tunnel_close($pid = NULL) {
  * Update drush aliases file.
  */
 function drush_terminus_pantheon_aliases() {
-  $data = terminus_session_data();
+  $session_data = terminus_bootstrap();
   $default_destination = FALSE;
   $home = drush_server_home();
   if ($home) {
@@ -901,21 +901,22 @@ function drush_terminus_pantheon_aliases() {
     drush_log('Cannot write aliases to "'. $destination .'" - verify this location is writable.', 'failed');
     return FALSE;
   }
-  if (!$data) {
+  if (!$session_data) {
     drush_log('You are not authenticated', 'failed');
     return FALSE;
   }
   drush_log('Loading aliases from Pantheon.', 'notice');
   // This one is a little wonky still. Goes to Drupal.
   $ch = curl_init();
-  $url = 'https://'. TERMINUS_HOST .'/users/'. $data['user_uuid'] .'/drushrc';
-  curl_setopt($ch, CURLOPT_COOKIE, $data['session']);
+  $url = 'https://'. TERMINUS_HOST .'/users/'. $session_data['user_uuid'] .'/drushrc';
+  curl_setopt($ch, CURLOPT_COOKIE, $session_data['session']);
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  if (TERMINUS_HOST == 'onebox.getpantheon.com') {
+  if ($session_data['onebox']) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    $host = 'onebox.getpantheon.com';
   }
 
   $result = curl_exec($ch);
@@ -946,8 +947,8 @@ function drush_terminus_pantheon_pp($realm, $uuid, $path=FALSE) {
  * Get the list of products.
  */
 function drush_terminus_pantheon_products() {
-  $nocache = drush_get_option('nocache');
-  $json_output = drush_get_option('json');
+  $session_data = terminus_bootstrap();
+  extract($session_data);
   $cid = 'terminus-products';
   if ($nocache || !$cache = drush_cache_get($cid, 'pantheon')) {
     drush_log('Loading site data from Pantheon.', 'notice');
@@ -972,9 +973,7 @@ function drush_terminus_pantheon_products() {
   $rows = array();
   foreach ($products as $product_uuid => $data) {
     $i = $data->attributes;
-    if ($i->organization_uuid == '') {
-      $rows[$i->machinename] = array($i->longname, $i->author, $product_uuid);
-    }
+    $rows[$i->machinename] = array($i->longname, $i->author, $product_uuid);
   }
   ksort($rows);
   array_unshift($rows, array("Product", "Maker", "UUID"));
@@ -996,7 +995,7 @@ function terminus_session_data($key = FALSE) {
   static $cache = FALSE;
   if (!$cache) {
     $cache = drush_cache_get('terminus-current-session', 'pantheon');
-    if (time() - $cache->created > 3600) {
+    if ($cache && time() - $cache->created > 3600) {
       // Only allow cached auth for an hour.
       drush_cache_clear_all('*', 'pantheon', TRUE);
       return FALSE;
