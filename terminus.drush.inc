@@ -279,6 +279,30 @@ function terminus_drush_command() {
   );
 
   /**
+   * Workflow.
+   */
+  $items['pantheon-site-clone'] = array(
+    'description' => 'Clone content from one site environment to another.',
+    'arguments' => array(
+      'site' => 'UUID of the site containing content.',
+      'source' => 'The source environment (e.g. "live") from which content will be cloned.',
+      'target' => 'The target environment (e.g. "live") to which content will be cloned.',
+    ),
+    'options' => array(
+      'db' => 'Clone database content.',
+      'files' => 'Clone files content.',
+      'update' => 'Run update.php after cloning database.',
+    ),
+    'examples' => array(
+      'drush psite-clone site_uuid dev test' => 'Clone both database and files from dev to test.',
+      'drush psite-clone site_uuid dev test --db --update' => 'Clone only database from dev to test then run update.php.',
+      'drush psite-clone site_uuid dev test --files' => 'Clone only user files from dev to test.',
+    ),
+    'aliases' => array('psite-clone'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  /**
    * Utility Functions.
    */
   $items['pantheon-aliases'] = array(
@@ -289,7 +313,7 @@ function terminus_drush_command() {
       ),
     ),
     'aliases' => array('paliases'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-pp'] = array(
@@ -300,7 +324,7 @@ function terminus_drush_command() {
       'path' => 'Optional: path extension for more specific commands.',
     ),
     'aliases' => array('pp'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   // Include standard options for all commands:
@@ -330,6 +354,91 @@ function terminus_drush_command() {
  *
  * These commands exercise various aspects of the API.
  */
+
+/**
+ * Validate Pantheon site content clone.
+ */
+function drush_terminus_pantheon_site_clone_validate($site_uuid, $source, $target) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_CLONE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_UUID', 'You must specify a valid site uuid.');
+  }
+  if (!terminus_validate_environment($source)) {
+    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_SOURCE', 'You must specify a valid source environment name.');
+  }
+  if (!terminus_validate_environment($target)) {
+    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_TARGET', 'You must specify a valid target environment name.');
+  }
+  if (!drush_get_option('db') && drush_get_option('files') && drush_get_option('update')) {
+    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_UPDATE', dt("You can't update the database if you're not cloning the database."));
+  }
+}
+
+/**
+ * Pantheon site content clone.
+ */
+function drush_terminus_pantheon_site_clone($site_uuid, $env_source, $env_target) {
+  // Figure out the various options.
+  $clone_db = $clone_files = FALSE;
+  if (!drush_get_option('db') && !drush_get_option('files')) {
+    $clone_db = $clone_files = TRUE;
+  }
+  else {
+    if (drush_get_option('db')) {
+      $clone_db = TRUE;
+    }
+    if (drush_get_option('files')) {
+      $clone_files = TRUE;
+    }
+  }
+  $clone_db_update = drush_get_option('update') ? 1 : 0;
+
+  // Build label to describe operation.
+  $content = array();
+  if ($clone_db) {
+    if ($clone_db_update) {
+      $content[] = 'database (then run update.php)';
+    }
+    else {
+      $content[] = 'database';
+    }
+  }
+  if ($clone_files) {
+    $content[] = 'user files';
+  }
+  $content_str = implode(' and ', $content);
+
+  // Confirm.
+  $confirm = drush_confirm(dt('Are you sure you want to clone @site_name @content_str from @source to @target?', array(
+    '@site_name' => terminus_site_uuid_to_name($site_uuid),
+    '@content_str' => $content_str,
+    '@source' => $env_source,
+    '@target' => $env_target,
+  )));
+  if (!$confirm) {
+    return;
+  }
+
+  // Clone database.
+  if ($clone_db) {
+    if ($clone_db_update) {
+      drush_log('Initiated database cloning then update.php.', 'notice');
+    }
+    else {
+      drush_log('Initiated database cloning.', 'notice');
+    }
+    terminus_api_environment_clone_database($site_uuid, $env_source, $env_target, $clone_db_update);
+  }
+
+  // Clone files.
+  if ($clone_files) {
+    drush_log('Initiated files cloning.', 'notice');
+    terminus_api_environment_clone_files($site_uuid, $env_source, $env_target);
+  }
+}
 
 /**
  * User data about self.
@@ -1060,7 +1169,7 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     $host = 'onebox.getpantheon.com';
   }
-  $url = 'https://'. $host .'/terminus.php?'. $realm .'='. $uuid;
+  $url = 'https://'. $host . '/terminus.php?' . $realm . '=' . $uuid;
   if ($path) {
     $url .= '&path='. urlencode($path);
   }
@@ -1113,10 +1222,13 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
     return FALSE;
   }
 
-  // TODO: nice to have a timer here for how long the request took.
-  drush_log('Request complete.', 'notice');
+  drush_log(dt('Request complete in @seconds seconds.', array(
+    '@seconds' => $info['total_time'],
+  )), 'notice');
   drush_log("Respnse headers:\n" .$headers_text, 'notice');
-  drush_log("JSON response:\n" . $json, 'notice');
+  if ($json) {
+    drush_log("JSON response:\n" . $json, 'notice');
+  }
   return array('headers' => $headers_text, 'json' => $json);
 }
 
@@ -1499,11 +1611,36 @@ function terminus_user_site_list($reset = FALSE) {
 }
 
 /**
- * UUID Validating Regex.
- */
-/**
- * Atlas UUID Generation Validation
+ * Validate Atlas UUID.
+ * @param $uuid
+ * @return boolean
  */
 function terminus_validate_uuid($uuid) {
-  return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid);
+  return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}
+
+/**
+ * Validate Environment Name.
+ * @param $env
+ * @return bool
+ * @todo Actually check to see if the environment exists.
+ */
+function terminus_validate_environment($env) {
+  return preg_match('/^[-a-z0-9]{1,11}$/', $env) ? TRUE : FALSE;
+}
+
+/**
+ * Helper function to convert a site_uuid to the human readable name.
+ * @param $site_uuid
+ * @return mixed
+ */
+function terminus_site_uuid_to_name($site_uuid) {
+  $sites = json_decode(terminus_user_site_list());
+  $site_names = array();
+  foreach ($sites as $uuid => $data) {
+    $site_names[$uuid] = $data->information->name;
+  }
+  if (isset($site_names[$site_uuid])) {
+    return $site_names[$site_uuid];
+  }
 }
