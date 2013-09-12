@@ -216,6 +216,15 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+  $items['pantheon-site-notifications'] = array(
+    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+    ),
+    'aliases' => array('psite-notifications'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
   /**
    * Tunnel Functions.
    */
@@ -549,9 +558,42 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_print($result['json']);
     return TRUE;
   }
+  $site_uuid = json_decode($result['json']);
   drush_log("Site is building now in your dashboard.", "ok");
-  drush_print("The new site's UUID is '". json_decode($result['json']) ."'");
+  drush_print("The new site's UUID is '". $site_uuid ."'");
   drush_cache_clear_all('terminus-sites', 'pantheon');
+
+  # Poll for completion.
+  drush_print("Waiting for site to complete. You can cancel anytime.");
+  $ready = 0;
+  while ($ready < 7) {
+    echo ".";
+    sleep(5);
+    $result = terminus_api_site_bindings($site_uuid);
+    $bindings = json_decode($result['json']);
+    foreach ($bindings as $bid => $data) {
+      if ($data->ready) {
+        $ready++;
+        echo "\n";
+        drush_print("Chekpoint! Infrastructure step complete!");
+      }
+    }
+  }
+  # Poll for the sync code job to complete.
+  drush_print("Creating git repository and deploying code to dev.");
+  while (TRUE) {
+    echo ".";
+    sleep(5);
+    $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
+    print_r($notifications);
+    if (count($notifications) > 0) {
+      break;
+    }
+  }
+
+  drush_print("Your site is now ready! Manage it in the dashboard:");
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+
   return TRUE;
 }
 
@@ -945,6 +987,48 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 
   $mode = $onserverdevstatus ? 'SFTP' : 'Git';
   drush_log('Connection mode set to: ' . $mode, 'ok');
+}
+
+/**
+ * Get a list of notifications for a site to track ongoing jobs.
+ */
+function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  $notifications = terminus_notifications_list($site_uuid);
+  print_r($notifications);
+}
+
+/**
+ * Helpful function to fetch and parse down a list of notifications.
+ */
+function terminus_notifications_list($site_uuid, $type = FALSE) {
+  $result = terminus_api_site_notifications($site_uuid);
+  $data = json_decode($result['json']);
+  $notifications = array();
+  foreach ($data as $id => $notification) {
+    if ($type) {
+      if (strpos($notification->name, $tyle) === FALSE) {
+        continue;
+      }
+    }
+    $notifications[$notification->start] = array(
+      'name' => $notification->name,
+      'status' => $notification->build->status,
+      'phase' => $notification->build->phase,
+      'duration' => $notification->build->duration,
+    );
+  }
+  # TODO: munge this list to remove internals, provide human-readable names.
+  return $notifications;
 }
 
 /**
