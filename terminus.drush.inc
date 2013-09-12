@@ -1629,7 +1629,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'site_label':
-      $val = drush_prompt('Human-fiendly name for the site?');
+      $val = drush_prompt('Human-friendly name for the site?');
       if ($val !== FALSE) {
         return $val;
       }
