@@ -5,32 +5,43 @@
  */
 
 /**
- * API Function to Move Databases Around
+ * API call to clone a database between site environments.
  */
-function atlas_api_environment_database_move($site_uuid, $oldenv, $newenv, $updatedb = 0) {
-  $path = '/sites/' . $site_uuid . '/environments/' . $newenv . '/database';
+function terminus_api_environment_clone_database($site_uuid, $env_source, $env_target, $updatedb = 0) {
+  $realm = 'site';
+  $path = 'environments/' . $env_target . '/database';
   $method = 'POST';
-  $data = json_encode(array('clone-from-environment' => $oldenv, 'updatedb' => $updatedb));
-  return atlas_api($path, $method, $data);
+  $uuid = $site_uuid;
+  $data = array(
+    'clone-from-environment' => $env_source,
+    'updatedb' => $updatedb,
+  );
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }
 
 /**
- * API Function to Move Files Around
+ * API call to clone user files between site environments.
  */
-function atlas_api_environment_files_move($site_uuid, $oldenv, $newenv) {
-  $path = '/sites/' . $site_uuid . '/environments/' . $newenv . '/files';
+function terminus_api_environment_clone_files($site_uuid, $env_source, $env_target) {
+  $realm = 'site';
+  $path = 'environments/' . $env_target . '/files';
   $method = 'POST';
-  $data = json_encode(array('clone-from-environment' => $oldenv));;
-  return atlas_api($path, $method, $data);
+  $uuid = $site_uuid;
+  $data = array(
+    'clone-from-environment' => $env_source,
+  );
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }
 
 /**
- * API Function to Move Code Around
+ * API Function to deploy code to a site environment.
  */
-function atlas_api_environment_code_move($site_uuid, $newenv, $updatedb = 0) {
-  $path = ($updatedb) ? '/sites/' . $site_uuid . '/environments/' . $newenv . '/code' : '/sites/' . $site_uuid . '/environments/' . $newenv . '/code';
+function atlas_api_environment_deploy_code($site_uuid, $newenv, $updatedb = 0) {
+  $path = '/sites/' . $site_uuid . '/environments/' . $newenv . '/code';
   $method = 'POST';
-  $data = json_encode(array('updatedb' => $updatedb));
+  $data = json_encode(array(
+    'updatedb' => $updatedb,
+  ));
   return atlas_api($path, $method, $data);
 }
 
@@ -40,14 +51,12 @@ function atlas_api_environment_code_move($site_uuid, $newenv, $updatedb = 0) {
 function atlas_api_environment_site_import($site_uuid, $importurl, $environment, $code, $db, $files) {
   $path = '/sites/' . $site_uuid . '/environments/' . $environment . '/import';
   $method = 'POST';
-  $data = json_encode(
-    array(
-      'url' => $importurl,
-      'code' => ($code) ? 1 : 0,
-      'database' => ($db) ? 1 : 0,
-      'files' => ($files) ? 1 : 0,
-    )
-  );
+  $data = json_encode(array(
+    'url' => $importurl,
+    'code' => ($code) ? 1 : 0,
+    'database' => ($db) ? 1 : 0,
+    'files' => ($files) ? 1 : 0,
+  ));
   return atlas_api($path, $method, $data);
 }
 
