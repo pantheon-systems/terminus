@@ -516,7 +516,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
 
   // Construct payload. We don't want empty/null values.
   $site_data = array();
-  $site_data['name'] = preg_replace("/[^A-Za-z0-9 ]/", '', $name);
+  $site_data['name'] = preg_replace("/[^A-Za-z0-9 -]/", '', $name);
   if (drush_get_option('label')) {
     $site_data['label'] = drush_get_option('label');
   }
@@ -551,7 +551,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   }
   drush_log("Site is building now in your dashboard.", "ok");
   drush_print("The new site's UUID is '". json_decode($result['json']) ."'");
-  drush_cache_clear_all('terminus-sites', 'pantheon');
+  drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
   return TRUE;
 }
 
