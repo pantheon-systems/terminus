@@ -545,7 +545,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if ($json_output) {
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1090,7 +1090,7 @@ function drush_terminus_pantheon_products() {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
   }
-  if ($json_output) {
+  if (isset($json_output) && isset($result['json']) && $result['json']) {
     drush_print($products);
     return TRUE;
   }
@@ -1175,7 +1175,7 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   $headers = array();
   $session_data = terminus_bootstrap(FALSE);
   $host = TERMINUS_HOST;
-  if ($session_data['onebox']) {
+  if (isset($session_data['onebox']) && $session_data['onebox']) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     $host = 'onebox.getpantheon.com';
@@ -1541,7 +1541,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
     case 'organization':
       $result = terminus_api_user_organizations_get($user_uuid);
       $organizations = json_decode($result['json']);
-      if (count($organizations) == 0) {
+      if (count($organizations) <= 1) {
         return NULL;
       }
       $choices = array('none' => dt('None'));
