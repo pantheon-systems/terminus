@@ -545,7 +545,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (isset($result['json']) && $result['json']) {
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1090,7 +1090,7 @@ function drush_terminus_pantheon_products() {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
   }
-  if (isset($result['json']) && $result['json']) {
+  if (isset($json_output) && isset($result['json']) && $result['json']) {
     drush_print($products);
     return TRUE;
   }
