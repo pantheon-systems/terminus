@@ -393,3 +393,27 @@ function terminus_api_site_environments($site_uuid) {
 
   return terminus_request($realm, $uuid, $path, $method);
 }
+
+/**
+ * API Function to get notifications for a site to track job status.
+ */
+function terminus_api_site_notifications($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'notifications';
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
+ * API Function to get all bindings for a site to track spin-up status.
+ */
+function terminus_api_site_bindings($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'bindings';
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}

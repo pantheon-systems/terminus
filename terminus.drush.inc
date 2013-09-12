@@ -216,6 +216,15 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+  $items['pantheon-site-notifications'] = array(
+    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+    ),
+    'aliases' => array('psite-notifications'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
   /**
    * Tunnel Functions.
    */
@@ -539,7 +548,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log('You must specify a starting state!', 'failed');
     return FALSE;
   }
-
+  drush_log("Queuing build.", "ok");
   $result = terminus_request('user', $user_uuid, 'sites', 'POST', $site_data);
   if (!$result) {
     drush_log("Site create failed", "failed");
@@ -549,9 +558,56 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_print($result['json']);
     return TRUE;
   }
+  $site_uuid = json_decode($result['json']);
   drush_log("Site is building now in your dashboard.", "ok");
-  drush_print("The new site's UUID is '". json_decode($result['json']) ."'");
+  drush_print("The new site's UUID is '". $site_uuid ."'");
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
+
+  # Poll for completion.
+  drush_print(dt('Waiting for site spinup to complete. You can cancel anytime and the process will continue in the background.'));
+  $ready = 0;
+  while (TRUE) {
+    echo ".";
+    sleep(5);
+    $result = terminus_api_site_bindings($site_uuid);
+    $bindings = json_decode($result['json']);
+    // Keep track of ready bindings.
+    if (!isset($bindings_ready)) {
+      foreach ($bindings as $bid => $data) {
+        $bindings_ready[$bid] = FALSE;
+      }
+    }
+    foreach ($bindings as $bid => $data) {
+      if ($data->ready && !$bindings_ready[$bid]) {
+        $bindings_ready[$bid] = TRUE;
+        drush_print(dt('Checkpoint! Infrastructure @type step complete (@ready out of @total).', array(
+          '@type' => $data->type,
+          '@ready' => ++$ready,
+          '@total' => count($bindings_ready),
+        )));
+      }
+    }
+    $all_ready = TRUE;
+    foreach ($bindings_ready as $binding_ready) {
+      if (!$binding_ready) $all_ready = FALSE;
+    }
+    if ($all_ready) {
+      break;
+    }
+  }
+  # Poll for the sync code job to complete.
+  drush_print("Creating git repository and deploying code to dev.");
+  while (TRUE) {
+    echo ".";
+    sleep(5);
+    $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
+    if (count($notifications) > 0) {
+      break;
+    }
+  }
+
+  drush_print("Your site is now ready! Manage it in the dashboard:");
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
   return TRUE;
 }
 
@@ -948,6 +1004,47 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 }
 
 /**
+ * Get a list of notifications for a site to track ongoing jobs.
+ */
+function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  $notifications = terminus_notifications_list($site_uuid);
+}
+
+/**
+ * Helpful function to fetch and parse down a list of notifications.
+ */
+function terminus_notifications_list($site_uuid, $type = FALSE) {
+  $result = terminus_api_site_notifications($site_uuid);
+  $data = json_decode($result['json']);
+  $notifications = array();
+  foreach ($data as $id => $notification) {
+    if ($type) {
+      if (strpos($notification->name, $type) === FALSE) {
+        continue;
+      }
+    }
+    $notifications[$notification->start] = array(
+      'name' => $notification->name,
+      'status' => $notification->build->status,
+      'phase' => $notification->build->phase,
+      'duration' => $notification->build->duration,
+    );
+  }
+  # TODO: munge this list to remove internals, provide human-readable names.
+  return $notifications;
+}
+
+/**
  * Displays a list of open tunnels
  */
 function drush_terminus_pantheon_site_tunnels() {
@@ -1236,9 +1333,9 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   drush_log(dt('Request complete in @seconds seconds.', array(
     '@seconds' => $info['total_time'],
   )), 'notice');
-  drush_log("Respnse headers:\n" .$headers_text, 'notice');
+  drush_log("Response headers:\n" .$headers_text, 'debug');
   if ($json) {
-    drush_log("JSON response:\n" . $json, 'notice');
+    drush_log("JSON response:\n" . $json, 'debug');
   }
   return array('headers' => $headers_text, 'json' => $json);
 }
