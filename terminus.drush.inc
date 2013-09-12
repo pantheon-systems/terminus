@@ -525,7 +525,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
 
   // Construct payload. We don't want empty/null values.
   $site_data = array();
-  $site_data['name'] = preg_replace("/[^A-Za-z0-9 ]/", '', $name);
+  $site_data['name'] = preg_replace("/[^A-Za-z0-9 -]/", '', $name);
   if (drush_get_option('label')) {
     $site_data['label'] = drush_get_option('label');
   }
@@ -548,7 +548,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log('You must specify a starting state!', 'failed');
     return FALSE;
   }
-
+  drush_log("Queuing build.", "ok");
   $result = terminus_request('user', $user_uuid, 'sites', 'POST', $site_data);
   if (!$result) {
     drush_log("Site create failed", "failed");
@@ -561,7 +561,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   $site_uuid = json_decode($result['json']);
   drush_log("Site is building now in your dashboard.", "ok");
   drush_print("The new site's UUID is '". $site_uuid ."'");
-  drush_cache_clear_all('terminus-sites', 'pantheon');
+  drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
 
   # Poll for completion.
   drush_print("Waiting for site to complete. You can cancel anytime.");
@@ -593,7 +593,6 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
 
   drush_print("Your site is now ready! Manage it in the dashboard:");
   drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
-
   return TRUE;
 }
 
