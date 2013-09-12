@@ -545,7 +545,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-
+  if (isset($result['json']) && $result['json']) {
+    drush_print($result['json']);
+    return TRUE;
+  }
   drush_log("Site is building now in your dashboard.", "ok");
   drush_print("The new site's UUID is '". json_decode($result['json']) ."'");
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
@@ -1086,6 +1089,10 @@ function drush_terminus_pantheon_products() {
   else {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
+  }
+  if (isset($result['json']) && $result['json']) {
+    drush_print($products);
+    return TRUE;
   }
 
   // Display tabular output.
