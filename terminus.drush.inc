@@ -564,19 +564,35 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
 
   # Poll for completion.
-  drush_print("Waiting for site to complete. You can cancel anytime.");
+  drush_print(dt('Waiting for site spinup to complete. You can cancel anytime and the process will continue in the background.'));
   $ready = 0;
-  while ($ready < 7) {
+  while (TRUE) {
     echo ".";
     sleep(5);
     $result = terminus_api_site_bindings($site_uuid);
     $bindings = json_decode($result['json']);
-    foreach ($bindings as $bid => $data) {
-      if ($data->ready) {
-        $ready++;
-        echo "\n";
-        drush_print("Chekpoint! Infrastructure step complete!");
+    // Keep track of ready bindings.
+    if (!isset($bindings_ready)) {
+      foreach ($bindings as $bid => $data) {
+        $bindings_ready[$bid] = FALSE;
       }
+    }
+    foreach ($bindings as $bid => $data) {
+      if ($data->ready && !$bindings_ready[$bid]) {
+        $bindings_ready[$bid] = TRUE;
+        drush_print(dt('Checkpoint! Infrastructure @type step complete (@ready out of @total).', array(
+          '@type' => $data->type,
+          '@ready' => ++$ready,
+          '@total' => count($bindings_ready),
+        )));
+      }
+    }
+    $all_ready = TRUE;
+    foreach ($bindings_ready as $binding_ready) {
+      if (!$binding_ready) $all_ready = FALSE;
+    }
+    if ($all_ready) {
+      break;
     }
   }
   # Poll for the sync code job to complete.
@@ -585,7 +601,6 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     echo ".";
     sleep(5);
     $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
-    print_r($notifications);
     if (count($notifications) > 0) {
       break;
     }
@@ -1003,7 +1018,6 @@ function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
     return FALSE;
   }
   $notifications = terminus_notifications_list($site_uuid);
-  print_r($notifications);
 }
 
 /**
@@ -1015,7 +1029,7 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
   $notifications = array();
   foreach ($data as $id => $notification) {
     if ($type) {
-      if (strpos($notification->name, $tyle) === FALSE) {
+      if (strpos($notification->name, $type) === FALSE) {
         continue;
       }
     }
@@ -1319,9 +1333,9 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   drush_log(dt('Request complete in @seconds seconds.', array(
     '@seconds' => $info['total_time'],
   )), 'notice');
-  drush_log("Respnse headers:\n" .$headers_text, 'notice');
+  drush_log("Response headers:\n" .$headers_text, 'debug');
   if ($json) {
-    drush_log("JSON response:\n" . $json, 'notice');
+    drush_log("JSON response:\n" . $json, 'debug');
   }
   return array('headers' => $headers_text, 'json' => $json);
 }
