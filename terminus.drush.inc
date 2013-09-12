@@ -444,7 +444,7 @@ function drush_terminus_pantheon_site_clone($site_uuid, $env_source, $env_target
  * User data about self.
  */
 function drush_terminus_pantheon_whoami() {
-  $session_data = terminus_session_data();
+  $session_data = terminus_bootstrap();
   // import to local scope variables
   extract($session_data);
   drush_print(dt("User UUID: !uuid", array('!uuid' => $user_uuid)));
@@ -505,9 +505,13 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     return FALSE;
   }
   extract($session_data);
+
   if (!$name) {
-    drush_log('You must supply a site name', 'failed');
-    return FALSE;
+    $name = terminus_session_select_data('site_name');
+    if (!$name) {
+      drush_log('You must supply a site name!', 'failed');
+      return FALSE;
+    }
   }
 
   // Construct payload. We don't want empty/null values.
@@ -516,11 +520,24 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   if (drush_get_option('label')) {
     $site_data['label'] = drush_get_option('label');
   }
+  else {
+    $site_data['label'] = terminus_session_select_data('site_label');
+  }
   if (drush_get_option('organization')) {
     $site_data['organization'] = drush_get_option('organization');
   }
+  else {
+    $site_data['organization'] = terminus_session_select_data('organization');
+  }
   if (drush_get_option('product')) {
     $site_data['product'] = drush_get_option('product');
+  }
+  else {
+    $site_data['product'] = terminus_session_select_data('product');
+  }
+  if (!$site_data['product']) {
+    drush_log('You must specify a starting state!', 'failed');
+    return FALSE;
   }
 
   $result = terminus_request('user', $user_uuid, 'sites', 'POST', $site_data);
@@ -528,7 +545,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (drush_get_option('json')) {
+  if ($json_output) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -995,7 +1012,7 @@ function drush_terminus_pantheon_site_tunnel_close($pid = NULL) {
  * Update drush aliases file.
  */
 function drush_terminus_pantheon_aliases() {
-  $data = terminus_session_data();
+  $session_data = terminus_bootstrap();
   $default_destination = FALSE;
   $home = drush_server_home();
   if ($home) {
@@ -1011,21 +1028,22 @@ function drush_terminus_pantheon_aliases() {
     drush_log('Cannot write aliases to "'. $destination .'" - verify this location is writable.', 'failed');
     return FALSE;
   }
-  if (!$data) {
+  if (!$session_data) {
     drush_log('You are not authenticated', 'failed');
     return FALSE;
   }
   drush_log('Loading aliases from Pantheon.', 'notice');
   // This one is a little wonky still. Goes to Drupal.
   $ch = curl_init();
-  $url = 'https://'. TERMINUS_HOST .'/users/'. $data['user_uuid'] .'/drushrc';
-  curl_setopt($ch, CURLOPT_COOKIE, $data['session']);
+  $url = 'https://'. TERMINUS_HOST .'/users/'. $session_data['user_uuid'] .'/drushrc';
+  curl_setopt($ch, CURLOPT_COOKIE, $session_data['session']);
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  if (TERMINUS_HOST == 'onebox.getpantheon.com') {
+  if ($session_data['onebox']) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    $host = 'onebox.getpantheon.com';
   }
 
   $result = curl_exec($ch);
@@ -1056,8 +1074,8 @@ function drush_terminus_pantheon_pp($realm, $uuid, $path=FALSE) {
  * Get the list of products.
  */
 function drush_terminus_pantheon_products() {
-  $nocache = drush_get_option('nocache');
-  $json_output = drush_get_option('json');
+  $session_data = terminus_bootstrap();
+  extract($session_data);
   $cid = 'terminus-products';
   if ($nocache || !$cache = drush_cache_get($cid, 'pantheon')) {
     drush_log('Loading site data from Pantheon.', 'notice');
@@ -1082,9 +1100,7 @@ function drush_terminus_pantheon_products() {
   $rows = array();
   foreach ($products as $product_uuid => $data) {
     $i = $data->attributes;
-    if ($i->organization_uuid == '') {
-      $rows[$i->machinename] = array($i->longname, $i->author, $product_uuid);
-    }
+    $rows[$i->machinename] = array($i->longname, $i->author, $product_uuid);
   }
   ksort($rows);
   array_unshift($rows, array("Product", "Maker", "UUID"));
@@ -1106,11 +1122,6 @@ function terminus_session_data($key = FALSE) {
   static $cache = FALSE;
   if (!$cache) {
     $cache = drush_cache_get('terminus-current-session', 'pantheon');
-    if (time() - $cache->created > 3600) {
-      // Only allow cached auth for an hour.
-      drush_cache_clear_all('*', 'pantheon', TRUE);
-      return FALSE;
-    }
   }
   if (!$cache) {
     // No session data. That's not good.
@@ -1511,8 +1522,58 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
           return $val;
         }
       }
-
       break;
+
+    case 'site_name':
+      $val = drush_prompt('Provide a name for the site. This will be part of the default URL');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'site_label':
+      $val = drush_prompt('Human-fiendly name for the site?');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'organization':
+      $result = terminus_api_user_organizations_get($user_uuid);
+      $organizations = json_decode($result['json']);
+      if (count($organizations) == 0) {
+        return NULL;
+      }
+      $choices = array('none' => dt('None'));
+      foreach ($organizations as $organization => $data) {
+        $choices[$organization] = $data->name;
+      }
+      $val = drush_choice($choices, 'Organizational affiliation');
+      if ($val == 'none') {
+        return NULL;
+      }
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'product':
+      $result = terminus_request('public', 'public', 'products');
+      $products = json_decode($result['json']);
+      $choices = array();
+      foreach ($products as $product_uuid => $data) {
+        $i = $data->attributes;
+        $choices[$product_uuid] = $i->longname;
+        if ($i->author != '') {
+          $choices[$product_uuid] .= ' (by '. $i->author .')';
+        }
+      }
+      $val = drush_choice($choices, 'Select your starting state.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
   }
 }
 
