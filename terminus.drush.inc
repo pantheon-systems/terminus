@@ -464,20 +464,7 @@ function drush_terminus_pantheon_sites() {
   }
   extract($session_data);
 
-  $cid = 'terminus-sites';
-  if ($nocache || !$cache = drush_cache_get($cid, 'pantheon')) {
-    drush_log('Loading site data from Pantheon.', 'notice');
-    $result = terminus_api_user_site_list($user_uuid);
-    if ($result === FALSE) {
-      return FALSE;
-    }
-    $sites = $result['json'];
-    drush_cache_set($cid, $sites, 'pantheon');
-  }
-  else {
-    drush_log('Loaded site data from cache.', 'notice');
-    $sites = $cache->data;
-  }
+  $sites = terminus_user_site_list();
   if ($json) {
     drush_print($sites);
     return TRUE;
@@ -565,12 +552,12 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
   }
   extract($session_data);
 
-  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, FALSE)) {
     drush_log('You must supply a site UUID', 'failed');
     return FALSE;
   }
-
-  $confirm = drush_confirm("Are you sure you want to delete?");
+  $name = terminus_site_uuid_to_name($site_uuid);
+  $confirm = drush_confirm("Are you sure you want to delete $name ($site_uuid)?");
   if (!$confirm) {
     return TRUE;
   }
@@ -1426,14 +1413,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
 
   switch ($key) {
     case 'site_uuid':
-      $cid = 'terminus-sites';
-      drush_log('Loading site data from Pantheon.', 'notice');
-      $result = terminus_api_user_site_list($user_uuid);
-      if ($result === FALSE) {
-        return FALSE;
-      }
-      $sites = json_decode($result['json']);
-      drush_cache_set($cid, $sites, 'pantheon');
+      $sites = json_decode(terminus_user_site_list());
 
       $choices = array();
       foreach ($sites as $site_uuid => $data) {
@@ -1541,7 +1521,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
     case 'organization':
       $result = terminus_api_user_organizations_get($user_uuid);
       $organizations = json_decode($result['json']);
-      if (count($organizations) <= 1) {
+      if (count((array) $organizations) == 0) {
         return NULL;
       }
       $choices = array('none' => dt('None'));
@@ -1598,7 +1578,7 @@ function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
 /**
  * Helper function to handle site uuid input.
  */
-function terminus_site_input($site_input, $prompt = TRUE, $uuid_only = FALSE) {
+function terminus_site_input($site_input = FALSE, $prompt = TRUE, $uuid_only = FALSE) {
   if (!$site_input && $prompt) {
     $site_input = terminus_session_select_data('site_uuid');
   }
@@ -1654,13 +1634,14 @@ function terminus_user_site_list($reset = FALSE) {
   extract($session_data);
 
   $cid = 'terminus-sites';
-  if ($reset || !$cache = drush_cache_get($cid, 'pantheon')) {
+  if ($reset || $nocache || !$cache = drush_cache_get($cid, 'pantheon')) {
     drush_log('Loading site data from Pantheon.', 'notice');
     $result = terminus_api_user_site_list($user_uuid);
     if ($result === FALSE) {
       return FALSE;
     }
-    $asites = json_decode($result['json']);
+    $asites = $result['json'];
+    drush_cache_set($cid, $asites);
   }
   else {
     drush_log('Loaded site data from cache.', 'notice');
@@ -1668,6 +1649,7 @@ function terminus_user_site_list($reset = FALSE) {
   }
 
   drush_cache_set($cid, $asites, 'pantheon');
+
   return $asites;
 }
 
@@ -1699,9 +1681,9 @@ function terminus_site_uuid_to_name($site_uuid) {
   $sites = json_decode(terminus_user_site_list());
   $site_names = array();
   foreach ($sites as $uuid => $data) {
-    $site_names[$uuid] = $data->information->name;
+    if ($site_uuid === $uuid) {
+      return $data->information->name;
+    }
   }
-  if (isset($site_names[$site_uuid])) {
-    return $site_names[$site_uuid];
-  }
+  return drush_set_error("No site found for UUID '$site_uuid'.");
 }
