@@ -1635,6 +1635,8 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'product':
+      # TODO: abstract this into a happy fetcher functon.
+      # TODO: allow that to filter by org so interactive spinup can't fail.
       $result = terminus_request('public', 'public', 'products');
       $products = json_decode($result['json']);
       $choices = array();
