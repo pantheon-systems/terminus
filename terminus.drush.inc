@@ -292,7 +292,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site. If left empty, all tunnels will be closed.',
       'environment' => 'The target environment (e.g. "live"). If left empty, all site tunnels will be closed.',
-      'destination' => 'Where would you like the backup?'
+      'destination' => 'Where would you to mount the file system?'
     ),
     'aliases' => array('psite-mount'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
