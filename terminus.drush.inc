@@ -1142,7 +1142,9 @@ function drush_terminus_pantheon_site_commit($site_uuid = FALSE, $environment = 
 
   drush_log(dt('Triggering commit.'), 'info');
   $result = terminus_api_site_environment_onserverdev_commit($site_uuid, $environment, $message, $user_uuid);
-  drush_log(trim($result['json']), 'info');
+  // Hope it's ok.
+  $json = json_decode($result['json']);
+  drush_log(trim($json), 'ok');
 }
 
 /**
