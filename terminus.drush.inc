@@ -1797,7 +1797,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'organization':
-      $result = terminus_api_user_organizations_get($user_uuid);
+      $result = terminus_api_user_organizations($user_uuid);
       $organizations = json_decode($result['json']);
       if (count((array) $organizations) == 0) {
         return NULL;
