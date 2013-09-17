@@ -626,11 +626,11 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     foreach ($bindings as $bid => $data) {
       if ($data->ready && !$bindings_ready[$bid]) {
         $bindings_ready[$bid] = TRUE;
-        drush_print(dt('Checkpoint! Infrastructure @type step complete (@ready out of @total).', array(
+        echo ' ' . dt('@type step complete (@ready/@total).', array(
           '@type' => $data->type,
           '@ready' => ++$ready,
           '@total' => count($bindings_ready),
-        )));
+        ));
       }
     }
     $all_ready = TRUE;

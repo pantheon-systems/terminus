@@ -18,6 +18,70 @@ Quick Demo
 
 You'll find many more fun commands in "drush help".
 
+Building a Site on Pantheon using drush_make
+============================================
+
+Specify the site name...
+
+    SITE_NAME=REPLACEME
+
+And a description...
+
+    SITE_DESC="Building a site with drush_make and terminus"
+
+Authenticate.
+
+    drush pauth YOUR@EMAIL.COM --password=TOOMANYSECRETS
+
+Create the site using Drupal 7 (drops-7) as the base.
+
+    drush psite-create $SITE_NAME --label="$SITE_DESC" --product=21e1fada-199c-492b-97bd-0b36b53a9da0
+
+Update your aliases.
+
+    drush paliases
+
+Determine the site_uuid of the newly created site.
+
+    SITE_UUID=$(drush psite-uuid $SITE_NAME)
+
+Change the connection mode of the dev environment to SFTP.
+
+    drush psite-cmode $SITE_UUID dev sftp
+
+Use a public gist as the source for drush make to download a few common modules.
+The contents of the gist can be found in the file demo.make
+
+    drush -y @pantheon.$SITE_NAME.dev make --no-core https://gist.github.com/fluxsauce/6590013/raw/f73d76bb6bdd366cdc9177de981624de84353dfc/gistfile1.txt
+
+Install the site. Remember to grab the password, or use drush uli later.
+
+    drush -y @pantheon.$SITE_NAME.dev si --site-name="$SITE_DESC" pantheon
+
+Commit the changes.
+
+    drush psite-commit $SITE_UUID dev --message="Base tools from drush_make"
+
+Change the connection mode back to git.
+
+    drush psite-cmode $SITE_UUID dev git
+
+Disable unnecessary modules.
+
+    drush -y @pantheon.$SITE_NAME.dev dis overlay comment rdf toolbar
+
+Enable new modules.
+
+    drush -y @pantheon.$SITE_NAME.dev en admin_menu module_filter features views views_ui ctools generate_errors admin_menu_toolbar devel_generate
+
+Generate test content.
+
+    drush @pantheon.$SITE_NAME.dev generate-content 50
+
+Deploy code...
+
+    # COMING SOON!
+
 TODO
 ====
 
