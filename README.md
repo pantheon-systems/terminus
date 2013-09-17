@@ -21,9 +21,7 @@ You'll find many more fun commands in "drush help".
 TODO
 ====
 
-- Site creation
 - Site import
-- Workflow operations
 - Team management
 - In-progress job status
 - Websockets support for real-time status info?
