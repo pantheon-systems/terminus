@@ -6,6 +6,18 @@
  */
 
 /**
+ * API Function Get The Quick Site Info
+ */
+function terminus_api_site_info($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+
+/**
  * API Function Get The Site Omnibus "State"
  */
 function terminus_api_site_state($site_uuid) {
@@ -14,7 +26,7 @@ function terminus_api_site_state($site_uuid) {
   $path = 'state';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $uuid, $path, $method);
 }
 
 /**
