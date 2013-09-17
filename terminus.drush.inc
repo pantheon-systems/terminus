@@ -260,6 +260,18 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+  $items['pantheon-site-name'] = array(
+    'description' => "Get ths site name based on the UUID.",
+    'arguments' => array(
+      'name' => 'name of the site.',
+    ),
+    'examples' => array(
+      'drush site-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
+    ),
+    'aliases' => array('psite-name'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
   $items['pantheon-site-dashboard'] = array(
     'description' => "Get the dashboard link for a site.",
     'arguments' => array(
@@ -650,10 +662,23 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
  * Get a site uuid based on the name.
  */
 function drush_terminus_pantheon_site_uuid($site_name) {
+  terminus_bootstrap();
   $site_uuid = terminus_get_site_uuid_by_name($site_name);
   drush_print($site_uuid);
   return TRUE;
 }
+
+/**
+ * Get a site name based on the uuid.
+ */
+function drush_terminus_pantheon_site_name($site_uuid) {
+  terminus_bootstrap();
+  $result = terminus_api_site_info($site_uuid);
+  $site = json_decode($result['json']);
+  drush_print($site->name);
+  return TRUE;
+}
+
 
 /**
  * Get a dashboard link.
