@@ -29,6 +29,10 @@ And a description...
 
     SITE_DESC="Building a site with drush_make and terminus"
 
+Authenticate.
+
+    drush pauth YOUR@EMAIL.COM --password=TOOMANYSECRETS
+
 Create the site using Drupal 7 (drops-7) as the base.
 
     drush psite-create $SITE_NAME --label="$SITE_DESC" --product=21e1fada-199c-492b-97bd-0b36b53a9da0
@@ -46,8 +50,13 @@ Change the connection mode of the dev environment to SFTP.
     drush psite-cmode $SITE_UUID dev sftp
 
 Use a public gist as the source for drush make to download a few common modules.
+The contents of the gist can be found in the file demo.make
 
-    drush -y @pantheon.$SITE_NAME.dev make --no-core https://gist.github.com/fluxsauce/6590013/raw/7ccce9c0288377ba48d756596bb52c92b4acf736/gistfile1.txt
+    drush -y @pantheon.$SITE_NAME.dev make --no-core https://gist.github.com/fluxsauce/6590013/raw/f73d76bb6bdd366cdc9177de981624de84353dfc/gistfile1.txt
+
+Install the site. Remember to grab the password, or use drush uli later.
+
+    drush -y @pantheon.$SITE_NAME.dev si --site-name="$SITE_DESC" pantheon
 
 Commit the changes.
 
@@ -56,10 +65,6 @@ Commit the changes.
 Change the connection mode back to git.
 
     drush psite-cmode $SITE_UUID dev git
-
-Install the site. Remember to grab the password, or use drush uli later.
-
-    drush -y @pantheon.$SITE_NAME.dev si --site-name="$SITE_DESC" pantheon
 
 Disable unnecessary modules.
 
