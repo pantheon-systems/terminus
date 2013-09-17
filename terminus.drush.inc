@@ -209,10 +209,33 @@ function terminus_drush_command() {
     'description' => "Set or retrieve the connection mode of a specific site/environment.",
     'arguments' => array(
       'site' => 'UUID or name of the site.',
-      'environment' => 'The environment (e.g. "live") you would like to target.',
+      'environment' => 'The dev or multidev environment you would like to target.',
       'mode' => 'Connection mode like to set. (e.g. "sftp" or "git") Leave blank to retrieve the current mode.',
     ),
     'aliases' => array('psite-cmode'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-commit'] = array(
+    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Environment to commit: a dev or multidev environment',
+    ),
+    'options' => array(
+      'message' => 'Commit message',
+    ),
+    'aliases' => array('psite-commit'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-diffstat'] = array(
+    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Environment to commit: a dev or multidev environment',
+    ),
+    'aliases' => array('psite-diffs'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -991,6 +1014,106 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 }
 
 /**
+ * Commit on server changes.
+ */
+function drush_terminus_pantheon_site_commit($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+  }
+  if (!$environment || in_array($environment, array('test', 'live'))) {
+    drush_log('You must choose a dev or multi-dev environment', 'failed');
+    return FALSE;
+  }
+
+  $diffstat = termins_render_diffstat($site_uuid, $environment);
+  if (!$diffstat) {
+    drush_log('No changes found to commit. Aborting.', 'ok');
+    return TRUE;
+  }
+
+  $message = drush_get_option('message', FALSE);
+  if (!$message) {
+    $message = drush_prompt(dt('Your commit message'), NULL, TRUE);
+    # If we're here, we have a $diffstat and no message was included, so confirm.
+    drush_print("Files to be committed:");
+    drush_print_table($diffstat, TRUE);
+    drush_print("Message:\n");
+    drush_print($message, 2);
+    $confirm = drush_confirm("\nConfirm this commit?");
+    if (!$confirm) {
+      drush_log('Aborting commit', 'ok');
+      return;
+    }
+  }
+
+  drush_log('Triggering commit.', 'info');
+  terminus_api_site_environment_onserverdev_commit($site_uuid, $environment, $message, $user_uuid);
+  drush_log('Commit complete.', 'ok');
+}
+
+/**
+ * Set or retrieve the connection mode for a site/environment.
+ */
+function drush_terminus_pantheon_site_diffstat($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+  }
+  if (!$environment || in_array($environment, array('test', 'live'))) {
+    drush_log('You must choose a dev or multi-dev environment', 'failed');
+    return FALSE;
+  }
+
+  $diffstat = termins_render_diffstat($site_uuid, $environment);
+  if (!$diffstat) {
+    drush_log('No diffs found.', 'ok');
+    return TRUE;
+  }
+
+  drush_print_table($diffstat, TRUE);
+  return TRUE;
+}
+
+/**
+ * Helper function to fetch/render a table of diffs, or return FALSE if none.
+ */
+function termins_render_diffstat($site_uuid, $environment) {
+  $result = terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $environment);
+  $diffstat = json_decode($result['json']);
+  $rows = array();
+  foreach ($diffstat as $file => $diff) {
+    $rows[] = array($file, $diff->status, $diff->deletions, $diff->additions);
+  }
+  if (count($rows) == 0) {
+    return FALSE;
+  }
+  ksort($rows);
+  array_unshift($rows, array("File", "Status", "Deletions", "Additions"));
+  return $rows;
+}
+
+/**
  * Get a list of notifications for a site to track ongoing jobs.
  */
 function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
@@ -1635,6 +1758,8 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'product':
+      # TODO: abstract this into a happy fetcher functon.
+      # TODO: allow that to filter by org so interactive spinup can't fail.
       $result = terminus_request('public', 'public', 'products');
       $products = json_decode($result['json']);
       $choices = array();
