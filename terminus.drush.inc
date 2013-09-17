@@ -248,6 +248,31 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+  $items['pantheon-site-uuid'] = array(
+    'description' => "Get ths site UUID based on the name.",
+    'arguments' => array(
+      'site' => 'UUID of the site.',
+    ),
+    'examples' => array(
+      'drush site-uuid mysite --nocache' => 'Get the UUID of your site.',
+    ),
+    'aliases' => array('psite-uuid'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-dashboard'] = array(
+    'description' => "Get the dashboard link for a site.",
+    'arguments' => array(
+      'site' => 'UUID of the site.',
+    ),
+    'examples' => array(
+      'drush site-dash mysite -y' => 'Open the dashboard for a site.',
+    ),
+    'aliases' => array('psite-dash'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+
   /**
    * Tunnel Functions.
    */
@@ -618,6 +643,39 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
 
   drush_print("Your site is now ready! Manage it in the dashboard:");
   drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+  return TRUE;
+}
+
+/**
+ * Get a site uuid based on the name.
+ */
+function drush_terminus_pantheon_site_uuid($site_name) {
+  $site_uuid = terminus_get_site_uuid_by_name($site_name);
+  drush_print($site_uuid);
+  return TRUE;
+}
+
+/**
+ * Get a dashboard link.
+ */
+function drush_terminus_pantheon_site_dashboard($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, FALSE)) {
+    drush_log('You must specify a site UUID', 'failed');
+    return FALSE;
+  }
+
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+  $open = drush_confirm("Would you like to open this link now?");
+  if ($open) {
+    exec("open https://dashboard.getpantheon.com/sites/$site_uuid");
+  }
+
   return TRUE;
 }
 
@@ -1823,14 +1881,12 @@ function terminus_get_site_uuid_by_name($site_name) {
   }
   extract($session_data);
 
-  $cid = 'terminus-sites';
   drush_log('Loading site data from Pantheon.', 'notice');
   $result = terminus_api_user_site_list($user_uuid);
   if ($result === FALSE) {
     return FALSE;
   }
   $sites = json_decode($result['json']);
-  drush_cache_set($cid, $sites, 'pantheon');
   foreach ($sites as $site_uuid => $data) {
     $i = $data->information;
     if ($i->name == $site_name) {
@@ -1863,14 +1919,12 @@ function terminus_user_site_list($reset = FALSE) {
       return FALSE;
     }
     $asites = $result['json'];
-    drush_cache_set($cid, $asites);
+    drush_cache_set($cid, $asites, 'pantheon');
   }
   else {
     drush_log('Loaded site data from cache.', 'notice');
     $asites = $cache->data;
   }
-
-  drush_cache_set($cid, $asites, 'pantheon');
 
   return $asites;
 }
