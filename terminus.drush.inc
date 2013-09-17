@@ -655,6 +655,29 @@ function drush_terminus_pantheon_site_uuid($site_name) {
   return TRUE;
 }
 
+/**
+ * Get a dashboard link.
+ */
+function drush_terminus_pantheon_site_dashboard($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, FALSE)) {
+    drush_log('You must specify a site UUID', 'failed');
+    return FALSE;
+  }
+
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+  $open = drush_confirm("Would you like to open this link now?");
+  if ($open) {
+    exec("open https://dashboard.getpantheon.com/sites/$site_uuid");
+  }
+
+  return TRUE;
+}
 
 /**
  * Delete a site via the CLI.
