@@ -11,7 +11,6 @@ define('TERMINUS_HOST', 'terminus.getpantheon.com');
 define('TERMINUS_PORT', 443);
 date_default_timezone_set('UTC');
 
-
 /**
  * An easy function to override constants to allow development internally.
  *
@@ -21,11 +20,13 @@ date_default_timezone_set('UTC');
  * TODO: use for other settings.
  */
 function terminus_bootstrap($validate = TRUE) {
+  // TODO: something to check that terminus is up to date!
   include_once('terminus.backup.api.inc');
   include_once('terminus.site.api.inc');
   include_once('terminus.user.api.inc');
   include_once('terminus.tunnel.inc');
   include_once('terminus.workflow.api.inc');
+  include_once('terminus.code.api.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -135,6 +136,9 @@ function terminus_drush_command() {
       'organization' => array(
         'description' => 'UUID of an organization you want the site to be a part of.',
       ),
+      'nopoll' => array(
+        'description' => 'Do not hang around and wait for the site to be ready. Useful for scripting a lot of spinups.',
+      ),
     ),
     'aliases' => array('psite-create'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -217,7 +221,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-commit'] = array(
-    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'description' => 'Commit changes in an on-server-dev environment.',
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'Environment to commit: a dev or multidev environment',
@@ -230,7 +234,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-diffstat'] = array(
-    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'description' => 'Get a list of changes (diffstat) to be commited in a remote on-server-dev environment.',
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'Environment to commit: a dev or multidev environment',
@@ -257,6 +261,18 @@ function terminus_drush_command() {
       'drush site-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
     'aliases' => array('psite-uuid'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-name'] = array(
+    'description' => "Get ths site name based on the UUID.",
+    'arguments' => array(
+      'name' => 'name of the site.',
+    ),
+    'examples' => array(
+      'drush site-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
+    ),
+    'aliases' => array('psite-name'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -599,6 +615,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
 
   # Poll for completion.
+  if (drush_get_option('nopoll')) {
+    drush_log("No-poll option detected. Check your dashboard to see when this site is ready.");
+    return TRUE;
+  }
   drush_print(dt('Waiting for site spinup to complete. You can cancel anytime and the process will continue in the background.'));
   $ready = 0;
   while (TRUE) {
@@ -615,11 +635,11 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     foreach ($bindings as $bid => $data) {
       if ($data->ready && !$bindings_ready[$bid]) {
         $bindings_ready[$bid] = TRUE;
-        drush_print(dt('Checkpoint! Infrastructure @type step complete (@ready out of @total).', array(
+        echo ' ' . dt('@type step complete (@ready/@total).', array(
           '@type' => $data->type,
           '@ready' => ++$ready,
           '@total' => count($bindings_ready),
-        )));
+        ));
       }
     }
     $all_ready = TRUE;
@@ -650,10 +670,23 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
  * Get a site uuid based on the name.
  */
 function drush_terminus_pantheon_site_uuid($site_name) {
+  terminus_bootstrap();
   $site_uuid = terminus_get_site_uuid_by_name($site_name);
   drush_print($site_uuid);
   return TRUE;
 }
+
+/**
+ * Get a site name based on the uuid.
+ */
+function drush_terminus_pantheon_site_name($site_uuid) {
+  terminus_bootstrap();
+  $result = terminus_api_site_info($site_uuid);
+  $site = json_decode($result['json']);
+  drush_print($site->name);
+  return TRUE;
+}
+
 
 /**
  * Get a dashboard link.
@@ -995,8 +1028,7 @@ function drush_terminus_pantheon_site_load_backup($site_uuid = FALSE, $environme
   }
 
   if (!drush_confirm('Overwrite this database with ' . $environment . '.' . $site_uuid . '?')) {
-    drush_log('Cancelled', 'failed');
-    return FALSE;
+    return drush_user_abort();
   }
 
   $destination = drush_tempdir();
@@ -1058,7 +1090,7 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
   if (!$cmode) {
     $result = terminus_api_site_environment_onserverdev_get($site_uuid, $environment);
     $data = json_decode($result['json']);
-    $mode = $data->enabled? 'SFTP' : 'Git';
+    $mode = $data->enabled ? 'SFTP' : 'Git';
     drush_log("Connection mode: " . $mode, 'ok');
     return TRUE;
   }
@@ -1072,52 +1104,81 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 }
 
 /**
- * Commit on server changes.
+ * Validate on-server commits.
  */
-function drush_terminus_pantheon_site_commit($site_uuid = FALSE, $environment = FALSE) {
+function drush_terminus_pantheon_site_commit_validate($site_uuid = FALSE, $environment = FALSE) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
-    return FALSE;
+    return drush_set_error('DRUSH_PSITE_COMMIT_NO_SESSION', dt('You must authenticate before using this command.'));
   }
-  extract($session_data);
 
-  if (!$site_uuid = terminus_site_input($site_uuid)) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
+  if (!$site_uuid) {
+    if (!$site_uuid = terminus_site_input($site_uuid)) {
+      return drush_user_abort();
+    }
   }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_COMMIT_INVALID_UUID', dt('You must specify a valid site uuid.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
 
   if (!$environment) {
-    $environment = terminus_session_select_data('environment', $site_uuid);
+    drush_set_option('dev_only', TRUE);
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_user_abort();
+    }
   }
-  if (!$environment || in_array($environment, array('test', 'live'))) {
-    drush_log('You must choose a dev or multi-dev environment', 'failed');
-    return FALSE;
+  if (!terminus_validate_environment($environment) || in_array($environment, array('test', 'live'))) {
+    return drush_set_error('DRUSH_PSITE_COMMIT_INVALID_SOURCE', dt('You must choose a dev or multi-dev environment.'));
+  }
+  drush_set_option('environment', $environment);
+
+  // Determine if in SFTP mode.
+  $result = terminus_api_site_environment_onserverdev_get($site_uuid, $environment);
+  $data = json_decode($result['json']);
+  if (!$data->enabled) {
+    return drush_set_error('DRUSH_PSITE_COMMIT_NOT_SFTP', dt('The @environment is not in SFTP mode.', array(
+      '@environment' => $environment,
+    )));
   }
 
   $diffstat = termins_render_diffstat($site_uuid, $environment);
   if (!$diffstat) {
-    drush_log('No changes found to commit. Aborting.', 'ok');
-    return TRUE;
+    return drush_set_error('DRUSH_PSITE_COMMIT_NO_CHANGES', dt('No changes found to commit, aborting.'));
   }
 
   $message = drush_get_option('message', FALSE);
   if (!$message) {
     $message = drush_prompt(dt('Your commit message'), NULL, TRUE);
-    # If we're here, we have a $diffstat and no message was included, so confirm.
     drush_print("Files to be committed:");
     drush_print_table($diffstat, TRUE);
     drush_print("Message:\n");
     drush_print($message, 2);
     $confirm = drush_confirm("\nConfirm this commit?");
     if (!$confirm) {
-      drush_log('Aborting commit', 'ok');
-      return;
+      return drush_user_abort();
     }
   }
+  drush_set_option('message', $message);
+  drush_set_option('session_data', $session_data);
+}
 
-  drush_log('Triggering commit.', 'info');
-  terminus_api_site_environment_onserverdev_commit($site_uuid, $environment, $message, $user_uuid);
-  drush_log('Commit complete.', 'ok');
+/**
+ * Commit on server changes.
+ */
+function drush_terminus_pantheon_site_commit($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = drush_get_option('session_data');
+  extract($session_data);
+
+  $message = drush_get_option('message', '');
+  $environment = drush_get_option('environment');
+  $site_uuid = drush_get_option('site_uuid');
+
+  drush_log(dt('Triggering commit.'), 'info');
+  $result = terminus_api_site_environment_onserverdev_commit($site_uuid, $environment, $message, $user_uuid);
+  // Hope it's ok.
+  $json = json_decode($result['json']);
+  drush_log(trim($json), 'ok');
 }
 
 /**
@@ -1319,7 +1380,8 @@ function drush_terminus_pantheon_aliases() {
   drush_log('Writing aliases to "'. $destination .'".', 'notice');
   fwrite($fh, $result);
   fclose($fh);
-  drush_log('Pantheon aliases updated!.', 'ok');
+  drush_log('Pantheon aliases updated.', 'ok');
+  drush_invoke('cache-clear', 'drush');
 
   return TRUE;
 }
@@ -1523,16 +1585,24 @@ function _terminus_service_level_name($level) {
   return $level;
 }
 
+/**
+ * Ensure cURL is enabled.
+ */
+function drush_terminus_pantheon_auth_validate($email = FALSE) {
+  // Check to see if cURL is available.
+  if (!in_array('curl', get_loaded_extensions())) {
+    return drush_set_error('DRUSH_PSITE_AUTH_NOCURL', 'The version of PHP drush is using in ' . PHP_BINDIR . '/ does not have the cURL extension enabled. If you need to specify a different PHP binary, see https://drupal.org/node/1302418');
+  }
+}
 
 /**
- * This is a curl-based tool to start a session in the dashboard.
+ * Start a dashboard session.
  *
  * It doesn't follow the normal pattern since it's working off Drupal's login
  * forms directly. This will be refactored when there's a direct CLI auth
  * mechanism in the API itself.
  *
  * Many thanks to Amitai and the gang at: https://drupal.org/node/89710
- *
  */
 function drush_terminus_pantheon_auth($email = FALSE) {
     // Flush existing data.
@@ -1710,8 +1780,14 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         $request = terminus_api_site_environments($site_uuid);
         $environments = json_decode($request['json']);
         $choices = array();
+        $dev_only = drush_get_option('dev_only', FALSE);
         foreach ($environments as $env => $data) {
-          $choices[$env] = $env;
+          if (!$dev_only || !in_array($env, array('test', 'live'))) {
+            $choices[$env] = $env;
+          }
+        }
+        if (count($choices) == 1) {
+          return array_pop($choices);
         }
       }
       else {
