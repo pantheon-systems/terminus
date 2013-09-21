@@ -1576,16 +1576,24 @@ function _terminus_service_level_name($level) {
   return $level;
 }
 
+/**
+ * Ensure cURL is enabled.
+ */
+function drush_terminus_pantheon_auth_validate($email = FALSE) {
+  // Check to see if cURL is available.
+  if (!in_array('curl', get_loaded_extensions())) {
+    return drush_set_error('DRUSH_PSITE_AUTH_NOCURL', 'The version of PHP drush is using in ' . PHP_BINDIR . '/ does not have the cURL extension enabled. If you need to specify a different PHP binary, see https://drupal.org/node/1302418');
+  }
+}
 
 /**
- * This is a curl-based tool to start a session in the dashboard.
+ * Start a dashboard session.
  *
  * It doesn't follow the normal pattern since it's working off Drupal's login
  * forms directly. This will be refactored when there's a direct CLI auth
  * mechanism in the API itself.
  *
  * Many thanks to Amitai and the gang at: https://drupal.org/node/89710
- *
  */
 function drush_terminus_pantheon_auth($email = FALSE) {
     // Flush existing data.

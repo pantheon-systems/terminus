@@ -3,9 +3,20 @@ terminus
 
 A Drush-based CLI interface into the Pantheon core API via a pseudoproxy.
 
-This is being developed initially to support some engineering and partner edge cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool for all command-line and script-savvy developers.
+This is being developed initially to support some engineering and partner edge
+cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool for
+all command-line and script-savvy developers.
+
+If you'd like to write your own code using terminus as an example, other PHP
+libraries can be used to make direct API calls.
 
 See `drush help --filter=terminus` for a list of commands.
+
+Requirements
+============
+
+* Drush 5 or higher - https://github.com/drush-ops/drush
+* PHP 5.3 or higher with cURL
 
 Quick Demo
 ==========
@@ -19,13 +30,11 @@ Quick Demo
     drush pantheon-sites
     # Download and replace pantheon.aliases.drushrc.php
     drush pantheon-aliases
-    # See the other commands
+    # Show all terminus commands.
     drush help --filter=terminus
 
-You'll also find PHP libraries that will facilitate making direct API calls if you have your own code you'd like to integrate. Drush is just one option.
-
-Building a Site on Pantheon using drush_make
-============================================
+Build a site on Pantheon with drush_make
+========================================
 
     # Specify the site name...
     SITE_NAME=REPLACEME
