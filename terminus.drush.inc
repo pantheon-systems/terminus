@@ -20,11 +20,13 @@ date_default_timezone_set('UTC');
  * TODO: use for other settings.
  */
 function terminus_bootstrap($validate = TRUE) {
+  // TODO: something to check that terminus is up to date!
   include_once('terminus.backup.api.inc');
   include_once('terminus.site.api.inc');
   include_once('terminus.user.api.inc');
   include_once('terminus.tunnel.inc');
   include_once('terminus.workflow.api.inc');
+  include_once('terminus.code.api.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
