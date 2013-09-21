@@ -26,6 +26,7 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.user.api.inc');
   include_once('terminus.tunnel.inc');
   include_once('terminus.workflow.api.inc');
+  include_once('terminus.code.api.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
