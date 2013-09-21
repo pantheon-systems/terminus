@@ -630,7 +630,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+  if (isset($json) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1312,7 +1312,23 @@ function drush_terminus_pantheon_organizations() {
   }
   extract($session_data);
   $result = terminus_api_user_organizations($user_uuid);
-  print_r($result);
+  $orgs = (array) json_decode($result['json']);
+  if (isset($json)) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+  if (count($orgs) == 0) {
+    return drush_set_error("You are not a member of any organizations.");
+  }
+  $rows = array(array('Name', 'Role', 'UUID'));
+  foreach ($orgs as $key => $data) {
+    $rows[] = array(
+      $data->name,
+      $data->admin ? 'Admin' : 'User',
+      $key
+    );
+  }
+  drush_print_table($rows, TRUE);
   return TRUE;
 }
 
@@ -1327,8 +1343,11 @@ function drush_terminus_pantheon_organization_sites($organization = FALSE) {
   extract($session_data);
   # TODO: build a nice interactive handler for getting a valid organization.
   $result = terminus_api_user_organization_sites($user_uuid, $organization);
-  print_r($result);
-  return TRUE;
+  if (!$result) {
+    # This is what happens when you aren't an admin.
+    return drush_set_error("You are not an admin for this organization.");
+  }
+
 }
 
 
@@ -1476,7 +1495,7 @@ function drush_terminus_pantheon_products() {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
   }
-  if (isset($json_output) && isset($result['json']) && $result['json']) {
+  if (isset($json) && isset($result['json']) && $result['json']) {
     drush_print($products);
     return TRUE;
   }
