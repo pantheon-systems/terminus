@@ -216,7 +216,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-commit'] = array(
-    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'description' => 'Commit changes in an on-server-dev environment.',
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'Environment to commit: a dev or multidev environment',
@@ -229,7 +229,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-diffstat'] = array(
-    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'description' => 'Get a list of changes (diffstat) to be commited in a remote on-server-dev environment.',
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'Environment to commit: a dev or multidev environment',
