@@ -134,6 +134,9 @@ function terminus_drush_command() {
       'organization' => array(
         'description' => 'UUID of an organization you want the site to be a part of.',
       ),
+      'nopoll' => array(
+        'description' => 'Do not hang around and wait for the site to be ready. Useful for scripting a lot of spinups.',
+      ),
     ),
     'aliases' => array('psite-create'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -610,6 +613,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
 
   # Poll for completion.
+  if (drush_get_option('nopoll')) {
+    drush_log("No-poll option detected. Check your dashboard to see when this site is ready.");
+    return TRUE;
+  }
   drush_print(dt('Waiting for site spinup to complete. You can cancel anytime and the process will continue in the background.'));
   $ready = 0;
   while (TRUE) {
