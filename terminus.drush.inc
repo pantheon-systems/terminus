@@ -27,6 +27,7 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.tunnel.inc');
   include_once('terminus.workflow.api.inc');
   include_once('terminus.code.api.inc');
+  include_once('terminus.organizations.api.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -288,6 +289,30 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
+
+  /**
+   * Organization-scope functions.
+   */
+  $items['pantheon-organizations'] = array(
+    'description' => "List your organization affiliations.",
+    'examples' => array(
+      'drush porgs --nocache' => 'Get a fresh list of sites.',
+    ),
+    'aliases' => array('porgs'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-organization-sites'] = array(
+    'description' => "List the sites for an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization you want to use.',
+    ),
+    'examples' => array(
+      'drush porg-sites --nocache' => 'Get a fresh list of sites.',
+    ),
+    'aliases' => array('porg-sites'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
 
   /**
    * Tunnel Functions.
@@ -1272,6 +1297,40 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
   # TODO: munge this list to remove internals, provide human-readable names.
   return $notifications;
 }
+
+/**
+ * Organization commands.
+ */
+
+/**
+ * List orgs for a user.
+ */
+function drush_terminus_pantheon_organizations() {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $result = terminus_api_user_organizations($user_uuid);
+  print_r($result);
+  return TRUE;
+}
+
+/**
+ * List sites for an org. You must be an admin for this to work.
+ */
+function drush_terminus_pantheon_organization_sites($organization = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  # TODO: build a nice interactive handler for getting a valid organization.
+  $result = terminus_api_user_organization_sites($user_uuid, $organization);
+  print_r($result);
+  return TRUE;
+}
+
 
 /**
  * Displays a list of open tunnels

@@ -38,7 +38,7 @@ function terminus_api_user_organization_sites($user_uuid, $organization_uuid) {
 function terminus_api_user_organization_site_add($user_uuid, $organization_uuid, $site_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
-  $path = 'organizations/'. $organization_uuid .'/sites/.' $site_uuid;
+  $path = 'organizations/'. $organization_uuid .'/sites/'. $site_uuid;
   $method = 'PUT';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -50,7 +50,7 @@ function terminus_api_user_organization_site_add($user_uuid, $organization_uuid,
 function terminus_api_user_organization_site_remove($user_uuid, $organization_uuid, $site_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
-  $path = 'organizations/'. $organization_uuid .'/sites/.' $site_uuid;
+  $path = 'organizations/'. $organization_uuid .'/sites/'. $site_uuid;
   $method = 'DELETE';
 
   return terminus_request($realm, $uuid, $path, $method);
@@ -59,7 +59,7 @@ function terminus_api_user_organization_site_remove($user_uuid, $organization_uu
 /**
  * API Call to get users within an organizetion.
  */
-function terminus_api_user_organization_site_remove($user_uuid, $organization_uuid) {
+function terminus_api_user_organization_users($user_uuid, $organization_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
   $path = 'organizations/'. $organization_uuid .'/users';
