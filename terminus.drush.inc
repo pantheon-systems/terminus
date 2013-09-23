@@ -37,7 +37,7 @@ function terminus_bootstrap($validate = TRUE) {
   }
   // Common command flags.
   $session_data['nocache'] = drush_get_option('nocache');
-  $session_data['json'] = drush_get_option('json');
+  $session_data['json_output'] = drush_get_option('json');
   if (isset($session_data['onebox']) || drush_get_option('onebox')) {
     $session_data['onebox'] = TRUE;
   }
@@ -604,12 +604,13 @@ function drush_terminus_pantheon_sites() {
   extract($session_data);
 
   $sites = terminus_user_site_list();
-  if ($json) {
+  if (isset($json_output)) {
     drush_print($sites);
     return TRUE;
   }
 
   // Display tabular output.
+  // TODO: refactor into re-usable display functions.
   $sites = json_decode($sites);
   $rows = array();
   foreach ($sites as $site_uuid => $data) {
@@ -671,7 +672,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (isset($json) && isset($result['json'])  && $result['json']) {
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -951,7 +952,7 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
   }
 
   $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
-  if (drush_get_option('json')) {
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1380,7 +1381,7 @@ function drush_terminus_pantheon_organizations() {
   extract($session_data);
   $result = terminus_api_user_organizations($user_uuid);
   $orgs = (array) json_decode($result['json']);
-  if (isset($json)) {
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1416,7 +1417,20 @@ function drush_terminus_pantheon_organization_sites($organization = FALSE) {
     # This is what happens when you aren't an admin.
     return drush_set_error("You are not an admin for this organization.");
   }
-
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+  $sites = json_decode($result['json']);
+  // Display tabular output.
+  // TODO: refactor into re-usable display functions.
+  $rows = array();
+  foreach ($sites as $site_uuid => $i) {
+    $rows[$i->name] = array($i->name, $i->service_level, $site_uuid);
+  }
+  ksort($rows);
+  array_unshift($rows, array("Site", "Service Level", "UUID"));
+  drush_print_table($rows, TRUE);
 }
 
 /**
@@ -1579,8 +1593,8 @@ function drush_terminus_pantheon_products() {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
   }
-  if (isset($json) && isset($result['json']) && $result['json']) {
-    drush_print($products);
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+    drush_print($result['json']);
     return TRUE;
   }
 
