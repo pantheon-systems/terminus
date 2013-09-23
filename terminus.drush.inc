@@ -604,12 +604,13 @@ function drush_terminus_pantheon_sites() {
   extract($session_data);
 
   $sites = terminus_user_site_list();
-  if ($json_output) {
+  if (isset($json_output)) {
     drush_print($sites);
     return TRUE;
   }
 
   // Display tabular output.
+  // TODO: refactor into re-usable display functions.
   $sites = json_decode($sites);
   $rows = array();
   foreach ($sites as $site_uuid => $data) {
@@ -1420,7 +1421,16 @@ function drush_terminus_pantheon_organization_sites($organization = FALSE) {
     drush_print($result['json']);
     return TRUE;
   }
-
+  $sites = json_decode($result['json']);
+  // Display tabular output.
+  // TODO: refactor into re-usable display functions.
+  $rows = array();
+  foreach ($sites as $site_uuid => $i) {
+    $rows[$i->name] = array($i->name, $i->service_level, $site_uuid);
+  }
+  ksort($rows);
+  array_unshift($rows, array("Site", "Service Level", "UUID"));
+  drush_print_table($rows, TRUE);
 }
 
 /**
