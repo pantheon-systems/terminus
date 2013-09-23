@@ -259,7 +259,7 @@ function terminus_drush_command() {
       'site' => 'UUID of the site.',
     ),
     'examples' => array(
-      'drush site-uuid mysite --nocache' => 'Get the UUID of your site.',
+      'drush psite-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
     'aliases' => array('psite-uuid'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -271,7 +271,7 @@ function terminus_drush_command() {
       'name' => 'name of the site.',
     ),
     'examples' => array(
-      'drush site-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
+      'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
     ),
     'aliases' => array('psite-name'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -283,11 +283,25 @@ function terminus_drush_command() {
       'site' => 'UUID of the site.',
     ),
     'examples' => array(
-      'drush site-dash mysite -y' => 'Open the dashboard for a site.',
+      'drush psite-dash mysite -y' => 'Open the dashboard for a site.',
     ),
     'aliases' => array('psite-dash'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
+
+  $items['pantheon-site-service-level'] = array(
+    'description' => "Update the service level for the site.",
+    'arguments' => array(
+      'site' => 'UUID of the site.',
+      'service-level' => 'Service level to upgrade to.'
+    ),
+    'examples' => array(
+      'drush psite-upgrade <site> <service-level>' => 'Open the dashboard for a site.',
+    ),
+    'aliases' => array('psite-upgrade'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
 
 
   /**
@@ -313,6 +327,33 @@ function terminus_drush_command() {
     'aliases' => array('porg-sites'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
+
+  $items['pantheon-organization-site-add'] = array(
+    'description' => "Add a site to an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization.',
+      'site' => 'UUID of the organization.',
+    ),
+    'examples' => array(
+      'drush porg-site-add <org> <site>' => 'Add a site to an organization.',
+    ),
+    'aliases' => array('porg-site-add'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-organization-site-remove'] = array(
+    'description' => "Remove a site from an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization.',
+      'site' => 'UUID of the organization.',
+    ),
+    'examples' => array(
+      'drush porg-site-remove <org> <site>' => 'Add a site to an organization.',
+    ),
+    'aliases' => array('porg-site-remove'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
 
   /**
    * Tunnel Functions.
@@ -1299,6 +1340,18 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
 }
 
 /**
+ * Allow upgrades and downgrades from the CLI.
+ */
+function drush_terminus_pantheon_site_service_level($site_uuid = FALSE, $service_level = FALSE) {
+  # Add interactive input for fetching service levels
+  # Make sure all args are present and that the site has an instrument.
+  # Do a confirmation.
+  # Send the PUT.
+  print "Not yet implemented";
+  return TRUE;
+}
+
+/**
  * Organization commands.
  */
 
@@ -1341,7 +1394,9 @@ function drush_terminus_pantheon_organization_sites($organization = FALSE) {
     return FALSE;
   }
   extract($session_data);
-  # TODO: build a nice interactive handler for getting a valid organization.
+  if (!$organization) {
+    $organization = terminus_session_select_data('organization');
+  }
   $result = terminus_api_user_organization_sites($user_uuid, $organization);
   if (!$result) {
     # This is what happens when you aren't an admin.
@@ -1350,6 +1405,21 @@ function drush_terminus_pantheon_organization_sites($organization = FALSE) {
 
 }
 
+/**
+ * Helper function to determine if a user is an org admin.
+ *
+ * TODO: Caching.
+ */
+function termins_user_organization_admin($user_uuid, $organization) {
+  $result = terminus_api_user_organizations($user_uuid);
+  $organizations = json_decode($result['json']);
+  foreach ($organizations as $org_uuid => $data) {
+    if ($org_uuid == $organization && isset($data->admin) && ($data->admin)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 /**
  * Displays a list of open tunnels
@@ -1983,6 +2053,44 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         }
       }
       $val = drush_choice($choices, 'Select your starting state.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'service_level':
+      # TODO: Add an api call so the range of possible service-level can be
+      # discovered remotely.
+      $choices = array(
+        'free' => 'free',
+        'personal' => 'basic',
+        'pro' => 'pro',
+        'business' => 'business',
+        'elite' => 'elite'
+      );
+      if ($site_uuid) {
+        $result = terminus_site_info($site_uuid);
+        $site_info = json_decode($result['json']);
+        if (isset($site_info->organization)) {
+          if (termins_user_organization_admin($user_uuid, $site_info->organization)) {
+            $choices['enterprise'] = 'enterprise';
+          }
+        }
+      }
+      $val = drush_choice($choices, 'Select the service-level you would like to use.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'organization':
+      $result = terminus_api_user_organizations($user_uuid);
+      $organizations = json_decode($result['json']);
+      $choices = array();
+      foreach ($organizations as $org_uuid => $data) {
+        $choices[$org_uuid] = $data->name;
+      }
+      $val = drush_choice($choices, 'Select the organization you would like to use.');
       if ($val !== FALSE) {
         return $val;
       }
