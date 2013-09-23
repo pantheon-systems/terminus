@@ -1348,19 +1348,21 @@ function drush_terminus_pantheon_site_service_level($site_uuid = FALSE, $service
     return FALSE;
   }
   extract($session_data);
+  $site_uuid = terminus_session_select_data('site_uuid', $site_uuid);
   if (!$site_uuid) {
-    $site_uuid = terminus_session_select_data('site');
+    return drush_set_error("You must choose a valid site.");
   }
   # TODO: verify owner.
   if (!$service_level) {
     $service_level = terminus_session_select_data('service_level', $site_uuid);
   }
-  drush_log("Setting service level to '". $service_level ."'", "notice");
-  $result =  terminus_api_site_put_service_level($site_uuid, $service_level);
+  drush_log("Setting service level for site '". $site_uuid ."' to '". $service_level ."'", "notice");
+  $result = terminus_api_site_put_service_level($site_uuid, $service_level);
   if ($result) {
-    drush_log("Success", "ok");
+    drush_log("Service level changed.", "ok");
+    return TRUE;
   }
-  return TRUE;
+  return drush_set_error("Service level change failed.");
 }
 
 /**
@@ -1924,9 +1926,17 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       $sites = json_decode(terminus_user_site_list());
 
       $choices = array();
-      foreach ($sites as $site_uuid => $data) {
+      foreach ($sites as $site => $data) {
+        # If a site_uuid was supplied, and it matches, validate.
+        if ($site_uuid == $site) {
+          return $site_uuid;
+        }
+        # If a name matches, validate.
+        if ($data->information->name == $site_uuid) {
+          return $site;
+        }
         $i = $data->information;
-        $choices[$site_uuid] = array($i->name, $i->service_level, $site_uuid);
+        $choices[$site] = array($i->name, $i->service_level, $site);
       }
 
       $val = drush_choice($choices, 'Select a site.');
