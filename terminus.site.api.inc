@@ -67,13 +67,13 @@ function terminus_api_site_get_service_level($site_uuid) {
  *
  * NOTE: This can cost you money!
  */
-function terminus_api_site_put_service_level($site_uuid, $level) {
+function terminus_api_site_put_service_level($site_uuid, $service_level) {
   $realm = 'site';
   $uuid = $site_uuid;
   $path = 'service-level';
   $method = 'PUT';
-  $data = $level;
-  $result = terminus_request($realm, $uuid, $path, $method, $data);
+  $data = $service_level;
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }
 
 /**

@@ -29,20 +29,6 @@ function terminus_api_user_profile_get($user_uuid) {
 }
 
 /**
- * API Call to Get a User Organizations
- *
- * TODO: this should be handled as part of the overall user_get
- */
-function terminus_api_user_organizations_get($user_uuid) {
-  $realm = 'user';
-  $uuid = $user_uuid;
-  $path = 'organizations';
-  $method = 'GET';
-
-  return terminus_request($realm, $uuid, $path, $method);
-}
-
-/**
  * API Call to Set a User Profile
  */
 function terminus_api_user_profile_set($user_uuid, $profile) {

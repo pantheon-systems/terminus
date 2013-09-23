@@ -27,6 +27,7 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.tunnel.inc');
   include_once('terminus.workflow.api.inc');
   include_once('terminus.code.api.inc');
+  include_once('terminus.organizations.api.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -258,7 +259,7 @@ function terminus_drush_command() {
       'site' => 'UUID of the site.',
     ),
     'examples' => array(
-      'drush site-uuid mysite --nocache' => 'Get the UUID of your site.',
+      'drush psite-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
     'aliases' => array('psite-uuid'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -270,7 +271,7 @@ function terminus_drush_command() {
       'name' => 'name of the site.',
     ),
     'examples' => array(
-      'drush site-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
+      'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
     ),
     'aliases' => array('psite-name'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
@@ -282,9 +283,74 @@ function terminus_drush_command() {
       'site' => 'UUID of the site.',
     ),
     'examples' => array(
-      'drush site-dash mysite -y' => 'Open the dashboard for a site.',
+      'drush psite-dash mysite -y' => 'Open the dashboard for a site.',
     ),
     'aliases' => array('psite-dash'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-site-service-level'] = array(
+    'description' => "Update the service level for the site.",
+    'arguments' => array(
+      'site' => 'UUID of the site.',
+      'service-level' => 'Service level to upgrade to.'
+    ),
+    'examples' => array(
+      'drush psite-upgrade <site> <service-level>' => 'Open the dashboard for a site.',
+    ),
+    'aliases' => array('psite-upgrade'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+
+
+  /**
+   * Organization-scope functions.
+   */
+  $items['pantheon-organizations'] = array(
+    'description' => "List your organization affiliations.",
+    'examples' => array(
+      'drush porgs --nocache' => 'Get a fresh list of sites.',
+    ),
+    'aliases' => array('porgs'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-organization-sites'] = array(
+    'description' => "List the sites for an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization you want to use.',
+    ),
+    'examples' => array(
+      'drush porg-sites --nocache' => 'Get a fresh list of sites.',
+    ),
+    'aliases' => array('porg-sites'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-organization-site-add'] = array(
+    'description' => "Add a site to an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization.',
+      'site' => 'UUID of the organization.',
+    ),
+    'examples' => array(
+      'drush porg-site-add <org> <site>' => 'Add a site to an organization.',
+    ),
+    'aliases' => array('porg-site-add'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+  );
+
+  $items['pantheon-organization-site-remove'] = array(
+    'description' => "Remove a site from an organization. Org admins only.",
+    'arguments' => array(
+      'organization' => 'UUID of the organization.',
+      'site' => 'UUID of the organization.',
+    ),
+    'examples' => array(
+      'drush porg-site-remove <org> <site>' => 'Add a site to an organization.',
+    ),
+    'aliases' => array('porg-site-remove'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
@@ -605,7 +671,7 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
     drush_log("Site create failed", "failed");
     return FALSE;
   }
-  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+  if (isset($json) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1274,6 +1340,102 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
 }
 
 /**
+ * Allow upgrades and downgrades from the CLI.
+ */
+function drush_terminus_pantheon_site_service_level($site_uuid = FALSE, $service_level = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $site_uuid = terminus_session_select_data('site_uuid', $site_uuid);
+  if (!$site_uuid) {
+    return drush_set_error("You must choose a valid site.");
+  }
+  # TODO: verify owner.
+  if (!$service_level) {
+    $service_level = terminus_session_select_data('service_level', $site_uuid);
+  }
+  drush_log("Setting service level for site '". $site_uuid ."' to '". $service_level ."'", "notice");
+  $result = terminus_api_site_put_service_level($site_uuid, $service_level);
+  if ($result) {
+    drush_log("Service level changed.", "ok");
+    return TRUE;
+  }
+  return drush_set_error("Service level change failed.");
+}
+
+/**
+ * Organization commands.
+ */
+
+/**
+ * List orgs for a user.
+ */
+function drush_terminus_pantheon_organizations() {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $result = terminus_api_user_organizations($user_uuid);
+  $orgs = (array) json_decode($result['json']);
+  if (isset($json)) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+  if (count($orgs) == 0) {
+    return drush_set_error("You are not a member of any organizations.");
+  }
+  $rows = array(array('Name', 'Role', 'UUID'));
+  foreach ($orgs as $key => $data) {
+    $rows[] = array(
+      $data->name,
+      $data->admin ? 'Admin' : 'User',
+      $key
+    );
+  }
+  drush_print_table($rows, TRUE);
+  return TRUE;
+}
+
+/**
+ * List sites for an org. You must be an admin for this to work.
+ */
+function drush_terminus_pantheon_organization_sites($organization = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$organization) {
+    $organization = terminus_session_select_data('organization');
+  }
+  $result = terminus_api_user_organization_sites($user_uuid, $organization);
+  if (!$result) {
+    # This is what happens when you aren't an admin.
+    return drush_set_error("You are not an admin for this organization.");
+  }
+
+}
+
+/**
+ * Helper function to determine if a user is an org admin.
+ *
+ * TODO: Caching.
+ */
+function termins_user_organization_admin($user_uuid, $organization) {
+  $result = terminus_api_user_organizations($user_uuid);
+  $organizations = json_decode($result['json']);
+  foreach ($organizations as $org_uuid => $data) {
+    if ($org_uuid == $organization && isset($data->admin) && ($data->admin)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
  * Displays a list of open tunnels
  */
 function drush_terminus_pantheon_site_tunnels() {
@@ -1417,7 +1579,7 @@ function drush_terminus_pantheon_products() {
     drush_log('Loaded site data from cache.', 'notice');
     $products = $cache->data;
   }
-  if (isset($json_output) && isset($result['json']) && $result['json']) {
+  if (isset($json) && isset($result['json']) && $result['json']) {
     drush_print($products);
     return TRUE;
   }
@@ -1764,9 +1926,17 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       $sites = json_decode(terminus_user_site_list());
 
       $choices = array();
-      foreach ($sites as $site_uuid => $data) {
+      foreach ($sites as $site => $data) {
+        # If a site_uuid was supplied, and it matches, validate.
+        if ($site_uuid == $site) {
+          return $site_uuid;
+        }
+        # If a name matches, validate.
+        if ($data->information->name == $site_uuid) {
+          return $site;
+        }
         $i = $data->information;
-        $choices[$site_uuid] = array($i->name, $i->service_level, $site_uuid);
+        $choices[$site] = array($i->name, $i->service_level, $site);
       }
 
       $val = drush_choice($choices, 'Select a site.');
@@ -1873,7 +2043,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'organization':
-      $result = terminus_api_user_organizations_get($user_uuid);
+      $result = terminus_api_user_organizations($user_uuid);
       $organizations = json_decode($result['json']);
       if (count((array) $organizations) == 0) {
         return NULL;
@@ -1905,6 +2075,44 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         }
       }
       $val = drush_choice($choices, 'Select your starting state.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'service_level':
+      # TODO: Add an api call so the range of possible service-level can be
+      # discovered remotely.
+      $choices = array(
+        'free' => 'free',
+        'basic' => 'personal',
+        'pro' => 'pro',
+        'business' => 'business',
+        'elite' => 'elite'
+      );
+      if ($site_uuid) {
+        $result = terminus_api_site_info($site_uuid);
+        $site_info = json_decode($result['json']);
+        if (isset($site_info->organization)) {
+          if (termins_user_organization_admin($user_uuid, $site_info->organization)) {
+            $choices['enterprise'] = 'enterprise';
+          }
+        }
+      }
+      $val = drush_choice($choices, 'Select the service-level you would like to use.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
+
+    case 'organization':
+      $result = terminus_api_user_organizations($user_uuid);
+      $organizations = json_decode($result['json']);
+      $choices = array();
+      foreach ($organizations as $org_uuid => $data) {
+        $choices[$org_uuid] = $data->name;
+      }
+      $val = drush_choice($choices, 'Select the organization you would like to use.');
       if ($val !== FALSE) {
         return $val;
       }
