@@ -1343,11 +1343,23 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
  * Allow upgrades and downgrades from the CLI.
  */
 function drush_terminus_pantheon_site_service_level($site_uuid = FALSE, $service_level = FALSE) {
-  # Add interactive input for fetching service levels
-  # Make sure all args are present and that the site has an instrument.
-  # Do a confirmation.
-  # Send the PUT.
-  print "Not yet implemented";
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid) {
+    $site_uuid = terminus_session_select_data('site');
+  }
+  # TODO: verify owner.
+  if (!$service_level) {
+    $service_level = terminus_session_select_data('service_level', $site_uuid);
+  }
+  drush_log("Setting service level to '". $service_level ."'", "notice");
+  $result =  terminus_api_site_put_service_level($site_uuid, $service_level);
+  if ($result) {
+    drush_log("Success", "ok");
+  }
   return TRUE;
 }
 
@@ -2063,13 +2075,13 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       # discovered remotely.
       $choices = array(
         'free' => 'free',
-        'personal' => 'basic',
+        'basic' => 'personal',
         'pro' => 'pro',
         'business' => 'business',
         'elite' => 'elite'
       );
       if ($site_uuid) {
-        $result = terminus_site_info($site_uuid);
+        $result = terminus_api_site_info($site_uuid);
         $site_info = json_decode($result['json']);
         if (isset($site_info->organization)) {
           if (termins_user_organization_admin($user_uuid, $site_info->organization)) {
