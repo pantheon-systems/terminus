@@ -28,6 +28,7 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.workflow.api.inc');
   include_once('terminus.code.api.inc');
   include_once('terminus.organizations.api.inc');
+  include_once('terminus.art.inc');
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -1795,9 +1796,11 @@ function drush_terminus_pantheon_auth($email = FALSE) {
         return TRUE;
       }
     }
+    $show_art = FALSE;
     $password = drush_get_option('password');
     if (!$password) {
       $password = drush_prompt(dt('Pantheon dashboard password'), NULL, TRUE, TRUE);
+      $show_art = TRUE;
     }
     drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
     $ch = curl_init();
@@ -1879,19 +1882,27 @@ function drush_terminus_pantheon_auth($email = FALSE) {
 
     drush_log('Success!', 'ok');
     drush_log(dt('User UUID: !user_uuid', array('!user_uuid' => $user_uuid)), 'notice');
-
     // Start socking away new data.
     $data = array('user_uuid' => $user_uuid, 'session' => $session, 'email' => $email);
     if ($session_data['onebox']) {
       // Mark this session as "forever onebox."
       $data['onebox'] = TRUE;
     }
-
+    // Store the session in drush cache.
     drush_cache_set('terminus-current-session', $data, 'pantheon');
 
-    // Store the session in drush cache.
     // close cURL resource, and free up system resources
     curl_close($ch);
+    if ($show_art) {
+      // ASCII ART FTW
+      $green = "\033[1;32;40m\033[1m%s\033[0m";
+      $art = terminus_art_fist();
+      drush_print("\n\n");
+      echo sprintf($green, $art);
+      drush_print("\n\n");
+      drush_print("LOGIN SUCCESSFUL.");
+    }
+
 }
 
 
