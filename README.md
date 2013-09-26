@@ -1,25 +1,22 @@
-terminus
-========
+# Terminus
 
 A Drush-based CLI interface into the Pantheon core API via a pseudoproxy.
 
-This is being developed initially to support some engineering and partner edge
-cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool for
-all command-line and script-savvy developers.
+Terminus is being developed initially to support some engineering and partner
+edge cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool
+for all command-line and script-savvy developers.
 
 If you'd like to write your own code using terminus as an example, other PHP
 libraries can be used to make direct API calls.
 
 See `drush help --filter=terminus` for a list of commands.
 
-Requirements
-============
+## Requirements
 
 * Drush 5 or higher - https://github.com/drush-ops/drush
 * PHP 5.3 or higher with cURL
 
-Quick Demo
-==========
+## Quick Demo
 
     git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
     # Clear drush's cache.
@@ -33,8 +30,7 @@ Quick Demo
     # Show all terminus commands.
     drush help --filter=terminus
 
-Build a site on Pantheon with drush_make
-========================================
+## Build a site on Pantheon with drush_make
 
     # Specify the site name...
     SITE_NAME=REPLACEME
@@ -67,11 +63,39 @@ Build a site on Pantheon with drush_make
     # Deploy code...
     # COMING SOON!
 
-TODO
-====
+## TODO
 
 - Site import
 - Team management
 - In-progress job status
 - Websockets support for real-time status info?
 - A "pantheon shell" option to keep you in context for interactive use
+
+## Contributing
+
+The Terminus source code is [hosted on GitHub](https://github.com/pantheon-systems/terminus).
+
+Please use the [issue tracker](https://github.com/pantheon-systems/terminus/issues) if you find any bugs or wish to contribute.
+
+### MIT license
+
+Copyright (c) 2013 Pantheon Systems, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
