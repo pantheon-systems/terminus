@@ -11,7 +11,7 @@
 function terminus_tunnel_get_all() {
   $tunnels = array('data' => array(), 'ports' => array());
   if (drush_shell_exec('ps -fU $USER |grep "ssh -[f]" | awk \'{print $2, $5, $12, $15}\'')) {
-    $sites = terminus_user_site_list();
+    $sites = json_decode(terminus_user_site_list());
     $lines = drush_shell_exec_output();
     $keys = array('raw', 'pid', 't1', 't2', 'port', 'host', 'rport', 'ruser', 'rhost', 'type', 'environment', 'site_uuid');
     // tunnels are keyed by port, ports are keyed by env.site for mapping.

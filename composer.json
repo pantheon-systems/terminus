@@ -1,0 +1,27 @@
+{
+    "name":"pantheon-systems/terminus",
+    "description":"A Drush-based CLI interface into the Pantheon core API via a pseudoproxy.",
+    "homepage":"https://github.com/pantheon-systems/terminus",
+    "license":"MIT",
+    "authors":[
+        {
+            "name":"Josh Koenig"
+        },
+        {
+            "name":"Mike Milano"
+        },
+        {
+            "name":"Jon Peck"
+        }
+    ],
+    "require":{
+        "php":">=5.3.3"
+    },
+    "require-dev":{
+        "phpunit/phpunit":">=3.5"
+    },
+    "support":{
+        "irc":"irc://irc.freenode.org/pantheon",
+        "issues":"https://github.com/pantheon-systems/terminus/issues"
+    }
+}
