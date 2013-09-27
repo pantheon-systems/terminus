@@ -1,6 +1,7 @@
 # Terminus
 
-A Drush-based CLI interface into the Pantheon core API via a pseudoproxy.
+Terminus is a Drush-based CLI interface into the Pantheon core API via a
+pseudoproxy.
 
 Terminus is being developed initially to support some engineering and partner
 edge cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool
@@ -11,16 +12,78 @@ libraries can be used to make direct API calls.
 
 See `drush help --filter=terminus` for a list of commands.
 
+Travis CI status: [<img src="https://travis-ci.org/pantheon-systems/terminus.png?branch=master">](https://travis-ci.org/pantheon-systems/terminus)
+
 ## Requirements
 
-* Drush 5 or higher - https://github.com/drush-ops/drush
-* PHP 5.3 or higher with cURL
+* Drush 5.1 or higher - https://github.com/drush-ops/drush
+* PHP 5.3.3 or higher with cURL
+
+## Installing Terminus with Composer and Packagist
+
+[Composer](http://getcomposer.org) is a dependency manager for PHP, and
+[Packagist](https://packagist.org/) is the main Composer repository. Terminus
+can be found on Packagist as [pantheon-systems/terminus](https://packagist.org/packages/pantheon-systems/terminus)
+
+The easiest way to install Composer for *nix (including Mac):
+
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+
+More detailed installation instructions for multiple platforms can be found in
+the [Composer Documentation](http://getcomposer.org/doc/00-intro.md).
+
+### Normal installation
+
+    # Download Terminus for non-development use.
+    composer create-project pantheon-systems/terminus $HOME/.drush/terminus -s dev --no-dev -n
+    # Clear Drush's cache.
+    drush cc drush
+
+That's it! If you ever need to update Terminus, just use the following command:
+
+    # Updating Terminus.
+    composer update --no-dev --working-dir $HOME/.drush/terminus
+
+### Development installation
+
+If you want to contribute to Terminus development, you'll want to download the
+dependencies for performing Unit Tests as well.
+
+    # Make a projects directory if it doesn't already exist.
+    mkdir -p $HOME/Projects
+    # Download Terminus and development dependencies.
+    composer create-project pantheon-systems/terminus $HOME/Projects/terminus -s dev --keep-vcs
+    # Symbolically link Terminus directory to make it available to drush
+    ln -s $HOME/Projects/terminus $HOME/.drush/terminus
+    # Clear Drush's cache.
+    drush cc drush
+
+Terminus includes a number of Unit Tests for automated quality assurance. If you
+add or modify functionality, please include test coverage as well.
+
+    # Change directory.
+    cd $HOME/Projects/terminus
+    # Execute unit tests
+    run_tests.sh
+
+Updates can be performed in the directory:
+
+    # Update Terminus and development dependencies.
+    composer update
+
+## Installing Terminus with Git
+
+If you are unable to use Composer, Terminus can be installed using git. This
+method is not recommended as dependencies will not be automatically installed if
+they're missing.
+
+    git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
+    # Clear Drush's cache.
+    drush cc drush
 
 ## Quick Demo
 
-    git clone https://github.com/pantheon-systems/terminus.git $HOME/.drush/terminus
-    # Clear drush's cache.
-    drush cc drush
     # Authenticate.
     drush pantheon-auth
     # List all your sites.
