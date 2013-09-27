@@ -12,6 +12,8 @@ libraries can be used to make direct API calls.
 
 See `drush help --filter=terminus` for a list of commands.
 
+Code Status: <img src="https://travis-ci.org/pantheon-systems/terminus.png?branch=master">
+
 ## Requirements
 
 * Drush 5.1 or higher - https://github.com/drush-ops/drush

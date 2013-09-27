@@ -104,6 +104,6 @@ JSON;
     }
 }
 JSON;
-    $this->assertTRUE(terminus_validate_sites($valid_sites));å
+    $this->assertTRUE(terminus_validate_sites($valid_sites));
   }
 }
