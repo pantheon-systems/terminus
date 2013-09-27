@@ -2404,6 +2404,10 @@ function terminus_validate_sites($json) {
   if (json_last_error() != JSON_ERROR_NONE) {
     return FALSE;
   }
+  // Not empty.
+  if (count((array) $json_response) == 0) {
+    return FALSE;
+  }
   // Make sure the contents are what we expect.
   foreach ($json_response as $site_uuid => $data) {
     if (!terminus_validate_uuid($site_uuid)) {
