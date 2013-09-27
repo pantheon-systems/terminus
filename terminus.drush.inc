@@ -416,6 +416,17 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-mount'] = array(
+    'description' => "Mounts an environment file system to a local directory.",
+    'arguments' => array(
+      'site' => 'UUID or name of the site. If left empty, all tunnels will be closed.',
+      'environment' => 'The target environment (e.g. "live"). If left empty, all site tunnels will be closed.',
+      'destination' => 'Where would you to mount the file system?'
+    ),
+    'aliases' => array('psite-mount'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   /**
    * Workflow.
    */
@@ -1517,6 +1528,67 @@ function drush_terminus_pantheon_site_tunnel_close($pid = NULL) {
   terminus_tunnel_close($pid);
 }
 
+/**
+ * Mounts the appserver for a specific environment.
+ */
+function drush_terminus_pantheon_site_mount($site_uuid = FALSE, $environment = FALSE, $destination = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+
+  $test = exec('which sshfs', $output, $ret);
+  if ($ret !== 0) {
+    return drush_set_error("'sshfs' command not found. Please install from http://osxfuse.github.io/");
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+
+  if (!$environment) {
+    $environment = terminus_session_select_data('environment', $site_uuid);
+    if (!$environment) {
+      drush_log('You must supply an environment', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!$destination) {
+    $destination = terminus_session_select_data('destination', NULL, NULL, NULL, 'Select a mount destination:', './' . $environment);
+    if (!$destination) {
+      drush_log('You must supply a mount destination', 'failed');
+      return FALSE;
+    }
+  }
+
+  if (!is_dir($destination)) {
+    drush_print(dt("The directory !destination does not exist.", array('!destination' => $destination)));
+    if (drush_confirm(dt('Would you like to create it?'))) {
+      drush_mkdir($destination, TRUE);
+    }
+    if (!is_dir($destination)) {
+      return drush_set_error('DRUSH_PSITE_MOUNT_DESTINATION', dt('Unable to create destination directory !destination.', array('!destination' => $destination)));
+    }
+  }
+
+  $user = $environment . '.' . $site_uuid;
+  $host = 'appserver.' . $environment . '.' . $site_uuid . '.drush.in';
+  $cmd = "sshfs -p 2222 {$user}@{$host}:./ {$destination}";
+
+  drush_shell_exec($cmd);
+  $output = drush_shell_exec_output();
+
+  if (empty($output)) {
+    drush_log(dt('Mount successful. To unmount, run: umount !destination', array('!destination' => $destination)), 'ok');
+  }
+  else {
+    return drush_set_error('DRUSH_PSITE_MOUNT', dt('Unable to mount: !output', array('!output' => implode("\n", $output))));
+  }
+}
+
 function drush_terminus_pantheon_aliases_validate() {
   // Require session.
   $session_data = terminus_bootstrap();
@@ -2031,7 +2103,7 @@ function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
  * @param $key string Required data name. i.e. site_uuid, environment, etc..
  * @return string input data
  */
-function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL) {
+function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL, $prompt_text = NULL, $default = NULL) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
     return FALSE;
@@ -2123,7 +2195,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'destination':
-      $val = drush_prompt('Select a destination', $default = './');
+      $val = drush_prompt(isset($prompt_text) ? $prompt_text : 'Select a destination', isset($default) ? $default : './');
       if ($val !== FALSE) {
         return $val;
       }
