@@ -12,7 +12,7 @@ libraries can be used to make direct API calls.
 
 See `drush help --filter=terminus` for a list of commands.
 
-Code Status: <img src="https://travis-ci.org/pantheon-systems/terminus.png?branch=master">
+Travis CI status: [<img src="https://travis-ci.org/pantheon-systems/terminus.png?branch=master">](https://travis-ci.org/pantheon-systems/terminus)
 
 ## Requirements
 
