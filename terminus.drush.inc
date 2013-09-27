@@ -302,8 +302,6 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
-
-
   /**
    * Organization-scope functions.
    */
@@ -1769,6 +1767,70 @@ function drush_terminus_pantheon_auth_validate($email = FALSE) {
   if (!in_array('curl', get_loaded_extensions())) {
     return drush_set_error('DRUSH_PSITE_AUTH_NOCURL', 'The version of PHP drush is using in ' . PHP_BINDIR . '/ does not have the cURL extension enabled. If you need to specify a different PHP binary, see https://drupal.org/node/1302418');
   }
+  if (!$email) {
+    $email = drush_prompt(dt('Pantheon account email address'), NULL, TRUE);
+  }
+  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    return drush_set_error('DRUSH_PSITE_AUTH_INVALID_EMAIL', 'A valid email address is required to authenticate.');
+  }
+  drush_set_option('email', $email);
+  return TRUE;
+}
+
+/**
+ * Parse form build ID.
+ *
+ * @param $html
+ * @return string
+ */
+function terminus_pauth_login_get_form_build_id($html) {
+  if (!$html) {
+    return FALSE;
+  }
+  // Parse form build ID.
+  $DOM = new DOMDocument;
+  @$DOM->loadHTML($html);
+  $login_form = $DOM->getElementById('atlas-login-form');
+  if (!$login_form) {
+    return drush_set_error("Dashboard unavailable", "Dashboard unavailable: login endpoint not found.");
+  }
+
+  foreach ($login_form->getElementsByTagName('input') as $input) {
+    if ($input->getAttribute('name') == 'form_build_id') {
+      return $input->getAttribute('value');
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Parse session out of a header.
+ * @param $header
+ * @return string
+ */
+function terminus_pauth_get_session_from_header($header) {
+  $session = FALSE;
+  $set_cookie = explode('; ', $header);
+  foreach ($set_cookie as $cookie) {
+    if (strpos($cookie, 'SSESS') === 0) {
+      $session = $cookie;
+    }
+  }
+  return $session;
+}
+
+/**
+ * Parse user ID out of headers.
+ * @param $headers
+ * @return string
+ */
+function terminus_pauth_get_user_uuid_from_headers($headers) {
+  $location_header = terminus_parse_drupal_headers($headers, 'Location');
+  if (!$location_header) {
+    return FALSE;
+  }
+  // https://terminus.getpantheon.com/users/UUID
+  return array_pop(explode('/', $location_header));
 }
 
 /**
@@ -1781,119 +1843,112 @@ function drush_terminus_pantheon_auth_validate($email = FALSE) {
  * Many thanks to Amitai and the gang at: https://drupal.org/node/89710
  */
 function drush_terminus_pantheon_auth($email = FALSE) {
-    // Flush existing data.
-    drush_cache_clear_all('*', 'pantheon', TRUE);
-    $session_data = terminus_bootstrap(FALSE);
-    if (!$email) {
-      $email = drush_prompt(dt('Pantheon account email address'), NULL, TRUE);
-    }
-    $nocache = drush_get_option('nocache');
-    if (!$nocache && isset($session_data['email'])) {
-      drush_log(dt('Cached auth found for !email', array('!email' => $email)), 'notice');
-      if (terminus_validate_session($session_data)) {
-        drush_log('Session still valid. Good to go!', 'ok');
-        return TRUE;
-      }
-    }
-    $password = drush_get_option('password');
-    if (!$password) {
-      $password = drush_prompt(dt('Pantheon dashboard password'), NULL, TRUE, TRUE);
-    }
-    drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
-    $ch = curl_init();
-    $host = TERMINUS_HOST;
-    if ($session_data['onebox']) {
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-      $host = 'onebox.getpantheon.com';
-    }
-    $url = 'https://'. $host .'/login';
-    drush_log(dt('POSTing auth to: !url', array('!url' => $url)));
-    // set URL and other appropriate options
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  if (!$email) {
+    $email = drush_get_option('email');
+  }
+  // Flush existing data.
+  drush_cache_clear_all('*', 'pantheon', TRUE);
+  $session_data = terminus_bootstrap(FALSE);
 
-    // grab URL and pass it to the browser
-    $result = curl_exec($ch);
-
-    if (curl_errno($ch) != 0) {
-      $err = curl_error($ch);
-      return drush_set_error("Dashboard unavailable", "Dashboard unavailable: $err");
+  $nocache = drush_get_option('nocache');
+  if (!$nocache && isset($session_data['email'])) {
+    drush_log(dt('Cached auth found for !email', array('!email' => $email)), 'notice');
+    if (terminus_validate_session($session_data)) {
+      drush_log('Session still valid. Good to go!', 'ok');
+      return TRUE;
     }
+  }
+  $password = drush_get_option('password');
+  if (!$password) {
+    $password = drush_prompt(dt('Pantheon dashboard password'), NULL, TRUE, TRUE);
+  }
+  drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
 
-    // Parse form build ID.
-    $DOM = new DOMDocument;
-    @$DOM->loadHTML($result);
-    $login_form = $DOM->getElementById('atlas-login-form');
-    if (!$login_form) {
-      return drush_set_error("Dashboard unavailable", "Dashboard unavailable: login endpoint not found.");
-    }
+  $ch = curl_init();
+  $host = TERMINUS_HOST;
+  if ($session_data['onebox']) {
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+    $host = 'onebox.getpantheon.com';
+  }
+  $url = 'https://'. $host .'/login';
+  drush_log(dt('POSTing auth to: !url', array('!url' => $url)));
+  // set URL and other appropriate options
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-    foreach ($login_form->getElementsByTagName('input') as $input) {
-      if ($input->getAttribute('name') == 'form_build_id') {
-        $form_build_id = $input->getAttribute('value');
-        break;
-      }
-    }
+  // grab URL and pass it to the browser
+  $result = curl_exec($ch);
 
-    // Now login.
-    $login_data = array('email' => $email,
-                        'password' => $password,
-                        'form_build_id' => $form_build_id,
-                        'form_id' => 'atlas_login_form',
-                        'op' => 'Login');
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $login_data);
-    curl_setopt($ch, CURLOPT_HEADER, 1);
-    $result = curl_exec($ch);
-
-    if (curl_errno($ch) != 0) {
-      $err = curl_error($ch);
-      return drush_set_error("Dashboard unavailable", "Dashboard unavailable: $err");
-    }
-    $set_cookie_header = terminus_parse_drupal_headers($result, 'Set-Cookie');
-    if (!$set_cookie_header) {
-      return drush_set_error("Failure!", 'Authentication failed. Please check your credentials and try again.');
-    }
-    $session = FALSE;
-    $set_cookie = explode('; ', $set_cookie_header);
-    foreach ($set_cookie as $cookie) {
-      if (strpos($cookie, 'SSESS') === 0) {
-        $session = $cookie;
-      }
-    }
-    if (!$session) {
-      return drush_set_error("Failure!", 'Session not found. Please check your credentials and try again.');
-    }
-
-    // Grab the UUID Now
-    curl_setopt($ch, CURLOPT_COOKIE, $session);
-    curl_setopt($ch, CURLOPT_URL, 'https://'. $host .'/account');
-    $result = curl_exec($ch);
-    $location_header = terminus_parse_drupal_headers($result, 'Location');
-    if (!$location_header) {
-      return drush_set_error("Failure!", 'Could not determine user UUID. Please check your credentials and try again.');
-    }
-    $user_uuid = array_pop(explode('/', $location_header));
-
-    drush_log('Success!', 'ok');
-    drush_log(dt('User UUID: !user_uuid', array('!user_uuid' => $user_uuid)), 'notice');
-
-    // Start socking away new data.
-    $data = array('user_uuid' => $user_uuid, 'session' => $session, 'email' => $email);
-    if ($session_data['onebox']) {
-      // Mark this session as "forever onebox."
-      $data['onebox'] = TRUE;
-    }
-
-    drush_cache_set('terminus-current-session', $data, 'pantheon');
-
-    // Store the session in drush cache.
-    // close cURL resource, and free up system resources
+  if (curl_errno($ch) != 0) {
+    $err = curl_error($ch);
     curl_close($ch);
-}
+    return drush_set_error("Dashboard unavailable", "Dashboard unavailable: $err");
+  }
 
+  $form_build_id = terminus_pauth_login_get_form_build_id($result);
+
+  // Attempt to login.
+  $login_data = array(
+    'email' => $email,
+    'password' => $password,
+    'form_build_id' => $form_build_id,
+    'form_id' => 'atlas_login_form',
+    'op' => 'Login',
+  );
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $login_data);
+  curl_setopt($ch, CURLOPT_HEADER, 1);
+  $result = curl_exec($ch);
+
+  if (curl_errno($ch) != 0) {
+    $err = curl_error($ch);
+    return drush_set_error("Dashboard unavailable", "Dashboard unavailable: $err");
+  }
+
+  $set_cookie_header = terminus_parse_drupal_headers($result, 'Set-Cookie');
+  if (!$set_cookie_header) {
+    return drush_set_error("Failure!", 'Authentication failed. Please check your credentials and try again.');
+  }
+
+  $session = terminus_pauth_get_session_from_header($set_cookie_header);
+
+  if (!$session) {
+    return drush_set_error("Failure!", 'Session not found. Please check your credentials and try again.');
+  }
+
+  // Get the UUID.
+  $user_uuid = terminus_pauth_get_user_uuid_from_headers($result);
+
+  if (!terminus_validate_uuid($user_uuid)) {
+    return drush_set_error("Failure!", 'Could not determine user UUID. Please check your credentials and try again.');
+  }
+
+  drush_log('Success!', 'ok');
+  drush_log(dt('User UUID: !user_uuid', array(
+    '!user_uuid' => $user_uuid,
+  )), 'notice');
+
+  // Prepare credentials for storage.
+  $data = array(
+    'user_uuid' => $user_uuid,
+    'session' => $session,
+    'email' => $email,
+  );
+
+  // Pantheon internal development.
+  if ($session_data['onebox']) {
+    // Mark this session as "forever onebox."
+    $data['onebox'] = TRUE;
+  }
+
+  drush_cache_set('terminus-current-session', $data, 'pantheon');
+
+  // Store the session in drush cache.
+  // close cURL resource, and free up system resources
+  curl_close($ch);
+}
 
 /**
  * Helper function for parsing Drupal headers for login.
