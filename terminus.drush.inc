@@ -63,7 +63,7 @@ function terminus_drush_command() {
       'drush plogout',
     ),
     'aliases' => array('plogout'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   // The 'pantheon-auth' command.
@@ -82,17 +82,17 @@ function terminus_drush_command() {
       'drush pauth josh@getpantheon.com --password=mypassword' => 'Get authentication token.',
     ),
     'aliases' => array('pauth'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
-  // The 'pantheon-sitelist' command
+  // The 'pantheon-sites' command.
   $items['pantheon-sites'] = array(
-    'description' => "List your sites.",
+    'description' => 'List your Pantheon sites.',
     'examples' => array(
       'drush psites --nocache' => 'Get a fresh list of sites.',
     ),
     'aliases' => array('psites'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-hostname-add'] = array(
@@ -590,22 +590,31 @@ function drush_terminus_pantheon_whoami() {
   return TRUE;
 }
 
+/**
+ * Validation for the list of Pantheon sites.
+ */
+function drush_terminus_pantheon_sites_validate() {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITES_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+}
 
 /**
- * Get a list of sites.
+ * Get the list of Pantheon sites.
  */
 function drush_terminus_pantheon_sites() {
-  $session_data = terminus_bootstrap();
-
-  if ($session_data === FALSE) {
-    return FALSE;
-  }
-  extract($session_data);
+  extract(drush_get_option('session_data'));
 
   $sites = terminus_user_site_list();
   if (isset($json_output)) {
     drush_print($sites);
     return TRUE;
+  }
+
+  if (!terminus_validate_sites($sites)) {
+    return drush_set_error('DRUSH_PSITES_INVALID_RESPONSE', 'Unable to parse list of sites.');
   }
 
   // Display tabular output.
@@ -620,7 +629,6 @@ function drush_terminus_pantheon_sites() {
   array_unshift($rows, array("Site", "Service Level", "UUID"));
   drush_print_table($rows, TRUE);
 }
-
 
 /**
  * Create a new site via the CLI.
@@ -2377,6 +2385,37 @@ function terminus_validate_palises($aliases) {
   }
   if (strpos($tokens[1][1], 'Pantheon drush alias file') === FALSE) {
     return FALSE;
+  }
+  return TRUE;
+}
+
+/**
+ * Validate list of Pantheon sites.
+ *
+ * @param $json
+ * @return bool
+ */
+function terminus_validate_sites($json) {
+  if (!$json) {
+    return FALSE;
+  }
+  // Make sure it's valid JSON.
+  $json_response = @json_decode($json);
+  if (json_last_error() != JSON_ERROR_NONE) {
+    return FALSE;
+  }
+  // Make sure the contents are what we expect.
+  foreach ($json_response as $site_uuid => $data) {
+    if (!terminus_validate_uuid($site_uuid)) {
+      return FALSE;
+    }
+    if (!isset($data->information)) {
+      return FALSE;
+    }
+    $i = $data->information;
+    if (!isset($i->name) || !isset($i->service_level)) {
+      return FALSE;
+    }
   }
   return TRUE;
 }
