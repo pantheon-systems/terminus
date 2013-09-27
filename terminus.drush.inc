@@ -1532,6 +1532,11 @@ function drush_terminus_pantheon_site_mount($site_uuid = FALSE, $environment = F
   }
   extract($session_data);
 
+  $test = exec('which sshfs', $output, $ret);
+  if ($ret !== 0) {
+    return drush_set_error("'sshfs' command not found. Please install from http://osxfuse.github.io/");
+  }
+
   if (!$site_uuid = terminus_site_input($site_uuid)) {
     drush_log('You must supply a site UUID', 'failed');
     return FALSE;
