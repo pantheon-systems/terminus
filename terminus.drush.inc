@@ -103,7 +103,7 @@ function terminus_drush_command() {
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
     'aliases' => array('psite-hostname-add'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-hostname-remove'] = array(
@@ -114,19 +114,19 @@ function terminus_drush_command() {
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
     'aliases' => array('psite-hostname-remove'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-products'] = array(
     'description' => "Get the list of available Drupal product start-states.",
     'aliases' => array('pproducts'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-create'] = array(
     'description' => "Create a new site on Pantheon",
     'arguments' => array(
-      'name' => 'Shortname of the site to create. Will be part of the url.',
+      'name' => 'Short name of the site to create. Will be part of the url.',
     ),
     'options' => array(
       'label' => array(
@@ -139,11 +139,11 @@ function terminus_drush_command() {
         'description' => 'UUID of an organization you want the site to be a part of.',
       ),
       'nopoll' => array(
-        'description' => 'Do not hang around and wait for the site to be ready. Useful for scripting a lot of spinups.',
+        'description' => 'Do not hang around and wait for the site to be ready. Useful for scripting a lot of spin-ups.',
       ),
     ),
     'aliases' => array('psite-create'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-delete'] = array(
@@ -152,7 +152,7 @@ function terminus_drush_command() {
       'site' => 'UUID of the site you want to delete.',
     ),
     'aliases' => array('psite-delete'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-backups'] = array(
@@ -162,7 +162,7 @@ function terminus_drush_command() {
       'environment' => 'The environment (e.g. "live") you want to back up.',
     ),
     'aliases' => array('psite-backups'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-get-backup'] = array(
@@ -174,7 +174,7 @@ function terminus_drush_command() {
       'element' => 'Which part of the backup do you want?',
     ),
     'aliases' => array('psite-get-backup'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-make-backup'] = array(
@@ -184,7 +184,7 @@ function terminus_drush_command() {
       'environment' => 'The environment (e.g. "live") you want to back up.',
     ),
     'aliases' => array('psite-backup'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-download-backup'] = array(
@@ -197,7 +197,7 @@ function terminus_drush_command() {
       'destination' => 'Where would you like the backup?'
     ),
     'aliases' => array('psite-dl-backup'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-load-backup'] = array(
@@ -208,7 +208,7 @@ function terminus_drush_command() {
       'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
     ),
     'aliases' => array('psite-load-backup'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-connection-mode'] = array(
@@ -219,7 +219,7 @@ function terminus_drush_command() {
       'mode' => 'Connection mode like to set. (e.g. "sftp" or "git") Leave blank to retrieve the current mode.',
     ),
     'aliases' => array('psite-cmode'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-commit'] = array(
@@ -232,7 +232,7 @@ function terminus_drush_command() {
       'message' => 'Commit message',
     ),
     'aliases' => array('psite-commit'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-diffstat'] = array(
@@ -242,7 +242,7 @@ function terminus_drush_command() {
       'environment' => 'Environment to commit: a dev or multidev environment',
     ),
     'aliases' => array('psite-diffs'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-notifications'] = array(
@@ -251,11 +251,11 @@ function terminus_drush_command() {
       'site' => 'UUID or name of the site.',
     ),
     'aliases' => array('psite-notifications'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-uuid'] = array(
-    'description' => "Get ths site UUID based on the name.",
+    'description' => "Get the site UUID based on the name.",
     'arguments' => array(
       'site' => 'UUID of the site.',
     ),
@@ -263,11 +263,11 @@ function terminus_drush_command() {
       'drush psite-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
     'aliases' => array('psite-uuid'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-name'] = array(
-    'description' => "Get ths site name based on the UUID.",
+    'description' => "Get the site name based on the UUID.",
     'arguments' => array(
       'name' => 'name of the site.',
     ),
@@ -275,7 +275,7 @@ function terminus_drush_command() {
       'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
     ),
     'aliases' => array('psite-name'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-dashboard'] = array(
@@ -287,20 +287,20 @@ function terminus_drush_command() {
       'drush psite-dash mysite -y' => 'Open the dashboard for a site.',
     ),
     'aliases' => array('psite-dash'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-service-level'] = array(
     'description' => "Update the service level for the site.",
     'arguments' => array(
       'site' => 'UUID of the site.',
-      'service-level' => 'Service level to upgrade to.'
+      'service-level' => 'Service level to upgrade to.',
     ),
     'examples' => array(
       'drush psite-upgrade <site> <service-level>' => 'Open the dashboard for a site.',
     ),
     'aliases' => array('psite-upgrade'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   /**
@@ -312,7 +312,7 @@ function terminus_drush_command() {
       'drush porgs --nocache' => 'Get a fresh list of sites.',
     ),
     'aliases' => array('porgs'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-organization-sites'] = array(
@@ -324,7 +324,7 @@ function terminus_drush_command() {
       'drush porg-sites --nocache' => 'Get a fresh list of sites.',
     ),
     'aliases' => array('porg-sites'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-organization-site-add'] = array(
@@ -337,7 +337,7 @@ function terminus_drush_command() {
       'drush porg-site-add <org> <site>' => 'Add a site to an organization.',
     ),
     'aliases' => array('porg-site-add'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-organization-site-remove'] = array(
@@ -350,9 +350,8 @@ function terminus_drush_command() {
       'drush porg-site-remove <org> <site>' => 'Add a site to an organization.',
     ),
     'aliases' => array('porg-site-remove'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
-
 
   /**
    * Tunnel Functions.
@@ -360,7 +359,7 @@ function terminus_drush_command() {
   $items['pantheon-site-tunnels'] = array(
     'description' => "Get a list of open tunnels.",
     'aliases' => array('psite-tunnels'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-tunnel'] = array(
@@ -372,7 +371,7 @@ function terminus_drush_command() {
       'port' => 'Local port to connect to.'
     ),
     'aliases' => array('psite-tunnel'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-tunnel-close'] = array(
@@ -383,7 +382,7 @@ function terminus_drush_command() {
       'service' => 'The service (e.g. "mysql" or "redis") to open a tunnel for. If empty, all site/environment tunnels will be closed.'
     ),
     'aliases' => array('psite-tclose'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
   $items['pantheon-site-sql-dump'] = array(
@@ -466,7 +465,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-pp'] = array(
-    'description' => "Direct pseudoproxy interface. JSON only, for debugging.",
+    'description' => "Direct pseudo-proxy interface. JSON only, for debugging.",
     'arguments' => array(
       'realm' => 'Are you asking about users or sites?',
       'uuid' => 'The unique id of the thing you want to know about.',
@@ -496,7 +495,6 @@ function terminus_drush_command() {
 
   return $items;
 }
-
 
 /**
  * @group Drush Commands
@@ -772,7 +770,6 @@ function drush_terminus_pantheon_site_name($site_uuid) {
   return TRUE;
 }
 
-
 /**
  * Get a dashboard link.
  */
@@ -822,7 +819,6 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
   drush_cache_clear_all('terminus-sites', 'pantheon');
   return TRUE;
 }
-
 
 /**
  * Add a hostname.

@@ -7,10 +7,12 @@ Terminus is being developed initially to support some engineering and partner
 edge cases (DevOps shops, Kalabox, proviso), but we hope to make it a solid tool
 for all command-line and script-savvy developers.
 
-If you'd like to write your own code using terminus as an example, other PHP
+If you'd like to write your own code using Terminus as an example, other PHP
 libraries can be used to make direct API calls.
 
-See `drush help --filter=terminus` for a list of commands.
+See `drush help --filter=terminus` for a list of commands, and visit the
+[Pantheon Helpdesk Article on Terminus](http://helpdesk.getpantheon.com/customer/portal/articles/1315417)
+for detailed help.
 
 Travis CI status: [<img src="https://travis-ci.org/pantheon-systems/terminus.png?branch=master">](https://travis-ci.org/pantheon-systems/terminus)
 
@@ -90,7 +92,7 @@ they're missing.
     drush pantheon-sites
     # Download and replace pantheon.aliases.drushrc.php
     drush pantheon-aliases
-    # Show all terminus commands.
+    # Show all Terminus commands.
     drush help --filter=terminus
 
 ## Build a site on Pantheon with drush_make
@@ -98,7 +100,7 @@ they're missing.
     # Specify the site name...
     SITE_NAME=REPLACEME
     # And a description...
-    SITE_DESC="Building a site with drush_make and terminus"
+    SITE_DESC="Building a site with drush_make and Terminus"
     # Authenticate.
     drush pauth YOUR@EMAIL.COM --password=TOOMANYSECRETS
     # Create the site using Drupal 7 (drops-7) as the base.
