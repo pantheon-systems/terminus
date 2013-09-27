@@ -66,7 +66,7 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap at all.
   );
 
-  // The 'pantheon-authenticate' command
+  // The 'pantheon-auth' command.
   $items['pantheon-auth'] = array(
     'description' => "Authenticate against the pantheon dashboard. Required before doing anything else.",
     'arguments' => array(
@@ -1509,11 +1509,15 @@ function drush_terminus_pantheon_site_tunnel_close($pid = NULL) {
   terminus_tunnel_close($pid);
 }
 
-/**
- * Update drush aliases file.
- */
-function drush_terminus_pantheon_aliases() {
+function drush_terminus_pantheon_aliases_validate() {
+  // Require session.
   $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_ALIASES_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+  drush_set_option('session_data', $session_data);
+
+  // Determine destination.
   $default_destination = FALSE;
   $home = drush_server_home();
   if ($home) {
@@ -1524,35 +1528,49 @@ function drush_terminus_pantheon_aliases() {
     drush_log('Could not auto-determine destination. Please provide one using the --destination option.', 'failed');
     return FALSE;
   }
+
+  // Ensure destination can be written to.
   $fh = fopen($destination, 'w');
   if ($fh === FALSE) {
-    drush_log('Cannot write aliases to "'. $destination .'" - verify this location is writable.', 'failed');
-    return FALSE;
+    return drush_set_error('DRUSH_ALIASES_NO_WRITE', dt('Cannot write aliases to @destination - verify this location is writable.', array(
+      '@destination' => $destination,
+    )));
   }
-  if (!$session_data) {
-    drush_log('You are not authenticated', 'failed');
-    return FALSE;
-  }
-  drush_log('Loading aliases from Pantheon.', 'notice');
+  drush_set_option('fh', $fh);
+  drush_set_option('destination', $destination);
+}
+
+/**
+ * Update drush aliases file.
+ */
+function drush_terminus_pantheon_aliases() {
+  $session_data = drush_get_option('session_data');
+  $fh = drush_get_option('fh');
+
+  drush_log('Loading aliases from Pantheon.');
+
   // This one is a little wonky still. Goes to Drupal.
   $ch = curl_init();
-  $url = 'https://'. TERMINUS_HOST .'/users/'. $session_data['user_uuid'] .'/drushrc';
   curl_setopt($ch, CURLOPT_COOKIE, $session_data['session']);
-  curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  if ($session_data['onebox']) {
+  $host = TERMINUS_HOST;
+  if (isset($session_data['onebox']) && $session_data['onebox']) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     $host = 'onebox.getpantheon.com';
   }
+  $url = 'https://' . $host . '/users/'. $session_data['user_uuid'] . '/drushrc';
+  curl_setopt($ch, CURLOPT_URL, $url);
 
   $result = curl_exec($ch);
-  if ($result === FALSE) {
-    drush_log('Failed fetching aliases. Try again?');
-    return FALSE;
+  if (!terminus_validate_palises($result)) {
+    return drush_set_error('DRUSH_ALIASES_UNVALIDATED', dt('Unable to fetch the aliases. Try again?'));
   }
-  drush_log('Writing aliases to "'. $destination .'".', 'notice');
+
+  drush_log(dt('Writing aliases to @destination', array(
+    '@destination' => drush_get_option('destination'),
+  )));
   fwrite($fh, $result);
   fclose($fh);
   drush_log('Pantheon aliases updated.', 'ok');
@@ -1761,6 +1779,16 @@ function _terminus_service_level_name($level) {
 }
 
 /**
+ * Email validation.
+ *
+ * @param $email
+ * @return boolean
+ */
+function terminus_validate_email($email) {
+  return filter_var($email, FILTER_VALIDATE_EMAIL) ? TRUE : FALSE;
+}
+
+/**
  * Ensure cURL is enabled.
  */
 function drush_terminus_pantheon_auth_validate($email = FALSE) {
@@ -1771,7 +1799,7 @@ function drush_terminus_pantheon_auth_validate($email = FALSE) {
   if (!$email) {
     $email = drush_prompt(dt('Pantheon account email address'), NULL, TRUE);
   }
-  if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+  if (!terminus_validate_email($email)) {
     return drush_set_error('DRUSH_PSITE_AUTH_INVALID_EMAIL', 'A valid email address is required to authenticate.');
   }
   drush_set_option('email', $email);
@@ -2327,4 +2355,28 @@ function terminus_site_uuid_to_name($site_uuid) {
     }
   }
   return drush_set_error("No site found for UUID '$site_uuid'.");
+}
+
+/**
+ * Validate Pantheon drush aliases.
+ *
+ * @param $aliases
+ * @return bool
+ */
+function terminus_validate_palises($aliases) {
+  if (!$aliases) {
+    return FALSE;
+  }
+  // Well, can't exactly PHP lint it...
+  $tokens = @token_get_all($aliases);
+  if (empty($tokens)) {
+    return FALSE;
+  }
+  if (strpos($tokens[0][1], '<?php') !== 0) {
+    return FALSE;
+  }
+  if (strpos($tokens[1][1], 'Pantheon drush alias file') === FALSE) {
+    return FALSE;
+  }
+  return TRUE;
 }

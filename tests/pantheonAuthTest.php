@@ -1,35 +1,29 @@
 <?php
 /**
  * @file
- * PHPUnit Tests for Terminus using Drush's test framework.
+ * PHPUnit Tests for pantheon-auth using Drush's test framework.
  */
 
-class pantheonAuthenticate extends Drush_UnitTestCase {
-  /**
-   * Load Terminus.
-   */
+class pantheonAuthTest extends Drush_UnitTestCase {
+
   public function __construct() {
     parent::__construct();
     // Load Terminus.
     require_once __DIR__ . '/../terminus.drush.inc';
-
   }
 
-  public function testPantheonAuthenticate() {
-    // Skip all prompts.
-    drush_set_context('DRUSH_AFFIRMATIVE', TRUE);
-
+  public function testPantheonAuth() {
     // No email.
-    $this->assertFalse(drush_terminus_pantheon_auth_validate(), FALSE);
+    $this->assertFalse(terminus_validate_email(''));
 
     // Invalid email.
-    $this->assertFalse(drush_terminus_pantheon_auth_validate('fail'), FALSE);
+    $this->assertFalse(terminus_validate_email('fail'));
 
     // Valid email.
-    $this->assertTrue(drush_terminus_pantheon_auth_validate('user@example.com'), TRUE);
+    $this->assertTrue(terminus_validate_email('user@example.com'));
 
     // Google emails.
-    $this->assertTrue(drush_terminus_pantheon_auth_validate('user+filter@example.com'), TRUE);
+    $this->assertTrue(terminus_validate_email('user+filter@example.com'));
 
     // Form parsing.
     $form = '<form action="/login" method="post" id="atlas-login-form" accept-charset="UTF-8"><div><h2 class="pane-title">Login here unless you <a href="/password">forgot your password</a> or <a href="/register">need to register</a>.</h2><div class="form-item-wrapper clearfix"><div class="form-label"><span class="form-label-text">Email Address</span></div><div class="form-item form-type-textfield form-item-email"> <input class="jsvalidate-enabled form-text" rule="{&quot;required&quot;:&quot;true&quot;,&quot;email&quot;:&quot;true&quot;}" message="{&quot;required&quot;:&quot;Please provide an email address.&quot;,&quot;email&quot;:&quot;The email address is not valid.&quot;}" type="text" id="edit-email" name="email" value="" size="60" maxlength="128" /> </div> <div class="form-error-wrapper"><div class="error-wrapper"></div><div class="form-error-arrow"></div></div></div><div class="form-item-wrapper clearfix"><div class="form-label"><span class="form-label-text">Password</span></div><div class="form-item form-type-password form-item-password"> <input class="jsvalidate-enabled form-text" rule="{&quot;required&quot;:&quot;true&quot;}" message="{&quot;required&quot;:&quot;Please provide a password.&quot;}" type="password" id="edit-password" name="password" size="60" maxlength="128" /> </div> <div class="form-error-wrapper"><div class="error-wrapper"></div><div class="form-error-arrow"></div></div></div><div class="form-item-wrapper clearfix"><div class="form-label"><span class="form-label-text"></span></div><input type="submit" id="edit-submit" name="op" value="Login" class="form-submit" /><div class="form-error-wrapper"><div class="error-wrapper"></div><div class="form-error-arrow"></div></div></div><input type="hidden" name="form_build_id" value="form-NEOwKyC4yaJIwMuLpkRG8xMdCbFK1--E8j8FgLvADdg" /> <input type="hidden" name="form_id" value="atlas_login_form" /> </div></form>';
