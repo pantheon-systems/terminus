@@ -1973,7 +1973,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
 
   $ch = curl_init();
   $host = TERMINUS_HOST;
-  if ($session_data['onebox']) {
+  if (isset($session_data['onebox']) && $session_data['onebox']) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     $host = 'onebox.getpantheon.com';
