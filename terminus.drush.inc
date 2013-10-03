@@ -1,7 +1,7 @@
 <?php
  /**
  * @file
- *  Terminus: programatic access to the Pantheon Platform via Drush.
+ *  Terminus: programmatic access to the Pantheon Platform via Drush.
  */
 
 /**
@@ -68,7 +68,7 @@ function terminus_drush_command() {
 
   // The 'pantheon-auth' command.
   $items['pantheon-auth'] = array(
-    'description' => "Authenticate against the pantheon dashboard. Required before doing anything else.",
+    'description' => "Authenticate against the Pantheon dashboard. Required before doing anything else.",
     'arguments' => array(
       'email' => 'Email address of dashboard account',
     ),
@@ -99,7 +99,7 @@ function terminus_drush_command() {
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
       'site' => 'The site UUID you are working on.',
-      'environment' => 'The environemnt (e.g. "live").',
+      'environment' => 'The environment (e.g. "live").',
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
     'aliases' => array('psite-hostname-add'),
@@ -126,7 +126,7 @@ function terminus_drush_command() {
   $items['pantheon-site-create'] = array(
     'description' => "Create a new site on Pantheon",
     'arguments' => array(
-      'name' => 'Short name of the site to create. Will be part of the url.',
+      'name' => 'Short name of the site to create. Will be part of the URL.',
     ),
     'options' => array(
       'label' => array(
@@ -191,7 +191,7 @@ function terminus_drush_command() {
     'description' => "Download a backup file from a specific site.",
     'arguments' => array(
       'site' => 'UUID of the site you want to get backups for.',
-      'environment' => 'The environment (e.g. "live") you want to download a back up from.',
+      'environment' => 'The environment (e.g. "live") you want to download a backup from.',
       'bucket' => 'Bucket for the backup. Use "latest" for the most recent.',
       'element' => 'Which part of the backup do you want? (e.g. database, files, code)',
       'destination' => 'Where would you like the backup?'
@@ -216,7 +216,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'The dev or multidev environment you would like to target.',
-      'mode' => 'Connection mode like to set. (e.g. "sftp" or "git") Leave blank to retrieve the current mode.',
+      'mode' => 'Connection mode like to set (e.g., "sftp" or "git"). Leave blank to retrieve the current mode.',
     ),
     'aliases' => array('psite-cmode'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -367,7 +367,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'The target environment (e.g. "live").',
-      'service' => 'The service (e.g. "db" or "redis") to open a tunnel for. This defaults to "db".',
+      'service' => 'The service (e.g., "db" or "redis") to open a tunnel for. This defaults to "db".',
       'port' => 'Local port to connect to.'
     ),
     'aliases' => array('psite-tunnel'),
@@ -379,7 +379,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site. If left empty, all tunnels will be closed.',
       'environment' => 'The target environment (e.g. "live"). If left empty, all site tunnels will be closed.',
-      'service' => 'The service (e.g. "mysql" or "redis") to open a tunnel for. If empty, all site/environment tunnels will be closed.'
+      'service' => 'The service (e.g., "mysql" or "redis") to open a tunnel for. If empty, all site/environment tunnels will be closed.'
     ),
     'aliases' => array('psite-tclose'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -395,7 +395,7 @@ function terminus_drush_command() {
     ),
     'options' => array(
       'result-file' => array(
-        'description' => 'Save to a file. The file should be relative to Drupal root. If --result-file is provided with no value, then date based filename will be created under ~/drush-backups directory.',
+        'description' => 'Save to a file. The file should be relative to Drupal root. If --result-file is provided with no value, then date-based filename will be created under ~/drush-backups directory.',
         'example-value' => '/path/to/file',
         'value' => 'optional',
       ),
@@ -405,10 +405,10 @@ function terminus_drush_command() {
       'skip-tables-list' => 'A comma-separated list of tables to exclude completely. Optional.',
       'structure-tables-list' => 'A comma-separated list of tables to include for structure, but not data. Optional.',
       'tables-list' => 'A comma-separated list of tables to transfer. Optional.',
-      'ordered-dump' => 'Use this option to output ordered INSERT statements in the sql-dump.Useful when backups are managed in a Version Control System. Optional.',
-      'create-db' => array('hidden' => TRUE, 'description' => 'Omit DROP TABLE statements. Postgres and Oracle only.  Used by sql-sync, since including the DROP TABLE statements interfere with the import when the database is created.'),
+      'ordered-dump' => 'Use this option to output ordered INSERT statements in the sql-dump. Useful when backups are managed in a Version Control System. Optional.',
+      'create-db' => array('hidden' => TRUE, 'description' => 'Omit DROP TABLE statements. Postgres and Oracle only.  Used by sql-sync, since including the DROP TABLE statements interferes with the import when the database is created.'),
       'data-only' => 'Dump data without statements to create any of the schema.',
-      'ordered-dump' => 'Order by primary key and add line breaks for efficient diff in revision control. Also, faster rsync. Slows down the dump. Mysql only.',
+      'ordered-dump' => 'Order by primary key and add line breaks for efficient diff in revision control. Also, faster rsync. Slows down the dump. MySQL only.',
       'gzip' => 'Compress the dump using the gzip program which must be in your $PATH.',
     ),
     'aliases' => array('psite-sql-dump'),
@@ -420,7 +420,7 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site. If left empty, all tunnels will be closed.',
       'environment' => 'The target environment (e.g. "live"). If left empty, all site tunnels will be closed.',
-      'destination' => 'Where would you to mount the file system?'
+      'destination' => 'Where would you like to mount the file system?'
     ),
     'aliases' => array('psite-mount'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -465,7 +465,7 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-pp'] = array(
-    'description' => "Direct pseudo-proxy interface. JSON only, for debugging.",
+    'description' => "Direct pseudo-proxy interface. JSON only. For debugging.",
     'arguments' => array(
       'realm' => 'Are you asking about users or sites?',
       'uuid' => 'The unique id of the thing you want to know about.',
@@ -511,7 +511,7 @@ function drush_terminus_pantheon_site_clone_validate($site_uuid, $source, $targe
     return drush_set_error('DRUSH_PSITE_CLONE_NO_SESSION', 'You must authenticate before using this command.');
   }
   if (!terminus_validate_uuid($site_uuid)) {
-    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_UUID', 'You must specify a valid site uuid.');
+    return drush_set_error('DRUSH_PSITE_CLONE_INVALID_UUID', 'You must specify a valid site UUID.');
   }
   if (!terminus_validate_environment($source)) {
     return drush_set_error('DRUSH_PSITE_CLONE_INVALID_SOURCE', 'You must specify a valid source environment name.');
@@ -592,7 +592,7 @@ function drush_terminus_pantheon_site_clone($site_uuid, $env_source, $env_target
  */
 function drush_terminus_pantheon_whoami() {
   $session_data = terminus_bootstrap();
-  // import to local scope variables
+  // Import to local scope variables.
   extract($session_data);
   drush_print(dt("User UUID: !uuid", array('!uuid' => $user_uuid)));
   drush_print(dt("Email: !email", array('!email' => $email)));
@@ -627,7 +627,7 @@ function drush_terminus_pantheon_sites() {
   }
 
   // Display tabular output.
-  // TODO: refactor into re-usable display functions.
+  // TODO: refactor into reusable display functions.
   $sites = json_decode($sites);
   $rows = array();
   foreach ($sites as $site_uuid => $data) {
@@ -971,7 +971,7 @@ function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environmen
     return TRUE;
   }
   $data = json_decode($result['json']);
-  drush_print(dt('Signed url for the backup:'));
+  drush_print(dt('Signed URL for the backup:'));
   drush_print($data->url);
   return TRUE;
 }
@@ -1199,7 +1199,7 @@ function drush_terminus_pantheon_site_commit_validate($site_uuid = FALSE, $envir
     }
   }
   if (!terminus_validate_uuid($site_uuid)) {
-    return drush_set_error('DRUSH_PSITE_COMMIT_INVALID_UUID', dt('You must specify a valid site uuid.'));
+    return drush_set_error('DRUSH_PSITE_COMMIT_INVALID_UUID', dt('You must specify a valid site UUID.'));
   }
   drush_set_option('site_uuid', $site_uuid);
 
@@ -1749,18 +1749,18 @@ function terminus_validate_session($data) {
  *
  * @param $realm
  *    Permissions realm for data request: currently "user" or "site" but in the
- *    future this could also be "orgnaization" or another high-level business
+ *    future this could also be "organization" or another high-level business
  *    object (e.g. "product" for managing your app). Can also be "public" to
  *    simply pull read-only data that is not privileged.
  *
  * @param $uuid
- *    The uuid of the item in the realm you want to access.
+ *    The UUID of the item in the realm you want to access.
  *
  * @param $method
  *    HTTP method (verb) to use.
  *
  * @param $data
- *    A native php data structure (int, string, arary or simple object) to be
+ *    A native PHP data structure (int, string, arary or simple object) to be
  *    sent along with the request. Will be encoded as JSON for you.
  */
 function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
@@ -1807,7 +1807,7 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   );
   curl_setopt_array($ch, $opts);
 
-  // grab URL and pass it to the browser
+  // Grab URL and pass it to the browser.
   drush_log('Making api request.', 'notice');
   drush_log($url, 'notice');
   $result = curl_exec($ch);
@@ -1980,12 +1980,12 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   }
   $url = 'https://'. $host .'/login';
   drush_log(dt('POSTing auth to: !url', array('!url' => $url)));
-  // set URL and other appropriate options
+  // Set URL and other appropriate options.
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-  // grab URL and pass it to the browser
+  // Grab URL and pass it to the browser.
   $result = curl_exec($ch);
 
   if (curl_errno($ch) != 0) {
@@ -1996,7 +1996,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
 
   $form_build_id = terminus_pauth_login_get_form_build_id($result);
 
-  // Attempt to login.
+  // Attempt to log in.
   $login_data = array(
     'email' => $email,
     'password' => $password,
@@ -2052,7 +2052,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   // Store the session in drush cache.
   drush_cache_set('terminus-current-session', $data, 'pantheon');
 
-  // close cURL resource, and free up system resources
+  // Close cURL resource, and free up system resources.
   curl_close($ch);
 
   if ($show_art) {
@@ -2096,7 +2096,7 @@ function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
 
 /**
  * Provides user prompt for missing data.
- * @param $key string Required data name. i.e. site_uuid, environment, etc..
+ * @param $key string Required data name. i.e. site_uuid, environment, etc.
  * @return string input data
  */
 function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL, $prompt_text = NULL, $default = NULL) {
@@ -2112,11 +2112,11 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
 
       $choices = array();
       foreach ($sites as $site => $data) {
-        # If a site_uuid was supplied, and it matches, validate.
+        // If a site_uuid was supplied, and it matches, validate.
         if ($site_uuid == $site) {
           return $site_uuid;
         }
-        # If a name matches, validate.
+        // If a name matches, validate.
         if ($data->information->name == $site_uuid) {
           return $site;
         }
@@ -2325,7 +2325,7 @@ function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
 }
 
 /**
- * Helper function to handle site uuid input.
+ * Helper function to handle site UUID input.
  */
 function terminus_site_input($site_input = FALSE, $prompt = TRUE, $uuid_only = FALSE) {
   if (!$site_input && $prompt) {
@@ -2418,7 +2418,7 @@ function terminus_validate_environment($env) {
 }
 
 /**
- * Helper function to convert a site_uuid to the human readable name.
+ * Helper function to convert a site_uuid to the human-readable name.
  * @param $site_uuid
  * @return mixed
  */
