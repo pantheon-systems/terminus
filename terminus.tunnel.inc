@@ -14,7 +14,7 @@ function terminus_tunnel_get_all() {
     $sites = json_decode(terminus_user_site_list(), TRUE);
     $lines = drush_shell_exec_output();
     $keys = array('raw', 'pid', 't1', 't2', 'port', 'host', 'rport', 'ruser', 'rhost', 'type', 'environment', 'site_uuid');
-    // tunnels are keyed by port, ports are keyed by env.site for mapping.
+    // Tunnels are keyed by port, ports are keyed by env.site for mapping.
     foreach ($lines as $line) {
       $matches = array();
       if (preg_match('/([0-9]{1,8}) ([0-9]{1,2}:[0-9]{2})(PM|AM) ([0-9]{1,7}):(127.0.0.1):([0-9]{1,7}) ([A-z0-9_]{3,16}\.[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})@(([A-z0-9_]{3,16})\.([A-z0-9_]{3,16})\.([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})\.drush.in)/', $line, $matches)) {
@@ -32,7 +32,7 @@ function terminus_tunnel_get_all() {
  * Opens a tunnel if one is not already open.
  */
 function terminus_tunnel_open($site_uuid, $environment, $type = 'dbserver', $port = NULL, $print_info = TRUE) {
-  // If tunnel exists, display connection info
+  // If tunnel exists, display connection info.
   $result = terminus_api_site_environment_bindings($site_uuid, $environment, $type);
   $bindings = json_decode($result['json']);
   $binding = reset($bindings);
@@ -74,7 +74,7 @@ function terminus_tunnel_open($site_uuid, $environment, $type = 'dbserver', $por
   if ($print_info) {
     terminus_tunnel_print_info_table(array($tunnel));
 
-    // Display type specific tunnel info
+    // Display type-specific tunnel info.
     $func = 'terminus_tunnel_info_' . $type;
     if (isset($tunnel) && function_exists($func)) {
       $func($tunnel, $binding);
