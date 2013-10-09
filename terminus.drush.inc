@@ -696,6 +696,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   drush_log("Site is building now in your dashboard.", "ok");
   drush_print("The new site's UUID is '". $site_uuid ."'");
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
+  drush_cache_clear_all('terminus-user-sites-'. $user_uuid, 'pantheon', TRUE);
+  if ($site_data['organization']) {
+    drush_cache_clear_all('terminus-org-sites-'. $site_data['organization'], 'pantheon', TRUE);
+  }
 
   # Poll for completion.
   if (drush_get_option('nopoll')) {
@@ -2354,23 +2358,21 @@ function terminus_get_site_uuid_by_name($site_name) {
   foreach ($user_sites as $site_uuid => $data) {
     $i = $data->information;
     if ($i->name == $site_name) {
-      return $site_uuid;
+      # return $site_uuid;
+      print "Would have done it as a site, but testing now.\n";
     }
   }
-
-  # Find orgs you're an admin of.
+  # Get all the orgs where they are an admin.
   $result = terminus_api_user_organizations($user_uuid);
   $orgs = json_decode($result['json']);
-  $check_orgs = array();
   foreach ($orgs as $org => $data) {
     if ($data->admin) {
       $check_orgs[] = $org;
     }
   }
-  # Get organization sites if you're an admin.
+  # Now iterate and see if there's a match.
   foreach ($check_orgs as $organization_uuid) {
-    $result = terminus_api_user_organization_sites($user_uuid, $organization_uuid);
-    $org_sites = json_decode($result['json']);
+    $org_sites = json_decode(terminus_org_site_list($organization_uuid));
     foreach ($org_sites as $site_uuid => $data) {
       if ($data->name == $site_name) {
         return $site_uuid;
@@ -2395,7 +2397,7 @@ function terminus_user_site_list($reset = FALSE) {
     return FALSE;
   }
   extract($session_data);
-  $cid = 'terminus-user-sites';
+  $cid = 'terminus-user-sites-'. $user_uuid;
 
   if (!$reset && !isset($nocache) && $cache = drush_cache_get($cid, 'pantheon')) {
     drush_log('Loaded user site list from cache.', 'notice');
@@ -2412,6 +2414,37 @@ function terminus_user_site_list($reset = FALSE) {
   drush_cache_set($cid, $asites, 'pantheon');
 
   return $asites;
+}
+
+/**
+ * Helper function to get org site lists.
+ */
+function terminus_org_site_list($organization_uuid, $reset = FALSE) {
+  static $osites;
+  if (isset($osites[$organization_uuid]) && !$reset) {
+    return $osites[$organization_uuid];
+  }
+  $osites = array();
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  $cid = 'terminus-org-sites-'. $organization_uuid;
+  if (!$reset && !isset($nocache) && $cache = drush_cache_get($cid, 'pantheon')) {
+    drush_log('Loaded organization site list from cache.', 'notice');
+    $osites[$organization_uuid] = $cache->data;
+    return $osites[$organization_uuid];
+  }
+
+  $result = terminus_api_user_organization_sites($user_uuid, $organization_uuid);
+  if ($result === FALSE) {
+    return FALSE;
+  }
+  $osites[$organization_uuid] = $result['json'];
+  drush_log('Caching organization site list.', 'notice');
+  drush_cache_set($cid, $osites[$organization_uuid], 'pantheon');
+  return $osites[$organization_uuid];
 }
 
 /**
