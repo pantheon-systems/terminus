@@ -2358,8 +2358,7 @@ function terminus_get_site_uuid_by_name($site_name) {
   foreach ($user_sites as $site_uuid => $data) {
     $i = $data->information;
     if ($i->name == $site_name) {
-      # return $site_uuid;
-      print "Would have done it as a site, but testing now.\n";
+      return $site_uuid;
     }
   }
   # Get all the orgs where they are an admin.
