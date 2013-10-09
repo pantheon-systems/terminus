@@ -304,6 +304,47 @@ function terminus_drush_command() {
   );
 
   /**
+   * Site team functions.
+   */
+  $items['pantheon-site-team'] = array(
+    'description' => "Get the team for a site.",
+    'arguments' => array(
+      'site' => 'uuid of the site',
+    ),
+    'examples' => array(
+      'drush psite-team 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the team of your site.',
+    ),
+    'aliases' => array('psite-team'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-team-add'] = array(
+    'description' => "Add someone to the team for a site.",
+    'arguments' => array(
+      'site' => 'uuid of the site',
+      'user' => 'user you would like to make a part of the team: uuid or email',
+    ),
+    'examples' => array(
+      'drush psite-team-add mysite josh@getpantheon.com' => 'Add josh to your site team.',
+    ),
+    'aliases' => array('psite-team-add'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-team-remove'] = array(
+    'description' => "Remove someone from the team for a site.",
+    'arguments' => array(
+      'site' => 'uuid of the site',
+      'user' => 'user you would like to remove: uuid or email',
+    ),
+    'examples' => array(
+      'drush psite-team-remove mysite josh@getpantheon.com' => 'Add josh to your site team.',
+    ),
+    'aliases' => array('psite-team-remove'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  /**
    * Organization-scope functions.
    */
   $items['pantheon-organizations'] = array(
@@ -1385,6 +1426,108 @@ function drush_terminus_pantheon_site_service_level($site_uuid = FALSE, $service
 }
 
 /**
+ * Team functions for a site.
+ */
+
+/**
+ * Get the team for a site.
+ */
+function drush_terminus_pantheon_site_team($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  $result = terminus_api_site_team_get($site_uuid);
+  $team = json_decode($result['json']);
+
+  # Build tabular results.
+  $rows = array();
+  foreach ($team as $user_uuid => $data) {
+    $rows[$data->profile->lastname] = array(
+      $data->profile->firstname,
+      $data->profile->lastname,
+      $data->email,
+      $user_uuid,
+    );
+  }
+  ksort($rows);
+  array_unshift($rows, array('First Name', 'Last Name', 'Email', 'UUID'));
+  drush_print_table($rows, TRUE);
+}
+
+/**
+ * Add someone to the team for a site.
+ *
+ * $add_user_uuid must be an email address.
+ */
+function drush_terminus_pantheon_site_team_add($site_uuid = FALSE, $add_user_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  if (!$add_user_uuid) {
+    $add_user_uuid = drush_prompt("Please enter the email address of the user you want to add");
+  }
+
+  $result = terminus_api_site_team_member_invite($site_uuid, $add_user_uuid, $user_uuid);
+  if ($result === FALSE) {
+    return drush_set_error("Error adding user!");
+  }
+  drush_print("Added user to team!");
+  return TRUE;
+}
+
+/**
+ * Remove someone from the team for a site.
+ *
+ * $remove_user must be a uuid or email.
+ */
+function drush_terminus_pantheon_site_team_remove($site_uuid = FALSE, $remove_user = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  if (!$remove_user) {
+    $remove_user = terminus_session_select_data('team', $site_uuid);
+  }
+  $result = terminus_api_site_team_get($site_uuid);
+  $team = json_decode($result['json']);
+  $remove = FALSE;
+  foreach ($team as $team_member => $data) {
+    if ($remove_user === $team_member || $remove_user === $data->email) {
+      $remove = $team_member;
+      break;
+    }
+  }
+  if (!$remove) {
+    drush_log('You must supply a valid user UUID or email address.', 'failed');
+    return FALSE;
+  }
+  $result = terminus_api_site_team_member_remove($site_uuid, $remove);
+  if ($result === FALSE) {
+    return drush_set_error("Error removing user!");
+  }
+  drush_print("Removed user from team!");
+  return TRUE;
+}
+
+
+/**
  * Organization commands.
  */
 
@@ -2306,7 +2449,21 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         return $val;
       }
       break;
-
+    case 'team':
+      if (!$site_uuid) {
+        return drush_set_error("Can't pick from a team without a site!");
+      }
+      $result = terminus_api_site_team_get($site_uuid);
+      $team = json_decode($result['json']);
+      $choices = array();
+      foreach ($team as $team_uuid => $data) {
+        $choices[$team_uuid] = $data->profile->firstname .' '. $data->profile->lastname .' ('. $data->email .')';
+      }
+      $val = drush_choice($choices, 'Select the team-member you want.');
+      if ($val !== FALSE) {
+        return $val;
+      }
+      break;
   }
 }
 

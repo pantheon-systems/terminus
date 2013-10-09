@@ -152,31 +152,19 @@ function terminus_api_site_attributes_delete($site_uuid) {
 /**
  * API Function to Invite a User to Pantheon and add to Site Team
  */
-function terminus_api_site_team_member_invite($email, $site_uuid, $invited_by) {
-    $realm = 'site';
-  $uuid = $site_uuid;
-  $path = 'team/' . $email;
-    $method = 'POST';
-    $data = json_encode(array('invited_by' => $invited_by));
-    return terminus_request($realm, $uuid, $path, $method, $data);
-}
-
-/**
-  * API Function to Add a User to a Site Team
-  */
-function terminus_api_site_team_member_add($site_uuid, $user_uuid) {
+function terminus_api_site_team_member_invite($site_uuid, $email, $invited_by) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path = 'team/' . $user_uuid;
-  $method = 'PUT';
-
-  return terminus_request($realm, $uuid, $path, $method);
+  $path = 'team/' . rawurlencode($email);
+  $method = 'POST';
+  $data = array('invited_by' => $invited_by);
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }
 
 /**
   * API Function to Delete a User from a Site Team
   */
-function terminus_api_site_team_member_delete($site_uuid, $user_uuid) {
+function terminus_api_site_team_member_remove($site_uuid, $user_uuid) {
   $realm = 'site';
   $uuid = $site_uuid;
   $path = 'team/' . $user_uuid;
