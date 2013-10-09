@@ -2350,18 +2350,34 @@ function terminus_get_site_uuid_by_name($site_name) {
   }
   extract($session_data);
 
-  drush_log('Loading site data from Pantheon.', 'notice');
-  $result = terminus_api_user_site_list($user_uuid);
-  if ($result === FALSE) {
-    return FALSE;
-  }
-  $sites = json_decode($result['json']);
-  foreach ($sites as $site_uuid => $data) {
+  $user_sites = json_decode(terminus_user_site_list());
+  foreach ($user_sites as $site_uuid => $data) {
     $i = $data->information;
     if ($i->name == $site_name) {
       return $site_uuid;
     }
   }
+
+  # Find orgs you're an admin of.
+  $result = terminus_api_user_organizations($user_uuid);
+  $orgs = json_decode($result['json']);
+  $check_orgs = array();
+  foreach ($orgs as $org => $data) {
+    if ($data->admin) {
+      $check_orgs[] = $org;
+    }
+  }
+  # Get organization sites if you're an admin.
+  foreach ($check_orgs as $organization_uuid) {
+    $result = terminus_api_user_organization_sites($user_uuid, $organization_uuid);
+    $org_sites = json_decode($result['json']);
+    foreach ($org_sites as $site_uuid => $data) {
+      if ($data->name == $site_name) {
+        return $site_uuid;
+      }
+    }
+  }
+
   return FALSE;
 }
 
@@ -2379,21 +2395,21 @@ function terminus_user_site_list($reset = FALSE) {
     return FALSE;
   }
   extract($session_data);
+  $cid = 'terminus-user-sites';
 
-  $cid = 'terminus-sites';
-  if ($reset || $nocache || !$cache = drush_cache_get($cid, 'pantheon')) {
-    drush_log('Loading site data from Pantheon.', 'notice');
-    $result = terminus_api_user_site_list($user_uuid);
-    if ($result === FALSE) {
-      return FALSE;
-    }
-    $asites = $result['json'];
-    drush_cache_set($cid, $asites, 'pantheon');
-  }
-  else {
-    drush_log('Loaded site data from cache.', 'notice');
+  if (!$reset && !isset($nocache) && $cache = drush_cache_get($cid, 'pantheon')) {
+    drush_log('Loaded user site list from cache.', 'notice');
     $asites = $cache->data;
+    return $asites;
   }
+
+  drush_log('Loading site data from Pantheon.', 'notice');
+  $result = terminus_api_user_site_list($user_uuid);
+  if ($result === FALSE) {
+    return FALSE;
+  }
+  $asites = $result['json'];
+  drush_cache_set($cid, $asites, 'pantheon');
 
   return $asites;
 }
