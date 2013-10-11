@@ -21,14 +21,15 @@ date_default_timezone_set('UTC');
  */
 function terminus_bootstrap($validate = TRUE) {
   // TODO: something to check that terminus is up to date!
-  include_once('terminus.backup.api.inc');
-  include_once('terminus.site.api.inc');
-  include_once('terminus.user.api.inc');
-  include_once('terminus.tunnel.inc');
-  include_once('terminus.workflow.api.inc');
-  include_once('terminus.code.api.inc');
-  include_once('terminus.organizations.api.inc');
-  include_once('terminus.art.inc');
+  // TODO: More intelligent includes, maybe autoloading?
+  include_once 'terminus.backup.api.inc';
+  include_once 'terminus.site.api.inc';
+  include_once 'terminus.user.api.inc';
+  include_once 'terminus.tunnel.inc';
+  include_once 'terminus.workflow.api.inc';
+  include_once 'terminus.code.api.inc';
+  include_once 'terminus.organizations.api.inc';
+  include_once 'terminus.art.inc';
   $session_data = terminus_session_data();
   // DRY session validation.
   if ($validate) {
@@ -66,7 +67,6 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
-  // The 'pantheon-auth' command.
   $items['pantheon-auth'] = array(
     'description' => "Authenticate against the Pantheon dashboard. Required before doing anything else.",
     'arguments' => array(
@@ -85,7 +85,6 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
-  // The 'pantheon-sites' command.
   $items['pantheon-sites'] = array(
     'description' => 'List your Pantheon sites.',
     'examples' => array(
@@ -505,6 +504,16 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-wake'] = array(
+    'description' => 'Ensure a site environment is online and not suspended due to inactivity.',
+    'aliases' => array('psite-wake'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'The target environment (e.g. "live").',
+    ),
+  );
+
   $items['pantheon-pp'] = array(
     'description' => "Direct pseudo-proxy interface. JSON only. For debugging.",
     'arguments' => array(
@@ -542,6 +551,85 @@ function terminus_drush_command() {
  *
  * These commands exercise various aspects of the API.
  */
+
+/**
+ * Validate Pantheon site wake.
+ */
+function drush_terminus_pantheon_site_wake_validate($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_WAKE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_WAKE_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+
+  if (!$site_name = terminus_pantheon_site_name($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_WAKE_NO_SITENAME', 'Unable to determine site name from UUID.');
+  }
+  drush_set_option('site_name', $site_name);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_WAKE_INVALID_ENV', 'You must specify a valid environment name.');
+    }
+  }
+  drush_set_option('environment', $environment);
+}
+
+/**
+ * Wake a Pantheon site.
+ */
+function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FALSE) {
+  $site_name = drush_get_option('site_name');
+  $environment = drush_get_option('environment');
+
+  $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com';
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_HEADER, 1);
+  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+  curl_setopt($ch, CURLOPT_NOBODY, 1);
+
+  if (!$response = curl_exec($ch)) {
+    return drush_set_error('DRUSH_PSITE_WAKE_CURL_FAIL', curl_error($ch));
+  }
+
+  $headers_exploded = explode("\n", $response);
+  $headers = array(
+    'status' => $headers_exploded[0],
+  );
+  array_shift($headers_exploded);
+
+  foreach($headers_exploded as $header) {
+    $key_value = explode(':', $header);
+    $key = trim($key_value[0]);
+    $value = trim($key_value[1]);
+    if ($key && ($key != $headers['status'])) {
+      $headers[$key] = $value;
+    }
+  }
+
+  $info = curl_getinfo($ch);
+  if ($info['http_code'] > 399) {
+    return drush_set_error('DRUSH_PSITE_WAKE_HTTP_FAIL', dt('Request failed: @http_code', array(
+      '@http_code' => $info['http_code'],
+    )));
+  }
+
+  if (!isset($headers['X-Pantheon-Styx-Hostname'])) {
+    return drush_set_error('DRUSH_PSITE_WAKE_NO_PHEADERS', 'Pantheon headers missing, which isn\'t quite right.');
+  }
+
+  drush_log(dt('@site_name-@environment responded in @total_time seconds.', array(
+    '@site_name' => $site_name,
+    '@environment' => $environment,
+    '@total_time' => $info['total_time'],
+  )), 'ok');
+}
 
 /**
  * Validate Pantheon site content clone.
@@ -805,14 +893,36 @@ function drush_terminus_pantheon_site_uuid($site_name) {
 }
 
 /**
- * Get a site name based on the uuid.
+ * Display a site name.
+ *
+ * @param string $site_uuid
+ *   The unique identifier for the site.
+ *
+ * @return bool
+ *   Always successful.
  */
 function drush_terminus_pantheon_site_name($site_uuid) {
+  drush_print(terminus_pantheon_site_name($site_uuid));
+  return TRUE;
+}
+
+/**
+ * Get a site name.
+ *
+ * @param $site_uuid
+ *   The unique identifier for the site.
+ *
+ * @return string
+ *   The name of the site, or empty if unknown.
+ */
+function terminus_pantheon_site_name($site_uuid) {
+  if (!terminus_validate_uuid($site_uuid)) {
+    return '';
+  }
   terminus_bootstrap();
   $result = terminus_api_site_info($site_uuid);
   $site = json_decode($result['json']);
-  drush_print($site->name);
-  return TRUE;
+  return $site->name;
 }
 
 /**
@@ -1960,7 +2070,7 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   $result = curl_exec($ch);
   list($headers_text, $json) = explode("\r\n\r\n", $result, 2);
   // Work around extra 100 Continue headers - http://stackoverflow.com/a/2964710/1895669
-  if(strpos($headers_text," 100 Continue") !== FALSE){
+  if (strpos($headers_text," 100 Continue") !== FALSE){
     list($headers_text, $json) = explode( "\r\n\r\n", $json , 2);
   }
 
