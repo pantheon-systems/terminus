@@ -585,9 +585,7 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
   $site_name = drush_get_option('site_name');
   $environment = drush_get_option('environment');
 
-  $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com';
-  // Cache bust.
-  $url .= '?wake=' . time();
+  $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com/pantheon_healthcheck';
 
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
@@ -616,7 +614,7 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
   }
 
   $info = curl_getinfo($ch);
-  if ($info['http_code'] > 399) {
+  if ($info['http_code'] != 200) {
     return drush_set_error('DRUSH_PSITE_WAKE_HTTP_FAIL', dt('Request failed: @http_code', array(
       '@http_code' => $info['http_code'],
     )));
