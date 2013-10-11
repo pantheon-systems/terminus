@@ -43,6 +43,12 @@ function terminus_bootstrap($validate = TRUE) {
     $session_data['onebox'] = TRUE;
   }
 
+  // Expired session.
+  if (isset($session_data['session_expire_time']) && time() > $session_data['session_expire_time']) {
+    drush_cache_clear_all('*', 'pantheon', TRUE);
+    drush_set_error('TERMINUS_BOOTSTRAP_SESS_EXPIRED', dt('The Terminus session expired; you must log in again.'));
+ }
+
   return $session_data;
 }
 
@@ -2056,6 +2062,21 @@ function terminus_pauth_login_get_form_build_id($html) {
 }
 
 /**
+ * Parse session expiration out of a header.
+ * @param $session_header
+ * @return int
+ */
+function terminus_pauth_get_session_expiration_from_header($session_header) {
+  $session_info = explode('; ', $session_header);
+  foreach ($session_info as $pair) {
+    if (strpos($pair, 'expires') === 0) {
+      $expiration = explode('=', $pair);
+      return strtotime($expiration[1]);
+    }
+  }
+}
+
+/**
  * Parse session out of a header.
  * @param $header
  * @return string
@@ -2187,6 +2208,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   $data = array(
     'user_uuid' => $user_uuid,
     'session' => $session,
+    'session_expire_time' => terminus_pauth_get_session_expiration_from_header($set_cookie_header),
     'email' => $email,
   );
 
