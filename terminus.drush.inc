@@ -586,6 +586,8 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
   $environment = drush_get_option('environment');
 
   $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com';
+  // Cache bust.
+  $url .= '?wake=' . time();
 
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
