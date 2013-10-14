@@ -30,12 +30,14 @@ function terminus_bootstrap($validate = TRUE) {
   include_once('terminus.organizations.api.inc');
   include_once('terminus.art.inc');
   $session_data = terminus_session_data();
+
   // DRY session validation.
   if ($validate) {
     if (!isset($session_data['user_uuid'])) {
       return drush_set_error("No user UUID found. Please authenticate first using 'drush pauth'");
     }
   }
+
   // Common command flags.
   $session_data['nocache'] = drush_get_option('nocache');
   $session_data['json_output'] = drush_get_option('json');
@@ -45,9 +47,9 @@ function terminus_bootstrap($validate = TRUE) {
 
   // Expired session.
   if (isset($session_data['session_expire_time']) && time() > $session_data['session_expire_time']) {
-    drush_cache_clear_all('*', 'pantheon', TRUE);
+    terminus_pantheon_logout();
     drush_set_error('TERMINUS_BOOTSTRAP_SESS_EXPIRED', dt('The Terminus session expired; you must log in again.'));
- }
+  }
 
   return $session_data;
 }
@@ -1857,10 +1859,17 @@ function drush_terminus_pantheon_products() {
 }
 
 /**
+ * Destroy all Terminus session data.
+ */
+function terminus_pantheon_logout() {
+  drush_cache_clear_all('*', 'pantheon', TRUE);
+}
+
+/**
  * Get rid of the current session.
  */
 function drush_terminus_pantheon_logout() {
-  drush_cache_clear_all('*', 'pantheon', TRUE);
+  terminus_pantheon_logout();
   drush_log('Removed session token and cleared all locally cached data.', 'ok');
 }
 
@@ -2025,12 +2034,27 @@ function drush_terminus_pantheon_auth_validate($email = FALSE) {
   if (!in_array('curl', get_loaded_extensions())) {
     return drush_set_error('DRUSH_PSITE_AUTH_NOCURL', 'The version of PHP drush is using in ' . PHP_BINDIR . '/ does not have the cURL extension enabled. If you need to specify a different PHP binary, see https://drupal.org/node/1302418');
   }
+
+  // Check for last-used email.
+  if (!$email) {
+    $email_cache = drush_cache_get('terminus-last-email', 'pantheon-persist');
+    $email = $email_cache->data;
+  }
+
+  // Email wasn't set previously.
   if (!$email) {
     $email = drush_prompt(dt('Pantheon account email address'), NULL, TRUE);
   }
+
+  // Actually validate the email in the validation function.
   if (!terminus_validate_email($email)) {
     return drush_set_error('DRUSH_PSITE_AUTH_INVALID_EMAIL', 'A valid email address is required to authenticate.');
   }
+
+  // Store the email for convenience.
+  drush_cache_set('terminus-last-email', $email, 'pantheon-persist');
+
+  // Make email available to actual function.
   drush_set_option('email', $email);
   return TRUE;
 }
