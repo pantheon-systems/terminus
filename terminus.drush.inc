@@ -102,6 +102,21 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-attributes'] = array(
+    'description' => 'Get attributes for a particular site.',
+    'aliases' => array('psite-attr'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+    'options' => array(
+      'attribute' => array(
+        'description' => 'Specific attribute that you want to get.',
+        'example-value' => 'label',
+      ),
+    ),
+  );
+
   $items['pantheon-hostname-add'] = array(
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
@@ -1345,6 +1360,54 @@ function drush_terminus_pantheon_site_connection_mode($site_uuid = FALSE, $envir
 
   $mode = $onserverdevstatus ? 'SFTP' : 'Git';
   drush_log('Connection mode set to: ' . $mode, 'ok');
+}
+
+/**
+ * Validate site attributes get.
+ */
+function drush_terminus_pantheon_site_attributes_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_ATTR_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid) {
+    if (!$site_uuid = terminus_site_input($site_uuid)) {
+      return drush_user_abort();
+    }
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_COMMIT_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Get a list of all site attributes.
+ */
+function drush_terminus_pantheon_site_attributes($site_uuid = FALSE) {
+  $result = terminus_api_site_attributes_get(drush_get_option('site_uuid'));
+  $attributes = (array) json_decode($result['json']);
+  $rows = array();
+  foreach ($attributes as $property => $value) {
+    // Allow a specific attribute to be returned.
+    if (drush_get_option('attribute') == $property) {
+      drush_print($value);
+      return;
+    }
+    $rows[] = array(
+      $property,
+      $value,
+    );
+  }
+
+  // Add headers.
+  array_unshift($rows, array(
+    dt('Property'),
+    dt('Value'),
+  ));
+
+  drush_print_table($rows, TRUE);
 }
 
 /**
