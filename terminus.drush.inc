@@ -2700,7 +2700,7 @@ function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
     }
     $buckets[$a->filename] = $parts[0] .'_'. $parts[1];
   }
-  krsort($buckets);
+  arsort($buckets);
   return reset($buckets);
 }
 
