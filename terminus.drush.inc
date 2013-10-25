@@ -505,11 +505,29 @@ function terminus_drush_command() {
       'update' => 'Run update.php after cloning database.',
     ),
     'examples' => array(
-      'drush psite-clone site_uuid dev test' => 'Clone both database and files from dev to test.',
-      'drush psite-clone site_uuid dev test --db --update' => 'Clone only database from dev to test then run update.php.',
-      'drush psite-clone site_uuid dev test --files' => 'Clone only user files from dev to test.',
+      'drush psite-clone SITE_UUID dev test' => 'Clone both database and files from dev to test.',
+      'drush psite-clone SITE_UUID dev test --db --update' => 'Clone only database from dev to test, then run update.php.',
+      'drush psite-clone SITE_UUID dev test --files' => 'Clone only user files from dev to test.',
     ),
     'aliases' => array('psite-clone'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-deploy'] = array(
+    'description' => 'Deploy code to a particular environment.',
+    'arguments' => array(
+      'site' => 'UUID of the site.',
+      'target' => 'The target environment (e.g. "live") to which code will be deployed.',
+    ),
+    'options' => array(
+      'update' => 'Run update.php after deploying code.',
+      'cc' => 'Clear cache after deploying code.',
+    ),
+    'examples' => array(
+      'drush psite-deploy SITE_UUID live' => 'Deploy latest code changes to live.',
+      'drush psite-deploy SITE_UUID test --update --cc' => 'Deploy latest code changes to test, the run update.php and clear cache.',
+    ),
+    'aliases' => array('psite-deploy'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -652,6 +670,57 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
     '@environment' => $environment,
     '@total_time' => $info['total_time'],
   )), 'ok');
+}
+
+/**
+ * Validate Pantheon site code deploy.
+ */
+function drush_terminus_pantheon_site_deploy_validate($site_uuid, $env_target) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_DEPLOY_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_DEPLOY_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+  if (!terminus_validate_environment($env_target)) {
+    return drush_set_error('DRUSH_PSITE_DEPLOY_INVALID_TARGET', 'You must specify a valid target environment name.');
+  }
+}
+
+/**
+ * Pantheon site code deploy.
+ */
+function drush_terminus_pantheon_site_deploy($site_uuid, $env_target) {
+  $deploy_db_update = drush_get_option('update') ? 1 : 0;
+  $deploy_cacheclear = drush_get_option('cc') ? 1 : 0;
+
+  // Build label to describe operation.
+  $content = array();
+  if ($deploy_db_update) {
+    $content[] = 'run update.php';
+  }
+  if ($deploy_cacheclear) {
+    $content[] = 'clear all caches';
+  }
+  $content_str = implode(' and ', $content);
+  if ($content_str) {
+    $content_str = ', then ' . $content_str;
+  }
+
+  // Confirm.
+  $confirm = drush_confirm(dt('Are you sure you want to deploy @site_name code to @target@content_str?', array(
+    '@site_name' => terminus_site_uuid_to_name($site_uuid),
+    '@content_str' => $content_str,
+    '@target' => $env_target,
+  )));
+  if (!$confirm) {
+    return;
+  }
+
+  // Deploy code.
+  drush_log('Initiated code deployment' . $content_str . '.', 'notice');
+  terminus_api_environment_deploy_code($site_uuid, $env_target, $deploy_db_update, $deploy_cacheclear);
 }
 
 /**
