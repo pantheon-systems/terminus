@@ -36,15 +36,22 @@ function terminus_api_environment_clone_files($site_uuid, $env_source, $env_targ
 /**
  * API call to deploy code to a site environment.
  */
-function terminus_api_environment_deploy_code($site_uuid, $env_target, $updatedb = 0, $cacheclear = 0) {
+function terminus_api_environment_deploy_code($site_uuid, $env_target, $updatedb = 0, $clearcache = 0) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path ='environments/' . $env_target . '/code';
+  $path = 'environments/' . $env_target . '/code';
+  $arguments = array();
+  if ($updatedb) {
+    $arguments[] = 'updatedb=1';
+  }
+  if ($clearcache) {
+    $arguments[] = 'clearcache=1';
+  }
+  if (!empty($arguments)) {
+    $path .= '?' . implode('&', $arguments);
+  }
   $method = 'POST';
-  $data = array(
-    'updatedb' => $updatedb,
-    'cacheclear' => $cacheclear,
-  );
+  $data = array();
   return terminus_request($realm, $uuid, $path, $method, $data);
 }
 

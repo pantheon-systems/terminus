@@ -675,7 +675,7 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
 /**
  * Validate Pantheon site code deploy.
  */
-function drush_terminus_pantheon_site_deploy_validate($site_uuid, $env_target) {
+function drush_terminus_pantheon_site_deploy_validate($site_uuid = '', $env_target = '') {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
     return drush_set_error('DRUSH_PSITE_DEPLOY_NO_SESSION', 'You must authenticate before using this command.');
@@ -691,16 +691,16 @@ function drush_terminus_pantheon_site_deploy_validate($site_uuid, $env_target) {
 /**
  * Pantheon site code deploy.
  */
-function drush_terminus_pantheon_site_deploy($site_uuid, $env_target) {
-  $deploy_db_update = drush_get_option('update') ? 1 : 0;
-  $deploy_cacheclear = drush_get_option('cc') ? 1 : 0;
+function drush_terminus_pantheon_site_deploy($site_uuid = '', $env_target = '') {
+  $updatedb = drush_get_option('update') ? 1 : 0;
+  $clearcache = drush_get_option('cc') ? 1 : 0;
 
   // Build label to describe operation.
   $content = array();
-  if ($deploy_db_update) {
+  if ($updatedb) {
     $content[] = 'run update.php';
   }
-  if ($deploy_cacheclear) {
+  if ($clearcache) {
     $content[] = 'clear all caches';
   }
   $content_str = implode(' and ', $content);
@@ -720,7 +720,7 @@ function drush_terminus_pantheon_site_deploy($site_uuid, $env_target) {
 
   // Deploy code.
   drush_log('Initiated code deployment' . $content_str . '.', 'notice');
-  terminus_api_environment_deploy_code($site_uuid, $env_target, $deploy_db_update, $deploy_cacheclear);
+  terminus_api_environment_deploy_code($site_uuid, $env_target, $updatedb, $clearcache);
 }
 
 /**
