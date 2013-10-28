@@ -34,21 +34,29 @@ function terminus_api_environment_clone_files($site_uuid, $env_source, $env_targ
 }
 
 /**
- * API Function to deploy code to a site environment.
+ * API call to deploy code to a site environment.
  */
-function terminus_api_environment_deploy_code($site_uuid, $newenv, $updatedb = 0) {
+function terminus_api_environment_deploy_code($site_uuid, $env_target, $updatedb = 0, $clearcache = 0) {
   $realm = 'site';
   $uuid = $site_uuid;
-  $path ='environments/' . $newenv . '/code';
+  $path = 'environments/' . $env_target . '/code';
+  $arguments = array();
+  if ($updatedb) {
+    $arguments[] = 'updatedb=1';
+  }
+  if ($clearcache) {
+    $arguments[] = 'clearcache=1';
+  }
+  if (!empty($arguments)) {
+    $path .= '?' . implode('&', $arguments);
+  }
   $method = 'POST';
-  $data = json_encode(array(
-    'updatedb' => $updatedb,
-  ));
-  terminus_request($realm, $uuid, $path, $method, $data);
+  $data = array();
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }
 
 /**
- * API Function to Wipe an Environment
+ * API call to wipe a site environment.
  */
 function terminus_api_environment_content_wipe($site_uuid, $environment) {
   $realm = 'site';
@@ -56,5 +64,5 @@ function terminus_api_environment_content_wipe($site_uuid, $environment) {
   $path ='environments/' . $environment . '/wipe';
   $method = 'POST';
   $data = '';
-  terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $uuid, $path, $method, $data);
 }

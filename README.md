@@ -125,8 +125,10 @@ they're missing.
     drush -y @pantheon.$SITE_NAME.dev en admin_menu module_filter features views views_ui ctools generate_errors admin_menu_toolbar devel_generate
     # Generate test content.
     drush @pantheon.$SITE_NAME.dev generate-content 50
-    # Deploy code...
-    # COMING SOON!
+    # Deploy code to test environment.
+    drush psite-deploy $SITE_UUID test
+    # Deploy content to test environment.
+    drush psite-clone $SITE_UUID dev test
 
 ## TODO
 
