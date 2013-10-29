@@ -430,8 +430,8 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site.',
       'environment' => 'The target environment (e.g. "live").',
-      'service' => 'The service (e.g., "db" or "redis") to open a tunnel for. This defaults to "db".',
-      'port' => 'Local port to connect to.'
+      'service' => 'The service (e.g., "mysql" or "redis") to open a tunnel for. Defaults to "mysql".',
+      'port' => 'Local port to connect to.',
     ),
     'aliases' => array('psite-tunnel'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
@@ -1902,7 +1902,10 @@ function drush_terminus_pantheon_site_tunnel($site_uuid = FALSE, $environment = 
   );
 
   if (!isset($types[$service])) {
-    return drush_set_error('TERMINUS_TUNNEL_ERROR', dt('Invlalid service: @service. Try "mysql" or "redis".', array('@service' => $service)));
+    return drush_set_error('TERMINUS_TUNNEL_ERROR', dt('Invalid service: @service. Currently, the only supported services are: @services', array(
+      '@service' => $service,
+      '@services' => implode(', ', array_keys($types)),
+    )));
   }
 
   return terminus_tunnel_open($site_uuid, $environment, $types[$service], $port, $print_info);

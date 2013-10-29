@@ -46,6 +46,8 @@ That's it! If you ever need to update Terminus, just use the following command:
 
     # Updating Terminus.
     composer update --no-dev --working-dir $HOME/.drush/terminus
+    # Clear Drush's cache.
+    drush cc drush
 
 ### Development installation
 
@@ -73,6 +75,8 @@ Updates can be performed in the directory:
 
     # Update Terminus and development dependencies.
     composer update
+    # Clear Drush's cache.
+    drush cc drush
 
 ## Installing Terminus with Git
 
