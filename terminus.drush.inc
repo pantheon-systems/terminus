@@ -360,9 +360,22 @@ function terminus_drush_command() {
       'user' => 'user you would like to remove: uuid or email',
     ),
     'examples' => array(
-      'drush psite-team-remove mysite josh@getpantheon.com' => 'Add josh to your site team.',
+      'drush psite-team-remove mysite josh@getpantheon.com' => 'Remove josh to your site team.',
     ),
     'aliases' => array('psite-team-remove'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-change-owner'] = array(
+    'description' => "Change the owner of a site.",
+    'arguments' => array(
+      'site' => 'uuid of the site',
+      'user' => 'team member you would like to make the new owner: uuid or email',
+    ),
+    'examples' => array(
+      'drush psite-set-owner mysite josh@getpantheon.com' => 'Make josh the site owner.',
+    ),
+    'aliases' => array('psite-change-owner'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -1776,6 +1789,44 @@ function drush_terminus_pantheon_site_team_remove($site_uuid = FALSE, $remove_us
   return TRUE;
 }
 
+/**
+ * Assuming you are the owner, transfer that to someone else.
+ *
+ * $new_owner must be a uuid or email.
+ */
+function drush_terminus_pantheon_site_change_owner($site_uuid = FALSE, $new_owner = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  if (!$new_owner) {
+    $new_owner = terminus_session_select_data('team', $site_uuid);
+  }
+  $result = terminus_api_site_team_get($site_uuid);
+  $team = json_decode($result['json']);
+  $switch = FALSE;
+  foreach ($team as $team_member => $data) {
+    if ($new_owner === $team_member || $new_owner === $data->email) {
+      $switch = $new_owner;
+      break;
+    }
+  }
+  if (!$switch) {
+    drush_log('You must supply a valid user UUID or email address for an existing team member.', 'failed');
+    return FALSE;
+  }
+  $result = terminus_api_set_site_owner($site_uuid, $switch);
+  if ($result === FALSE) {
+    return drush_set_error("Error changing site owner!");
+  }
+  drush_print("Ownership changed!");
+  return TRUE;
+}
 
 /**
  * Organization commands.
@@ -2403,7 +2454,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   $show_art = FALSE;
   $password = drush_get_option('password');
   if (!$password) {
-    $password = drush_prompt(dt('Pantheon dashboard password'), NULL, TRUE, TRUE);
+    $password = drush_prompt(dt('Pantheon dashboard password for '. $email), NULL, TRUE, TRUE);
     $show_art = TRUE;
   }
   drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
