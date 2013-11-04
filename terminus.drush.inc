@@ -126,6 +126,21 @@ function terminus_drush_command() {
     ),
   );
 
+  $items['pantheon-site-branch-create'] = array(
+    'description' => 'Create Git branch of master for a particular site.',
+    'aliases' => array('psite-bcreate'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+    'options' => array(
+      'name' => array(
+        'description' => 'Branch name to be created.',
+        'example-value' => 'feature-123',
+      ),
+    ),
+  );
+
   $items['pantheon-hostname-add'] = array(
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
@@ -1486,6 +1501,51 @@ function drush_terminus_pantheon_site_attributes($site_uuid = FALSE) {
   ));
 
   drush_print_table($rows, TRUE);
+}
+
+/**
+ * Validate Git branch create.
+ */
+function drush_terminus_pantheon_site_branch_create_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  $name = drush_get_option('name');
+  if (!$name) {
+    $name = drush_prompt(dt('New branch name'), NULL, TRUE);
+  }
+  if (!terminus_validate_new_branch_name($name)) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_INVALID_NAME', 'You must specify a valid new branch name; dev, test, live and master are reserved.');
+  }
+  drush_set_option('name', $name);
+}
+
+/**
+ * Git branch create.
+ */
+function drush_terminus_pantheon_site_branch_create($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $branch_name = drush_get_option('name');
+  $result = terminus_api_code_branch_create($site_uuid, $branch_name);
+
+  $json = json_decode($result['json']);
+  if (!$json) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_FAIL', 'Branch creation failed, typically because it already exists.');
+  }
+  drush_log(dt('Branch @branch created, commit ID #@commit', array(
+    '@branch' => $branch_name,
+    '@commit' => $json->{'refs/heads/' . $branch_name},
+  )), 'ok');
 }
 
 /**
@@ -2959,6 +3019,25 @@ function terminus_org_site_list($organization_uuid, $reset = FALSE) {
  */
 function terminus_validate_uuid($uuid) {
   return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}
+
+/**
+ * Validate Branch name.
+ *
+ * @param $branch_name
+ *   String containing the name of the new branch.
+ * @return boolean
+ */
+function terminus_validate_new_branch_name($branch_name) {
+  if (in_array($branch_name, array(
+    'dev',
+    'test',
+    'live',
+    'master',
+  ))) {
+    return FALSE;
+  }
+  return terminus_validate_environment($branch_name);
 }
 
 /**
