@@ -117,6 +117,15 @@ function terminus_drush_command() {
     ),
   );
 
+  $items['pantheon-site-branch-list'] = array(
+    'description' => 'List Git branches for a particular site.',
+    'aliases' => array('psite-blist'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+  );
+
   $items['pantheon-hostname-add'] = array(
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
@@ -1480,6 +1489,49 @@ function drush_terminus_pantheon_site_attributes($site_uuid = FALSE) {
 }
 
 /**
+ * Validate Git branch list.
+ */
+function drush_terminus_pantheon_site_branch_list_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BLIST_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BLIST_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Git branch list.
+ */
+function drush_terminus_pantheon_site_branch_list($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_code_tips($site_uuid);
+
+  $json = json_decode($result['json']);
+  // Graceful failure.
+  if (!$json) {
+    return;
+  }
+
+  $branches = array();
+  foreach (get_object_vars($json) as $branch => $commit_id) {
+    if (!in_array($branch, array('test', 'live'))) {
+      $branches[] = array($branch, $commit_id);
+    }
+  }
+
+  ksort($branches);
+  array_unshift($branches, array('Branch', 'Commit ID'));
+  drush_print_table($branches, TRUE);
+}
+
+/**
  * Validate on-server commits.
  */
 function drush_terminus_pantheon_site_commit_validate($site_uuid = FALSE, $environment = FALSE) {
@@ -1775,7 +1827,6 @@ function drush_terminus_pantheon_site_team_remove($site_uuid = FALSE, $remove_us
   drush_print("Removed user from team!");
   return TRUE;
 }
-
 
 /**
  * Organization commands.
@@ -2232,7 +2283,14 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   }
   $info = curl_getinfo($ch);
   if ($info['http_code'] > 399) {
-    drush_log('Request failed: '. $info['http_code']. ' '. $json, 'failed');
+    drush_log(dt('Request failed: @http_code @json', array(
+      '@http_code' => $info['http_code'],
+      '@json' => $json,
+    )), 'failed');
+    // Expired session. Really don't like the string comparison.
+    if ($info['http_code'] == 403 && $json == '"Session not found."') {
+      terminus_pantheon_logout();
+    }
     return FALSE;
   }
 

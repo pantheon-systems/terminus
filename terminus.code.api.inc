@@ -26,6 +26,18 @@ function terminus_api_code_upstream_info($site_uuid) {
 }
 
 /**
+ * API Call to get branches.
+ */
+function terminus_api_code_tips($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'code-tips';
+  $method = 'GET';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
  * API Call to Update Core Status
  */
 function terminus_api_code_upstream_update($site_uuid, $updatedb=FALSE, $overwrite=FALSE) {
