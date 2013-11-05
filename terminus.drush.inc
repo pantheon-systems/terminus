@@ -641,7 +641,12 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
   $site_name = drush_get_option('site_name');
   $environment = drush_get_option('environment');
 
-  $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com/pantheon_healthcheck';
+  $result = terminus_api_site_environment_hostnames($site_uuid, $environment);
+  $hostnames = (array) json_decode($result['json']);
+  reset($hostnames);
+  $hostname = key($hostnames);
+
+  $url = 'http://' . $hostname . '/pantheon_healthcheck';
 
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
