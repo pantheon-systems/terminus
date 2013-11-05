@@ -291,6 +291,15 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-environment-list'] = array(
+    'description' => 'Get a list of site environments.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+    ),
+    'aliases' => array('psite-elist'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['pantheon-site-notifications'] = array(
     'description' => 'Get a list of notifications for a site to track ongoing jobs.',
     'arguments' => array(
@@ -1546,6 +1555,71 @@ function drush_terminus_pantheon_site_branch_create($site_uuid = FALSE) {
     '@branch' => $branch_name,
     '@commit' => $json->{'refs/heads/' . $branch_name},
   )), 'ok');
+}
+
+/**
+ * Validate environment list.
+ */
+function drush_terminus_pantheon_site_environment_list_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_ELIST_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_ELIST_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Environment list.
+ */
+function drush_terminus_pantheon_site_environment_list($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_site_environments($site_uuid);
+
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+
+  $json = json_decode($result['json']);
+  // Graceful failure.
+  if (!$json) {
+    return;
+  }
+
+  // Also get the list of code tips as an ad-hoc environment existence check.
+  $tips_result = terminus_api_code_tips($site_uuid);
+  $tips_json = json_decode($tips_result['json']);
+
+  $environments = array();
+
+  foreach (get_object_vars($json) as $env => $data) {
+    $tips_env = ($env == 'dev') ? 'master' : $env;
+    if (isset($tips_json->$tips_env)) {
+      $environments[] = array(
+        $env,
+        date(DATE_RFC822, $data->environment_created),
+        $data->lock->locked ? 'locked' : 'public',
+      );
+    }
+    else {
+      $environments[] = array(
+        $env,
+        'NOT CREATED',
+        'NOT CREATED',
+      );
+    }
+  }
+
+  ksort($environments);
+  array_unshift($environments, array('Environment', 'Created', 'Locked'));
+  drush_print_table($environments, TRUE);
 }
 
 /**
@@ -3022,6 +3096,20 @@ function terminus_validate_uuid($uuid) {
 }
 
 /**
+ * Check to see if a branch name is reserved by Pantheon.
+ * @param $branch_name
+ * @return bool
+ */
+function terminus_is_reserved_branch_name($branch_name) {
+  return in_array($branch_name, array(
+    'dev',
+    'test',
+    'live',
+    'master',
+  ));
+}
+
+/**
  * Validate Branch name.
  *
  * @param $branch_name
@@ -3029,12 +3117,7 @@ function terminus_validate_uuid($uuid) {
  * @return boolean
  */
 function terminus_validate_new_branch_name($branch_name) {
-  if (in_array($branch_name, array(
-    'dev',
-    'test',
-    'live',
-    'master',
-  ))) {
+  if (terminus_is_reserved_branch_name($branch_name)) {
     return FALSE;
   }
   return terminus_validate_environment($branch_name);
