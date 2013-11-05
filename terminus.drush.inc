@@ -279,11 +279,12 @@ function terminus_drush_command() {
   $items['pantheon-site-uuid'] = array(
     'description' => "Get the site UUID based on the name.",
     'arguments' => array(
-      'site' => 'UUID of the site.',
+      'site' => 'Name of the site.',
     ),
     'examples' => array(
       'drush psite-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
+    'required-arguments' => TRUE,
     'aliases' => array('psite-uuid'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
@@ -291,11 +292,12 @@ function terminus_drush_command() {
   $items['pantheon-site-name'] = array(
     'description' => "Get the site name based on the UUID.",
     'arguments' => array(
-      'name' => 'name of the site.',
+      'uuid' => 'UUID of the site.',
     ),
     'examples' => array(
       'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
     ),
+    'required-arguments' => TRUE,
     'aliases' => array('psite-name'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
