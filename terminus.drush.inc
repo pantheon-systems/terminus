@@ -1203,35 +1203,61 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
 }
 
 /**
+ * Validate backups.
+ */
+function drush_terminus_pantheon_site_get_backup_validate($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE, $element = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_GET_BACKUP_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_ENV', 'You must specify a valid environment name.');
+    }
+  }
+  drush_set_option('environment', $environment);
+
+  if (!$element) {
+    if (!$element = terminus_session_select_data('element')) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_ELEMENT', 'You must specify a valid element.');
+    }
+  }
+  drush_set_option('element', $element);
+
+  if ($bucket == 'latest') {
+    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
+  }
+  if (!$bucket) {
+    if (!$bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element)) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_BUCKET', 'You must specify a valid bucket.');
+    }
+  }
+  drush_set_option('bucket', $bucket);
+}
+
+/**
  * Get a list of backups for a site.
  */
 function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE, $element = FALSE) {
-  $session_data = terminus_bootstrap();
-  if ($session_data === FALSE) {
-    return FALSE;
-  }
+  $session_data = drush_get_option('session_data');
   extract($session_data);
 
-  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
-  }
+  $result = terminus_api_backup_download_url(drush_get_option('site_uuid'), drush_get_option('environment'), drush_get_option('bucket'), drush_get_option('element'));
 
-  if (!$environment) {
-    $environment = terminus_session_select_data('environment', $site_uuid);
-    if (!$environment) {
-      drush_log('You must supply an environment', 'failed');
-      return FALSE;
-    }
-  }
-
-  $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
   if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
+
   $data = json_decode($result['json']);
-  drush_print(dt('Signed URL for the backup:'));
+  drush_print(dt('Signed URL for the backup (surround the download link in double quotes if using with wget):'));
   drush_print($data->url);
   return TRUE;
 }
