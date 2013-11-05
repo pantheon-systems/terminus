@@ -141,6 +141,21 @@ function terminus_drush_command() {
     ),
   );
 
+  $items['pantheon-site-branch-delete'] = array(
+    'description' => 'Delete a Git branch from a particular site.',
+    'aliases' => array('psite-bdel'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+    'options' => array(
+      'name' => array(
+        'description' => 'Branch name to be deleted.',
+        'example-value' => 'feature-123',
+      ),
+    ),
+  );
+
   $items['pantheon-hostname-add'] = array(
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
@@ -1210,8 +1225,8 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
     }
     $parts = explode('_', $id);
     $type = strpos($id, 'backup') ? 'backup' : 'export';
-    $size = round($a->size/(1024*1024), 2) .' MB';
-    $rows[$a->filename] = array($type, date(DATE_RFC822, $a->timestamp), $parts[2], $parts[0] .'_'. $parts[1], $size);
+    $size = round($a->size / (1024 * 1024), 2) . ' MB';
+    $rows[$a->filename] = array($type, date(DATE_RFC822, $a->timestamp), $parts[2], $parts[0] . '_' . $parts[1], $size);
   }
   krsort($rows);
   if (drush_get_option('json')) {
@@ -1554,6 +1569,58 @@ function drush_terminus_pantheon_site_branch_create($site_uuid = FALSE) {
   drush_log(dt('Branch @branch created, commit ID #@commit', array(
     '@branch' => $branch_name,
     '@commit' => $json->{'refs/heads/' . $branch_name},
+  )), 'ok');
+}
+
+/**
+ * Validate Git branch delete.
+ */
+function drush_terminus_pantheon_site_branch_delete_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  $branch_name = drush_get_option('name');
+  if (!$branch_name) {
+    // Select existing branches.
+    $branch_name = terminus_session_select_data('branch', $site_uuid);
+  }
+  if (!terminus_validate_new_branch_name($branch_name)) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_INVALID_NAME', 'You must specify a valid target branch name; dev, test, live and master can\'t be deleted and you should feel bad for trying.');
+  }
+  drush_set_option('branch_name', $branch_name);
+}
+
+/**
+ * Git branch delete.
+ */
+function drush_terminus_pantheon_site_branch_delete($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $branch_name = drush_get_option('branch_name');
+
+  if (!drush_confirm(dt('You sure you want to delete @branch_name?', array(
+    '@branch_name' => $branch_name,
+  )))) {
+    return drush_user_abort();
+  }
+
+  $result = terminus_api_code_branch_delete($site_uuid, $branch_name);
+
+  $json = json_decode($result['json']);
+  if (!$json) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_FAIL', 'Branch deletion failed, typically because it doesn\'t exist.');
+  }
+  drush_log(dt('Branch @branch_name deleted.', array(
+    '@branch_name' => $branch_name,
   )), 'ok');
 }
 
@@ -2728,6 +2795,7 @@ function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
  * Provides user prompt for missing data.
  * @param $key string Required data name. i.e. site_uuid, environment, etc.
  * @return string input data
+ * @todo Use an options array instead of death by parameters.
  */
 function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL, $prompt_text = NULL, $default = NULL) {
   $session_data = terminus_bootstrap();
@@ -2758,6 +2826,24 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       if ($val !== FALSE) {
         return $val;
       }
+      break;
+
+    case 'branch':
+      if (!$site_uuid) {
+        return;
+      }
+      $result = terminus_api_code_tips($site_uuid);
+      if (!$tips = json_decode($result['json'])) {
+        return;
+      }
+
+      $branches = array();
+      foreach (get_object_vars($tips) as $branch => $commit_id) {
+        if (!terminus_is_reserved_branch_name($branch)) {
+          $branches[$branch] = $branch;
+        }
+      }
+      return drush_choice($branches, 'Select the target branch.');
       break;
 
     case 'environment':
@@ -2804,9 +2890,9 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         if (!isset($a->filename) || $parts[2] != $element) {
           continue;
         }
-        $size = round($a->size/(1024*1024), 2) .' MB';
-        $choices[$a->filename] = $a->filename . ' ' . $size; //$type . ' ' . date(DATE_RFC822, $a->timestamp) . ' ' . $parts[2] . ' ' . $parts[0] .'_'. $parts[1] . ' ' . $size;
-        $buckets[$a->filename] = $parts[0] .'_'. $parts[1];
+        $size = round($a->size / (1024 * 1024), 2) . ' MB';
+        $choices[$a->filename] = $a->filename . ' ' . $size;
+        $buckets[$a->filename] = $parts[0] . '_' . $parts[1];
       }
       krsort($choices);
       $val = drush_choice($choices, 'Select a backup.');
@@ -2816,7 +2902,11 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'cmode':
-      $choices = array(0 => 'Retrieve connection mode', 'sftp' => 'SFTP', 'git' => 'Git');
+      $choices = array(
+        0 => 'Retrieve connection mode',
+        'sftp' => 'SFTP',
+        'git' => 'Git',
+      );
       return drush_choice($choices, 'Connection mode');
       break;
 

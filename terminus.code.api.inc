@@ -48,6 +48,20 @@ function terminus_api_code_branch_create($site_uuid, $branch_name) {
 }
 
 /**
+ * API Call to delete branch.
+ */
+function terminus_api_code_branch_delete($site_uuid, $branch_name) {
+  $realm = 'site';
+  $path = 'code-branch';
+  $method = 'DELETE';
+  $data = array(
+    'refspec' => 'refs/heads/' . $branch_name,
+  );
+
+  return terminus_request($realm, $site_uuid, $path, $method, $data);
+}
+
+/**
  * API Call to Update Core Status
  */
 function terminus_api_code_upstream_update($site_uuid, $updatedb = FALSE, $overwrite = FALSE) {
