@@ -315,6 +315,19 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-environment-create'] = array(
+    'description' => 'Create a new multidev site environment.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Name of multidev site environment. If branch does not exist, it will be created.',
+    ),
+    'options' => array(
+      'source' => 'The source environment (e.g. "live") from which content will be cloned. If omitted, will default to dev.',
+    ),
+    'aliases' => array('psite-ecreate'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['pantheon-site-notifications'] = array(
     'description' => 'Get a list of notifications for a site to track ongoing jobs.',
     'arguments' => array(
@@ -1687,6 +1700,83 @@ function drush_terminus_pantheon_site_environment_list($site_uuid = FALSE) {
   ksort($environments);
   array_unshift($environments, array('Environment', 'Created', 'Locked'));
   drush_print_table($environments, TRUE);
+}
+
+/**
+ * Validate multidev environment creation.
+ */
+function drush_terminus_pantheon_site_environment_create_validate($site_uuid, $new_environment) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+
+  if (!terminus_validate_environment($new_environment)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_NEW_ENV', 'You must specify a valid new environment name.');
+  }
+  if (terminus_is_reserved_branch_name($new_environment)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_RESERVED_ENV', 'Why are you trying to create a reserved environment name? Bad idea.');
+  }
+
+  $env_source = drush_get_option('source');
+
+  if ($env_source && !terminus_validate_environment($env_source)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_SOURCE', 'You must specify a valid source environment name.');
+  }
+  if (!$env_source) {
+    $env_source = 'dev';
+  }
+  drush_set_option('source', $env_source);
+}
+
+/**
+ * Create a multidev environment.
+ */
+function drush_terminus_pantheon_site_environment_create($site_uuid, $new_environment) {
+  // Check to see if branch exists.
+  $branch_result = terminus_api_code_tips($site_uuid);
+  $branches = json_decode($branch_result['json']);
+
+  // If not, create it.
+  if (!isset($branches->$new_environment)) {
+    drush_log(dt('Creating the @new_environment branch...', array(
+      '@new_environment' => $new_environment,
+    )), 'ok');
+    $result_branch_create = terminus_api_code_branch_create($site_uuid, $new_environment);
+    if (!$result_branch_create) {
+      return drush_set_error('DRUSH_PSITE_ECREATE_BRANCH_FAIL', 'Unable to create new branch.');
+    }
+    drush_log('Branch created.');
+  }
+
+  // Create the environment.
+  drush_log(dt('Creating the @new_environment environment...', array(
+    '@new_environment' => $new_environment,
+  )), 'ok');
+  $result_env_create = terminus_api_site_environment_create($site_uuid, $new_environment);
+  if (!$result_env_create) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_FAIL', 'Unable to create new environment.');
+  }
+  drush_log('Environment created.');
+
+  // Wait...
+  // @todo use the abstracted code for this that is on an unmerged branch
+
+  // Clone...
+  $env_source = drush_get_option('source');
+  drush_log(dt('Cloning content from @env_source...', array(
+    '@env_source' => $env_source,
+  )), 'ok');
+
+  $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
+  drush_log(json_decode($result_clone_db['json']));
+
+  $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
+  drush_log(json_decode($result_clone_files['json']));
 }
 
 /**
