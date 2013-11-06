@@ -210,6 +210,19 @@ function terminus_api_site_owner($site_uuid) {
 }
 
 /**
+ * API Function to Get the user_uuid of the Site Owner
+ */
+function terminus_api_set_site_owner($site_uuid, $new_owner_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'owner';
+  $method = 'PUT';
+  $data = $new_owner_uuid;
+
+  return terminus_request($realm, $uuid, $path, $method, $data);
+}
+
+/**
  * API Function to Take Site Screenshots
  */
 function terminus_api_site_screenshots($site_uuid) {

@@ -350,11 +350,12 @@ function terminus_drush_command() {
   $items['pantheon-site-uuid'] = array(
     'description' => "Get the site UUID based on the name.",
     'arguments' => array(
-      'site' => 'UUID of the site.',
+      'site' => 'Name of the site.',
     ),
     'examples' => array(
       'drush psite-uuid mysite --nocache' => 'Get the UUID of your site.',
     ),
+    'required-arguments' => TRUE,
     'aliases' => array('psite-uuid'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
@@ -362,11 +363,12 @@ function terminus_drush_command() {
   $items['pantheon-site-name'] = array(
     'description' => "Get the site name based on the UUID.",
     'arguments' => array(
-      'name' => 'name of the site.',
+      'uuid' => 'UUID of the site.',
     ),
     'examples' => array(
       'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
     ),
+    'required-arguments' => TRUE,
     'aliases' => array('psite-name'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
@@ -431,9 +433,22 @@ function terminus_drush_command() {
       'user' => 'user you would like to remove: uuid or email',
     ),
     'examples' => array(
-      'drush psite-team-remove mysite josh@getpantheon.com' => 'Add josh to your site team.',
+      'drush psite-team-remove mysite josh@getpantheon.com' => 'Remove josh to your site team.',
     ),
     'aliases' => array('psite-team-remove'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-change-owner'] = array(
+    'description' => "Change the owner of a site.",
+    'arguments' => array(
+      'site' => 'uuid of the site',
+      'user' => 'team member you would like to make the new owner: uuid or email',
+    ),
+    'examples' => array(
+      'drush psite-set-owner mysite josh@getpantheon.com' => 'Make josh the site owner.',
+    ),
+    'aliases' => array('psite-change-owner'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -697,7 +712,12 @@ function drush_terminus_pantheon_site_wake($site_uuid = FALSE, $environment = FA
   $site_name = drush_get_option('site_name');
   $environment = drush_get_option('environment');
 
-  $url = 'http://' . $environment . '-' . $site_name . '.gotpantheon.com/pantheon_healthcheck';
+  $result = terminus_api_site_environment_hostnames($site_uuid, $environment);
+  $hostnames = (array) json_decode($result['json']);
+  reset($hostnames);
+  $hostname = key($hostnames);
+
+  $url = 'http://' . $hostname . '/pantheon_healthcheck';
 
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
@@ -1261,35 +1281,61 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
 }
 
 /**
+ * Validate backups.
+ */
+function drush_terminus_pantheon_site_get_backup_validate($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE, $element = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_GET_BACKUP_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_ENV', 'You must specify a valid environment name.');
+    }
+  }
+  drush_set_option('environment', $environment);
+
+  if (!$element) {
+    if (!$element = terminus_session_select_data('element')) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_ELEMENT', 'You must specify a valid element.');
+    }
+  }
+  drush_set_option('element', $element);
+
+  if ($bucket == 'latest') {
+    $bucket = terminus_latest_bucket($site_uuid, $environment, $element);
+  }
+  if (!$bucket) {
+    if (!$bucket = terminus_session_select_data('bucket', $site_uuid, $environment, $element)) {
+      return drush_set_error('DRUSH_PSITE_GET_BACKUP_INVALID_BUCKET', 'You must specify a valid bucket.');
+    }
+  }
+  drush_set_option('bucket', $bucket);
+}
+
+/**
  * Get a list of backups for a site.
  */
 function drush_terminus_pantheon_site_get_backup($site_uuid = FALSE, $environment = FALSE, $bucket = FALSE, $element = FALSE) {
-  $session_data = terminus_bootstrap();
-  if ($session_data === FALSE) {
-    return FALSE;
-  }
+  $session_data = drush_get_option('session_data');
   extract($session_data);
 
-  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
-  }
+  $result = terminus_api_backup_download_url(drush_get_option('site_uuid'), drush_get_option('environment'), drush_get_option('bucket'), drush_get_option('element'));
 
-  if (!$environment) {
-    $environment = terminus_session_select_data('environment', $site_uuid);
-    if (!$environment) {
-      drush_log('You must supply an environment', 'failed');
-      return FALSE;
-    }
-  }
-
-  $result = terminus_api_backup_download_url($site_uuid, $environment, $bucket, $element);
   if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
+
   $data = json_decode($result['json']);
-  drush_print(dt('Signed URL for the backup:'));
+  drush_print(dt('Signed URL for the backup (surround the download link in double quotes if using with wget):'));
   drush_print($data->url);
   return TRUE;
 }
@@ -2180,6 +2226,45 @@ function drush_terminus_pantheon_site_team_remove($site_uuid = FALSE, $remove_us
 }
 
 /**
+ * Assuming you are the owner, transfer that to someone else.
+ *
+ * $new_owner must be a uuid or email.
+ */
+function drush_terminus_pantheon_site_change_owner($site_uuid = FALSE, $new_owner = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return FALSE;
+  }
+  extract($session_data);
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    drush_log('You must supply a site UUID', 'failed');
+    return FALSE;
+  }
+  if (!$new_owner) {
+    $new_owner = terminus_session_select_data('team', $site_uuid);
+  }
+  $result = terminus_api_site_team_get($site_uuid);
+  $team = json_decode($result['json']);
+  $switch = FALSE;
+  foreach ($team as $team_member => $data) {
+    if ($new_owner === $team_member || $new_owner === $data->email) {
+      $switch = $new_owner;
+      break;
+    }
+  }
+  if (!$switch) {
+    drush_log('You must supply a valid user UUID or email address for an existing team member.', 'failed');
+    return FALSE;
+  }
+  $result = terminus_api_set_site_owner($site_uuid, $switch);
+  if ($result === FALSE) {
+    return drush_set_error("Error changing site owner!");
+  }
+  drush_print("Ownership changed!");
+  return TRUE;
+}
+
+/**
  * Organization commands.
  */
 
@@ -2812,7 +2897,7 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   $show_art = FALSE;
   $password = drush_get_option('password');
   if (!$password) {
-    $password = drush_prompt(dt('Pantheon dashboard password'), NULL, TRUE, TRUE);
+    $password = drush_prompt(dt('Pantheon dashboard password for '. $email), NULL, TRUE, TRUE);
     $show_art = TRUE;
   }
   drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
