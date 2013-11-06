@@ -5,7 +5,7 @@
  */
 
 /**
- * API Call to Get a User Organizations.
+ * API call to get a user's organizations.
  */
 function terminus_api_user_organizations($user_uuid) {
   $realm = 'user';
@@ -17,11 +17,9 @@ function terminus_api_user_organizations($user_uuid) {
 }
 
 /**
- * The following API calls are only available to organization admins.
- */
-
-/**
- * API Call to get sites within an Organizations.
+ * API call to get sites within an organization.
+ *
+ * Available only to organization admins.
  */
 function terminus_api_user_organization_sites($user_uuid, $organization_uuid) {
   $realm = 'user';
@@ -33,19 +31,23 @@ function terminus_api_user_organization_sites($user_uuid, $organization_uuid) {
 }
 
 /**
- * API Call to out a site into an Organizations.
+ * API call to add a site into an organization.
+ *
+ * Available only to organization admins.
  */
 function terminus_api_user_organization_site_add($user_uuid, $organization_uuid, $site_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
-  $path = 'organizations/'. $organization_uuid .'/sites/'. $site_uuid;
+  $path = 'organizations/' . $organization_uuid . '/sites/' . $site_uuid;
   $method = 'PUT';
 
   return terminus_request($realm, $uuid, $path, $method);
 }
 
 /**
- * API Call to remove a site from an Organizations.
+ * API call to remove a site from an organization.
+ *
+ * Available only to organization admins.
  */
 function terminus_api_user_organization_site_remove($user_uuid, $organization_uuid, $site_uuid) {
   $realm = 'user';
@@ -57,7 +59,9 @@ function terminus_api_user_organization_site_remove($user_uuid, $organization_uu
 }
 
 /**
- * API Call to get users within an organizetion.
+ * API call to get users within an organization.
+ *
+ * Available only to organization admins.
  */
 function terminus_api_user_organization_users($user_uuid, $organization_uuid) {
   $realm = 'user';
@@ -69,9 +73,11 @@ function terminus_api_user_organization_users($user_uuid, $organization_uuid) {
 }
 
 /**
- * API Call to add a user to an organizetion.
+ * API call to add a user to an organization.
  *
- * TODO: promote/demote
+ * Available only to organization admins.
+ *
+ * @todo: promote/demote
  */
 function terminus_api_user_organization_user_add($user_uuid, $organization_uuid, $user_to_add, $admin = FALSE) {
   $realm = 'user';
@@ -86,7 +92,9 @@ function terminus_api_user_organization_user_add($user_uuid, $organization_uuid,
 }
 
 /**
- * API Call to remove a user from an organizetion.
+ * API call to remove a user from an organization.
+ *
+ * Available only to organization admins.
  */
 function terminus_api_user_organization_user_remove($user_uuid, $organization_uuid, $user_to_delete) {
   $realm = 'user';
@@ -96,4 +104,3 @@ function terminus_api_user_organization_user_remove($user_uuid, $organization_uu
 
   return terminus_request($realm, $uuid, $path, $method);
 }
-

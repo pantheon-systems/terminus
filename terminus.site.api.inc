@@ -89,17 +89,14 @@ function terminus_api_site_attributes_set($site_uuid, $attributes) {
 }
 
 /**
-  * API Function to Set One Site Attribute
+ * API Function to set a site attribute.
  */
-function terminus_api_site_attribute_set($site_uuid, $attribute, $value) {
+function terminus_api_site_attribute_set($site_uuid, $attribute, $data) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'attributes/' . $attribute;
   $method = 'PUT';
-  $data = $value;
-  return terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
-
 
 /**
  * API Function to Get Site Upstream
@@ -235,6 +232,21 @@ function terminus_api_site_screenshots($site_uuid) {
 }
 
 /**
+ * API function to import a drush site archive.
+ */
+function terminus_api_site_import_drush_archive($site_uuid, $url) {
+  $realm = 'site';
+  $path = 'environments/dev/import';
+  $method = 'POST';
+  $data = array(
+    'url' => $url,
+    'drush_archive' => 1,
+  );
+
+  return terminus_request($realm, $site_uuid, $path, $method, $data);
+}
+
+/**
  * API Function Get Events
  */
 function terminus_api_site_events($site_uuid, $environment, $limit = 100) {
@@ -311,7 +323,7 @@ function terminus_api_site_environment_onserverdev_commit($site_uuid, $environme
 }
 
 /**
- * API Function to Get a Git Diff of a path
+ * API call to get a git diff of a path.
  */
 function terminus_api_site_environment_onserverdev_diff_get($site_uuid, $environment, $file_path = "") {
   $realm = 'site';
@@ -323,7 +335,7 @@ function terminus_api_site_environment_onserverdev_diff_get($site_uuid, $environ
 }
 
 /**
- * API Function to Get a Git Diff --numstat
+ * API call to get a git diff.
  */
 function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $environment) {
   $realm = 'site';
@@ -335,76 +347,70 @@ function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $e
 }
 
 /**
- * API Function to Lock an Environment
+ * API call to lock an environment.
  */
 function terminus_api_site_environment_lock($site_uuid, $environment, $username, $password) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/lock';
   $method = 'PUT';
   $data = array('username' => $username, 'password' => $password);
 
-  return terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $site_uuid, $path, $method, $data);
 }
 
 /**
- * API Function to Delete a Lock on an Environment
+ * API call to delete a lock on an environment.
  */
 function terminus_api_site_environment_lock_delete($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/lock';
   $method = 'DELETE';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to get hostnames for an Environment
+ * API call to get hostnames for an environment.
  */
 function terminus_api_site_environment_hostnames($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/hostnames';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to add a hostname for an Environment
+ * API call to add a hostname to an environment.
  */
 function terminus_api_site_environment_add_hostname($site_uuid, $environment, $hostname) {
   $realm = 'site';
-  $uuid = $site_uuid;
-  $path = 'environments/' . $environment . '/hostnames/'. rawurlencode($hostname);
+  $path = 'environments/' . $environment . '/hostnames/' . rawurlencode($hostname);
   $method = 'PUT';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to remove a hostname for an Environment
+ * API call to remove a hostname from an environment.
  */
 function terminus_api_site_environment_delete_hostname($site_uuid, $environment, $hostname) {
   $realm = 'site';
-  $uuid = $site_uuid;
-  $path = 'environments/' . $environment . '/hostnames/'. rawurlencode($hostname);
+  $path = 'environments/' . $environment . '/hostnames/' . rawurlencode($hostname);
   $method = 'DELETE';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to get environments for an site!
+ * API call to get environments for a site.
  */
 function terminus_api_site_environments($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -412,11 +418,10 @@ function terminus_api_site_environments($site_uuid) {
  */
 function terminus_api_site_environment_create($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment;
   $method = 'POST';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -424,33 +429,30 @@ function terminus_api_site_environment_create($site_uuid, $environment) {
  */
 function terminus_api_site_environment_delete($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment;
   $method = 'DELETE';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to get notifications for a site to track job status.
+ * API call to get notifications for a site to track job status.
  */
 function terminus_api_site_notifications($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'notifications';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
- * API Function to get all bindings for a site to track spin-up status.
+ * API call to get all bindings for a site to track spin-up status.
  */
 function terminus_api_site_bindings($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'bindings';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }

@@ -207,6 +207,27 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-import'] = array(
+    'description' => "Import an existing site to Pantheon",
+    'arguments' => array(
+      'name' => 'Short name of the site to create. Will be part of the URL.',
+      'url' => 'URL of Drush Archive.',
+    ),
+    'options' => array(
+      'label' => array(
+        'description' => 'Human-friendly site label.',
+      ),
+      'organization' => array(
+        'description' => 'UUID of an organization you want the site to be a part of.',
+      ),
+      'nopoll' => array(
+        'description' => 'Do not hang around and wait for the site to be ready. Useful for scripting a lot of spin-ups.',
+      ),
+    ),
+    'aliases' => array('psite-import'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['pantheon-site-delete'] = array(
     'description' => "Delete a site from Pantheon.",
     'arguments' => array(
@@ -952,76 +973,190 @@ function drush_terminus_pantheon_sites() {
 }
 
 /**
+ * Validation for the list of Pantheon sites.
+ */
+function drush_terminus_pantheon_site_import_validate($name = FALSE, $url = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_IMPORT_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+
+  if (!$name) {
+    if (!$name = terminus_session_select_data('site_name')) {
+      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', 'You must supply a site name!');
+    }
+  }
+  drush_set_option('name', preg_replace("/[^A-Za-z0-9 -]/", '', $name));
+
+  if (!$label = drush_get_option('label')) {
+    $label = terminus_session_select_data('site_label');
+  }
+  drush_set_option('label', $label);
+
+  if (!$url) {
+    $url = drush_prompt(dt('URL containing Drush archive'), NULL, TRUE);
+  }
+  if (!filter_var($url, FILTER_VALIDATE_URL)) {
+    return drush_set_error('DRUSH_PSITE_IMPORT_URL_MISSING', 'You must provide a valid URL containing the Drush archive to import.');
+  }
+  $file_headers = @get_headers($url);
+  if ($file_headers[0] == 'HTTP/1.1 404 Not Found') {
+    return drush_set_error('DRUSH_PSITE_IMPORT_URL_404', 'The Drush Site Archive URL does not exist!');
+  }
+  else if ($file_headers[0] == 'HTTP/1.1 403 Forbidden') {
+    return drush_set_error('DRUSH_PSITE_IMPORT_URL_403', 'Unable to access the Drush Site Archive URL!');
+  }
+  drush_set_option('url', $url);
+
+  if (!$organization = drush_get_option('organization')) {
+    $organization = terminus_session_select_data('organization');
+  }
+  drush_set_option('organization', $organization);
+}
+
+/**
+ * Import an existing site via the CLI.
+ */
+function drush_terminus_pantheon_site_import($name = FALSE, $url = FALSE) {
+  $session_data = drush_get_option('session_data');
+  extract($session_data);
+
+  $name = drush_get_option('name');
+  $organization = drush_get_option('organization');
+  $label = drush_get_option('label');
+  $url = drush_get_option('url');
+
+  $result_creation = terminus_api_user_site_create($user_uuid, $name, $label, $organization);
+  if (!$result_creation) {
+    return drush_set_error('DRUSH_PSITE_IMPORT_CREATION_FAILED', 'Site creation for import failed.');
+  }
+
+  $site_uuid = json_decode($result_creation['json']);
+
+  // Start import.
+  $result_import = terminus_api_site_import_drush_archive($site_uuid, $url);
+  if (!$result_import) {
+    return drush_set_error('DRUSH_PSITE_IMPORT_FAILED', 'Site creation request succeeded, but import failed.');
+  }
+
+  // JSON response.
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+
+  // Notify the user.
+  drush_log(dt('Site is now building.'), "ok");
+  drush_print(dt("The new site's UUID is @site_uuid", array(
+    '@site_uuid' => $site_uuid,
+  )));
+
+  // Opted out of waiting?
+  if (drush_get_option('nopoll')) {
+    drush_log("No-poll option detected. Check your dashboard to see when this site is ready.");
+    return TRUE;
+  }
+
+  // Poll for completion.
+  drush_print(dt('Waiting for site spinup to complete. You can cancel at any point and the process will continue in the background.'));
+  terminus_site_creation_poll($site_uuid);
+
+  // Done!
+  drush_print("Your imported site is now ready! Manage it in the dashboard:");
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+  return TRUE;
+}
+
+/**
+ * Create a new site via the CLI.
+ */
+function drush_terminus_pantheon_site_create_validate($name = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_CREATE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+
+  if (!$name) {
+    if (!$name = terminus_session_select_data('site_name')) {
+      return drush_set_error('DRUSH_PSITE_CREATE_NO_NAME', 'You must supply a site name!');
+    }
+  }
+  drush_set_option('name', preg_replace("/[^A-Za-z0-9 -]/", '', $name));
+
+  if (!$label = drush_get_option('label')) {
+    $label = terminus_session_select_data('site_label');
+  }
+  drush_set_option('label', $label);
+
+  if (!$organization = drush_get_option('organization')) {
+    $organization = terminus_session_select_data('organization');
+  }
+  drush_set_option('organization', $organization);
+
+  if (drush_get_option('product')) {
+    $product = drush_get_option('product');
+  }
+  else if (!$product = terminus_session_select_data('product')) {
+    return drush_set_error('DRUSH_PSITE_CREATE_NO_PRODUCT', 'You must specify a starting state!');
+  }
+  drush_set_option('product', $product);
+}
+
+/**
  * Create a new site via the CLI.
  */
 function drush_terminus_pantheon_site_create($name = FALSE) {
-  $session_data = terminus_bootstrap();
-  if ($session_data === FALSE) {
-    return FALSE;
-  }
+  $session_data = drush_get_option('session_data');
   extract($session_data);
 
-  if (!$name) {
-    $name = terminus_session_select_data('site_name');
-    if (!$name) {
-      drush_log('You must supply a site name!', 'failed');
-      return FALSE;
-    }
-  }
+  $name = drush_get_option('name');
+  $organization = drush_get_option('organization');
+  $label = drush_get_option('label');
+  $product = drush_get_option('product');
 
-  // Construct payload. We don't want empty/null values.
-  $site_data = array();
-  $site_data['name'] = preg_replace("/[^A-Za-z0-9 -]/", '', $name);
-  if (drush_get_option('label')) {
-    $site_data['label'] = drush_get_option('label');
-  }
-  else {
-    $site_data['label'] = terminus_session_select_data('site_label');
-  }
-  if (drush_get_option('organization')) {
-    $site_data['organization'] = drush_get_option('organization');
-  }
-  else {
-    $site_data['organization'] = terminus_session_select_data('organization');
-  }
-  if (drush_get_option('product')) {
-    $site_data['product'] = drush_get_option('product');
-  }
-  else {
-    $site_data['product'] = terminus_session_select_data('product');
-  }
-  if (!$site_data['product']) {
-    drush_log('You must specify a starting state!', 'failed');
-    return FALSE;
-  }
   drush_log("Queuing build.", "ok");
-  $result = terminus_request('user', $user_uuid, 'sites', 'POST', $site_data);
+  $result = terminus_api_user_site_create($user_uuid, $name, $label, $organization, $product);
   if (!$result) {
-    drush_log("Site create failed", "failed");
-    return FALSE;
+    return drush_set_error('DRUSH_PSITE_CREATE_FAILED', 'Site creation failed.');
   }
   if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
+
   $site_uuid = json_decode($result['json']);
-  drush_log("Site is building now in your dashboard.", "ok");
-  drush_print("The new site's UUID is '". $site_uuid ."'");
+  drush_log("Your new site is now building.", "ok");
+  drush_print("The site's UUID is '" . $site_uuid . "'");
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
-  drush_cache_clear_all('terminus-user-sites-'. $user_uuid, 'pantheon', TRUE);
-  if ($site_data['organization']) {
-    drush_cache_clear_all('terminus-org-sites-'. $site_data['organization'], 'pantheon', TRUE);
+  drush_cache_clear_all('terminus-user-sites-' . $user_uuid, 'pantheon', TRUE);
+  if ($organization) {
+    drush_cache_clear_all('terminus-org-sites-' . $organization, 'pantheon', TRUE);
   }
 
-  # Poll for completion.
+  // Poll for completion.
   if (drush_get_option('nopoll')) {
     drush_log("No-poll option detected. Check your dashboard to see when this site is ready.");
     return TRUE;
   }
-  drush_print(dt('Waiting for site spinup to complete. You can cancel anytime and the process will continue in the background.'));
+  drush_print(dt('Waiting for site spinup to complete. You can cancel at any point and the process will continue in the background.'));
+
+  terminus_site_creation_poll($site_uuid);
+
+  drush_print("Your site is now ready! Manage it from the dashboard:");
+  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
+  return TRUE;
+}
+
+/**
+ * Because real notifications are for the weak.
+ * @param $site_uuid
+ */
+function terminus_site_creation_poll($site_uuid) {
   $ready = 0;
   while (TRUE) {
-    echo ".";
+    echo '.';
     sleep(5);
     $result = terminus_api_site_bindings($site_uuid);
     $bindings = json_decode($result['json']);
@@ -1049,20 +1184,17 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
       break;
     }
   }
-  # Poll for the sync code job to complete.
+
+  // Poll for the sync code job to complete.
   drush_print("Creating git repository and deploying code to dev.");
   while (TRUE) {
-    echo ".";
+    echo '.';
     sleep(5);
     $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
     if (count($notifications) > 0) {
       break;
     }
   }
-
-  drush_print("Your site is now ready! Manage it in the dashboard:");
-  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
-  return TRUE;
 }
 
 /**
@@ -2681,11 +2813,11 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
       curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
-      array_push($headers, 'Content-Type: application/json', 'Content-Length: '. strlen($data));
+      array_push($headers, 'Content-Type: application/json', 'Content-Length: ' . strlen($data));
     }
     // $data for GETs is sent as querystrings.
-    else if ($method === "GET") {
-      $url .= "?" . http_build_query($data);
+    else if ($method === 'GET') {
+      $url .= '?' . http_build_query($data);
     }
   }
   // set URL and other appropriate options
@@ -2702,8 +2834,9 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   curl_setopt_array($ch, $opts);
 
   // Grab URL and pass it to the browser.
-  drush_log('Making api request.', 'notice');
-  drush_log($url, 'notice');
+  drush_log('Making API request.');
+  drush_log($url);
+
   $result = curl_exec($ch);
   list($headers_text, $json) = explode("\r\n\r\n", $result, 2);
   // Work around extra 100 Continue headers - http://stackoverflow.com/a/2964710/1895669
@@ -2714,9 +2847,9 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   if (curl_errno($ch) != 0) {
     $error = curl_error($ch);
     curl_close($ch);
-    drush_log("CONNECTION ERROR: $error", 'failed');
-    return FALSE;
+    return drush_set_error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
   }
+
   $info = curl_getinfo($ch);
   if ($info['http_code'] > 399) {
     drush_log(dt('Request failed: @http_code @json', array(
@@ -2732,11 +2865,12 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
 
   drush_log(dt('Request complete in @seconds seconds.', array(
     '@seconds' => $info['total_time'],
-  )), 'notice');
-  drush_log("Response headers:\n" .$headers_text, 'debug');
+  )));
+  drush_log("Response headers:\n"  .$headers_text);
   if ($json) {
-    drush_log("JSON response:\n" . $json, 'debug');
+    drush_log("JSON response:\n" . $json);
   }
+
   return array('headers' => $headers_text, 'json' => $json);
 }
 
@@ -3177,7 +3311,7 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'site_label':
-      $val = drush_prompt('Human-friendly name for the site?');
+      $val = drush_prompt('Display name for the site');
       if ($val !== FALSE) {
         return $val;
       }
