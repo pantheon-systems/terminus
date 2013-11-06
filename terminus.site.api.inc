@@ -351,12 +351,11 @@ function terminus_api_site_environment_onserverdev_diff_stats_get($site_uuid, $e
  */
 function terminus_api_site_environment_lock($site_uuid, $environment, $username, $password) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/lock';
   $method = 'PUT';
   $data = array('username' => $username, 'password' => $password);
 
-  return terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $site_uuid, $path, $method, $data);
 }
 
 /**
@@ -364,11 +363,10 @@ function terminus_api_site_environment_lock($site_uuid, $environment, $username,
  */
 function terminus_api_site_environment_lock_delete($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/lock';
   $method = 'DELETE';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -376,11 +374,10 @@ function terminus_api_site_environment_lock_delete($site_uuid, $environment) {
  */
 function terminus_api_site_environment_hostnames($site_uuid, $environment) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/hostnames';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -388,11 +385,10 @@ function terminus_api_site_environment_hostnames($site_uuid, $environment) {
  */
 function terminus_api_site_environment_add_hostname($site_uuid, $environment, $hostname) {
   $realm = 'site';
-  $uuid = $site_uuid;
-  $path = 'environments/' . $environment . '/hostnames/'. rawurlencode($hostname);
+  $path = 'environments/' . $environment . '/hostnames/' . rawurlencode($hostname);
   $method = 'PUT';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -400,11 +396,10 @@ function terminus_api_site_environment_add_hostname($site_uuid, $environment, $h
  */
 function terminus_api_site_environment_delete_hostname($site_uuid, $environment, $hostname) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments/' . $environment . '/hostnames/' . rawurlencode($hostname);
   $method = 'DELETE';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -412,11 +407,32 @@ function terminus_api_site_environment_delete_hostname($site_uuid, $environment,
  */
 function terminus_api_site_environments($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'environments';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
+}
+
+/**
+ * API call to create an environment.
+ */
+function terminus_api_site_environment_create($site_uuid, $environment) {
+  $realm = 'site';
+  $path = 'environments/' . $environment;
+  $method = 'POST';
+
+  return terminus_request($realm, $site_uuid, $path, $method);
+}
+
+/**
+ * API call to delete an environment.
+ */
+function terminus_api_site_environment_delete($site_uuid, $environment) {
+  $realm = 'site';
+  $path = 'environments/' . $environment;
+  $method = 'DELETE';
+
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -424,11 +440,10 @@ function terminus_api_site_environments($site_uuid) {
  */
 function terminus_api_site_notifications($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'notifications';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }
 
 /**
@@ -436,9 +451,8 @@ function terminus_api_site_notifications($site_uuid) {
  */
 function terminus_api_site_bindings($site_uuid) {
   $realm = 'site';
-  $uuid = $site_uuid;
   $path = 'bindings';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method);
+  return terminus_request($realm, $site_uuid, $path, $method);
 }

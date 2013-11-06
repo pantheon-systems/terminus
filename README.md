@@ -137,7 +137,6 @@ they're missing.
 ## TODO
 
 - Site import
-- Team management
 - In-progress job status
 - Websockets support for real-time status info?
 - A "pantheon shell" option to keep you in context for interactive use
