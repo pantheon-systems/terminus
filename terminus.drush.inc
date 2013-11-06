@@ -328,6 +328,16 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-environment-delete'] = array(
+    'description' => 'Delete a multidev site environment.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Name of multidev site environment.',
+    ),
+    'aliases' => array('psite-edelete'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['pantheon-site-notifications'] = array(
     'description' => 'Get a list of notifications for a site to track ongoing jobs.',
     'arguments' => array(
@@ -1777,6 +1787,56 @@ function drush_terminus_pantheon_site_environment_create($site_uuid, $new_enviro
 
   $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
   drush_log(json_decode($result_clone_files['json']));
+}
+
+/**
+ * Validate multidev environment deletion.
+ */
+function drush_terminus_pantheon_site_environment_delete_validate($site_uuid, $target_environment) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+
+  if (!terminus_validate_environment($target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_INVALID_NEW_ENV', 'You must specify a valid target environment name.');
+  }
+  if (terminus_is_reserved_branch_name($target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_RESERVED_ENV', 'Why are you trying to delete a reserved environment? You should feel bad for trying.');
+  }
+
+  // See if the environment even exists.
+  $result = terminus_api_site_environments($site_uuid);
+  $json = json_decode($result['json']);
+  if (!isset($json->$target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_PHANTOM_ENV', 'That environment does\'t exist.');
+  }
+}
+
+/**
+ * Delete a multidev environment.
+ */
+function drush_terminus_pantheon_site_environment_delete($site_uuid, $target_environment) {
+  if (!drush_confirm(dt('Are you sure you want to delete @target_environment from @site_name?', array(
+    '@site_name' => terminus_site_uuid_to_name($site_uuid),
+    '@target_environment' => $target_environment,
+  )))) {
+    return;
+  }
+
+  // Delete the environment.
+  drush_log(dt('Deleting the @target_environment environment...', array(
+    '@target_environment' => $target_environment,
+  )));
+  $result_env_delete = terminus_api_site_environment_delete($site_uuid, $target_environment);
+  if (!$result_env_delete) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_FAIL', 'Unable to delete the environment.');
+  }
+  drush_log('Environment deleted.', 'ok');
 }
 
 /**
