@@ -2897,7 +2897,9 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   $show_art = FALSE;
   $password = drush_get_option('password');
   if (!$password) {
-    $password = drush_prompt(dt('Pantheon dashboard password for '. $email), NULL, TRUE, TRUE);
+    $password = drush_prompt(dt('Pantheon dashboard password for !email', array(
+      '!email' => $email,
+    )), NULL, TRUE, TRUE);
     $show_art = TRUE;
   }
   drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
@@ -2990,9 +2992,8 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   if ($show_art) {
     // ASCII ART FTW
     $green = "\033[1;32;40m\033[1m%s\033[0m";
-    $art = terminus_art_fist();
     drush_print("\n\n");
-    echo sprintf($green, $art);
+    echo sprintf($green, terminus_art_fist());
     drush_print("\n\n");
     drush_print("LOGIN SUCCESSFUL.");
   }
