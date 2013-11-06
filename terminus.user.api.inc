@@ -233,14 +233,34 @@ function terminus_api_user_site_list($user_uuid) {
 }
 
 /**
-  * API Function to Get List of Sites Owned by a User
-  */
+ * API call to get sites owned by a user.
+ */
 function terminus_api_user_owned_list($user_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
   $path = 'sites?owned=1';
   $method = 'GET';
 
-  return terminus_request($realm, $uuid, $path, $method, $data);
+  return terminus_request($realm, $uuid, $path, $method);
 }
 
+/**
+ * API call to create a site.
+ */
+function terminus_api_user_site_create($user_uuid, $name, $label, $organization = '', $product = '') {
+  $realm = 'user';
+  $path = 'sites';
+  $method = 'POST';
+  $data = array(
+    'name' => $name,
+    'label' => $label,
+  );
+  if ($organization) {
+    $data['organization'] = $organization;
+  }
+  if ($product) {
+    $data['product'] = $product;
+  }
+
+  return terminus_request($realm, $user_uuid, $path, $method, $data);
+}
