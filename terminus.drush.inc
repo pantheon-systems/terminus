@@ -997,7 +997,7 @@ function drush_terminus_pantheon_site_import_validate($name = FALSE, $url = FALS
   if (!$url) {
     $url = drush_prompt(dt('URL containing Drush archive'), NULL, TRUE);
   }
-  if (!filter_var($url, FILTER_VALIDATE_URL))
+  if (!filter_var($url, FILTER_VALIDATE_URL)) {
     return drush_set_error('DRUSH_PSITE_IMPORT_URL_MISSING', 'You must provide a valid URL containing the Drush archive to import.');
   }
   $file_headers = @get_headers($url);
