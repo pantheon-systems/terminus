@@ -408,6 +408,30 @@ function terminus_api_site_environments($site_uuid) {
 }
 
 /**
+ * API call to create an environment.
+ */
+function terminus_api_site_environment_create($site_uuid, $environment) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments/' . $environment;
+  $method = 'POST';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
+ * API call to delete an environment.
+ */
+function terminus_api_site_environment_delete($site_uuid, $environment) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'environments/' . $environment;
+  $method = 'DELETE';
+
+  return terminus_request($realm, $uuid, $path, $method);
+}
+
+/**
  * API Function to get notifications for a site to track job status.
  */
 function terminus_api_site_notifications($site_uuid) {

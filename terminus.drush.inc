@@ -117,6 +117,45 @@ function terminus_drush_command() {
     ),
   );
 
+  $items['pantheon-site-branch-list'] = array(
+    'description' => 'List Git branches for a particular site.',
+    'aliases' => array('psite-blist'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+  );
+
+  $items['pantheon-site-branch-create'] = array(
+    'description' => 'Create Git branch of master for a particular site.',
+    'aliases' => array('psite-bcreate'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+    'options' => array(
+      'name' => array(
+        'description' => 'Branch name to be created.',
+        'example-value' => 'feature-123',
+      ),
+    ),
+  );
+
+  $items['pantheon-site-branch-delete'] = array(
+    'description' => 'Delete a Git branch from a particular site.',
+    'aliases' => array('psite-bdel'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => 'The site UUID in question.',
+    ),
+    'options' => array(
+      'name' => array(
+        'description' => 'Branch name to be deleted.',
+        'example-value' => 'feature-123',
+      ),
+    ),
+  );
+
   $items['pantheon-hostname-add'] = array(
     'description' => "Add a hostname to a site you control.",
     'arguments' => array(
@@ -264,6 +303,38 @@ function terminus_drush_command() {
       'environment' => 'Environment to commit: a dev or multidev environment',
     ),
     'aliases' => array('psite-diffs'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-environment-list'] = array(
+    'description' => 'Get a list of site environments.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+    ),
+    'aliases' => array('psite-elist'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-environment-create'] = array(
+    'description' => 'Create a new multidev site environment.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Name of multidev site environment. If branch does not exist, it will be created.',
+    ),
+    'options' => array(
+      'source' => 'The source environment (e.g. "live") from which content will be cloned. If omitted, will default to dev.',
+    ),
+    'aliases' => array('psite-ecreate'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-environment-delete'] = array(
+    'description' => 'Delete a multidev site environment.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Name of multidev site environment.',
+    ),
+    'aliases' => array('psite-edelete'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -1197,8 +1268,8 @@ function drush_terminus_pantheon_site_backups($site_uuid = FALSE, $environment =
     }
     $parts = explode('_', $id);
     $type = strpos($id, 'backup') ? 'backup' : 'export';
-    $size = round($a->size/(1024*1024), 2) .' MB';
-    $rows[$a->filename] = array($type, date(DATE_RFC822, $a->timestamp), $parts[2], $parts[0] .'_'. $parts[1], $size);
+    $size = round($a->size / (1024 * 1024), 2) . ' MB';
+    $rows[$a->filename] = array($type, date(DATE_RFC822, $a->timestamp), $parts[2], $parts[0] . '_' . $parts[1], $size);
   }
   krsort($rows);
   if (drush_get_option('json')) {
@@ -1523,6 +1594,338 @@ function drush_terminus_pantheon_site_attributes($site_uuid = FALSE) {
   ));
 
   drush_print_table($rows, TRUE);
+}
+
+/**
+ * Validate Git branch create.
+ */
+function drush_terminus_pantheon_site_branch_create_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  $name = drush_get_option('name');
+  if (!$name) {
+    $name = drush_prompt(dt('New branch name'), NULL, TRUE);
+  }
+  if (!terminus_validate_new_branch_name($name)) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_INVALID_NAME', 'You must specify a valid new branch name; dev, test, live and master are reserved.');
+  }
+  drush_set_option('name', $name);
+}
+
+/**
+ * Git branch create.
+ */
+function drush_terminus_pantheon_site_branch_create($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $branch_name = drush_get_option('name');
+  $result = terminus_api_code_branch_create($site_uuid, $branch_name);
+
+  $json = json_decode($result['json']);
+  if (!$json) {
+    return drush_set_error('DRUSH_PSITE_BCREATE_FAIL', 'Branch creation failed, typically because it already exists.');
+  }
+  drush_log(dt('Branch @branch created, commit ID #@commit', array(
+    '@branch' => $branch_name,
+    '@commit' => $json->{'refs/heads/' . $branch_name},
+  )), 'ok');
+}
+
+/**
+ * Validate Git branch delete.
+ */
+function drush_terminus_pantheon_site_branch_delete_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  $branch_name = drush_get_option('name');
+  if (!$branch_name) {
+    // Select existing branches.
+    $branch_name = terminus_session_select_data('branch', $site_uuid);
+  }
+  if (!terminus_validate_new_branch_name($branch_name)) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_INVALID_NAME', 'You must specify a valid target branch name; dev, test, live and master can\'t be deleted and you should feel bad for trying.');
+  }
+  drush_set_option('branch_name', $branch_name);
+}
+
+/**
+ * Git branch delete.
+ */
+function drush_terminus_pantheon_site_branch_delete($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $branch_name = drush_get_option('branch_name');
+
+  if (!drush_confirm(dt('You sure you want to delete @branch_name?', array(
+    '@branch_name' => $branch_name,
+  )))) {
+    return drush_user_abort();
+  }
+
+  $result = terminus_api_code_branch_delete($site_uuid, $branch_name);
+
+  $json = json_decode($result['json']);
+  if (!$json) {
+    return drush_set_error('DRUSH_PSITE_BDELETE_FAIL', 'Branch deletion failed, typically because it doesn\'t exist.');
+  }
+  drush_log(dt('Branch @branch_name deleted.', array(
+    '@branch_name' => $branch_name,
+  )), 'ok');
+}
+
+/**
+ * Validate environment list.
+ */
+function drush_terminus_pantheon_site_environment_list_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_ELIST_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_ELIST_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Environment list.
+ */
+function drush_terminus_pantheon_site_environment_list($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_site_environments($site_uuid);
+
+  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+    drush_print($result['json']);
+    return TRUE;
+  }
+
+  $json = json_decode($result['json']);
+  // Graceful failure.
+  if (!$json) {
+    return;
+  }
+
+  // Also get the list of code tips as an ad-hoc environment existence check.
+  $tips_result = terminus_api_code_tips($site_uuid);
+  $tips_json = json_decode($tips_result['json']);
+
+  $environments = array();
+
+  foreach (get_object_vars($json) as $env => $data) {
+    $tips_env = ($env == 'dev') ? 'master' : $env;
+    if (isset($tips_json->$tips_env)) {
+      $environments[] = array(
+        $env,
+        date(DATE_RFC822, $data->environment_created),
+        $data->lock->locked ? 'locked' : 'public',
+      );
+    }
+    else {
+      $environments[] = array(
+        $env,
+        'NOT CREATED',
+        'NOT CREATED',
+      );
+    }
+  }
+
+  ksort($environments);
+  array_unshift($environments, array('Environment', 'Created', 'Locked'));
+  drush_print_table($environments, TRUE);
+}
+
+/**
+ * Validate multidev environment creation.
+ */
+function drush_terminus_pantheon_site_environment_create_validate($site_uuid, $new_environment) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+
+  if (!terminus_validate_environment($new_environment)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_NEW_ENV', 'You must specify a valid new environment name.');
+  }
+  if (terminus_is_reserved_branch_name($new_environment)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_RESERVED_ENV', 'Why are you trying to create a reserved environment name? Bad idea.');
+  }
+
+  $env_source = drush_get_option('source');
+
+  if ($env_source && !terminus_validate_environment($env_source)) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_INVALID_SOURCE', 'You must specify a valid source environment name.');
+  }
+  if (!$env_source) {
+    $env_source = 'dev';
+  }
+  drush_set_option('source', $env_source);
+}
+
+/**
+ * Create a multidev environment.
+ */
+function drush_terminus_pantheon_site_environment_create($site_uuid, $new_environment) {
+  // Check to see if branch exists.
+  $branch_result = terminus_api_code_tips($site_uuid);
+  $branches = json_decode($branch_result['json']);
+
+  // If not, create it.
+  if (!isset($branches->$new_environment)) {
+    drush_log(dt('Creating the @new_environment branch...', array(
+      '@new_environment' => $new_environment,
+    )), 'ok');
+    $result_branch_create = terminus_api_code_branch_create($site_uuid, $new_environment);
+    if (!$result_branch_create) {
+      return drush_set_error('DRUSH_PSITE_ECREATE_BRANCH_FAIL', 'Unable to create new branch.');
+    }
+    drush_log('Branch created.');
+  }
+
+  // Create the environment.
+  drush_log(dt('Creating the @new_environment environment...', array(
+    '@new_environment' => $new_environment,
+  )), 'ok');
+  $result_env_create = terminus_api_site_environment_create($site_uuid, $new_environment);
+  if (!$result_env_create) {
+    return drush_set_error('DRUSH_PSITE_ECREATE_FAIL', 'Unable to create new environment.');
+  }
+  drush_log('Environment created.');
+
+  // Wait...
+  // @todo use the abstracted code for this that is on an unmerged branch
+
+  // Clone...
+  $env_source = drush_get_option('source');
+  drush_log(dt('Cloning content from @env_source...', array(
+    '@env_source' => $env_source,
+  )), 'ok');
+
+  $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
+  drush_log(json_decode($result_clone_db['json']));
+
+  $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
+  drush_log(json_decode($result_clone_files['json']));
+}
+
+/**
+ * Validate multidev environment deletion.
+ */
+function drush_terminus_pantheon_site_environment_delete_validate($site_uuid, $target_environment) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_NO_SESSION', 'You must authenticate before using this command.');
+  }
+
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+
+  if (!terminus_validate_environment($target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_INVALID_NEW_ENV', 'You must specify a valid target environment name.');
+  }
+  if (terminus_is_reserved_branch_name($target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_RESERVED_ENV', 'Why are you trying to delete a reserved environment? You should feel bad for trying.');
+  }
+
+  // See if the environment even exists.
+  $result = terminus_api_site_environments($site_uuid);
+  $json = json_decode($result['json']);
+  if (!isset($json->$target_environment)) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_PHANTOM_ENV', 'That environment does\'t exist.');
+  }
+}
+
+/**
+ * Delete a multidev environment.
+ */
+function drush_terminus_pantheon_site_environment_delete($site_uuid, $target_environment) {
+  if (!drush_confirm(dt('Are you sure you want to delete @target_environment from @site_name?', array(
+    '@site_name' => terminus_site_uuid_to_name($site_uuid),
+    '@target_environment' => $target_environment,
+  )))) {
+    return;
+  }
+
+  // Delete the environment.
+  drush_log(dt('Deleting the @target_environment environment...', array(
+    '@target_environment' => $target_environment,
+  )));
+  $result_env_delete = terminus_api_site_environment_delete($site_uuid, $target_environment);
+  if (!$result_env_delete) {
+    return drush_set_error('DRUSH_PSITE_EDELETE_FAIL', 'Unable to delete the environment.');
+  }
+  drush_log('Environment deleted.', 'ok');
+}
+
+/**
+ * Validate Git branch list.
+ */
+function drush_terminus_pantheon_site_branch_list_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_BLIST_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid)) {
+    return drush_user_abort();
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_BLIST_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Git branch list.
+ */
+function drush_terminus_pantheon_site_branch_list($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_code_tips($site_uuid);
+
+  $json = json_decode($result['json']);
+  // Graceful failure.
+  if (!$json) {
+    return;
+  }
+
+  $branches = array();
+  foreach (get_object_vars($json) as $branch => $commit_id) {
+    if (!in_array($branch, array('test', 'live'))) {
+      $branches[] = array($branch, $commit_id);
+    }
+  }
+
+  ksort($branches);
+  array_unshift($branches, array('Branch', 'Commit ID'));
+  drush_print_table($branches, TRUE);
 }
 
 /**
@@ -2316,7 +2719,14 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   }
   $info = curl_getinfo($ch);
   if ($info['http_code'] > 399) {
-    drush_log('Request failed: '. $info['http_code']. ' '. $json, 'failed');
+    drush_log(dt('Request failed: @http_code @json', array(
+      '@http_code' => $info['http_code'],
+      '@json' => $json,
+    )), 'failed');
+    // Expired session. Really don't like the string comparison.
+    if ($info['http_code'] == 403 && $json == '"Session not found."') {
+      terminus_pantheon_logout();
+    }
     return FALSE;
   }
 
@@ -2487,7 +2897,9 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   $show_art = FALSE;
   $password = drush_get_option('password');
   if (!$password) {
-    $password = drush_prompt(dt('Pantheon dashboard password for '. $email), NULL, TRUE, TRUE);
+    $password = drush_prompt(dt('Pantheon dashboard password for !email', array(
+      '!email' => $email,
+    )), NULL, TRUE, TRUE);
     $show_art = TRUE;
   }
   drush_log(dt('Authenticating as !email', array('!email' => $email)), 'ok');
@@ -2580,9 +2992,8 @@ function drush_terminus_pantheon_auth($email = FALSE) {
   if ($show_art) {
     // ASCII ART FTW
     $green = "\033[1;32;40m\033[1m%s\033[0m";
-    $art = terminus_art_fist();
     drush_print("\n\n");
-    echo sprintf($green, $art);
+    echo sprintf($green, terminus_art_fist());
     drush_print("\n\n");
     drush_print("LOGIN SUCCESSFUL.");
   }
@@ -2620,6 +3031,7 @@ function terminus_parse_drupal_headers($result, $target_header='Set-Cookie') {
  * Provides user prompt for missing data.
  * @param $key string Required data name. i.e. site_uuid, environment, etc.
  * @return string input data
+ * @todo Use an options array instead of death by parameters.
  */
 function terminus_session_select_data($key, $site_uuid = NULL, $environment = NULL, $element = NULL, $prompt_text = NULL, $default = NULL) {
   $session_data = terminus_bootstrap();
@@ -2650,6 +3062,24 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       if ($val !== FALSE) {
         return $val;
       }
+      break;
+
+    case 'branch':
+      if (!$site_uuid) {
+        return;
+      }
+      $result = terminus_api_code_tips($site_uuid);
+      if (!$tips = json_decode($result['json'])) {
+        return;
+      }
+
+      $branches = array();
+      foreach (get_object_vars($tips) as $branch => $commit_id) {
+        if (!terminus_is_reserved_branch_name($branch)) {
+          $branches[$branch] = $branch;
+        }
+      }
+      return drush_choice($branches, 'Select the target branch.');
       break;
 
     case 'environment':
@@ -2696,9 +3126,9 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
         if (!isset($a->filename) || $parts[2] != $element) {
           continue;
         }
-        $size = round($a->size/(1024*1024), 2) .' MB';
-        $choices[$a->filename] = $a->filename . ' ' . $size; //$type . ' ' . date(DATE_RFC822, $a->timestamp) . ' ' . $parts[2] . ' ' . $parts[0] .'_'. $parts[1] . ' ' . $size;
-        $buckets[$a->filename] = $parts[0] .'_'. $parts[1];
+        $size = round($a->size / (1024 * 1024), 2) . ' MB';
+        $choices[$a->filename] = $a->filename . ' ' . $size;
+        $buckets[$a->filename] = $parts[0] . '_' . $parts[1];
       }
       krsort($choices);
       $val = drush_choice($choices, 'Select a backup.');
@@ -2708,7 +3138,11 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'cmode':
-      $choices = array(0 => 'Retrieve connection mode', 'sftp' => 'SFTP', 'git' => 'Git');
+      $choices = array(
+        0 => 'Retrieve connection mode',
+        'sftp' => 'SFTP',
+        'git' => 'Git',
+      );
       return drush_choice($choices, 'Connection mode');
       break;
 
@@ -2985,6 +3419,34 @@ function terminus_org_site_list($organization_uuid, $reset = FALSE) {
  */
 function terminus_validate_uuid($uuid) {
   return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}
+
+/**
+ * Check to see if a branch name is reserved by Pantheon.
+ * @param $branch_name
+ * @return bool
+ */
+function terminus_is_reserved_branch_name($branch_name) {
+  return in_array($branch_name, array(
+    'dev',
+    'test',
+    'live',
+    'master',
+  ));
+}
+
+/**
+ * Validate Branch name.
+ *
+ * @param $branch_name
+ *   String containing the name of the new branch.
+ * @return boolean
+ */
+function terminus_validate_new_branch_name($branch_name) {
+  if (terminus_is_reserved_branch_name($branch_name)) {
+    return FALSE;
+  }
+  return terminus_validate_environment($branch_name);
 }
 
 /**
