@@ -136,7 +136,11 @@ they're missing.
 
 ## TODO
 
-- Site import
+- Human readable and exportable Connection Information for site environments
+- Log access
+- HTTP library to remove cURL requirement
+- Upload archive to Pantheon for site imports
+- Better Unit Test coverage
 - In-progress job status
 - Websockets support for real-time status info?
 - A "pantheon shell" option to keep you in context for interactive use
