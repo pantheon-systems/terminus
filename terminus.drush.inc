@@ -419,6 +419,16 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-environment-redis-clear'] = array(
+    'description' => 'Clear redis cache of a site environment.',
+    'arguments' => array(
+      'site' => 'UUID or name of the site.',
+      'environment' => 'Name of site environment.',
+    ),
+    'aliases' => array('psite-erc'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   /**
    * Site team functions.
    */
@@ -1193,6 +1203,78 @@ function terminus_site_creation_poll($site_uuid) {
     $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
     if (count($notifications) > 0) {
       break;
+    }
+  }
+}
+
+/**
+ * Validation prior to clearing a site environment's redis cache.
+ */
+function drush_terminus_pantheon_site_environment_redis_clear_validate($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_EREDIS_NO_SESS', 'You must authenticate before using this command.');
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_EREDIS_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_EREDIS_INVALID_ENV', 'You must specify a valid environment name.');
+    }
+  }
+  drush_set_option('environment', $environment);
+
+  // Make sure that they even have redis.
+  $result_bindings = terminus_api_site_environment_bindings($site_uuid, $environment, 'cacheserver');
+  $bindings = json_decode($result_bindings['json']);
+  $binding_uuids = get_object_vars($bindings);
+  if (!count($binding_uuids)) {
+    return drush_set_error('DRUSH_PSITE_EREDIS_NO_REDIS', dt('No redis binding for this environment.'));
+  }
+  drush_set_option('bindings', $bindings);
+}
+
+/**
+ * Clear a site environment's redis cache.
+ */
+function drush_terminus_pantheon_site_environment_redis_clear($site_uuid = FALSE, $environment = FALSE) {
+  $bindings = drush_get_option('bindings');
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+  foreach (get_object_vars($bindings) as $binding_uuid => $binding) {
+    // Build the command to flush from the application server.
+    $command = 'ssh -p 2222 ' . $environment . '.' . $site_uuid;
+    $command .= '@appserver.' . $environment . '.' . $site_uuid . '.drush.in ';
+    $command .= '"redis-cli -h ' . $binding->host . ' ';
+    $command .= '-p ' . $binding->port . ' ';
+    $command .= '-a ' . $binding->password . ' ';
+    $command .= 'flushall"';
+
+    if (drush_shell_exec($command)) {
+      $response = drush_shell_exec_output();
+      $last_response = array_pop($response);
+      if ($last_response == 'OK') {
+        drush_log(dt('Redis flushed on @site_name @environment cacheserver binding @binding_uuid', array(
+          '@site_name' => terminus_pantheon_site_name($site_uuid),
+          '@environment' => $environment,
+          '@binding_uuid' => $binding_uuid,
+        )), 'ok');
+      }
+      else {
+        return drush_set_error('DRUSH_PSITE_EREDIS_CLEAR_FAIL', dt('Unable to flush redis on @site_name @environment cacheserver binding @binding_uuid: @response', array(
+          '@site_name' => terminus_pantheon_site_name($site_uuid),
+          '@environment' => $environment,
+          '@binding_uuid' => $binding_uuid,
+          '@response' => $last_response,
+        )));
+      }
+    }
+    else {
+      return drush_set_error('DRUSH_PSITE_EREDIS_EXEC_FAIL', dt('Unable to execute redis cache clear command.'));
     }
   }
 }
