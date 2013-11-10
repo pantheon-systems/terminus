@@ -109,10 +109,10 @@ function terminus_api_user_email_get($user_uuid) {
  * API Call to Get a User's UUID
  * NOTE - No logging!
  */
-function terminus_api_user_uuid_get($email) {
+function terminus_api_user_uuid_get($user_uuid, $email) {
   $realm = 'user';
   $uuid = $user_uuid;
-  $path = rawurlencode($email) . '/uuid';
+  $path = 'uuid/' . rawurlencode($email);
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
