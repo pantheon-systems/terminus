@@ -11,6 +11,7 @@
 function terminus_api_site_info($site_uuid) {
   $realm = 'site';
   $uuid = $site_uuid;
+  $path = '';
   $method = 'GET';
 
   return terminus_request($realm, $uuid, $path, $method);
