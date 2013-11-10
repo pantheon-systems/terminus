@@ -121,8 +121,10 @@ function terminus_api_user_uuid_get($user_uuid, $email) {
 /**
  * API Call to Check a User's Email by Email
  * NOTE - No logging!
+ *
+ * TODO: Invalid path, fix or remove
  */
-function terminus_api_user_email_check_by_email($email) {
+function terminus_api_user_email_check_by_email($user_uuid, $email) {
   $realm = 'user';
   $uuid = $user_uuid;
   $path = rawurlencode($email) . '/email';
@@ -151,6 +153,7 @@ function terminus_api_user_email_set($user_uuid, $email) {
 function terminus_api_user_delete($user_uuid) {
   $realm = 'user';
   $uuid = $user_uuid;
+  $path = '';
   $method = 'DELETE';
 
   return terminus_request($realm, $uuid, $path, $method);
