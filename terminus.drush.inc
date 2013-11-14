@@ -565,36 +565,6 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
-  $items['pantheon-site-sql-dump'] = array(
-    'callback' => 'drush_sql_dump_execute',
-    'description' => 'Exports the Drupal DB as SQL using mysqldump or equivalent.',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-    'examples' => array(
-      'drush sql-dump --result-file=../18.sql' => 'Save SQL dump to the directory above Drupal root.',
-      'drush sql-dump --skip-tables-key=common' => 'Skip standard tables. @see example.drushrc.php',
-    ),
-    'options' => array(
-      'result-file' => array(
-        'description' => 'Save to a file. The file should be relative to Drupal root. If --result-file is provided with no value, then date-based filename will be created under ~/drush-backups directory.',
-        'example-value' => '/path/to/file',
-        'value' => 'optional',
-      ),
-      'skip-tables-key' => 'A key in the $skip_tables array. @see example.drushrc.php. Optional.',
-      'structure-tables-key' => 'A key in the $structure_tables array. @see example.drushrc.php. Optional.',
-      'tables-key' => 'A key in the $tables array. Optional.',
-      'skip-tables-list' => 'A comma-separated list of tables to exclude completely. Optional.',
-      'structure-tables-list' => 'A comma-separated list of tables to include for structure, but not data. Optional.',
-      'tables-list' => 'A comma-separated list of tables to transfer. Optional.',
-      'ordered-dump' => 'Use this option to output ordered INSERT statements in the sql-dump. Useful when backups are managed in a Version Control System. Optional.',
-      'create-db' => array('hidden' => TRUE, 'description' => 'Omit DROP TABLE statements. Postgres and Oracle only.  Used by sql-sync, since including the DROP TABLE statements interferes with the import when the database is created.'),
-      'data-only' => 'Dump data without statements to create any of the schema.',
-      'ordered-dump' => 'Order by primary key and add line breaks for efficient diff in revision control. Also, faster rsync. Slows down the dump. MySQL only.',
-      'gzip' => 'Compress the dump using the gzip program which must be in your $PATH.',
-    ),
-    'aliases' => array('psite-sql-dump'),
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
-  );
-
   $items['pantheon-site-mount'] = array(
     'description' => "Mounts an environment file system to a local directory.",
     'arguments' => array(
