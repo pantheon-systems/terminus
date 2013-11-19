@@ -1147,7 +1147,7 @@ function terminus_site_creation_poll($site_uuid) {
       }
     }
     foreach ($bindings as $bid => $data) {
-      if ($data->ready && !$bindings_ready[$bid]) {
+      if (isset($data->ready) && $data->ready && !$bindings_ready[$bid]) {
         $bindings_ready[$bid] = TRUE;
         echo ' ' . dt('@type step complete (@ready/@total).', array(
           '@type' => $data->type,
@@ -1165,12 +1165,30 @@ function terminus_site_creation_poll($site_uuid) {
     }
   }
 
-  // Poll for the sync code job to complete.
+  // Wait for the sync code job to complete.
   drush_print("Creating git repository and deploying code to dev.");
+  terminus_notification_poll($site_uuid, 'chef_solo_sync_code');
+}
+
+/**
+ * Wait until notifications are cleared.
+ * @param string $site_uuid
+ * @param string $type
+ */
+function terminus_notification_poll($site_uuid, $type) {
+  // Require a valid UUID.
+  if (!terminus_validate_uuid($site_uuid)) {
+    return;
+  }
+  // Require type.
+  if (!$type) {
+    return;
+  }
+
   while (TRUE) {
     echo '.';
     sleep(5);
-    $notifications = terminus_notifications_list($site_uuid, 'chef_solo_sync_code');
+    $notifications = terminus_notifications_list($site_uuid, $type);
     if (count($notifications) > 0) {
       break;
     }
@@ -1945,7 +1963,7 @@ function drush_terminus_pantheon_site_environment_list($site_uuid = FALSE) {
 /**
  * Validate multidev environment creation.
  */
-function drush_terminus_pantheon_site_environment_create_validate($site_uuid, $new_environment) {
+function drush_terminus_pantheon_site_environment_create_validate($site_uuid = FALSE, $new_environment = FALSE) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
     return drush_set_error('DRUSH_PSITE_ECREATE_NO_SESSION', 'You must authenticate before using this command.');
@@ -2001,22 +2019,36 @@ function drush_terminus_pantheon_site_environment_create($site_uuid, $new_enviro
   if (!$result_env_create) {
     return drush_set_error('DRUSH_PSITE_ECREATE_FAIL', 'Unable to create new environment.');
   }
-  drush_log('Environment created.');
 
   // Wait...
-  // @todo use the abstracted code for this that is on an unmerged branch
+  terminus_notification_poll($site_uuid, 'chef_solo_bindings');
+  drush_log(' ' . 'Environment created.', 'ok');
 
   // Clone...
   $env_source = drush_get_option('source');
-  drush_log(dt('Cloning content from @env_source...', array(
+  drush_log(dt('Cloning database from @env_source...', array(
     '@env_source' => $env_source,
-  )), 'ok');
+  )));
 
   $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
   drush_log(json_decode($result_clone_db['json']));
+  terminus_notification_poll($site_uuid, 'ellis_clone_database');
+
+  drush_log(' ' . dt('Database cloned from @env_source.', array(
+    '@env_source' => $env_source,
+  )), 'ok');
 
   $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
   drush_log(json_decode($result_clone_files['json']));
+  terminus_notification_poll($site_uuid, 'ellis_clone_files');
+
+  drush_log(' ' . dt('Files cloned from @env_source.', array(
+    '@env_source' => $env_source,
+  )), 'ok');
+
+  drush_log(dt('Environment @new_environment is ready!', array(
+    '@new_environment' => $new_environment,
+  )));
 }
 
 /**
