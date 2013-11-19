@@ -2637,9 +2637,16 @@ function drush_terminus_pantheon_site_mount($site_uuid = FALSE, $environment = F
   }
   extract($session_data);
 
-  $test = exec('which sshfs', $output, $ret);
+  exec('which sshfs', $output, $ret);
   if ($ret !== 0) {
     return drush_set_error("'sshfs' command not found. Please install from http://osxfuse.github.io/");
+  }
+
+  $darwin = False;
+  $output = array();
+  exec('uname', $output, $ret);
+  if (is_array($output) && isset($output[0]) && strpos($output[0], 'Darwin') !== False) {
+    $darwin = True;
   }
 
   if (!$site_uuid = terminus_site_input($site_uuid)) {
@@ -2675,7 +2682,8 @@ function drush_terminus_pantheon_site_mount($site_uuid = FALSE, $environment = F
 
   $user = $environment . '.' . $site_uuid;
   $host = 'appserver.' . $environment . '.' . $site_uuid . '.drush.in';
-  $cmd = "sshfs -p 2222 {$user}@{$host}:./ {$destination}";
+  $darwin_args = $darwin ? '-o defer_permissions ' : '';
+  $cmd = "sshfs " . $darwin_args . "-p 2222 {$user}@{$host}:./ {$destination}";
 
   drush_shell_exec($cmd);
   $output = drush_shell_exec_output();
