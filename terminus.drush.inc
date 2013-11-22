@@ -364,6 +364,10 @@ function terminus_drush_command() {
     'arguments' => array(
       'site' => 'UUID or name of the site.',
     ),
+    'options' => array(
+      'count' => 'Number of notifications to show',
+      'type' => 'Filter notifications by type',
+    ),
     'aliases' => array('psite-notifications'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
@@ -1189,7 +1193,21 @@ function terminus_notification_poll($site_uuid, $type) {
     echo '.';
     sleep(5);
     $notifications = terminus_notifications_list($site_uuid, $type);
-    if (count($notifications) > 0) {
+    // Some jobs won't be listed until they're complete.
+    if (in_array($type, array(
+      'ellis_clone_database',
+      'ellis_clone_files',
+    ))) {
+      foreach ($notifications as $notification_time => $notification) {
+        if (in_array($notification['phase'], array(
+          'FINISHED',
+          'COMPLETED',
+        ))) {
+          break;
+        }
+      }
+    }
+    else if (count($notifications) > 0) {
       break;
     }
   }
@@ -2012,9 +2030,9 @@ function drush_terminus_pantheon_site_environment_create($site_uuid, $new_enviro
   }
 
   // Create the environment.
-  drush_log(dt('Creating the @new_environment environment...', array(
+  drush_print(dt('Creating the @new_environment environment...', array(
     '@new_environment' => $new_environment,
-  )), 'ok');
+  )), 0, NULL, FALSE);
   $result_env_create = terminus_api_site_environment_create($site_uuid, $new_environment);
   if (!$result_env_create) {
     return drush_set_error('DRUSH_PSITE_ECREATE_FAIL', 'Unable to create new environment.');
@@ -2024,27 +2042,28 @@ function drush_terminus_pantheon_site_environment_create($site_uuid, $new_enviro
   terminus_notification_poll($site_uuid, 'chef_solo_bindings');
   drush_log(' ' . 'Environment created.', 'ok');
 
-  // Clone...
+  // Clone files...
   $env_source = drush_get_option('source');
-  drush_log(dt('Cloning database from @env_source...', array(
-    '@env_source' => $env_source,
-  )));
 
-  $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
-  drush_log(json_decode($result_clone_db['json']));
-  terminus_notification_poll($site_uuid, 'ellis_clone_database');
-
-  drush_log(' ' . dt('Database cloned from @env_source.', array(
+  drush_print(dt('Cloning files from @env_source...', array(
     '@env_source' => $env_source,
-  )), 'ok');
+  )), 0, NULL, FALSE);
 
   $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
   drush_log(json_decode($result_clone_files['json']));
   terminus_notification_poll($site_uuid, 'ellis_clone_files');
 
-  drush_log(' ' . dt('Files cloned from @env_source.', array(
+  drush_log(dt('file cloning complete.'), 'ok');
+
+  drush_print(dt('Cloning database from @env_source...', array(
     '@env_source' => $env_source,
-  )), 'ok');
+  )), 0, NULL, FALSE);
+
+  $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
+  drush_log(json_decode($result_clone_db['json']));
+  terminus_notification_poll($site_uuid, 'ellis_clone_database');
+
+  drush_log(dt('database cloning complete'), 'ok');
 
   drush_log(dt('Environment @new_environment is ready!', array(
     '@new_environment' => $new_environment,
@@ -2287,7 +2306,31 @@ function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
     drush_log('You must supply a site UUID', 'failed');
     return FALSE;
   }
-  $notifications = terminus_notifications_list($site_uuid);
+
+  $type = drush_get_option('type');
+
+  $notifications = terminus_notifications_list($site_uuid, $type);
+
+  $count = drush_get_option('count');
+  if ($count) {
+    $notifications = array_slice($notifications, 0, $count);
+  }
+
+  $rows = array();
+  foreach ($notifications as $notification_time => $notification) {
+    $id = substr($notification['id'], strpos($notification['id'], '-', strpos($notification['id'], '-') + 1) + 1);
+    $rows[] = array(
+      $notification_time,
+      $notification['name'],
+      $id,
+      $notification['status'],
+      $notification['phase'],
+      round($notification['duration'] / 1000, 2) . 's',
+    );
+  }
+
+  array_unshift($rows, array('Time', 'Name', 'ID', 'Status', 'Phase', 'Duration'));
+  drush_print_table($rows, TRUE);
 }
 
 /**
@@ -2298,6 +2341,9 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
   $data = json_decode($result['json']);
   $notifications = array();
   foreach ($data as $id => $notification) {
+    if (!isset($notification->name) || is_null($notification->name)) {
+      continue;
+    }
     if ($type) {
       if (strpos($notification->name, $type) === FALSE) {
         continue;
@@ -2305,12 +2351,14 @@ function terminus_notifications_list($site_uuid, $type = FALSE) {
     }
     $notifications[$notification->start] = array(
       'name' => $notification->name,
+      'id' => $id,
       'status' => $notification->build->status,
       'phase' => $notification->build->phase,
       'duration' => $notification->build->duration,
     );
   }
   # TODO: munge this list to remove internals, provide human-readable names.
+  krsort($notifications);
   return $notifications;
 }
 
@@ -2924,8 +2972,8 @@ function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data =
   $result = curl_exec($ch);
   list($headers_text, $json) = explode("\r\n\r\n", $result, 2);
   // Work around extra 100 Continue headers - http://stackoverflow.com/a/2964710/1895669
-  if (strpos($headers_text," 100 Continue") !== FALSE){
-    list($headers_text, $json) = explode( "\r\n\r\n", $json , 2);
+  if (strpos($headers_text," 100 Continue") !== FALSE) {
+    list($headers_text, $json) = explode("\r\n\r\n", $json , 2);
   }
 
   if (curl_errno($ch) != 0) {
