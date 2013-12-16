@@ -1405,7 +1405,7 @@ function drush_terminus_pantheon_hostname_list_validate($site_uuid = FALSE, $env
 
   if (!terminus_validate_environment($environment)) {
     if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
-      return drush_set_error('DRUSH_PSITE_HOSTNAME_LIST_INDVALID_ENV', 'You must specify a valid environment name.');
+      return drush_set_error('DRUSH_PSITE_HOSTNAME_LIST_INVALID_ENV', 'You must specify a valid environment name.');
     }
   }
   drush_set_option('environment', $environment);
@@ -1435,39 +1435,58 @@ function drush_terminus_pantheon_hostname_list($site_uuid = FALSE, $environment 
 }
 
 /**
- * Add a hostname.
+ * Validate hostname add to a site environment.
  */
-function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
+function drush_terminus_pantheon_hostname_add_validate($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
-    return FALSE;
+    return drush_set_error('DRUSH_PSITE_HOSTNAME_ADD_NO_SESSION', 'You must authenticate before using this command.');
   }
-  extract($session_data);
+  drush_set_option('session_data', $session_data);
 
   if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
-    drush_log('You must supply a site UUID', 'failed');
-    return FALSE;
+    return drush_set_error('DRUSH_PSITE_HOSTNAME_ADD_INVALID_UUID', dt('You must specify a valid site UUID.'));
   }
+  drush_set_option('site_uuid', $site_uuid);
 
-  if (!$environment) {
-    $environment = terminus_session_select_data('environment', $site_uuid);
-    if (!$environment) {
-      drush_log('You must supply an environment', 'failed');
-      return FALSE;
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_HOSTNAME_ADD_INVALID_ENV', dt('You must specify a valid environment name.'));
     }
   }
+  drush_set_option('environment', $environment);
 
-  $hostname = drush_prompt(dt('Hostname (e.g. "www.mysite.com") you would like to add'), NULL, TRUE);
-  if (!preg_match('/(?=^.{1,254}$)(^(?:(?!\d|-)[a-z0-9\-]{1,63}(?<!-)\.)+(?:[a-z]{2,})$)/i', $hostname)) {
-    drush_log("'$hostname' is not a valid hostname.", 'failed');
-    return FALSE;
+  if (!terminus_validate_hostname($hostname)) {
+    $hostname = drush_prompt(dt('Hostname (e.g. "www.mysite.com") you would like to add'), $hostname, TRUE);
+    if (!terminus_validate_hostname($hostname)) {
+      return drush_set_error('DRUSH_PSITE_HOSTNAME_ADD_INVALID_HOSTNAME', dt('You must specify a valid hostname.'));
+    }
   }
+  drush_set_option('hostname', $hostname);
+}
+
+/**
+ * Add a hostname to a site environment.
+ */
+function drush_terminus_pantheon_hostname_add($site_uuid = FALSE, $environment = FALSE, $hostname = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+  $hostname = drush_get_option('hostname');
+
   $result = terminus_api_site_environment_add_hostname($site_uuid, $environment, $hostname);
   if ($result === FALSE) {
-    return FALSE;
+    return drush_set_error('DRUSH_PSITE_HOSTNAME_ADD_ERROR', dt('Unable to add @hostname to the @site_name @environment environment.', array(
+      '@hostname' => $hostname,
+      '@site_name' => terminus_site_uuid_to_name($site_uuid),
+      '@environment' => $environment,
+    )));
   }
-  drush_log("Added '$hostname' to the $environment environment", 'ok');
-  return TRUE;
+
+  drush_log(dt('Added @hostname to the @site_name @environment environment.', array(
+    '@hostname' => $hostname,
+    '@site_name' => terminus_site_uuid_to_name($site_uuid),
+    '@environment' => $environment,
+  )), 'ok');
 }
 
 /**
@@ -3862,4 +3881,17 @@ function terminus_validate_sites($json) {
     }
   }
   return TRUE;
+}
+
+/**
+ * Validate a hostname.
+ *
+ * @param $hostname
+ *   The hostname to be validated.
+ *
+ * @return bool
+ *   Whether the target is a valid hostname.
+ */
+function terminus_validate_hostname($hostname) {
+  return preg_match('/(?=^.{1,254}$)(^(?:(?!\d|-)[a-z0-9\-]{1,63}(?<!-)\.)+(?:[a-z]{2,})$)/i', $hostname);
 }
