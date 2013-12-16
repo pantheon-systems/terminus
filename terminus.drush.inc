@@ -163,7 +163,7 @@ function terminus_drush_command() {
       'environment' => 'The environment (e.g. "live").',
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
-    'aliases' => array('psite-hostname-add'),
+    'aliases' => array('psite-hostname-add', 'psite-ha'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -174,7 +174,17 @@ function terminus_drush_command() {
       'environment' => 'The environemnt (e.g. "live").',
       'hostname' => 'The hostname (e.g. "www.mysite.com")',
     ),
-    'aliases' => array('psite-hostname-remove'),
+    'aliases' => array('psite-hostname-remove', 'psite-hr'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-hostname-list'] = array(
+    'description' => dt('List all hostnames associated with a site.'),
+    'arguments' => array(
+      'site' => 'The site UUID you are working on.',
+      'environment' => 'The environemnt (e.g. "live").',
+    ),
+    'aliases' => array('psite-hostname-list', 'psite-hl'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -1025,7 +1035,7 @@ function drush_terminus_pantheon_site_import($name = FALSE, $url = FALSE) {
   }
 
   // JSON response.
-  if (isset($json_output) && isset($result['json'])  && $result['json']) {
+  if (isset($json_output) && isset($result['json']) && $result['json']) {
     drush_print($result['json']);
     return TRUE;
   }
@@ -1376,6 +1386,52 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
   drush_log("Site deleted.", "ok");
   drush_cache_clear_all('terminus-sites', 'pantheon');
   return TRUE;
+}
+
+/**
+ * Validate hostname list.
+ */
+function drush_terminus_pantheon_hostname_list_validate($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_HOSTNAME_LIST_NO_SESSION', 'You must authenticate before using this command.');
+  }
+  drush_set_option('session_data', $session_data);
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_HOSTNAME_LIST_INVALID_UUID', 'You must specify a valid site UUID.');
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_HOSTNAME_LIST_INDVALID_ENV', 'You must specify a valid environment name.');
+    }
+  }
+  drush_set_option('environment', $environment);
+}
+
+/**
+ * List hostnames associated with an environment.
+ */
+function drush_terminus_pantheon_hostname_list($site_uuid = FALSE, $environment = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+
+  $result = terminus_api_site_environment_hostnames($site_uuid, $environment);
+
+  // JSON response.
+  if (isset($json_output) && isset($result['json']) && $result['json']) {
+    drush_print($result['json']);
+    return;
+  }
+
+  $hostnames = array_keys((array) json_decode($result['json']));
+  asort($hostnames);
+
+  foreach ($hostnames as $hostname) {
+    drush_print($hostname);
+  }
 }
 
 /**
