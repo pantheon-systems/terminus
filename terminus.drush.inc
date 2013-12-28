@@ -370,15 +370,34 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-notifications'] = array(
-    'description' => 'Get a list of notifications for a site to track ongoing jobs.',
+    'description' => dt('Get a list of notifications for a site.'),
     'arguments' => array(
-      'site' => 'UUID or name of the site.',
+      'site' => dt('UUID of the site.'),
     ),
     'options' => array(
-      'count' => 'Number of notifications to show',
-      'type' => 'Filter notifications by type',
+      'count' => dt('Number of notifications to show'),
+      'type' => dt('Filter notifications by type'),
     ),
     'aliases' => array('psite-notifications'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-jobs'] = array(
+    'description' => dt('Get a list of jobs for a site.'),
+    'arguments' => array(
+      'site' => dt('UUID of the site.'),
+    ),
+    'options' => array(
+      'environment' => array(
+        'description' => dt('Filter jobs by environment'),
+        'example-value' => 'dev',
+      ),
+      'slot' => array(
+        'description' => dt('Filter by slot'),
+        'example-value' => 'cache_clear',
+      ),
+    ),
+    'aliases' => array('psite-jobs'),
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
@@ -2368,7 +2387,93 @@ function termins_render_diffstat($site_uuid, $environment) {
 }
 
 /**
- * Get a list of notifications for a site to track ongoing jobs.
+ * Validate job list command.
+ */
+function drush_terminus_pantheon_site_jobs_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_JOBS_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid) {
+    if (!$site_uuid = terminus_site_input($site_uuid)) {
+      return drush_user_abort();
+    }
+  }
+  if (!terminus_validate_uuid($site_uuid)) {
+    return drush_set_error('DRUSH_PSITE_JOBS_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Get a list of jobs for a site.
+ */
+function drush_terminus_pantheon_site_jobs($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+
+  $environment = drush_get_option('environment');
+  $slot = drush_get_option('slot');
+
+  $jobs = terminus_jobs_list($site_uuid, $environment, $slot);
+
+  if (empty($jobs)) {
+    return drush_print(dt('No jobs match.'));
+  }
+
+  $rows = array();
+
+  foreach ($jobs as $job) {
+    $rows[] = array(
+      $job['slot'],
+      $job['name'],
+      $job['env'],
+      $job['completed'] ? 'Y' : 'N',
+      $job['status'],
+      round($job['duration_ms'] / 1000, 2) . 's',
+      date(DATE_RFC822, $job['updated']),
+    );
+  }
+
+  array_unshift($rows, array('Slot', 'Name', 'Env', 'Completed', 'Status', 'Duration', 'Updated'));
+  drush_print_table($rows, TRUE);
+}
+
+function terminus_jobs_list($site_uuid, $environment = FALSE, $slot = FALSE) {
+  $response = terminus_api_site_get_jobs($site_uuid);
+  if (!$response) {
+    return drush_set_error('DRUSH_PSITE_JOBS_EMPTY', dt('No response for site jobs!'));
+  }
+  $jobs = (array) json_decode($response['json']);
+
+  $rows = array();
+  foreach ($jobs as $job_id => $job) {
+    // Filter by environment.
+    if ($environment && $environment != $job->environment) {
+      continue;
+    }
+    // Filter by slot.
+    if ($slot && strpos($job->slot, $slot) === FALSE) {
+      continue;
+    }
+    $job_time = strtotime($job->changed);
+    $job_uid = $job_time . '-' . $job->slot;
+    $rows[$job_uid] = array(
+      'slot' => $job->slot,
+      'name' => $job->human_name,
+      'env' => $job->environment,
+      'completed' => in_array($job->phase, array('FINISHED', 'COMPLETED')) ? TRUE : FALSE,
+      'status' => $job->status,
+      'duration_ms' => $job->estimated_duration,
+      'updated' => $job_time,
+    );
+  }
+  krsort($rows);
+  return $rows;
+}
+
+/**
+ * Get a list of notifications for a site.
  */
 function drush_terminus_pantheon_site_notifications($site_uuid = FALSE) {
   $session_data = terminus_bootstrap();
