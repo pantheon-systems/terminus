@@ -986,32 +986,49 @@ function drush_terminus_pantheon_sites() {
 }
 
 /**
- * Validation for the list of Pantheon sites.
+ * Sanitize the machine name of a site.
+ *
+ * @param $name
+ *
+ * @return string
+ *   Alpha-numeric and dashes, no spaces.
  */
-function drush_terminus_pantheon_site_import_validate($name = FALSE, $url = FALSE) {
-  $session_data = terminus_bootstrap();
-  if ($session_data === FALSE) {
-    return drush_set_error('DRUSH_PSITE_IMPORT_NO_SESSION', dt('You must authenticate before using this command.'));
-  }
-  drush_set_option('session_data', $session_data);
-
-  if (!$name) {
-    if (!$name = terminus_session_select_data('site_name')) {
-      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', dt('You must supply a site name!'));
-    }
-  }
+function terminus_site_name_sanitize($name) {
+  // Trim.
+  $name = trim($name);
   // Lowercase.
   $name = strtolower($name);
   // Replace spaces with dashes.
   $name = preg_replace('/[\s]+/', '-', $name);
   // Alpha-numeric and dash.
   $name = preg_replace('/[^\da-z-]/', '', $name);
-  drush_set_option('name', $name);
+  return $name;
+}
 
+/**
+ * Validation for site import.
+ */
+function drush_terminus_pantheon_site_import_validate($name = FALSE, $url = FALSE) {
+  // Session data, required to know the current user.
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_IMPORT_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+  drush_set_option('session_data', $session_data);
+
+  // Human readable label.
   if (!$label = drush_get_option('label')) {
-    $label = terminus_session_select_data('site_label');
+    $label = terminus_session_select_data('site_label', NULL, NULL, NULL, NULL, $name);
   }
   drush_set_option('label', $label);
+
+  // Machine name.
+  if (!$name) {
+    if (!$name = terminus_session_select_data('site_name', NULL, NULL, NULL, NULL, terminus_site_name_sanitize($label))) {
+      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', dt('You must supply a site name!'));
+    }
+  }
+  drush_set_option('name', terminus_site_name_sanitize($name));
 
   if (!$url) {
     $url = drush_prompt(dt('URL containing Drush archive'), NULL, TRUE);
@@ -3694,14 +3711,14 @@ function terminus_session_select_data($key, $site_uuid = NULL, $environment = NU
       break;
 
     case 'site_name':
-      $val = drush_prompt('Provide a name for the site. This will be part of the default URL');
+      $val = drush_prompt('Machine name of the site; used as part of the default URL', $default);
       if ($val !== FALSE) {
         return $val;
       }
       break;
 
     case 'site_label':
-      $val = drush_prompt('Display name for the site');
+      $val = drush_prompt('Human readable label for the site', $default);
       if ($val !== FALSE) {
         return $val;
       }
