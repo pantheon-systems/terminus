@@ -991,16 +991,22 @@ function drush_terminus_pantheon_sites() {
 function drush_terminus_pantheon_site_import_validate($name = FALSE, $url = FALSE) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
-    return drush_set_error('DRUSH_PSITE_IMPORT_NO_SESSION', 'You must authenticate before using this command.');
+    return drush_set_error('DRUSH_PSITE_IMPORT_NO_SESSION', dt('You must authenticate before using this command.'));
   }
   drush_set_option('session_data', $session_data);
 
   if (!$name) {
     if (!$name = terminus_session_select_data('site_name')) {
-      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', 'You must supply a site name!');
+      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', dt('You must supply a site name!'));
     }
   }
-  drush_set_option('name', preg_replace("/[^A-Za-z0-9 -]/", '', $name));
+  // Lowercase.
+  $name = strtolower($name);
+  // Replace spaces with dashes.
+  $name = preg_replace('/[\s]+/', '-', $name);
+  // Alpha-numeric and dash.
+  $name = preg_replace('/[^\da-z-]/', '', $name);
+  drush_set_option('name', $name);
 
   if (!$label = drush_get_option('label')) {
     $label = terminus_session_select_data('site_label');
