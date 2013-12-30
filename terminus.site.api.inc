@@ -457,3 +457,14 @@ function terminus_api_site_bindings($site_uuid) {
 
   return terminus_request($realm, $site_uuid, $path, $method);
 }
+
+/**
+ * API Function to get jobs for a site.
+ */
+function terminus_api_site_get_jobs($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'jobs';
+  $method = 'GET';
+  return terminus_request($realm, $uuid, $path, $method);
+}
