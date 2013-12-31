@@ -1304,21 +1304,23 @@ function drush_terminus_pantheon_site_import($name = FALSE, $url = FALSE) {
 function drush_terminus_pantheon_site_create_validate($name = FALSE) {
   $session_data = terminus_bootstrap();
   if ($session_data === FALSE) {
-    return drush_set_error('DRUSH_PSITE_CREATE_NO_SESSION', 'You must authenticate before using this command.');
+    return drush_set_error('DRUSH_PSITE_CREATE_NO_SESSION', dt('You must authenticate before using this command.'));
   }
   drush_set_option('session_data', $session_data);
 
-  if (!$name) {
-    if (!$name = terminus_session_select_data('site_name')) {
-      return drush_set_error('DRUSH_PSITE_CREATE_NO_NAME', 'You must supply a site name!');
-    }
-  }
-  drush_set_option('name', preg_replace("/[^A-Za-z0-9 -]/", '', $name));
-
+  // Human readable label.
   if (!$label = drush_get_option('label')) {
-    $label = terminus_session_select_data('site_label');
+    $label = terminus_session_select_data('site_label', NULL, NULL, NULL, NULL, $name);
   }
   drush_set_option('label', $label);
+
+  // Machine name.
+  if (!$name) {
+    if (!$name = terminus_session_select_data('site_name', NULL, NULL, NULL, NULL, terminus_site_name_sanitize($label))) {
+      return drush_set_error('DRUSH_PSITE_IMPORT_NO_NAME', dt('You must supply a site name!'));
+    }
+  }
+  drush_set_option('name', terminus_site_name_sanitize($name));
 
   if (!$organization = drush_get_option('organization')) {
     $organization = terminus_session_select_data('organization');
@@ -1329,7 +1331,7 @@ function drush_terminus_pantheon_site_create_validate($name = FALSE) {
     $product = drush_get_option('product');
   }
   else if (!$product = terminus_session_select_data('product')) {
-    return drush_set_error('DRUSH_PSITE_CREATE_NO_PRODUCT', 'You must specify a starting state!');
+    return drush_set_error('DRUSH_PSITE_CREATE_NO_PRODUCT', dt('You must specify a starting state!'));
   }
   drush_set_option('product', $product);
 }
@@ -1346,10 +1348,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   $label = drush_get_option('label');
   $product = drush_get_option('product');
 
-  drush_log("Queuing build.", "ok");
+  drush_log(dt('Queuing build.'), 'ok');
   $result = terminus_api_user_site_create($user_uuid, $name, $label, $organization, $product);
   if (!$result) {
-    return drush_set_error('DRUSH_PSITE_CREATE_FAILED', 'Site creation failed.');
+    return drush_set_error('DRUSH_PSITE_CREATE_FAILED', dt('Site creation failed.'));
   }
   if (isset($json_output) && isset($result['json'])  && $result['json']) {
     drush_print($result['json']);
@@ -1357,8 +1359,10 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
   }
 
   $site_uuid = json_decode($result['json']);
-  drush_log("Your new site is now building.", "ok");
-  drush_print("The site's UUID is '" . $site_uuid . "'");
+  drush_log(dt('Your new site "@name" is now building with UUID "@site_uuid".', array(
+    '@name' => $name,
+    '@site_uuid' => $site_uuid,
+  )), 'ok');
   drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
   drush_cache_clear_all('terminus-user-sites-' . $user_uuid, 'pantheon', TRUE);
   if ($organization) {
@@ -1367,16 +1371,15 @@ function drush_terminus_pantheon_site_create($name = FALSE) {
 
   // Poll for completion.
   if (drush_get_option('nopoll')) {
-    drush_log("No-poll option detected. Check your dashboard to see when this site is ready.");
+    drush_log(dt('Not polling for completion; check your dashboard to see when this site is ready.'));
     return TRUE;
   }
-  drush_print(dt('Waiting for site spinup to complete. You can cancel at any point and the process will continue in the background.'));
+  drush_print(dt('Waiting for site spin-up to complete. You can cancel at any point and the process will continue in the background.'));
 
   terminus_site_creation_poll($site_uuid);
 
-  drush_print("Your site is now ready! Manage it from the dashboard:");
-  drush_print("https://dashboard.getpantheon.com/sites/$site_uuid");
-  return TRUE;
+  drush_log(dt('Your site is now ready! Manage it from the dashboard:'), 'ok');
+  drush_print('https://dashboard.getpantheon.com/sites/' . $site_uuid);
 }
 
 /**
@@ -1418,6 +1421,7 @@ function terminus_site_creation_poll($site_uuid) {
   // Wait for the sync code job to complete.
   drush_print("Creating git repository and deploying code to dev.");
   terminus_notification_poll($site_uuid, 'chef_solo_sync_code');
+  echo ' ' . dt('Complete!') . "\n";
 }
 
 /**
@@ -1648,8 +1652,11 @@ function drush_terminus_pantheon_site_delete($site_uuid = FALSE) {
   }
 
   $result = terminus_api_site_delete($site_uuid);
-  drush_log("Site deleted.", "ok");
-  drush_cache_clear_all('terminus-sites', 'pantheon');
+  if (!$result) {
+    return drush_set_error('PSITE_DELETE_API', dt('Unable to delete site, try again?'));
+  }
+  drush_log(dt('Site deleted.'), 'ok');
+  drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
   return TRUE;
 }
 
