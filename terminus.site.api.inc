@@ -371,6 +371,17 @@ function terminus_api_site_environment_lock_delete($site_uuid, $environment) {
 }
 
 /**
+ * API call get lock info for an environment.
+ */
+function terminus_api_site_environment_lock_info($site_uuid, $environment) {
+  $realm = 'site';
+  $path = 'environments/' . $environment . '/lock';
+  $method = 'GET';
+
+  return terminus_request($realm, $site_uuid, $path, $method);
+}
+
+/**
  * API call to get hostnames for an environment.
  */
 function terminus_api_site_environment_hostnames($site_uuid, $environment) {

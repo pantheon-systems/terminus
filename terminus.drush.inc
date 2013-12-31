@@ -369,6 +369,38 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-environment-lock'] = array(
+    'description' => dt('Lock a site environment.'),
+    'arguments' => array(
+      'site' => dt('UUID or name of the site.'),
+      'environment' => dt('Name of site environment.'),
+      'username' => dt('Username for HTTP Basic Auth'),
+      'password' => dt('Password for HTTP Basic Auth'),
+    ),
+    'aliases' => array('psite-elo'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-environment-unlock'] = array(
+    'description' => dt('Unlock a site environment.'),
+    'arguments' => array(
+      'site' => dt('UUID or name of the site.'),
+      'environment' => dt('Name of site environment.'),
+    ),
+    'aliases' => array('psite-eul'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
+  $items['pantheon-site-environment-lock-info'] = array(
+    'description' => dt('Get information about whether a site environment is locked.'),
+    'arguments' => array(
+      'site' => dt('UUID or name of the site.'),
+      'environment' => dt('Name of site environment.'),
+    ),
+    'aliases' => array('psite-eli'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+  );
+
   $items['pantheon-site-notifications'] = array(
     'description' => dt('Get a list of notifications for a site.'),
     'arguments' => array(
@@ -415,12 +447,12 @@ function terminus_drush_command() {
   );
 
   $items['pantheon-site-name'] = array(
-    'description' => "Get the site name based on the UUID.",
+    'description' => dt('Get the site name from UUID.'),
     'arguments' => array(
-      'uuid' => 'UUID of the site.',
+      'uuid' => dt('UUID of the site.'),
     ),
     'examples' => array(
-      'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => 'Get the name of your site.',
+      'drush psite-name 12345678-1234-abcd-9876-fedcba09 --nocache' => dt('Get the name of your site.'),
     ),
     'required-arguments' => TRUE,
     'aliases' => array('psite-name'),
@@ -712,6 +744,167 @@ function terminus_drush_command() {
  *
  * These commands exercise various aspects of the API.
  */
+
+/**
+ * Validate site environment lock.
+ */
+function drush_terminus_pantheon_site_environment_lock_validate($site_uuid = FALSE, $environment = FALSE, $username = FALSE, $password = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_LOCK_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_LOCK_INVALID_ENV', dt('You must specify a valid environment name.'));
+    }
+  }
+  drush_set_option('environment', $environment);
+
+  $result = terminus_api_site_environment_lock_info($site_uuid, $environment);
+  if (!$result) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INFO_REQFAIL', dt('Unable to get lock information.'));
+  }
+  $lock = json_decode($result['json']);
+  if ($lock->locked) {
+    return drush_set_error('DRUSH_PSITE_LOCK_ALREADY_LOCKED', dt('Already locked!'));
+  }
+
+  if (!$username) {
+    if (!$username = drush_prompt(dt('Username'))) {
+      return drush_user_abort();
+    }
+  }
+  drush_set_option('username', $username);
+
+  if (!$password) {
+    if (!$password = drush_prompt(dt('Password'))) {
+      return drush_user_abort();
+    }
+  }
+  drush_set_option('password', $password);
+}
+
+/**
+ * Lock a site environment.
+ */
+function drush_terminus_pantheon_site_environment_lock($site_uuid = FALSE, $environment = FALSE, $username = FALSE, $password = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+  $username = drush_get_option('username');
+  $password = drush_get_option('password');
+
+  $result = terminus_api_site_environment_lock($site_uuid, $environment, $username, $password);
+  if (!$result) {
+    return drush_set_error('DRUSH_PSITE_LOCK_REQFAIL', dt('Unable to lock.'));
+  }
+  drush_log(dt('@site_name @environment is now locked.', array(
+    '@site_name' => terminus_pantheon_site_name($site_uuid),
+    '@environment' => $environment,
+  )), 'ok');
+}
+
+/**
+ * Validate site environment unlock.
+ */
+function drush_terminus_pantheon_site_environment_unlock_validate($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_UNLOCK_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_UNLOCK_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_UNLOCK_INVALID_ENV', dt('You must specify a valid environment name.'));
+    }
+  }
+  drush_set_option('environment', $environment);
+
+  $result = terminus_api_site_environment_lock_info($site_uuid, $environment);
+  if (!$result) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INFO_REQFAIL', dt('Unable to get lock information.'));
+  }
+  $lock = json_decode($result['json']);
+  if (!$lock->locked) {
+    return drush_set_error('DRUSH_PSITE_UNLOCK_ALREADY_UNLOCKED', dt('Already unlocked!'));
+  }
+}
+
+/**
+ * Unlock a site environment.
+ */
+function drush_terminus_pantheon_site_environment_unlock($site_uuid = FALSE, $environment = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+
+  $result = terminus_api_site_environment_lock_delete($site_uuid, $environment);
+  if (!$result) {
+    return drush_set_error('DRUSH_PSITE_UNLOCK_REQFAIL', dt('Unable to unlock.'));
+  }
+  drush_log(dt('@site_name @environment is now unlocked.', array(
+    '@site_name' => terminus_pantheon_site_name($site_uuid),
+    '@environment' => $environment,
+  )), 'ok');
+}
+
+/**
+ * Validate Pantheon site environment lock info.
+ */
+function drush_terminus_pantheon_site_environment_lock_info_validate($site_uuid = FALSE, $environment = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INFO_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INFO_INVALID_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+
+  if (!terminus_validate_environment($environment)) {
+    if (!$environment = terminus_session_select_data('environment', $site_uuid)) {
+      return drush_set_error('DRUSH_PSITE_LOCK_INFO_INVALID_ENV', dt('You must specify a valid environment name.'));
+    }
+  }
+  drush_set_option('environment', $environment);
+}
+
+/**
+ * Get lock info for a site environment.
+ */
+function drush_terminus_pantheon_site_environment_lock_info($site_uuid = FALSE, $environment = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $environment = drush_get_option('environment');
+
+  $result = terminus_api_site_environment_lock_info($site_uuid, $environment);
+  if (!$result) {
+    return drush_set_error('DRUSH_PSITE_LOCK_INFO_REQFAIL', dt('Unable to get lock information.'));
+  }
+  $lock = json_decode($result['json']);
+  if (!$lock->locked) {
+    drush_print(dt('@site_name @environment is unlocked.', array(
+      '@site_name' => terminus_pantheon_site_name($site_uuid),
+      '@environment' => $environment,
+    )));
+  } else {
+    drush_print(dt('@site_name @environment is locked with username "@username" and password "@password".', array(
+      '@site_name' => terminus_pantheon_site_name($site_uuid),
+      '@environment' => $environment,
+      '@username' => $lock->username,
+      '@password' => $lock->password,
+    )));
+  }
+}
 
 /**
  * Validate Pantheon site wake.
