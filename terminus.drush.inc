@@ -896,7 +896,8 @@ function drush_terminus_pantheon_site_environment_lock_info($site_uuid = FALSE, 
       '@site_name' => terminus_pantheon_site_name($site_uuid),
       '@environment' => $environment,
     )));
-  } else {
+  }
+  else {
     drush_print(dt('@site_name @environment is locked with username "@username" and password "@password".', array(
       '@site_name' => terminus_pantheon_site_name($site_uuid),
       '@environment' => $environment,
@@ -4032,6 +4033,13 @@ function terminus_latest_bucket($site_uuid, $environment, $element = NULL) {
  * Helper function to handle site UUID input.
  */
 function terminus_site_input($site_input = FALSE, $prompt = TRUE, $uuid_only = FALSE) {
+  if (!terminus_validate_uuid($site_input) && $site_input) {
+    // Try to guess based on name.
+    $guessed_uuid = terminus_get_site_uuid_by_name($site_input);
+    if (terminus_validate_uuid($guessed_uuid)) {
+      return $guessed_uuid;
+    }
+  }
   if (!$site_input && $prompt) {
     $site_input = terminus_session_select_data('site_uuid');
   }
