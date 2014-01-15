@@ -479,3 +479,14 @@ function terminus_api_site_get_jobs($site_uuid) {
   $method = 'GET';
   return terminus_request($realm, $uuid, $path, $method);
 }
+
+/**
+ * API Function to get New Relic info.
+ */
+function terminus_api_new_relic_info($site_uuid) {
+  $realm = 'site';
+  $uuid = $site_uuid;
+  $path = 'new-relic';
+  $method = 'GET';
+  return terminus_request($realm, $uuid, $path, $method);
+}

@@ -697,6 +697,34 @@ function terminus_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
 
+  $items['pantheon-site-info'] = array(
+    'description' => dt('Get Pantheon metadata on a site'),
+    'aliases' => array('psite-info'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => dt('UUID or name of the site.'),
+    ),
+    'options' => array(
+      'json' => array(
+        'description' => dt('If set, will output in JSON format.'),
+      ),
+    ),
+  );
+
+  $items['pantheon-site-nr-info'] = array(
+    'description' => dt('Get New Relic metadata on a site'),
+    'aliases' => array('psite-nri'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'arguments' => array(
+      'site' => dt('UUID or name of the site.'),
+    ),
+    'options' => array(
+      'json' => array(
+        'description' => dt('If set, will output in JSON format.'),
+      ),
+    ),
+  );
+
   $items['pantheon-site-wake'] = array(
     'description' => 'Ensure a site environment is online and not suspended due to inactivity.',
     'aliases' => array('psite-wake'),
@@ -744,6 +772,69 @@ function terminus_drush_command() {
  *
  * These commands exercise various aspects of the API.
  */
+
+/**
+ * Validate site info.
+ */
+function drush_terminus_pantheon_site_info_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_INFO_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_INFO_NO_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * Site info.
+ */
+function drush_terminus_pantheon_site_info($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_site_info($site_uuid);
+  if (drush_get_option('json')) {
+    drush_print($result['json']);
+  }
+  else {
+    drush_print_r(json_decode($result['json']));
+  }
+}
+
+/**
+ * Validate New Relic info.
+ */
+function drush_terminus_pantheon_site_nr_info_validate($site_uuid = FALSE) {
+  $session_data = terminus_bootstrap();
+  if ($session_data === FALSE) {
+    return drush_set_error('DRUSH_PSITE_NR_INFO_NO_SESSION', dt('You must authenticate before using this command.'));
+  }
+
+  if (!$site_uuid = terminus_site_input($site_uuid, TRUE, TRUE)) {
+    return drush_set_error('DRUSH_PSITE_NR_INFO_NO_UUID', dt('You must specify a valid site UUID.'));
+  }
+  drush_set_option('site_uuid', $site_uuid);
+}
+
+/**
+ * New Relic info.
+ */
+function drush_terminus_pantheon_site_nr_info($site_uuid = FALSE) {
+  $site_uuid = drush_get_option('site_uuid');
+  $result = terminus_api_new_relic_info($site_uuid);
+  if ($result['json'] != 'No NewRelic account found') {
+    if (drush_get_option('json')) {
+      drush_print($result['json']);
+    }
+    else {
+      drush_print_r(json_decode($result['json']));
+    }
+  }
+  else {
+    drush_set_error('DRUSH_PSITE_NR_INFO_NO_NR', dt('Site does not have New Relic enabled.'));
+  }
+}
 
 /**
  * Validate site environment lock.
