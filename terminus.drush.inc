@@ -1413,7 +1413,11 @@ function drush_terminus_pantheon_site_create_validate($name = FALSE) {
   }
   drush_set_option('name', terminus_site_name_sanitize($name));
 
-  if (!$organization = drush_get_option('organization')) {
+  $organization = drush_get_option('organization');
+  if ($organization == 'none') {
+    $organization = '';
+  }
+  else if (!$organization) {
     $organization = terminus_session_select_data('organization');
   }
   drush_set_option('organization', $organization);
