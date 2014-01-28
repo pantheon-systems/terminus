@@ -2509,7 +2509,7 @@ function drush_terminus_pantheon_site_environment_create($site_uuid = FALSE, $ne
   )), 0, NULL, FALSE);
   $result_clone_files = terminus_api_environment_clone_files($site_uuid, $env_source, $new_environment);
   drush_log(json_decode($result_clone_files['json']));
-  if (FALSE) {
+  if (TRUE) {
     if (terminus_job_poll($site_uuid, 'clone_files_from_' . $env_source . '_to_' . $new_environment)) {
       drush_print(' ' . dt('files cloned.'));
     }
@@ -2524,7 +2524,7 @@ function drush_terminus_pantheon_site_environment_create($site_uuid = FALSE, $ne
   )), 0, NULL, FALSE);
   $result_clone_db = terminus_api_environment_clone_database($site_uuid, $env_source, $new_environment, FALSE);
   drush_log(json_decode($result_clone_db['json']));
-  if (FALSE) {
+  if (TRUE) {
     if (terminus_job_poll($site_uuid, 'clone_database_from_' . $env_source . '_to_' . $new_environment)) {
       drush_print(' ' . dt('database cloned.'));
     }
@@ -3362,7 +3362,7 @@ function drush_terminus_pantheon_aliases() {
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
     $host = 'onebox.getpantheon.com';
   }
-  $url = 'https://' . $host . '/users/'. $session_data['user_uuid'] . '/drushrc';
+  $url = 'https://' . $host . '/users/' . $session_data['user_uuid'] . '/drushrc';
   curl_setopt($ch, CURLOPT_URL, $url);
 
   $result = curl_exec($ch);
@@ -3377,6 +3377,8 @@ function drush_terminus_pantheon_aliases() {
   fclose($fh);
   drush_log('Pantheon aliases updated.', 'ok');
   drush_invoke('cache-clear', 'drush');
+  drush_cache_clear_all('terminus-sites', 'pantheon', TRUE);
+  drush_cache_clear_all('terminus-user-sites-' . $user_uuid, 'pantheon', TRUE);
 
   return TRUE;
 }
