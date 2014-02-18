@@ -252,30 +252,6 @@ class Runner {
 		$this->run_command( $this->arguments, $this->assoc_args );
 	}
 
-	/**
-	 * Returns wp-config.php code, skipping the loading of wp-settings.php
-	 *
-	 * @return string
-	 */
-	public function get_wp_config_code() {
-		$wp_config_path = Utils\locate_wp_config();
-
-		$wp_config_code = explode( "\n", file_get_contents( $wp_config_path ) );
-
-		$lines_to_run = array();
-
-		foreach ( $wp_config_code as $line ) {
-			if ( preg_match( '/^\s*require.+wp-settings\.php/', $line ) )
-				continue;
-
-			$lines_to_run[] = $line;
-		}
-
-		$source = implode( "\n", $lines_to_run );
-		$source = Utils\replace_path_consts( $source, $wp_config_path );
-		return preg_replace( '|^\s*\<\?php\s*|', '', $source );
-	}
-
 	// Transparently convert old syntaxes
 	private static function back_compat_conversions( $args, $assoc_args ) {
 		$top_level_aliases = array(
@@ -510,12 +486,6 @@ class Runner {
 			exit;
 		}
 
-		if ( $this->cmd_starts_with( array( 'db' ) ) ) {
-			eval( $this->get_wp_config_code() );
-			$this->_run_command();
-			exit;
-		}
-
 		if ( $this->cmd_starts_with( array( 'core', 'is-installed' ) ) ) {
 			define( 'WP_INSTALLING', true );
 		}
@@ -552,44 +522,12 @@ class Runner {
 		if ( $this->cmd_starts_with( array( 'plugin' ) ) ) {
 			$GLOBALS['pagenow'] = 'plugins.php';
 		}
-	}
 
-	private static function fake_current_site_blog( $url_parts ) {
-		global $current_site, $current_blog;
 
-		if ( !isset( $url_parts['path'] ) ) {
-			$url_parts['path'] = '/';
-		}
-
-		$current_site = (object) array(
-			'id' => 1,
-			'blog_id' => 1,
-			'domain' => $url_parts['host'],
-			'path' => $url_parts['path'],
-			'cookie_domain' => $url_parts['host'],
-			'site_name' => 'Fake Site',
-		);
-
-		$current_blog = (object) array(
-			'blog_id' => 1,
-			'site_id' => 1,
-			'domain' => $url_parts['host'],
-			'path' => $url_parts['path'],
-			'public' => '1',
-			'archived' => '0',
-			'mature' => '0',
-			'spam' => '0',
-			'deleted' => '0',
-			'lang_id' => '0',
-		);
-	}
-
-	public function after_wp_load() {
-
-		// Handle --user parameter
-		self::set_user( $this->config );
-
+		# Run the stinkin command!
 		$this->_run_command();
+
 	}
+
 }
 
