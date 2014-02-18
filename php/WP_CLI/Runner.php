@@ -505,17 +505,9 @@ class Runner {
 
 		$this->do_early_invoke( 'before_wp_load' );
 
-		$this->check_wp_version();
-
 		if ( $this->cmd_starts_with( array( 'core', 'config' ) ) ) {
 			$this->_run_command();
 			exit;
-		}
-
-		if ( !Utils\locate_wp_config() ) {
-			WP_CLI::error(
-				"wp-config.php not found.\n" .
-				"Either create one manually or use `wp core config`." );
 		}
 
 		if ( $this->cmd_starts_with( array( 'db' ) ) ) {
@@ -593,7 +585,6 @@ class Runner {
 	}
 
 	public function after_wp_load() {
-		add_filter( 'filesystem_method', function() { return 'direct'; }, 99 );
 
 		// Handle --user parameter
 		self::set_user( $this->config );
