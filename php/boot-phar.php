@@ -1,5 +1,6 @@
 <?php
 
-define( 'TERMINUS_ROOT', 'phar://terminus.phar' );
+define( 'WP_CLI_ROOT', 'phar://wp-cli.phar' );
 
-include TERMINUS_ROOT . '/php/terminus.php';
+include WP_CLI_ROOT . '/php/wp-cli.php';
+
