@@ -1,3 +1,4 @@
-vendor
-composer.lock
-tests/phpunit.xml
+/vendor
+/*.phar
+/phpunit.xml
+/builds

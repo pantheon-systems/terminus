@@ -1,0 +1,17 @@
+{
+    "name": "bensheldon/terminus",
+    "description": "a PHP CLI for TERMINUS",
+    "require": {
+        "jlogsdon/cli": "~0.9.4",
+        "rmccue/requests": "~1.6",
+        "symfony/finder": "~2.3"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ben Sheldon",
+            "email": "bensheldon@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
