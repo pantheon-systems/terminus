@@ -7,7 +7,7 @@ namespace WP_CLI;
  *
  * @package terminus
  */
-abstract class CommandWithDBObject extends \WP_CLI_Command {
+abstract class CommandWithDBObject extends \Terminus_Command {
 
 	protected $obj_type;
 	protected $obj_id_key = 'ID';

@@ -8,7 +8,7 @@ use \WP_CLI\Dispatcher,
  *
  * @when before_wp_load
  */
-class CLI_Command extends WP_CLI_Command {
+class CLI_Command extends Terminus_Command {
 
 	private function command_to_array( $command ) {
 		$dump = array(

@@ -4,7 +4,7 @@
  *
  * @when before_wp_load
  */
-class Sites_Command extends WP_CLI_Command {
+class Sites_Command extends Terminus_Command {
 	/**
 	 * Show a list of your sites on Pantheon
 	 */

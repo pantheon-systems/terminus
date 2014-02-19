@@ -26,7 +26,7 @@ Feature: Get help about WP-CLI commands
       <?php
       // Plugin Name: Test CLI Help
 
-      class Test_Help extends WP_CLI_Command {
+      class Test_Help extends Terminus_Command {
         /**
          * A dummy command.
          */

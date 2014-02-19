@@ -5,7 +5,7 @@
  *
  * @package terminus
  */
-abstract class WP_CLI_Command {
+abstract class Terminus_Command {
 
   public $cache;
   public $session;

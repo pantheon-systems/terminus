@@ -7,7 +7,7 @@ namespace WP_CLI;
  *
  * @package terminus
  */
-abstract class CommandWithSSH extends \WP_CLI_Command {
+abstract class CommandWithSSH extends \Terminus_Command {
 
   protected function send_command($server, $remote_exec, $args, $assoc_args) {
     # unset CLI args

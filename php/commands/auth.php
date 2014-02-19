@@ -4,7 +4,7 @@
  *
  * @when before_wp_load
  */
-class Auth_Command extends WP_CLI_Command {
+class Auth_Command extends Terminus_Command {
 
 	/**
 	 * Log yourself out and remove the secret session key.

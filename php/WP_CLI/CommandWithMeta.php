@@ -7,7 +7,7 @@ namespace WP_CLI;
  *
  * @package terminus
  */
-abstract class CommandWithMeta extends \WP_CLI_Command {
+abstract class CommandWithMeta extends \Terminus_Command {
 
 	protected $meta_type;
 

@@ -149,7 +149,7 @@ Feature: Global flags
       /**
        * @when before_wp_load
        */
-      class Test_Command extends WP_CLI_Command {
+      class Test_Command extends Terminus_Command {
 
         function req( $args, $assoc_args ) {
           WP_CLI::line( $args[0] );

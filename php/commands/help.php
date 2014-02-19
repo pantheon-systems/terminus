@@ -3,7 +3,7 @@
 use \WP_CLI\Utils;
 use \WP_CLI\Dispatcher;
 
-class Help_Command extends WP_CLI_Command {
+class Help_Command extends Terminus_Command {
 
 	/**
 	 * Get help on a certain command.

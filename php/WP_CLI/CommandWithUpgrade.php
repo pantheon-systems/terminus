@@ -2,7 +2,7 @@
 
 namespace WP_CLI;
 
-abstract class CommandWithUpgrade extends \WP_CLI_Command {
+abstract class CommandWithUpgrade extends \Terminus_Command {
 
 	protected $item_type;
 	protected $obj_fields;
