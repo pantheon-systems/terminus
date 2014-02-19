@@ -5,7 +5,7 @@ namespace WP_CLI;
 /**
  * Base class for WP-CLI commands that deal with database objects.
  *
- * @package wp-cli
+ * @package terminus
  */
 abstract class CommandWithDBObject extends \WP_CLI_Command {
 
@@ -82,7 +82,7 @@ abstract class CommandWithDBObject extends \WP_CLI_Command {
 	protected function get_formatter( &$assoc_args ) {
 		return new \WP_CLI\Formatter( $assoc_args, $this->obj_fields, $this->obj_type );
 	}
-	
+
 	protected function _url( $args, $callback ) {
 		foreach ( $args as $obj_id ) {
 			$object = $this->fetcher->get_check( $obj_id );

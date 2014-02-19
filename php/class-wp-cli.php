@@ -67,7 +67,7 @@ class WP_CLI {
 				// sometime in windows $HOME is not defined
 				$home = getenv( 'HOMEDRIVE' ) . '/' . getenv( 'HOMEPATH' );
 			}
-			$dir = getenv( 'TERMINUS_CACHE_DIR' ) ? : "$home/.wp-cli/cache";
+			$dir = getenv( 'TERMINUS_CACHE_DIR' ) ? : "$home/.terminus/cache";
 
 			// 6 months, 300mb
 			$cache = new FileCache( $dir, 15552000, 314572800 );
@@ -150,7 +150,7 @@ class WP_CLI {
 	}
 
 	/**
-	 * Add a command to the wp-cli list of commands
+	 * Add a command to the terminus list of commands
 	 *
 	 * @param string $name The name of the command that will be used in the CLI
 	 * @param string $class The command implementation

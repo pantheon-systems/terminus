@@ -1,15 +1,15 @@
 {
-	"name": "wp-cli/wp-cli",
+	"name": "terminus/terminus",
 	"description": "A command line interface for WordPress",
-	"keywords": [ "cli", "wordpress" ], 
-	"homepage": "http://wp-cli.org",
+	"keywords": [ "cli", "wordpress" ],
+	"homepage": "http://terminus.org",
 	"license": "MIT",
 	"bin": [
 		"bin/wp.bat", "bin/wp"
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"wp-cli/php-cli-tools": "0.9.4-patch46",
+		"terminus/php-cli-tools": "0.9.4-patch46",
 		"mustache/mustache": "~2.4",
 		"rhumsaa/array_column": "~1.1",
 		"rmccue/requests": "~1.6",

@@ -229,16 +229,16 @@
             "time": "2014-01-07 13:28:54"
         },
         {
-            "name": "wp-cli/php-cli-tools",
+            "name": "terminus/php-cli-tools",
             "version": "v0.9.4-patch46",
             "source": {
                 "type": "git",
-                "url": "https://github.com/wp-cli/php-cli-tools.git",
+                "url": "https://github.com/terminus/php-cli-tools.git",
                 "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wp-cli/php-cli-tools/zipball/02d5ed4cdbab911df91bf06062c8b2705fb0919a",
+                "url": "https://api.github.com/repos/terminus/php-cli-tools/zipball/02d5ed4cdbab911df91bf06062c8b2705fb0919a",
                 "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a",
                 "shasum": ""
             },

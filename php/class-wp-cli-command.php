@@ -3,7 +3,7 @@
 /**
  * Base class for WP-CLI commands
  *
- * @package wp-cli
+ * @package terminus
  */
 abstract class WP_CLI_Command {
 

@@ -45,7 +45,7 @@ Feature: Perform database operations
       1
       """
 
-    When I run `wp db export /tmp/wp-cli-behat.sql`
+    When I run `wp db export /tmp/terminus-behat.sql`
     Then STDOUT should contain:
       """
       Success: Exported
@@ -60,7 +60,7 @@ Feature: Perform database operations
     When I try `wp post list --format=count`
     Then STDERR should not be empty
 
-    When I run `wp db import /tmp/wp-cli-behat.sql`
+    When I run `wp db import /tmp/terminus-behat.sql`
     Then STDOUT should contain:
       """
       Success: Imported

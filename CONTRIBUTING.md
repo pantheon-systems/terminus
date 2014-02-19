@@ -16,8 +16,8 @@ Submitting patches
 
 Whether you want to fix a bug or implement a new feature, the process is pretty much the same:
 
-0. [Search existing issues](https://github.com/wp-cli/wp-cli/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
-1. [Fork](https://github.com/wp-cli/wp-cli/fork) the repository.
+0. [Search existing issues](https://github.com/terminus/terminus/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
+1. [Fork](https://github.com/terminus/terminus/fork) the repository.
 2. Push the code changes from your local clone to your fork.
 3. Open a pull request.
 

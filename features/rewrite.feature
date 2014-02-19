@@ -36,7 +36,7 @@ Feature: Manage WordPress rewrites
 
   Scenario: Generate .htaccess on hard flush
     Given a WP install
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       apache_modules: [mod_rewrite]
       """

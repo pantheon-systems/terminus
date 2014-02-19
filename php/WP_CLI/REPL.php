@@ -99,7 +99,7 @@ BASH;
 	private function set_history_file() {
 		$data = getcwd() . get_current_user();
 
-		$this->history_file = sys_get_temp_dir() . '/wp-cli-history-' . md5( $data );
+		$this->history_file = sys_get_temp_dir() . '/terminus-history-' . md5( $data );
 	}
 
 	private static function starts_with( $tokens, $line ) {

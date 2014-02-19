@@ -5,7 +5,7 @@ namespace WP_CLI;
 /**
  * A Upgrader Skin for WordPress that only generates plain-text
  *
- * @package wp-cli
+ * @package terminus
  */
 class UpgraderSkin extends \WP_Upgrader_Skin {
 

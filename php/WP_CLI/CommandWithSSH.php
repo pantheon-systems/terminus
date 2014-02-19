@@ -5,7 +5,7 @@ namespace WP_CLI;
 /**
  * Base class for WP-CLI commands that deal with sending SSH commands
  *
- * @package wp-cli
+ * @package terminus
  */
 abstract class CommandWithSSH extends \WP_CLI_Command {
 

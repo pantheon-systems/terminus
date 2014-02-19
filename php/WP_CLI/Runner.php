@@ -46,7 +46,7 @@ class Runner {
 		}
 
 		if ( !$config_path ) {
-			$config_path = getenv( 'HOME' ) . '/.wp-cli/config.yml';
+			$config_path = getenv( 'HOME' ) . '/.terminus/config.yml';
 		}
 
 		if ( !is_readable( $config_path ) )
@@ -57,8 +57,8 @@ class Runner {
 
 	private static function get_project_config_path() {
 		$config_files = array(
-			'wp-cli.local.yml',
-			'wp-cli.yml'
+			'terminus.local.yml',
+			'terminus.yml'
 		);
 
 		// Stop looking upward when we find we have emerged from a subdirectory

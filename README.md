@@ -1,27 +1,27 @@
 WP-CLI
 ======
 
-[![Build Status](https://travis-ci.org/wp-cli/wp-cli.png?branch=master)](https://travis-ci.org/wp-cli/wp-cli)
+[![Build Status](https://travis-ci.org/terminus/terminus.png?branch=master)](https://travis-ci.org/terminus/terminus)
 
 WP-CLI is a set of command-line tools for managing WordPress installations.
 
 Installing
 ------------
-If you just want to use WP-CLI, see <http://wp-cli.org/#install>.
+If you just want to use WP-CLI, see <http://terminus.org/#install>.
 
 If you want to hack on WP-CLI, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Where can I get more info?
 --------------------------
-For documentation and examples, check out [wp-cli.org](http://wp-cli.org/) and the [wiki](https://github.com/wp-cli/wp-cli/wiki).
+For documentation and examples, check out [terminus.org](http://terminus.org/) and the [wiki](https://github.com/terminus/terminus/wiki).
 
-Also, WordPress Answers has a growing list of [WP-CLI related questions](http://wordpress.stackexchange.com/questions/tagged/wp-cli).
+Also, WordPress Answers has a growing list of [WP-CLI related questions](http://wordpress.stackexchange.com/questions/tagged/terminus).
 
-If you want to receive an email for every single commit, you can subscribe to the [wp-cli-commits](https://groups.google.com/forum/?fromgroups=#!forum/wp-cli-commits) mailing list.
+If you want to receive an email for every single commit, you can subscribe to the [terminus-commits](https://groups.google.com/forum/?fromgroups=#!forum/terminus-commits) mailing list.
 
 I'm running into troubles, what can I do?
 -----------------------------------------
-To suggest a feature, report a bug, or general discussion, visit the [issues section](https://github.com/wp-cli/wp-cli/issues).
+To suggest a feature, report a bug, or general discussion, visit the [issues section](https://github.com/terminus/terminus/issues).
 
 If you're reporting a bug, please also post the output from `wp --info`.
 
@@ -39,6 +39,6 @@ Besides the libraries defined in [composer.json](composer.json), we have used co
 
 Who's behind this thing?
 ------------------------
-We are [Andreas Creten](https://github.com/andreascreten) and [Cristi Burcă](https://github.com/scribu), friendly guys from Europe. For more info, see [Governance](https://github.com/wp-cli/wp-cli/wiki/Governance).
+We are [Andreas Creten](https://github.com/andreascreten) and [Cristi Burcă](https://github.com/scribu), friendly guys from Europe. For more info, see [Governance](https://github.com/terminus/terminus/wiki/Governance).
 
-A complete list of contributors can be found [here](https://github.com/wp-cli/wp-cli/contributors).
+A complete list of contributors can be found [here](https://github.com/terminus/terminus/contributors).

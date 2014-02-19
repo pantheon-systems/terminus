@@ -169,14 +169,14 @@ Feature: Global flags
       <?php echo basename(__FILE__) . "\n";
       """
 
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       require:
         - foo.php
         - bar.php
       """
 
-    And a wp-cli2.yml file:
+    And a terminus2.yml file:
       """
       require: custom-cmd.php
       """
@@ -189,7 +189,7 @@ Feature: Global flags
       This is a custom command.
       """
 
-    When I run `TERMINUS_CONFIG_PATH=wp-cli2.yml wp test req 'This is a custom command.'`
+    When I run `TERMINUS_CONFIG_PATH=terminus2.yml wp test req 'This is a custom command.'`
     Then STDOUT should contain:
       """
       This is a custom command.

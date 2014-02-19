@@ -22,7 +22,7 @@ function add_file( $phar, $path ) {
 	$phar[ $key ] = file_get_contents( $path );
 }
 
-$phar = new Phar( DEST_PATH, 0, 'wp-cli.phar' );
+$phar = new Phar( DEST_PATH, 0, 'terminus.phar' );
 
 $phar->startBuffering();
 
@@ -33,7 +33,7 @@ $finder
 	->ignoreVCS(true)
 	->name('*.php')
 	->in('./php')
-	->in('./vendor/wp-cli')
+	->in('./vendor/terminus')
 	->in('./vendor/mustache')
 	->in('./vendor/rmccue/requests')
 	->in('./vendor/composer')
@@ -70,7 +70,7 @@ $phar->setStub( <<<EOB
 #!/usr/bin/env php
 <?php
 Phar::mapPhar();
-include 'phar://wp-cli.phar/php/boot-phar.php';
+include 'phar://terminus.phar/php/boot-phar.php';
 __HALT_COMPILER();
 ?>
 EOB

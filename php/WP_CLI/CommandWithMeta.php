@@ -5,7 +5,7 @@ namespace WP_CLI;
 /**
  * Base class for WP-CLI commands that deal with metadata
  *
- * @package wp-cli
+ * @package terminus
  */
 abstract class CommandWithMeta extends \WP_CLI_Command {
 

@@ -6,7 +6,7 @@ Feature: Have a config file
     When I run `wp --info`
     Then STDOUT should not contain:
       """
-      wp-cli.yml
+      terminus.yml
       """
 
     When I run `wp core is-installed` from 'wp-content'
@@ -18,7 +18,7 @@ Feature: Have a config file
       """
       <?php
       """
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       require: sample.php
       """
@@ -26,7 +26,7 @@ Feature: Have a config file
     When I run `wp --info`
     Then STDOUT should contain:
       """
-      wp-cli.yml
+      terminus.yml
       """
 
     When I run `wp core is-installed`
@@ -37,7 +37,7 @@ Feature: Have a config file
 
   Scenario: WP in a subdirectory
     Given a WP install in 'core'
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       path: core
       """
@@ -45,7 +45,7 @@ Feature: Have a config file
     When I run `wp --info`
     Then STDOUT should contain:
       """
-      wp-cli.yml
+      terminus.yml
       """
 
     When I run `wp core is-installed`
@@ -83,14 +83,14 @@ Feature: Have a config file
   Scenario: Nested installs
     Given a WP install
     And a WP install in 'subsite'
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       """
 
     When I run `wp --info` from 'subsite'
     Then STDOUT should not contain:
       """
-      wp-cli.yml
+      terminus.yml
       """
 
   Scenario: Disabled commands
@@ -109,7 +109,7 @@ Feature: Have a config file
 
   Scenario: Command-specific configs
     Given a WP install
-    And a wp-cli.yml file:
+    And a terminus.yml file:
       """
       core config:
         dbname: wordpress

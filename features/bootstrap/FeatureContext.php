@@ -27,7 +27,7 @@ class FeatureContext extends BehatContext implements ClosuredContextInterface {
 	// We cache the results of `wp core download` to improve test performance
 	// Ideally, we'd cache at the HTTP layer for more reliable tests
 	private static function cache_wp_files() {
-		self::$cache_dir = sys_get_temp_dir() . '/wp-cli-test core-download-cache';
+		self::$cache_dir = sys_get_temp_dir() . '/terminus-test core-download-cache';
 
 		if ( is_readable( self::$cache_dir . '/wp-config-sample.php' ) )
 			return;
@@ -41,7 +41,7 @@ class FeatureContext extends BehatContext implements ClosuredContextInterface {
 	 */
 	public static function prepare( SuiteEvent $event ) {
 		self::cache_wp_files();
-		self::$suite_cache_dir = sys_get_temp_dir() . '/' . uniqid( "wp-cli-test-suite-cache-", TRUE );
+		self::$suite_cache_dir = sys_get_temp_dir() . '/' . uniqid( "terminus-test-suite-cache-", TRUE );
 		mkdir( self::$suite_cache_dir );
 	}
 
@@ -102,13 +102,13 @@ class FeatureContext extends BehatContext implements ClosuredContextInterface {
 
 	public function create_run_dir() {
 		if ( !isset( $this->variables['RUN_DIR'] ) ) {
-			$this->variables['RUN_DIR'] = sys_get_temp_dir() . '/' . uniqid( "wp-cli-test-run-", TRUE );
+			$this->variables['RUN_DIR'] = sys_get_temp_dir() . '/' . uniqid( "terminus-test-run-", TRUE );
 			mkdir( $this->variables['RUN_DIR'] );
 		}
 	}
 
 	private function set_cache_dir() {
-		$path = sys_get_temp_dir() . '/wp-cli-test-cache';
+		$path = sys_get_temp_dir() . '/terminus-test-cache';
 		Process::create( Utils\esc_cmd( 'mkdir -p %s', $path ) )->run_check();
 		$this->variables['CACHE_DIR'] = $path;
 	}
