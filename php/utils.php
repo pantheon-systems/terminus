@@ -1,7 +1,5 @@
 <?php
 
-// Utilities that do NOT depend on WordPress code.
-
 namespace WP_CLI\Utils;
 
 use \WP_CLI\Dispatcher;
@@ -400,3 +398,15 @@ function replace_path_consts( $source, $path ) {
 	return str_replace( $old, $new, $source );
 }
 
+function is_valid_email( $email ) {
+  return (bool) filter_var( $email, FILTER_VALIDATE_EMAIL );
+}
+
+/**
+ * Validate Atlas UUID.
+ * @param $uuid
+ * @return boolean
+ */
+function is_valid_uuid($uuid) {
+  return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}

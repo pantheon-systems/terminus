@@ -133,7 +133,7 @@ class FileCache {
     }
   }
 
-  public function write_array( $key, $array ) {
+  public function put_data( $key, $array ) {
     $json = json_encode( $array );
     $result = $this->write( $key, $json );
 
@@ -157,11 +157,11 @@ class FileCache {
     }
   }
 
-  public function read_array( $key, $ttl = null ) {
+  public function get_data( $key, $ttl = null ) {
     $contents = $this->read( $key, $ttl );
 
     if ( $contents ) {
-      return json_encode( $contents );
+      return json_decode( $contents );
     }
     else {
       return false;

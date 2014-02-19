@@ -505,8 +505,6 @@ class Runner {
 
 		$this->do_early_invoke( 'before_wp_load' );
 
-		$this->check_wp_version();
-
 		if ( $this->cmd_starts_with( array( 'core', 'config' ) ) ) {
 			$this->_run_command();
 			exit;

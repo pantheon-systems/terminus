@@ -3,14 +3,13 @@
 // Can be used by plugins/themes to check if WP-CLI is running or not
 define( 'WP_CLI', true );
 define( 'WP_CLI_VERSION', '0.15-alpha' );
-
-// Set common headers, to prevent warnings from plugins
-$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
-$_SERVER['HTTP_USER_AGENT'] = '';
-$_SERVER['REQUEST_METHOD'] = 'GET';
-$_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+define( 'TERMINUS_HOST', 'onebox.getpantheon.com' );
+define( 'TERMINUS_PORT', '443' );
+date_default_timezone_set('UTC');
 
 include WP_CLI_ROOT . '/php/utils.php';
+include WP_CLI_ROOT . '/php/login.php';
+include WP_CLI_ROOT . '/php/FileCache.php';
 include WP_CLI_ROOT . '/php/dispatcher.php';
 include WP_CLI_ROOT . '/php/class-wp-cli.php';
 include WP_CLI_ROOT . '/php/class-wp-cli-command.php';
