@@ -12,9 +12,9 @@ class RootCommand extends CompositeCommand {
 	function __construct() {
 		$this->parent = false;
 
-		$this->name = 'wp';
+		$this->name = 'terminus';
 
-		$this->shortdesc = 'Manage WordPress through the command-line.';
+		$this->shortdesc = 'Manage Pantheon through the command-line.';
 	}
 
 	function get_longdesc() {

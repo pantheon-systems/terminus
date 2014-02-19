@@ -12,6 +12,7 @@ return array(
 		'file' => '<url>',
 		'desc' => 'Pretend request came from given URL',
 	),
+
 	'blog' => array(
 		'deprecated' => 'Use --url instead.',
 		'runtime' => '=<url>',
@@ -22,18 +23,10 @@ return array(
 		'runtime' => '=<path>',
 	),
 
-	'user' => array(
-		'runtime' => '=<id|login>',
-		'file' => '<id|login>',
-		'desc' => 'Set the WordPress user',
-	),
-
-	'skip-plugins' => array(
-		'runtime' => '[=<plugin>]',
-		'file' => false,
-		'desc' => 'Skip loading all or some plugins',
-		'multiple' => false,
-		'default' => '',
+	'site' => array(
+		'runtime' => '=<name|url|uuid>',
+		'file' => '<name|url|uuid>',
+		'desc' => 'Set the Pantheon site',
 	),
 
 	'require' => array(
