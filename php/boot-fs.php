@@ -12,7 +12,7 @@ if ( version_compare( PHP_VERSION, '5.3.0', '<' ) ) {
 	die(-1);
 }
 
-define( 'WP_CLI_ROOT', dirname( __DIR__ ) );
+define( 'TERMINUS_ROOT', dirname( __DIR__ ) );
 
-include WP_CLI_ROOT . '/php/wp-cli.php';
+include TERMINUS_ROOT . '/php/wp-cli.php';
 

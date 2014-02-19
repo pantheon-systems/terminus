@@ -189,7 +189,7 @@ Feature: Global flags
       This is a custom command.
       """
 
-    When I run `WP_CLI_CONFIG_PATH=wp-cli2.yml wp test req 'This is a custom command.'`
+    When I run `TERMINUS_CONFIG_PATH=wp-cli2.yml wp test req 'This is a custom command.'`
     Then STDOUT should contain:
       """
       This is a custom command.
@@ -219,8 +219,8 @@ Feature: Global flags
     When I run `wp cli completions --line='wp eva' --point=100`
     Then STDOUT should be:
       """
-      eval 
-      eval-file 
+      eval
+      eval-file
       """
 
     When I run `wp cli completions --line='wp core config --dbname=' --point=100`
@@ -233,11 +233,11 @@ Feature: Global flags
       """
     And STDOUT should contain:
       """
-      --extra-php 
+      --extra-php
       """
 
     When I run `wp cli completions --line='wp media import ' --point=100`
     Then STDOUT should contain:
       """
-      <file> 
+      <file>
       """

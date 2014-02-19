@@ -29,7 +29,7 @@ class Process {
 		);
 
 		// Ensure we're using the expected `wp` binary
-		$bin_dir = getenv( 'WP_CLI_BIN_DIR' ) ?: realpath( __DIR__ . "/../../bin" );
+		$bin_dir = getenv( 'TERMINUS_BIN_DIR' ) ?: realpath( __DIR__ . "/../../bin" );
 		$env = array_merge( $this->env, array(
 			'PATH' =>  $bin_dir . ':' . getenv( 'PATH' ),
 			'BEHAT_RUN' => 1

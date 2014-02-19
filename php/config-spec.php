@@ -18,7 +18,7 @@ return array(
 	),
 
 	'config' => array(
-		'deprecated' => 'Use the WP_CLI_CONFIG_PATH environment variable instead.',
+		'deprecated' => 'Use the TERMINUS_CONFIG_PATH environment variable instead.',
 		'runtime' => '=<path>',
 	),
 

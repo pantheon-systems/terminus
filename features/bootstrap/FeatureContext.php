@@ -137,7 +137,7 @@ class FeatureContext extends BehatContext implements ClosuredContextInterface {
 			$command .= Utils\assoc_args_to_str( $assoc_args );
 
 		return Process::create( $command, $this->variables['RUN_DIR'],
-			array( 'WP_CLI_CACHE_DIR' => $this->variables['SUITE_CACHE_DIR'] ) );
+			array( 'TERMINUS_CACHE_DIR' => $this->variables['SUITE_CACHE_DIR'] ) );
 	}
 
 	public function move_files( $src, $dest ) {

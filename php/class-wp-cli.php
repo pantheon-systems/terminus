@@ -29,7 +29,7 @@ class WP_CLI {
 		static $configurator;
 
 		if ( !$configurator ) {
-			$configurator = new WP_CLI\Configurator( WP_CLI_ROOT . '/php/config-spec.php' );
+			$configurator = new WP_CLI\Configurator( TERMINUS_ROOT . '/php/config-spec.php' );
 		}
 
 		return $configurator;
@@ -67,7 +67,7 @@ class WP_CLI {
 				// sometime in windows $HOME is not defined
 				$home = getenv( 'HOMEDRIVE' ) . '/' . getenv( 'HOMEPATH' );
 			}
-			$dir = getenv( 'WP_CLI_CACHE_DIR' ) ? : "$home/.wp-cli/cache";
+			$dir = getenv( 'TERMINUS_CACHE_DIR' ) ? : "$home/.wp-cli/cache";
 
 			// 6 months, 300mb
 			$cache = new FileCache( $dir, 15552000, 314572800 );
@@ -391,11 +391,11 @@ class WP_CLI {
 		if ( defined( 'PHP_BINARY' ) )
 			return PHP_BINARY;
 
-		if ( getenv( 'WP_CLI_PHP_USED' ) )
-			return getenv( 'WP_CLI_PHP_USED' );
+		if ( getenv( 'TERMINUS_PHP_USED' ) )
+			return getenv( 'TERMINUS_PHP_USED' );
 
-		if ( getenv( 'WP_CLI_PHP' ) )
-			return getenv( 'WP_CLI_PHP' );
+		if ( getenv( 'TERMINUS_PHP' ) )
+			return getenv( 'TERMINUS_PHP' );
 
 		return 'php';
 	}

@@ -40,7 +40,7 @@ class Runner {
 	}
 
 	private static function get_global_config_path() {
-		$config_path = getenv( 'WP_CLI_CONFIG_PATH' );
+		$config_path = getenv( 'TERMINUS_CONFIG_PATH' );
 		if ( isset( $runtime_config['config'] ) ) {
 			$config_path = $runtime_config['config'];
 		}

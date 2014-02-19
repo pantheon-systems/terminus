@@ -6,8 +6,8 @@ use \WP_CLI\Dispatcher;
 use \WP_CLI\Iterators\Transform;
 
 function load_dependencies() {
-	if ( 0 === strpos( WP_CLI_ROOT, 'phar:' ) ) {
-		require WP_CLI_ROOT . '/vendor/autoload.php';
+	if ( 0 === strpos( TERMINUS_ROOT, 'phar:' ) ) {
+		require TERMINUS_ROOT . '/vendor/autoload.php';
 		return;
 	}
 
@@ -29,8 +29,8 @@ function load_dependencies() {
 
 function get_vendor_paths() {
 	return array(
-		WP_CLI_ROOT . '/../../../vendor',  // part of a larger project / installed via Composer (preferred)
-		WP_CLI_ROOT . '/vendor',           // top-level project / installed as Git clone
+		TERMINUS_ROOT . '/../../../vendor',  // part of a larger project / installed via Composer (preferred)
+		TERMINUS_ROOT . '/vendor',           // top-level project / installed as Git clone
 	);
 }
 
@@ -40,7 +40,7 @@ function load_file( $path ) {
 }
 
 function load_command( $name ) {
-	$path = WP_CLI_ROOT . "/php/commands/$name.php";
+	$path = TERMINUS_ROOT . "/php/commands/$name.php";
 
 	if ( is_readable( $path ) ) {
 		include_once $path;
@@ -48,7 +48,7 @@ function load_command( $name ) {
 }
 
 function load_all_commands() {
-	$cmd_dir = WP_CLI_ROOT . '/php/commands';
+	$cmd_dir = TERMINUS_ROOT . '/php/commands';
 
 	$iterator = new \DirectoryIterator( $cmd_dir );
 
@@ -345,7 +345,7 @@ function run_mysql_command( $cmd, $assoc_args, $descriptors = null ) {
  */
 function mustache_render( $template_name, $data ) {
 	if ( ! file_exists( $template_name ) )
-		$template_name = WP_CLI_ROOT . "/templates/$template_name";
+		$template_name = TERMINUS_ROOT . "/templates/$template_name";
 
 	$template = file_get_contents( $template_name );
 

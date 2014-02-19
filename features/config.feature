@@ -101,7 +101,7 @@ Feature: Have a config file
         - core version
       """
 
-    When I try `WP_CLI_CONFIG_PATH=config.yml wp core version`
+    When I try `TERMINUS_CONFIG_PATH=config.yml wp core version`
     Then STDERR should contain:
       """
       command has been disabled
