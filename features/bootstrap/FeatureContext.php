@@ -5,7 +5,7 @@ use Behat\Behat\Context\ClosuredContextInterface,
     Behat\Behat\Context\BehatContext,
     Behat\Behat\Event\SuiteEvent;
 
-use \WP_CLI\Utils;
+use \Terminus\Utils;
 
 require_once __DIR__ . '/../../php/utils.php';
 

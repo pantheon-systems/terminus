@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 /**
  * Base class for WP-CLI commands that deal with database objects.
@@ -19,20 +19,20 @@ abstract class CommandWithDBObject extends \Terminus_Command {
 		$obj_id = $callback( $assoc_args );
 
 		if ( is_wp_error( $obj_id ) ) {
-			\WP_CLI::error( $obj_id );
+			\Terminus::error( $obj_id );
 		}
 
 		if ( isset( $assoc_args['porcelain'] ) )
-			\WP_CLI::line( $obj_id );
+			\Terminus::line( $obj_id );
 		else
-			\WP_CLI::success( "Created $this->obj_type $obj_id." );
+			\Terminus::success( "Created $this->obj_type $obj_id." );
 	}
 
 	protected function _update( $args, $assoc_args, $callback ) {
 		$status = 0;
 
 		if ( empty( $assoc_args ) ) {
-			\WP_CLI::error( "Need some fields to update." );
+			\Terminus::error( "Need some fields to update." );
 		}
 
 		foreach ( $args as $obj_id ) {
@@ -69,10 +69,10 @@ abstract class CommandWithDBObject extends \Terminus_Command {
 		list( $type, $msg ) = $r;
 
 		if ( 'success' == $type ) {
-			\WP_CLI::success( $msg );
+			\Terminus::success( $msg );
 			$status = 0;
 		} else {
-			\WP_CLI::warning( $msg );
+			\Terminus::warning( $msg );
 			$status = 1;
 		}
 
@@ -80,13 +80,13 @@ abstract class CommandWithDBObject extends \Terminus_Command {
 	}
 
 	protected function get_formatter( &$assoc_args ) {
-		return new \WP_CLI\Formatter( $assoc_args, $this->obj_fields, $this->obj_type );
+		return new \Terminus\Formatter( $assoc_args, $this->obj_fields, $this->obj_type );
 	}
 
 	protected function _url( $args, $callback ) {
 		foreach ( $args as $obj_id ) {
 			$object = $this->fetcher->get_check( $obj_id );
-			\WP_CLI::line( $callback( $object->{$this->obj_id_key} ) );
+			\Terminus::line( $callback( $object->{$this->obj_id_key} ) );
 		}
 	}
 }

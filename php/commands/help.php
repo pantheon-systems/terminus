@@ -1,7 +1,7 @@
 <?php
 
-use \WP_CLI\Utils;
-use \WP_CLI\Dispatcher;
+use \Terminus\Utils;
+use \Terminus\Dispatcher;
 
 class Help_Command extends Terminus_Command {
 
@@ -28,12 +28,12 @@ class Help_Command extends Terminus_Command {
 
 		// WordPress is already loaded, so there's no chance we'll find the command
 		if ( function_exists( 'add_filter' ) ) {
-			\WP_CLI::error( sprintf( "'%s' is not a registered wp command.", $args[0] ) );
+			\Terminus::error( sprintf( "'%s' is not a registered wp command.", $args[0] ) );
 		}
 	}
 
 	private static function find_subcommand( $args ) {
-		$command = \WP_CLI::get_root_command();
+		$command = \Terminus::get_root_command();
 
 		while ( !empty( $args ) && $command && $command->can_have_subcommands() ) {
 			$command = $command->find_subcommand( $args );
@@ -51,7 +51,7 @@ class Help_Command extends Terminus_Command {
 		}
 
 		// section headers
-		$out = preg_replace( '/^## ([A-Z ]+)/m', WP_CLI::colorize( '%9\1%n' ), $out );
+		$out = preg_replace( '/^## ([A-Z ]+)/m', Terminus::colorize( '%9\1%n' ), $out );
 
 		// definition lists
 		$out = preg_replace_callback( '/([^\n]+)\n: (.+?)(\n\n|$)/s', array( __CLASS__, 'rewrap_param_desc' ), $out );
@@ -141,5 +141,5 @@ class Help_Command extends Terminus_Command {
 	}
 }
 
-WP_CLI::add_command( 'help', 'Help_Command' );
+Terminus::add_command( 'help', 'Help_Command' );
 

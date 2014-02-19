@@ -1,8 +1,8 @@
 <?php
 
-use \WP_CLI\Dispatcher,
-  \WP_CLI\Utils,
-  \WP_CLI\CommandWithSSH;
+use \Terminus\Dispatcher,
+  \Terminus\Utils,
+  \Terminus\CommandWithSSH;
 
 
 class WP_Command extends CommandWithSSH {
@@ -24,4 +24,4 @@ class WP_Command extends CommandWithSSH {
 
 }
 
-WP_CLI::add_command( 'wp', 'WP_Command' );
+Terminus::add_command( 'wp', 'WP_Command' );

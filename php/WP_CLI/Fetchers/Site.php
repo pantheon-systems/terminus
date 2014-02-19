@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Fetchers;
+namespace Terminus\Fetchers;
 
 class Site extends Base {
 
@@ -9,7 +9,7 @@ class Site extends Base {
 	public function get( $site_id ) {
 		return $this->_get_site( $site_id );
 	}
-	
+
 	/**
 	 * Get site (blog) data for a given id.
 	 *

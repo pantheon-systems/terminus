@@ -1,9 +1,9 @@
 <?php
 
-namespace WP_CLI\Utils;
+namespace Terminus\Utils;
 
-use \WP_CLI\Dispatcher;
-use \WP_CLI\Iterators\Transform;
+use \Terminus\Dispatcher;
+use \Terminus\Iterators\Transform;
 
 function load_dependencies() {
 	if ( 0 === strpos( TERMINUS_ROOT, 'phar:' ) ) {
@@ -208,7 +208,7 @@ function locate_wp_config() {
  */
 function format_items( $format, $items, $fields ) {
 	$assoc_args = compact( 'format', 'fields' );
-	$formatter = new \WP_CLI\Formatter( $assoc_args );
+	$formatter = new \Terminus\Formatter( $assoc_args );
 	$formatter->display_items( $items );
 }
 
@@ -264,7 +264,7 @@ function launch_editor_for_input( $input, $title = 'WP-CLI' ) {
 	$tmpfile = wp_tempnam( $title );
 
 	if ( !$tmpfile )
-		\WP_CLI::error( 'Error creating temporary file.' );
+		\Terminus::error( 'Error creating temporary file.' );
 
 	$output = '';
 	file_put_contents( $tmpfile, $input );
@@ -277,7 +277,7 @@ function launch_editor_for_input( $input, $title = 'WP-CLI' ) {
 			$editor = 'vi';
 	}
 
-	\WP_CLI::launch( "$editor " . escapeshellarg( $tmpfile ) );
+	\Terminus::launch( "$editor " . escapeshellarg( $tmpfile ) );
 
 	$output = file_get_contents( $tmpfile );
 
@@ -358,7 +358,7 @@ function mustache_render( $template_name, $data ) {
 
 function make_progress_bar( $message, $count ) {
 	if ( \cli\Shell::isPiped() )
-		return new \WP_CLI\NoOp;
+		return new \Terminus\NoOp;
 
 	return new \cli\progress\Bar( $message, $count );
 }

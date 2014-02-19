@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 final class NoOp {
 

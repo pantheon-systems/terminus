@@ -83,7 +83,7 @@ Feature: Global flags
         }
       }
 
-      WP_CLI::set_logger( new Dummy_Logger );
+      Terminus::set_logger( new Dummy_Logger );
       """
 
     When I try `wp --require=custom-logger.php is-installed`
@@ -152,11 +152,11 @@ Feature: Global flags
       class Test_Command extends Terminus_Command {
 
         function req( $args, $assoc_args ) {
-          WP_CLI::line( $args[0] );
+          Terminus::line( $args[0] );
         }
       }
 
-      WP_CLI::add_command( 'test', 'Test_Command' );
+      Terminus::add_command( 'test', 'Test_Command' );
       """
 
     And a foo.php file:

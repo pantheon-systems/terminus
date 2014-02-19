@@ -1,7 +1,7 @@
 <?php
 
-use \WP_CLI\Dispatcher,
-	\WP_CLI\Utils;
+use \Terminus\Dispatcher,
+	\Terminus\Utils;
 
 /**
  * Get information about WP-CLI itself.
@@ -32,7 +32,7 @@ class CLI_Command extends Terminus_Command {
 	 * Print WP-CLI version.
 	 */
 	function version() {
-		WP_CLI::line( 'WP-CLI ' . TERMINUS_VERSION );
+		Terminus::line( 'WP-CLI ' . TERMINUS_VERSION );
 	}
 
 	/**
@@ -46,7 +46,7 @@ class CLI_Command extends Terminus_Command {
 	function info( $_, $assoc_args ) {
 		$php_bin = defined( 'PHP_BINARY' ) ? PHP_BINARY : getenv( 'TERMINUS_PHP_USED' );
 
-		$runner = WP_CLI::get_runner();
+		$runner = Terminus::get_runner();
 
 		if ( isset( $assoc_args['format'] ) && 'json' === $assoc_args['format'] ) {
 			$info = array(
@@ -57,15 +57,15 @@ class CLI_Command extends Terminus_Command {
 				'wp_cli_version' => TERMINUS_VERSION,
 			);
 
-			WP_CLI::line( json_encode( $info ) );
+			Terminus::line( json_encode( $info ) );
 		} else {
-			WP_CLI::line( "PHP binary:\t" . $php_bin );
-			WP_CLI::line( "PHP version:\t" . PHP_VERSION );
-			WP_CLI::line( "php.ini used:\t" . get_cfg_var( 'cfg_file_path' ) );
-			WP_CLI::line( "WP-CLI root dir:\t" . TERMINUS_ROOT );
-			WP_CLI::line( "WP-CLI global config:\t" . $runner->global_config_path );
-			WP_CLI::line( "WP-CLI project config:\t" . $runner->project_config_path );
-			WP_CLI::line( "WP-CLI version:\t" . TERMINUS_VERSION );
+			Terminus::line( "PHP binary:\t" . $php_bin );
+			Terminus::line( "PHP version:\t" . PHP_VERSION );
+			Terminus::line( "php.ini used:\t" . get_cfg_var( 'cfg_file_path' ) );
+			Terminus::line( "WP-CLI root dir:\t" . TERMINUS_ROOT );
+			Terminus::line( "WP-CLI global config:\t" . $runner->global_config_path );
+			Terminus::line( "WP-CLI project config:\t" . $runner->project_config_path );
+			Terminus::line( "WP-CLI version:\t" . TERMINUS_VERSION );
 		}
 	}
 
@@ -75,7 +75,7 @@ class CLI_Command extends Terminus_Command {
 	 * @subcommand param-dump
 	 */
 	function param_dump() {
-		echo json_encode( \WP_CLI::get_configurator()->get_spec() );
+		echo json_encode( \Terminus::get_configurator()->get_spec() );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class CLI_Command extends Terminus_Command {
 	 * @subcommand cmd-dump
 	 */
 	function cmd_dump() {
-		echo json_encode( self::command_to_array( WP_CLI::get_root_command() ) );
+		echo json_encode( self::command_to_array( Terminus::get_root_command() ) );
 	}
 
 	/**
@@ -100,10 +100,10 @@ class CLI_Command extends Terminus_Command {
 	 */
 	function completions( $_, $assoc_args ) {
 		$line = substr( $assoc_args['line'], 0, $assoc_args['point'] );
-		$compl = new \WP_CLI\Completions( $line );
+		$compl = new \Terminus\Completions( $line );
 		$compl->render();
 	}
 }
 
-WP_CLI::add_command( 'cli', 'CLI_Command' );
+Terminus::add_command( 'cli', 'CLI_Command' );
 

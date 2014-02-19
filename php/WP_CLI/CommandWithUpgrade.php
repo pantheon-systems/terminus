@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 abstract class CommandWithUpgrade extends \Terminus_Command {
 
@@ -46,7 +46,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 		$n = count( $items );
 
 		// Not interested in the translation, just the number logic
-		\WP_CLI::log( sprintf( _n(
+		\Terminus::log( sprintf( _n(
 			"%d installed {$this->item_type}:",
 			"%d installed {$this->item_type}s:",
 		$n ), $n ) );
@@ -66,10 +66,10 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 				$line .= " " . $details['version'];
 			}
 
-			\WP_CLI::line( \WP_CLI::colorize( $line ) );
+			\Terminus::line( \Terminus::colorize( $line ) );
 		}
 
-		\WP_CLI::line();
+		\Terminus::line();
 
 		$this->show_legend( $items );
 	}
@@ -104,7 +104,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 		if ( in_array( true, wp_list_pluck( $items, 'update' ) ) )
 			$legend_line[] = '%yU = Update Available%n';
 
-		\WP_CLI::line( 'Legend: ' . implode( ', ', \WP_CLI::colorize( $legend_line ) ) );
+		\Terminus::line( 'Legend: ' . implode( ', ', \Terminus::colorize( $legend_line ) ) );
 	}
 
 	function install( $args, $assoc_args ) {
@@ -139,12 +139,12 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 				$result = $this->install_from_repo( $slug, $assoc_args );
 
 				if ( is_wp_error( $result ) ) {
-					\WP_CLI::warning( "$slug: " . $result->get_error_message() );
+					\Terminus::warning( "$slug: " . $result->get_error_message() );
 				}
 			}
 
 			if ( $result && isset( $assoc_args['activate'] ) ) {
-				\WP_CLI::log( "Activating '$slug'..." );
+				\Terminus::log( "Activating '$slug'..." );
 				$this->activate( array( $slug ) );
 			}
 		}
@@ -177,7 +177,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 			// check if the requested version exists
 			$response = wp_remote_head( $response->download_link );
 			if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				\WP_CLI::error( sprintf(
+				\Terminus::error( sprintf(
 					"Can't find the requested %s's version %s in the WordPress.org %s repository.",
 					$download_type, $version, $download_type ) );
 			}
@@ -186,7 +186,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 
 	protected function get_upgrader( $assoc_args ) {
 		$upgrader_class = $this->get_upgrader_class( isset( $assoc_args['force'] ) );
-		return \WP_CLI\Utils\get_upgrader( $upgrader_class );
+		return \Terminus\Utils\get_upgrader( $upgrader_class );
 	}
 
 	protected function update_many( $args, $assoc_args ) {
@@ -204,13 +204,13 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 
 		if ( isset( $assoc_args['dry-run'] ) ) {
 			if ( empty( $items_to_update ) ) {
-				\WP_CLI::line( "No {$this->item_type} updates available." );
+				\Terminus::line( "No {$this->item_type} updates available." );
 				return;
 			}
 
-			\WP_CLI::line( "Available {$this->item_type} updates:" );
+			\Terminus::line( "Available {$this->item_type} updates:" );
 
-			\WP_CLI\Utils\format_items( 'table', $items_to_update,
+			\Terminus\Utils\format_items( 'table', $items_to_update,
 				array( 'name', 'status', 'version', 'update_version' ) );
 
 			return;
@@ -220,7 +220,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 
 		// Only attempt to update if there is something to update
 		if ( !empty( $items_to_update ) ) {
-			$cache_manager = \WP_CLI::get_http_cache_manager();
+			$cache_manager = \Terminus::get_http_cache_manager();
 			foreach ($items_to_update as $item) {
 				$cache_manager->whitelist_package($item['update_package'], $this->item_type, $item['name'], $item['update_version']);
 			}
@@ -235,11 +235,11 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 		$line = "Updated $num_updated/$num_to_update {$this->item_type}s.";
 
 		if ( $num_to_update == $num_updated ) {
-			\WP_CLI::success( $line );
+			\Terminus::success( $line );
 		} else if ( $num_updated > 0 ) {
-			\WP_CLI::warning( $line );
+			\Terminus::warning( $line );
 		} else {
-			\WP_CLI::error( $line );
+			\Terminus::error( $line );
 		}
 	}
 
@@ -249,7 +249,7 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 
 		$all_items = $this->get_all_items();
 		if ( !is_array( $all_items ) )
-			\WP_CLI::error( "No {$this->item_type}s found." );
+			\Terminus::error( "No {$this->item_type}s found." );
 
 		foreach ( $all_items as $key => &$item ) {
 
@@ -363,23 +363,23 @@ abstract class CommandWithUpgrade extends \Terminus_Command {
 		}
 
 		if ( is_wp_error( $api ) )
-			\WP_CLI::error( $api->get_error_message() . __( ' Try again' ) );
+			\Terminus::error( $api->get_error_message() . __( ' Try again' ) );
 
 		$plural = $this->item_type . 's';
 
 		if ( ! isset( $api->$plural ) )
-			\WP_CLI::error( __( 'API error. Try Again.' ) );
+			\Terminus::error( __( 'API error. Try Again.' ) );
 
 		$items = $api->$plural;
 
 		$count = isset( $api->info['results'] ) ? $api->info['results'] : 'unknown';
-		\WP_CLI::success( sprintf( 'Showing %s of %s %s.', count( $items ), $count, $plural ) );
+		\Terminus::success( sprintf( 'Showing %s of %s %s.', count( $items ), $count, $plural ) );
 
 		$formatter->display_items( $items );
 	}
 
 	protected function get_formatter( &$assoc_args ) {
-		return new \WP_CLI\Formatter( $assoc_args, $this->obj_fields, $this->item_type );
+		return new \Terminus\Formatter( $assoc_args, $this->obj_fields, $this->item_type );
 	}
 }
 

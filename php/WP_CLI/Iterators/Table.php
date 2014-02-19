@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Iterators;
+namespace Terminus\Iterators;
 
 /**
  * @source https://gist.github.com/4060005

@@ -3,7 +3,7 @@
 class UnserializeReplaceTest extends PHPUnit_Framework_TestCase {
 
 	private static function recursive_unserialize_replace( $from, $to, $data, $serialised = false, $recurse_objects = false ) {
-		$replacer = new \WP_CLI\SearchReplacer( $from, $to, $recurse_objects );
+		$replacer = new \Terminus\SearchReplacer( $from, $to, $recurse_objects );
 		return $replacer->run( $data, $serialised );
 	}
 

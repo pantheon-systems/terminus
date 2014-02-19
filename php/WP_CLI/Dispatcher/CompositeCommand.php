@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Dispatcher;
+namespace Terminus\Dispatcher;
 
 /**
  * A non-leaf node in the command tree.
@@ -21,7 +21,7 @@ class CompositeCommand {
 
 		$when_to_invoke = $docparser->get_tag( 'when' );
 		if ( $when_to_invoke ) {
-			\WP_CLI::get_runner()->register_early_invoke( $when_to_invoke, $this );
+			\Terminus::get_runner()->register_early_invoke( $when_to_invoke, $this );
 		}
 	}
 
@@ -75,11 +75,11 @@ class CompositeCommand {
 		foreach ( $methods as $name => $subcommand ) {
 			$prefix = ( 0 == $i++ ) ? 'usage: ' : '   or: ';
 
-			\WP_CLI::line( $subcommand->get_usage( $prefix ) );
+			\Terminus::line( $subcommand->get_usage( $prefix ) );
 		}
 
-		\WP_CLI::line();
-		\WP_CLI::line( "See 'wp help $this->name <command>' for more information on a specific command." );
+		\Terminus::line();
+		\Terminus::line( "See 'wp help $this->name <command>' for more information on a specific command." );
 	}
 
 	function invoke( $args, $assoc_args, $extra_args ) {

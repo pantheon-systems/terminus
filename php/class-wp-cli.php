@@ -1,14 +1,14 @@
 <?php
 
-use \WP_CLI\Utils;
-use \WP_CLI\Dispatcher;
+use \Terminus\Utils;
+use \Terminus\Dispatcher;
 use \Terminus\FileCache;
-use \WP_CLI\WpHttpCacheManager;
+use \Terminus\WpHttpCacheManager;
 
 /**
  * Various utilities for WP-CLI commands.
  */
-class WP_CLI {
+class Terminus {
 
 	private static $configurator;
 
@@ -29,7 +29,7 @@ class WP_CLI {
 		static $configurator;
 
 		if ( !$configurator ) {
-			$configurator = new WP_CLI\Configurator( TERMINUS_ROOT . '/php/config-spec.php' );
+			$configurator = new Terminus\Configurator( TERMINUS_ROOT . '/php/config-spec.php' );
 		}
 
 		return $configurator;
@@ -49,7 +49,7 @@ class WP_CLI {
 		static $runner;
 
 		if ( !$runner ) {
-			$runner = new WP_CLI\Runner;
+			$runner = new Terminus\Runner;
 		}
 
 		return $runner;
@@ -176,7 +176,7 @@ class WP_CLI {
 			// create an empty container
 			if ( !$subcommand ) {
 				$subcommand = new Dispatcher\CompositeCommand( $command, $subcommand_name,
-					new \WP_CLI\DocParser( '' ) );
+					new \Terminus\DocParser( '' ) );
 				$command->add_subcommand( $subcommand_name, $subcommand );
 			}
 
@@ -289,7 +289,7 @@ class WP_CLI {
 		if ( isset( $assoc_args['format'] ) && 'json' == $assoc_args['format'] ) {
 			$value = json_decode( $raw_value, true );
 			if ( null === $value ) {
-				WP_CLI::error( sprintf( 'Invalid JSON: %s', $raw_value ) );
+				Terminus::error( sprintf( 'Invalid JSON: %s', $raw_value ) );
 			}
 		} else {
 			$value = $raw_value;
@@ -380,7 +380,7 @@ class WP_CLI {
 		$script_path = $GLOBALS['argv'][0];
 
 		$args = implode( ' ', array_map( 'escapeshellarg', $args ) );
-		$assoc_args = \WP_CLI\Utils\assoc_args_to_str( $assoc_args );
+		$assoc_args = \Terminus\Utils\assoc_args_to_str( $assoc_args );
 
 		$full_command = "{$php_bin} {$script_path} {$command} {$args} {$assoc_args}";
 
@@ -428,7 +428,7 @@ class WP_CLI {
 	// DEPRECATED STUFF
 
 	static function add_man_dir() {
-		trigger_error( 'WP_CLI::add_man_dir() is deprecated. Add docs inline.', E_USER_WARNING );
+		trigger_error( 'Terminus::add_man_dir() is deprecated. Add docs inline.', E_USER_WARNING );
 	}
 
 	// back-compat
@@ -438,7 +438,7 @@ class WP_CLI {
 
 	// back-compat
 	static function addCommand( $name, $class ) {
-		trigger_error( sprintf( 'wp %s: %s is deprecated. use WP_CLI::add_command() instead.',
+		trigger_error( sprintf( 'wp %s: %s is deprecated. use Terminus::add_command() instead.',
 			$name, __FUNCTION__ ), E_USER_WARNING );
 		self::add_command( $name, $class );
 	}

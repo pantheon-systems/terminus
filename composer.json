@@ -20,7 +20,7 @@
 		"psy/psysh": "Enhanced `wp shell` functionality"
 	},
 	"autoload": {
-		"psr-0": { "WP_CLI": "php" },
+		"psr-0": { "Terminus": "php" },
 		"files": [ "php/Spyc.php" ],
 		"classmap": [ "php/export" ]
 	}

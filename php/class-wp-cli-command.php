@@ -11,7 +11,7 @@ abstract class Terminus_Command {
   public $session;
 
 	public function __construct() {
-	  $this->cache = WP_CLI::get_cache();
+	  $this->cache = Terminus::get_cache();
 	  $this->session = $this->cache->get_data('session');
 	}
 
@@ -36,7 +36,7 @@ abstract class Terminus_Command {
    */
   public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
     if ($this->session == FALSE) {
-      \WP_CLI::error("You must login first.");
+      \Terminus::error("You must login first.");
       exit;
     }
     static $ch = FALSE;
@@ -91,16 +91,16 @@ abstract class Terminus_Command {
     if (curl_errno($ch) != 0) {
       $error = curl_error($ch);
       curl_close($ch);
-      \WP_CLI::error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
+      \Terminus::error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
       return FALSE;
     }
 
     $info = curl_getinfo($ch);
     if ($info['http_code'] > 399) {
-      \WP_CLI::error('Request failed');
+      \Terminus::error('Request failed');
       // Expired session. Really don't like the string comparison.
       if ($info['http_code'] == 403 && $json == '"Session not found."') {
-        \WP_CLI::error('Session expired');
+        \Terminus::error('Session expired');
         # Auth_Command->logout();
       }
       return FALSE;

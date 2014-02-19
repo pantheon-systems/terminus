@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 class Formatter {
 
@@ -45,7 +45,7 @@ class Formatter {
 		if ( isset( $this->args['field'] ) ) {
 			$item = (object) $item;
 			$key = $this->find_item_key( $item, $this->args['field'] );
-			\WP_CLI::print_value( $item->$key, array( 'format' => $this->args['format'] ) );
+			\Terminus::print_value( $item->$key, array( 'format' => $this->args['format'] ) );
 		} else {
 			self::show_multiple_fields( $item, $this->args['format'] );
 		}
@@ -74,13 +74,13 @@ class Formatter {
 			break;
 
 		case 'csv':
-			\WP_CLI\Utils\write_csv( STDOUT, $items, $fields );
+			\Terminus\Utils\write_csv( STDOUT, $items, $fields );
 			break;
 
 		case 'json':
 			$out = array();
 			foreach ( $items as $item ) {
-				$out[] = \WP_CLI\Utils\pick_fields( $item, $fields );
+				$out[] = \Terminus\Utils\pick_fields( $item, $fields );
 			}
 
 			echo json_encode( $out );
@@ -108,7 +108,7 @@ class Formatter {
 			if ( 'json' == $this->args['format'] ) {
 				$values[] = $item->$key;
 			} else {
-				\WP_CLI::print_value( $item->$key, array( 'format' => $this->args['format'] ) );
+				\Terminus::print_value( $item->$key, array( 'format' => $this->args['format'] ) );
 			}
 		}
 
@@ -126,7 +126,7 @@ class Formatter {
 		}
 
 		if ( ! isset( $key ) ) {
-			\WP_CLI::error( "Invalid field: $field." );
+			\Terminus::error( "Invalid field: $field." );
 		}
 
 		return $key;
@@ -147,11 +147,11 @@ class Formatter {
 			break;
 
 		case 'json':
-			\WP_CLI::print_value( $data, array( 'format' => $format ) );
+			\Terminus::print_value( $data, array( 'format' => $format ) );
 			break;
 
 		default:
-			\WP_CLI::error( "Invalid format: " . $format );
+			\Terminus::error( "Invalid format: " . $format );
 			break;
 
 		}
@@ -164,7 +164,7 @@ class Formatter {
 		$table->setHeaders( $fields );
 
 		foreach ( $items as $item ) {
-			$table->addRow( array_values( \WP_CLI\Utils\pick_fields( $item, $fields ) ) );
+			$table->addRow( array_values( \Terminus\Utils\pick_fields( $item, $fields ) ) );
 		}
 
 		$table->display();

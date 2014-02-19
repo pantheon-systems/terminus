@@ -1,8 +1,8 @@
 <?php
 
-namespace WP_CLI\Dispatcher;
+namespace Terminus\Dispatcher;
 
-use \WP_CLI\Utils;
+use \Terminus\Utils;
 
 /**
  * The root node in the command tree.
@@ -20,7 +20,7 @@ class RootCommand extends CompositeCommand {
 	function get_longdesc() {
 		$binding = array();
 
-		foreach ( \WP_CLI::get_configurator()->get_spec() as $key => $details ) {
+		foreach ( \Terminus::get_configurator()->get_spec() as $key => $details ) {
 			if ( false === $details['runtime'] )
 				continue;
 

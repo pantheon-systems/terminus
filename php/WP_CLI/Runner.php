@@ -1,10 +1,10 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
-use WP_CLI;
-use WP_CLI\Utils;
-use WP_CLI\Dispatcher;
+use Terminus;
+use Terminus\Utils;
+use Terminus\Dispatcher;
 
 class Runner {
 
@@ -142,7 +142,7 @@ class Runner {
 		if ( !isset( $assoc_args['user'] ) )
 			return;
 
-		$fetcher = new \WP_CLI\Fetchers\User;
+		$fetcher = new \Terminus\Fetchers\User;
 		$user = $fetcher->get_check( $assoc_args['user'] );
 		wp_set_current_user( $user->ID );
 
@@ -156,7 +156,7 @@ class Runner {
 		if ( isset( $assoc_args['url'] ) ) {
 			$url = $assoc_args['url'];
 			if ( true === $url ) {
-				WP_CLI::warning( 'The --url parameter expects a value.' );
+				Terminus::warning( 'The --url parameter expects a value.' );
 			}
 		} elseif ( $wp_config_path = Utils\locate_wp_config() ) {
 			// Try to find the blog parameter in the wp-config file
@@ -193,7 +193,7 @@ class Runner {
 	}
 
 	public function find_command_to_run( $args ) {
-		$command = \WP_CLI::get_root_command();
+		$command = \Terminus::get_root_command();
 
 		$cmd_path = array();
 
@@ -228,7 +228,7 @@ class Runner {
 	public function run_command( $args, $assoc_args = array() ) {
 		$r = $this->find_command_to_run( $args );
 		if ( is_string( $r ) ) {
-			WP_CLI::error( $r );
+			Terminus::error( $r );
 		}
 
 		list( $command, $final_args, $cmd_path ) = $r;
@@ -243,8 +243,8 @@ class Runner {
 
 		try {
 			$command->invoke( $final_args, $assoc_args, $extra_args );
-		} catch ( WP_CLI\Iterators\Exception $e ) {
-			WP_CLI::error( $e->getMessage() );
+		} catch ( Terminus\Iterators\Exception $e ) {
+			Terminus::error( $e->getMessage() );
 		}
 	}
 
@@ -349,11 +349,11 @@ class Runner {
 
 	private function init_logger() {
 		if ( $this->config['quiet'] )
-			$logger = new \WP_CLI\Loggers\Quiet;
+			$logger = new \Terminus\Loggers\Quiet;
 		else
-			$logger = new \WP_CLI\Loggers\Regular( $this->in_color() );
+			$logger = new \Terminus\Loggers\Regular( $this->in_color() );
 
-		WP_CLI::set_logger( $logger );
+		Terminus::set_logger( $logger );
 	}
 
 	private function wp_exists() {
@@ -362,7 +362,7 @@ class Runner {
 
 	private function check_wp_version() {
 		if ( !$this->wp_exists() ) {
-			WP_CLI::error(
+			Terminus::error(
 				"This does not seem to be a WordPress install.\n" .
 				"Pass --path=`path/to/wordpress` or run `wp core download`." );
 		}
@@ -373,7 +373,7 @@ class Runner {
 
 		// @codingStandardsIgnoreStart
 		if ( version_compare( $wp_version, $minimum_version, '<' ) ) {
-			WP_CLI::error(
+			Terminus::error(
 				"WP-CLI needs WordPress $minimum_version or later to work properly. " .
 				"The version currently installed is $wp_version.\n" .
 				"Try running `wp core download --force`."
@@ -383,7 +383,7 @@ class Runner {
 	}
 
 	private function init_config() {
-		$configurator = \WP_CLI::get_configurator();
+		$configurator = \Terminus::get_configurator();
 
 		// File config
 		{
@@ -416,7 +416,7 @@ class Runner {
 		if ( posix_geteuid() !== 0 )
 			return; # not root
 
-		WP_CLI::error(
+		Terminus::error(
 			"YIKES! It looks like you're running this as root. You probably meant to " .
 			"run this as the user that your WordPress install exists under.\n" .
 			"\n" .
@@ -477,7 +477,7 @@ class Runner {
 		// Handle --url parameter
 		$url = self::guess_url( $this->config );
 		if ( $url )
-			\WP_CLI::set_url( $url );
+			\Terminus::set_url( $url );
 
 		$this->do_early_invoke( 'before_wp_load' );
 
@@ -500,7 +500,7 @@ class Runner {
 			// We really need a URL here
 			if ( !isset( $_SERVER['HTTP_HOST'] ) ) {
 				$url = 'http://example.com';
-				\WP_CLI::set_url( $url );
+				\Terminus::set_url( $url );
 			}
 
 			if ( 'multisite-install' == $this->arguments[1] ) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 class Completions {
 
@@ -70,9 +70,9 @@ class Completions {
 			}
 		}
 
-		$r = \WP_CLI::get_runner()->find_command_to_run( $positional_args );
+		$r = \Terminus::get_runner()->find_command_to_run( $positional_args );
 		if ( !is_array( $r ) && array_pop( $positional_args ) == $this->cur_word ) {
-			$r = \WP_CLI::get_runner()->find_command_to_run( $positional_args );
+			$r = \Terminus::get_runner()->find_command_to_run( $positional_args );
 		}
 
 		if ( !is_array( $r ) ) {
@@ -96,7 +96,7 @@ class Completions {
 
 	public function render() {
 		foreach ( $this->opts as $opt ) {
-			\WP_CLI::line( $opt );
+			\Terminus::line( $opt );
 		}
 	}
 }

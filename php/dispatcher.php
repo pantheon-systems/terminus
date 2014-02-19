@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Dispatcher;
+namespace Terminus\Dispatcher;
 
 function get_path( $command ) {
 	$path = array();

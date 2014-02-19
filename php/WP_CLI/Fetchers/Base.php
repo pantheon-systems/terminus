@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Fetchers;
+namespace Terminus\Fetchers;
 
 abstract class Base {
 
@@ -16,7 +16,7 @@ abstract class Base {
 	abstract public function get( $arg );
 
 	/**
-	 * Like get(), but calls WP_CLI::error() instead of returning false.
+	 * Like get(), but calls Terminus::error() instead of returning false.
 	 *
 	 * @param string $arg The raw CLI argument
 	 */
@@ -24,7 +24,7 @@ abstract class Base {
 		$item = $this->get( $arg );
 
 		if ( ! $item ) {
-			\WP_CLI::error( sprintf( $this->msg, $arg ) );
+			\Terminus::error( sprintf( $this->msg, $arg ) );
 		}
 
 		return $item;
@@ -43,7 +43,7 @@ abstract class Base {
 			if ( $item ) {
 				$items[] = $item;
 			} else {
-				\WP_CLI::warning( sprintf( $this->msg, $arg ) );
+				\Terminus::warning( sprintf( $this->msg, $arg ) );
 			}
 		}
 

@@ -17,13 +17,13 @@ class Auth_Command extends Terminus_Command {
         $email = $args[0];
       }
 
-      if ( \WP_CLI\Utils\is_valid_email( $email ) ) {
+      if ( \Terminus\Utils\is_valid_email( $email ) ) {
         exec("stty -echo");
         $password = \cli\prompt( "Your dashboard password (input will not be shown)" );
         exec("stty echo");
         \cli\line();
         \cli\line( "Logging in as $email" );
-        $data = \WP_CLI\Login\auth( $email, $password );
+        $data = \Terminus\Login\auth( $email, $password );
         if ( $data != FALSE ) {
           \cli\line( "Success!" );
           $this->cache->put_data('session', $data);
@@ -59,5 +59,5 @@ class Auth_Command extends Terminus_Command {
 
 }
 
-WP_CLI::add_command( 'auth', 'Auth_Command' );
+Terminus::add_command( 'auth', 'Auth_Command' );
 

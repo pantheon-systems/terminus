@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Loggers;
+namespace Terminus\Loggers;
 
 class Quiet {
 
@@ -17,7 +17,7 @@ class Quiet {
 	}
 
 	function error( $message ) {
-		fwrite( STDERR, \WP_CLI::colorize( "%RError:%n $message\n" ) );
+		fwrite( STDERR, \Terminus::colorize( "%RError:%n $message\n" ) );
 	}
 }
 

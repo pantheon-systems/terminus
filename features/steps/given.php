@@ -13,7 +13,7 @@ $steps->Given( '/^an? ([^\s]+) file:$/',
 	function ( $world, $path, PyStringNode $content ) {
 		$content = (string) $content . "\n";
 		$full_path = $world->variables['RUN_DIR'] . "/$path";
-		Process::create( \WP_CLI\utils\esc_cmd( 'mkdir -p %s', dirname( $full_path ) ) )->run_check();
+		Process::create( \Terminus\utils\esc_cmd( 'mkdir -p %s', dirname( $full_path ) ) )->run_check();
 		file_put_contents( $full_path, $content );
 	}
 );
@@ -82,7 +82,7 @@ $steps->Given( '/^download:$/',
 				continue;
 			}
 
-			\Process::create( \WP_CLI\Utils\esc_cmd( 'curl -sSL %s > %s', $row['url'], $path ) )->run_check();
+			\Process::create( \Terminus\Utils\esc_cmd( 'curl -sSL %s > %s', $row['url'], $path ) )->run_check();
 		}
 	}
 );

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Iterators;
+namespace Terminus\Iterators;
 
 /**
  * Iterates over results of a query, split into many queries via LIMIT and OFFSET
@@ -36,7 +36,7 @@ class Query implements \Iterator {
 	 */
 	public function __construct( $query, $chunk_size = 500 ) {
 		$this->query = $query;
-		
+
 		$this->count_query = preg_replace( '/^.*? FROM /', 'SELECT COUNT(*) FROM ', $query, 1, $replacements );
 		if ( $replacements != 1 )
 			$this->count_query = '';
@@ -48,8 +48,8 @@ class Query implements \Iterator {
 
 	/**
 	 * Reduces the offset when the query row count shrinks
-	 * 
-	 * In cases where the iterated rows are being updated such that they will no 
+	 *
+	 * In cases where the iterated rows are being updated such that they will no
 	 * longer be returned by the original query, the offset must be reduced to
 	 * iterate over all remaining rows.
 	 */

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Dispatcher;
+namespace Terminus\Dispatcher;
 
 /**
  * A leaf node in the command tree.
@@ -42,7 +42,7 @@ class Subcommand extends CompositeCommand {
 	}
 
 	function show_usage( $prefix = 'usage: ' ) {
-		\WP_CLI::line( $this->get_usage( $prefix ) );
+		\Terminus::line( $this->get_usage( $prefix ) );
 	}
 
 	function get_usage( $prefix ) {
@@ -58,7 +58,7 @@ class Subcommand extends CompositeCommand {
 		try {
 			$response = \cli\prompt( $question, $default );
 		} catch( \Exception $e ) {
-			\WP_CLI::line();
+			\Terminus::line();
 			return false;
 		}
 
@@ -72,7 +72,7 @@ class Subcommand extends CompositeCommand {
 		if ( ! $synopsis )
 			return array( $args, $assoc_args );
 
-		$spec = array_filter( \WP_CLI\SynopsisParser::parse( $synopsis ), function( $spec_arg ) {
+		$spec = array_filter( \Terminus\SynopsisParser::parse( $synopsis ), function( $spec_arg ) {
 			return in_array( $spec_arg['type'], array( 'generic', 'positional', 'assoc', 'flag' ) );
 		});
 
@@ -162,11 +162,11 @@ class Subcommand extends CompositeCommand {
 		if ( !$synopsis )
 			return array();
 
-		$validator = new \WP_CLI\SynopsisValidator( $synopsis );
+		$validator = new \Terminus\SynopsisValidator( $synopsis );
 
 		$cmd_path = implode( ' ', get_path( $this ) );
 		foreach ( $validator->get_unknown() as $token ) {
-			\WP_CLI::warning( sprintf(
+			\Terminus::warning( sprintf(
 				"The `%s` command has an invalid synopsis part: %s",
 				$cmd_path, $token
 			) );
@@ -179,12 +179,12 @@ class Subcommand extends CompositeCommand {
 
 		$unknown_positionals = $validator->unknown_positionals( $args );
 		if ( !empty( $unknown_positionals ) ) {
-			\WP_CLI::error( 'Too many positional arguments: ' .
+			\Terminus::error( 'Too many positional arguments: ' .
 				implode( ' ', $unknown_positionals ) );
 		}
 
 		list( $errors, $to_unset ) = $validator->validate_assoc(
-			array_merge( \WP_CLI::get_config(), $extra_args, $assoc_args )
+			array_merge( \Terminus::get_config(), $extra_args, $assoc_args )
 		);
 
 		foreach ( $validator->unknown_assoc( $assoc_args ) as $key ) {
@@ -197,16 +197,16 @@ class Subcommand extends CompositeCommand {
 				$out .= "\n " . $error;
 			}
 
-			\WP_CLI::error( $out );
+			\Terminus::error( $out );
 		}
 
-		array_map( '\\WP_CLI::warning', $errors['warning'] );
+		array_map( '\\Terminus::warning', $errors['warning'] );
 
 		return $to_unset;
 	}
 
 	function invoke( $args, $assoc_args, $extra_args ) {
-		if ( \WP_CLI::get_config( 'prompt' ) )
+		if ( \Terminus::get_config( 'prompt' ) )
 			list( $args, $assoc_args ) = $this->prompt_args( $args, $assoc_args );
 
 		$to_unset = $this->validate_args( $args, $assoc_args, $extra_args );
@@ -216,7 +216,7 @@ class Subcommand extends CompositeCommand {
 		}
 
 		$path = get_path( $this->get_parent() );
-		\WP_CLI::do_hook( 'before_invoke:' . implode( ' ', array_slice( $path, 1 ) ) );
+		\Terminus::do_hook( 'before_invoke:' . implode( ' ', array_slice( $path, 1 ) ) );
 
 		call_user_func( $this->when_invoked, $args, array_merge( $extra_args, $assoc_args ) );
 	}

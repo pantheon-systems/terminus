@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Fetchers;
+namespace Terminus\Fetchers;
 
 class User extends Base {
 

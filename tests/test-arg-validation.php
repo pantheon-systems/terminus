@@ -1,6 +1,6 @@
 <?php
 
-use WP_CLI\SynopsisValidator;
+use Terminus\SynopsisValidator;
 
 class ArgValidationTests extends PHPUnit_Framework_TestCase {
 

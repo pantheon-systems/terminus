@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 /**
  * Checks if the list of parameters matches the specification defined in the synopsis.

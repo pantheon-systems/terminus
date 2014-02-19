@@ -2,18 +2,18 @@
 
 // Utilities that depend on WordPress code.
 
-namespace WP_CLI\Utils;
+namespace Terminus\Utils;
 
 function wp_not_installed() {
 	if ( !is_blog_installed() && !defined( 'WP_INSTALLING' ) ) {
-		\WP_CLI::error(
+		\Terminus::error(
 			"The site you have requested is not installed.\n" .
 			'Run `wp core install`.' );
 	}
 }
 
 function wp_debug_mode() {
-	if ( \WP_CLI::get_config( 'debug' ) ) {
+	if ( \Terminus::get_config( 'debug' ) ) {
 		if ( !defined( 'WP_DEBUG' ) )
 			define( 'WP_DEBUG', true );
 
@@ -42,11 +42,11 @@ function wp_die_handler( $message ) {
 
 	$message = html_entity_decode( $message );
 
-	\WP_CLI::error( $message );
+	\Terminus::error( $message );
 }
 
 function wp_redirect_handler( $url ) {
-	\WP_CLI::warning( 'Some code is trying to do a URL redirect. Backtrace:' );
+	\Terminus::warning( 'Some code is trying to do a URL redirect. Backtrace:' );
 
 	ob_start();
 	debug_print_backtrace();
@@ -66,7 +66,7 @@ function get_upgrader( $class ) {
 	if ( !class_exists( '\WP_Upgrader' ) )
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 
-	return new $class( new \WP_CLI\UpgraderSkin );
+	return new $class( new \Terminus\UpgraderSkin );
 }
 
 /**
@@ -84,7 +84,7 @@ function get_plugin_name( $basename ) {
 function is_plugin_skipped( $file ) {
 	$name = get_plugin_name( str_replace( WP_PLUGIN_DIR . '/', '', $file ) );
 
-	$skipped_plugins = \WP_CLI::get_runner()->config['skip-plugins'];
+	$skipped_plugins = \Terminus::get_runner()->config['skip-plugins'];
 	if ( true === $skipped_plugins )
 		return true;
 

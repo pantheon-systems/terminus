@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Dispatcher;
+namespace Terminus\Dispatcher;
 
 /**
  * Creates CompositeCommand or Subcommand instances.
@@ -21,7 +21,7 @@ class CommandFactory {
 	}
 
 	private static function create_subcommand( $parent, $name, $class_name, $method ) {
-		$docparser = new \WP_CLI\DocParser( $method->getDocComment() );
+		$docparser = new \Terminus\DocParser( $method->getDocComment() );
 
 		if ( !$name )
 			$name = $docparser->get_tag( 'subcommand' );
@@ -39,7 +39,7 @@ class CommandFactory {
 	}
 
 	private static function create_composite_command( $parent, $name, $reflection ) {
-		$docparser = new \WP_CLI\DocParser( $reflection->getDocComment() );
+		$docparser = new \Terminus\DocParser( $reflection->getDocComment() );
 
 		$container = new CompositeCommand( $parent, $name, $docparser );
 

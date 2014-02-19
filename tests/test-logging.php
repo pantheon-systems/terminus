@@ -1,6 +1,6 @@
 <?php
 
-class LoggerMock extends WP_CLI\Loggers\Regular {
+class LoggerMock extends Terminus\Loggers\Regular {
 
 	protected function write( $handle, $str ) {
 		echo $str;

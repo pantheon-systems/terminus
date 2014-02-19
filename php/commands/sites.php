@@ -16,5 +16,5 @@ class Sites_Command extends Terminus_Command {
 
 }
 
-WP_CLI::add_command( 'sites', 'Sites_Command' );
+Terminus::add_command( 'sites', 'Sites_Command' );
 

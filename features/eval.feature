@@ -12,7 +12,7 @@ Feature: Evaluating PHP code and files.
     Given a script.php file:
       """
       <?php
-      WP_CLI::line( implode( ' ', $args ) );
+      Terminus::line( implode( ' ', $args ) );
       """
 
     When I run `wp eval-file script.php foo bar`

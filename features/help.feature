@@ -33,7 +33,7 @@ Feature: Get help about WP-CLI commands
         function __invoke() {}
       }
 
-      WP_CLI::add_command( 'test-help', 'Test_Help' );
+      Terminus::add_command( 'test-help', 'Test_Help' );
       """
     And I run `wp plugin activate test-cli`
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 /**
  * Base class for WP-CLI commands that deal with metadata
@@ -24,7 +24,7 @@ abstract class CommandWithMeta extends \Terminus_Command {
 		if ( '' === $value )
 			die(1);
 
-		\WP_CLI::print_value( $value, $assoc_args );
+		\Terminus::print_value( $value, $assoc_args );
 	}
 
 	/**
@@ -38,9 +38,9 @@ abstract class CommandWithMeta extends \Terminus_Command {
 		$success = \delete_metadata( $this->meta_type, $object_id, $meta_key );
 
 		if ( $success ) {
-			\WP_CLI::success( "Deleted custom field." );
+			\Terminus::success( "Deleted custom field." );
 		} else {
-			\WP_CLI::error( "Failed to delete custom field." );
+			\Terminus::error( "Failed to delete custom field." );
 		}
 	}
 
@@ -64,15 +64,15 @@ abstract class CommandWithMeta extends \Terminus_Command {
 	public function add( $args, $assoc_args ) {
 		list( $object_id, $meta_key ) = $args;
 
-		$meta_value = \WP_CLI::get_value_from_arg_or_stdin( $args, 2 );
-		$meta_value = \WP_CLI::read_value( $meta_value, $assoc_args );
+		$meta_value = \Terminus::get_value_from_arg_or_stdin( $args, 2 );
+		$meta_value = \Terminus::read_value( $meta_value, $assoc_args );
 
 		$success = \add_metadata( $this->meta_type, $object_id, $meta_key, $meta_value );
 
 		if ( $success ) {
-			\WP_CLI::success( "Added custom field." );
+			\Terminus::success( "Added custom field." );
 		} else {
-			\WP_CLI::error( "Failed to add custom field." );
+			\Terminus::error( "Failed to add custom field." );
 		}
 	}
 
@@ -98,15 +98,15 @@ abstract class CommandWithMeta extends \Terminus_Command {
 	public function update( $args, $assoc_args ) {
 		list( $object_id, $meta_key ) = $args;
 
-		$meta_value = \WP_CLI::get_value_from_arg_or_stdin( $args, 2 );
-		$meta_value = \WP_CLI::read_value( $meta_value, $assoc_args );
+		$meta_value = \Terminus::get_value_from_arg_or_stdin( $args, 2 );
+		$meta_value = \Terminus::read_value( $meta_value, $assoc_args );
 
 		$success = \update_metadata( $this->meta_type, $object_id, $meta_key, $meta_value );
 
 		if ( $success ) {
-			\WP_CLI::success( "Updated custom field." );
+			\Terminus::success( "Updated custom field." );
 		} else {
-			\WP_CLI::error( "Failed to update custom field." );
+			\Terminus::error( "Failed to update custom field." );
 		}
 	}
 }

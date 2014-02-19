@@ -11,7 +11,7 @@
  *     Jordi Boggiano <j.boggiano@seld.be>
  */
 
-namespace WP_CLI;
+namespace Terminus;
 
 use Symfony\Component\Finder\Finder;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Iterators;
+namespace Terminus\Iterators;
 
 /**
  * Allows incrementally reading and parsing lines from a CSV file.
@@ -20,7 +20,7 @@ class CSV implements \Iterator {
 	public function __construct( $filename, $delimiter = ',' ) {
 		$this->filePointer = fopen( $filename, 'r' );
 		if ( !$this->filePointer ) {
-			\WP_CLI::error( sprintf( 'Could not open file: %s', $filename ) );
+			\Terminus::error( sprintf( 'Could not open file: %s', $filename ) );
 		}
 
 		$this->delimiter = $delimiter;

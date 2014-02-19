@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 /**
  * Base class for WP-CLI commands that deal with sending SSH commands

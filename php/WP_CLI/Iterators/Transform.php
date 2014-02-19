@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Iterators;
+namespace Terminus\Iterators;
 
 /**
  * Aplies one or more callbacks to an item before returning it.

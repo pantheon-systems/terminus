@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 class Configurator {
 
@@ -162,7 +162,7 @@ class Configurator {
 	}
 
 	private static function absolutize( &$path, $base ) {
-		if ( !empty( $path ) && !\WP_CLI\Utils\is_path_absolute( $path ) ) {
+		if ( !empty( $path ) && !\Terminus\Utils\is_path_absolute( $path ) ) {
 			$path = $base . DIRECTORY_SEPARATOR . $path;
 		}
 	}

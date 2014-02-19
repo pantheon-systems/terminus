@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI;
+namespace Terminus;
 
 /**
  * A Upgrader Skin for WordPress that only generates plain-text
@@ -22,7 +22,7 @@ class UpgraderSkin extends \WP_Upgrader_Skin {
 			$error = $this->upgrader->strings[ $error ];
 
 		// TODO: show all errors, not just the first one
-		\WP_CLI::warning( $error );
+		\Terminus::warning( $error );
 	}
 
 	function feedback( $string ) {
@@ -41,7 +41,7 @@ class UpgraderSkin extends \WP_Upgrader_Skin {
 
 		$string = str_replace( '&#8230;', '...', strip_tags( $string ) );
 
-		\WP_CLI::line( $string );
+		\Terminus::line( $string );
 	}
 }
 

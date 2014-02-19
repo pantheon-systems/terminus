@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_CLI\Loggers;
+namespace Terminus\Loggers;
 
 class Regular {
 
