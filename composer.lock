@@ -3,8 +3,53 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e502a8dde135d515bae118796470793a",
+    "hash": "8c4d31e246462510e1c8ff7b131b952f",
     "packages": [
+        {
+            "name": "jlogsdon/cli",
+            "version": "v0.9.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jlogsdon/php-cli-tools.git",
+                "reference": "e051551f45fb833b67d9fe99e0c696dbc6d283f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jlogsdon/php-cli-tools/zipball/e051551f45fb833b67d9fe99e0c696dbc6d283f0",
+                "reference": "e051551f45fb833b67d9fe99e0c696dbc6d283f0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "cli": "lib/"
+                },
+                "files": [
+                    "lib/cli/cli.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Logsdon",
+                    "email": "jlogsdon@php.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Console utilities for PHP",
+            "homepage": "http://github.com/jlogsdon/php-cli-tools",
+            "keywords": [
+                "cli",
+                "console"
+            ],
+            "time": "2013-06-17 19:40:15"
+        },
         {
             "name": "mustache/mustache",
             "version": "v2.5.1",
@@ -227,51 +272,6 @@
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
             "time": "2014-01-07 13:28:54"
-        },
-        {
-            "name": "terminus/php-cli-tools",
-            "version": "v0.9.4-patch46",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/terminus/php-cli-tools.git",
-                "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/terminus/php-cli-tools/zipball/02d5ed4cdbab911df91bf06062c8b2705fb0919a",
-                "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">= 5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "cli": "lib/"
-                },
-                "files": [
-                    "lib/cli/cli.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "James Logsdon",
-                    "email": "jlogsdon@php.net",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Console utilities for PHP",
-            "homepage": "http://github.com/jlogsdon/php-cli-tools",
-            "keywords": [
-                "cli",
-                "console"
-            ],
-            "time": "2014-02-01 23:11:00"
         }
     ],
     "packages-dev": [

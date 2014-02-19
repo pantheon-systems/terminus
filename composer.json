@@ -9,7 +9,7 @@
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"terminus/php-cli-tools": "0.9.4-patch46",
+		"jlogsdon/cli": "~0.9.4",
 		"mustache/mustache": "~2.4",
 		"rhumsaa/array_column": "~1.1",
 		"rmccue/requests": "~1.6",
