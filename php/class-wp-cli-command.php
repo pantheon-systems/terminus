@@ -36,7 +36,7 @@ abstract class WP_CLI_Command {
    */
   public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
     if ($this->session == FALSE) {
-      \cli\error("You must login first.");
+      \WP_CLI::error("You must login first.");
       exit;
     }
     static $ch = FALSE;
@@ -91,16 +91,16 @@ abstract class WP_CLI_Command {
     if (curl_errno($ch) != 0) {
       $error = curl_error($ch);
       curl_close($ch);
-      \cli\error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
+      \WP_CLI::error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
       return FALSE;
     }
 
     $info = curl_getinfo($ch);
     if ($info['http_code'] > 399) {
-      \cli\error('Request failed');
+      \WP_CLI::error('Request failed');
       // Expired session. Really don't like the string comparison.
       if ($info['http_code'] == 403 && $json == '"Session not found."') {
-        \cli\error('Session expired');
+        \WP_CLI::error('Session expired');
         # Auth_Command->logout();
       }
       return FALSE;

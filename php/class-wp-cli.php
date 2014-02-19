@@ -2,8 +2,8 @@
 
 use \WP_CLI\Utils;
 use \WP_CLI\Dispatcher;
-use \WP_CLI\WpHttpCacheManager;
 use \Terminus\FileCache;
+use \WP_CLI\WpHttpCacheManager;
 
 /**
  * Various utilities for WP-CLI commands.
