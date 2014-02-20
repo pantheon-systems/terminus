@@ -1,44 +1,6 @@
-WP-CLI
-======
-
-[![Build Status](https://travis-ci.org/terminus/terminus.png?branch=master)](https://travis-ci.org/terminus/terminus)
-
-WP-CLI is a set of command-line tools for managing WordPress installations.
-
-Installing
-------------
-If you just want to use WP-CLI, see <http://terminus.org/#install>.
-
-If you want to hack on WP-CLI, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-Where can I get more info?
---------------------------
-For documentation and examples, check out [terminus.org](http://terminus.org/) and the [wiki](https://github.com/terminus/terminus/wiki).
-
-Also, WordPress Answers has a growing list of [WP-CLI related questions](http://wordpress.stackexchange.com/questions/tagged/terminus).
-
-If you want to receive an email for every single commit, you can subscribe to the [terminus-commits](https://groups.google.com/forum/?fromgroups=#!forum/terminus-commits) mailing list.
-
-I'm running into troubles, what can I do?
------------------------------------------
-To suggest a feature, report a bug, or general discussion, visit the [issues section](https://github.com/terminus/terminus/issues).
-
-If you're reporting a bug, please also post the output from `wp --info`.
+Pantheon Terminus
+=================
 
 Credits
 -------
-Besides the libraries defined in [composer.json](composer.json), we have used code or ideas from the following projects:
-
-* [Drush](http://drush.ws/) for... a lot of things
-* [wpshell](http://code.trac.wordpress.org/browser/wpshell) for `wp shell`
-* [Regenerate Thumbnails](http://wordpress.org/plugins/regenerate-thumbnails/) for `wp media regenerate`
-* [Search-Replace-DB](https://github.com/interconnectit/Search-Replace-DB) for `wp search-replace`
-* [WordPress-CLI-Exporter](https://github.com/Automattic/WordPress-CLI-Exporter) for `wp export`
-* [WordPress-CLI-Importer](https://github.com/Automattic/WordPress-CLI-Importer) for `wp import`
-* [wordpress-plugin-tests](https://github.com/benbalter/wordpress-plugin-tests/) for `wp scaffold plugin-tests`
-
-Who's behind this thing?
-------------------------
-We are [Andreas Creten](https://github.com/andreascreten) and [Cristi Burcă](https://github.com/scribu), friendly guys from Europe. For more info, see [Governance](https://github.com/terminus/terminus/wiki/Governance).
-
-A complete list of contributors can be found [here](https://github.com/terminus/terminus/contributors).
+We have leaned heavily on the work of [wp-cli](http://wp-cli.org/) in archtecting this command line utility, we've also been greatly inspired by[Drush](http://drush.ws/).
