@@ -315,27 +315,6 @@ class Terminus {
 	}
 
 	/**
-	 * Convert a wp_error into a string
-	 *
-	 * @param mixed $errors
-	 * @return string
-	 */
-	static function error_to_string( $errors ) {
-		if ( is_string( $errors ) ) {
-			return $errors;
-		}
-
-		if ( is_object( $errors ) && is_a( $errors, 'WP_Error' ) ) {
-			foreach ( $errors->get_error_messages() as $message ) {
-				if ( $errors->get_error_data() )
-					return $message . ' ' . $errors->get_error_data();
-				else
-					return $message;
-			}
-		}
-	}
-
-	/**
 	 * Launch an external process that takes over I/O.
 	 *
 	 * @param string Command to call
@@ -353,7 +332,7 @@ class Terminus {
 	}
 
 	/**
-	 * Launch another WP-CLI command using the runtime arguments for the current process
+	 * Launch another Terminus command using the runtime arguments for the current process
 	 *
 	 * @param string Command to call
 	 * @param array $args Positional arguments to use
@@ -422,25 +401,4 @@ class Terminus {
 	static function run_command( $args, $assoc_args = array() ) {
 		self::get_runner()->run_command( $args, $assoc_args );
 	}
-
-
-
-	// DEPRECATED STUFF
-
-	static function add_man_dir() {
-		trigger_error( 'Terminus::add_man_dir() is deprecated. Add docs inline.', E_USER_WARNING );
-	}
-
-	// back-compat
-	static function out( $str ) {
-		fwrite( STDOUT, $str );
-	}
-
-	// back-compat
-	static function addCommand( $name, $class ) {
-		trigger_error( sprintf( 'wp %s: %s is deprecated. use Terminus::add_command() instead.',
-			$name, __FUNCTION__ ), E_USER_WARNING );
-		self::add_command( $name, $class );
-	}
 }
-
