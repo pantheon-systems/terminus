@@ -18,7 +18,7 @@ function get_form_build_id($html) {
   @$DOM->loadHTML($html);
   $login_form = $DOM->getElementById('atlas-login-form');
   if (!$login_form) {
-    return \Terminus::error("Dashboard unavailable", "Dashboard unavailable: login endpoint not found.");
+    return \Terminus::error("Dashboard unavailable: login endpoint not found.");
   }
 
   foreach ($login_form->getElementsByTagName('input') as $input) {
@@ -107,7 +107,7 @@ function auth($email, $password) {
   if (curl_errno($ch) != 0) {
     $err = curl_error($ch);
     curl_close($ch);
-    return \Terminus::error("Dashboard unavailable", "Dashboard unavailable: $err");
+    return \Terminus::error("Dashboard unavailable: $err");
   }
 
   $form_build_id = get_form_build_id($result);
@@ -127,7 +127,7 @@ function auth($email, $password) {
 
   if (curl_errno($ch) != 0) {
     $err = curl_error($ch);
-    return \Terminus::error("Dashboard unavailable", "Dashboard unavailable: $err");
+    return \Terminus::error("Dashboard unavailable: $err");
   }
 
   // Close cURL resource, and free up system resources.
@@ -135,19 +135,19 @@ function auth($email, $password) {
 
   $set_cookie_header = parse_drupal_headers($result, 'Set-Cookie');
   if (!$set_cookie_header) {
-    return \Terminus::error("Failure!", 'Authentication failed. Please check your credentials and try again.');
+    return \Terminus::error('Authentication failed. Please check your credentials and try again.');
   }
 
   $session = get_session_from_header($set_cookie_header);
 
   if (!$session) {
-    return \Terminus::error("Failure!", 'Session not found. Please check your credentials and try again.');
+    return \Terminus::error('Session not found. Please check your credentials and try again.');
   }
 
   // Get the UUID.
   $user_uuid = get_user_uuid_from_headers($result);
   if (!\Terminus\Utils\is_valid_uuid($user_uuid)) {
-    return \Terminus::error("Failure!", 'Could not determine user UUID. Please check your credentials and try again.');
+    return \Terminus::error('Could not determine user UUID. Please check your credentials and try again.');
   }
 
   // Prepare credentials for storage.
