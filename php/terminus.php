@@ -16,5 +16,5 @@ include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
 \Terminus\Utils\load_dependencies();
 
-Terminus::get_runner()->before_wp_load();
+Terminus::get_runner()->run();
 

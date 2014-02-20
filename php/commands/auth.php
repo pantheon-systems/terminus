@@ -2,7 +2,6 @@
 /**
  * Authenticate to Pantheon and store a local secret token.
  *
- * @when before_wp_load
  */
 class Auth_Command extends Terminus_Command {
 

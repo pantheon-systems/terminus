@@ -23,22 +23,6 @@ class Runner {
 		return $this->$key;
 	}
 
-	public function register_early_invoke( $when, $command ) {
-		$this->_early_invoke[ $when ][] = array_slice( Dispatcher\get_path( $command ), 1 );
-	}
-
-	private function do_early_invoke( $when ) {
-		if ( !isset( $this->_early_invoke[ $when ] ) )
-			return;
-
-		foreach ( $this->_early_invoke[ $when ] as $path ) {
-			if ( $this->cmd_starts_with( $path ) ) {
-				$this->_run_command();
-				exit;
-			}
-		}
-	}
-
 	private static function get_global_config_path() {
 		$config_path = getenv( 'TERMINUS_CONFIG_PATH' );
 		if ( isset( $runtime_config['config'] ) ) {
@@ -55,51 +39,12 @@ class Runner {
 		return $config_path;
 	}
 
-	private static function get_project_config_path() {
-		$config_files = array(
-			'terminus.local.yml',
-			'terminus.yml'
-		);
-
-		// Stop looking upward when we find we have emerged from a subdirectory
-		// install into a parent install
-		return Utils\find_file_upward( $config_files, getcwd(), function ( $dir ) {
-			static $wp_load_count = 0;
-			$wp_load_path = $dir . DIRECTORY_SEPARATOR . 'wp-load.php';
-			if ( file_exists( $wp_load_path ) ) {
-				$wp_load_count += 1;
-			}
-			return $wp_load_count > 1;
-		} );
-	}
-
 	/**
-	 * Attempts to find the path to the WP install inside index.php
-	 */
-	private static function extract_subdir_path( $index_path ) {
-		$index_code = file_get_contents( $index_path );
-
-		if ( !preg_match( '|^\s*require\s*\(?\s*(.+?)/wp-blog-header\.php([\'"])|m', $index_code, $matches ) ) {
-			return false;
-		}
-
-		$wp_path_src = $matches[1] . $matches[2];
-		$wp_path_src = Utils\replace_path_consts( $wp_path_src, $index_path );
-		$wp_path = eval( "return $wp_path_src;" );
-
-		if ( !Utils\is_path_absolute( $wp_path ) ) {
-			$wp_path = dirname( $index_path ) . "/$wp_path";
-		}
-
-		return $wp_path;
-	}
-
-	/**
-	 * Find the directory that contains the WordPress files. Defaults to the current working dir.
+	 * Find the directory that contains the project files. Defaults to the current working dir.
 	 *
 	 * @return string An absolute path
 	 */
-	private function find_wp_root() {
+	private function find_project_root() {
 		if ( !empty( $this->config['path'] ) ) {
 			$path = $this->config['path'];
 			if ( !Utils\is_path_absolute( $path ) )
@@ -108,20 +53,13 @@ class Runner {
 			return $path;
 		}
 
-		if ( $this->cmd_starts_with( array( 'core', 'download' ) ) ) {
-			return getcwd();
-		}
-
 		$dir = getcwd();
 
+		// walk the parent directories till we find the git directory at what
+		// we assume is the root of the project
 		while ( is_readable( $dir ) ) {
-			if ( file_exists( "$dir/wp-load.php" ) ) {
+			if ( file_exists( "$dir/.git" ) ) {
 				return $dir;
-			}
-
-			if ( file_exists( "$dir/index.php" ) ) {
-				if ( $path = self::extract_subdir_path( "$dir/index.php" ) )
-					return $path;
 			}
 
 			$parent_dir = dirname( $dir );
@@ -132,64 +70,10 @@ class Runner {
 		}
 	}
 
-	private static function set_wp_root( $path ) {
+	private static function set_project_root( $path ) {
 		define( 'ABSPATH', rtrim( $path, '/' ) . '/' );
 
 		$_SERVER['DOCUMENT_ROOT'] = realpath( $path );
-	}
-
-	private static function set_user( $assoc_args ) {
-		if ( !isset( $assoc_args['user'] ) )
-			return;
-
-		$fetcher = new \Terminus\Fetchers\User;
-		$user = $fetcher->get_check( $assoc_args['user'] );
-		wp_set_current_user( $user->ID );
-
-	}
-
-	private static function guess_url( $assoc_args ) {
-		if ( isset( $assoc_args['blog'] ) ) {
-			$assoc_args['url'] = $assoc_args['blog'];
-		}
-
-		if ( isset( $assoc_args['url'] ) ) {
-			$url = $assoc_args['url'];
-			if ( true === $url ) {
-				Terminus::warning( 'The --url parameter expects a value.' );
-			}
-		} elseif ( $wp_config_path = Utils\locate_wp_config() ) {
-			// Try to find the blog parameter in the wp-config file
-			$wp_config_file = file_get_contents( $wp_config_path );
-			$hit = array();
-
-			$re_define = "#.*define\s*\(\s*(['|\"]{1})(.+)(['|\"]{1})\s*,\s*(['|\"]{1})(.+)(['|\"]{1})\s*\)\s*;#iU";
-
-			if ( preg_match_all( $re_define, $wp_config_file, $matches ) ) {
-				foreach ( $matches[2] as $def_key => $def_name ) {
-					if ( 'DOMAIN_CURRENT_SITE' == $def_name )
-						$hit['domain'] = $matches[5][$def_key];
-					if ( 'PATH_CURRENT_SITE' == $def_name )
-						$hit['path'] = $matches[5][$def_key];
-				}
-			}
-
-			if ( !empty( $hit ) && isset( $hit['domain'] ) ) {
-				$url = $hit['domain'];
-				if ( isset( $hit['path'] ) )
-					$url .= $hit['path'];
-			}
-		}
-
-		if ( isset( $url ) ) {
-			return $url;
-		}
-
-		return false;
-	}
-
-	private function cmd_starts_with( $prefix ) {
-		return $prefix == array_slice( $this->arguments, 0, count( $prefix ) );
 	}
 
 	public function find_command_to_run( $args ) {
@@ -388,7 +272,6 @@ class Runner {
 		// File config
 		{
 			$this->global_config_path = self::get_global_config_path();
-			$this->project_config_path = self::get_project_config_path();
 
 			$configurator->merge_yml( $this->global_config_path );
 			$configurator->merge_yml( $this->project_config_path );
@@ -435,7 +318,7 @@ class Runner {
 		);
 	}
 
-	public function before_wp_load() {
+	public function run() {
 		$this->init_config();
 		$this->init_colorization();
 		$this->init_logger();
@@ -467,62 +350,12 @@ class Runner {
 		}
 
 		// Handle --path parameter
-		self::set_wp_root( $this->find_wp_root() );
+		self::set_project_root( $this->find_project_root() );
 
 		// First try at showing man page
 		if ( 'help' === $this->arguments[0] && ( isset( $this->arguments[1] ) || !$this->wp_exists() ) ) {
 			$this->_run_command();
 		}
-
-		// Handle --url parameter
-		$url = self::guess_url( $this->config );
-		if ( $url )
-			\Terminus::set_url( $url );
-
-		$this->do_early_invoke( 'before_wp_load' );
-
-		if ( $this->cmd_starts_with( array( 'core', 'config' ) ) ) {
-			$this->_run_command();
-			exit;
-		}
-
-		if ( $this->cmd_starts_with( array( 'core', 'is-installed' ) ) ) {
-			define( 'WP_INSTALLING', true );
-		}
-
-		if (
-			count( $this->arguments ) >= 2 &&
-			$this->arguments[0] == 'core' &&
-			in_array( $this->arguments[1], array( 'install', 'multisite-install' ) )
-		) {
-			define( 'WP_INSTALLING', true );
-
-			// We really need a URL here
-			if ( !isset( $_SERVER['HTTP_HOST'] ) ) {
-				$url = 'http://example.com';
-				\Terminus::set_url( $url );
-			}
-
-			if ( 'multisite-install' == $this->arguments[1] ) {
-				// need to fake some globals to skip the checks in wp-includes/ms-settings.php
-				$url_parts = Utils\parse_url( $url );
-				self::fake_current_site_blog( $url_parts );
-
-				if ( !defined( 'COOKIEHASH' ) ) {
-					define( 'COOKIEHASH', md5( $url_parts['host'] ) );
-				}
-			}
-		}
-
-		if ( $this->cmd_starts_with( array( 'import') ) ) {
-			define( 'WP_LOAD_IMPORTERS', true );
-			define( 'WP_IMPORTING', true );
-		}
-
-		if ( $this->cmd_starts_with( array( 'plugin' ) ) ) {
-			$GLOBALS['pagenow'] = 'plugins.php';
-		}
-
 
 		# Run the stinkin command!
 		$this->_run_command();

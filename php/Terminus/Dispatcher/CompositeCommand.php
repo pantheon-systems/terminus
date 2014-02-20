@@ -18,11 +18,6 @@ class CompositeCommand {
 
 		$this->shortdesc = $docparser->get_shortdesc();
 		$this->longdesc = $docparser->get_longdesc();
-
-		$when_to_invoke = $docparser->get_tag( 'when' );
-		if ( $when_to_invoke ) {
-			\Terminus::get_runner()->register_early_invoke( $when_to_invoke, $this );
-		}
 	}
 
 	function get_parent() {

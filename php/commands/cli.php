@@ -4,9 +4,8 @@ use \Terminus\Dispatcher,
 	\Terminus\Utils;
 
 /**
- * Get information about WP-CLI itself.
+ * Get information about Terminus itself.
  *
- * @when before_wp_load
  */
 class CLI_Command extends Terminus_Command {
 
