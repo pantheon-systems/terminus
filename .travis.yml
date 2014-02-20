@@ -40,11 +40,13 @@ matrix:
     - php: 5.5
       env: WP_VERSION=3.5.2 DEPLOY_BRANCH=master
 
-before_script: ./ci/prepare.sh
+before_script:
+  - ./scripts/prepare.sh
+  - ./scripts/build.sh
 
-script: ./ci/test.sh
+script: ./scripts/test.sh
 
-after_success: ./ci/deploy.sh
+after_success: ./scripts/package.sh
 
 notifications:
   email:
