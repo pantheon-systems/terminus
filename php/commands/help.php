@@ -11,10 +11,10 @@ class Help_Command extends Terminus_Command {
 	 * ## EXAMPLES
 	 *
 	 *     # get help for `core` command
-	 *     wp help core
+	 *     terminus help core
 	 *
 	 *     # get help for `core download` subcommand
-	 *     wp help core download
+	 *     terminus help core download
 	 *
 	 * @synopsis [<command>...]
 	 */
@@ -28,7 +28,7 @@ class Help_Command extends Terminus_Command {
 
 		// WordPress is already loaded, so there's no chance we'll find the command
 		if ( function_exists( 'add_filter' ) ) {
-			\Terminus::error( sprintf( "'%s' is not a registered wp command.", $args[0] ) );
+			\Terminus::error( sprintf( "'%s' is not a registered command.", $args[0] ) );
 		}
 	}
 

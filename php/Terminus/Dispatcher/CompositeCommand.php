@@ -79,7 +79,7 @@ class CompositeCommand {
 		}
 
 		\Terminus::line();
-		\Terminus::line( "See 'wp help $this->name <command>' for more information on a specific command." );
+		\Terminus::line( "See 'terminus help $this->name <command>' for more information on a specific command." );
 	}
 
 	function invoke( $args, $assoc_args, $extra_args ) {

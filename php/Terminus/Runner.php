@@ -207,7 +207,7 @@ class Runner {
 
 			if ( !$subcommand ) {
 				return sprintf(
-					"'%s' is not a registered wp command. See 'wp help'.",
+					"'%s' is not a registered command. See 'terminus help'.",
 					$full_name
 				);
 			}
