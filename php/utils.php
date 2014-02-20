@@ -259,7 +259,7 @@ function pick_fields( $item, $fields ) {
  * @return str|bool       Edited text, if file is saved from editor
  *                        False, if no change to file
  */
-function launch_editor_for_input( $input, $title = 'WP-CLI' ) {
+function launch_editor_for_input( $input, $title = 'Terminus' ) {
 
 	$tmpfile = wp_tempnam( $title );
 

@@ -6,7 +6,7 @@ use \Terminus\FileCache;
 use \Terminus\WpHttpCacheManager;
 
 /**
- * Various utilities for WP-CLI commands.
+ * Various utilities for Terminus commands.
  */
 class Terminus {
 
@@ -84,7 +84,7 @@ class Terminus {
 	}
 
 	/**
-	 * Set the context in which WP-CLI should be run
+	 * Set the context in which Terminus should be run
 	 */
 	static function set_url( $url ) {
 		$url_parts = Utils\parse_url( $url );

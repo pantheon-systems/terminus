@@ -258,7 +258,7 @@ class Runner {
 		// @codingStandardsIgnoreStart
 		if ( version_compare( $wp_version, $minimum_version, '<' ) ) {
 			Terminus::error(
-				"WP-CLI needs WordPress $minimum_version or later to work properly. " .
+				"Terminus needs WordPress $minimum_version or later to work properly. " .
 				"The version currently installed is $wp_version.\n" .
 				"Try running `wp core download --force`."
 			);

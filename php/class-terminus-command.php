@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Base class for WP-CLI commands
+ * Base class for Terminus commands
  *
  * @package terminus
  */

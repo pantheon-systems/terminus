@@ -86,7 +86,7 @@ class Configurator {
 				$details = $this->spec[ $key ];
 
 				if ( isset( $details['deprecated'] ) ) {
-					fwrite( STDERR, "WP-CLI: The --{$key} global parameter is deprecated. {$details['deprecated']}\n" );
+					fwrite( STDERR, "Terminus: The --{$key} global parameter is deprecated. {$details['deprecated']}\n" );
 				}
 
 				if ( $details['multiple'] ) {

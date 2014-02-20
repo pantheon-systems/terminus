@@ -3,7 +3,7 @@
 namespace Terminus;
 
 /**
- * Base class for WP-CLI commands that deal with database objects.
+ * Base class for Terminus commands that deal with database objects.
  *
  * @package terminus
  */

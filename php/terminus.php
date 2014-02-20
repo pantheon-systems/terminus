@@ -1,6 +1,6 @@
 <?php
 
-// Can be used by plugins/themes to check if WP-CLI is running or not
+// Can be used by plugins/themes to check if Terminus is running or not
 define( 'Terminus', true );
 define( 'TERMINUS_VERSION', '0.15-alpha' );
 define( 'TERMINUS_HOST', 'onebox.getpantheon.com' );

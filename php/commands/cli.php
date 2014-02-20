@@ -28,10 +28,10 @@ class CLI_Command extends Terminus_Command {
 	}
 
 	/**
-	 * Print WP-CLI version.
+	 * Print Terminus version.
 	 */
 	function version() {
-		Terminus::line( 'WP-CLI ' . TERMINUS_VERSION );
+		Terminus::line( 'Terminus ' . TERMINUS_VERSION );
 	}
 
 	/**
@@ -61,10 +61,10 @@ class CLI_Command extends Terminus_Command {
 			Terminus::line( "PHP binary:\t" . $php_bin );
 			Terminus::line( "PHP version:\t" . PHP_VERSION );
 			Terminus::line( "php.ini used:\t" . get_cfg_var( 'cfg_file_path' ) );
-			Terminus::line( "WP-CLI root dir:\t" . TERMINUS_ROOT );
-			Terminus::line( "WP-CLI global config:\t" . $runner->global_config_path );
-			Terminus::line( "WP-CLI project config:\t" . $runner->project_config_path );
-			Terminus::line( "WP-CLI version:\t" . TERMINUS_VERSION );
+			Terminus::line( "Terminus root dir:\t" . TERMINUS_ROOT );
+			Terminus::line( "Terminus global config:\t" . $runner->global_config_path );
+			Terminus::line( "Terminus project config:\t" . $runner->project_config_path );
+			Terminus::line( "Terminus version:\t" . TERMINUS_VERSION );
 		}
 	}
 

@@ -3,7 +3,7 @@
 namespace Terminus;
 
 /**
- * Base class for WP-CLI commands that deal with sending SSH commands
+ * Base class for Terminus commands that deal with sending SSH commands
  *
  * @package terminus
  */

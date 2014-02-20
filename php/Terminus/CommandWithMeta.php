@@ -3,7 +3,7 @@
 namespace Terminus;
 
 /**
- * Base class for WP-CLI commands that deal with metadata
+ * Base class for Terminus commands that deal with metadata
  *
  * @package terminus
  */
