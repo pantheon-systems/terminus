@@ -5,10 +5,10 @@
  */
 class Auth_Command extends Terminus_Command {
 
-	/**
-	 * Log yourself out and remove the secret session key.
-	 */
-	public function login( $args ) {
+  /**
+   * Log in as a user
+   */
+	public function login( $args, $assoc_args ) {
       if (empty($args)) {
         $email = \cli\prompt( "Your email address?", NULL );
       }
