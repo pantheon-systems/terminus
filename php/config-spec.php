@@ -23,12 +23,6 @@ return array(
 		'runtime' => '=<path>',
 	),
 
-	'site' => array(
-		'runtime' => '=<name|url|uuid>',
-		'file' => '<name|url|uuid>',
-		'desc' => 'Set the Pantheon site',
-	),
-
 	'require' => array(
 		'runtime' => '=<path>',
 		'file' => '<path>',

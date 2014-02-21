@@ -136,89 +136,6 @@ class Runner {
 		$this->run_command( $this->arguments, $this->assoc_args );
 	}
 
-	// Transparently convert old syntaxes
-	private static function back_compat_conversions( $args, $assoc_args ) {
-		$top_level_aliases = array(
-			'sql' => 'db',
-			'blog' => 'site'
-		);
-		if ( count( $args ) > 0 ) {
-			foreach ( $top_level_aliases as $old => $new ) {
-				if ( $old == $args[0] ) {
-					$args[0] = $new;
-					break;
-				}
-			}
-		}
-
-		// *-meta  ->  * meta
-		if ( !empty( $args ) && preg_match( '/(post|comment|user|network)-meta/', $args[0], $matches ) ) {
-			array_shift( $args );
-			array_unshift( $args, 'meta' );
-			array_unshift( $args, $matches[1] );
-		}
-
-		// core (multsite-)install --admin_name=  ->  --admin_user=
-		if ( count( $args ) > 0 && 'core' == $args[0] && isset( $assoc_args['admin_name'] ) ) {
-			$assoc_args['admin_user'] = $assoc_args['admin_name'];
-			unset( $assoc_args['admin_name'] );
-		}
-
-		// site --site_id=  ->  site --network_id=
-		if ( count( $args ) > 0 && 'site' == $args[0] && isset( $assoc_args['site_id'] ) ) {
-			$assoc_args['network_id'] = $assoc_args['site_id'];
-			unset( $assoc_args['site_id'] );
-		}
-
-		// {plugin|theme} update-all  ->  {plugin|theme} update --all
-		if ( count( $args ) > 1 && in_array( $args[0], array( 'plugin', 'theme' ) )
-			&& $args[1] == 'update-all'
-		) {
-			$args[1] = 'update';
-			$assoc_args['all'] = true;
-		}
-
-		// plugin scaffold  ->  scaffold plugin
-		if ( array( 'plugin', 'scaffold' ) == array_slice( $args, 0, 2 ) ) {
-			list( $args[0], $args[1] ) = array( $args[1], $args[0] );
-		}
-
-		// foo --help  ->  help foo
-		if ( isset( $assoc_args['help'] ) ) {
-			array_unshift( $args, 'help' );
-			unset( $assoc_args['help'] );
-		}
-
-		// {post|user} list --ids  ->  {post|user} list --format=ids
-		if ( count( $args ) > 1 && in_array( $args[0], array( 'post', 'user' ) )
-			&& $args[1] == 'list'
-			&& isset( $assoc_args['ids'] )
-		) {
-			$assoc_args['format'] = 'ids';
-			unset( $assoc_args['ids'] );
-		}
-
-		// --json  ->  --format=json
-		if ( isset( $assoc_args['json'] ) ) {
-			$assoc_args['format'] = 'json';
-			unset( $assoc_args['json'] );
-		}
-
-		// --{version|info}  ->  cli {version|info}
-		if ( empty( $args ) ) {
-			$special_flags = array( 'version', 'info' );
-			foreach ( $special_flags as $key ) {
-				if ( isset( $assoc_args[ $key ] ) ) {
-					$args = array( 'cli', $key );
-					unset( $assoc_args[ $key ] );
-					break;
-				}
-			}
-		}
-
-		return array( $args, $assoc_args );
-	}
-
 	public function in_color() {
 		return $this->colorize;
 	}
@@ -282,8 +199,9 @@ class Runner {
 			list( $args, $assoc_args, $runtime_config ) = $configurator->parse_args(
 				array_slice( $GLOBALS['argv'], 1 ) );
 
-			list( $this->arguments, $this->assoc_args ) = self::back_compat_conversions(
-				$args, $assoc_args );
+
+			$this->arguments = $args;
+			$this->assoc_args = $assoc_args;
 
 			$configurator->merge_array( $runtime_config );
 		}
