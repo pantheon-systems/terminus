@@ -106,7 +106,11 @@ abstract class Terminus_Command {
       return FALSE;
     }
 
-    return array('headers' => $headers_text, 'json' => $json);
+    return array(
+      'headers' => $headers_text,
+      'json' => $json,
+      'data' => json_decode($json)
+    );
   }
 }
 
