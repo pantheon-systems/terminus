@@ -83,70 +83,8 @@ class Terminus {
 		return $cache;
 	}
 
-	/**
-	 * Set the context in which Terminus should be run
-	 */
-	static function set_url( $url ) {
-		$url_parts = Utils\parse_url( $url );
-		self::set_url_params( $url_parts );
-	}
-
-	private static function set_url_params( $url_parts ) {
-		$f = function( $key ) use ( $url_parts ) {
-			return isset( $url_parts[ $key ] ) ? $url_parts[ $key ] : '';
-		};
-
-		if ( isset( $url_parts['host'] ) ) {
-			$_SERVER['HTTP_HOST'] = $url_parts['host'];
-			if ( isset( $url_parts['port'] ) ) {
-				$_SERVER['HTTP_HOST'] .= ':' . $url_parts['port'];
-			}
-
-			$_SERVER['SERVER_NAME'] = $url_parts['host'];
-		}
-
-		$_SERVER['REQUEST_URI'] = $f('path') . ( isset( $url_parts['query'] ) ? '?' . $url_parts['query'] : '' );
-		$_SERVER['SERVER_PORT'] = isset( $url_parts['port'] ) ? $url_parts['port'] : '80';
-		$_SERVER['QUERY_STRING'] = $f('query');
-	}
-
-	/**
-	 * @return WpHttpCacheManager
-	 */
-	static function get_http_cache_manager() {
-		static $http_cacher;
-
-		if ( !$http_cacher ) {
-			$http_cacher = new WpHttpCacheManager( self::get_cache() );
-		}
-
-		return $http_cacher;
-	}
-
 	static function colorize( $string ) {
 		return \cli\Colors::colorize( $string, self::get_runner()->in_color() );
-	}
-
-	/**
-	 * Schedule a callback to be executed at a certain point (before WP is loaded).
-	 */
-	static function add_hook( $when, $callback ) {
-		if ( in_array( $when, self::$hooks_passed ) )
-			call_user_func( $callback );
-
-		self::$hooks[ $when ][] = $callback;
-	}
-
-	/**
-	 * Execute registered callbacks.
-	 */
-	static function do_hook( $when ) {
-		self::$hooks_passed[] = $when;
-
-		if ( !isset( self::$hooks[ $when ] ) )
-			return;
-
-		array_map( 'call_user_func', self::$hooks[ $when ] );
 	}
 
 	/**
@@ -158,9 +96,6 @@ class Terminus {
 	 *   'before_invoke' => callback to execute before invoking the command
 	 */
 	static function add_command( $name, $class, $args = array() ) {
-		if ( isset( $args['before_invoke'] ) ) {
-			self::add_hook( "before_invoke:$name", $args['before_invoke'] );
-		}
 
 		$path = preg_split( '/\s+/', $name );
 
