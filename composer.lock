@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "a69acb37cc39cbc71c6753f94fcdda4f",
+    "hash": "0d85028c83fc59a8d3c0ae3fa7728a46",
     "packages": [
         {
             "name": "jlogsdon/cli",
@@ -49,6 +49,131 @@
                 "console"
             ],
             "time": "2013-06-17 19:40:15"
+        },
+        {
+            "name": "mustache/mustache",
+            "version": "v2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bobthecow/mustache.php.git",
+                "reference": "996c944fa2ddedddfaf0d276b913809d6a32fd85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/996c944fa2ddedddfaf0d276b913809d6a32fd85",
+                "reference": "996c944fa2ddedddfaf0d276b913809d6a32fd85",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Mustache": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Justin Hileman",
+                    "email": "justin@justinhileman.info",
+                    "homepage": "http://justinhileman.com"
+                }
+            ],
+            "description": "A Mustache implementation in PHP.",
+            "homepage": "https://github.com/bobthecow/mustache.php",
+            "keywords": [
+                "mustache",
+                "templating"
+            ],
+            "time": "2014-01-09 00:36:09"
+        },
+        {
+            "name": "nb/oxymel",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nb/oxymel.git",
+                "reference": "cbe626ef55d5c4cc9b5e6e3904b395861ea76e3c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nb/oxymel/zipball/cbe626ef55d5c4cc9b5e6e3904b395861ea76e3c",
+                "reference": "cbe626ef55d5c4cc9b5e6e3904b395861ea76e3c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Oxymel": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nikolay Bachiyski",
+                    "email": "nb@nikolay.bg",
+                    "homepage": "http://extrapolate.me/"
+                }
+            ],
+            "description": "A sweet XML builder",
+            "homepage": "https://github.com/nb/oxymel",
+            "keywords": [
+                "xml"
+            ],
+            "time": "2013-02-24 15:01:54"
+        },
+        {
+            "name": "rhumsaa/array_column",
+            "version": "1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/array_column.git",
+                "reference": "c09744baae0e023d1021055f9c65755b88a9721f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ramsey/array_column/zipball/c09744baae0e023d1021055f9c65755b88a9721f",
+                "reference": "c09744baae0e023d1021055f9c65755b88a9721f",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/array_column.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Ramsey",
+                    "homepage": "http://benramsey.com"
+                }
+            ],
+            "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
+            "homepage": "https://github.com/ramsey/array_column",
+            "keywords": [
+                "array",
+                "array_column",
+                "column"
+            ],
+            "time": "2013-07-22 16:12:38"
         },
         {
             "name": "rmccue/requests",
@@ -101,17 +226,17 @@
         },
         {
             "name": "symfony/finder",
-            "version": "dev-master",
+            "version": "v2.4.2",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "9a267caac6298b91efc7f0bc8522fd80f48fee98"
+                "reference": "b6735d1fc16da13c4c7dddfe78366a4a098cf011"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/9a267caac6298b91efc7f0bc8522fd80f48fee98",
-                "reference": "9a267caac6298b91efc7f0bc8522fd80f48fee98",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/b6735d1fc16da13c4c7dddfe78366a4a098cf011",
+                "reference": "b6735d1fc16da13c4c7dddfe78366a4a098cf011",
                 "shasum": ""
             },
             "require": {
@@ -120,7 +245,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -146,7 +271,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2014-01-07 13:29:57"
+            "time": "2014-01-07 13:28:54"
         }
     ],
     "packages-dev": [
@@ -155,13 +280,13 @@
     "aliases": [
 
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [
 
     ],
-    "platform": [
-
-    ],
+    "platform": {
+        "php": ">=5.3.2"
+    },
     "platform-dev": [
 
     ]
