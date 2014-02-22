@@ -7,32 +7,44 @@ class Auth_Command extends Terminus_Command {
 
   /**
    * Log in as a user
+   *
+   *  ## OPTIONS
+   * [<email>]
+   * : Email address to log in as.
+   *
+	 * [--password=<value>]
+	 * : Log in non-interactively with this password. Useful for automation.
    */
 	public function login( $args, $assoc_args ) {
-      if (empty($args)) {
-        $email = \cli\prompt( "Your email address?", NULL );
+      if ( empty( $args ) ) {
+        $email = Terminus::prompt( "Your email address?", NULL );
       }
       else {
         $email = $args[0];
       }
 
       if ( \Terminus\Utils\is_valid_email( $email ) ) {
-        exec("stty -echo");
-        $password = \cli\prompt( "Your dashboard password (input will not be shown)" );
-        exec("stty echo");
-        \cli\line();
-        \cli\line( "Logging in as $email" );
+        if ( !isset( $assoc_args['password'] ) ) {
+          exec("stty -echo");
+          $password = Terminus::prompt( "Your dashboard password (input will not be shown)" );
+          exec("stty echo");
+          Terminus::line();
+        }
+        else {
+          $password = $assoc_args['password'];
+        }
+        Terminus::line( "Logging in as $email" );
         $data = \Terminus\Login\auth( $email, $password );
         if ( $data != FALSE ) {
-          \cli\line( "Success!" );
+          Terminus::line( "Success!" );
           $this->cache->put_data('session', $data);
         }
         else {
-          \cli\line( "Login Failed/" );
+          Terminus::line( "Login Failed/" );
         }
       }
       else {
-        \cli\line( "Error: invalid email address" );
+        Terminus::line( "Error: invalid email address" );
       }
 	}
 
@@ -40,7 +52,7 @@ class Auth_Command extends Terminus_Command {
 	 * Log yourself out and remove the secret session key.
 	 */
 	public function logout() {
-		\cli\line( "Logging out of to Pantheon." );
+		$this->line( "Logging out of to Pantheon." );
 		$this->cache->remove('session');
 	}
 
@@ -49,10 +61,10 @@ class Auth_Command extends Terminus_Command {
 	 */
 	public function whoami() {
 		if ($this->session) {
-		  \cli\line( "You are authenticated as ". $this->session->email );
+		  $this->line( "You are authenticated as ". $this->session->email );
 		}
 		else {
-		  \cli\line( "You are not logged in." );
+		  $this->line( "You are not logged in." );
 		}
 	}
 

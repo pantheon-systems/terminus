@@ -7,17 +7,16 @@ class Sites_Command extends Terminus_Command {
 	/**
 	 * Show a list of your sites on Pantheon
 	 */
-	public function show() {
+	public function show( $arguments ) {
     $sites = $this->terminus_request('user', $this->session->user_uuid, 'sites', 'GET', Array('hydrated' => true))['data'];
 
-    print_r($sites);
     $headers = Array('Site', 'Framework', 'Service Level', 'UUID');
     $rows = Array();
-
+    var_dump($arguments);
     foreach($sites as $id => $site) {
       $rows[] = Array(
         $site->information->name,
-        $site->information->framework,
+        isset($site->information->framework) ? $site->information->framework : '',
         $site->information->service_level,
         $id
       );

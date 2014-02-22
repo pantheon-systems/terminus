@@ -129,12 +129,21 @@ class Terminus {
 	}
 
 	/**
+	 * Prompt the user for input
+	 *
+	 * @param string $message
+	 */
+	static function prompt( $message = '' ) {
+		return \cli\prompt( $message );
+	}
+
+	/**
 	 * Display a message in the CLI and end with a newline
 	 *
 	 * @param string $message
 	 */
 	static function line( $message = '' ) {
-		echo $message . "\n";
+		echo \cli\line($message);
 	}
 
 	/**
