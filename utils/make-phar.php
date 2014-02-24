@@ -33,7 +33,7 @@ $finder
 	->ignoreVCS(true)
 	->name('*.php')
 	->in('./php')
-	->in('./vendor/terminus')
+	->in('./vendor/jlogsdon')
 	->in('./vendor/mustache')
 	->in('./vendor/rmccue/requests')
 	->in('./vendor/composer')
