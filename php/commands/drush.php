@@ -36,20 +36,19 @@ class Drush_Command extends CommandWithSSH {
       Terminus::error("Command could not be completed.");
       exit;
     }
-    # TODO: validate environment quickly.
-    # SSH will fail if the environment isn't specified.
-    # Maybe we can catch that?
+
     $server = Array(
       'user' => "$environment.$site->site_uuid",
       'host' => "appserver.$environment.$site->site_uuid.drush.in",
       'port' => '2222'
     );
-
     # Sanitize assoc args so we don't try to pass our own flags.
+    # TODO: DRY this out?
     unset($assoc_args['site']);
     if (isset($assoc_args['environment'])) {
       unset($assoc_args['environment']);
     }
+
     # Create user-friendly output
     $command = implode( $args, ' ' );
     $flags = '';
@@ -62,10 +61,7 @@ class Drush_Command extends CommandWithSSH {
       }
     }
     Terminus::line( "Running drush $command $flags on $site_name-$environment" );
-    $result = $this->send_command($server, 'drush', $args, $assoc_args );
-    if ($result == 255) {
-      Terminus::error("Failed to connect. Check your credentials, and that you are specifying a valid environment.");
-    }
+    $this->send_command($server, 'drush', $args, $assoc_args );
   }
 
 }

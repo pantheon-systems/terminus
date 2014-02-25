@@ -29,7 +29,9 @@ abstract class CommandWithSSH extends \Terminus_Command {
     $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " '" . $remote_cmd . "'";
 
     passthru( $cmd, $exit_code );
-
+    if ($result == 255) {
+      \Terminus::error("Failed to connect. Check your credentials, and that you are specifying a valid environment.");
+    }
     return( $exit_code );
   }
 }
