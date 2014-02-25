@@ -31,24 +31,6 @@ class Sites_Command extends Terminus_Command {
     $table->display();
 	}
 
-	/**
-	 * Helper code to grab sites and manage local cache.
-	 */
-	private function fetch_sites( $nocache = false ) {
-	  $sites = $this->cache->get_data('sites');
-	  if (!$sites || $nocache) {
-	    Terminus::log( 'Fetching site list from Pantheon' );
-      $request = $this->terminus_request( 'user',
-                                        $this->session->user_uuid,
-                                        'sites',
-                                        'GET',
-                                        Array('hydrated' => true));
-      # TODO: handle errors well.
-      $sites = $request['data'];
-      $this->cache->put_data( 'sites', $sites );
-    }
-    return $sites;
-	}
 }
 
 Terminus::add_command( 'sites', 'Sites_Command' );

@@ -9,11 +9,70 @@ abstract class Terminus_Command {
 
   public $cache;
   public $session;
+  public $sites;
 
 	public function __construct() {
+	  # Load commonly used data from cache.
 	  $this->cache = Terminus::get_cache();
 	  $this->session = $this->cache->get_data('session');
+	  $this->sites = $this->cache->get_data('sites');
 	}
+
+	/**
+	 * Helper code to grab sites and manage local cache.
+	 */
+	public function fetch_sites( $nocache = false ) {
+	  if (!$this->sites || $nocache) {
+	    $this->_fetch_sites();
+    }
+    return $this->sites;
+	}
+
+	/**
+	 * Actually go out and get the sites.
+	 */
+	private function _fetch_sites() {
+    Terminus::log( 'Fetching site list from Pantheon' );
+    $request = $this->terminus_request( 'user',
+                                      $this->session->user_uuid,
+                                      'sites',
+                                      'GET',
+                                      Array('hydrated' => true));
+    # TODO: handle errors well.
+    $sites = $request['data'];
+    $this->cache->put_data( 'sites', $sites );
+    $this->sites = $sites;
+    return $sites;
+	}
+
+  /**
+   * Helper function to grab a single site's data from cache if possible.
+   */
+  public function fetch_site( $site_name, $nocache = false ) {
+    if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
+      return $this->_fetch_site($site_name);
+    }
+    # No? Refresh that list.
+    $this->_fetch_sites();
+    if ( $this->_fetch_site($site_name) !== false ) {
+      return $this->_fetch_site($site_name);
+    }
+    Terminus::error("The site named '$site_name' does not exist. Run `terminus sites show` for a list of sites.");
+  }
+
+  /**
+   * Private function to deal with our data object for sites and return one
+   * by name that includes its uuid.
+   */
+  private function _fetch_site( $site_name ) {
+    foreach ($this->sites as $site_uuid => $data) {
+      if ( $data->information->name == $site_name ) {
+        $data->information->site_uuid = $site_uuid;
+        return $data->information;
+      }
+    }
+    return false;
+  }
 
   /**
    * Make a request to the Dashbord's internal API.
