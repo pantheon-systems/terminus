@@ -7,20 +7,20 @@ namespace Terminus\Iterators;
  */
 class Transform extends \IteratorIterator {
 
-	private $transformers = array();
+  private $transformers = array();
 
-	public function add_transform( $fn ) {
-		$this->transformers[] = $fn;
-	}
+  public function add_transform( $fn ) {
+    $this->transformers[] = $fn;
+  }
 
-	public function current() {
-		$value = parent::current();
+  public function current() {
+    $value = parent::current();
 
-		foreach ( $this->transformers as $fn ) {
-			$value = $fn( $value );
-		}
+    foreach ( $this->transformers as $fn ) {
+      $value = $fn( $value );
+    }
 
-		return $value;
-	}
+    return $value;
+  }
 }
 

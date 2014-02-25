@@ -4,83 +4,83 @@ namespace Terminus;
 
 class REPL {
 
-	private $promt;
+  private $promt;
 
-	public function __construct( $prompt ) {
-		$this->prompt = $prompt;
+  public function __construct( $prompt ) {
+    $this->prompt = $prompt;
 
-		$this->set_history_file();
-	}
+    $this->set_history_file();
+  }
 
-	public function start() {
-		while ( true ) {
-			$line = $this->prompt();
+  public function start() {
+    while ( true ) {
+      $line = $this->prompt();
 
-			if ( '' === $line ) continue;
+      if ( '' === $line ) continue;
 
-			$line = rtrim( $line, ';' ) . ';';
+      $line = rtrim( $line, ';' ) . ';';
 
-			if ( self::starts_with( self::non_expressions(), $line ) ) {
-				eval( $line );
-			} else {
-				if ( !self::starts_with( 'return', $line ) )
-					$line = 'return ' . $line;
+      if ( self::starts_with( self::non_expressions(), $line ) ) {
+        eval( $line );
+      } else {
+        if ( !self::starts_with( 'return', $line ) )
+          $line = 'return ' . $line;
 
-				// Write directly to STDOUT, to sidestep any output buffers created by plugins
-				ob_start();
-				var_dump( eval( $line ) );
-				fwrite( STDOUT, ob_get_clean() );
-			}
-		}
-	}
+        // Write directly to STDOUT, to sidestep any output buffers created by plugins
+        ob_start();
+        var_dump( eval( $line ) );
+        fwrite( STDOUT, ob_get_clean() );
+      }
+    }
+  }
 
-	private static function non_expressions() {
-		return implode( '|', array(
-			'echo', 'global', 'unset', 'function',
-			'while', 'for', 'foreach', 'if', 'switch',
-			'include', 'include\_once', 'require', 'require\_once'
-		) );
-	}
+  private static function non_expressions() {
+    return implode( '|', array(
+      'echo', 'global', 'unset', 'function',
+      'while', 'for', 'foreach', 'if', 'switch',
+      'include', 'include\_once', 'require', 'require\_once'
+    ) );
+  }
 
-	private function prompt() {
-		$full_line = false;
+  private function prompt() {
+    $full_line = false;
 
-		$done = false;
-		do {
-			$prompt = ( !$done && $full_line !== false ) ? '--> ' : $this->prompt;
+    $done = false;
+    do {
+      $prompt = ( !$done && $full_line !== false ) ? '--> ' : $this->prompt;
 
-			$fp = popen( self::create_prompt_cmd( $prompt, $this->history_file ), 'r' );
+      $fp = popen( self::create_prompt_cmd( $prompt, $this->history_file ), 'r' );
 
-			$line = fgets( $fp );
+      $line = fgets( $fp );
 
-			if ( !$line ) {
-				break;
-			}
+      if ( !$line ) {
+        break;
+      }
 
-			$line = rtrim( $line, "\n" );
+      $line = rtrim( $line, "\n" );
 
-			if ( $line && '\\' == $line[ strlen( $line ) - 1 ] ) {
-				$line = substr( $line, 0, -1 );
-			} else {
-				$done = true;
-			}
+      if ( $line && '\\' == $line[ strlen( $line ) - 1 ] ) {
+        $line = substr( $line, 0, -1 );
+      } else {
+        $done = true;
+      }
 
-			$full_line .= $line;
+      $full_line .= $line;
 
-		} while ( !$done );
+    } while ( !$done );
 
-		if ( $full_line === false ) {
-			return 'exit';
-		}
+    if ( $full_line === false ) {
+      return 'exit';
+    }
 
-		return $full_line;
-	}
+    return $full_line;
+  }
 
-	private static function create_prompt_cmd( $prompt, $history_path ) {
-		$prompt = escapeshellarg( $prompt );
-		$history_path = escapeshellarg( $history_path );
+  private static function create_prompt_cmd( $prompt, $history_path ) {
+    $prompt = escapeshellarg( $prompt );
+    $history_path = escapeshellarg( $history_path );
 
-		$cmd = <<<BASH
+    $cmd = <<<BASH
 set -f
 history -r $history_path
 LINE=""
@@ -91,19 +91,19 @@ history -w $history_path
 echo \$LINE
 BASH;
 
-		$cmd = str_replace( "\n", '; ', $cmd );
+    $cmd = str_replace( "\n", '; ', $cmd );
 
-		return '/bin/bash -c ' . escapeshellarg( $cmd );
-	}
+    return '/bin/bash -c ' . escapeshellarg( $cmd );
+  }
 
-	private function set_history_file() {
-		$data = getcwd() . get_current_user();
+  private function set_history_file() {
+    $data = getcwd() . get_current_user();
 
-		$this->history_file = sys_get_temp_dir() . '/terminus-history-' . md5( $data );
-	}
+    $this->history_file = sys_get_temp_dir() . '/terminus-history-' . md5( $data );
+  }
 
-	private static function starts_with( $tokens, $line ) {
-		return preg_match( "/^($tokens)[\(\s]+/", $line );
-	}
+  private static function starts_with( $tokens, $line ) {
+    return preg_match( "/^($tokens)[\(\s]+/", $line );
+  }
 }
 

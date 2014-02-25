@@ -11,27 +11,27 @@ abstract class Terminus_Command {
   public $session;
   public $sites;
 
-	public function __construct() {
-	  # Load commonly used data from cache.
-	  $this->cache = Terminus::get_cache();
-	  $this->session = $this->cache->get_data('session');
-	  $this->sites = $this->cache->get_data('sites');
-	}
+  public function __construct() {
+    # Load commonly used data from cache.
+    $this->cache = Terminus::get_cache();
+    $this->session = $this->cache->get_data('session');
+    $this->sites = $this->cache->get_data('sites');
+  }
 
-	/**
-	 * Helper code to grab sites and manage local cache.
-	 */
-	public function fetch_sites( $nocache = false ) {
-	  if (!$this->sites || $nocache) {
-	    $this->_fetch_sites();
+  /**
+   * Helper code to grab sites and manage local cache.
+   */
+  public function fetch_sites( $nocache = false ) {
+    if (!$this->sites || $nocache) {
+      $this->_fetch_sites();
     }
     return $this->sites;
-	}
+  }
 
-	/**
-	 * Actually go out and get the sites.
-	 */
-	private function _fetch_sites() {
+  /**
+   * Actually go out and get the sites.
+   */
+  private function _fetch_sites() {
     Terminus::log( 'Fetching site list from Pantheon' );
     $request = $this->terminus_request( 'user',
                                       $this->session->user_uuid,
@@ -43,7 +43,7 @@ abstract class Terminus_Command {
     $this->cache->put_data( 'sites', $sites );
     $this->sites = $sites;
     return $sites;
-	}
+  }
 
   /**
    * Helper function to grab a single site's data from cache if possible.

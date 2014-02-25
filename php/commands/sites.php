@@ -4,15 +4,15 @@
  *
  */
 class Sites_Command extends Terminus_Command {
-	/**
-	 * Show a list of your sites on Pantheon
-	 *
+  /**
+   * Show a list of your sites on Pantheon
+   *
    *  ## OPTIONS
    *
-	 * [--nocache]
-	 * : Get a fresh list of sites from the server side.
-	 */
-	public function show( $args, $assoc_args ) {
+   * [--nocache]
+   * : Get a fresh list of sites from the server side.
+   */
+  public function show( $args, $assoc_args ) {
     $sites = $this->fetch_sites(isset($assoc_args['nocache']));
     $headers = Array('Site', 'Framework', 'Service Level', 'UUID');
     $rows = Array();
@@ -29,7 +29,7 @@ class Sites_Command extends Terminus_Command {
     $table->setHeaders($headers);
     $table->setRows($rows);
     $table->display();
-	}
+  }
 
 }
 

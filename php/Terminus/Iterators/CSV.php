@@ -7,70 +7,70 @@ namespace Terminus\Iterators;
  */
 class CSV implements \Iterator {
 
-	const ROW_SIZE = 4096;
+  const ROW_SIZE = 4096;
 
-	private $filePointer;
+  private $filePointer;
 
-	private $delimiter;
-	private $columns;
+  private $delimiter;
+  private $columns;
 
-	private $currentIndex;
-	private $currentElement;
+  private $currentIndex;
+  private $currentElement;
 
-	public function __construct( $filename, $delimiter = ',' ) {
-		$this->filePointer = fopen( $filename, 'r' );
-		if ( !$this->filePointer ) {
-			\Terminus::error( sprintf( 'Could not open file: %s', $filename ) );
-		}
+  public function __construct( $filename, $delimiter = ',' ) {
+    $this->filePointer = fopen( $filename, 'r' );
+    if ( !$this->filePointer ) {
+      \Terminus::error( sprintf( 'Could not open file: %s', $filename ) );
+    }
 
-		$this->delimiter = $delimiter;
-	}
+    $this->delimiter = $delimiter;
+  }
 
-	public function rewind() {
-		rewind( $this->filePointer );
+  public function rewind() {
+    rewind( $this->filePointer );
 
-		$this->columns = fgetcsv( $this->filePointer, self::ROW_SIZE, $this->delimiter );
+    $this->columns = fgetcsv( $this->filePointer, self::ROW_SIZE, $this->delimiter );
 
-		$this->currentIndex = -1;
-		$this->next();
-	}
+    $this->currentIndex = -1;
+    $this->next();
+  }
 
-	public function current() {
-		return $this->currentElement;
-	}
+  public function current() {
+    return $this->currentElement;
+  }
 
-	public function key() {
-		return $this->currentIndex;
-	}
+  public function key() {
+    return $this->currentIndex;
+  }
 
-	public function next() {
-		$this->currentElement = false;
+  public function next() {
+    $this->currentElement = false;
 
-		while ( true ) {
-			$str = fgets( $this->filePointer );
+    while ( true ) {
+      $str = fgets( $this->filePointer );
 
-			if ( false === $str )
-				break;
+      if ( false === $str )
+        break;
 
-			$row = str_getcsv( $str, $this->delimiter );
+      $row = str_getcsv( $str, $this->delimiter );
 
-			$element = array();
-			foreach ( $this->columns as $i => $key ) {
-				if ( isset( $row[ $i ] ) )
-					$element[ $key ] = $row[ $i ];
-			}
+      $element = array();
+      foreach ( $this->columns as $i => $key ) {
+        if ( isset( $row[ $i ] ) )
+          $element[ $key ] = $row[ $i ];
+      }
 
-			if ( !empty( $element ) ) {
-				$this->currentElement = $element;
-				$this->currentIndex++;
+      if ( !empty( $element ) ) {
+        $this->currentElement = $element;
+        $this->currentIndex++;
 
-				break;
-			}
-		}
-	}
+        break;
+      }
+    }
+  }
 
-	public function valid() {
-		return is_array( $this->currentElement );
-	}
+  public function valid() {
+    return is_array( $this->currentElement );
+  }
 }
 

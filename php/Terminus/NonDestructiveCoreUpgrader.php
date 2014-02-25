@@ -8,8 +8,8 @@ namespace Terminus;
  * @package terminus
  */
 class NonDestructiveCoreUpgrader extends \Core_Upgrader {
-	function unpack_package($package, $delete_package = false) {
-		return parent::unpack_package( $package, $delete_package );
-	}
+  function unpack_package($package, $delete_package = false) {
+    return parent::unpack_package( $package, $delete_package );
+  }
 }
 
