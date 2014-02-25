@@ -181,24 +181,6 @@ function esc_cmd( $cmd ) {
   return vsprintf( $cmd, array_map( 'escapeshellarg', $args ) );
 }
 
-function locate_wp_config() {
-  static $path;
-
-  if ( null === $path ) {
-    if ( file_exists( ABSPATH . 'wp-config.php' ) )
-      $path = ABSPATH . 'wp-config.php';
-    elseif ( file_exists( ABSPATH . '../wp-config.php' ) && ! file_exists( ABSPATH . '/../wp-settings.php' ) )
-      $path = ABSPATH . '../wp-config.php';
-    else
-      $path = false;
-
-    if ( $path )
-      $path = realpath( $path );
-  }
-
-  return $path;
-}
-
 /**
  * Output items in a table, JSON, CSV, ids, or the total count
  *

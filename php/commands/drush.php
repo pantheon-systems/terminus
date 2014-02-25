@@ -54,10 +54,10 @@ class Drush_Command extends CommandWithSSH {
     $flags = '';
     foreach ( $assoc_args as $k => $v ) {
       if (isset($v) && (string) $v != '') {
-        $flags .= "--$k=$v";
+        $flags .= "--$k=$v ";
       }
       else {
-        $flags .= "--$k";
+        $flags .= "--$k ";
       }
     }
     Terminus::line( "Running drush $command $flags on $site_name-$environment" );

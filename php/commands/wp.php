@@ -50,16 +50,15 @@ class WPCLI_Command extends CommandWithSSH {
     if (isset($assoc_args['environment'])) {
       unset($assoc_args['environment']);
     }
-
     # Create user-friendly output
     $command = implode( $args, ' ' );
     $flags = '';
     foreach ( $assoc_args as $k => $v ) {
       if (isset($v) && (string) $v != '') {
-        $flags .= "--$k=$v";
+        $flags .= "--$k=$v ";
       }
       else {
-        $flags .= "--$k";
+        $flags .= "--$k ";
       }
     }
     Terminus::line( "Running drush $command $flags on $site_name-$environment" );
