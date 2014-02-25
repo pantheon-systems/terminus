@@ -36,10 +36,6 @@ class WPCLI_Command extends CommandWithSSH {
       Terminus::error("Command could not be completed.");
       exit;
     }
-    # TODO: validate environment quickly.
-    #if (!isset($site->environments->$environment)) {
-    #  Terminus::error("The '$environment' environment does not exist.");
-    #}
 
     # see https://github.com/pantheon-systems/titan-mt/blob/master/dashboardng/app/workshops/site/models/environment.coffee
     $server = Array(
@@ -48,11 +44,13 @@ class WPCLI_Command extends CommandWithSSH {
       'port' => '2222'
     );
 
-    # Sanitize assoc args.
+    # Sanitize assoc args so we don't try to pass our own flags.
+    # TODO: DRY this out?
     unset($assoc_args['site']);
     if (isset($assoc_args['environment'])) {
       unset($assoc_args['environment']);
     }
+
     # Create user-friendly output
     $command = implode( $args, ' ' );
     $flags = '';
@@ -64,8 +62,9 @@ class WPCLI_Command extends CommandWithSSH {
         $flags .= "--$k";
       }
     }
-    Terminus::line( "Running wp-cli $command $flags against $site_name-$environment" );
+    Terminus::line( "Running drush $command $flags on $site_name-$environment" );
     $this->send_command($server, 'wp', $args, $assoc_args );
+
   }
 
 }
