@@ -5,16 +5,16 @@ use \Terminus\Dispatcher,
   \Terminus\CommandWithSSH;
 
 
-class Drush_Command extends CommandWithSSH {
+class WPCLI_Command extends CommandWithSSH {
 
   /**
-   * Invoke `drush` commands on a Pantheon development site
+   * Invoke `wp` commands on a Pantheon development site
    *
    * <commands>...
-   * : The Drush commands you intend to run.
+   * : The WP-CLI commands you intend to run.
    *
    * [--<flag>=<value>]
-   * : Additional Drush flag(s) to pass in to the command.
+   * : Additional WP-CLI flag(s) to pass in to the command.
    *
    * --site=<site>
    * : The name (DNS shortname) of your site on Pantheon.
@@ -37,15 +37,18 @@ class Drush_Command extends CommandWithSSH {
       exit;
     }
     # TODO: validate environment quickly.
-    # SSH will fail if the environment isn't specified.
-    # Maybe we can catch that?
+    #if (!isset($site->environments->$environment)) {
+    #  Terminus::error("The '$environment' environment does not exist.");
+    #}
+
+    # see https://github.com/pantheon-systems/titan-mt/blob/master/dashboardng/app/workshops/site/models/environment.coffee
     $server = Array(
       'user' => "$environment.$site->site_uuid",
       'host' => "appserver.$environment.$site->site_uuid.drush.in",
       'port' => '2222'
     );
 
-    # Sanitize assoc args so we don't try to pass our own flags.
+    # Sanitize assoc args.
     unset($assoc_args['site']);
     if (isset($assoc_args['environment'])) {
       unset($assoc_args['environment']);
@@ -61,13 +64,10 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k";
       }
     }
-    Terminus::line( "Running drush $command $flags on $site_name-$environment" );
-    $result = $this->send_command($server, 'drush', $args, $assoc_args );
-    if ($result == 255) {
-      Terminus::error("Failed to connect. Check your credentials, and that you are specifying a valid environment.");
-    }
+    Terminus::line( "Running wp-cli $command $flags against $site_name-$environment" );
+    $this->send_command($server, 'wp', $args, $assoc_args );
   }
 
 }
 
-Terminus::add_command( 'drush', 'Drush_Command' );
+Terminus::add_command( 'wp', 'WPCLI_Command' );
