@@ -46,8 +46,9 @@ terminus sites show
 | sftp-mode-ftw      |           | free          | 100486f7-3488-eb11-10c4-9fbfab1996af |
 | new-wp-spinup      | wordpress | free          | c33df3d3-deae-48ac-b4e1-97e36ea1ba34 |
 +--------------------+-----------+---------------+--------------------------------------+
-terminus wp --site=c33df3d3-deae-48ac-b4e1-97e36ea1ba34
 
+terminus drush cc all --site=outlandish-josh --environment=dev
+```
 
 Credits
 -------
