@@ -31,6 +31,15 @@ Currently the command-set exposed by the Pantheon CLI is limited:
 
 **Example**
 
+As of now, the implementation is very limited. The only commands of use are:
+
+- ```terminus auth login```
+- ```terminus sites show```
+- ```terminus drush```
+- ```terminus wp```
+
+A great deal more is still to come as we port over the rest of the dashboard feature-set, and add conveniences.
+
 ```
 terminus auth login
 Your email address?: josh@getpantheon.com
@@ -57,4 +66,4 @@ terminus wp core install --site=new-wp-spinup --title=CliInstall --admin_user=ad
 
 Credits
 -------
-We have leaned heavily on the work of [wp-cli](http://wp-cli.org/) in architecting this command line utility with an object-oriented structure. We've also (obviously) been greatly inspired by[Drush](http://drush.ws/).
+We have leaned heavily on the work of [wp-cli](http://wp-cli.org/) in architecting this command line utility with an object-oriented structure. We've also (obviously) been greatly inspired by [Drush](http://drush.ws/).
