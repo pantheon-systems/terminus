@@ -14,7 +14,7 @@ Installation
 Currently the quickest way to install the project is to grab the .phar file from github. We are currently in pre-release, and so instructions will change, but for now something like this should work:
 
 ```
-curl https://github.com/pantheon-systems/cli/releases/download/0.0.1-alpha/terminus.phar -L -o /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.0.2-alpha/terminus.phar -L -o /usr/local/bin/terminus
 chmod +x /usr/local/bin/terminus
 ```
 
@@ -47,7 +47,12 @@ terminus sites show
 | new-wp-spinup      | wordpress | free          | c33df3d3-deae-48ac-b4e1-97e36ea1ba34 |
 +--------------------+-----------+---------------+--------------------------------------+
 
+# Run a drush cc all
 terminus drush cc all --site=outlandish-josh --environment=dev
+
+# Install a freshly spun-up WordPress site.
+# NOTE: Replace with your own site name, email, password!
+terminus wp core install --site=new-wp-spinup --title=CliInstall --admin_user=admin --admin_password=XXXXXX --admin_email=josh@getpantheon.com --url=dev-new-wp-spinup.gotpantheon.com
 ```
 
 Credits
