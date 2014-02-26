@@ -206,7 +206,7 @@ class Subcommand extends CompositeCommand {
   }
 
   function invoke( $args, $assoc_args, $extra_args ) {
-    if ( \Terminus::get_config( 'prompt' ) )
+    if ( \Terminus::get_config( 'interactive' ) )
       list( $args, $assoc_args ) = $this->prompt_args( $args, $assoc_args );
 
     $to_unset = $this->validate_args( $args, $assoc_args, $extra_args );
