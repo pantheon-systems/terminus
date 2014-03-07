@@ -44,6 +44,11 @@ class WPCLI_Command extends CommandWithSSH {
       'port' => '2222'
     );
 
+    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
+      $server['user'] = "appserver.$environment.$site->site_uuid";
+      $server['host'] = TERMINUS_HOST;
+    }
+
     # Sanitize assoc args so we don't try to pass our own flags.
     # TODO: DRY this out?
     unset($assoc_args['site']);
@@ -61,7 +66,7 @@ class WPCLI_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    Terminus::line( "Running drush $command $flags on $site_name-$environment" );
+    Terminus::line( "Running wp $command $flags on $site_name-$environment" );
     $this->send_command($server, 'wp', $args, $assoc_args );
 
   }
