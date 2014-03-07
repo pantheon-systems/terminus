@@ -107,7 +107,7 @@ abstract class Terminus_Command {
     if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
       curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-      $host = 'onebox.getpantheon.com';
+      $host = TERMINUS_HOST;
     }
     $url = 'https://'. $host . '/terminus.php?' . $realm . '=' . $uuid;
     if ($path) {
