@@ -144,7 +144,7 @@ class Runner {
     }
 
     // First try at showing man page
-    if ( 'help' === $this->arguments[0] && ( isset( $this->arguments[1] ) || !$this->wp_exists() ) ) {
+    if ( 'help' === $this->arguments[0] && ( isset( $this->arguments[1] ) ) ) {
       $this->_run_command();
     }
 

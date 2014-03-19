@@ -74,7 +74,7 @@ class CLI_Command extends Terminus_Command {
    * @subcommand param-dump
    */
   function param_dump() {
-    echo json_encode( \Terminus::get_configurator()->get_spec() );
+    echo \Terminus\Utils\json_dump( \Terminus::get_configurator()->get_spec() );
   }
 
   /**
@@ -83,7 +83,7 @@ class CLI_Command extends Terminus_Command {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    echo json_encode( self::command_to_array( Terminus::get_root_command() ) );
+    echo \Terminus\Utils\json_dump( self::command_to_array( Terminus::get_root_command() ) );    
   }
 
   /**

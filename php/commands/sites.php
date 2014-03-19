@@ -1,6 +1,6 @@
 <?php
 /**
- * Authenticate to Pantheon and store a local secret token.
+ * Actions on multiple sites
  *
  */
 class Sites_Command extends Terminus_Command {

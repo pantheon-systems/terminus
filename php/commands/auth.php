@@ -36,8 +36,9 @@ class Auth_Command extends Terminus_Command {
         Terminus::line( "Logging in as $email" );
         $data = \Terminus\Login\auth( $email, $password );
         if ( $data != FALSE ) {
-          Terminus::line( "Success!" );
+          //Terminus::line( "Success!" );
           $this->cache->put_data('session', $data);
+          Terminus::launch_self("art", array("fist"));
         }
         else {
           Terminus::line( "Login Failed/" );
@@ -52,19 +53,19 @@ class Auth_Command extends Terminus_Command {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    $this->line( "Logging out of to Pantheon." );
+    Terminus::line( "Logging out of to Pantheon." );
     $this->cache->remove('session');
   }
 
   /**
    * Find out what user you are logged in as.
    */
-  public function whoami() {
+  public function whoami() {    
     if ($this->session) {
-      $this->line( "You are authenticated as ". $this->session->email );
+      Terminus::line( "You are authenticated as ". $this->session->email );
     }
     else {
-      $this->line( "You are not logged in." );
+      Terminus::line( "You are not logged in." );
     }
   }
 

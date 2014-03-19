@@ -314,8 +314,8 @@ class Terminus {
     );
 
     foreach ( $reused_runtime_args as $key ) {
-      if ( $value = self::get_runner()->config[ $key ] )
-        $assoc_args[ $key ] = $value;
+      if ( array_key_exists( $key, self::get_runner()->config ) )
+        $assoc_args[ $key ] = self::get_runner()->config[$key];
     }
 
     $php_bin = self::get_php_binary();
