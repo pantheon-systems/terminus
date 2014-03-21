@@ -25,8 +25,8 @@ class Drush_Command extends CommandWithSSH {
    */
   function __invoke( $args, $assoc_args ) {
     $site_name = $assoc_args['site'];
-    if (isset($assoc_args['environment'])) {
-      $environment = $assoc_args['environment'];
+    if (isset($assoc_args['env'])) {
+      $environment = $assoc_args['env'];
     }
     else {
       $environment = 'dev';
@@ -45,8 +45,8 @@ class Drush_Command extends CommandWithSSH {
     # Sanitize assoc args so we don't try to pass our own flags.
     # TODO: DRY this out?
     unset($assoc_args['site']);
-    if (isset($assoc_args['environment'])) {
-      unset($assoc_args['environment']);
+    if (isset($assoc_args['env'])) {
+      unset($assoc_args['env']);
     }
 
     # Create user-friendly output
