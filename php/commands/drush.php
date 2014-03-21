@@ -42,6 +42,12 @@ class Drush_Command extends CommandWithSSH {
       'host' => "appserver.$environment.$site->site_uuid.drush.in",
       'port' => '2222'
     );
+
+    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
+      $server['user'] = "appserver.$environment.$site->site_uuid";
+      $server['host'] = TERMINUS_HOST;
+    }
+
     # Sanitize assoc args so we don't try to pass our own flags.
     # TODO: DRY this out?
     unset($assoc_args['site']);
