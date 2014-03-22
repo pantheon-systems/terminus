@@ -17,9 +17,9 @@ class Environment_Command extends Terminus_Command {
      *
      * <commands>...
      * [--site=<value>]
-     * : Additional Drush flag(s) to pass in to the command.
+     * : specify the site on which the command should be performed
      * [--env=<value>]
-     * : Additional Drush flag(s) to pass in to the command.
+     * : Specificy the environment of a site previously set with --site=
      *
      * [--<flag>=<value>]
      * : Additional Drush flag(s) to pass in to the command.
@@ -146,7 +146,7 @@ class Environment_Command extends Terminus_Command {
      */
     function create($args, $assoc_args) {
       $env = array_shift($args);
-      return terminus_request("site", $this->_siteInfo->site_uuid , 'environments/' . $env, "POST");
+      return $this->terminus_request("site", $this->_siteInfo->site_uuid , 'environments/' . $env, "POST");
     }
 
     /**
@@ -154,7 +154,7 @@ class Environment_Command extends Terminus_Command {
      */
     function delete($args, $assoc_args) {
       $env = array_shift($args);
-      return terminus_request("site", $this->_siteInfo->site_uuid , 'environments/' . $env, "DELETE");
+      return $this->terminus_request("site", $this->_siteInfo->site_uuid , 'environments/' . $env, "DELETE");
     }
     
     /**
