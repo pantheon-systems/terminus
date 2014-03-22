@@ -10,6 +10,10 @@ abstract class Terminus_Command {
   public $cache;
   public $session;
   public $sites;
+  
+  protected $_func;
+  protected $_siteInfo;
+  protected $_bindings;
 
   public function __construct() {
     # Load commonly used data from cache.
@@ -156,6 +160,7 @@ abstract class Terminus_Command {
 
     $info = curl_getinfo($ch);
     if ($info['http_code'] > 399) {
+      $this->_debug(get_defined_vars());
       \Terminus::error('Request failed');
       // Expired session. Really don't like the string comparison.
       if ($info['http_code'] == 403 && $json == '"Session not found."') {
@@ -171,5 +176,123 @@ abstract class Terminus_Command {
       'data' => json_decode($json)
     );
   }
+  
+  protected function _validateSiteUuid($site) {
+    if (\Terminus\Utils\is_valid_uuid($site) && property_exists($this->sites, $site)){
+      $this->_siteInfo =& $this->sites[$site];
+      $this->_siteInfo->site_uuid = $site;
+    } elseif($this->_siteInfo = $this->fetch_site($site)) {
+      $site = $this->_siteInfo->site_uuid;
+    } else {
+      Terminus::error("Unable to locate the requested site.");
+    }
+    return $site;
+  }
+  
+  protected function _constructTableForResponse($data) {
+    $table = new \cli\Table();
+    if (is_object($data)) {
+      $data = (array)$data;
+    }
+    if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
+      $table->setHeaders($this->_headers[$this->_func]);
+    } else {
+      $table->setHeaders(array_keys($data));
+    }
+    foreach ($data as $row => $row_data) {
+      $row = array();
+      foreach($row_data as $key => $value) {
+        $row[] = $value;
+      } 
+      $table->addRow($row);
+    }
+    $table->display();
+  }
+  
+  protected function _handleFuncArg(&$args, $assoc_args = array()) {
+    // backups-delete should execute backups_delete function
+    $this->_func = str_replace("_", "-", array_shift($args));
+    if (!is_callable(array($this, $this->_func), false, $static)) {
+      if (array_key_exists("debug", $assoc_args)){
+        $this->_debug(get_defined_vars());
+      }
+      Terminus::error("I cannot find the requested task to perform it.");
+	  } 
+  }
+  
+  protected function _handleSiteArg(&$args, $assoc_args = array()) {
+    $uuid = null;
+    if (array_key_exists("site", $assoc_args)) {
+      $uuid = $this->_validateSiteUuid($assoc_args["site"]);
+    } else  {
+      Terminus::error("Please specify the site with --site=<sitename> option.");
+    }
+    if (!empty($uuid) && property_exists($this->sites, $uuid)) {
+      $this->_siteInfo = $this->sites->$uuid;
+      $this->_siteInfo->site_uuid = $uuid;
+    } else {
+      if (array_key_exists("debug", $assoc_args)){
+        $this->_debug(get_defined_vars());
+      }
+      Terminus::error("Please specify the site with --site=<sitename> option.");
+    }
+  }
+  
+  protected function _handleEnvArg(&$args, $assoc_args = array()) {
+    if (array_key_exists("env", $assoc_args)) {
+      $this->_getEnvBindings($args, $assoc_args);
+    } else  {
+      Terminus::error("Please specify the site => environment with --env=<environment> option.");
+    }
+    
+    if (!is_object($this->_bindings)) {
+      if (array_key_exists("debug", $assoc_args)){
+        $this->_debug(get_defined_vars());
+      }
+      Terminus::error("Unable to obtain the bindings for the requested environment.\n\n");
+    } else {
+      if (property_exists($this->_bindings, $assoc_args['env'])) {
+        $this->_env = $assoc_args['env'];
+      } else {
+        Terminus::error("The requested environment either does not exist or you don't have access to it.");
+      }
+    }
+  }
+  
+  protected function _getEnvBindings(&$args, $assoc_args) {
+    $b = $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/'. $this->_env .'/bindings', "GET");
+    if (!empty($b) && is_array($b) && array_key_exists("data", $b)) {
+      $this->_bindings = $b['data'];
+    } 
+  }
+  
+  protected function _execute($args, $assoc_args = array()){
+    $success = $this->{$this->_func}( $args, $assoc_args);
+    if (array_key_exists("debug", $assoc_args)){
+      $this->_debug(get_defined_vars());
+    }
+    if (!empty($success)){
+      if (is_array($success) && array_key_exists("data", $success)) {
+        if (array_key_exists("json", $assoc_args)) {
+          echo \Terminus\Utils\json_dump($success["data"]);
+        } else {
+          $this->_constructTableForResponse($success['data']);
+        }
+      } elseif (is_string($success)) {
+        echo Terminus::line($success);
+      }
+    } else {
+      if (array_key_exists("debug", $assoc_args)){
+        $this->_debug(get_defined_vars());
+      }
+      Terminus::error("There was an error attempting to execute the requested task.\n\n");
+    }
+  }
+  
+  protected function _debug($vars) {
+    Terminus::line(print_r($this, true));
+    Terminus::line(print_r($vars, true));
+  }
+  
 }
 

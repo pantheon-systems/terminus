@@ -14,6 +14,8 @@ class Auth_Command extends Terminus_Command {
    *
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
+   * [--debug]
+   * : dump call information when logging in.
    */
   public function login( $args, $assoc_args ) {
       if ( empty( $args ) ) {
@@ -36,16 +38,19 @@ class Auth_Command extends Terminus_Command {
         Terminus::line( "Logging in as $email" );
         $data = \Terminus\Login\auth( $email, $password );
         if ( $data != FALSE ) {
+          if (array_key_exists("debug", $assoc_args)){
+            $this->_debug(get_defined_vars());
+          }
           //Terminus::line( "Success!" );
           $this->cache->put_data('session', $data);
           Terminus::launch_self("art", array("fist"));
         }
         else {
-          Terminus::line( "Login Failed/" );
+          Terminus::error( "Login Failed!" );
         }
       }
       else {
-        Terminus::line( "Error: invalid email address" );
+        Terminus::error( "Error: invalid email address" );
       }
   }
 
