@@ -171,6 +171,7 @@ abstract class Terminus_Command {
     }
 
     return array(
+      'info' => $info,
       'headers' => $headers_text,
       'json' => $json,
       'data' => json_decode($json)
@@ -209,15 +210,17 @@ abstract class Terminus_Command {
     $table->display();
   }
   
-  protected function _handleFuncArg(&$args, $assoc_args = array()) {
+  protected function _handleFuncArg(array &$args = array() , array $assoc_args = array()) {
     // backups-delete should execute backups_delete function
-    $this->_func = str_replace("_", "-", array_shift($args));
-    if (!is_callable(array($this, $this->_func), false, $static)) {
-      if (array_key_exists("debug", $assoc_args)){
-        $this->_debug(get_defined_vars());
-      }
-      Terminus::error("I cannot find the requested task to perform it.");
-	  } 
+    if (!empty($args)){
+      $this->_func = str_replace("-", "_", array_shift($args));
+      if (!is_callable(array($this, $this->_func), false, $static)) {
+        if (array_key_exists("debug", $assoc_args)){
+          $this->_debug(get_defined_vars());
+        }
+        Terminus::error("I cannot find the requested task to perform it.");
+  	  }  
+    }
   }
   
   protected function _handleSiteArg(&$args, $assoc_args = array()) {
@@ -266,7 +269,7 @@ abstract class Terminus_Command {
     } 
   }
   
-  protected function _execute($args, $assoc_args = array()){
+  protected function _execute( array $args = array() , array $assoc_args = array() ){
     $success = $this->{$this->_func}( $args, $assoc_args);
     if (array_key_exists("debug", $assoc_args)){
       $this->_debug(get_defined_vars());

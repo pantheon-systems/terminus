@@ -8,6 +8,9 @@ use Terminus\Utils;
 
 class Site_Command extends Terminus_Command {
   
+  protected $_headers = array(
+    "environments" => array("Environment","Created", "Locked")
+  );
     
   /**
    * Invoke `drush` commands on a Pantheon development site
@@ -48,7 +51,16 @@ class Site_Command extends Terminus_Command {
    * List enviroments for a site
    */
   function environments($args, $assoc_args) {
-    return terminus_request("site", $this->_siteInfo->site_uuid, "environments", "GET");
+    $results = $this->terminus_request("site", $this->_siteInfo->site_uuid, "environments", "GET");
+    $toReturn = array();
+    foreach ($results['data'] as $key => $value) {
+      $toReturn['data'][] = array(
+        $key,
+        date('jS F Y h:i:s A (T)', $value->environment_created),
+        ( $value->lock->locked ? "Locked" : "Not Locked" )
+      );
+    }
+    return $toReturn;
   }
   
 }

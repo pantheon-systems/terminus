@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Print the pantheon art
+ * Commands specific to an environment
  *
  */
 
@@ -17,7 +17,7 @@ class Environment_Command extends Terminus_Command {
      *
      * <commands>...
      * [--site=<value>]
-     * : specify the site on which the command should be performed
+     * : specify the site on which the command should be performed (may be name or UUID)
      * [--env=<value>]
      * : Specificy the environment of a site previously set with --site=
      *
@@ -25,11 +25,14 @@ class Environment_Command extends Terminus_Command {
      * : Additional Drush flag(s) to pass in to the command.
      */
     function __invoke(array $args, array $assoc_args ) {
-      if (empty($args) or count($args) <= 2 ) {
+      if (empty($args) || (!array_key_exists("site", $assoc_args)) || (!array_key_exists("org", $assoc_args))) {
         Terminus::error("You need to specify a task to perform, site and envrionment on which to perform.");
       } else {
+        // process the function argument
   		  $this->_handleFuncArg($args, $assoc_args);
+        //process the site id argment
   		  $this->_handleSiteArg($args, $assoc_args);
+        // if we are not creating or deleting an org, go ahead and process the org argment
         if (!in_array($this->_func, array("create", "delete"))) {
     		  $this->_handleEnvArg($args, $assoc_args);
         }
@@ -213,7 +216,7 @@ class Environment_Command extends Terminus_Command {
     /**
      * Delete hostname from environment
      */
-    public function hostnamedelete($site_uuid, $environment, $hostname) {
+    public function hostnamedelete($args, $assoc_args) {
       $hostname = array_shift($args);
       return $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/' . $this->_env . '/hostnames/' . rawurlencode($hostname), "DELETE");
     }

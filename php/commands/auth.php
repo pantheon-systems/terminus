@@ -4,6 +4,8 @@
  *
  */
 class Auth_Command extends Terminus_Command {
+  
+  
 
   /**
    * Log in as a user
@@ -58,7 +60,7 @@ class Auth_Command extends Terminus_Command {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    Terminus::line( "Logging out of to Pantheon." );
+    Terminus::line( "Logging out of Pantheon." );
     $this->cache->remove('session');
   }
 
@@ -74,6 +76,21 @@ class Auth_Command extends Terminus_Command {
     }
   }
 
+  private function _checkSession() {
+    if ((!property_exists($this, "session")) || (!property_exists($this->session, "user_uuid"))) {
+      return false;
+    }
+    $results = $this->terminus_request("user", $this->session->user_uuid, "profile", "GET");
+    if ($results['info']['http_code'] >= 400){
+      Terminus::line("Expired Session, please re-authenticate.");
+      $this->cache->remove('session');
+      Terminus::launch_self("auth", array("login"));
+      $this->whoami();
+      return true;
+    } else {
+      return (($results['info']['http_code'] <= 199 )||($results['info']['http_code'] >= 300 ))? false : true;
+    }
+  }
 }
 
 Terminus::add_command( 'auth', 'Auth_Command' );

@@ -106,7 +106,6 @@ class Terminus {
     while ( !empty( $path ) ) {
       $subcommand_name = $path[0];
       $subcommand = $command->find_subcommand( $path );
-
       // create an empty container
       if ( !$subcommand ) {
         $subcommand = new Dispatcher\CompositeCommand( $command, $subcommand_name,
@@ -122,8 +121,7 @@ class Terminus {
     if ( ! $command->can_have_subcommands() ) {
       throw new Exception( sprintf( "'%s' can't have subcommands.",
         implode( ' ' , Dispatcher\get_path( $command ) ) ) );
-    }
-
+    }    
     $command->add_subcommand( $leaf_name, $leaf_command );
   }
 
