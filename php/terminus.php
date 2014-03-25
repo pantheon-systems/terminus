@@ -1,7 +1,7 @@
 <?php
 // Can be used by plugins/themes to check if Terminus is running or not
 define( 'Terminus', true );
-define( 'TERMINUS_VERSION', '0.0.2-alpha' );
+define( 'TERMINUS_VERSION', '0.0.3-alpha' );
 date_default_timezone_set('UTC');
 
 include TERMINUS_ROOT . '/php/utils.php';
