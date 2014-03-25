@@ -7,7 +7,7 @@
 
 
 class Organizations_Command extends Terminus_Command {
-  
+
   /**
    * Commands specific to an environment
    *
@@ -28,13 +28,14 @@ class Organizations_Command extends Terminus_Command {
     }
     $this->_execute($args, $assoc_args);
   }
+
   /**
    * API call to get a user's organizations.
    */
-  function list($args, $assoc_args) {
-    //TODO: format output
-    return $this->terminus_request("user", $this->_uuid, 'organizations', "GET");
-  }
+  // function list($args, $assoc_args) {
+  //   //TODO: format output
+  //   return $this->terminus_request("user", $this->_uuid, 'organizations', "GET");
+  // }
 
   /**
    * API call to get sites within an organization.
@@ -120,9 +121,9 @@ class Organizations_Command extends Terminus_Command {
     //TODO: format output
     return $this->terminus_request("user", $this->_uuid, 'organizations/'. $organization_uuid .'/users/'. $user_to_delete, "DELETE");
   }
-  
-  
-  
+
+
+
 }
 
 
