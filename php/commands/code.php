@@ -18,7 +18,7 @@ class Code_Command extends CommandWithSSH {
    * : Specificy the environment of a site previously set with --site=
    *
    * [--<flag>=<value>]
-   * : Additional Drush flag(s) to pass in to the command.
+   * : Additional argument flag(s) to pass in to the command.
    */
   function __invoke(array $args, array $assoc_args ) {
     if (empty($args) ) {
@@ -85,10 +85,10 @@ class Code_Command extends CommandWithSSH {
    * [--updatedb=<true|false>]
    * : specify the site on which the command should be performed
    * [--xoption=<theirs|mine>]
-   * : specifies the merge option 
+   * : specifies the merge option
    */
   function upstreamupdate(array $args, array $assoc_args) {
-    
+
     $path = 'code-upstream-updates';
     $data = array(
       // update database with latest schema
@@ -100,7 +100,7 @@ class Code_Command extends CommandWithSSH {
 
     return $this->terminus_request("site", $this->_siteInfo->site_uuid, $path, "POST", $data);
   }
-  
+
 }
 
 Terminus::add_command( 'code', 'Code_Command' );
