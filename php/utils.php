@@ -5,6 +5,10 @@ namespace Terminus\Utils;
 use \Terminus\Dispatcher;
 use \Terminus\Iterators\Transform;
 
+if (!defined('JSON_PRETTY_PRINT')){
+  define('JSON_PRETTY_PRINT', 128);
+}
+
 function load_dependencies() {
   if ( 0 === strpos( TERMINUS_ROOT, 'phar:' ) ) {
     require TERMINUS_ROOT . '/vendor/autoload.php';
@@ -53,10 +57,20 @@ function load_all_commands() {
   $iterator = new \DirectoryIterator( $cmd_dir );
 
   foreach ( $iterator as $filename ) {
-    if ( '.php' != substr( $filename, -4 ) )
+    if ( '.php' != substr( $filename, -4 ) ){
       continue;
-
+    }
     include_once "$cmd_dir/$filename";
+  }
+}
+
+function json_dump($var) {
+  // if it's a piped command, don't 'prettify' json. 
+  if (\cli\Shell::isPiped()) {
+    return json_encode( $var );
+  } else {
+    // if not, make it legible to humans
+    return json_encode( $var , JSON_PRETTY_PRINT )."\n";
   }
 }
 

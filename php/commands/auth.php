@@ -4,6 +4,8 @@
  *
  */
 class Auth_Command extends Terminus_Command {
+  
+  
 
   /**
    * Log in as a user
@@ -14,6 +16,8 @@ class Auth_Command extends Terminus_Command {
    *
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
+   * [--debug]
+   * : dump call information when logging in.
    */
   public function login( $args, $assoc_args ) {
       if ( empty( $args ) ) {
@@ -36,15 +40,19 @@ class Auth_Command extends Terminus_Command {
         Terminus::line( "Logging in as $email" );
         $data = \Terminus\Login\auth( $email, $password );
         if ( $data != FALSE ) {
-          Terminus::line( "Success!" );
+          if (array_key_exists("debug", $assoc_args)){
+            $this->_debug(get_defined_vars());
+          }
+          //Terminus::line( "Success!" );
           $this->cache->put_data('session', $data);
+          Terminus::launch_self("art", array("fist"));
         }
         else {
-          Terminus::line( "Login Failed/" );
+          Terminus::error( "Login Failed!" );
         }
       }
       else {
-        Terminus::line( "Error: invalid email address" );
+        Terminus::error( "Error: invalid email address" );
       }
   }
 
@@ -52,22 +60,37 @@ class Auth_Command extends Terminus_Command {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    $this->line( "Logging out of to Pantheon." );
+    Terminus::line( "Logging out of Pantheon." );
     $this->cache->remove('session');
   }
 
   /**
    * Find out what user you are logged in as.
    */
-  public function whoami() {
+  public function whoami() {    
     if ($this->session) {
-      $this->line( "You are authenticated as ". $this->session->email );
+      Terminus::line( "You are authenticated as ". $this->session->email );
     }
     else {
-      $this->line( "You are not logged in." );
+      Terminus::line( "You are not logged in." );
     }
   }
 
+  private function _checkSession() {
+    if ((!property_exists($this, "session")) || (!property_exists($this->session, "user_uuid"))) {
+      return false;
+    }
+    $results = $this->terminus_request("user", $this->session->user_uuid, "profile", "GET");
+    if ($results['info']['http_code'] >= 400){
+      Terminus::line("Expired Session, please re-authenticate.");
+      $this->cache->remove('session');
+      Terminus::launch_self("auth", array("login"));
+      $this->whoami();
+      return true;
+    } else {
+      return (($results['info']['http_code'] <= 199 )||($results['info']['http_code'] >= 300 ))? false : true;
+    }
+  }
 }
 
 Terminus::add_command( 'auth', 'Auth_Command' );

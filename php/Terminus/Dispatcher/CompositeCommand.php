@@ -94,8 +94,9 @@ class CompositeCommand {
       }
     }
 
-    if ( !isset( $subcommands[ $name ] ) )
+    if ( !isset( $subcommands[ $name ] ) ){
       return false;
+    }
 
     return $subcommands[ $name ];
   }

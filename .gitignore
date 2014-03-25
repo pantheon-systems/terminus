@@ -4,3 +4,5 @@ composer.lock
 /phpunit.xml
 
 /builds
+
+/.DS_Store
