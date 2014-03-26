@@ -14,7 +14,7 @@ Installation
 Currently the quickest way to install the project is to grab the .phar file from github. We are currently in pre-release, and so instructions will change, but for now something like this should work:
 
 ```
-curl https://github.com/pantheon-systems/cli/releases/download/0.0.3-alpha/terminus.phar -L -o /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.0.4-alpha/terminus -L -o /usr/local/bin/terminus
 chmod +x /usr/local/bin/terminus
 ```
 
