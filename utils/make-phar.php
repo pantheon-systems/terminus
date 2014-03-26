@@ -50,6 +50,19 @@ foreach ( $finder as $file ) {
   add_file( $phar, $file );
 }
 
+// Non-PHP Files
+$finder = new Finder();
+$finder
+  ->files()
+  ->ignoreVCS(true)
+  ->ignoreDotFiles(false)
+  ->in('./templates')
+  ;
+
+foreach ( $finder as $file ) {
+  add_file( $phar, $file );
+}
+
 add_file( $phar, './vendor/autoload.php' );
 add_file( $phar, './vendor/rmccue/requests/library/Requests/Transport/cacert.pem' );
 
