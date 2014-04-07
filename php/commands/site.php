@@ -44,7 +44,9 @@ class Site_Command extends Terminus_Command {
    */
   
   public function state($args, $assoc_args) {
-    return $this->terminus_request("site", $this->_siteInfo->site_uuid, "state", "GET");
+    $response = $this->terminus_request("site", $this->_siteInfo->site_uuid, "state", "GET");
+    //TODO: format response
+    return $response;
   }  
   
   /**
