@@ -17,7 +17,7 @@
     "nb/oxymel": "0.1.0"
   },
   "autoload": {
-    "psr-0": { "Terminus": "php" },
+    "psr-0": { "Terminus": "php", "Pantheon": "php" },
     "files": [ "php/Spyc.php" ],
     "classmap": [ "php/export" ]
   }

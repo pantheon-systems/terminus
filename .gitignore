@@ -6,3 +6,13 @@ composer.lock
 /builds
 
 /.DS_Store
+
+/.idea/
+
+/php/.DS_Store
+
+/php/Pantheon/.DS_Store
+
+/php/Terminus/.DS_Store
+
+/php/Terminus/Iterators/.DS_Store

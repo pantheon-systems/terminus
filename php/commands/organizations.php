@@ -12,6 +12,8 @@ class Organizations_Command extends Terminus_Command {
    * Commands specific to an environment
    *
    * <commands>...
+   * : The function you intend to run
+   *
    * [--site=<value>]
    * : specify the site on which the command should be performed
    * [--env=<value>]
