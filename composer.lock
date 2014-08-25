@@ -1,23 +1,22 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-        "This file is @generated automatically"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
     "hash": "bc79fe26eee0368948209e37e5d80c1c",
     "packages": [
         {
             "name": "jlogsdon/cli",
-            "version": "v0.9.4-patch46",
+            "version": "v0.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jlogsdon/php-cli-tools.git",
-                "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a"
+                "reference": "e051551f45fb833b67d9fe99e0c696dbc6d283f0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jlogsdon/php-cli-tools/zipball/02d5ed4cdbab911df91bf06062c8b2705fb0919a",
-                "reference": "02d5ed4cdbab911df91bf06062c8b2705fb0919a",
+                "url": "https://api.github.com/repos/jlogsdon/php-cli-tools/zipball/e051551f45fb833b67d9fe99e0c696dbc6d283f0",
+                "reference": "e051551f45fb833b67d9fe99e0c696dbc6d283f0",
                 "shasum": ""
             },
             "require": {
@@ -49,20 +48,20 @@
                 "cli",
                 "console"
             ],
-            "time": "2014-02-01 23:11:00"
+            "time": "2013-06-17 19:40:15"
         },
         {
             "name": "mustache/mustache",
-            "version": "v2.6.1",
+            "version": "v2.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/mustache.php.git",
-                "reference": "1430ca884912eaba2b3830856b45685733b16789"
+                "reference": "996c944fa2ddedddfaf0d276b913809d6a32fd85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/1430ca884912eaba2b3830856b45685733b16789",
-                "reference": "1430ca884912eaba2b3830856b45685733b16789",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/996c944fa2ddedddfaf0d276b913809d6a32fd85",
+                "reference": "996c944fa2ddedddfaf0d276b913809d6a32fd85",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +93,7 @@
                 "mustache",
                 "templating"
             ],
-            "time": "2014-06-20 19:34:49"
+            "time": "2014-01-09 00:36:09"
         },
         {
             "name": "nb/oxymel",
@@ -164,8 +163,7 @@
             "authors": [
                 {
                     "name": "Ben Ramsey",
-                    "homepage": "http://benramsey.com",
-                    "role": "Developer"
+                    "homepage": "http://benramsey.com"
                 }
             ],
             "description": "Provides functionality for array_column() to projects using PHP earlier than version 5.5.",
@@ -179,16 +177,16 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v1.6.1",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rmccue/Requests.git",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea"
+                "reference": "756374edd59ac69268ed35481a506ebd4e732525"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/6aac485666c2955077d77b796bbdd25f0013a4ea",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea",
+                "url": "https://api.github.com/repos/rmccue/Requests/zipball/756374edd59ac69268ed35481a506ebd4e732525",
+                "reference": "756374edd59ac69268ed35481a506ebd4e732525",
                 "shasum": ""
             },
             "require": {
@@ -224,21 +222,21 @@
                 "iri",
                 "sockets"
             ],
-            "time": "2014-05-18 04:59:02"
+            "time": "2013-10-06 13:30:32"
         },
         {
             "name": "symfony/finder",
-            "version": "v2.5.3",
+            "version": "v2.4.2",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "090fe4eaff414d8f2171c7a4748ea868d530775f"
+                "reference": "b6735d1fc16da13c4c7dddfe78366a4a098cf011"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/090fe4eaff414d8f2171c7a4748ea868d530775f",
-                "reference": "090fe4eaff414d8f2171c7a4748ea868d530775f",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/b6735d1fc16da13c4c7dddfe78366a4a098cf011",
+                "reference": "b6735d1fc16da13c4c7dddfe78366a4a098cf011",
                 "shasum": ""
             },
             "require": {
@@ -247,7 +245,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -261,17 +259,19 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
                 }
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2014-07-28 13:20:46"
+            "time": "2014-01-07 13:28:54"
         }
     ],
     "packages-dev": [
@@ -284,7 +284,6 @@
     "stability-flags": [
 
     ],
-    "prefer-stable": false,
     "platform": {
         "php": ">=5.3.2"
     },
