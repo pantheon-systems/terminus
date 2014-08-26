@@ -19,7 +19,7 @@ class Art_Command extends Terminus_Command {
     $artwork = array_shift($args);
 
     if (!empty($artwork) && array_key_exists($artwork, $this->works)){
-      echo Terminus::colorize(base64_decode($this->works[$artwork]))."\n";
+      echo Terminus::colorize("%g".base64_decode($this->works[$artwork])."%n")."\n";
     } else {
       Terminus::error("No formula for requested artwork");
     }

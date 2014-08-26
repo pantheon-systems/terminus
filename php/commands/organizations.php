@@ -22,7 +22,7 @@ class Organizations_Command extends Terminus_Command {
    */
   function __invoke(array $args, array $assoc_args ) {
     if (empty($args) || (!array_key_exists("site", $assoc_args)) || (!array_key_exists("org", $assoc_args))) {
-      Terminus::error("You need to specify a task to perform, site and envrionment on which to perform.");
+      Terminus::error("You need to specify a task to perform, site and environment on which to perform.");
     } else {
 		  $this->_handleFuncArg($args, $assoc_args);
     }

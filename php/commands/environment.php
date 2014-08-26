@@ -7,11 +7,11 @@
 
 
 class Environment_Command extends Terminus_Command {
-  
+
     protected $_headers = array(
       "backups" => array("ID","Type", "Date", "Bucket", "Size")
     );
-  
+
     /**
      * Commands specific to an environment
      *
@@ -26,7 +26,7 @@ class Environment_Command extends Terminus_Command {
      */
     function __invoke(array $args, array $assoc_args ) {
       if (empty($args) || (!array_key_exists("site", $assoc_args)) || (!array_key_exists("org", $assoc_args))) {
-        Terminus::error("You need to specify a task to perform, site and envrionment on which to perform.");
+        Terminus::error("You need to specify a task to perform, site and environment on which to perform.");
       } else {
         // process the function argument
   		  $this->_handleFuncArg($args, $assoc_args);
@@ -42,8 +42,8 @@ class Environment_Command extends Terminus_Command {
 	  /**
 	   * list backups for a specific site => env
 	   *
-	   * @param array $args 
-	   * @param array $assoc_args 
+	   * @param array $args
+	   * @param array $assoc_args
 	   * @return void
 	   * @author stovak
 	   */
@@ -53,7 +53,7 @@ class Environment_Command extends Terminus_Command {
       foreach ($results['data'] as $key => $value) {
          $table[] = array(
            $key,
-           @array_pop(explode("_", $key)), 
+           @array_pop(explode("_", $key)),
            date('jS F Y h:i:s A (T)', $value->timestamp),
            $value->folder,
            number_format((($value->size/1024)/1024), 1)."MB"
@@ -61,18 +61,18 @@ class Environment_Command extends Terminus_Command {
       }
       return array("data" => $table);
     }
-    
+
     /**
      *  Retrieve a backup URL from the catalog for this site => environment
      *
      * [--json]
      * : return the value in json.
-     * 
+     *
      * [--download]
      * : download the backup rather than return the url
-     *    
-     * @param string $args 
-     * @param string $assoc_args 
+     *
+     * @param string $args
+     * @param string $assoc_args
      * @return void
      * @author stovak
      */
@@ -80,7 +80,7 @@ class Environment_Command extends Terminus_Command {
       // todo: account for --json and --download
       // todo: default behavior should be to return url
       $BID = array_shift($args);
-      
+
       if ($this->_backupIdIsValidBackup($BID)) {
         $aBID = explode("_", $BID);
         $path = 'environments/' . $this->_env . '/backups/catalog/' . $aBID[0] . "_" . $aBID[1] . '/' . $aBID[2] . '/s3token';
@@ -91,49 +91,49 @@ class Environment_Command extends Terminus_Command {
         if (count($assoc_args)) {
           $output = array_shift($assoc_args);
           switch ($output) {
-          
+
             case "json":
               return $burl['data'];
               break;
-                
+
             case "download":
               Terminus::line("Downloading backup...");
               passthru("curl -OL \"{$burl['data']->url}\"");
               return "Downloaded";
               break;
-              
+
             case "default":
               return $burl['data']->url;
             }
         }
       }
     }
-    
+
     /**
      * Backup Now
      *
      * @author stovak
      */
-    
+
     public function backupnow($args, $assoc_args) {
       $type = array_shift($args);
-      
+
       $code = false;
       $db = false;
       $files = false;
-      
+
       switch($type) {
-        
-        case "all": 
+
+        case "all":
           $code = true;
           $db = true;
           $files = true;
           break;
-        
+
         default:
           $$type = true;
       }
-      
+
       $data = array(
         'entry_type' => $entry_type,
         'scheduled_for' => time(),
@@ -143,7 +143,7 @@ class Environment_Command extends Terminus_Command {
       );
       return $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/' . $this->_env . '/backups/create', "POST", $data);
     }
-    
+
     /**
      * Create an environment
      */
@@ -159,13 +159,13 @@ class Environment_Command extends Terminus_Command {
       $env = array_shift($args);
       return $this->terminus_request("site", $this->_siteInfo->site_uuid , 'environments/' . $env, "DELETE");
     }
-    
+
     /**
      * lock an environment.
      *
      * [--username]
      * : Your patheon username
-     * 
+     *
      * [--download]
      * : Your pantheon password
      */
@@ -197,7 +197,7 @@ class Environment_Command extends Terminus_Command {
     public function lockinfo($args, $assoc_args) {
       return $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/'.$this->_env.'/lock', "GET");
     }
-    
+
     /**
      * list hotnames for environment
      */
@@ -220,22 +220,22 @@ class Environment_Command extends Terminus_Command {
       $hostname = array_shift($args);
       return $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/' . $this->_env . '/hostnames/' . rawurlencode($hostname), "DELETE");
     }
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
     /**
      * undocumented function
      *
-     * @param string $bid 
+     * @param string $bid
      * @return void
      * @author stovak
      */
-    
+
     private function _backupIdIsValidBackup($bid) {
       $backup_list = $this->terminus_request("site", $this->_siteInfo->site_uuid, "environments/{$this->_env}/backups/catalog", "GET");
       if (!property_exists($backup_list['data'], $bid)) {
@@ -244,8 +244,7 @@ class Environment_Command extends Terminus_Command {
         return $backup_list['data']->{$bid};
       }
     }
-  
+
 }
 
 Terminus::add_command( 'environment', 'Environment_Command' );
-

@@ -22,7 +22,7 @@ class Code_Command extends CommandWithSSH {
    */
   function __invoke(array $args, array $assoc_args ) {
     if (empty($args) ) {
-      Terminus::error("You need to specify a task to perform, site and envrionment on which to perform.");
+      Terminus::error("You need to specify a task to perform, site and environment on which to perform.");
     } else {
 		  $this->_handleFuncArg($args, $assoc_args);
 		  $this->_handleSiteArg($args, $assoc_args);
@@ -104,4 +104,3 @@ class Code_Command extends CommandWithSSH {
 }
 
 Terminus::add_command( 'code', 'Code_Command' );
-
