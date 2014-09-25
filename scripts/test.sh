@@ -3,8 +3,7 @@
 set -ex
 
 # Basic lint test
-#find . -type f -name "*.php" -exec php -l {} \;
-git diff-tree --no-commit-id --name-only -r $TRAVIS_COMMIT | php -l
+for f in $( git diff-tree --n -commit-id --name-only -r $TRAVIS_COMMIT ) ; do php -l ; done
 
 # Run the unit tests
 # phpunit
