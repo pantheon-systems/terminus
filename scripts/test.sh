@@ -4,8 +4,8 @@ set -ex
 
 # Basic lint test
 #find . -type f -name "*.php" -exec php -l {} \;
-echo $TRAVIS_COMMIT
-for file in $( git diff --name-only $TRAVIS_COMMIT | grep ".php" ); do php -l $file; done
+git diff-tree --no-commit-id --name-only -r $TRAVIS_COMMIT | php -l
+
 # Run the unit tests
 # phpunit
 
