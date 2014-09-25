@@ -2,8 +2,6 @@
 
 set -ex
 
-compgen -v
-
 # Basic lint test
 find . -type f -name "*.php" -exec php -l {} \;
 
