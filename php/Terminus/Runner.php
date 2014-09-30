@@ -119,6 +119,9 @@ class Runner {
     $this->init_colorization();
     $this->init_logger();
 
+    if ( @CLI_TEST_MODE )
+      return true;
+
     if ( empty( $this->arguments ) )
       $this->arguments[] = 'help';
 
@@ -154,4 +157,3 @@ class Runner {
   }
 
 }
-
