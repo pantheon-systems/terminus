@@ -3,9 +3,17 @@
  * Authenticate to Pantheon and store a local secret token.
  *
  */
+ use Terminus\Request as Request;
+ use Terminus\Utils;
+ use Symfony\Component\DomCrawler\Crawler;
+ use Guzzle\Parser\Cookie\CookieParser;
+
 class Auth_Command extends Terminus_Command {
-  
-  
+  private $sessionid;
+  private $uuid;
+  private $logged_id = false;
+
+
 
   /**
    * Log in as a user
@@ -38,7 +46,11 @@ class Auth_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         Terminus::line( "Logging in as $email" );
-        $data = \Terminus\Login\auth( $email, $password );
+        if ( Utils\is_hermes() ) {
+          $data = $this->doLogin($email, $password);
+        } else {
+          $data = \Terminus\Login\auth( $email, $password );
+        }
         if ( $data != FALSE ) {
           if (array_key_exists("debug", $assoc_args)){
             $this->_debug(get_defined_vars());
@@ -67,7 +79,7 @@ class Auth_Command extends Terminus_Command {
   /**
    * Find out what user you are logged in as.
    */
-  public function whoami() {    
+  public function whoami() {
     if ($this->session) {
       Terminus::line( "You are authenticated as ". $this->session->email );
     }
@@ -91,7 +103,94 @@ class Auth_Command extends Terminus_Command {
       return (($results['info']['http_code'] <= 199 )||($results['info']['http_code'] >= 300 ))? false : true;
     }
   }
+
+  private function doLogin($email,$password)
+  {
+    try {
+      // First send a GET and scape the CSRF info from the response
+      $url = sprintf( "https://%s/login", TERMINUS_HOST );
+      $response = Request::send($url,'GET');
+      $cookie = $this->getCsrfCookie( $response );
+      $token = $this->getCsrfInput( $response->getBody(TRUE) );
+
+      // Now send back with the login info
+      $params = array(
+        'postdata' => array(
+          'email' => $email,
+          'password' => $password,
+          '_csrf' => $token,
+        ),
+        'cookies' => array(
+          '_csrf' => $cookie,
+          ),
+      );
+      $response = Request::send($url, "POST", $params);
+
+
+      if ( '302' != $response->getStatusCode() ) {
+        \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
+      }
+      $result = $response->getRawHeaders();
+
+      $this->uuid = $response->getHeader('X-Pantheon-Trace-Id')->__toString();
+      $cookie = $response->getSetCookie();
+      $parser = new CookieParser();
+      $cookie = $parser->parseCookie($cookie);
+      $this->session = $cookie['cookies']['X-Pantheon-Session'];
+      $expires = strtotime( $cookie['expires'] );
+
+      // Prepare credentials for storage.
+      $data = array(
+        'user_uuid' => $this->uuid,
+        'session' => $this->session,
+        'session_expire_time' => $expires,
+        'email' => $email,
+      );
+
+      return $data;
+
+    } catch (\Exception $e) {
+      \Terminus::error("[auth_error]: %s", array($e->getMessage()));
+    }
+  }
+
+  /**
+   * Extract the CSRF Cookie from the previous response
+   *
+   * @package Terminus
+   * @version 0.04-alpha
+   * @return string
+   */
+  private function getCsrfCookie( $response ) {
+    $cookies = $response->getSetCookie();
+    $parser = new CookieParser();
+    $cookie = $parser->parseCookie($cookies);
+
+    if( !array_key_exists('_csrf',$cookie['cookies']) OR empty($cookie['cookies']['_csrf']) ) {
+      throw new Exception("Verifcation cookie not present.");
+    }
+
+    return $cookie['cookies']['_csrf'];
+  }
+
+  /**
+   * Extract the input value from the login form
+   *
+   * @package Terminus
+   * @version 0.04-alpha
+   * @return string
+   */
+  private function getCsrfInput( $html ) {
+    $crawler = new Crawler( $html );
+    $value = $crawler->filter('input[name="_csrf"]')->extract('value');
+    if( empty( $value ) ) {
+      throw new Exception( "Could not find the required csrf token." );
+    }
+    if ( is_array($value) ) {
+      return array_pop($value);
+    }
+    return $value;
+  }
 }
 
 Terminus::add_command( 'auth', 'Auth_Command' );
-

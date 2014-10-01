@@ -1,6 +1,7 @@
 <?php
 
 namespace Terminus\Login;
+
 use DOMDocument;
 
 /**
@@ -88,13 +89,16 @@ function auth($email, $password) {
   if (!$email) {
     $email = drush_get_option('email');
   }
-  $ch = curl_init();
+
   $host = TERMINUS_HOST;
+  $url = 'https://'. $host .'/login';
+
+  $ch = curl_init();
   if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
   }
-  $url = 'https://'. $host .'/login';
+
 
   // Set URL and other appropriate options.
   curl_setopt($ch, CURLOPT_URL, $url);
@@ -132,7 +136,7 @@ function auth($email, $password) {
 
   // Close cURL resource, and free up system resources.
   curl_close($ch);
-
+  
   $set_cookie_header = parse_drupal_headers($result, 'Set-Cookie');
   if (!$set_cookie_header) {
     return \Terminus::error('Authentication failed. Please check your credentials and try again.');

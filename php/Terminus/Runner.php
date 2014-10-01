@@ -119,7 +119,7 @@ class Runner {
     $this->init_colorization();
     $this->init_logger();
 
-    if ( @CLI_TEST_MODE )
+    if ( TRUE === @CLI_TEST_MODE )
       return true;
 
     if ( empty( $this->arguments ) )
