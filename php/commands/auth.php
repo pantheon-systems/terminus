@@ -104,6 +104,15 @@ class Auth_Command extends Terminus_Command {
     }
   }
 
+  /**
+   * Execute the login based on email,password
+   *
+   * @param $email string (required)
+   * @param $password string (required)
+   * @package Terminus
+   * @version 0.04-alpha
+   * @return string
+   */
   private function doLogin($email,$password)
   {
     try {
