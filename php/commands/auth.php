@@ -11,7 +11,7 @@
 class Auth_Command extends Terminus_Command {
   private $sessionid;
   private $uuid;
-  private $logged_id = false;
+  private $logged_in = false;
 
 
 

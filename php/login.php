@@ -99,7 +99,6 @@ function auth($email, $password) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
   }
 
-
   // Set URL and other appropriate options.
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -136,7 +135,7 @@ function auth($email, $password) {
 
   // Close cURL resource, and free up system resources.
   curl_close($ch);
-  
+
   $set_cookie_header = parse_drupal_headers($result, 'Set-Cookie');
   if (!$set_cookie_header) {
     return \Terminus::error('Authentication failed. Please check your credentials and try again.');
