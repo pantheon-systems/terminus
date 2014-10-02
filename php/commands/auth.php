@@ -51,6 +51,7 @@ class Auth_Command extends Terminus_Command {
         } else {
           $data = \Terminus\Login\auth( $email, $password );
         }
+
         if ( $data != FALSE ) {
           if (array_key_exists("debug", $assoc_args)){
             $this->_debug(get_defined_vars());
@@ -140,12 +141,12 @@ class Auth_Command extends Terminus_Command {
         \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
       }
       $result = $response->getRawHeaders();
-
-      $this->uuid = $response->getHeader('X-Pantheon-Trace-Id')->__toString();
       $cookie = $response->getSetCookie();
       $parser = new CookieParser();
       $cookie = $parser->parseCookie($cookie);
       $this->session = $cookie['cookies']['X-Pantheon-Session'];
+      $this->uuid = $this->getUUIDFromSession();
+
       $expires = strtotime( $cookie['expires'] );
 
       // Prepare credentials for storage.
@@ -161,6 +162,25 @@ class Auth_Command extends Terminus_Command {
     } catch (\Exception $e) {
       \Terminus::error("[auth_error]: %s", array($e->getMessage()));
     }
+  }
+
+  public function getUUIDFromSession() {
+    if( !$this->session ) {
+      throw new Exception("Need a valid session.");
+    }
+
+    $endpoint = sprintf("https://%s/api/user",TERMINUS_HOST);
+    $response = Request::send($endpoint, "GET", array(
+      'allow_redirects'=>true,
+      'cookies'=>
+        array('X-Pantheon-Session'=>$this->session)
+      )
+    );
+
+    $user = json_decode($response->getBody(TRUE));
+    $this->cache->put_data("user",$user);
+    return $user->id;
+
   }
 
   /**

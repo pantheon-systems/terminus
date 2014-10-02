@@ -19,7 +19,8 @@ class Request {
 
   public static function send( $url, $method, $data = array() ) {
     $browser = new Browser;
-    $request = $browser->createRequest($method, $url, null, null, array('allow_redirects' => false ) );
+    $allow_redirects = @$data['allow_redirects'] ?: false;
+    $request = $browser->createRequest($method, $url, null, null, array('allow_redirects' => $allow_redirects ) );
     if( !empty($data['postdata']) ) {
       foreach( $data['postdata'] as $k=>$v ) {
         $request->setPostField($k,$v);
