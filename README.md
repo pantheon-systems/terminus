@@ -1,7 +1,7 @@
 Pantheon CLI
 ============
 
-[![Dependency Status](https://gemnasium.com/pantheon-systems/cli.svg)](https://gemnasium.com/pantheon-systems/cli)
+[![Build Status](https://travis-ci.org/pantheon-systems/cli.svg?branch=master)](https://travis-ci.org/pantheon-systems/cli) [![Dependency Status](https://gemnasium.com/pantheon-systems/cli.svg)](https://gemnasium.com/pantheon-systems/cli)
 
 The Pantheon Command Line Interface is a successor to the "Terminus" project, which provides access to the Pantheon Platform via Drush. While Terminus has provided great value (and we're going to keep the name in the product), we felt that it was important to have a first-class standalone CLI toolkit:
 
