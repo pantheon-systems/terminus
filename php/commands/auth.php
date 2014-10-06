@@ -10,6 +10,7 @@
 
 class Auth_Command extends Terminus_Command {
   private $sessionid;
+  private $session_cookie_name='X-Pantheon-Session';
   private $uuid;
   private $logged_in = false;
 
@@ -144,9 +145,8 @@ class Auth_Command extends Terminus_Command {
       $cookie = $response->getSetCookie();
       $parser = new CookieParser();
       $cookie = $parser->parseCookie($cookie);
-      $this->session = $cookie['cookies']['X-Pantheon-Session'];
+      $this->session = urldecode($cookie['cookies']['X-Pantheon-Session']);
       $this->uuid = $this->getUUIDFromSession();
-
       $expires = strtotime( $cookie['expires'] );
 
       // Prepare credentials for storage.

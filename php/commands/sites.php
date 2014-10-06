@@ -34,4 +34,3 @@ class Sites_Command extends Terminus_Command {
 }
 
 Terminus::add_command( 'sites', 'Sites_Command' );
-

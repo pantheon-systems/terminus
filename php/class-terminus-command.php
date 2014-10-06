@@ -1,5 +1,6 @@
 <?php
-
+use \Terminus\Endpoint;
+use \Terminus\Request;
 /**
  * Base class for Terminus commands
  *
@@ -10,7 +11,7 @@ abstract class Terminus_Command {
   public $cache;
   public $session;
   public $sites;
-  
+
   protected $_func;
   protected $_siteInfo;
   protected $_bindings;
@@ -53,6 +54,7 @@ abstract class Terminus_Command {
    * Helper function to grab a single site's data from cache if possible.
    */
   public function fetch_site( $site_name, $nocache = false ) {
+    print_r($site_name);
     if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
       return $this->_fetch_site($site_name);
     }
@@ -102,82 +104,19 @@ abstract class Terminus_Command {
       \Terminus::error("You must login first.");
       exit;
     }
-    static $ch = FALSE;
-    if (!$ch) {
-      $ch = curl_init();
-    }
-    $headers = array();
-    $host = TERMINUS_HOST;
-    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-      $host = TERMINUS_HOST;
-    }
-    $url = 'https://'. $host . '/terminus.php?' . $realm . '=' . $uuid;
-    if ($path) {
-      $url .= '&path='. urlencode($path);
-    }
-    if ($data) {
-      // The $data for POSTs, PUTs, DELETEs are sent as JSON.
-      if ($method === 'POST' || $method === 'PUT' || $method === 'DELETE') {
-        $data = json_encode(array('data' => $data));
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
-        array_push($headers, 'Content-Type: application/json', 'Content-Length: ' . strlen($data));
-      }
-      // $data for GETs is sent as querystrings.
-      else if ($method === 'GET') {
-        $url .= '?' . http_build_query($data);
-      }
-    }
-    // Set URL and other appropriate options.
-    $opts = array(
-      CURLOPT_URL => $url,
-      CURLOPT_HEADER => 1,
-      CURLOPT_PORT => TERMINUS_PORT,
-      CURLOPT_RETURNTRANSFER => 1,
-      CURLOPT_TIMEOUT => 30,
-      CURLOPT_CUSTOMREQUEST => $method,
-      CURLOPT_COOKIE => $this->session->session,
-      CURLOPT_HTTPHEADER => $headers,
-    );
-    curl_setopt_array($ch, $opts);
+    $url = Endpoint::get( array( 'realm' => 'user', 'uuid'=>$uuid, 'path'=>$path ) );
+    $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
 
-    $result = curl_exec($ch);
-    list($headers_text, $json) = explode("\r\n\r\n", $result, 2);
-    // Work around extra 100 Continue headers - http://stackoverflow.com/a/2964710/1895669
-    if (strpos($headers_text," 100 Continue") !== FALSE) {
-      list($headers_text, $json) = explode("\r\n\r\n", $json , 2);
-    }
-
-    if (curl_errno($ch) != 0) {
-      $error = curl_error($ch);
-      curl_close($ch);
-      \Terminus::error('TERMINUS_API_CONNECTION_ERROR', "CONNECTION ERROR: $error");
-      return FALSE;
-    }
-
-    $info = curl_getinfo($ch);
-    if ($info['http_code'] > 399) {
-      $this->_debug(get_defined_vars());
-      \Terminus::error('Request failed');
-      // Expired session. Really don't like the string comparison.
-      if ($info['http_code'] == 403 && $json == '"Session not found."') {
-        \Terminus::error('Session expired');
-        # Auth_Command->logout();
-      }
-      return FALSE;
-    }
+    $json = $resp->getBody(TRUE);
 
     return array(
-      'info' => $info,
-      'headers' => $headers_text,
+      'info' => $resp->getInfo(),
+      'headers' => $resp->getRawHeaders(),
       'json' => $json,
       'data' => json_decode($json)
     );
   }
-  
+
   protected function _validateSiteUuid($site) {
     if (\Terminus\Utils\is_valid_uuid($site) && property_exists($this->sites, $site)){
       $this->_siteInfo =& $this->sites[$site];
@@ -189,7 +128,7 @@ abstract class Terminus_Command {
     }
     return $site;
   }
-  
+
   protected function _constructTableForResponse($data) {
     $table = new \cli\Table();
     if (is_object($data)) {
@@ -204,12 +143,12 @@ abstract class Terminus_Command {
       $row = array();
       foreach($row_data as $key => $value) {
         $row[] = $value;
-      } 
+      }
       $table->addRow($row);
     }
     $table->display();
   }
-  
+
   protected function _handleFuncArg(array &$args = array() , array $assoc_args = array()) {
     // backups-delete should execute backups_delete function
     if (!empty($args)){
@@ -219,10 +158,10 @@ abstract class Terminus_Command {
           $this->_debug(get_defined_vars());
         }
         Terminus::error("I cannot find the requested task to perform it.");
-  	  }  
+  	  }
     }
   }
-  
+
   protected function _handleSiteArg(&$args, $assoc_args = array()) {
     $uuid = null;
     if (array_key_exists("site", $assoc_args)) {
@@ -240,14 +179,14 @@ abstract class Terminus_Command {
       Terminus::error("Please specify the site with --site=<sitename> option.");
     }
   }
-  
+
   protected function _handleEnvArg(&$args, $assoc_args = array()) {
     if (array_key_exists("env", $assoc_args)) {
       $this->_getEnvBindings($args, $assoc_args);
     } else  {
       Terminus::error("Please specify the site => environment with --env=<environment> option.");
     }
-    
+
     if (!is_object($this->_bindings)) {
       if (array_key_exists("debug", $assoc_args)){
         $this->_debug(get_defined_vars());
@@ -261,14 +200,14 @@ abstract class Terminus_Command {
       }
     }
   }
-  
+
   protected function _getEnvBindings(&$args, $assoc_args) {
     $b = $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/'. $this->_env .'/bindings', "GET");
     if (!empty($b) && is_array($b) && array_key_exists("data", $b)) {
       $this->_bindings = $b['data'];
-    } 
+    }
   }
-  
+
   protected function _execute( array $args = array() , array $assoc_args = array() ){
     $success = $this->{$this->_func}( $args, $assoc_args);
     if (array_key_exists("debug", $assoc_args)){
@@ -291,11 +230,10 @@ abstract class Terminus_Command {
       Terminus::error("There was an error attempting to execute the requested task.\n\n");
     }
   }
-  
+
   protected function _debug($vars) {
     Terminus::line(print_r($this, true));
     Terminus::line(print_r($vars, true));
   }
-  
-}
 
+}
