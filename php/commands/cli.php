@@ -83,7 +83,7 @@ class CLI_Command extends Terminus_Command {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    echo \Terminus\Utils\json_dump( self::command_to_array( Terminus::get_root_command() ) );    
+    echo \Terminus\Utils\json_dump( self::command_to_array( Terminus::get_root_command() ) );
   }
 
   /**
@@ -102,7 +102,16 @@ class CLI_Command extends Terminus_Command {
     $compl = new \Terminus\Completions( $line );
     $compl->render();
   }
+
+  /**
+   * @subcommand session-dump
+   */
+   function session_dump() {
+     $session = $this->cache->get_data("session");
+     echo \Terminus\Utils\json_dump( $session );
+
+
+   }
 }
 
 Terminus::add_command( 'cli', 'CLI_Command' );
-

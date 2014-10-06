@@ -104,10 +104,11 @@ abstract class Terminus_Command {
       \Terminus::error("You must login first.");
       exit;
     }
-    $url = Endpoint::get( array( 'realm' => 'user', 'uuid'=>$uuid, 'path'=>$path ) );
+    $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
     $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
 
     $json = $resp->getBody(TRUE);
+    print_r($json);
 
     return array(
       'info' => $resp->getInfo(),
@@ -164,6 +165,7 @@ abstract class Terminus_Command {
 
   protected function _handleSiteArg(&$args, $assoc_args = array()) {
     $uuid = null;
+    if( !@$this->sites ) { $this->fetch_sites(); }
     if (array_key_exists("site", $assoc_args)) {
       $uuid = $this->_validateSiteUuid($assoc_args["site"]);
     } else  {

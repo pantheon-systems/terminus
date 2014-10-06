@@ -2,7 +2,7 @@
 namespace Terminus;
 
 use \Terminus\Utils;
-/** 
+/**
  * Class for getting/setting an api endpoint from provided arguments
  *
  **/
@@ -12,11 +12,12 @@ class Endpoint {
       'hermes'   => 'https://%s/api/%s/%s'
     );
 
-  // some "realms" are different on hermes then terminus.php, this is a 
+  // some "realms" are different on hermes then terminus.php, this is a
   // simple has index to migrate them
-  public $realm_map = array( 
-    'user'    =>  'users'
-  ); 
+  public $realm_map = array(
+    'user'    => 'users',
+    'site'    => 'sites'
+  );
 
   private $target = 'terminus';
 
@@ -42,13 +43,13 @@ class Endpoint {
     return $url;
   }
 
-  /** 
+  /**
    * @param $args (array)
-   *    required args are 
+   *    required args are
    *      - realm ( i.e. user,site,organization )
    *      - path ( specific method to call )
    */
-  static function get( $args ) 
+  static function get( $args )
   {
     $endpoint = new Endpoint( $args );
     return $endpoint->lookup( $args );
