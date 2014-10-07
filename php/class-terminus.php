@@ -177,7 +177,7 @@ class Terminus {
    */
   static function error( $message, $params = array() ) {
     if ( !empty($params) ) {
-      $message = vsprintf($message,$params);
+      $message = vsprintf($message, $params);
     }
     if ( ! isset( self::get_runner()->assoc_args[ 'completions' ] ) ) {
       self::$logger->error( self::error_to_string( $message ) );

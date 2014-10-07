@@ -54,7 +54,7 @@ abstract class Terminus_Command {
    * Helper function to grab a single site's data from cache if possible.
    */
   public function fetch_site( $site_name, $nocache = false ) {
-    
+
     if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
       return $this->_fetch_site($site_name);
     }
@@ -100,6 +100,7 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
+
     if ($this->session == FALSE) {
       \Terminus::error("You must login first.");
       exit;
@@ -108,7 +109,6 @@ abstract class Terminus_Command {
     $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
 
     $json = $resp->getBody(TRUE);
-    print_r($json);
 
     return array(
       'info' => $resp->getInfo(),
@@ -135,18 +135,33 @@ abstract class Terminus_Command {
     if (is_object($data)) {
       $data = (array)$data;
     }
+
+    // if we've only a multidimensional array, give it an index to prevent
+    // having conditional logic depending on the "shape" of the array
+    if ( count($data) === count($data, COUNT_RECURSIVE) ) {
+      $data = array(
+        1=>$data,
+      );
+    }
+
     if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
       $table->setHeaders($this->_headers[$this->_func]);
     } else {
       $table->setHeaders(array_keys($data));
     }
+
     foreach ($data as $row => $row_data) {
       $row = array();
-      foreach($row_data as $key => $value) {
+      foreach( $row_data as $key => $value) {
+        if( is_array($value) OR is_object($value) ) {
+          $value = join(", ",(array) $value);
+        }
         $row[] = $value;
       }
       $table->addRow($row);
     }
+
+
     $table->display();
   }
 
