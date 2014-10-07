@@ -121,7 +121,7 @@ class Terminus {
     if ( ! $command->can_have_subcommands() ) {
       throw new Exception( sprintf( "'%s' can't have subcommands.",
         implode( ' ' , Dispatcher\get_path( $command ) ) ) );
-    }    
+    }
     $command->add_subcommand( $leaf_name, $leaf_command );
   }
 
@@ -175,7 +175,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function error( $message ) {
+  static function error( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     if ( ! isset( self::get_runner()->assoc_args[ 'completions' ] ) ) {
       self::$logger->error( self::error_to_string( $message ) );
     }

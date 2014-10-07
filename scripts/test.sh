@@ -7,6 +7,7 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-only -r | grep php ) ; do php -l
 
 # Run the unit tests
 # phpunit
+phpunit
 
 # Run the functional tests
 php behat.phar --format pretty

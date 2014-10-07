@@ -65,7 +65,7 @@ function load_all_commands() {
 }
 
 function json_dump($var) {
-  // if it's a piped command, don't 'prettify' json. 
+  // if it's a piped command, don't 'prettify' json.
   if (\cli\Shell::isPiped()) {
     return json_encode( $var );
   } else {
@@ -396,6 +396,17 @@ function replace_path_consts( $source, $path ) {
 
 function is_valid_email( $email ) {
   return (bool) filter_var( $email, FILTER_VALIDATE_EMAIL );
+}
+
+/**
+ * Check if we're pointed at Hermes. Use this for conditional behavior within terminus
+ * @return bool
+ */
+function is_hermes() {
+  if( 'dashboard.getpantheon.com' === TERMINUS_HOST ) {
+      return true;
+  }
+  return false;
 }
 
 /**

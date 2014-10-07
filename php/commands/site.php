@@ -7,11 +7,11 @@
 use Terminus\Utils;
 
 class Site_Command extends Terminus_Command {
-  
+
   protected $_headers = array(
     "environments" => array("Environment","Created", "Locked")
   );
-    
+
   /**
    * Invoke `drush` commands on a Pantheon development site
    *
@@ -29,24 +29,24 @@ class Site_Command extends Terminus_Command {
     }
     $this->_execute($args, $assoc_args);
   }
-  
+
   public function info($args, $assoc_args) {
     return $this->terminus_request("site", $this->_siteInfo->site_uuid, "", "GET");
   }
-  
+
   /**
    * get site state
    *
-   * @param string $args 
-   * @param string $assoc_args 
+   * @param string $args
+   * @param string $assoc_args
    * @return array
    * @author stovak
    */
-  
+
   public function state($args, $assoc_args) {
-    return $this->terminus_request("site", $this->_siteInfo->site_uuid, "state", "GET");
-  }  
-  
+    return $this->terminus_request("site", $this->_siteInfo->site_uuid, "", "GET");
+  }
+
   /**
    * List enviroments for a site
    */
@@ -62,7 +62,7 @@ class Site_Command extends Terminus_Command {
     }
     return $toReturn;
   }
-  
+
 }
 
 Terminus::add_command( 'site', 'Site_Command' );
