@@ -31,7 +31,7 @@ class Endpoint {
   private function lookup( $args )
   {
     $args['host'] = @$args['host'] ?: TERMINUS_HOST;
-    if ( array_key_exists(@$args['realm'],$this->realm_map) ) {
+    if ( array_key_exists(@$args['realm'],$this->realm_map) AND \Terminus\Utils\is_hermes() ) {
       $args['realm'] = $this->realm_map[$args['realm']];
     }
     $url = sprintf( $this->patterns[$this->target], @$args['host'], @$args['realm'], @$args['uuid'] );
