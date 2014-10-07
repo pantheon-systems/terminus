@@ -1,6 +1,6 @@
 <?php
 /**
- * Testing class for \Terminus\Utils
+ * Testing class for \Terminus\Endpoint
  *
  */
 use \Terminus\Endpoint;
@@ -10,7 +10,7 @@ use \Terminus\Endpoint;
      if( "dashboard.getpantheon.com" === TERMINUS_HOST ) {
        $this->assertEquals( 'https://dashboard.getpantheon.com/api/users/UUID/sites', Endpoint::get( array('realm'=>'user','path' => 'sites', 'uuid'=> 'UUID') ) );
      } else {
-       $this->assertEquals( 'https://dashboard.getpantheon.com/terminus.php?user=UUID&path=sites', Endpoint::get( array('realm'=>'user','path' => 'sites', 'uuid'=> 'UUID') ) );
+       $this->assertEquals( 'https://terminus.getpantheon.com/terminus.php?user=UUID&path=sites', Endpoint::get( array('realm'=>'user','path' => 'sites', 'uuid'=> 'UUID') ) );
      }
    }
 
