@@ -54,7 +54,7 @@ abstract class Terminus_Command {
    * Helper function to grab a single site's data from cache if possible.
    */
   public function fetch_site( $site_name, $nocache = false ) {
-    print_r($site_name);
+    
     if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
       return $this->_fetch_site($site_name);
     }
