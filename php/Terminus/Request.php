@@ -2,6 +2,7 @@
 namespace Terminus;
 
 use Guzzle\Http\Client as Browser;
+use \Terminus\Fixtures;
 /**
  * Handles requests made by terminus
  *
@@ -18,6 +19,7 @@ class Request {
   public $responses = array();
 
   public static function send( $url, $method, $data = array() ) {
+    // create a new Guzzle\Http\Client
     $browser = new Browser;
     $allow_redirects = @$data['allow_redirects'] ?: false;
     $request = $browser->createRequest($method, $url, null, null, array('allow_redirects' => $allow_redirects ) );
@@ -39,7 +41,16 @@ class Request {
       }
     }
 
+    if ( getenv("BUILD_FIXTURES") ) {
+      Fixtures::put("request_headers", $request->getRawHeaders());
+    }
+
     $response = $request->send();
+
+    if ( getenv("BUILD_FIXTURES") ) {
+      Fixtures::put("response", json_encode( $response, 1) );
+    }
+
     return $response;
   }
 

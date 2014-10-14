@@ -104,6 +104,15 @@ class CLI_Command extends Terminus_Command {
   }
 
   /**
+   * Clear session data
+   * @subcommand session-clear
+   */
+   function session_clear()
+   {
+    $this->cache->remove("session");
+   }
+
+  /**
    * @subcommand session-dump
    */
    function session_dump() {

@@ -39,7 +39,7 @@ abstract class Terminus_Command {
   private function _fetch_sites() {
     Terminus::log( 'Fetching site list from Pantheon' );
     $request = $this->terminus_request( 'user',
-                                      $this->session->user_uuid,
+                                      @$this->session->user_uuid,
                                       'sites',
                                       'GET',
                                       Array('hydrated' => true));
@@ -105,8 +105,12 @@ abstract class Terminus_Command {
       \Terminus::error("You must login first.");
       exit;
     }
-    $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
-    $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
+    try {
+      $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
+      $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
+    } catch( Exception $e ) {
+      \Terminus::error("Login failed. %s", $e->getMessage());
+    }
 
     $json = $resp->getBody(TRUE);
 
@@ -166,6 +170,7 @@ abstract class Terminus_Command {
   }
 
   protected function _handleFuncArg(array &$args = array() , array $assoc_args = array()) {
+
     // backups-delete should execute backups_delete function
     if (!empty($args)){
       $this->_func = str_replace("-", "_", array_shift($args));
