@@ -1,6 +1,8 @@
 <?php
 use \Terminus\Endpoint;
 use \Terminus\Request;
+use \Terminus\Fixtures;
+
 /**
  * Base class for Terminus commands
  *
@@ -101,6 +103,10 @@ abstract class Terminus_Command {
    */
   public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
 
+    if ( defined("CLI_TEST_MODE") || 1 === getenv("USE_FIXTURES") ) {
+      return $this->fixtured_request();
+    }
+
     if ($this->session == FALSE) {
       \Terminus::error("You must login first.");
       exit;
@@ -120,6 +126,20 @@ abstract class Terminus_Command {
       'json' => $json,
       'data' => json_decode($json)
     );
+  }
+
+  /**
+   * Divert a request to our local cache of a fixtured data for testing
+   *
+   * Since the fixturing is based on the @global $argv we don't need args
+   * @todo I'm not sure that I'm happy with the fixturing as is BUT it's
+   * something to start with.
+   */
+  protected function fixtured_request() {
+    if ( !$response = Fixtures::get("response") ) {
+      Terminus::error("Oops, we don't seem to have a fixture for this request.
+      Maybe you should try running scripts/build_fixtures.sh and then try again.");
+    }
   }
 
   protected function _validateSiteUuid($site) {
@@ -144,27 +164,39 @@ abstract class Terminus_Command {
     // having conditional logic depending on the "shape" of the array
     if ( count($data) === count($data, COUNT_RECURSIVE) ) {
       $data = array(
-        1=>$data,
+        0=>$data,
       );
     }
 
-    if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
-      $table->setHeaders($this->_headers[$this->_func]);
-    } else {
-      $table->setHeaders(array_keys($data));
-    }
 
-    foreach ($data as $row => $row_data) {
-      $row = array();
-      foreach( $row_data as $key => $value) {
-        if( is_array($value) OR is_object($value) ) {
-          $value = join(", ",(array) $value);
-        }
-        $row[] = $value;
+    if( count($data) > 1 ) {
+      if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
+        $table->setHeaders($this->_headers[$this->_func]);
+      } else {
+        $table->setHeaders(array_keys($data[0]));
       }
-      $table->addRow($row);
-    }
 
+      foreach ($data as $row => $row_data) {
+        $row = array();
+        foreach( $row_data as $key => $value) {
+          if( is_array($value) OR is_object($value) ) {
+            $value = join(", ",(array) $value);
+          }
+          $row[] = $value;
+        }
+        $table->addRow($row);
+      }
+    } else {
+      $table->setHeaders(array("name", $data[0]['name']));
+      unset($data[0]['name']);
+      foreach( $data[0] as $key=>$value ) {
+
+        if( is_array($value) OR is_object($value) ) {
+          $value = implode(", ",(array) $value);
+        }
+        $table->addRow( array( $key, $value ) );
+      }
+    }
 
     $table->display();
   }
