@@ -8,9 +8,10 @@ use \Terminus\Utils;
  **/
 class Endpoint {
   public $patterns = array(
-      'terminus' => 'https://%s/terminus.php?%s=%s',
-      'hermes'   => 'https://%s/api/%s/%s'
-    );
+    'deprecated' => 'https://%s/terminus.php?%s=%s',
+    'private'  => 'https://%s/api/%s/%s',
+    'public'   => 'https://%s/api/%s'
+  );
 
   // some "realms" are different on hermes then terminus.php, this is a
   // simple has index to migrate them
@@ -19,25 +20,61 @@ class Endpoint {
     'site'    => 'sites'
   );
 
-  private $target = 'terminus';
+  private $public_realms = array(
+    'products',
+  );
 
-  public function __construct( )
+  private $target = 'deprecated';
+
+  public function __construct()
   {
     if ( \Terminus\Utils\is_hermes() ) {
-      $this->target = 'hermes';
+      $this->target = 'private';
     }
   }
 
-  private function lookup( $args )
+  /**
+   * This is a convoluted (but unit tested) function to build the needed api
+   * endpoint. Once we're fully committed to the 2.0 api we can clean it up a
+   * bit.
+   *
+   * @package CLI
+   * @version 1.5
+   * @param $args (array) - should contain at least a realm and uuid, can also have a path
+   *
+   *    Example:
+   *
+   *    $args = array(
+   *      'realm' => 'users',
+   *      'uuid'  => 'c4912ef3-2ec0-400d-906d-02d9fd035b98',
+   *      'path'  => 'sites',
+   *    );
+   *
+   */
+   private function lookup( $args )
   {
+    // adjust the target if it's a public request
+    if ( isset($args['uuid']) AND 'public' === $args['uuid'] ) {
+      $this->target = 'public';
+    }
+
     $args['host'] = @$args['host'] ?: TERMINUS_HOST;
     if ( array_key_exists(@$args['realm'],$this->realm_map) AND \Terminus\Utils\is_hermes() ) {
       $args['realm'] = $this->realm_map[$args['realm']];
     }
-    $url = sprintf( $this->patterns[$this->target], @$args['host'], @$args['realm'], @$args['uuid'] );
+
+    // a substiution array to pass to the vsprintf
+    $substitutions = array( $args['host'], $args['realm'] );
+    if( isset($args['uuid']) AND $args['uuid'] !== 'public' ) {
+      array_push( $substitutions, $args['uuid'] );
+    }
+
+    $url = vsprintf( $this->patterns[$this->target], $substitutions );
+
+    // now we have our base url add the path
     $params = '';
     if (@$args['path']) {
-      $params .= ( 'terminus' === $this->target ) ? "&path=".urlencode($args['path']) : '/'.@$args['path'] ;
+      $params .= ( 'deprecated' === $this->target ) ? "&path=".urlencode($args['path']) : '/'.@$args['path'] ;
     }
     $url .= $params;
     return $url;
