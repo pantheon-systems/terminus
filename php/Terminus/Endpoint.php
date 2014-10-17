@@ -28,9 +28,7 @@ class Endpoint {
 
   public function __construct()
   {
-    if ( \Terminus\Utils\is_hermes() ) {
       $this->target = 'private';
-    }
   }
 
   /**
@@ -59,7 +57,7 @@ class Endpoint {
     }
 
     $args['host'] = @$args['host'] ?: TERMINUS_HOST;
-    if ( array_key_exists(@$args['realm'],$this->realm_map) AND \Terminus\Utils\is_hermes() ) {
+    if ( array_key_exists(@$args['realm'],$this->realm_map) ) {
       $args['realm'] = $this->realm_map[$args['realm']];
     }
 
@@ -74,7 +72,7 @@ class Endpoint {
     // now we have our base url add the path
     $params = '';
     if (@$args['path']) {
-      $params .= ( 'deprecated' === $this->target ) ? "&path=".urlencode($args['path']) : '/'.@$args['path'] ;
+      $params .=  '/' . @$args['path'];
     }
     $url .= $params;
     return $url;
