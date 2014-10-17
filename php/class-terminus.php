@@ -197,6 +197,7 @@ class Terminus {
 
       if ( 'y' != $answer )
         exit;
+      return true;
     }
   }
 
@@ -355,6 +356,10 @@ class Terminus {
     }
 
     return self::get_runner()->config[ $key ];
+  }
+
+  static function menu( $data, $default = null, $text = "Select one" ) {
+    return \cli\Streams::menu($data,$default,$text);
   }
 
   /**
