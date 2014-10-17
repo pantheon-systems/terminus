@@ -101,19 +101,18 @@ abstract class Terminus_Command {
    *    A native PHP data structure (int, string, arary or simple object) to be
    *    sent along with the request. Will be encoded as JSON for you.
    */
-  public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $data = NULL) {
+  public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
 
     if ( defined("CLI_TEST_MODE") || 1 === getenv("USE_FIXTURES") ) {
       return $this->fixtured_request();
     }
 
-    if ($this->session == FALSE) {
-      \Terminus::error("You must login first.");
-      exit;
-    }
     try {
+      $options['cookies'] = array('X-Pantheon-Session' => $this->session->session);
+      $options['verify'] = false;
       $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
-      $resp = Request::send( $url, $method, array('cookies'=> array('X-Pantheon-Session' => $this->session->session) ) );
+      $resp = Request::send( $url, $method, $options );
+
     } catch( Exception $e ) {
       \Terminus::error("Login failed. %s", $e->getMessage());
     }
@@ -168,7 +167,6 @@ abstract class Terminus_Command {
       );
     }
 
-
     if( count($data) > 1 ) {
       if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
         $table->setHeaders($this->_headers[$this->_func]);
@@ -199,6 +197,34 @@ abstract class Terminus_Command {
     }
 
     $table->display();
+  }
+
+  /**
+   * Waits and returns response from workflow.
+   * @package Terminus
+   * @version 1.5
+   * @param $object_name string -- i.e. sites / users / organization
+   * @param $object_id string -- coresponding id
+   * @param $workflow_id string -- workflow to wait on
+   *
+   * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
+   */
+  public function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
+    echo "waiting on workflow: $workflow_id ...";
+    $workflow = $this->terminus_request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
+    $result = $workflow['data']->result;
+    while( $result !== 'succeeded' AND $tries < 100) {
+      $workflow = $this->terminus_request( "sites", $site->site_id, "workflows/{$workflow_id}", 'GET' );
+      $result = $workflow['data']->result;
+      sleep(3);
+      print ".";
+      $tries++;
+    }
+    print PHP_EOL;
+    if( "succeeded" === $workflow['data']->result )
+      return $workflow['data'];
+    return false;
+    unset($workflow);
   }
 
   protected function _handleFuncArg(array &$args = array() , array $assoc_args = array()) {
