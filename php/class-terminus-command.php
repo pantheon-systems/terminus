@@ -210,11 +210,12 @@ abstract class Terminus_Command {
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
   public function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
-    echo "waiting on workflow: $workflow_id ...";
+    Terminus::line( "waiting on workflow: $workflow_id ..." );
     $workflow = $this->terminus_request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
+    $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
-      $workflow = $this->terminus_request( "sites", $site->site_id, "workflows/{$workflow_id}", 'GET' );
+      $workflow = $this->terminus_request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
       sleep(3);
       print ".";
