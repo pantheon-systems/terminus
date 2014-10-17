@@ -3,10 +3,13 @@
  * Actions on multiple sites
  *
  */
+use Terminus\Products;
+
 class Sites_Command extends Terminus_Command {
   /**
    * Show a list of your sites on Pantheon
-   * @package 2.0
+   * @package Terminus
+   * @version 1.5
 
    *  ## OPTIONS
    *
@@ -14,7 +17,7 @@ class Sites_Command extends Terminus_Command {
    * : Get a fresh list of sites from the server side.
    */
   public function show($args, $assoc_args) {
-    $sites = $this->fetch_sites(isset($assoc_args['nocache']));
+    $sites = $this->fetch_sites( @$assoc_args['nocache'] );
     $headers = Array('Site', 'Framework', 'Service Level', 'UUID');
     $rows = Array();
     foreach($sites as $id => $site) {
@@ -50,14 +53,56 @@ class Sites_Command extends Terminus_Command {
       Terminus::error("Please login first with `terminus auth login`");
     }
     $sites = $this->fetch_sites(isset($assoc_args['nocache']));
-    print_r($this->session);
     $data = array();
-    // @TODO
+    // @TODO clean this up and move to separate method
     $data['label'] = @$assoc_args['label'] ?: Terminus::prompt("Human readable label for the site");
     $data['name'] = @$assoc_args['name'] ?: Terminus::prompt("Machine name of the site; used as part of the default URL [ i.e. ".$this->sanitizeName( $data['label'] )."]");
-    $data['product'] = 'e8fe8550-1ab9-4964-8838-2b9abdccf4bf';
-    $response = $this->terminus_request( "user", $this->session->user_uuid, "sites", 'POST', $data );
-    print_r($response);
+    require_once __DIR__.'/products.php';
+    $product = Terminus::menu( Products_Command::selectList() );
+    $product = Products_Command::getByIndex( $product);
+    Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
+    $data['product'] = $product['id'];
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json'));
+    $response = $this->terminus_request( "user", $this->session->user_uuid, "sites", 'POST', $options );
+
+    // if we made it this far we need to query the work flow to wait for response
+    $site = $response['data'];
+    $tries = 0;
+    $workflow_id = $site->id;
+    $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
+    if( $result ) {
+      Terminus::success("Pow! You created a new site!");
+      Terminus::launch_self('sites',array('show'),array('cache'));
+    }
+  }
+
+  /**
+   * Delete site
+   * [<siteid>]
+   *  : Id of the site you want to delete
+
+   * [--all]
+   *  : Just kidding ... we won't let you do that.
+   */
+  function delete($args, $assoc_args) {
+      if( !@$args['siteid'] ) {
+        $sites = $menu = array();
+        foreach( $this->fetch_sites(true) as $id => $site ) {
+          $site->id = $id;
+          $sites[] = $site;
+          $menu[] = $site->information->name;
+        }
+        $index = Terminus::menu( $menu, null, "Select a site to delete" );
+        $site_to_delete = $sites[$index];
+      }
+
+      Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
+      Terminus::confirm( "Are you really sure?" );
+      Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
+
+      $response = $this->terminus_request( 'sites', $site_to_delete->id, '', 'DELETE' );
+
+      Terminus::launch_self("sites",array('show'),array('nocache'=>1));
   }
 
   /**
@@ -69,35 +114,6 @@ class Sites_Command extends Terminus_Command {
     $name = strtolower($name);
     return $name;
   }
-
-  /**
-   * Get list of products from pantheon
-   * ## OPTIONS
-   *
-   */
-  public function products() {
-    if( !$products = $this->cache->get_data('products') ) {
-      $response = $this->terminus_request("products", "public", false, "GET");
-      $products = array();
-      $keys_to_show = array('longname','framework','type','category');
-      // we'll use this to sort the list later
-      $sort = array();
-      foreach( (array) $response['data'] as $id=>$details ) {
-        $sort[] = $details->attributes->shortname;
-        $row = array();
-        $row['id'] = $id;
-        foreach( $keys_to_show as $key ) {
-          $row[$key] = @$details->attributes->$key;
-        }
-        array_push($products, $row);
-      }
-      array_multisort( $sort, SORT_ASC, SORT_REGULAR, $products);
-      $this->cache->put_data('products', $products);
-    }
-    $this->_constructTableForResponse( $products );
-    return (array) $products;
-  }
-
 }
 
 Terminus::add_command( 'sites', 'Sites_Command' );
