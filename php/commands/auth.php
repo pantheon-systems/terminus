@@ -47,11 +47,7 @@ class Auth_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         Terminus::line( "Logging in as $email" );
-        if ( Utils\is_hermes() ) {
-          $data = $this->doLogin($email, $password);
-        } else {
-          $data = \Terminus\Login\auth( $email, $password );
-        }
+        $data = $this->doLogin($email, $password);
 
         if ( $data != FALSE ) {
           if (array_key_exists("debug", $assoc_args)){
