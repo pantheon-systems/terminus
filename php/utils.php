@@ -4,6 +4,7 @@ namespace Terminus\Utils;
 
 use \Terminus\Dispatcher;
 use \Terminus\Iterators\Transform;
+use \ArrayIterator;
 
 if (!defined('JSON_PRETTY_PRINT')){
   define('JSON_PRETTY_PRINT', 128);
@@ -60,6 +61,7 @@ function load_all_commands() {
     if ( '.php' != substr( $filename, -4 ) ){
       continue;
     }
+
     include_once "$cmd_dir/$filename";
   }
 }
@@ -409,6 +411,17 @@ function is_hermes() {
   return false;
 }
 
+/**
+ * Check if result is an array of multiple objects or a simple array of one.
+**/
+function result_is_multiobj( $result ) {
+  $iter = new ArrayIterator($result);
+  if( is_object( $iter->current() ) OR is_array( $iter->current() ) ) {
+    return true;
+  }
+  unset($iter);
+  return false;
+}
 /**
  * Validate Atlas UUID.
  * @param $uuid

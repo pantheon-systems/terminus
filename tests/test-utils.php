@@ -13,4 +13,21 @@
      }
    }
 
+   function testResultIsMultiObj() {
+     $arraysimple = array(
+       'name' => 'test',
+       'key'  => 'test',
+     );
+
+     $arraymultiobj = array(
+       0 => (object) array(
+         'name' => 'test',
+         'key'  => 'test',
+       ),
+     );
+
+     $this->assertFalse( \Terminus\Utils\result_is_multiobj( $arraysimple ));
+     $this->assertTrue( \Terminus\Utils\result_is_multiobj( $arraymultiobj ));
+   }
+
  }

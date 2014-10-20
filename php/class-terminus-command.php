@@ -159,19 +159,11 @@ abstract class Terminus_Command {
       $data = (array)$data;
     }
 
-    // if we've only a multidimensional array, give it an index to prevent
-    // having conditional logic depending on the "shape" of the array
-    if ( count($data) === count($data, COUNT_RECURSIVE) ) {
-      $data = array(
-        0=>$data,
-      );
-    }
-
-    if( count($data) > 1 ) {
+    if (\Terminus\Utils\result_is_multiobj($data)) {
       if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
         $table->setHeaders($this->_headers[$this->_func]);
       } else {
-        $table->setHeaders(array_keys($data[0]));
+        $table->setHeaders(array_keys( (array) $data[0]));
       }
 
       foreach ($data as $row => $row_data) {
@@ -185,10 +177,8 @@ abstract class Terminus_Command {
         $table->addRow($row);
       }
     } else {
-      $table->setHeaders(array("name", $data[0]['name']));
-      unset($data[0]['name']);
-      foreach( $data[0] as $key=>$value ) {
-
+      $table->setHeaders( array( $this->_func, '') );
+      foreach( $data as $key=>$value ) {
         if( is_array($value) OR is_object($value) ) {
           $value = implode(", ",(array) $value);
         }
@@ -209,7 +199,7 @@ abstract class Terminus_Command {
    *
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
-  public function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
+  protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
     Terminus::line( "waiting on workflow: $workflow_id ..." );
     $workflow = $this->terminus_request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
@@ -247,6 +237,8 @@ abstract class Terminus_Command {
     if( !@$this->sites ) { $this->fetch_sites(); }
     if (array_key_exists("site", $assoc_args)) {
       $uuid = $this->_validateSiteUuid($assoc_args["site"]);
+    } elseif( 'Site_Command' === get_class( $this ) AND $this->_validateSiteUuid($args[0]) ) {
+      $uuid = $this->_validateSiteUuid($args[0]);
     } else  {
       Terminus::error("Please specify the site with --site=<sitename> option.");
     }
