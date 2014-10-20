@@ -108,7 +108,7 @@ abstract class Terminus_Command {
     }
 
     try {
-      $options['cookies'] = array('X-Pantheon-Session' => $this->session->session);
+      $options['cookies'] = array('X-Pantheon-Session' => @$this->session->session);
       $options['verify'] = false;
       $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
       $resp = Request::send( $url, $method, $options );
