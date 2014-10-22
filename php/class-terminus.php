@@ -130,7 +130,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function prompt( $message = '' ) {
+  static function prompt( $message = '', $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     return \cli\prompt( $message );
   }
 
@@ -139,7 +142,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function line( $message = '' ) {
+  static function line( $message = '', $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     echo \cli\line($message);
   }
 
@@ -148,7 +154,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function log( $message ) {
+  static function log( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->info( $message );
   }
 
@@ -157,7 +166,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function success( $message ) {
+  static function success( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->success( $message );
   }
 
@@ -166,7 +178,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function warning( $message ) {
+  static function warning( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->warning( self::error_to_string( $message ) );
   }
 
