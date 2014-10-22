@@ -67,12 +67,11 @@ class Sites_Command extends Terminus_Command {
 
     // if we made it this far we need to query the work flow to wait for response
     $site = $response['data'];
-    $tries = 0;
     $workflow_id = $site->id;
     $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
-      Terminus::launch_self('sites',array('show'),array('cache'));
+      Terminus::launch_self('sites',array('show'),array('nocache'));
     }
   }
 
