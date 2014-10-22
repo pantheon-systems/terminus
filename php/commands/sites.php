@@ -10,7 +10,15 @@ class Sites_Command extends Terminus_Command {
    * Show a list of your sites on Pantheon
    * @package Terminus
    * @version 1.5
+   */
+  public function __construct() {
+    parent::__construct();
+    if(empty($this->session)) {
+      Terminus::error("Please login first with `terminus auth login`");
+    }
+  }
 
+  /**
    *  ## OPTIONS
    *
    * [--nocache]
@@ -49,9 +57,6 @@ class Sites_Command extends Terminus_Command {
    * : Label for the site
    */
   public function create($args, $assoc_args) {
-    if(empty($this->session)) {
-      Terminus::error("Please login first with `terminus auth login`");
-    }
     $sites = $this->fetch_sites(isset($assoc_args['nocache']));
     $data = array();
     // @TODO clean this up and move to separate method
