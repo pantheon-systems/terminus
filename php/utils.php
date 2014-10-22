@@ -76,6 +76,22 @@ function json_dump($var) {
   }
 }
 
+function bash_out($var) {
+  // if it's a piped command, don't 'prettify' json.
+  $output = '';
+  foreach( $var as $index => $row ) {
+    if( is_array($row) OR is_object($row) ) {
+      $row = (array) $row;
+      $row = join(' ',$row);
+    }
+    if (!is_numeric($index))
+      $output .= "$index ";
+    $output .= $row.PHP_EOL;
+  }
+  return $output;
+}
+
+
 /**
  * Like array_map(), except it returns a new iterator, instead of a modified array.
  *
@@ -421,6 +437,17 @@ function result_is_multiobj( $result ) {
   }
   unset($iter);
   return false;
+}
+
+/**
+ * Fetch keys from the first object in a collection
+**/
+function result_get_response_fields( $result ) {
+  $iter = new ArrayIterator($result);
+  if( !$iter ) return false;
+  $keys = array_keys( (array) $iter->current() );
+  unset($iter);
+  return $keys;
 }
 /**
  * Validate Atlas UUID.
