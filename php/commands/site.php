@@ -26,10 +26,10 @@ class Site_Command extends Terminus_Command {
       \Terminus::error("You must first login using `terminus auth login`");
     }
     if (empty($args)) {
-      Terminus::error("You need to specify a task to perform and a site on which to perform it.");
+      \Terminus::error("You need to specify a task to perform and a site on which to perform it.");
     } else {
-	    $this->_handleFuncArg($args, $assoc_args);
-	    $this->_handleSiteArg($args, $assoc_args);
+      $this->_handleFuncArg($args, $assoc_args);
+      $this->_handleSiteArg($args, $assoc_args);
     }
     $this->_execute($args, $assoc_args);
   }
@@ -90,11 +90,11 @@ class Site_Command extends Terminus_Command {
     // hit api if necessary
     if ( isset($assoc_args['nocache']) OR !$toReturn ) {
       $site_id = $this->getSiteId( $assoc_args['site'] );
-      if( !$site_id ) Terminus::error("Could not find site %s", array($assoc_args['site']) );
+      if( !$site_id ) \Terminus::error("Could not find site %s", array($assoc_args['site']) );
       $path = sprintf("environments/%s/backups/catalog", $env);
       $backups = $this->terminus_request('site', $site_id, $path );
       if( count( (array) $backups['data']) < 1 ) {
-        Terminus::success("No backup found. Create one using `terminus site backup-make`");
+        \Terminus::success("No backup found. Create one using `terminus site backup-make`");
       }
 
       // format the response data for better display
@@ -179,26 +179,115 @@ class Site_Command extends Terminus_Command {
       $workflow_id = $response['data']->id;
       $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id );
       if( $result ) {
-        Terminus::success("Successfully created backup");
+        \Terminus::success("Successfully created backup");
       }
      }
 
      return true;
    }
 
-   /*
-   * Deploy dev environment to test or live
-   *
+  /**
    * ## OPTIONS
-   * <env>
-   * : Environment to deploy to
-   * <site>
-   * : Site to deploy from
+   * [--from-env]
+   * : Environment you want to clone from
+   * [--to-env]
+   * : Environment you want to clone to
+   * [--db]
+   * : Clone the database? (bool) default no
+   * [--files]
+   * : Clone the files? (bool) default no
+   */
+   public function clone_env($args, $assoc_args) {
+     $site_id = $this->getSiteId($assoc_args['site']);
+     $from_env = $this->getValidEnv(@$assoc_args['from-env'], "Choose environment you want to clone from");
+     $to_env = $this->getValidEnv(@$assoc_args['to-env'], "Choose environment you want to clone to");
 
-   * [--cc]
-   * : Clear cache after deploy?
-   * [--update]
-   * : (Drupal only) run update.php after deploy?
+     $db = $files = false;
+     $db = isset($assoc_args['db']) ?: false;
+     $append = array();
+     if ($db) {
+       $append[] = "DATABASE";
+     }
+     $files = isset($assoc_args['files']) ?: false;
+     if ($files) {
+       $append[] = 'FILES';
+     }
+     $append = join(' and ', $append);
+
+     if (!$files AND !$db) {
+       \Terminus::error('You must specify something to clone using the the --db and --files flags');
+     }
+
+     $confirm = sprintf("Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n", strtoupper($from_env), strtoupper($to_env), $append);
+     \Terminus::confirm($confirm);
+
+      if ( !$this->envExists($site_id, $to_env) ) {
+        $assoc_args['env'] = $to_env;
+        $this->create_env($args, $assoc_args);
+      }
+
+     if ($db) {
+       print "Cloning database ... ";
+       $this->cloneObject( $to_env, $from_env, $site_id, 'database');
+     }
+
+     if ($files) {
+      print "Cloning files ... ";
+      $this->cloneObject( $to_env, $from_env, $site_id, 'database');
+     }
+     \Terminus::success("Clone complete!");
+     return true;
+   }
+
+   private function cloneObject($to_env, $from_env, $site_id, $object_type) {
+     $path = sprintf("environments/%s/database", $to_env);
+     $data = array('clone-from-environment'=>$from_env);
+     $options = array(
+       'body' => json_encode($data) ,
+       'headers'=> array('Content-type'=>'application/json')
+     );
+     $response = $this->terminus_request("sites", $site_id, $path, "POST", $options);
+     if ($response) {
+       $this->waitOnWorkflow("sites", $site_id, $response['data']->id);
+       return $response;
+     }
+     return false;
+   }
+
+  /**
+   * ## OPTIONS
+   * [--env]
+   * : Pantheon environment create
+   */
+   public function create_env($args, $assoc_args) {
+     $env = $this->getValidEnv(@$assoc_args['env']);
+     $site_id = $this->getSiteId($assoc_args['site']);
+     if ($this->envExists($site_id,$env)) {
+       \Terminus::error("The %s environment already exists", array($env));
+     }
+     $path = sprintf('environments/%s', $env);
+     $options = array(
+       'body' => json_encode(array()) ,
+       'headers'=> array('Content-type'=>'application/json')
+     );
+     $response = $this->terminus_request('sites', $site_id, $path, 'POST', $options);
+    \Terminus::success("Created %s environment", array($env));
+
+   }
+
+   /**
+    * Deploy dev environment to test or live
+    *
+    * ## OPTIONS
+    * <env>
+    * : Environment to deploy to
+    * <site>
+    * : Site to deploy from
+
+    * [--cc]
+    * : Clear cache after deploy?
+    * [--update]
+    * : (Drupal only) run update.php after deploy?
    **/
    public function deploy($args, $assoc_args) {
      $env = $this->getValidEnv(@$assoc_args['env']);
@@ -217,31 +306,31 @@ class Site_Command extends Terminus_Command {
      );
      $site_id = $this->getSiteId($assoc_args['site']);
      $path = sprintf('environments/%s/code?%s', $env, http_build_query($params));
-     $response = $this->terminus_request('sites', $site_id, $path, POST);
-     $result = $this->waitOnWordflow('sites', $sites_id, $response['data']->id);
+     $response = $this->terminus_request('sites', $site_id, $path, 'POST');
+     $result = $this->waitOnWorkflow('sites', $sites_id, $response['data']->id);
      if ($result) {
-       Terminus::success("Woot! Code deployed");
+       \Terminus::success("Woot! Code deployed to %s", array($env));
      }
    }
 
   /**
    * Fetch a valid environment
    */
-   private function getValidEnv( $env = null ) {
+   private function getValidEnv( $env = null, $message = false ) {
      $envs = $this->getAvailableEnvs();
+     if (!$message) {
+       $message = "Specify a environment";
+     }
 
-     if (!$env) {
-       $env = \Terminus::menu( $envs , null, "Specify a environment");
+     if (!$env OR array_search($env, $envs) === false) {
+       $env = \Terminus::menu( $envs , null, $message );
        $env = $envs[$env];
      }
 
-     if ( false === array_search($env, $envs) ) {
-       Terminus::error("Environment '%s' unavailable", array($env));
+     if (!$env) {
+       \Terminus::error("Environment '%s' unavailable", array($env));
      }
 
-     if (!$env) {
-       Terminus::error("Environment '%s' unavailable", array($env));
-     }
      return $env;
    }
 
@@ -291,9 +380,18 @@ class Site_Command extends Terminus_Command {
     return $toReturn;
   }
 
-   private function getBackupUrl($site,$env,$bucket,$element) {
+  /**
+   * List enviroments for a site
+   */
+   function envExists($site_id, $env) {
+     $response = $this->terminus_request('sites', $site_id, 'environments/live/code-log', 'GET');
+     $envs = (array) $response['data'];
+     return array_key_exists($env, $envs);
+   }
 
-     //this is confusing
+   private function getBackupUrl($site,$env,$bucket,$element) {
+     //this is confusing, but is for some reason required by the api
+     //@TODO fix this
      $data = array(
        'method' => 'GET'
      );
@@ -317,10 +415,25 @@ class Site_Command extends Terminus_Command {
     $backups = (array) $backups['backups'];
     $last = end($backups);
     if (!is_object($last)) {
-      Terminus::error('No backups found.');
+      \Terminus::error('No backups found.');
     }
     return $last->folder;
    }
+
+   /**
+    * ## OPTIONS
+    * [--from-env]
+    * : Environment you want to clone from
+    * [--to-env]
+    * : Environment you want to clone to
+    * [--db]
+    * : Clone the database? (bool) default no
+    * [--files]
+    * : Clone the files? (bool) default no
+    */
+    function diff() {
+
+    }
 }
 
-Terminus::add_command( 'site', 'Site_Command' );
+\Terminus::add_command( 'site', 'Site_Command' );
