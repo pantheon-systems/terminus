@@ -20,6 +20,7 @@ abstract class Terminus_Command {
 
   public function __construct() {
     # Load commonly used data from cache.
+
     $this->cache = Terminus::get_cache();
     $this->session = $this->cache->get_data('session');
     $this->sites = $this->cache->get_data('sites');
@@ -163,7 +164,7 @@ abstract class Terminus_Command {
       if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
         $table->setHeaders($this->_headers[$this->_func]);
       } else {
-        $table->setHeaders(array_keys( (array) $data[0]));
+        $table->setHeaders(\Terminus\Utils\result_get_response_fields($data));
       }
 
       foreach ($data as $row => $row_data) {
@@ -237,8 +238,6 @@ abstract class Terminus_Command {
     if( !@$this->sites ) { $this->fetch_sites(); }
     if (array_key_exists("site", $assoc_args)) {
       $uuid = $this->_validateSiteUuid($assoc_args["site"]);
-    } elseif( 'Site_Command' === get_class( $this ) AND $this->_validateSiteUuid($args[0]) ) {
-      $uuid = $this->_validateSiteUuid($args[0]);
     } else  {
       Terminus::error("Please specify the site with --site=<sitename> option.");
     }
@@ -290,6 +289,8 @@ abstract class Terminus_Command {
       if (is_array($success) && array_key_exists("data", $success)) {
         if (array_key_exists("json", $assoc_args)) {
           echo \Terminus\Utils\json_dump($success["data"]);
+        } elseif (array_key_exists("bash", $assoc_args)) {
+          echo \Terminus\Utils\bash_out($success['data']);
         } else {
           $this->_constructTableForResponse($success['data']);
         }
