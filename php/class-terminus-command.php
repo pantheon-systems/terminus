@@ -193,7 +193,7 @@ abstract class Terminus_Command {
   /**
    * Waits and returns response from workflow.
    * @package Terminus
-   * @version 1.5
+   * @version 2.0
    * @param $object_name string -- i.e. sites / users / organization
    * @param $object_id string -- coresponding id
    * @param $workflow_id string -- workflow to wait on
@@ -201,7 +201,7 @@ abstract class Terminus_Command {
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
   protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
-    Terminus::line( "waiting on workflow: $workflow_id ..." );
+    print "working .";
     $workflow = $this->terminus_request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
     $tries = 0;
