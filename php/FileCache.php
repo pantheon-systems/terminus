@@ -343,7 +343,7 @@ class FileCache {
    *
    * @return Finder
    */
-  protected function get_finder() {
+  public function get_finder() {
     return Finder::create()->in( $this->root )->files();
   }
 }
