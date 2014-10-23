@@ -9,7 +9,7 @@ class Sites_Command extends Terminus_Command {
   /**
    * Show a list of your sites on Pantheon
    * @package Terminus
-   * @version 1.5
+   * @version 2.0
    */
   public function __construct() {
     parent::__construct();
@@ -26,21 +26,20 @@ class Sites_Command extends Terminus_Command {
    */
   public function show($args, $assoc_args) {
     $sites = $this->fetch_sites( @$assoc_args['nocache'] );
-    $headers = Array('Site', 'Framework', 'Service Level', 'UUID');
-    $rows = Array();
+    //$headers = array('Site', 'Framework', 'Service Level', 'UUID');
+    $toReturn = array();
+    $toReturn['sites'] = $sites;
+    $toReturn['data'] = array();
     foreach($sites as $id => $site) {
-      $rows[] = Array(
-        $site->information->name,
-        isset($site->information->framework) ? $site->information->framework : '',
-        $site->information->service_level,
-        $id
+      $toReturn['data'][] = array(
+        'Site' => $site->information->name,
+        'Framwork' => isset($site->information->framework) ? $site->information->framework : '',
+        'Service Level' => $site->information->service_level,
+        'UUID' => $id
       );
     }
-
-    $table = new \cli\Table();
-    $table->setHeaders($headers);
-    $table->setRows($rows);
-    $table->display();
+    $this->_constructTableForResponse($toReturn['data']);
+    return $toReturn;
   }
 
   /**
@@ -67,7 +66,7 @@ class Sites_Command extends Terminus_Command {
     $product = Products_Command::getByIndex( $product);
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
-    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json'));
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
     $response = $this->terminus_request( "user", $this->session->user_uuid, "sites", 'POST', $options );
 
     // if we made it this far we need to query the work flow to wait for response
@@ -76,8 +75,8 @@ class Sites_Command extends Terminus_Command {
     $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
-      Terminus::launch_self('sites',array('show'),array('nocache'));
     }
+    return true;
   }
 
   /**
