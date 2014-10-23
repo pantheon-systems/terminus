@@ -10,7 +10,7 @@ class Products_Command extends Terminus_Command {
 
   public function __construct( ) {
     # Load commonly used data from cache.
-    $this->cache = Terminus::get_cache();
+    parent::__construct();
     $this->loadProducts();
   }
   /**
