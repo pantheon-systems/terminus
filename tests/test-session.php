@@ -26,6 +26,8 @@ use Terminus\Session;
      $this->assertEquals($data->user_uuid,Session::getData('user_uuid'));
      $this->assertEquals($data->email,Session::getData('email'));
      $this->assertEquals($data->session_expires_time,Session::getData('session_expires_time'));
+
+     
    }
 
  }

@@ -20,9 +20,13 @@ class Session {
       $cache->put_data('session',$session);
     }
 
+    if (!$session) {
+      return false;
+    }
+
     $this->session = $session->session;
     $this->user_uuid = $session->user_uuid;
-    $this->session_expires_time = $session->session_expires_time;
+    $this->session_expire_time = $session->session_expire_time;
     $this->email = $session->email;
     self::$instance = $this;
     return $this;
