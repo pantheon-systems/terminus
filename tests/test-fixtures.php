@@ -33,7 +33,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
  function testPutAndGet() {
 
    // this takes the place of the global argv
-   $test = array( __FILE__, 'sites', 'show', '--site=wink-behat','--nocache' );
+   $test = array( __FILE__, 'sites', 'show', '--site=wink-behat-test','--nocache' );
 
    $data = new stdClass;
    $data->file = __FILE__;
