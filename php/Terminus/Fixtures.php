@@ -14,11 +14,14 @@ class Fixtures {
       mkdir( sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key) );
     }
 
-    file_put_contents(
-      sprintf( "%s/%s/%s/%s", $cli_root, self::$fixtures_dir, $key, $fixture ),
-      $data,
-      LOCK_EX
-    );
+    $fixture =  sprintf( "%s/%s/%s/%s", $cli_root, self::$fixtures_dir, $key, $fixture );
+
+    // if there's already a fixture, assume we want to overwrite it
+    if (file_exists($fixture)) {
+      unlink($fixture);
+    }
+
+    file_put_contents($fixture, $data, LOCK_EX);
   }
 
 
