@@ -337,7 +337,11 @@ class Terminus {
 
     $php_bin = self::get_php_binary();
 
-    $script_path = $GLOBALS['argv'][0];
+    if (defined('CLI_TEST_MODE') AND CLI_TEST_MODE) {
+      $script_path = __DIR__.'/boot-fs.php';
+    } else {
+      $script_path = $GLOBALS['argv'][0];
+    }
 
     $args = implode( ' ', array_map( 'escapeshellarg', $args ) );
     $assoc_args = \Terminus\Utils\assoc_args_to_str( $assoc_args );
