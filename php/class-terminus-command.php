@@ -2,6 +2,7 @@
 use \Terminus\Endpoint;
 use \Terminus\Request;
 use \Terminus\Fixtures;
+use \Terminus\Session;
 
 /**
  * Base class for Terminus commands
@@ -13,6 +14,7 @@ abstract class Terminus_Command {
   public $cache;
   public $session;
   public $sites;
+  static $instance = false;
 
   protected $_func;
   protected $_siteInfo;
@@ -20,10 +22,17 @@ abstract class Terminus_Command {
 
   public function __construct() {
     # Load commonly used data from cache.
-
     $this->cache = Terminus::get_cache();
-    $this->session = $this->cache->get_data('session');
+    $this->session = Session::instance();
     $this->sites = $this->cache->get_data('sites');
+    self::$instance = $this;
+  }
+
+  public static function instance() {
+    if (!self::$instance) {
+      Terminus::error("No valid instance available");
+    }
+    return self::$instance;
   }
 
   /**
@@ -40,8 +49,8 @@ abstract class Terminus_Command {
    * Actually go out and get the sites.
    */
   protected function _fetch_sites() {
-    Terminus::log( 'Fetching site list from Pantheon' );
-    $request = $this->terminus_request( 'user', @$this->session->user_uuid,'sites','GET', Array('hydrated' => true));
+    Terminus::log( 'Fetching site list from Pantheon');
+    $request = self::request( 'user', Session::getData('user_uuid'),'sites','GET', Array('hydrated' => true));
     # TODO: handle errors well.
     $sites = $request['data'];
     $this->cache->put_data( 'sites', $sites );
@@ -98,13 +107,14 @@ abstract class Terminus_Command {
    *    A native PHP data structure (int, string, arary or simple object) to be
    *    sent along with the request. Will be encoded as JSON for you.
    */
-  protected function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
+  public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
 
     if ( defined("CLI_TEST_MODE") || 1 === getenv("USE_FIXTURES") ) {
-      return $this->fixtured_request();
+      return $thfixtured_request();
     }
+
     try {
-      $options['cookies'] = array('X-Pantheon-Session' => @$this->session->session);
+      $options['cookies'] = array('X-Pantheon-Session' => Session::getData('session'));
       $options['verify'] = false;
       $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
       $resp = Request::send( $url, $method, $options );
@@ -199,11 +209,11 @@ abstract class Terminus_Command {
    */
   protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
     print "working .";
-    $workflow = $this->terminus_request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
+    $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
-      $workflow = $this->terminus_request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
+      $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
       sleep(3);
       print ".";
@@ -271,7 +281,7 @@ abstract class Terminus_Command {
   }
 
   protected function _getEnvBindings(&$args, $assoc_args) {
-    $b = $this->terminus_request("site", $this->_siteInfo->site_uuid, 'environments/'. $this->_env .'/bindings', "GET");
+    $b = self::request("site", $this->_siteInfo->site_uuid, 'environments/'. $this->_env .'/bindings', "GET");
     if (!empty($b) && is_array($b) && array_key_exists("data", $b)) {
       $this->_bindings = $b['data'];
     }
