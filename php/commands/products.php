@@ -34,7 +34,7 @@ class Products_Command extends Terminus_Command {
   private function loadProducts() {
     $key = join("-", array( @$this->type, @$this->category, @$this->framework ) );
     if( !$products = $this->cache->get_data("products$key") ) {
-      $response = $this->terminus_request("products", "public", false, "GET");
+      $response = \Terminus_Command::request("products", "public", false, "GET");
       $products = array();
       $keys_to_show = array('longname','framework','type','category');
       // we'll use this to sort the list later
@@ -92,8 +92,17 @@ class Products_Command extends Terminus_Command {
   }
 
   public static function getByIndex( $index ) {
-    $products = self::get( TRUE );
+    $products = self::get(TRUE);
     return $products[$index];
+  }
+
+  public static function getById($id) {
+    $products = self::get(TRUE);
+    foreach ($products as $product) {
+      if ($product['id'] == $id) {
+        return $product;
+      }
+    }
   }
 
   public static function instance() {

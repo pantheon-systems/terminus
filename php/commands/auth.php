@@ -7,13 +7,13 @@
  use Terminus\Utils;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
+ use Terminus\Session;
 
 class Auth_Command extends Terminus_Command {
   private $sessionid;
   private $session_cookie_name='X-Pantheon-Session';
   private $uuid;
   private $logged_in = false;
-
 
 
   /**
@@ -54,7 +54,6 @@ class Auth_Command extends Terminus_Command {
             $this->_debug(get_defined_vars());
           }
           //Terminus::line( "Success!" );
-          $this->cache->put_data('session', $data);
           Terminus::launch_self("art", array("fist"));
         }
         else {
@@ -71,7 +70,7 @@ class Auth_Command extends Terminus_Command {
    */
   public function logout() {
     Terminus::line( "Logging out of Pantheon." );
-    $this->cache->remove('session');
+    Terminus::launch_self("cli",array('cache-clear'));
   }
 
   /**
@@ -113,7 +112,6 @@ class Auth_Command extends Terminus_Command {
    */
   private function doLogin($email,$password)
   {
-    try {
       // First send a GET and scape the CSRF info from the response
       $url = sprintf( "https://%s/login", TERMINUS_HOST );
       $response = Request::send($url,'GET');
@@ -133,10 +131,10 @@ class Auth_Command extends Terminus_Command {
       );
       $response = Request::send($url, "POST", $params);
 
-
       if ( '302' != $response->getStatusCode() ) {
         \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
       }
+
       $result = $response->getRawHeaders();
       $cookie = $response->getSetCookie();
       $parser = new CookieParser();
@@ -152,12 +150,15 @@ class Auth_Command extends Terminus_Command {
         'session_expire_time' => $expires,
         'email' => $email,
       );
+      
+      // creates a session instance
+      Session::instance( (object) $data );
 
       return $data;
 
-    } catch (\Exception $e) {
+
       \Terminus::error("[auth_error]: %s", array($e->getMessage()));
-    }
+
   }
 
   public function getUUIDFromSession() {

@@ -360,6 +360,7 @@ class Site_Command extends Terminus_Command {
    * List enviroments for a site
    */
   function environments($args, $assoc_args) {
+    $this->_handleSiteArg($args, $assoc_args);
     $results = $this->terminus_request("sites", $this->_siteInfo->site_uuid, "environments", "GET");
     $toReturn = array();
     foreach ($results['data'] as $key => $value) {
