@@ -14,39 +14,25 @@ class Site_Command extends Terminus_Command {
   );
 
   /**
-   * Invoke `drush` commands on a Pantheon development site
-   *
-   * <commands>...
-   * : The Drush commands you intend to run.
-   * [--<flag>=<value>]
-   * : Additional Drush flag(s) to pass in to the command.
-   */
-  function __invoke(array $args, array $assoc_args ) {
-    if( !isset($this->session->user_uuid) ) {
-      \Terminus::error("You must first login using `terminus auth login`");
-    }
-    if (empty($args)) {
-      \Terminus::error("You need to specify a task to perform and a site on which to perform it.");
-    } else {
-      $this->_handleFuncArg($args, $assoc_args);
-      $this->_handleSiteArg($args, $assoc_args);
-    }
-    $this->_execute($args, $assoc_args);
-  }
-
-  /**
    * ## Options
-   * <site>
+   * --site=<site>
    * : name of the site to work with
-   * [--<nocache>]
+   * [--nocache]
    * : bypass the local cache
    */
   public function info($args, $assoc_args) {
-    return (array) $this->terminus_request("site", $this->_siteInfo->site_uuid, "", "GET");
+    $this->_handleSiteArg($args, $assoc_args);
+    $toReturn = $this->terminus_request("site", $this->_siteInfo->site_uuid, "", "GET");
+    $this->_constructTableForResponse($toReturn['data']);
+    return $toReturn;
+
   }
 
   /**
    * get site state
+   *
+   * ## Options
+   * --site=<site>
    *
    * @param string $args
    * @param string $assoc_args
@@ -55,7 +41,10 @@ class Site_Command extends Terminus_Command {
    */
 
   public function state($args, $assoc_args) {
-    return $this->terminus_request("sites", $this->_siteInfo->site_uuid, "", "GET");
+    $this->_handleSiteArg($args, $assoc_args);
+    $toReturn = $this->terminus_request("sites", $this->_siteInfo->site_uuid, "", "GET");
+    $this->_constructTableForResponse($toReturn['data']);
+    return $toReturn;
   }
 
   /**
@@ -63,19 +52,17 @@ class Site_Command extends Terminus_Command {
    * Show a list of your sites on Pantheon
    *
    * @package Terminus
-   * @version 1.5
+   * @version 2.0
    *
    * ## OPTIONS
-   * <env>
-   * : site environment to list backups from
+   * --site=<site>
    *
    * [--nocache]
-   * [--site]
-   * : (required) site name
    * [--latest]
    * : show the most recent backup
    */
    public function backups($args, $assoc_args) {
+     $this->_handleSiteArg($args, $assoc_args);
     $env = $this->getValidEnv(@$assoc_args['env']);
 
     // if $latest is set we'll filter the output list
@@ -111,13 +98,13 @@ class Site_Command extends Terminus_Command {
       }
       $this->cache->put_data("backup-catalog-{$assoc_args['site']}-$env$folder", $toReturn );
     }
+    $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
    }
 
     /*
     * ## OPTIONS
-    * <site>
-    * : site to get backups from
+    * --site=<site>
     *
     * [--env]
     * : Include code in backup? default 'yes'
@@ -126,6 +113,7 @@ class Site_Command extends Terminus_Command {
     * : Backup folder to retrieve
     */
    public function backups_urls($args, $assoc_args) {
+     $this->_handleSiteArg($args, $assoc_args);
      $assoc_args['folder'] = @$assoc_args['folder'] ?: '';
      $assoc_args['env'] = @$assoc_args['env'] ?: 'dev';
 
@@ -141,15 +129,15 @@ class Site_Command extends Terminus_Command {
        $urls[] = $this->getBackupUrl( $assoc_args['site'],$assoc_args['env'], $assoc_args['folder'], $element);
      }
      $toReturn['data'] = $urls;
-
+     $this->_constructTableForResponse($toReturn['data']);
      return $toReturn;
    }
 
    /*
    * ## OPTIONS
-   * <env>
+   * --env=<env>
    * : site environment to run backup from
-   *
+   * --site=<site>
    * [--code]
    * : Include code in backup? default 'yes'
    * [--file]
@@ -158,6 +146,7 @@ class Site_Command extends Terminus_Command {
    * : Include dump of database? default 'yes'
    */
    public function backup_make($args, $assoc_args) {
+     $this->_handleSiteArg($args, $assoc_args);
      $env = $this->getValidEnv( @$assoc_args['env'] );
 
      $type='backup';
@@ -182,12 +171,12 @@ class Site_Command extends Terminus_Command {
         \Terminus::success("Successfully created backup");
       }
      }
-
      return true;
    }
 
   /**
    * ## OPTIONS
+   * --site=<site>
    * [--from-env]
    * : Environment you want to clone from
    * [--to-env]
@@ -198,6 +187,7 @@ class Site_Command extends Terminus_Command {
    * : Clone the files? (bool) default no
    */
    public function clone_env($args, $assoc_args) {
+     $this->_handleSiteArg($args, $assoc_args);
      $site_id = $this->getSiteId($assoc_args['site']);
      $from_env = $this->getValidEnv(@$assoc_args['from-env'], "Choose environment you want to clone from");
      $to_env = $this->getValidEnv(@$assoc_args['to-env'], "Choose environment you want to clone to");
@@ -222,8 +212,7 @@ class Site_Command extends Terminus_Command {
      \Terminus::confirm($confirm);
 
       if ( !$this->envExists($site_id, $to_env) ) {
-        $assoc_args['env'] = $to_env;
-        $this->create_env($args, $assoc_args);
+        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env --site=<env>`");
       }
 
      if ($db) {
@@ -256,10 +245,12 @@ class Site_Command extends Terminus_Command {
 
   /**
    * ## OPTIONS
-   * [--env]
+   * --site=<site>
+   * --env=<env>
    * : Pantheon environment create
    */
    public function create_env($args, $assoc_args) {
+     Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
      $env = $this->getValidEnv(@$assoc_args['env']);
      $site_id = $this->getSiteId($assoc_args['site']);
      if ($this->envExists($site_id,$env)) {
@@ -279,9 +270,9 @@ class Site_Command extends Terminus_Command {
     * Deploy dev environment to test or live
     *
     * ## OPTIONS
-    * <env>
+    * [--env=<env>]
     * : Environment to deploy to
-    * <site>
+    * --site=<site>
     * : Site to deploy from
 
     * [--cc]
@@ -290,6 +281,7 @@ class Site_Command extends Terminus_Command {
     * : (Drupal only) run update.php after deploy?
    **/
    public function deploy($args, $assoc_args) {
+     $this->_handleSiteArg($args, $assoc_args);
      $env = $this->getValidEnv(@$assoc_args['env']);
 
      $cc = $update = 0;
@@ -377,18 +369,22 @@ class Site_Command extends Terminus_Command {
         ( $value->lock->locked ? "Locked" : "Not Locked" )
       );
     }
+    $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
   }
 
   /**
    * List enviroments for a site
    */
-   function envExists($site_id, $env) {
+   private function envExists($site_id, $env) {
      $response = $this->terminus_request('sites', $site_id, 'environments/live/code-log', 'GET');
      $envs = (array) $response['data'];
      return array_key_exists($env, $envs);
    }
 
+   /**
+    * Get the Amazon url for a backup
+    */
    private function getBackupUrl($site,$env,$bucket,$element) {
      //this is confusing, but is for some reason required by the api
      //@TODO fix this
@@ -420,20 +416,6 @@ class Site_Command extends Terminus_Command {
     return $last->folder;
    }
 
-   /**
-    * ## OPTIONS
-    * [--from-env]
-    * : Environment you want to clone from
-    * [--to-env]
-    * : Environment you want to clone to
-    * [--db]
-    * : Clone the database? (bool) default no
-    * [--files]
-    * : Clone the files? (bool) default no
-    */
-    function diff() {
-
-    }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
