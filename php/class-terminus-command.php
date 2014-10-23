@@ -29,7 +29,7 @@ abstract class Terminus_Command {
   /**
    * Helper code to grab sites and manage local cache.
    */
-  public function fetch_sites( $nocache = false ) {
+  protected function fetch_sites( $nocache = false ) {
     if (!$this->sites || $nocache) {
       $this->_fetch_sites();
     }
@@ -39,13 +39,9 @@ abstract class Terminus_Command {
   /**
    * Actually go out and get the sites.
    */
-  private function _fetch_sites() {
+  protected function _fetch_sites() {
     Terminus::log( 'Fetching site list from Pantheon' );
-    $request = $this->terminus_request( 'user',
-                                      @$this->session->user_uuid,
-                                      'sites',
-                                      'GET',
-                                      Array('hydrated' => true));
+    $request = $this->terminus_request( 'user', @$this->session->user_uuid,'sites','GET', Array('hydrated' => true));
     # TODO: handle errors well.
     $sites = $request['data'];
     $this->cache->put_data( 'sites', $sites );
@@ -56,7 +52,7 @@ abstract class Terminus_Command {
   /**
    * Helper function to grab a single site's data from cache if possible.
    */
-  public function fetch_site( $site_name, $nocache = false ) {
+  protected function fetch_site( $site_name, $nocache = false ) {
 
     if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
       return $this->_fetch_site($site_name);
@@ -66,7 +62,7 @@ abstract class Terminus_Command {
     if ( $this->_fetch_site($site_name) !== false ) {
       return $this->_fetch_site($site_name);
     }
-    Terminus::error("The site named '$site_name' does not exist. Run `terminus sites show` for a list of sites.");
+    Terminus::error("The site named '%s' does not exist. Run `terminus sites show` for a list of sites.", array($site_name));
   }
 
   /**
@@ -102,12 +98,11 @@ abstract class Terminus_Command {
    *    A native PHP data structure (int, string, arary or simple object) to be
    *    sent along with the request. Will be encoded as JSON for you.
    */
-  public function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
+  protected function terminus_request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
 
     if ( defined("CLI_TEST_MODE") || 1 === getenv("USE_FIXTURES") ) {
       return $this->fixtured_request();
     }
-
     try {
       $options['cookies'] = array('X-Pantheon-Session' => @$this->session->session);
       $options['verify'] = false;
@@ -115,7 +110,8 @@ abstract class Terminus_Command {
       $resp = Request::send( $url, $method, $options );
 
     } catch( Exception $e ) {
-      \Terminus::error("Login failed. %s", $e->getMessage());
+      $response = $e->getResponse();
+      \Terminus::error("%s", $response->getBody(TRUE));
     }
 
     $json = $resp->getBody(TRUE);
@@ -140,6 +136,7 @@ abstract class Terminus_Command {
       Terminus::error("Oops, we don't seem to have a fixture for this request.
       Maybe you should try running scripts/build_fixtures.sh and then try again.");
     }
+    return $response;
   }
 
   protected function _validateSiteUuid($site) {
