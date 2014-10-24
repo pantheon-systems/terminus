@@ -122,11 +122,8 @@ class CLI_Command extends Terminus_Command {
   /**
   * @subcommand cache-clear
   */
-  public function cache_clear() {
-    $finder = $this->cache->get_finder();
-    foreach( $finder as $file ) {
-      unlink($file->getRealPath());
-    }
+  public function cache_clear($cache = null) {
+    $this->cache->flush($cache);
   }
 
 }

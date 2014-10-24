@@ -63,7 +63,7 @@ class Request {
     $response = $request->send();
 
     if ( getenv("BUILD_FIXTURES") ) {
-      Fixtures::put("response", serialize( $response ) );
+      Fixtures::put("response", $response);
     }
 
     return $response;

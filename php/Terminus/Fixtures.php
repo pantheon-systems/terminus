@@ -21,7 +21,7 @@ class Fixtures {
       unlink($fixture);
     }
 
-    file_put_contents($fixture, $data, LOCK_EX);
+    file_put_contents($fixture, serialize($data), LOCK_EX);
   }
 
 
@@ -31,7 +31,7 @@ class Fixtures {
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s/%s', $cli_root, self::$fixtures_dir, $key, $fixture);
       if( file_exists($filename) ) {
-        return file_get_contents( $filename );
+        return unserialize(file_get_contents( $filename ));
       }
       return false;
   }

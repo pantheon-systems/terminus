@@ -5,9 +5,14 @@
  */
 
 use Terminus\Utils;
+use Terminus\Auth;
 use \Guzzle\Http\Client;
 
 class Site_Command extends Terminus_Command {
+
+  public function __construct() {
+    parent::__construct();
+  }
 
   protected $_headers = array(
     "environments" => array("Environment","Created", "Locked")
@@ -21,8 +26,7 @@ class Site_Command extends Terminus_Command {
    * : bypass the local cache
    */
   public function info($args, $assoc_args) {
-    $this->_handleSiteArg($args, $assoc_args);
-    $toReturn = $this->terminus_request("site", $this->_siteInfo->site_uuid, "", "GET");
+    $toReturn = \Terminus_Command::request("site", $this->getSiteId($assoc_args['site']), "", "GET");
     $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
 
@@ -41,8 +45,7 @@ class Site_Command extends Terminus_Command {
    */
 
   public function state($args, $assoc_args) {
-    $this->_handleSiteArg($args, $assoc_args);
-    $toReturn = $this->terminus_request("sites", $this->_siteInfo->site_uuid, "", "GET");
+    $toReturn = \Terminus_Command::request("sites", $this->getSiteId($assoc_args['site']), "", "GET");
     $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
   }
@@ -62,48 +65,52 @@ class Site_Command extends Terminus_Command {
    * : show the most recent backup
    */
    public function backups($args, $assoc_args) {
-     $this->_handleSiteArg($args, $assoc_args);
-    $env = $this->getValidEnv(@$assoc_args['env']);
-
-    // if $latest is set we'll filter the output list
-    $latest = @$assoc_args['latest'] ?: false;
-    $folder = '';
-    if ($latest) {
-      $folder = $this->getLatestBucket($assoc_args['site']);
-    }
-    // try cache first
-    $toReturn = $this->cache->get_data("backup-catalog-{$assoc_args['site']}-$env$folder");
-
-    // hit api if necessary
-    if ( isset($assoc_args['nocache']) OR !$toReturn ) {
-      $site_id = $this->getSiteId( $assoc_args['site'] );
-      if( !$site_id ) \Terminus::error("Could not find site %s", array($assoc_args['site']) );
-      $path = sprintf("environments/%s/backups/catalog", $env);
-      $backups = $this->terminus_request('site', $site_id, $path );
-      if( count( (array) $backups['data']) < 1 ) {
-        \Terminus::success("No backup found. Create one using `terminus site backup-make`");
-      }
-
-      // format the response data for better display
-      $toReturn = array();
-      $toReturn['backups'] = $backups['data'];
-      foreach( $backups['data'] as $backup ) {
-        if (!@$backup->filename ) continue;
-        if (!empty($folder) AND $backup->folder != $folder) continue;
-        $toReturn['data'][] = array(
-          'filename' => $backup->filename,
-          'finished'=> date('F j,Y H:i:s', $backup->finish_time ),
-          'folder' => $backup->folder,
-        );
-      }
-      $this->cache->put_data("backup-catalog-{$assoc_args['site']}-$env$folder", $toReturn );
+    $toReturn = $this->getBackups($args, $assoc_args);
+    //munging data
+    for( $i=0; $i<count($toReturn['data']); $i++ ) {
+      $toReturn['data'][$i] = (array) $toReturn['data'][$i];
     }
     $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
    }
 
+   private function getBackups($args, $assoc_args) {
+     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
+     // if $latest is set we'll filter the output list
+     $latest = @$assoc_args['latest'] ?: false;
+     $folder = '';
+     // try cache first
+     $toReturn = $this->cache->get_data("backup-catalog-{$assoc_args['site']}-$env$folder");
+
+     // hit api if necessary
+     if ( @$assoc_args['nocache'] OR !$toReturn ) {
+       $site_id = $this->getSiteId( $assoc_args['site'] );
+       if( !$site_id ) \Terminus::error("Could not find site %s", array($assoc_args['site']) );
+       $path = sprintf("environments/%s/backups/catalog", $env);
+       $backups = \Terminus_Command::request('site', $site_id, $path );
+       if( count( (array) $backups['data']) < 1 ) {
+         \Terminus::success("No backup found. Create one using `terminus site backup-make`");
+       }
+
+       // format the response data for better display
+       $toReturn = array();
+       foreach( $backups['data'] as $backup ) {
+         if (!@$backup->filename ) continue;
+         if (!empty($folder) AND $backup->folder != $folder) continue;
+         $toReturn['data'][] = array(
+           'filename' => $backup->filename,
+           'finished'=> date('F j,Y H:i:s', $backup->finish_time ),
+           'folder' => $backup->folder,
+         );
+       }
+       $this->cache->put_data("backup-catalog-{$assoc_args['site']}-$env$folder", $toReturn );
+     }
+     return (array) $toReturn;
+   }
+
     /*
     * ## OPTIONS
+    * @subcommand backups-urls
     * --site=<site>
     *
     * [--env]
@@ -113,7 +120,6 @@ class Site_Command extends Terminus_Command {
     * : Backup folder to retrieve
     */
    public function backups_urls($args, $assoc_args) {
-     $this->_handleSiteArg($args, $assoc_args);
      $assoc_args['folder'] = @$assoc_args['folder'] ?: '';
      $assoc_args['env'] = @$assoc_args['env'] ?: 'dev';
 
@@ -129,11 +135,17 @@ class Site_Command extends Terminus_Command {
        $urls[] = $this->getBackupUrl( $assoc_args['site'],$assoc_args['env'], $assoc_args['folder'], $element);
      }
      $toReturn['data'] = $urls;
-     $this->_constructTableForResponse($toReturn['data']);
+
+     if ($assoc_args['bash']) {
+       print join(' ',$urls);
+     }
      return $toReturn;
    }
 
    /*
+   * Make a backup
+   * @subcommand backup-make
+
    * ## OPTIONS
    * --env=<env>
    * : site environment to run backup from
@@ -146,9 +158,7 @@ class Site_Command extends Terminus_Command {
    * : Include dump of database? default 'yes'
    */
    public function backup_make($args, $assoc_args) {
-     $this->_handleSiteArg($args, $assoc_args);
-     $env = $this->getValidEnv( @$assoc_args['env'] );
-
+     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env'] );
      $type='backup';
      $path = sprintf('environments/%s/backups/create', $env);
      $site_id = $this->getSiteId( $assoc_args['site'] );
@@ -163,7 +173,7 @@ class Site_Command extends Terminus_Command {
         'body' => json_encode($data) ,
         'headers'=> array('Content-type'=>'application/json')
       );
-     $response = $this->terminus_request( "sites", $site_id, $path, 'POST', $options );
+     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $options );
      if( @$response['data']->id ) {
       $workflow_id = $response['data']->id;
       $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id );
@@ -176,6 +186,7 @@ class Site_Command extends Terminus_Command {
 
   /**
    * ## OPTIONS
+   * @subcommand clone-env
    * --site=<site>
    * [--from-env]
    * : Environment you want to clone from
@@ -187,10 +198,9 @@ class Site_Command extends Terminus_Command {
    * : Clone the files? (bool) default no
    */
    public function clone_env($args, $assoc_args) {
-     $this->_handleSiteArg($args, $assoc_args);
      $site_id = $this->getSiteId($assoc_args['site']);
-     $from_env = $this->getValidEnv(@$assoc_args['from-env'], "Choose environment you want to clone from");
-     $to_env = $this->getValidEnv(@$assoc_args['to-env'], "Choose environment you want to clone to");
+     $from_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['from-env'], "Choose environment you want to clone from");
+     $to_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['to-env'], "Choose environment you want to clone to");
 
      $db = $files = false;
      $db = isset($assoc_args['db']) ?: false;
@@ -235,7 +245,7 @@ class Site_Command extends Terminus_Command {
        'body' => json_encode($data) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = $this->terminus_request("sites", $site_id, $path, "POST", $options);
+     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $options);
      if ($response) {
        $this->waitOnWorkflow("sites", $site_id, $response['data']->id);
        return $response;
@@ -244,6 +254,7 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * @subcommand create-env
    * ## OPTIONS
    * --site=<site>
    * --env=<env>
@@ -251,7 +262,7 @@ class Site_Command extends Terminus_Command {
    */
    public function create_env($args, $assoc_args) {
      Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
-     $env = $this->getValidEnv(@$assoc_args['env']);
+     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
      $site_id = $this->getSiteId($assoc_args['site']);
      if ($this->envExists($site_id,$env)) {
        \Terminus::error("The %s environment already exists", array($env));
@@ -261,7 +272,7 @@ class Site_Command extends Terminus_Command {
        'body' => json_encode(array()) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = $this->terminus_request('sites', $site_id, $path, 'POST', $options);
+     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $options);
     \Terminus::success("Created %s environment", array($env));
 
    }
@@ -281,8 +292,7 @@ class Site_Command extends Terminus_Command {
     * : (Drupal only) run update.php after deploy?
    **/
    public function deploy($args, $assoc_args) {
-     $this->_handleSiteArg($args, $assoc_args);
-     $env = $this->getValidEnv(@$assoc_args['env']);
+     $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env']);
 
      $cc = $update = 0;
      if (array_key_exists('cc',$assoc_args)) {
@@ -298,7 +308,7 @@ class Site_Command extends Terminus_Command {
      );
      $site_id = $this->getSiteId($assoc_args['site']);
      $path = sprintf('environments/%s/code?%s', $env, http_build_query($params));
-     $response = $this->terminus_request('sites', $site_id, $path, 'POST');
+     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST');
      $result = $this->waitOnWorkflow('sites', $sites_id, $response['data']->id);
      if ($result) {
        \Terminus::success("Woot! Code deployed to %s", array($env));
@@ -308,8 +318,9 @@ class Site_Command extends Terminus_Command {
   /**
    * Fetch a valid environment
    */
-   private function getValidEnv( $env = null, $message = false ) {
-     $envs = $this->getAvailableEnvs();
+   private function getValidEnv($site, $env = null, $message = false ) {
+     $envs = $this->getAvailableEnvs($site);
+
      if (!$message) {
        $message = "Specify a environment";
      }
@@ -329,9 +340,9 @@ class Site_Command extends Terminus_Command {
   /**
     * Fetch available environments
     */
-    private function getAvailableEnvs() {
+    private function getAvailableEnvs($site) {
       $is_available = "Not Locked";
-      $envs = $this->environments(array(), array());
+      $envs = $this->getEnvironments(array(), array('site'=>$site));
       $available = array();
       foreach( $envs['data'] as $env ) {
         if( $env[2] == $is_available ) {
@@ -345,6 +356,10 @@ class Site_Command extends Terminus_Command {
    * Fetch the UUID for a site name
    */
    private function getSiteId( $name ) {
+      if( !$this->sites ) {
+       $this->fetch_sites();
+      }
+
       $lookup = array();
       foreach( $this->sites as $uuid => $site ) {
         $lookup[$site->information->name] = $uuid;
@@ -353,15 +368,27 @@ class Site_Command extends Terminus_Command {
       if (array_key_exists($name, $lookup)) {
         return $lookup[$name];
       }
+
       return false;
    }
 
   /**
    * List enviroments for a site
+   * @subcommand
+   * ## OPTIONS
+   * --site=<site>
+   * : Name of site to check
    */
   function environments($args, $assoc_args) {
     $this->_handleSiteArg($args, $assoc_args);
-    $results = $this->terminus_request("sites", $this->_siteInfo->site_uuid, "environments", "GET");
+    $toReturn = $this->getEnvironments($args, $assoc_args);
+    $this->_constructTableForResponse($toReturn['data']);
+    return $toReturn;
+  }
+
+  // @TODO this is going away and will be replaced by Site and Environment Objects
+  public function getEnvironments($args, $assoc_args) {
+    $results = \Terminus_Command::request("sites", $this->getSiteId($assoc_args['site']), "environments", "GET");
     $toReturn = array();
     foreach ($results['data'] as $key => $value) {
       $toReturn['data'][] = array(
@@ -370,7 +397,6 @@ class Site_Command extends Terminus_Command {
         ( $value->lock->locked ? "Locked" : "Not Locked" )
       );
     }
-    $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
   }
 
@@ -378,7 +404,7 @@ class Site_Command extends Terminus_Command {
    * List enviroments for a site
    */
    private function envExists($site_id, $env) {
-     $response = $this->terminus_request('sites', $site_id, 'environments/live/code-log', 'GET');
+     $response = \Terminus_Command::request('sites', $site_id, 'environments/live/code-log', 'GET');
      $envs = (array) $response['data'];
      return array_key_exists($env, $envs);
    }
@@ -399,7 +425,7 @@ class Site_Command extends Terminus_Command {
      );
 
      $path = sprintf('environments/%s/backups/catalog/%s/%s/s3token', $env, $bucket, $element );
-     $response = $this->terminus_request('sites', $this->getSiteId($site), $path, 'POST', $options );
+     $response = \Terminus_Command::request('sites', $this->getSiteId($site), $path, 'POST', $options );
      return $response['data']->url;
    }
 
@@ -408,7 +434,7 @@ class Site_Command extends Terminus_Command {
     */
    private function getLatestBucket($site) {
     // casting is ugly
-    $backups = (array) $this->backups( array(), array('env'=>'dev', 'site' => $site) );
+    $backups = (array) $this->getBackups( array(), array('env'=>'dev', 'site' => $site) );
     $backups = (array) $backups['backups'];
     $last = end($backups);
     if (!is_object($last)) {

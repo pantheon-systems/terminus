@@ -47,6 +47,7 @@ class Auth_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         Terminus::line( "Logging in as $email" );
+
         $data = $this->doLogin($email, $password);
 
         if ( $data != FALSE ) {
@@ -150,9 +151,9 @@ class Auth_Command extends Terminus_Command {
         'session_expire_time' => $expires,
         'email' => $email,
       );
-      
+
       // creates a session instance
-      Session::instance( (object) $data );
+      Session::instance()->setData( $data );
 
       return $data;
 

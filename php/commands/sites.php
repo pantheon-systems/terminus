@@ -4,6 +4,7 @@
  *
  */
 use Terminus\Products;
+use Terminus\Session;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -13,7 +14,7 @@ class Sites_Command extends Terminus_Command {
    */
   public function __construct() {
     parent::__construct();
-    if(empty($this->session)) {
+    if(empty(Session::instance())) {
       Terminus::error("Please login first with `terminus auth login`");
     }
   }
@@ -72,13 +73,14 @@ class Sites_Command extends Terminus_Command {
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request( "user", $this->session->user_uuid, "sites", 'POST', $options );
+    $response = \Terminus_Command::request( "user", Session::getValue('user_uuid'), "sites", 'POST', $options );
     // if we made it this far we need to query the work flow to wait for response
     $site = $response['data'];
     $workflow_id = $site->id;
     $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
+      $this->cache->flush('sites');
     }
     return true;
   }

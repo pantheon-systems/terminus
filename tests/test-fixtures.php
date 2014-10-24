@@ -17,10 +17,10 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
 
     // we're going to make up some phony argv requests and make sure they get parsed right
     $keystotest = array(
-      array( __FILE__, 'sites', 'show', '--site=wink-behat','--nocache' ),
+      array( __FILE__, 'sites', 'show', '--site=behat-test','--nocache' ),
     );
     $expectedresults = array(
-      array( 'sites:show:--site=wink-behat:--nocache' )
+      array( 'sites:show:--site=behat:--nocache' )
     );
     for( $i=0; $i++; $i<count($keystotest) ) {
       $GLOBALS['argv'] = $keystotest[$i];
@@ -33,7 +33,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
  function testPutAndGet() {
 
    // this takes the place of the global argv
-   $test = array( __FILE__, 'sites', 'show', '--site=wink-behat-test','--nocache' );
+   $test = array( __FILE__, 'sites', 'show', '--site=behat-test','--nocache' );
 
    $data = new stdClass;
    $data->file = __FILE__;
@@ -42,8 +42,8 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    Fixtures::put( "test_fixture", json_encode($data) );
 
    // test manually
-   $this->assertFileExists(CLI_ROOT.'/fixtures/sites:show:--site=wink-behat:--nocache/test_fixture');
-   $content = json_decode(file_get_contents(CLI_ROOT.'/fixtures/sites:show:--site=wink-behat:--nocache/test_fixture'));
+   $this->assertFileExists(CLI_ROOT.'/fixtures/sites:show:--site=behat-test:--nocache/test_fixture');
+   $content = json_decode(file_get_contents(CLI_ROOT.'/fixtures/sites:show:--site=behat-test:--nocache/test_fixture'));
    $this->assertInstanceOf( 'stdClass', $content );
    $this->assertEquals( "success", $content->msg );
 

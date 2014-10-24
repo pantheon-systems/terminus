@@ -6,50 +6,59 @@ use Terminus;
 
 class Session {
   static $instance;
-  private $session;
-  private $user_uuid;
-  private $session_expires_time;
-  private $email;
+  protected $data;
 
-  public function __construct( $session = null ) {
+
+  public function __construct() {
+
     $cache = Terminus::get_cache();
-
-    if( !$session ) {
-      $session = $cache->get_data('session');
-    } else {
-      $cache->put_data('session',$session);
-    }
+    $session = $cache->get_data('session');
 
     if (!$session) {
       return false;
     }
-
-    $this->session = $session->session;
-    $this->user_uuid = $session->user_uuid;
-    $this->session_expire_time = $session->session_expire_time;
-    $this->email = $session->email;
+    $this->data = $session;
     self::$instance = $this;
     return $this;
   }
 
   public function get($key = 'session', $default = false) {
-    return $this->$key;
+    if ( isset($this->data) AND $this->data->$key )
+      return $this->data->$key;
+    return $default;
   }
 
   public function set($key, $value) {
-    $this->$key = $value;
+    $this->data->$key = $value;
     return $this;
   }
 
   public static function instance( $session = null ) {
-    if (!self::$instance)
-      self::$instance = new Self($session);
+    if (!self::$instance) {
+      self::$instance = new self($session);
+    }
     return self::$instance;
   }
 
-  public static function getData( $key, $default = false ) {
+  public static function getValue( $key, $default = false ) {
     $session = Session::instance();
     return $session->get($key);
+  }
+
+  public static function getData() {
+    $session = Session::instance();
+    return $session->data;
+  }
+
+  public static function setData( $data ) {
+    $cache = Terminus::get_cache();
+    Terminus::line('Saving session data');
+    $cache->put_data('session', $data);
+    $session = self::instance();
+    $session->set('data',$data);
+    foreach ($data as $k=>$v) {
+        $session->set($k,$v);
+    }
   }
 
 }

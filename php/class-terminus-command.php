@@ -3,6 +3,7 @@ use \Terminus\Endpoint;
 use \Terminus\Request;
 use \Terminus\Fixtures;
 use \Terminus\Session;
+use \Terminus\Auth;
 
 /**
  * Base class for Terminus commands
@@ -49,8 +50,10 @@ abstract class Terminus_Command {
    * Actually go out and get the sites.
    */
   protected function _fetch_sites() {
-    Terminus::log( 'Fetching site list from Pantheon');
-    $request = self::request( 'user', Session::getData('user_uuid'),'sites','GET', Array('hydrated' => true));
+    Terminus::log('Fetching site list from Pantheon');
+
+    $request = self::request( 'user', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true));
+
     # TODO: handle errors well.
     $sites = $request['data'];
     $this->cache->put_data( 'sites', $sites );
@@ -62,7 +65,6 @@ abstract class Terminus_Command {
    * Helper function to grab a single site's data from cache if possible.
    */
   protected function fetch_site( $site_name, $nocache = false ) {
-
     if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
       return $this->_fetch_site($site_name);
     }
@@ -108,13 +110,16 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
+    if ('public' != $realm) {
+      Auth::loggedIn();
+    }
 
-    if ( defined("CLI_TEST_MODE") || 1 === getenv("USE_FIXTURES") ) {
-      return $thfixtured_request();
+    if ( defined("CLI_TEST_MODE") || 1 == getenv("USE_FIXTURES") ) {
+      return self::fixtured_request();
     }
 
     try {
-      $options['cookies'] = array('X-Pantheon-Session' => Session::getData('session'));
+      $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
       $options['verify'] = false;
       $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
       $resp = Request::send( $url, $method, $options );
@@ -141,12 +146,20 @@ abstract class Terminus_Command {
    * @todo I'm not sure that I'm happy with the fixturing as is BUT it's
    * something to start with.
    */
-  protected function fixtured_request() {
-    if ( !$response = Fixtures::get("response") ) {
+  static function fixtured_request() {
+    if ( !$resp = Fixtures::get("response") ) {
       Terminus::error("Oops, we don't seem to have a fixture for this request.
       Maybe you should try running scripts/build_fixtures.sh and then try again.");
     }
-    return $response;
+
+    $json = $resp->getBody(TRUE);
+
+    return array(
+      'info' => $resp->getInfo(),
+      'headers' => $resp->getRawHeaders(),
+      'json' => $json,
+      'data' => json_decode($json)
+    );
   }
 
   protected function _validateSiteUuid($site) {

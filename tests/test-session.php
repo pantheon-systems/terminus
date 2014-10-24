@@ -14,7 +14,8 @@ use Terminus\Session;
      $data->session_expires_time = time(TRUE);
      $data->email = "test@email.com";
 
-     $session = Session::instance($data);
+     Session::instance()->setData($data);
+     $session = Session::instance();
      $this->assertInstanceOf('\Terminus\Session', $session);
      $this->assertEquals($data->session,$session->get('session'));
      $this->assertEquals($data->user_uuid,$session->get('user_uuid'));
@@ -22,12 +23,12 @@ use Terminus\Session;
      $this->assertEquals($data->session_expires_time,$session->get('session_expires_time'));
 
      // Test static methods
-     $this->assertEquals($data->session,Session::getData('session'));
-     $this->assertEquals($data->user_uuid,Session::getData('user_uuid'));
-     $this->assertEquals($data->email,Session::getData('email'));
-     $this->assertEquals($data->session_expires_time,Session::getData('session_expires_time'));
+     $this->assertEquals($data->session,Session::getValue('session'));
+     $this->assertEquals($data->user_uuid,Session::getValue('user_uuid'));
+     $this->assertEquals($data->email,Session::getValue('email'));
+     $this->assertEquals($data->session_expires_time,Session::getValue('session_expires_time'));
 
-     
+
    }
 
  }
