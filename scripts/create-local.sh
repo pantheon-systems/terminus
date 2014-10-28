@@ -2,9 +2,9 @@
 TERMINUS='/home/vagrant/cli/php/boot-fs.php'
 LOCAL_DIR="/srv/www/drupal/$1"; #should be an empty dir
 SITENAME=$1
-DB="pantheon_$1"
-DBUSER="$1"
-DBPASS="$1"
+DB="pantheon_$( echo $1 | sed -r 's/-//')"
+DBUSER="$( echo $1 | sed -r 's/-//')"
+DBPASS="$( echo $1 | sed -r 's/-//')"
 SITE_ID=$( php $TERMINUS site info --site=$SITENAME --bash --nocache=1 | grep id | awk '{print $2}' )
 GIT_REMOTE="ssh://codeserver.dev.$SITE_ID@codeserver.dev.$SITE_ID.drush.in:2222/~/repository.git"
 echo "GIT_REMOTE=$GIT_REMOTE"
@@ -15,9 +15,9 @@ fi
 
 cd $LOCAL_DIR
 
-URLS=$( php $TERMINUS site backups-urls --site=$SITENAME --nocache --bash );
+URLS=$( php $TERMINUS site backups_urls --site=$SITENAME --nocache --bash );
 if [[ 1 = "$?" ]]; then
-	echo "Must make a backup first \`terminus site backup-make --site=$SITENAME --env=dev\`"
+	echo "Must make a backup first \`terminus site backup_make --site=$SITENAME --env=dev\`"
 	exit
 fi
 
