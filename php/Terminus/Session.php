@@ -29,7 +29,7 @@ class Session {
   }
 
   public function set($key, $value) {
-    $this->data->$key = $value;
+    $this->data->$key = !empty($value) ? $value : null;
     return $this;
   }
 
