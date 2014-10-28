@@ -10,7 +10,6 @@
      // this takes the place of the global argv
      $sites = new Sites_Command();
      $data = $sites->show(array(),array('json'));
-     print_r($data);
    }
 
  }

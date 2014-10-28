@@ -39,17 +39,16 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    $data->file = __FILE__;
    $data->msg = "success";
    $GLOBALS['argv'] = $test;
-   Fixtures::put( "test_fixture", json_encode($data) );
+   Fixtures::put( "test_fixture", $data );
 
    // test manually
    $this->assertFileExists(CLI_ROOT.'/fixtures/sites:show:--site=behat-test:--nocache/test_fixture');
-   $content = json_decode(file_get_contents(CLI_ROOT.'/fixtures/sites:show:--site=behat-test:--nocache/test_fixture'));
-   $this->assertInstanceOf( 'stdClass', $content );
+   $content = unserialize(file_get_contents(CLI_ROOT.'/fixtures/sites:show:--site=behat-test:--nocache/test_fixture'));
+   $this->assertInstanceOf( get_class($content), $content );
    $this->assertEquals( "success", $content->msg );
 
    // now test the get method
    $content = Fixtures::get("test_fixture");
-   $content = json_decode($content);
    $this->assertInstanceOf( 'stdClass', $content );
    $this->assertEquals( "success", $content->msg );
 
