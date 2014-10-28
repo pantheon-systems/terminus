@@ -13,3 +13,6 @@ $args = $GLOBALS['argv'];
 $GLOBALS['argv'] = array(__FILE__, 'auth', 'login', 'wink+behat@getpantheon.com','--password=chicago77');
 Session::setData( Fixtures::get('response') );
 $GLOBALS['argv'] = $args;
+
+// clear the cache to prevent pollution
+Terminus::launch_self('cli', array('cache-clear'));

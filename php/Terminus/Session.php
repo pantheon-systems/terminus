@@ -14,10 +14,13 @@ class Session {
     $cache = Terminus::get_cache();
     $session = $cache->get_data('session');
 
-    if (!$session) {
-      return false;
+
+    if (empty($session)) {
+      $this->data = new \stdClass();;
+    } else {
+      $this->data = $session;
     }
-    $this->data = $session;
+
     self::$instance = $this;
     return $this;
   }
