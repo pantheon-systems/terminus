@@ -24,10 +24,15 @@ class Site_Command extends Terminus_Command {
    * : name of the site to work with
    * [--nocache]
    * : bypass the local cache
+   * [--bash]
+   * : bash friendly output
    */
   public function info($args, $assoc_args) {
     $toReturn = \Terminus_Command::request("site", $this->getSiteId($assoc_args['site']), "", "GET");
-    $this->_constructTableForResponse($toReturn['data']);
+    if ( @$assoc_args['bash'] )
+      echo \Terminus\Utils\bash_out($toReturn['data']);
+    else
+      $this->_constructTableForResponse($toReturn['data']);
     return $toReturn;
 
   }
@@ -67,6 +72,10 @@ class Site_Command extends Terminus_Command {
    public function backups($args, $assoc_args) {
     $toReturn = $this->getBackups($args, $assoc_args);
     //munging data
+    if ( !$toReturn ) {
+      \Terminus::error("No backups found.");
+    }
+
     for( $i=0; $i<count($toReturn['data']); $i++ ) {
       $toReturn['data'][$i] = (array) $toReturn['data'][$i];
     }
@@ -74,11 +83,17 @@ class Site_Command extends Terminus_Command {
     return $toReturn;
    }
 
+   /**
+   * Retrieve all backups
+   * This is a helper function that will eventually be moved into a Backup class
+   **/
    private function getBackups($args, $assoc_args) {
      $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
+
      // if $latest is set we'll filter the output list
      $latest = @$assoc_args['latest'] ?: false;
      $folder = '';
+
      // try cache first
      $toReturn = $this->cache->get_data("backup-catalog-{$assoc_args['site']}-$env$folder");
 
@@ -94,6 +109,7 @@ class Site_Command extends Terminus_Command {
 
        // format the response data for better display
        $toReturn = array();
+       $toReturn['backups'] = $backups['data'];
        foreach( $backups['data'] as $backup ) {
          if (!@$backup->filename ) continue;
          if (!empty($folder) AND $backup->folder != $folder) continue;
@@ -118,6 +134,9 @@ class Site_Command extends Terminus_Command {
 
     * [--folder]
     * : Backup folder to retrieve
+    *
+    * [--bash]
+    * : Bash friendly output
     */
    public function backups_urls($args, $assoc_args) {
      $assoc_args['folder'] = @$assoc_args['folder'] ?: '';
@@ -136,8 +155,8 @@ class Site_Command extends Terminus_Command {
      }
      $toReturn['data'] = $urls;
 
-     if ($assoc_args['bash']) {
-       print join(' ',$urls);
+     if (@$assoc_args['bash']) {
+       echo \Terminus\Utils\bash_out($toReturn['data']);
      }
      return $toReturn;
    }
@@ -309,7 +328,7 @@ class Site_Command extends Terminus_Command {
      $site_id = $this->getSiteId($assoc_args['site']);
      $path = sprintf('environments/%s/code?%s', $env, http_build_query($params));
      $response = \Terminus_Command::request('sites', $site_id, $path, 'POST');
-     $result = $this->waitOnWorkflow('sites', $sites_id, $response['data']->id);
+     $result = $this->waitOnWorkflow('sites', $site_id, $response['data']->id);
      if ($result) {
        \Terminus::success("Woot! Code deployed to %s", array($env));
      }
@@ -404,7 +423,7 @@ class Site_Command extends Terminus_Command {
    * List enviroments for a site
    */
    private function envExists($site_id, $env) {
-     $response = \Terminus_Command::request('sites', $site_id, 'environments/live/code-log', 'GET');
+     $response = \Terminus_Command::request('sites', $site_id, 'code-tips', 'GET');
      $envs = (array) $response['data'];
      return array_key_exists($env, $envs);
    }
