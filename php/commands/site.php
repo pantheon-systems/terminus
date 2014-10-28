@@ -6,6 +6,8 @@
 
 use Terminus\Utils;
 use Terminus\Auth;
+use Terminus\SiteFactory;
+use Terminus\Site;
 use \Guzzle\Http\Client;
 
 class Site_Command extends Terminus_Command {
@@ -28,44 +30,24 @@ class Site_Command extends Terminus_Command {
    * : bash friendly output
    */
   public function info($args, $assoc_args) {
-    $toReturn = \Terminus_Command::request("site", $this->getSiteId($assoc_args['site']), "", "GET");
+    $site = SiteFactory::instance($assoc_args['site']);
+    $toReturn = $site->info();
     if ( @$assoc_args['bash'] )
       echo \Terminus\Utils\bash_out($toReturn['data']);
     else
-      $this->_constructTableForResponse($toReturn['data']);
+      $this->_constructTableForResponse( (array) $toReturn);
     return $toReturn;
 
-  }
-
-  /**
-   * get site state
-   *
-   * ## Options
-   * --site=<site>
-   *
-   * @param string $args
-   * @param string $assoc_args
-   * @return array
-   * @author stovak
-   */
-
-  public function state($args, $assoc_args) {
-    $toReturn = \Terminus_Command::request("sites", $this->getSiteId($assoc_args['site']), "", "GET");
-    $this->_constructTableForResponse($toReturn['data']);
-    return $toReturn;
   }
 
   /**
    * list backups
    * Show a list of your sites on Pantheon
-   *
-   * @package Terminus
-   * @version 2.0
-   *
-   * ## OPTIONS
+   * ## Options
    * --site=<site>
-   *
+   * : Site to use
    * [--nocache]
+   * : Bypass cache
    * [--latest]
    * : show the most recent backup
    */
@@ -84,8 +66,8 @@ class Site_Command extends Terminus_Command {
    }
 
    /**
-   * Retrieve all backups
-   * This is a helper function that will eventually be moved into a Backup class
+    * Retrieve all backups
+    * This is a helper function that will eventually be moved into a Backup class
    **/
    private function getBackups($args, $assoc_args) {
      $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
@@ -124,20 +106,18 @@ class Site_Command extends Terminus_Command {
      return (array) $toReturn;
    }
 
-    /*
-    * ## OPTIONS
-    * @subcommand backups-urls
-    * --site=<site>
-    *
-    * [--env]
-    * : Include code in backup? default 'yes'
-
-    * [--folder]
-    * : Backup folder to retrieve
-    *
-    * [--bash]
-    * : Bash friendly output
-    */
+  /**
+   * @subcommand backups-urls
+   * ## Options
+   * --site=<site>
+   * : Site to use
+   * [--env]
+   * : Include code in backup? default 'yes'
+   * [--folder]
+   * : Backup folder to retrieve
+   * [--bash]
+   * : Bash friendly output
+   */
    public function backups_urls($args, $assoc_args) {
      $assoc_args['folder'] = @$assoc_args['folder'] ?: '';
      $assoc_args['env'] = @$assoc_args['env'] ?: 'dev';
@@ -161,14 +141,14 @@ class Site_Command extends Terminus_Command {
      return $toReturn;
    }
 
-   /*
-   * Make a backup
-   * @subcommand backup-make
 
-   * ## OPTIONS
+  /**
+   * @subcommand backup-make
+   * ## Options
    * --env=<env>
    * : site environment to run backup from
    * --site=<site>
+   * : Site to use
    * [--code]
    * : Include code in backup? default 'yes'
    * [--file]
@@ -188,11 +168,11 @@ class Site_Command extends Terminus_Command {
       'database' => @$assoc_args['db'] ? true : false,
       'files' => @$assoc_args['files'] ? true : false,
      );
-     $options = array(
+     $Options = array(
         'body' => json_encode($data) ,
         'headers'=> array('Content-type'=>'application/json')
       );
-     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $options );
+     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options );
      if( @$response['data']->id ) {
       $workflow_id = $response['data']->id;
       $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id );
@@ -204,9 +184,10 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * ## OPTIONS
+   * ## Options
    * @subcommand clone-env
    * --site=<site>
+   * : Site to use
    * [--from-env]
    * : Environment you want to clone from
    * [--to-env]
@@ -260,11 +241,11 @@ class Site_Command extends Terminus_Command {
    private function cloneObject($to_env, $from_env, $site_id, $object_type) {
      $path = sprintf("environments/%s/database", $to_env);
      $data = array('clone-from-environment'=>$from_env);
-     $options = array(
+     $Options = array(
        'body' => json_encode($data) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $options);
+     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $Options);
      if ($response) {
        $this->waitOnWorkflow("sites", $site_id, $response['data']->id);
        return $response;
@@ -274,8 +255,9 @@ class Site_Command extends Terminus_Command {
 
   /**
    * @subcommand create-env
-   * ## OPTIONS
+   * ## Options
    * --site=<site>
+   * : Site to use
    * --env=<env>
    * : Pantheon environment create
    */
@@ -287,11 +269,11 @@ class Site_Command extends Terminus_Command {
        \Terminus::error("The %s environment already exists", array($env));
      }
      $path = sprintf('environments/%s', $env);
-     $options = array(
+     $Options = array(
        'body' => json_encode(array()) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $options);
+     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $Options);
     \Terminus::success("Created %s environment", array($env));
 
    }
@@ -299,7 +281,7 @@ class Site_Command extends Terminus_Command {
    /**
     * Deploy dev environment to test or live
     *
-    * ## OPTIONS
+    * ## Options
     * [--env=<env>]
     * : Environment to deploy to
     * --site=<site>
@@ -394,7 +376,7 @@ class Site_Command extends Terminus_Command {
   /**
    * List enviroments for a site
    * @subcommand
-   * ## OPTIONS
+   * ## Options
    * --site=<site>
    * : Name of site to check
    */
@@ -406,7 +388,7 @@ class Site_Command extends Terminus_Command {
   }
 
   // @TODO this is going away and will be replaced by Site and Environment Objects
-  public function getEnvironments($args, $assoc_args) {
+  private function getEnvironments($args, $assoc_args) {
     $results = \Terminus_Command::request("sites", $this->getSiteId($assoc_args['site']), "environments", "GET");
     $toReturn = array();
     foreach ($results['data'] as $key => $value) {
@@ -438,13 +420,13 @@ class Site_Command extends Terminus_Command {
        'method' => 'GET'
      );
      $method = 'POST';
-     $options = array(
+     $Options = array(
        'body' => json_encode($data) ,
        'headers'=> array('Content-type'=>'application/json')
      );
 
      $path = sprintf('environments/%s/backups/catalog/%s/%s/s3token', $env, $bucket, $element );
-     $response = \Terminus_Command::request('sites', $this->getSiteId($site), $path, 'POST', $options );
+     $response = \Terminus_Command::request('sites', $this->getSiteId($site), $path, 'POST', $Options );
      return $response['data']->url;
    }
 
@@ -460,6 +442,32 @@ class Site_Command extends Terminus_Command {
       \Terminus::error('No backups found.');
     }
     return $last->folder;
+   }
+
+   /**
+    * Complete wipe and reset a site
+    @subcommand wipe
+    * ## Options
+    * --site=<site>
+    * : Site to use
+    * [--env=<env>]
+    * : Specify environment, default = dev
+    */
+   public function wipe($args, $assoc_args) {
+     try {
+       $env = @$assoc_args['env'] ?: 'dev';
+       $site = SiteFactory::instance($assoc_args['site']);
+       $site_id = $site->getId();
+       $env = $this->getValidEnv($assoc_args['site'], $env);
+       Terminus::line("Wiping %s %s", array($site_id, $env));
+       $resp = $site->environment($env)->wipe();
+       if ($resp) {
+         $this->waitOnWorkflow('sites', $site_id, $resp['data']->id);
+         Terminus::success("Successfully wiped %s -- %s", array($site->getName(),$env));
+       }
+    } catch(Exception $e) {
+      Terminus::error("%s",array($e->getMessage()));
+    }
    }
 
 }
