@@ -23,8 +23,28 @@ class Site {
     return $this;
   }
 
+  /**
+   * Return all environments for a site
+   */
   public function environments() {
-    return $this;
+    $cache = \Terminus::get_cache();
+    if (empty($this->environments)) {
+      if (!$environments = $cache->get_data("environments:{$this->id}")) {
+        $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
+        $environments = $results['data'];
+        $cache->put_data("environments:{$this->id}",$environments);
+      }
+      $this->environments = $environments;
+    }
+
+    // instantiate local objects
+    foreach ( $this->environments as $name => $env) {
+      $this->environments->$name = EnvironmentFactory::load($this->getId(), $name, array(
+        'hydrate_with' => $env,
+      ));
+    }
+
+    return $this->environments;
   }
 
   /**
@@ -33,11 +53,12 @@ class Site {
    */
   public function environment($environment) {
     if (array_key_exists($environment,$this->environments)) {
-      return $this->environments[$environment];
+      return $this->environments->$environment;
+    } else {
+      // load the environments
+      $this->environments();
     }
-    $env = EnvironmentFactory::load($this->id, $environment);
-    $this->environments[$environment] = $env;
-    return $this->environments[$environment];
+    return $this->environments->$environment;
   }
 
   /**

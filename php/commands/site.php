@@ -24,6 +24,45 @@ class Site_Command extends Terminus_Command {
    * ## Options
    * --site=<site>
    * : name of the site to work with
+   * --env=<env>
+   * : environment to check
+   * [--filter]
+   * : Use a regex to filter the diffstat for certain files
+   * [--nocache]
+   * : bypass the local cache
+   * [--bash]
+   * : bash friendly output
+   */
+  public function diffstat($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
+    $diff = (array) $site->environment($env)->diffstat();
+    $data = array();
+    // munge the data
+    $filter = @$assoc_args['filter'] ?: false;
+    foreach ($diff as $file => $stats) {
+      if ($filter) {
+        $filter = preg_quote($filter,'/');
+        $regex = '/'.$filter.'/';
+        if (!preg_match($regex, $file)) {
+          continue;
+        }
+      }
+      $data[] = array_merge( array('file'=>$file), (array) $stats );
+    }
+
+    if ( @$assoc_args['bash'] )
+      echo \Terminus\Utils\bash_out( (array) $data);
+    else
+      $this->_constructTableForResponse( (array) $data);
+
+    return $diff;
+  }
+
+  /**
+   * ## Options
+   * --site=<site>
+   * : name of the site to work with
    * [--nocache]
    * : bypass the local cache
    * [--bash]
@@ -31,9 +70,9 @@ class Site_Command extends Terminus_Command {
    */
   public function info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
-    $toReturn = $site->info();
+    $toReturn = (array) $site->info();
     if ( @$assoc_args['bash'] )
-      echo \Terminus\Utils\bash_out($toReturn['data']);
+      echo \Terminus\Utils\bash_out( (array) $toReturn);
     else
       $this->_constructTableForResponse( (array) $toReturn);
     return $toReturn;
@@ -293,7 +332,7 @@ class Site_Command extends Terminus_Command {
     * : (Drupal only) run update.php after deploy?
    **/
    public function deploy($args, $assoc_args) {
-     $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env']);
+     $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env'], "Select environment to deploy to");
 
      $cc = $update = 0;
      if (array_key_exists('cc',$assoc_args)) {

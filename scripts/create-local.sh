@@ -15,9 +15,9 @@ fi
 
 cd $LOCAL_DIR
 
-URLS=$( php $TERMINUS site backups_urls --site=$SITENAME --nocache --bash );
+URLS=$( php $TERMINUS site backups-urls --site=$SITENAME --nocache --bash );
 if [[ 1 = "$?" ]]; then
-	echo "Must make a backup first \`terminus site backup_make --site=$SITENAME --env=dev\`"
+	echo "Must make a backup first \`terminus site backup-make --site=$SITENAME --env=dev\`"
 	exit
 fi
 
