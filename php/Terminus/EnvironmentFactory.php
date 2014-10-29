@@ -7,12 +7,17 @@ use Terminus\FileCache;
 class EnvironmentFactory {
   /**
    * Instatiate an environment object
+   * @param $site (object) required
    * @param $environment (string) required
+   * @param $options (array) optional -- no options currently available
    */
-  public static function load($site_id, $environment, $options=array()) {
+  public static function load($site, $environment, $options=array()) {
     $class_name = '\Terminus\Environment'.ucfirst($environment);
     if (class_exists($class_name)) {
-      $object = new $class_name($site_id);
+      if (isset($options['hydrate_with'])) {
+        $environment = $options['hydrate_with'];
+      }
+      $object = new $class_name($site, $environment);
       return $object;
     }
   }
