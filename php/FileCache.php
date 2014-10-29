@@ -314,7 +314,7 @@ class FileCache {
     $url_parts = parse_url( $key );
     if ( ! empty($url_parts['scheme']) ) { // is url
       $parts = array('misc');
-      $parts[] = $url_parts['scheme'] . '-' . $url_parts['host'] .
+      $parts[] = $url_parts['scheme'] . '-' . @$url_parts['host'] .
         ( empty( $url_parts['port'] ) ? '' : '-' . $url_parts['port'] );
       $parts[] = substr($url_parts['path'], 1) .
         ( empty( $url_parts['query'] ) ? '' : '-' . $url_parts['query'] );
