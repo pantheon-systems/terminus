@@ -21,6 +21,20 @@ class Site_Command extends Terminus_Command {
   );
 
   /**
+   * @subcommand branch-create
+   * ## Options
+   * --site=<site>
+   * : site to create branch of
+   * --branch=<branch>
+   * : name of new branch
+  **/
+  public function branch_create($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $branch = preg_replace('#[-_\s]+#',"",@$assoc_args['branch']);
+    $branch = $site->createBranch($branch);
+  }
+
+  /**
    * ## Options
    * --site=<site>
    * : name of the site to work with
@@ -37,6 +51,7 @@ class Site_Command extends Terminus_Command {
     $site = SiteFactory::instance($assoc_args['site']);
     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
     $diff = (array) $site->environment($env)->diffstat();
+
     $data = array();
     // munge the data
     $filter = @$assoc_args['filter'] ?: false;
@@ -80,104 +95,155 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * list backups
    * Show a list of your sites on Pantheon
+   *
    * ## Options
    * --site=<site>
    * : Site to use
+   * [--env=<env>]
+   * : Environment
    * [--nocache]
    * : Bypass cache
    * [--latest]
    * : show the most recent backup
    */
    public function backups($args, $assoc_args) {
-    $toReturn = $this->getBackups($args, $assoc_args);
-    //munging data
-    if ( !$toReturn ) {
-      \Terminus::error("No backups found.");
+    $site = SiteFactory::instance($assoc_args['site']);
+    $env = $this->getValidEnv($site->getName(), $assoc_args['env']);
+    $backups = $site->environment($env)->backups();
+
+    $data = array();
+    foreach ($backups as $id => $backup) {
+      if (!isset($backup->filename)) continue;
+      $data[] = array(
+        $backup->filename,
+        sprintf("%dMB", $backup->size / 1024 / 1024),
+        date("Y-m-d H:i:s", $backup->finish_time),
+      );
     }
 
-    for( $i=0; $i<count($toReturn['data']); $i++ ) {
-      $toReturn['data'][$i] = (array) $toReturn['data'][$i];
+    if (empty($backups)) {
+      \Terminus::error("No backups found.");
+      return false;
+    } else {
+      //munging data
+      $this->_constructTableForResponse($data, array('File','Size','Date'));
+      return $data;
     }
-    $this->_constructTableForResponse($toReturn['data']);
-    return $toReturn;
+
    }
 
-   /**
-    * Retrieve all backups
-    * This is a helper function that will eventually be moved into a Backup class
-   **/
-   private function getBackups($args, $assoc_args) {
-     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
+ /**
+  * ## Options
+  * @subcommand get-backup
+  * --site=<site>
+  * : Site to load
+  * [--env=<env>]
+  * : Environment to load
+  * [--element=<code|files|db>]
+  * : Element to download
+  * [--to-directory=<directory>]
+  * : Download the file if set
+  */
+   public function get_backup($args, $assoc_args) {
+     $site = SiteFactory::instance($assoc_args['site']);
+     $env = $this->getValidEnv($site->getName(), $assoc_args['env']);
 
-     // if $latest is set we'll filter the output list
-     $latest = @$assoc_args['latest'] ?: false;
-     $folder = '';
-
-     // try cache first
-     $toReturn = $this->cache->get_data("backup-catalog-{$assoc_args['site']}-$env$folder");
-
-     // hit api if necessary
-     if ( @$assoc_args['nocache'] OR !$toReturn ) {
-       $site_id = $this->getSiteId( $assoc_args['site'] );
-       if( !$site_id ) \Terminus::error("Could not find site %s", array($assoc_args['site']) );
-       $path = sprintf("environments/%s/backups/catalog", $env);
-       $backups = \Terminus_Command::request('site', $site_id, $path );
-       if( count( (array) $backups['data']) < 1 ) {
-         \Terminus::success("No backup found. Create one using `terminus site backup-make`");
-       }
-
-       // format the response data for better display
-       $toReturn = array();
-       $toReturn['backups'] = $backups['data'];
-       foreach( $backups['data'] as $backup ) {
-         if (!@$backup->filename ) continue;
-         if (!empty($folder) AND $backup->folder != $folder) continue;
-         $toReturn['data'][] = array(
-           'filename' => $backup->filename,
-           'finished'=> date('F j,Y H:i:s', $backup->finish_time ),
-           'folder' => $backup->folder,
-         );
-       }
-       $this->cache->put_data("backup-catalog-{$assoc_args['site']}-$env$folder", $toReturn );
+     // prompt for backup type
+     if (!$element = @$assoc_args['element']) {
+       $element = Terminus::menu(array('code','files','database'), null, "Select type backup", TRUE);
      }
-     return (array) $toReturn;
+
+     if (!in_array($element,array('code','files','database'))) {
+       Terminus::error("Invalid backup element specified.");
+     }
+
+     if (!$backups = $this->cache->get_data("{$site->getName()}:$env:{$element}")) {
+       $backups = $site->environment($env)->backups($element);
+       $this->cache->put_data("{$site->getName()}:$env:{$element}", $backups);
+     }
+     $menu = $folders = array();
+
+     // build a menu for selecting back ups
+     foreach( $backups as $backup ) {
+       if (!isset($backup->filename)) continue;
+       $buckets[] = $backup->folder;
+       $menu[] = $backup->filename;
+     }
+
+     $index = Terminus::menu($menu, null, "Select backup");
+     $bucket = $buckets[$index];
+     $filename = $menu[$index];
+
+     $url = $site->environment($env)->backupUrl($bucket,$element);
+
+     if (isset($assoc_args['download-to'])) {
+       Terminus::line("Downloading ... please wait ...");
+       $filename = \Terminus\Utils\get_filename_from_url($url->url);
+       $target = sprintf("%s/%s", $assoc_args['download-to'], $filename);
+       if (Terminus_Command::download($url->url,$target)) {
+         Terminus::success("Downloaded %s", $target);
+         return $target;
+       } else {
+         Terminus::error("Could not download file");
+       }
+     }
+     print $url->url;
+     return;
    }
 
   /**
-   * @subcommand backups-urls
    * ## Options
+   * @subcommand load-backup
    * --site=<site>
-   * : Site to use
-   * [--env]
-   * : Include code in backup? default 'yes'
-   * [--folder]
-   * : Backup folder to retrieve
-   * [--bash]
-   * : Bash friendly output
+   * : Site to load
+   * [--env=<env>]
+   * : Environment to load
+   * [--element=<code|files|db>]
+   * : Element to download
+   * [--to-directory=<directory>]
+   * : Download the file if set
    */
-   public function backups_urls($args, $assoc_args) {
-     $assoc_args['folder'] = @$assoc_args['folder'] ?: '';
-     $assoc_args['env'] = @$assoc_args['env'] ?: 'dev';
+   public function load_backup($args, $assoc_args) {
+      $assoc_args['download-to'] = '/tmp';
+      $assoc_args['element'] = 'database';
+      $database = @$assoc_args['database'] ?: false;
+      $username = @$assoc_args['username'] ?: false;
+      $password = @$assoc_args['password'] ?: false;
 
-     // if a folder isn't specified then just grab the latest folder
-     if (empty($assoc_args['folder'])) {
-       $assoc_args['folder'] = $this->getLatestBucket($assoc_args['site']);
-     }
+      exec("mysql -e 'show databases'",$stdout, $exit);
+      if ( 0 != $exit ) {
+        Terminus::error("MySQL does not appear to be installed on your server.");
+      }
 
-     $elements = array('code','database','files');
-     $toReturn = array();
-     $urls = array();
-     foreach ($elements as $element) {
-       $urls[] = $this->getBackupUrl( $assoc_args['site'],$assoc_args['env'], $assoc_args['folder'], $element);
-     }
-     $toReturn['data'] = $urls;
+      $target = $this->get_backup($args, $assoc_args);
 
-     if (@$assoc_args['bash']) {
-       echo \Terminus\Utils\bash_out($toReturn['data']);
-     }
-     return $toReturn;
+      if (!file_exists($target)) {
+        Terminus::error("Can't read database file %s", array($target));
+      }
+
+      Terminus::line("Unziping database");
+      exec("gunzip $target", $stdout, $exit);
+
+      // trim the gz of the target
+      $target = Terminus\Utils\sql_from_zip($target);
+      $target = escapeshellarg($target);
+
+      if (!$database)
+        $database = escapeshellarg(Terminus::prompt("Name of database to import to"));
+      if (!$username)
+        $username = escapeshellarg(Terminus::prompt("Username"));
+      if (!$password)
+        $password = escapeshellarg(Terminus::prompt("Password"));
+
+      exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
+      if (0 != $exit) {
+        Terminus::error("Could not import database");
+      }
+
+      Terminus::success("%s successfuly imported to %s", array($target, $database));
+      return true;
+
    }
 
 
@@ -223,8 +289,8 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * ## Options
    * @subcommand clone-env
+   * ## Options
    * --site=<site>
    * : Site to use
    * [--from-env]
@@ -321,11 +387,10 @@ class Site_Command extends Terminus_Command {
     * Deploy dev environment to test or live
     *
     * ## Options
-    * [--env=<env>]
-    * : Environment to deploy to
     * --site=<site>
     * : Site to deploy from
-
+    * [--env=<env>]
+    * : Environment to deploy to
     * [--cc]
     * : Clear cache after deploy?
     * [--update]
@@ -379,17 +444,10 @@ class Site_Command extends Terminus_Command {
 
   /**
     * Fetch available environments
+    * @deprecated
     */
     private function getAvailableEnvs($site) {
-      $is_available = "Not Locked";
-      $envs = $this->getEnvironments(array(), array('site'=>$site));
-      $available = array();
-      foreach( $envs['data'] as $env ) {
-        if( $env[2] == $is_available ) {
-          $available[] = $env[0];
-        }
-      }
-      return $available;
+      return $this->getEnvironments($site);
     }
 
   /**
@@ -421,23 +479,16 @@ class Site_Command extends Terminus_Command {
    */
   function environments($args, $assoc_args) {
     $this->_handleSiteArg($args, $assoc_args);
-    $toReturn = $this->getEnvironments($args, $assoc_args);
-    $this->_constructTableForResponse($toReturn['data']);
+    $toReturn = $this->getEnvironments($assoc_args['site']);
+    $this->_constructTableForResponse($toReturn);
     return $toReturn;
   }
 
   // @TODO this is going away and will be replaced by Site and Environment Objects
-  private function getEnvironments($args, $assoc_args) {
-    $results = \Terminus_Command::request("sites", $this->getSiteId($assoc_args['site']), "environments", "GET");
-    $toReturn = array();
-    foreach ($results['data'] as $key => $value) {
-      $toReturn['data'][] = array(
-        $key,
-        date('jS F Y h:i:s A (T)', $value->environment_created),
-        ( $value->lock->locked ? "Locked" : "Not Locked" )
-      );
-    }
-    return $toReturn;
+  private function getEnvironments($site) {
+    $site = SiteFactory::instance($site);
+    $environments = $site->availableEnvironments();
+    return $environments;
   }
 
   /**
@@ -449,38 +500,84 @@ class Site_Command extends Terminus_Command {
      return array_key_exists($env, $envs);
    }
 
-   /**
-    * Get the Amazon url for a backup
-    */
-   private function getBackupUrl($site,$env,$bucket,$element) {
-     //this is confusing, but is for some reason required by the api
-     //@TODO fix this
-     $data = array(
-       'method' => 'GET'
-     );
-     $method = 'POST';
-     $Options = array(
-       'body' => json_encode($data) ,
-       'headers'=> array('Content-type'=>'application/json')
-     );
+  /**
+   * Deploy dev environment to test or live
+   *
+   * ## Options
+   * --site=<site>
+   * : Site to deploy from
+   * [--env=<env>]
+   * : Environment to deploy to
+   * [--cc]
+   * : Clear cache after deploy?
+   * [--update]
+   * : (Drupal only) run update.php after deploy?
+  **/
+  public function jobs($args, $assoc_args) {
+    $site = SiteFactory($assoc_args['site']);
+    print_r($site->jobs());
+  }
 
-     $path = sprintf('environments/%s/backups/catalog/%s/%s/s3token', $env, $bucket, $element );
-     $response = \Terminus_Command::request('sites', $this->getSiteId($site), $path, 'POST', $Options );
-     return $response['data']->url;
-   }
 
-   /**
-    * Get the most recent backup's bucket
-    */
-   private function getLatestBucket($site) {
-    // casting is ugly
-    $backups = (array) $this->getBackups( array(), array('env'=>'dev', 'site' => $site) );
-    $backups = (array) $backups['backups'];
-    $last = end($backups);
-    if (!is_object($last)) {
-      \Terminus::error('No backups found.');
-    }
-    return $last->folder;
+  /**
+   * Show upstream updates
+   * @subcommand upstream-info
+   * ## Options
+   * --site=<site>
+   * : Site to check
+   */
+  public function upstream_info($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $upstream = $site->getUpstream();
+    $this->_constructTableForResponse((array) $upstream);
+
+  }
+
+  /**
+   * Show upstream updates
+   * @subcommand upstream-updates
+   * ## Options
+   * --site=<site>
+   * : Site to check
+   * [--apply-to=<env>]
+   * : A flag to apply to a specified environment
+   */
+   public function upstream_updates($args, $assoc_args) {
+     $site = SiteFactory::instance($assoc_args['site']);
+     $upstream = $site->getUpstreamUpdates();
+
+     // data munging as usual
+     $data = array();
+     $data['dev'] = ( @$upstream->dev->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+     if (isset($upstream->test)) {
+       $data['test'] = ( @$upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+     }
+     if (isset($upstream->live)) {
+       $data['test'] = ( @$upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+     }
+
+     $this->_constructTableForResponse($data, array('Environment','Status') );
+     if (!empty((array) $upstream->update_log)) {
+       $data = array();
+       foreach ((array) $upstream->update_log as $commit) {
+         $data = array(
+           'hash' => $commit->hash,
+           'datetime'=> $commit->datetime,
+           'message' => $commit->message,
+           'author' => $commit->author,
+         );
+         $this->_constructTableForResponse($data);
+         echo PHP_EOL;
+       }
+     }
+
+     if (isset($assoc_args['apply-to'])) {
+       $env = $this->getValidEnv($site->getName(),$assoc_args['apply-to']);
+       Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s:%s", $site->getName(), $env));
+       $response = $site->applyUpstreamUpdates($env);
+       $this->waitOnWorkflow('sites', $site->getId(), $response->id);
+     }
+
    }
 
    /**
