@@ -139,6 +139,15 @@ abstract class Terminus_Command {
     );
   }
 
+  public static function download($url, $target) {
+    try {
+      $response = Request::download($url,$target);
+      return $target;
+    } catch(Exception $e) {
+      Terminus::error($e->getMessage());
+    }
+  }
+
   /**
    * Divert a request to our local cache of a fixtured data for testing
    *
@@ -174,14 +183,16 @@ abstract class Terminus_Command {
     return $site;
   }
 
-  protected function _constructTableForResponse($data) {
+  protected function _constructTableForResponse($data,$headers = array()) {
     $table = new \cli\Table();
     if (is_object($data)) {
       $data = (array)$data;
     }
 
     if (\Terminus\Utils\result_is_multiobj($data)) {
-      if (property_exists($this, "_headers") && array_key_exists($this->_func, $this->_headers)) {
+      if (!empty($headers)) {
+        $table->setHeaders($headers);
+      } elseif (property_exists($this, "_headers")) {
         $table->setHeaders($this->_headers[$this->_func]);
       } else {
         $table->setHeaders(\Terminus\Utils\result_get_response_fields($data));
@@ -198,7 +209,11 @@ abstract class Terminus_Command {
         $table->addRow($row);
       }
     } else {
-      $table->setHeaders( array( $this->_func, '') );
+      if (!empty($headers)) {
+        $table->setHeaders($headers);
+      } else {
+        //$table->setHeaders( array_keys($data) );
+      }
       foreach( $data as $key=>$value ) {
         if( is_array($value) OR is_object($value) ) {
           $value = implode(", ",(array) $value);
