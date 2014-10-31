@@ -449,6 +449,7 @@ function result_get_response_fields( $result ) {
   unset($iter);
   return $keys;
 }
+
 /**
  * Validate Atlas UUID.
  * @param $uuid
@@ -456,4 +457,19 @@ function result_get_response_fields( $result ) {
  */
 function is_valid_uuid($uuid) {
   return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}
+
+/**
+ * Get filename from a url
+ * @param $url sting valid url
+ */
+function get_filename_from_url($url) {
+  $path = parse_url($url);
+  $parts = explode('/',$path['path']);
+  return end($parts);
+}
+
+function sql_from_zip($filename) {
+  $file = preg_replace('#\.gz$#s','', $filename);
+  return $file;
 }
