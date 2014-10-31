@@ -16,11 +16,8 @@ class SiteFactory {
   private function hydrate() {
     $cache = \Terminus::get_cache();
 
-    if (!$sites = $cache->get_data('sites')) {
-      $request = Terminus_Command::request( 'user', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
-      $sites = $request['data'];
-      $cache->put_data('sites', $sites);
-    }
+    $request = Terminus_Command::request( 'user', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
+    $sites = $request['data'];
 
     foreach( $sites as $site_id => $site_data ) {
       $site_data->id = $site_id;
@@ -32,12 +29,16 @@ class SiteFactory {
 
   public static function instance($sitename = null) {
     if (!self::$instance) {
-      $site = self::$instance = new self();
+      self::$instance = new self();
     }
+
+    $factory = self::$instance;
+
     if ($sitename) {
-      return $site->getSite($sitename);
+      return $factory->getSite($sitename);
+    } else {
+      return $factory->getAll();
     }
-    return self::$instance;
   }
 
   public function getSite($sitename) {
@@ -47,10 +48,14 @@ class SiteFactory {
     if (isset($this->sites[$sitename])) {
       // if we haven't instatiated yet, do that now
       if("Terminus\Site" != get_class($this->sites[$sitename])) {
-        $this->site[$sitename] = new Site($this->sites[$sitename]);
+        $this->sites[$sitename] = new Site($this->sites[$sitename]);
       }
-      return $this->site[$sitename];
+      return $this->sites[$sitename];
     }
     return false;
+  }
+
+  public function getAll() {
+    return $this->sites;
   }
 }
