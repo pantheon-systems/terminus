@@ -26,7 +26,7 @@ class Session {
   }
 
   public function get($key = 'session', $default = false) {
-    if ( isset($this->data) AND $this->data->$key )
+    if ( isset($this->data) AND isset($this->data->$key) )
       return $this->data->$key;
     return $default;
   }
@@ -59,6 +59,7 @@ class Session {
     $cache->put_data('session', $data);
     $session = self::instance();
     $session->set('data',$data);
+    if (empty($data)) return false;
     foreach ($data as $k=>$v) {
         $session->set($k,$v);
     }
