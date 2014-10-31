@@ -69,4 +69,18 @@ class Request {
     return $response;
   }
 
+  public static function download($url,$target) {
+    // @todo use Guzzle in the future, but for now this will do
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $content = curl_exec($ch);
+    if (curl_error($ch)) {
+      return false;
+    }
+    curl_close($ch);
+    file_put_contents($target, $content, LOCK_EX);
+    return true;
+  }
+
  }
