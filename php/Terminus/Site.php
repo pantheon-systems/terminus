@@ -8,6 +8,7 @@ class Site {
   public $information;
   public $metadata;
   public $environments = array();
+  public $jobs;
 
   /**
    * Needs site object from the api to instantiate
@@ -62,6 +63,20 @@ class Site {
   }
 
   /**
+   * Returns the available environments
+   */
+  public function availableEnvironments() {
+    $envs = array();
+    if (empty($this->environments)) {
+      $this->environments();
+    }
+    foreach ($this->environments as $name => $data) {
+      $envs[] = $name;
+    }
+    return $envs;
+  }
+
+  /**
    * Load site info
    */
   public function info() {
@@ -82,4 +97,54 @@ class Site {
      return $this->information->name;
    }
 
+  /**
+   * Get upstream info
+   */
+   public function getUpstream() {
+     $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream', 'GET');
+     return $response['data'];
+   }
+
+  /**
+   * Get upstream updates
+   */
+   public function getUpstreamUpdates() {
+     $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream-updates', 'GET');
+     return $response['data'];
+   }
+
+  /**
+   * Apply upstream updates
+   * @param $env string required -- environment name
+   * @param $updatedb boolean (optional) -- whether to run update.php
+   * @param $optionx boolean (optional) -- auto resolve merge conflicts
+   * @todo This currently doesn't work and is block upstream
+   */
+  public function applyUpstreamUpdates($env, $updatedb = false, $xoption = false) {
+    $data = array('updatedb' => $updatedb, 'xoption' => $xoption );
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
+    $response = \Terminus_Command::request('site', $this->getId(), 'code-upstream-updates', 'POST', $options);
+    return $response['data'];
+  }
+
+  /**
+   * Create a new branch
+   */
+  public function createBranch($branch) {
+    $data = array('refspec' => sprintf('refs/heads/%s', $branch));
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
+    $response = \Terminus_Command::request('site', $this->getId(), 'code-branch', 'POST', $options);
+    return $response['data'];
+  }
+
+  /**
+   * fetch jobs
+  **/
+  public function jobs() {
+    if (!$this->jobs) {
+      $response = \Terminus_Command::request('sites', $this->getId(), 'jobs', 'GET');
+      $this->jobs = $response['data'];
+    }
+    return $this->jobs;
+  }
 }
