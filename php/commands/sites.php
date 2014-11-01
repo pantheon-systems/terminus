@@ -5,6 +5,7 @@
  */
 use Terminus\Products;
 use Terminus\Session;
+use Terminus\SiteFactory;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -24,11 +25,11 @@ class Sites_Command extends Terminus_Command {
    *
    * [--nocache]
    * : Get a fresh list of sites from the server side.
+   * [--bash]
+   * : Get bash friendly output
    */
   public function show($args, $assoc_args) {
-    $sites = $this->fetch_sites( @$assoc_args['nocache'] );
-
-    //$headers = array('Site', 'Framework', 'Service Level', 'UUID');
+    $sites = SiteFactory::instance();
     $toReturn = array();
     $toReturn['sites'] = $sites;
     $toReturn['data'] = array();
@@ -40,7 +41,11 @@ class Sites_Command extends Terminus_Command {
         'UUID' => $id
       );
     }
-    $this->_constructTableForResponse($toReturn['data']);
+    if (@$assoc_args['bash']) {
+      echo \Terminus\Utils\bash_out((array) $toReturn['data']);
+    } else {
+      $this->_constructTableForResponse($toReturn['data']);
+    }
     return $toReturn;
   }
 
