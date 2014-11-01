@@ -21,12 +21,18 @@ class Site_Command extends Terminus_Command {
   );
 
   /**
-   * @subcommand branch-create
+   *
    * ## Options
+   *
    * --site=<site>
    * : site to create branch of
+
    * --branch=<branch>
    * : name of new branch
+   *
+   * ## EXAMPLES
+   *
+   * @subcommand branch-create
   **/
   public function branch_create($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
@@ -36,16 +42,25 @@ class Site_Command extends Terminus_Command {
 
   /**
    * ## Options
+   *
    * --site=<site>
    * : name of the site to work with
+   *
    * --env=<env>
    * : environment to check
+   *
    * [--filter]
    * : Use a regex to filter the diffstat for certain files
+   *
    * [--nocache]
    * : bypass the local cache
+   *
    * [--bash]
    * : bash friendly output
+   *
+   * ## EXAMPLES
+   *  terminus site diffstat --site=test --env=dev
+   *
    */
   public function diffstat($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
@@ -76,12 +91,17 @@ class Site_Command extends Terminus_Command {
 
   /**
    * ## Options
+   *
    * --site=<site>
    * : name of the site to work with
+   *
    * [--nocache]
    * : bypass the local cache
    * [--bash]
    * : bash friendly output
+   *
+   * ## EXAMPLES
+   *
    */
   public function info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
@@ -98,14 +118,19 @@ class Site_Command extends Terminus_Command {
    * Show a list of your sites on Pantheon
    *
    * ## Options
+   *
    * --site=<site>
    * : Site to use
+   *
    * [--env=<env>]
    * : Environment
    * [--nocache]
    * : Bypass cache
    * [--latest]
    * : show the most recent backup
+   *
+   * ## EXAMPLES
+   *
    */
    public function backups($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
@@ -134,16 +159,23 @@ class Site_Command extends Terminus_Command {
    }
 
  /**
-  * ## Options
-  * @subcommand get-backup
+  * Get a backup
+  *
+  * ## OPTIONS
+  *
   * --site=<site>
   * : Site to load
+  *
   * [--env=<env>]
   * : Environment to load
   * [--element=<code|files|db>]
   * : Element to download
   * [--to-directory=<directory>]
   * : Download the file if set
+  *
+  * ## EXAMPLES
+  *
+  * @subcommand get-backup
   */
    public function get_backup($args, $assoc_args) {
      $site = SiteFactory::instance($assoc_args['site']);
@@ -194,15 +226,22 @@ class Site_Command extends Terminus_Command {
 
   /**
    * ## Options
-   * @subcommand load-backup
+   *
    * --site=<site>
    * : Site to load
+   *
    * [--env=<env>]
    * : Environment to load
    * [--element=<code|files|db>]
    * : Element to download
    * [--to-directory=<directory>]
    * : Download the file if set
+   *
+   * ## Examples
+   *    terminus site load-backup --site=test --env=dev --download-to=/tmp
+   *
+   *
+   * @subcommand load-backup
    */
    public function load_backup($args, $assoc_args) {
       $assoc_args['download-to'] = '/tmp';
@@ -248,18 +287,26 @@ class Site_Command extends Terminus_Command {
 
 
   /**
-   * @subcommand backup-make
    * ## Options
+   *
    * --env=<env>
    * : site environment to run backup from
+   *
    * --site=<site>
    * : Site to use
+   *
    * [--code]
    * : Include code in backup? default 'yes'
+   *
    * [--file]
    * : Include media and files in backup? default 'no'
+   *
    * [--db]
    * : Include dump of database? default 'yes'
+   *
+   * ## EXAMPLES
+   *
+   * @subcommand backup-make
    */
    public function backup_make($args, $assoc_args) {
      $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env'] );
@@ -289,18 +336,24 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * @subcommand clone-env
    * ## Options
+   *
    * --site=<site>
    * : Site to use
+   *
    * [--from-env]
    * : Environment you want to clone from
+   *
    * [--to-env]
    * : Environment you want to clone to
+   *
    * [--db]
    * : Clone the database? (bool) default no
+   *
    * [--files]
    * : Clone the files? (bool) default no
+   *
+   * @subcommand clone-env
    */
    public function clone_env($args, $assoc_args) {
      $site_id = $this->getSiteId($assoc_args['site']);
@@ -359,12 +412,15 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * @subcommand create-env
    * ## Options
+   *
    * --site=<site>
    * : Site to use
+   *
    * --env=<env>
    * : Pantheon environment create
+   *
+   * @subcommand create-env
    */
    public function create_env($args, $assoc_args) {
      Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
@@ -387,15 +443,20 @@ class Site_Command extends Terminus_Command {
     * Deploy dev environment to test or live
     *
     * ## Options
+    *
     * --site=<site>
     * : Site to deploy from
+    *
     * [--env=<env>]
     * : Environment to deploy to
+    *
     * [--cc]
     * : Clear cache after deploy?
+    *
     * [--update]
     * : (Drupal only) run update.php after deploy?
-   **/
+    *
+    */
    public function deploy($args, $assoc_args) {
      $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env'], "Select environment to deploy to");
 
@@ -443,39 +504,41 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-    * Fetch available environments
-    * @deprecated
-    */
-    private function getAvailableEnvs($site) {
-      return $this->getEnvironments($site);
-    }
+   * Fetch available environments
+   * @deprecated
+   */
+  private function getAvailableEnvs($site) {
+    return $this->getEnvironments($site);
+  }
 
   /**
    * Fetch the UUID for a site name
    */
-   private function getSiteId( $name ) {
-      if( !$this->sites ) {
-       $this->fetch_sites();
-      }
+  private function getSiteId( $name ) {
+    if( !$this->sites ) {
+     $this->fetch_sites();
+    }
 
-      $lookup = array();
-      foreach( $this->sites as $uuid => $site ) {
-        $lookup[$site->information->name] = $uuid;
-      }
+    $lookup = array();
+    foreach( $this->sites as $uuid => $site ) {
+      $lookup[$site->information->name] = $uuid;
+    }
 
-      if (array_key_exists($name, $lookup)) {
-        return $lookup[$name];
-      }
+    if (array_key_exists($name, $lookup)) {
+      return $lookup[$name];
+    }
 
-      return false;
-   }
+    return false;
+  }
 
   /**
    * List enviroments for a site
-   * @subcommand
+   *
    * ## Options
+   *
    * --site=<site>
    * : Name of site to check
+   *
    */
   function environments($args, $assoc_args) {
     $this->_handleSiteArg($args, $assoc_args);
@@ -521,10 +584,13 @@ class Site_Command extends Terminus_Command {
 
   /**
    * Show upstream updates
-   * @subcommand upstream-info
+   *
    * ## Options
+   *
    * --site=<site>
    * : Site to check
+   *
+   * @subcommand upstream-info
    */
   public function upstream_info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
@@ -535,12 +601,16 @@ class Site_Command extends Terminus_Command {
 
   /**
    * Show upstream updates
-   * @subcommand upstream-updates
+   *
    * ## Options
+   *
    * --site=<site>
    * : Site to check
+   *
    * [--apply-to=<env>]
    * : A flag to apply to a specified environment
+   *
+   * @subcommand upstream-updates
    */
    public function upstream_updates($args, $assoc_args) {
      $site = SiteFactory::instance($assoc_args['site']);
@@ -580,15 +650,17 @@ class Site_Command extends Terminus_Command {
 
    }
 
-   /**
-    * Complete wipe and reset a site
-    @subcommand wipe
-    * ## Options
-    * --site=<site>
-    * : Site to use
-    * [--env=<env>]
-    * : Specify environment, default = dev
-    */
+  /**
+   * Complete wipe and reset a site
+   *
+   * ## Options
+   *
+   * --site=<site>
+   * : Site to use
+   *
+   * [--env=<env>]
+   * : Specify environment, default = dev
+   */
    public function wipe($args, $assoc_args) {
      try {
        $env = @$assoc_args['env'] ?: 'dev';
