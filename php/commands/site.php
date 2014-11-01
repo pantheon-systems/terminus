@@ -42,6 +42,27 @@ class Site_Command extends Terminus_Command {
    * ## Options
    *
    * --site=<site>
+   * : site to use
+   *
+   * [--env=<env>]
+   * : Environment to clear
+   *
+   * ## EXAMPLES
+   *  terminus site clear-caches --site=test
+   *
+   * @subcommand clear-caches
+   */
+  public function clear_caches($args, $assoc_args) {
+      $site = SiteFactory::instance($assoc_args['site']);
+      $response = $site->environment('dev')->workflow("clear_cache");
+      $this->waitOnWorkFlow('sites', $site->getId(), $response->id);
+      Terminus::success("Caches cleared");
+  }
+
+  /**
+   * ## Options
+   *
+   * --site=<site>
    * : name of the site to work with
    *
    * --env=<env>

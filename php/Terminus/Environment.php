@@ -80,4 +80,20 @@ abstract class Environment {
     return $response['data'];
   }
 
+  /**
+   * Start a work flow
+   * @param $workflow string work flow "slot"
+   */
+  public function workflow($workflow) {
+    $path = sprintf("environments/%s/workflows", $this->name);
+    $data = array(
+      'type' => $workflow,
+      'environment' => $this->name,
+    );
+    $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
+    $response = \Terminus_Command::request('sites', $this->site, $path, 'POST', $options);
+
+    return $response['data'];
+  }
+
 }
