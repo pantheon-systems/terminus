@@ -45,13 +45,18 @@ class Terminus {
   }
 
   static function get_runner() {
-    static $runner;
+    // the entire process needs an exception wrapper
+    try {
+      static $runner;
 
-    if ( !$runner ) {
-      $runner = new Terminus\Runner;
+      if ( !$runner ) {
+        $runner = new Terminus\Runner;
+      }
+
+      return $runner;
+    } catch(\Exception $e) {
+      Terminus::error($e->getMessage());
     }
-
-    return $runner;
   }
 
   /**
@@ -377,9 +382,13 @@ class Terminus {
     return self::get_runner()->config[ $key ];
   }
 
-  static function menu( $data, $default = null, $text = "Select one" ) {
+  static function menu( $data, $default = null, $text = "Select one", $return_value=false ) {
     echo PHP_EOL;
-    return \cli\Streams::menu($data,$default,$text);
+    $index = \cli\Streams::menu($data,$default,$text);
+    if ($return_value) {
+      return $data[$index];
+    }
+    return $index;
   }
 
   /**

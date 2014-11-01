@@ -16,9 +16,7 @@ class Site_Command extends Terminus_Command {
     parent::__construct();
   }
 
-  protected $_headers = array(
-    "environments" => array("Environment","Created", "Locked")
-  );
+  protected $_headers = false;
 
   /**
    *
@@ -567,18 +565,25 @@ class Site_Command extends Terminus_Command {
    * Deploy dev environment to test or live
    *
    * ## Options
+   *
    * --site=<site>
    * : Site to deploy from
-   * [--env=<env>]
-   * : Environment to deploy to
-   * [--cc]
-   * : Clear cache after deploy?
-   * [--update]
-   * : (Drupal only) run update.php after deploy?
   **/
   public function jobs($args, $assoc_args) {
-    $site = SiteFactory($assoc_args['site']);
-    print_r($site->jobs());
+    $site = SiteFactory::instance($assoc_args['site']);
+    $jobs = $site->jobs();
+    $data = array();
+    foreach ($jobs as $job) {
+      $data[] = array(
+        'slot' => $job->slot,
+        'name' => $job->human_name,
+        'env'  => @$job->environment,
+        'status'  => $job->status,
+        'updated' => $job->changed
+      );
+    }
+    print_r($this->_headers);
+    $this->_constructTableForResponse($data);
   }
 
 

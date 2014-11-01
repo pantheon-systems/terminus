@@ -446,6 +446,7 @@ function result_get_response_fields( $result ) {
   $iter = new ArrayIterator($result);
   if( !$iter ) return false;
   $keys = array_keys( (array) $iter->current() );
+  $keys = array_map('ucfirst', $keys);
   unset($iter);
   return $keys;
 }

@@ -192,8 +192,10 @@ abstract class Terminus_Command {
     if (\Terminus\Utils\result_is_multiobj($data)) {
       if (!empty($headers)) {
         $table->setHeaders($headers);
-      } elseif (property_exists($this, "_headers")) {
-        $table->setHeaders($this->_headers[$this->_func]);
+      } elseif (property_exists($this, "_headers") AND !empty($this->_headers[$this->_func])) {
+        if (is_array($this->_headers[$this->_func])) {
+          $table->setHeaders($this->_headers[$this->_func]);
+        }
       } else {
         $table->setHeaders(\Terminus\Utils\result_get_response_fields($data));
       }
