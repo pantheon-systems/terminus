@@ -1,11 +1,11 @@
 #!/bin/bash
-TERMINUS='/home/vagrant/cli/php/boot-fs.php'
+TERMINUS='php /home/vagrant/cli/php/boot-fs.php'
 LOCAL_DIR="/srv/www/drupal/$1"; #should be an empty dir
 SITENAME=$1
-DB="pantheon_$( echo $1 | sed -r 's/-//')"
+DB_NAME="pantheon_$( echo $1 | sed -r 's/-//')"
 DBUSER="$( echo $1 | sed -r 's/-//')"
 DBPASS="$( echo $1 | sed -r 's/-//')"
-SITE_ID=$( php $TERMINUS site info --site=$SITENAME --bash --nocache=1 | grep id | awk '{print $2}' )
+SITE_ID=$( $TERMINUS site info --site=$SITENAME --bash --nocache=1 | grep id | awk '{print $2}' )
 GIT_REMOTE="ssh://codeserver.dev.$SITE_ID@codeserver.dev.$SITE_ID.drush.in:2222/~/repository.git"
 echo "GIT_REMOTE=$GIT_REMOTE"
 
@@ -15,11 +15,11 @@ fi
 
 cd $LOCAL_DIR
 
-URLS=$( php $TERMINUS site backups-urls --site=$SITENAME --nocache --bash );
-if [[ 1 = "$?" ]]; then
-	echo "Must make a backup first \`terminus site backup-make --site=$SITENAME --env=dev\`"
-	exit
-fi
+$TERMINUS site get-backup --site=$SITENAME --element=files --env='dev' --to-directory=$LOCAL_DIR
+$TERMINUS site get-backup --site=$SITENAME --element=database --env='dev' --to-directory=$LOCAL_DIR
+
+DB=$( ls . | grep "database.*gz" )
+FILES=$( ls . | grep "files.*gz" )
 
 # code first
 if [[ ! -d code ]]; then
@@ -34,20 +34,17 @@ if [[ ! -d code ]]; then
 	cd ../
 fi
 
-DB_URL=$( echo "$URLS" | grep "database" )
-curl "$DB_URL" > "database.sql.gz"
-gunzip database.sql.gz
-
-FILES_URL=$( echo "$URLS" | grep "files" )
-curl "$FILES_URL" > files.tar.gz
-mkdir -p files
-tar -vxf files.tar.gz -C ./files/
+# import files
+tar -vxf $FILES 
 
 # import db
-mysql -e "DROP DATABASE $DB" #in case it already exists
-mysql -e "create database $DB"
-mysql -e "grant all privileges on $DB.* to $DBUSER@'%' identified by '$DBPASS'"
-mysql $DB < database.sql
+gunzip $DB
+DB=$( ls . | grep "database.*\.sql$" )
+
+mysql -e "DROP DATABASE $DB_NAME" #in case it already exists
+mysql -e "create database $DB_NAME"
+mysql -e "grant all privileges on $DB_NAME.* to $DBUSER@'%' identified by '$DBPASS'"
+mysql -vvv $DB_NAME < $DB
 
 # create the local config if it's wordpress
 cd code
