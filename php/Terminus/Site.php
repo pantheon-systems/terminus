@@ -147,4 +147,15 @@ class Site {
     }
     return $this->jobs;
   }
+
+  /**
+   * Import Archive
+   */
+  public function import($url) {
+    $path = 'environments/dev/import';
+    $data = array('url'=>$url,'drush_archive' => 1);
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, 'POST', $options);
+    return $response['data'];
+  }
 }
