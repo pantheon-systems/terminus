@@ -229,10 +229,10 @@ class Site_Command extends Terminus_Command {
 
      $url = $site->environment($env)->backupUrl($bucket,$element);
 
-     if (isset($assoc_args['download-to'])) {
+     if (isset($assoc_args['to-directory'])) {
        Terminus::line("Downloading ... please wait ...");
        $filename = \Terminus\Utils\get_filename_from_url($url->url);
-       $target = sprintf("%s/%s", $assoc_args['download-to'], $filename);
+       $target = sprintf("%s/%s", $assoc_args['to-directory'], $filename);
        if (Terminus_Command::download($url->url,$target)) {
          Terminus::success("Downloaded %s", $target);
          return $target;
@@ -240,8 +240,9 @@ class Site_Command extends Terminus_Command {
          Terminus::error("Could not download file");
        }
      }
-     print $url->url;
-     return;
+     echo $url->url;
+     return $url->url;
+
    }
 
   /**
@@ -318,7 +319,7 @@ class Site_Command extends Terminus_Command {
    * [--code]
    * : Include code in backup? default 'yes'
    *
-   * [--file]
+   * [--files]
    * : Include media and files in backup? default 'no'
    *
    * [--db]
@@ -584,6 +585,29 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * ## Options
+   *
+   * --site=<site>
+   * : Site to use
+   *
+   * --url=<url>
+   * : Archive to import
+   *
+   * @subcommand import
+   */
+  public function import($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    if (!isset($assoc_args['url'])) {
+      Terminus::error("You must specify a url for the archive you want to import.");
+    }
+
+    $import = $site->import($url);
+    if ($import) {
+      Terminus::success("Import queued");
+    }
+  }
+
+  /**
    * Deploy dev environment to test or live
    *
    * ## Options
@@ -608,6 +632,65 @@ class Site_Command extends Terminus_Command {
     $this->_constructTableForResponse($data);
   }
 
+  /**
+   * Mount a site with sshfs
+   *
+   * ## Options
+   *
+   * --site=<site>
+   * : Site to deploy from
+   *
+   * --destination=<path>
+   * : local directory to mount
+   *
+   * [--env=<env>]
+   * : Environment (dev,test)
+   *
+  **/
+  public function mount($args, $assoc_args) {
+    exec("which sshfs", $stdout, $exit);
+    if ($exit !== 0) {
+      Terminus::error("Must install sshfs first");
+    }
+
+    $destination = $this->getValidDestination($assoc_args['destination']);
+
+    $site = SiteFactory::instance($assoc_args['site']);
+    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+
+    // Darwin check ... not sure what this is really ... borrowed from terminus 1
+    $darwin = false;
+    exec('uname', $output, $ret);
+    if (is_array($output) && isset($output[0]) && strpos($output[0], 'Darwin') !== False) {
+     $darwin = True;
+    }
+
+    $user = $env.'.'.$site->getId();
+    $host = 'appserver.' . $env . '.' . $site->getId() . '.drush.in';
+    $darwin_args = $darwin ? '-o defer_permissions ' : '';
+    $cmd = "sshfs " . $darwin_args . "-p 2222 {$user}@{$host}:./ {$destination}";
+    exec($cmd, $stdout, $exit);
+    if ($exit !== 0) {
+      print_r($stdout);
+      Terminus::error("Couldn't mount $destination");
+    }
+    Terminus::success("Site mounted to %s. To unmount, run: umount %s ( or fusermount -u %s ).", array($destination,$destination,$destination));
+  }
+
+  function getValidDestination($destination) {
+    if (file_exists($destination) AND !is_dir($destination)) {
+      Terminus::error("Destination mush be a directory. You've supplied a file.");
+    }
+
+    if (!is_dir($destination)) {
+      $make = Terminus::confirm("Directory does not exists. Create it now?");
+      if ($make) {
+        mkdir($destination, 0755);
+      }
+    }
+
+    return $destination;
+  }
 
   /**
    * Show upstream updates
