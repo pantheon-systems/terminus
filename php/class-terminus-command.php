@@ -110,7 +110,7 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if ('public' != $realm AND !@CLI_TEST_MODE) {
+    if ('public' != $realm AND !Terminus::is_test()) {
       Auth::loggedIn();
     }
 
