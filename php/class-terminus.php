@@ -400,4 +400,13 @@ class Terminus {
   static function run_command( $args, $assoc_args = array() ) {
     self::get_runner()->run_command( $args, $assoc_args );
   }
+
+  /**
+   * Terminus is in test mode
+   */
+  static function is_test() {
+    if( defined('CLI_TEST_MODE') AND false !== CLI_TEST_MODE)
+      return true;
+    return false;
+  }
 }
