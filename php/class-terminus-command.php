@@ -110,7 +110,7 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if ('public' != $realm) {
+    if ('public' != $realm AND !@CLI_TEST_MODE) {
       Auth::loggedIn();
     }
 
@@ -156,6 +156,7 @@ abstract class Terminus_Command {
    * something to start with.
    */
   static function fixtured_request() {
+
     if ( !$resp = Fixtures::get("response") ) {
       Terminus::error("Oops, we don't seem to have a fixture for this request.
       Maybe you should try running scripts/build_fixtures.sh and then try again.");
