@@ -154,7 +154,7 @@ class Site_Command extends Terminus_Command {
    */
    public function backups($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
-    $env = $this->getValidEnv($site->getName(), $assoc_args['env']);
+    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
     $backups = $site->environment($env)->backups();
 
     $data = array();
@@ -199,7 +199,7 @@ class Site_Command extends Terminus_Command {
   */
    public function get_backup($args, $assoc_args) {
      $site = SiteFactory::instance($assoc_args['site']);
-     $env = $this->getValidEnv($site->getName(), $assoc_args['env']);
+     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
 
      // prompt for backup type
      if (!$element = @$assoc_args['element']) {
@@ -330,7 +330,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand backup-make
    */
    public function backup_make($args, $assoc_args) {
-     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env'] );
+     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
      $type='backup';
      $path = sprintf('environments/%s/backups/create', $env);
      $site_id = $this->getSiteId( $assoc_args['site'] );

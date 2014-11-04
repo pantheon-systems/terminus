@@ -6,6 +6,7 @@
 use Terminus\Products;
 use Terminus\Session;
 use Terminus\SiteFactory;
+use Terminus\Auth;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -15,9 +16,7 @@ class Sites_Command extends Terminus_Command {
    */
   public function __construct() {
     parent::__construct();
-    if(empty(Session::instance()) AND !@CLI_TEST_MODE) {
-      Terminus::error("Please login first with `terminus auth login`");
-    }
+    Auth::loggedIn();
   }
 
   /**
