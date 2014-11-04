@@ -15,7 +15,7 @@ class Sites_Command extends Terminus_Command {
    */
   public function __construct() {
     parent::__construct();
-    if(empty(Session::instance())) {
+    if(empty(Session::instance()) AND !@CLI_TEST_MODE) {
       Terminus::error("Please login first with `terminus auth login`");
     }
   }
