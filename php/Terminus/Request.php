@@ -3,6 +3,7 @@ namespace Terminus;
 
 use Guzzle\Http\Client as Browser;
 use \Terminus\Fixtures;
+use \Terminus\FauxRequest;
 /**
  * Handles requests made by terminus
  *
@@ -18,7 +19,10 @@ class Request {
   public $response; // most recent Guzzle\Http\Message\Response
   public $responses = array();
 
-  public static function send( $url, $method, $data = array() ) {
+  public static function send($url, $method, $data = array()) {
+    if (getenv("USE_FIXTURES") == 1) {
+      return FauxRequest::send($url, $method, $data);
+    }
     // create a new Guzzle\Http\Client
     $browser = new Browser;
     $options = array();
@@ -63,7 +67,7 @@ class Request {
     $response = $request->send();
 
     if ( getenv("BUILD_FIXTURES") ) {
-      Fixtures::put("response", $response);
+      Fixtures::put(array($url,$method,$data), $response);
     }
 
     return $response;

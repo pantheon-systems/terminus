@@ -8,14 +8,11 @@ class Fixtures {
   /**
    * This creates a "phony" data blob that we can use for unit testing.
    */
-  static function put( $fixture, $data ) {
-    $key = Fixtures::getArgsKey();
+  static function put( $args, $data) {
+    $key = Fixtures::getArgsKey($args);
     $cli_root = dirname(dirname(__DIR__));
-    if( !file_exists(self::$fixtures_dir."/$key") ) {
-      mkdir( sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key) );
-    }
 
-    $fixture =  sprintf( "%s/%s/%s/%s", $cli_root, self::$fixtures_dir, $key, $fixture );
+    $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
 
     // if there's already a fixture, assume we want to overwrite it
     if (file_exists($fixture)) {
@@ -26,12 +23,11 @@ class Fixtures {
   }
 
 
-  static function get( $fixture )
+  static function get($args)
   {
-      $key = self::$current_fixture ?: Fixtures::getArgsKey();
+      $key = self::$current_fixture ?: Fixtures::getArgsKey($args);
       $cli_root = dirname(dirname(__DIR__));
-
-      $filename = sprintf('%s/%s/%s/%s', $cli_root, self::$fixtures_dir, $key, $fixture);
+      $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
       if( file_exists($filename) ) {
         return unserialize(file_get_contents("$filename"));
       } else {
@@ -40,12 +36,10 @@ class Fixtures {
       return false;
   }
 
-  static function getArgsKey()
+  static function getArgsKey($args)
   {
     // save the cli args for later just in case we're debugging
-    $args = $GLOBALS['argv'];
-    array_shift($args);
-    return join("-",$args);
+    return md5(serialize($args));
   }
 
   static function setFixture($fixture) {
