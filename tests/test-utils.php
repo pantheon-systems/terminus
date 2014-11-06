@@ -42,4 +42,8 @@
     $this->assertEquals('/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql', $actual);
   }
 
+  function testIsTest() {
+    $this->assertTrue(Terminus::is_test());
+  }
+
  }

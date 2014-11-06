@@ -7,28 +7,6 @@
 
 // this test is a demo on why globals suck
 class FixturesTest extends PHPUnit_Framework_TestCase {
- private $original_argv;
-
- function __construct() {
-   $this->original_argv = $GLOBALS['argv'];
- }
-
- function testArgsKey() {
-
-    // we're going to make up some phony argv requests and make sure they get parsed right
-    $keystotest = array(
-      array( __FILE__, 'sites', 'show', '--site=dummy','--nocache' ),
-    );
-    $expectedresults = array(
-      array( 'sites-show---site=dummy---nocache' )
-    );
-    for( $i=0; $i++; $i<count($keystotest) ) {
-      $GLOBALS['argv'] = $keystotest[$i];
-      $key = Fixtures::getArgsKey();
-      $this->assertIsString( $key );
-      $this->assertEquals( $expectedresults[$i], $key );
-    }
- }
 
  function testPutAndGet() {
 
@@ -38,24 +16,19 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    $data = new stdClass;
    $data->file = __FILE__;
    $data->msg = "success";
-   $GLOBALS['argv'] = $test;
-   Fixtures::put( "test_fixture", $data );
+   Fixtures::put($test, $data);
 
    // test manually
-   $this->assertFileExists(CLI_ROOT.'/tests/fixtures/sites-show---site=dummy---nocache/test_fixture');
-   $content = unserialize(file_get_contents(CLI_ROOT.'/tests/fixtures/sites-show---site=dummy---nocache/test_fixture'));
+   $this->assertFileExists(CLI_ROOT.'/tests/fixtures/'.md5(serialize($test)));
+   $content = unserialize(file_get_contents(CLI_ROOT.'/tests/fixtures/'.md5(serialize($test))));
    $this->assertInstanceOf( get_class($content), $content );
    $this->assertEquals( "success", $content->msg );
 
    // now test the get method
-   $content = Fixtures::get("test_fixture");
+   $content = Fixtures::get($test);
    $this->assertInstanceOf( 'stdClass', $content );
    $this->assertEquals( "success", $content->msg );
 
- }
-
- public function __desctruct() {
-   $GLOBALS['argv'] = $this->original_argv;
  }
 
 }

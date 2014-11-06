@@ -8,6 +8,7 @@ use Terminus\Session;
  class SessionTest extends PHPUnit_Framework_TestCase {
 
    public function testSession() {
+     if (getenv("BUILD_FIXTURES") == 1) return true;
      $data = new stdClass();
      $data->session = 'alskdmca;sdlkcmas;dlc';
      $data->user_uuid = 'asdf;lkamsd';
