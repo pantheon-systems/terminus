@@ -1,0 +1,4 @@
+s:263:"GET /api/users/77629472-3050-457c-8c3d-32b2cabf992b/sites HTTP/1.1
+Host: onebox
+User-Agent: Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4
+Cookie: X-Pantheon-Session=77629472-3050-457c-8c3d-32b2cabf992b:21df2486-6531-11e4-b314-bc764e100eb1:7JFTiBQmxZ5MIYwWGbA1V";
