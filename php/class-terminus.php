@@ -342,7 +342,7 @@ class Terminus {
 
     $php_bin = self::get_php_binary();
 
-    if (defined('CLI_TEST_MODE') AND CLI_TEST_MODE) {
+    if (Terminus::is_test()) {
       $script_path = __DIR__.'/boot-fs.php';
     } else {
       $script_path = $GLOBALS['argv'][0];
@@ -405,7 +405,9 @@ class Terminus {
    * Terminus is in test mode
    */
   static function is_test() {
-    if( defined('CLI_TEST_MODE') AND false !== CLI_TEST_MODE)
+    if (defined('CLI_TEST_MODE') AND false !== CLI_TEST_MODE)
+      return true;
+    if (getenv("CLI_TEST_MODE"))
       return true;
     return false;
   }

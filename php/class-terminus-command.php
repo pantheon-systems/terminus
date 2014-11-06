@@ -114,10 +114,6 @@ abstract class Terminus_Command {
       Auth::loggedIn();
     }
 
-    if ( defined("CLI_TEST_MODE") || 1 == getenv("USE_FIXTURES") ) {
-      return self::fixtured_request();
-    }
-
     try {
       $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
       $options['verify'] = false;
@@ -146,30 +142,6 @@ abstract class Terminus_Command {
     } catch(Exception $e) {
       Terminus::error($e->getMessage());
     }
-  }
-
-  /**
-   * Divert a request to our local cache of a fixtured data for testing
-   *
-   * Since the fixturing is based on the @global $argv we don't need args
-   * @todo I'm not sure that I'm happy with the fixturing as is BUT it's
-   * something to start with.
-   */
-  static function fixtured_request() {
-
-    if ( !$resp = Fixtures::get("response") ) {
-      Terminus::error("Oops, we don't seem to have a fixture for this request.
-      Maybe you should try running scripts/build_fixtures.sh and then try again.");
-    }
-
-    $json = $resp->getBody(TRUE);
-
-    return array(
-      'info' => $resp->getInfo(),
-      'headers' => $resp->getRawHeaders(),
-      'json' => $json,
-      'data' => json_decode($json)
-    );
   }
 
   protected function _validateSiteUuid($site) {
@@ -341,6 +313,15 @@ abstract class Terminus_Command {
       }
       Terminus::error("There was an error attempting to execute the requested task.\n\n");
     }
+  }
+
+  protected function handleDisplay($data,$args) {
+    if (array_key_exists("json", $args))
+      echo \Terminus\Utils\json_dump($data);
+    if (array_key_exists("bash", $args))
+      echo \Terminus\Utils\bash_out((array)$data);
+    else
+      $this->_constructTableForResponse((array)$data);
   }
 
   protected function _debug($vars) {

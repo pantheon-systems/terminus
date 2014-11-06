@@ -14,6 +14,7 @@
     "rhumsaa/array_column": "~1.1",
     "rmccue/requests": "~1.6",
     "symfony/finder": "~2.3",
+		"symfony/process": "2.6.*@dev",
     "symfony/dom-crawler": "2.5.5",
     "symfony/css-selector": "2.5.5",
     "guzzle/http": "3.8",
