@@ -26,6 +26,8 @@ class Sites_Command extends Terminus_Command {
    * : Get a fresh list of sites from the server side.
    * [--bash]
    * : Get bash friendly output
+   * [--json]
+   * : Json output
    */
   public function show($args, $assoc_args) {
     $sites = SiteFactory::instance();

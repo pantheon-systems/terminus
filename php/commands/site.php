@@ -101,12 +101,9 @@ class Site_Command extends Terminus_Command {
       $data[] = array_merge( array('file'=>$file), (array) $stats );
     }
 
-    if ( @$assoc_args['bash'] )
-      echo \Terminus\Utils\bash_out( (array) $data);
-    else
-      $this->_constructTableForResponse( (array) $data);
+    $this->handleDisplay($data,$args);
 
-    return $diff;
+    return $data;
   }
 
   /**
@@ -125,12 +122,9 @@ class Site_Command extends Terminus_Command {
    */
   public function info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
-    $toReturn = (array) $site->info();
-    if ( @$assoc_args['bash'] )
-      echo \Terminus\Utils\bash_out( (array) $toReturn);
-    else
-      $this->_constructTableForResponse( (array) $toReturn);
-    return $toReturn;
+    $data = (array) $site->info();
+    $this->handleDisplay($data,$args);
+    return $data;
 
   }
 
@@ -172,7 +166,7 @@ class Site_Command extends Terminus_Command {
       return false;
     } else {
       //munging data
-      $this->_constructTableForResponse($data, array('File','Size','Date'));
+      $this->handleDisplay($data,$args);
       return $data;
     }
 
@@ -345,10 +339,10 @@ class Site_Command extends Terminus_Command {
         'body' => json_encode($data) ,
         'headers'=> array('Content-type'=>'application/json')
       );
-     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options );
+     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options);
      if( @$response['data']->id ) {
       $workflow_id = $response['data']->id;
-      $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id );
+      $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
       if( $result ) {
         \Terminus::success("Successfully created backup");
       }
@@ -564,7 +558,7 @@ class Site_Command extends Terminus_Command {
   function environments($args, $assoc_args) {
     $this->_handleSiteArg($args, $assoc_args);
     $toReturn = $this->getEnvironments($assoc_args['site']);
-    $this->_constructTableForResponse($toReturn);
+    $this->handleDisplay($toReturn['data'],$args);
     return $toReturn;
   }
 
@@ -628,8 +622,7 @@ class Site_Command extends Terminus_Command {
         'updated' => $job->changed
       );
     }
-    print_r($this->_headers);
-    $this->_constructTableForResponse($data);
+    $this->handleDisplay($data,$args);
   }
 
   /**
@@ -705,8 +698,7 @@ class Site_Command extends Terminus_Command {
   public function upstream_info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
     $upstream = $site->getUpstream();
-    $this->_constructTableForResponse((array) $upstream);
-
+    $this->handleDisplay($upstream,$args);
   }
 
   /**
@@ -746,7 +738,7 @@ class Site_Command extends Terminus_Command {
            'message' => $commit->message,
            'author' => $commit->author,
          );
-         $this->_constructTableForResponse($data);
+         $this->handleDisplay($data,$args);
          echo PHP_EOL;
        }
      }
