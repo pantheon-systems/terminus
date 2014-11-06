@@ -1,4 +1,0 @@
-s:290:"GET /api/sites/eed7601b-3c46-43a7-8ede-ca69618792df/environments/dev/backups/catalog HTTP/1.1
-Host: onebox
-User-Agent: Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4
-Cookie: X-Pantheon-Session=77629472-3050-457c-8c3d-32b2cabf992b:2c5937e2-6475-11e4-bf22-bc764e100eb1:IBobVyc8BB8kCi7jMfsaQ";
