@@ -42,11 +42,8 @@ class Sites_Command extends Terminus_Command {
         'UUID' => $id
       );
     }
-    if (@$assoc_args['bash']) {
-      echo \Terminus\Utils\bash_out((array) $toReturn['data']);
-    } else {
-      $this->_constructTableForResponse($toReturn['data']);
-    }
+
+    $this->handleDisplay($toReturn['data']);
     return $toReturn;
   }
 
@@ -64,7 +61,7 @@ class Sites_Command extends Terminus_Command {
    * : Label for the site
    */
   public function create($args, $assoc_args) {
-    $sites = $this->fetch_sites(isset($assoc_args['nocache']));
+    $sites = SiteFactory::instance();
     $data = array();
     // @TODO clean this up and move to separate method
     $data['label'] = @$assoc_args['label'] ?: Terminus::prompt("Human readable label for the site");
@@ -79,7 +76,7 @@ class Sites_Command extends Terminus_Command {
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request( "user", Session::getValue('user_uuid'), "sites", 'POST', $options );
+    $response = \Terminus_Command::request( "users", Session::getValue('user_uuid'), "sites", 'POST', $options );
     // if we made it this far we need to query the work flow to wait for response
     $site = $response['data'];
     $workflow_id = $site->id;
@@ -103,9 +100,9 @@ class Sites_Command extends Terminus_Command {
    *  : to skip the confirmations
    */
   function delete($args, $assoc_args) {
-      $site_to_delete = $this->getIdFromName(@$assoc_args['site']);
+      $site_to_delete = SiteFactory::instance(@$assoc_args['site']);
       if (!$site_to_delete) {
-        foreach( $this->fetch_sites(true) as $id => $site ) {
+        foreach( SiteFactory::instance() as $id => $site ) {
           $site->id = $id;
           $sites[] = $site;
           $menu[] = $site->information->name;
