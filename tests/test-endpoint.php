@@ -11,7 +11,7 @@ use \Terminus\Endpoint;
 				// expected => test
 				$tests = array(
 				 'https://'.$host.'/api/users/UUID/sites' => array(
-					 'realm'=>'user','path' => 'sites', 'uuid'=> 'UUID'
+					 'realm'=>'users','path' => 'sites', 'uuid'=> 'UUID'
 				 ),
 				 'https://'.$host.'/api/products' => array(
 					 'realm'=>'products','path' => false, 'uuid'=> 'public'

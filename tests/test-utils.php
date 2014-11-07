@@ -38,12 +38,18 @@
 
   function testSqlFromZip() {
     $target = '/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql.gz';
-    $actual = Terminus\Utils\sql_from_zip($target);
+    $actual = \Terminus\Utils\sql_from_zip($target);
     $this->assertEquals('/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql', $actual);
   }
 
   function testIsTest() {
-    $this->assertTrue(Terminus::is_test());
+    $this->assertTrue(\Terminus::is_test());
   }
 
+  function testDestinationIsValid() {
+    $testdir = sys_get_temp_dir()."/testdirtocreate";
+    $destination = \Terminus\Utils\destination_is_valid($testdir);
+    $this->assertFileExists($testdir);
+    $this->assertEquals($testdir,$destination);
+  }
  }
