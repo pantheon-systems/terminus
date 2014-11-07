@@ -217,6 +217,10 @@ class Site_Command extends Terminus_Command {
        $menu[] = $backup->filename;
      }
 
+     if (empty($menu)) {
+       Terminus::error("No backups available. Create one with `terminus site backup-make --site=%s`", array($site->getName()));
+     }
+
      $index = Terminus::menu($menu, null, "Select backup");
      $bucket = $buckets[$index];
      $filename = $menu[$index];
@@ -328,6 +332,7 @@ class Site_Command extends Terminus_Command {
      $type='backup';
      $path = sprintf('environments/%s/backups/create', $env);
      $site_id = $this->getSiteId( $assoc_args['site'] );
+
      $data = array(
       'entry_type' => $type,
       'scheduled_for' => time(),
@@ -340,6 +345,7 @@ class Site_Command extends Terminus_Command {
         'headers'=> array('Content-type'=>'application/json')
       );
      $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options);
+
      if( @$response['data']->id ) {
       $workflow_id = $response['data']->id;
       $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
@@ -499,7 +505,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Fetch a valid environment
    */
-   private function getValidEnv($site, $env = null, $message = false ) {
+   private function getValidEnv($site, $env = null, $message = false) {
      $envs = $this->getAvailableEnvs($site);
 
      if (!$message) {
@@ -530,20 +536,8 @@ class Site_Command extends Terminus_Command {
    * Fetch the UUID for a site name
    */
   private function getSiteId( $name ) {
-    if( !$this->sites ) {
-     $this->fetch_sites();
-    }
-
-    $lookup = array();
-    foreach( $this->sites as $uuid => $site ) {
-      $lookup[$site->information->name] = $uuid;
-    }
-
-    if (array_key_exists($name, $lookup)) {
-      return $lookup[$name];
-    }
-
-    return false;
+    $site = SiteFactory::instance($name);
+    return $site->getId();
   }
 
   /**
@@ -556,10 +550,9 @@ class Site_Command extends Terminus_Command {
    *
    */
   function environments($args, $assoc_args) {
-    $this->_handleSiteArg($args, $assoc_args);
-    $toReturn = $this->getEnvironments($assoc_args['site']);
-    $this->handleDisplay($toReturn['data'],$args);
-    return $toReturn;
+    $data = $this->getEnvironments($assoc_args['site']);
+    $this->handleDisplay($data,$args);
+    return $data;
   }
 
   // @TODO this is going away and will be replaced by Site and Environment Objects
@@ -646,7 +639,7 @@ class Site_Command extends Terminus_Command {
       Terminus::error("Must install sshfs first");
     }
 
-    $destination = $this->getValidDestination($assoc_args['destination']);
+    $destination = \Terminus\Util\destination_is_valid($assoc_args['destination']);
 
     $site = SiteFactory::instance($assoc_args['site']);
     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
@@ -668,21 +661,6 @@ class Site_Command extends Terminus_Command {
       Terminus::error("Couldn't mount $destination");
     }
     Terminus::success("Site mounted to %s. To unmount, run: umount %s ( or fusermount -u %s ).", array($destination,$destination,$destination));
-  }
-
-  function getValidDestination($destination) {
-    if (file_exists($destination) AND !is_dir($destination)) {
-      Terminus::error("Destination mush be a directory. You've supplied a file.");
-    }
-
-    if (!is_dir($destination)) {
-      $make = Terminus::confirm("Directory does not exists. Create it now?");
-      if ($make) {
-        mkdir($destination, 0755);
-      }
-    }
-
-    return $destination;
   }
 
   /**
