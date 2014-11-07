@@ -123,7 +123,7 @@ class Site {
   public function applyUpstreamUpdates($env, $updatedb = false, $xoption = false) {
     $data = array('updatedb' => $updatedb, 'xoption' => $xoption );
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('site', $this->getId(), 'code-upstream-updates', 'POST', $options);
+    $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream-updates', 'POST', $options);
     return $response['data'];
   }
 
@@ -133,7 +133,7 @@ class Site {
   public function createBranch($branch) {
     $data = array('refspec' => sprintf('refs/heads/%s', $branch));
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('site', $this->getId(), 'code-branch', 'POST', $options);
+    $response = \Terminus_Command::request('sites', $this->getId(), 'code-branch', 'POST', $options);
     return $response['data'];
   }
 
@@ -157,5 +157,19 @@ class Site {
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
     $response = \Terminus_Command::request('sites', $this->getId(), $path, 'POST', $options);
     return $response['data'];
+  }
+
+  /**
+   * Create an environment
+   */
+  public function createEnvironment($env) {
+    return \Terminus_Command::request("sites", $this->getId() , "environments/$env", "POST");
+  }
+
+  /**
+   * Delete an environment
+   */
+  public function deleteEnvironment($env) {
+    return \Terminus_Command::request("sites", $this->getId() , "environments/$env", "DELETE");
   }
 }
