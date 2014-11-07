@@ -15,8 +15,8 @@ fi
 
 cd $LOCAL_DIR
 
-$TERMINUS site get-backup --site=$SITENAME --element=files --env='dev' --to-directory=$LOCAL_DIR
-$TERMINUS site get-backup --site=$SITENAME --element=database --env='dev' --to-directory=$LOCAL_DIR
+$TERMINUS site get-backup --site=$SITENAME --element=files --env='dev' --to-directory=$LOCAL_DIR || exit 1
+$TERMINUS site get-backup --site=$SITENAME --element=database --env='dev' --to-directory=$LOCAL_DIR || exit 1
 
 DB=$( ls . | grep "database.*gz" )
 FILES=$( ls . | grep "files.*gz" )
@@ -24,6 +24,8 @@ FILES=$( ls . | grep "files.*gz" )
 # code first
 if [[ ! -d code ]]; then
 	mkdir -p code
+fi
+
 	cd code
 	git clone $GIT_REMOTE .
 	# setup git repo with remote connection
@@ -32,15 +34,15 @@ if [[ ! -d code ]]; then
 	# reset and mode changes that may have been introduced
 	git reset --hard HEAD
 	cd ../
-fi
 
 # import files
-tar -vxf $FILES 
+tar -vxf $FILES
 
 # import db
 gunzip $DB
-DB=$( ls . | grep "database.*\.sql$" )
 
+DB=$( ls . | grep "database" )
+echo DATABASE=$DB
 mysql -e "DROP DATABASE $DB_NAME" #in case it already exists
 mysql -e "create database $DB_NAME"
 mysql -e "grant all privileges on $DB_NAME.* to $DBUSER@'%' identified by '$DBPASS'"
@@ -50,7 +52,9 @@ mysql -vvv $DB_NAME < $DB
 cd code
 if [[ -f ./wp-config.php ]]; then
 	cp wp-config-sample.php wp-config-local.php
-	sed -i 's/database_name_here/'$DB'/' wp-config-local.php
+	sed -i 's/database_name_here/'$DB_NAME'/' wp-config-local.php
 	sed -i 's/username_here/'$DBUSER'/' wp-config-local.php
 	sed -i 's/password_here/'$DBPASS'/' wp-config-local.php
 fi
+
+echo "All done!"
