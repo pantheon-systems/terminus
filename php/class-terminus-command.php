@@ -110,16 +110,17 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if ('public' != $realm AND !Terminus::is_test()) {
+    if (!in_array($realm,array('login','public')) AND !Terminus::is_test()) {
       Auth::loggedIn();
     }
 
     try {
-      $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
-      $options['verify'] = false;
-      $url = Endpoint::get( array( 'realm' => $realm, 'uuid'=>$uuid, 'path'=>$path ) );
-      $resp = Request::send( $url, $method, $options );
-
+      if ($realm != 'login') {
+        $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
+        $options['verify'] = false;
+      }
+      $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
+      $resp = Request::send($url, $method, $options);
     } catch( Exception $e ) {
       $response = $e->getResponse();
       \Terminus::error("%s", $response->getBody(TRUE));
@@ -229,38 +230,6 @@ abstract class Terminus_Command {
     unset($workflow);
   }
 
-  protected function _handleFuncArg(array &$args = array() , array $assoc_args = array()) {
-
-    // backups-delete should execute backups_delete function
-    if (!empty($args)){
-      $this->_func = str_replace("-", "_", array_shift($args));
-      if (!is_callable(array($this, $this->_func), false, $static)) {
-        if (array_key_exists("debug", $assoc_args)){
-          $this->_debug(get_defined_vars());
-        }
-        Terminus::error("I cannot find the requested task to perform it.");
-  	  }
-    }
-  }
-
-  protected function _handleSiteArg(&$args, $assoc_args = array()) {
-    $uuid = null;
-    if( !@$this->sites ) { $this->fetch_sites(); }
-    if (array_key_exists("site", $assoc_args)) {
-      $uuid = $this->_validateSiteUuid($assoc_args["site"]);
-    } else  {
-      Terminus::error("Please specify the site with --site=<sitename> option.");
-    }
-    if (!empty($uuid) && property_exists($this->sites, $uuid)) {
-      $this->_siteInfo = $this->sites->$uuid;
-      $this->_siteInfo->site_uuid = $uuid;
-    } else {
-      if (array_key_exists("debug", $assoc_args)){
-        $this->_debug(get_defined_vars());
-      }
-      Terminus::error("Please specify the site with --site=<sitename> option.");
-    }
-  }
 
   protected function _handleEnvArg(&$args, $assoc_args = array()) {
     if (array_key_exists("env", $assoc_args)) {
@@ -315,7 +284,7 @@ abstract class Terminus_Command {
     }
   }
 
-  protected function handleDisplay($data,$args) {
+  protected function handleDisplay($data,$args = array()) {
     if (array_key_exists("json", $args))
       echo \Terminus\Utils\json_dump($data);
     if (array_key_exists("bash", $args))
