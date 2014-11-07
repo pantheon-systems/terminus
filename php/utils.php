@@ -474,3 +474,19 @@ function sql_from_zip($filename) {
   $file = preg_replace('#\.gz$#s','', $filename);
   return $file;
 }
+
+function destination_is_valid($destination,$make=true) {
+  if (file_exists($destination) AND !is_dir($destination)) {
+    \Terminus::error("Destination mush be a directory. You've supplied a file.");
+  }
+
+  if (!is_dir($destination)) {
+    if (!$make)
+      $make = \Terminus::confirm("Directory does not exists. Create it now?");
+    if ($make) {
+      mkdir($destination, 0755);
+    }
+  }
+
+  return $destination;
+}
