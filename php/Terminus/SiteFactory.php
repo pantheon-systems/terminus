@@ -16,7 +16,7 @@ class SiteFactory {
   private function hydrate() {
     $cache = \Terminus::get_cache();
 
-    $request = Terminus_Command::request( 'user', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
+    $request = Terminus_Command::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
     $sites = $request['data'];
 
     foreach( $sites as $site_id => $site_data ) {
