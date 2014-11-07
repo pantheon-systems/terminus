@@ -47,7 +47,6 @@ class Auth_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         Terminus::line( "Logging in as $email" );
-
         $data = $this->doLogin($email, $password);
 
         if ( $data != FALSE ) {
@@ -113,53 +112,39 @@ class Auth_Command extends Terminus_Command {
    */
   private function doLogin($email,$password)
   {
-      // First send a GET and scape the CSRF info from the response
-      $url = sprintf( "https://%s/login", TERMINUS_HOST );
-      $response = Request::send($url,'GET');
-      $cookie = $this->getCsrfCookie( $response );
-      $token = $this->getCsrfInput( $response->getBody(TRUE) );
+      if (Terminus::is_test()) {
+        $data = array(
+          'user_uuid' => '77629472-3050-457c-8c3d-32b2cabf992b',
+          'session' => '77629472-3050-457c-8c3d-32b2cabf992b:7dc42f40-65f8-11e4-b314-bc764e100eb1:ZHR0TgtQYsKcOOwMOd0tk',
+          'session_expire_time' => '1417727066',
+          'email' => 'wink@getpantheon.com',
+        );
+        return $data;
+      }
 
-      // Now send back with the login info
-      $params = array(
-        'postdata' => array(
-          'email' => $email,
-          'password' => $password,
-          '_csrf' => $token,
-        ),
-        'cookies' => array(
-          '_csrf' => $cookie,
-          ),
+      $options = array(
+          'body' => json_encode(array(
+            'email' => $email,
+            'password' => $password,
+          )),
+          'headers' => array('Content-type'=>'application/json'),
       );
-      $response = Request::send($url, "POST", $params);
 
-      if ( '302' != $response->getStatusCode() ) {
+      $response = Terminus_Command::request('login','','','POST',$options);
+      if ( '200' != $response['info']['http_code'] ) {
         \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
       }
 
-      $result = $response->getRawHeaders();
-      $cookie = $response->getSetCookie();
-      $parser = new CookieParser();
-      $cookie = $parser->parseCookie($cookie);
-      $this->session = urldecode($cookie['cookies']['X-Pantheon-Session']);
-      $this->uuid = $this->getUUIDFromSession();
-      $expires = strtotime( $cookie['expires'] );
-
       // Prepare credentials for storage.
       $data = array(
-        'user_uuid' => $this->uuid,
-        'session' => $this->session,
-        'session_expire_time' => $expires,
+        'user_uuid' => $response['data']->user_id,
+        'session' => $response['data']->session,
+        'session_expire_time' => $response['data']->expires_at,
         'email' => $email,
       );
-
       // creates a session instance
-      Session::instance()->setData( $data );
-
+      Session::instance()->setData($data);
       return $data;
-
-
-      \Terminus::error("[auth_error]: %s", array($e->getMessage()));
-
   }
 
   public function getUUIDFromSession() {
