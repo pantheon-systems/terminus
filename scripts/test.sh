@@ -7,6 +7,8 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-only -r | grep php ) ; do php -l
 
 # Run the unit tests
 # phpunit
+export USE_FIXTURES=1;
+export CLI_TEST_MODE=1;
 phpunit
 
 # Run the functional tests
