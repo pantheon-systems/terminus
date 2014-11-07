@@ -10,7 +10,8 @@ class Endpoint {
   public $patterns = array(
     'deprecated' => 'https://%s/terminus.php?%s=%s',
     'private'  => 'https://%s/api/%s/%s',
-    'public'   => 'https://%s/api/%s'
+    'public'   => 'https://%s/api/%s',
+    'login'    => 'https://%s/api/authorize',
   );
 
   // some "realms" are different on hermes then terminus.php, this is a
@@ -56,10 +57,11 @@ class Endpoint {
       $this->target = 'public';
     }
 
-    $args['host'] = @$args['host'] ?: TERMINUS_HOST;
-    if ( array_key_exists(@$args['realm'],$this->realm_map) ) {
-      $args['realm'] = $this->realm_map[$args['realm']];
+    if ('login' == $args['realm']) {
+      $this->target = 'login';
     }
+
+    $args['host'] = @$args['host'] ?: TERMINUS_HOST;
 
     // a substiution array to pass to the vsprintf
     $substitutions = array( $args['host'], $args['realm'] );
@@ -75,6 +77,7 @@ class Endpoint {
       $params .=  '/' . @$args['path'];
     }
     $url .= $params;
+
     return $url;
   }
 
