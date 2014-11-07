@@ -1,4 +1,6 @@
-s:263:"GET /api/users/77629472-3050-457c-8c3d-32b2cabf992b/sites HTTP/1.1
+s:378:"POST /api/sites/cf4301c9-9a3c-43a9-b281-d9961401083e/environments/dev/backups/catalog/1415309739_backup/database/s3token HTTP/1.1
 Host: onebox
 User-Agent: Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4
-Cookie: X-Pantheon-Session=77629472-3050-457c-8c3d-32b2cabf992b:3ad21bbe-6609-11e4-a014-bc764e100eb1:U00eIlAZM2FzyUlGd92Yn";
+Content-Length: 16
+Cookie: X-Pantheon-Session=77629472-3050-457c-8c3d-32b2cabf992b:3ad21bbe-6609-11e4-a014-bc764e100eb1:U00eIlAZM2FzyUlGd92Yn
+Content-type: application/json";
