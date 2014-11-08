@@ -13,10 +13,10 @@ use \Symfony\Component\Process\Process;
      $sites = SiteFactory::instance();
      $this->assertTrue(is_array($sites));
      $this->assertNotEmpty($sites);
-     $this->assertArrayHasKey('behat-test', $sites);
+     $this->assertArrayHasKey('phpunittest', $sites);
      unset($sites);
 
-     $site = SiteFactory::instance('behat-test');
+     $site = SiteFactory::instance('phpunittest');
      $this->assertInstanceOf('\Terminus\Site',$site);
      $this->assertObjectHasAttribute("id",$site);
      $this->assertObjectHasAttribute("information",$site);

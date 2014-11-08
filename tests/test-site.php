@@ -6,22 +6,22 @@ use \Terminus\Site;
 class SiteTest extends PHPUnit_Framework_TestCase {
 
  function testGetId() {
-     $site = SiteFactory::instance('behat-test');
+     $site = SiteFactory::instance('phpunittest');
      $this->assertObjectHasAttribute("id",$site);
      $this->assertNotNull($site->getId());
      $this->assertStringMatchesFormat("%a-%a-%a-%a",$site->getId());
  }
 
  function testGetName() {
-   $site = SiteFactory::instance('behat-test');
+   $site = SiteFactory::instance('phpunittest');
    $this->assertObjectHasAttribute("name",$site->information);
    $this->assertNotNull($site->getName());
    $this->assertStringMatchesFormat("%a",$site->getName());
-   $this->assertEquals('behat-test',$site->getName());
+   $this->assertEquals('phpunittest',$site->getName());
  }
 
  function testEnvironments() {
-   $site = SiteFactory::instance('behat-test');
+   $site = SiteFactory::instance('phpunittest');
    $environments = $site->environments();
    $this->assertInstanceOf('\Terminus\EnvironmentDev', $environments->dev);
    $this->assertInstanceOf('\Terminus\EnvironmentTest', $environments->test);
@@ -29,7 +29,7 @@ class SiteTest extends PHPUnit_Framework_TestCase {
  }
 
  function testInfo() {
-   $site = SiteFactory::instance('behat-test');
+   $site = SiteFactory::instance('phpunittest');
    $data = $site->info();
    $this->assertNotEmpty($data);
    $this->assertInstanceOf('stdClass', $data);

@@ -10,10 +10,10 @@ use Terminus\Session;
    public function testSession() {
      if (getenv("BUILD_FIXTURES") == 1) return true;
      $data = new stdClass();
-     $data->session = 'alskdmca;sdlkcmas;dlc';
-     $data->user_uuid = 'asdf;lkamsd';
-     $data->session_expires_time = time(TRUE);
-     $data->email = "test@email.com";
+     $data->session = 'dca4f8cd-9ec2-4117-957f-fc5230c23737:7c468270-66e9-11e4-aa9b-bc764e111d20:eEFVhz2Dc87oZIJxqBtaM';
+     $data->user_uuid = 'dca4f8cd-9ec2-4117-957f-fc5230c23737';
+     $data->session_expires_time = 1417830572;
+     $data->email = "mike+test@mikevanwinkle.com";
 
      Session::instance()->setData($data);
      $session = Session::instance();
