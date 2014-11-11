@@ -1,7 +1,7 @@
 #!/bin/bash
+SITENAME=${1:?"You must enter the name of the site you want to install."}
 TERMINUS='php /home/vagrant/cli/php/boot-fs.php'
 LOCAL_DIR="/srv/www/drupal/$1"; #should be an empty dir
-SITENAME=$1
 DB_NAME="pantheon_$( echo $1 | sed -r 's/-//')"
 DBUSER="$( echo $1 | sed -r 's/-//')"
 DBPASS="$( echo $1 | sed -r 's/-//')"
@@ -26,14 +26,20 @@ if [[ ! -d code ]]; then
 	mkdir -p code
 fi
 
-	cd code
+cd code
+
+if [ -f .git/config ]; then
+	git pull origin master
+else
 	git clone $GIT_REMOTE .
 	# setup git repo with remote connection
 	git remote rm origin
 	git remote add origin $GIT_REMOTE
 	# reset and mode changes that may have been introduced
 	git reset --hard HEAD
-	cd ../
+fi
+
+cd ../
 
 # import files
 tar -vxf $FILES
@@ -49,12 +55,47 @@ mysql -e "grant all privileges on $DB_NAME.* to $DBUSER@'%' identified by '$DBPA
 mysql -vvv $DB_NAME < $DB
 
 # create the local config if it's wordpress
+framework=""
 cd code
 if [[ -f ./wp-config.php ]]; then
 	cp wp-config-sample.php wp-config-local.php
 	sed -i 's/database_name_here/'$DB_NAME'/' wp-config-local.php
 	sed -i 's/username_here/'$DBUSER'/' wp-config-local.php
 	sed -i 's/password_here/'$DBPASS'/' wp-config-local.php
+	framework="wp"
+elif [[ -f ./sites/default/default.settings.php ]]; then
+	cp ./sites/default/default.settings.php ./sites/default/settings.php
+	# create a local settings file
+	touch ./sites/default/local.settings.php
+	# inject include
+	echo "if (file_exists(__DIR__.'/local.settings.php')) require_once __DIR__.'/local.settings.php'; // inserted by create-local.sh" >> ./sites/default/settings.php
+	echo "<?php
+		\$databases['default']['default'] = array(
+			'driver' => 'mysql',
+			'database' => '$DB_NAME',
+			'username' => '$DBUSER',
+			'password' => '$DBPASS',
+			'host'	=> 'localhost',
+			'post'	=> '3306',
+		);" >> ./sites/default/local.settings.php
+	framework="drupal"
+fi
+# maybe do the nginx conf if we're set up for it
+if [ -f /etc/nginx/nginx-$framework-common.conf ]; then
+	sudo sh -c "echo '
+	server {
+	    listen       80;
+	    listen       443 ssl;
+	    server_name  local.$SITENAME.dev;
+	    root         /srv/www/drupal/$SITENAME/code;
+	    include      /etc/nginx/nginx-$framework-common.conf;
+	}' > /etc/nginx/custom-sites/$SITENAME.conf"
+
+	# restart nginx but only if the config test passes
+	sudo nginx -t && sudo service nginx restart
 fi
 
-echo "All done!"
+ipaddress=$( /sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}' )
+echo "All done, but don't forget you'll need to add the line below to your computers /etc/hosts file in order to view the site with a web browsers
+
+$ipaddress local.$SITENAME.dev"

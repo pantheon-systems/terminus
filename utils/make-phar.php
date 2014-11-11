@@ -31,15 +31,8 @@ $finder = new Finder();
 $finder
   ->files()
   ->ignoreVCS(true)
-  ->name('*.php')
   ->in('./php')
-  ->in('./vendor/jlogsdon')
-  ->in('./vendor/mustache')
-  ->in('./vendor/rmccue/requests')
-  ->in('./vendor/composer')
-  ->in('./vendor/symfony/finder')
-  ->in('./vendor/nb/oxymel')
-  ->in('./vendor/rhumsaa/array_column')
+  ->in('./vendor')
   ->exclude('test')
   ->exclude('tests')
   ->exclude('Tests')
@@ -79,4 +72,3 @@ EOB
 $phar->stopBuffering();
 
 echo "Generated " . DEST_PATH . "\n";
-

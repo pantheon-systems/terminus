@@ -131,8 +131,8 @@ class Auth_Command extends Terminus_Command {
       );
 
       $response = Terminus_Command::request('login','','','POST',$options);
-      if ( '200' != $response['info']['http_code'] ) {
-        \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
+      if ( !$response OR '200' != @$response['info']['http_code'] ) {
+        \Terminus::error("[auth_error]: unsuccessful login");
       }
 
       // Prepare credentials for storage.

@@ -53,7 +53,7 @@ class Request {
       }
     }
 
-    if ( getenv("debug") === 1 ) {
+    if ( getenv("debug") == 1 ) {
       print "####### DEBUG #######".PHP_EOL;
       print $request->getRawHeaders();
       print_r($data);
@@ -83,6 +83,9 @@ class Request {
       return false;
     }
     curl_close($ch);
+    if (file_exists($target)) {
+      throw new \Exception(sprintf("Target file (%s) already exists.", $target));
+    }
     file_put_contents($target, $content, LOCK_EX);
     return true;
   }

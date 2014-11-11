@@ -12,4 +12,4 @@ export CLI_TEST_MODE=1;
 phpunit
 
 # Run the functional tests
-php behat.phar --format pretty
+# php behat.phar --format pretty
