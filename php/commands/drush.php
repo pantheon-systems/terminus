@@ -2,7 +2,8 @@
 
 use \Terminus\Dispatcher,
   \Terminus\Utils,
-  \Terminus\CommandWithSSH;
+  \Terminus\CommandWithSSH,
+  \Terminus\SiteFactory;
 
 
 class Drush_Command extends CommandWithSSH {
@@ -31,20 +32,20 @@ class Drush_Command extends CommandWithSSH {
     else {
       $environment = 'dev';
     }
-    $site = $this->fetch_site($site_name);
+    $site = SiteFactory::instance($site_name);
     if (!$site) {
       Terminus::error("Command could not be completed.");
       exit;
     }
 
     $server = Array(
-      'user' => "$environment.$site->site_uuid",
-      'host' => "appserver.$environment.$site->site_uuid.drush.in",
+      'user' => "$environment.{$site->getId()}",
+      'host' => "appserver.$environment.{$site->getId()}.drush.in",
       'port' => '2222'
     );
 
     if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      $server['user'] = "appserver.$environment.$site->site_uuid";
+      $server['user'] = "appserver.$environment.{$site->getId()}";
       $server['host'] = TERMINUS_HOST;
     }
 
@@ -66,7 +67,7 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    Terminus::line( "Running drush $command $flags on $site_name-$environment" );
+    Terminus::line( "Running drush %s %s on %s-%s", array($command, $flags, $site->getName(), $environment));
     $this->send_command($server, 'drush', $args, $assoc_args );
   }
 
