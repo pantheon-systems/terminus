@@ -96,4 +96,12 @@ abstract class Environment {
     return $response['data'];
   }
 
+  /**
+   * Get the code log
+   */
+  public function log() {
+    $path = sprintf("environments/%s/code-log",$this->name);
+    $response = \Terminus_Command::request('sites', $this->site, $path, 'GET');
+    return $response['data'];
+  }
 }

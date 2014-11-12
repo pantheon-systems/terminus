@@ -64,6 +64,38 @@ class Site_Command extends Terminus_Command {
    * ## Options
    *
    * --site=<site>
+   * : name of the site
+   *
+   * [--env=<env>]
+   * : site nvironment
+   *
+   * ## Examples
+   *    terminus site code-log --site=test --env=dev
+   *
+   * @subcommand code-log
+   */
+  public function code_log($args, $assoc_args) {
+      $site = SiteFactory::instance(@$assoc_args['site']);
+      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+      $logs = $site->environment($env)->log();
+      $data = array();
+      foreach ($logs as $log) {
+        $data[] = array(
+          'time' => $log->datetime,
+          'author' => $log->author,
+          'labels' => join(", ", $log->labels),
+          'hash'  => $log->hash,
+          'message' => trim(str_replace("\n",'',str_replace("\t",'',substr($log->message,0,50)))),
+        );
+      }
+      $this->handleDisplay($data);
+      return $log;
+  }
+
+  /**
+   * ## Options
+   *
+   * --site=<site>
    * : name of the site to work with
    *
    * --env=<env>
