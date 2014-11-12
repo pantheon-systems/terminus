@@ -165,44 +165,6 @@ class Auth_Command extends Terminus_Command {
     return $user->id;
 
   }
-
-  /**
-   * Extract the CSRF Cookie from the previous response
-   *
-   * @package Terminus
-   * @version 0.04-alpha
-   * @return string
-   */
-  private function getCsrfCookie( $response ) {
-    $cookies = $response->getSetCookie();
-    $parser = new CookieParser();
-    $cookie = $parser->parseCookie($cookies);
-
-    if( !array_key_exists('_csrf',$cookie['cookies']) OR empty($cookie['cookies']['_csrf']) ) {
-      throw new Exception("Verifcation cookie not present.");
-    }
-
-    return $cookie['cookies']['_csrf'];
-  }
-
-  /**
-   * Extract the input value from the login form
-   *
-   * @package Terminus
-   * @version 0.04-alpha
-   * @return string
-   */
-  private function getCsrfInput( $html ) {
-    $crawler = new Crawler( $html );
-    $value = $crawler->filter('input[name="_csrf"]')->extract('value');
-    if( empty( $value ) ) {
-      throw new Exception( "Could not find the required csrf token." );
-    }
-    if ( is_array($value) ) {
-      return array_pop($value);
-    }
-    return $value;
-  }
 }
 
 Terminus::add_command( 'auth', 'Auth_Command' );
