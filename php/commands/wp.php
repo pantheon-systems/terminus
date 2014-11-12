@@ -2,7 +2,8 @@
 
 use \Terminus\Dispatcher,
   \Terminus\Utils,
-  \Terminus\CommandWithSSH;
+  \Terminus\CommandWithSSH,
+  \Terminus\SiteFactory;
 
 
 class WPCLI_Command extends CommandWithSSH {
@@ -31,7 +32,9 @@ class WPCLI_Command extends CommandWithSSH {
     else {
       $environment = 'dev';
     }
-    $site = $this->fetch_site($site_name);
+
+    $site = SiteFactory::instance($site_name);
+
     if (!$site) {
       Terminus::error("Command could not be completed.");
       exit;
@@ -39,13 +42,13 @@ class WPCLI_Command extends CommandWithSSH {
 
     # see https://github.com/pantheon-systems/titan-mt/blob/master/dashboardng/app/workshops/site/models/environment.coffee
     $server = Array(
-      'user' => "$environment.$site->site_uuid",
-      'host' => "appserver.$environment.$site->site_uuid.drush.in",
+      'user' => "$environment.{$site->getId()}",
+      'host' => "appserver.$environment.{$site->getId()}.drush.in",
       'port' => '2222'
     );
 
     if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      $server['user'] = "appserver.$environment.$site->site_uuid";
+      $server['user'] = "appserver.$environment.{$site->getId()}";
       $server['host'] = TERMINUS_HOST;
     }
 
@@ -66,7 +69,7 @@ class WPCLI_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    Terminus::line( "Running wp $command $flags on $site_name-$environment" );
+    Terminus::line( "Running wp %s %s on %s-%s", array($command,$flags,$site->getName(),$environment));
     $this->send_command($server, 'wp', $args, $assoc_args );
 
   }
