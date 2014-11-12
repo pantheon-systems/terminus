@@ -314,7 +314,7 @@ class FileCache {
     $url_parts = parse_url( $key );
     if ( ! empty($url_parts['scheme']) ) { // is url
       $parts = array('misc');
-      $parts[] = $url_parts['scheme'] . '-' . $url_parts['host'] .
+      $parts[] = $url_parts['scheme'] . '-' . @$url_parts['host'] .
         ( empty( $url_parts['port'] ) ? '' : '-' . $url_parts['port'] );
       $parts[] = substr($url_parts['path'], 1) .
         ( empty( $url_parts['query'] ) ? '' : '-' . $url_parts['query'] );
@@ -343,7 +343,16 @@ class FileCache {
    *
    * @return Finder
    */
-  protected function get_finder() {
+  public function get_finder() {
     return Finder::create()->in( $this->root )->files();
+  }
+
+  public function flush($cache=null) {
+    $finder = $this->get_finder();
+    foreach( $finder as $file ) {
+      // if a cache to clear was specified skip those that don't match
+      if($cache AND $cache != $file->getFilename() ) continue;
+      unlink($file->getRealPath());
+    }
   }
 }

@@ -2,6 +2,8 @@
 namespace Terminus;
 
 use Guzzle\Http\Client as Browser;
+use \Terminus\Fixtures;
+use \Terminus\FauxRequest;
 /**
  * Handles requests made by terminus
  *
@@ -17,10 +19,22 @@ class Request {
   public $response; // most recent Guzzle\Http\Message\Response
   public $responses = array();
 
-  public static function send( $url, $method, $data = array() ) {
+  public static function send($url, $method, $data = array()) {
+    if (getenv("USE_FIXTURES") == 1) {
+      return FauxRequest::send($url, $method, $data);
+    }
+    // create a new Guzzle\Http\Client
     $browser = new Browser;
-    $allow_redirects = @$data['allow_redirects'] ?: false;
-    $request = $browser->createRequest($method, $url, null, null, array('allow_redirects' => $allow_redirects ) );
+    $options = array();
+    $options['allow_redirects'] = @$data['allow_redirects'] ?: false;
+    $options['json'] = @$data['json'] ?: false;
+    if( @$data['body'] ) {
+      $options['body'] = $data['body'];
+    }
+    $options['verify'] = false;
+
+    $request = $browser->createRequest($method, $url, null, null, $options );
+
     if( !empty($data['postdata']) ) {
       foreach( $data['postdata'] as $k=>$v ) {
         $request->setPostField($k,$v);
@@ -39,8 +53,41 @@ class Request {
       }
     }
 
+    if ( getenv("debug") == 1 ) {
+      print "####### DEBUG #######".PHP_EOL;
+      print $request->getRawHeaders();
+      print_r($data);
+      print "####### END DEBUG #####".PHP_EOL.PHP_EOL;
+    }
+
+    if ( getenv("BUILD_FIXTURES") ) {
+      Fixtures::put("request_headers", $request->getRawHeaders());
+    }
+
     $response = $request->send();
+
+    if ( getenv("BUILD_FIXTURES") ) {
+      Fixtures::put(array($url,$method,$data), $response);
+    }
+
     return $response;
+  }
+
+  public static function download($url,$target) {
+    // @todo use Guzzle in the future, but for now this will do
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $content = curl_exec($ch);
+    if (curl_error($ch)) {
+      return false;
+    }
+    curl_close($ch);
+    if (file_exists($target)) {
+      throw new \Exception(sprintf("Target file (%s) already exists.", $target));
+    }
+    file_put_contents($target, $content, LOCK_EX);
+    return true;
   }
 
  }

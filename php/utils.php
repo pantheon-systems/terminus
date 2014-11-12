@@ -4,6 +4,7 @@ namespace Terminus\Utils;
 
 use \Terminus\Dispatcher;
 use \Terminus\Iterators\Transform;
+use \ArrayIterator;
 
 if (!defined('JSON_PRETTY_PRINT')){
   define('JSON_PRETTY_PRINT', 128);
@@ -60,6 +61,7 @@ function load_all_commands() {
     if ( '.php' != substr( $filename, -4 ) ){
       continue;
     }
+
     include_once "$cmd_dir/$filename";
   }
 }
@@ -73,6 +75,22 @@ function json_dump($var) {
     return json_encode( $var , JSON_PRETTY_PRINT )."\n";
   }
 }
+
+function bash_out($var) {
+  // if it's a piped command, don't 'prettify' json.
+  $output = '';
+  foreach( $var as $index => $row ) {
+    if( is_array($row) OR is_object($row) ) {
+      $row = (array) $row;
+      $row = join(' ',$row);
+    }
+    if (!is_numeric($index))
+      $output .= "$index ";
+    $output .= $row.PHP_EOL;
+  }
+  return $output;
+}
+
 
 /**
  * Like array_map(), except it returns a new iterator, instead of a modified array.
@@ -410,10 +428,65 @@ function is_hermes() {
 }
 
 /**
+ * Check if result is an array of multiple objects or a simple array of one.
+**/
+function result_is_multiobj( $result ) {
+  $iter = new ArrayIterator($result);
+  if( is_object( $iter->current() ) OR is_array( $iter->current() ) ) {
+    return true;
+  }
+  unset($iter);
+  return false;
+}
+
+/**
+ * Fetch keys from the first object in a collection
+**/
+function result_get_response_fields( $result ) {
+  $iter = new ArrayIterator($result);
+  if( !$iter ) return false;
+  $keys = array_keys( (array) $iter->current() );
+  $keys = array_map('ucfirst', $keys);
+  unset($iter);
+  return $keys;
+}
+
+/**
  * Validate Atlas UUID.
  * @param $uuid
  * @return boolean
  */
 function is_valid_uuid($uuid) {
   return preg_match('#^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$#', $uuid) ? TRUE : FALSE;
+}
+
+/**
+ * Get filename from a url
+ * @param $url sting valid url
+ */
+function get_filename_from_url($url) {
+  $path = parse_url($url);
+  $parts = explode('/',$path['path']);
+  return end($parts);
+}
+
+function sql_from_zip($filename) {
+  $file = preg_replace('#\.gz$#s','', $filename);
+  return $file;
+}
+
+function destination_is_valid($destination,$make=true) {
+  if (file_exists($destination) AND !is_dir($destination)) {
+    \Terminus::error("Destination mush be a directory. You've supplied a file.");
+  }
+
+  if (!is_dir($destination)) {
+    if (!$make)
+      $make = \Terminus::confirm("Directory does not exists. Create it now?");
+    if ($make) {
+      mkdir($destination, 0755);
+    }
+  }
+
+  return $destination;
 }

@@ -104,14 +104,28 @@ class CLI_Command extends Terminus_Command {
   }
 
   /**
-   * @subcommand session-dump
-   */
-   function session_dump() {
-     $session = $this->cache->get_data("session");
-     echo \Terminus\Utils\json_dump( $session );
+  * Clear session data
+  * @subcommand session-clear
+  */
+  function session_clear() {
+    $this->cache->remove("session");
+  }
 
+  /**
+  * @subcommand session-dump
+  */
+  public function session_dump() {
+   $session = $this->cache->get_data("session");
+   echo \Terminus\Utils\json_dump( $session );
+  }
 
-   }
+  /**
+  * @subcommand cache-clear
+  */
+  public function cache_clear($cache = null) {
+    $this->cache->flush($cache);
+  }
+
 }
 
 Terminus::add_command( 'cli', 'CLI_Command' );

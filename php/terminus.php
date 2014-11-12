@@ -18,7 +18,7 @@ if (isset($_SERVER['TERMINUS_HOST']) && $_SERVER['TERMINUS_HOST'] != '') {
   \cli\line(\cli\Colors::colorize('%YNote: using custom target "'. $_SERVER['TERMINUS_HOST'] .'"%n'));
 }
 else {
-  define( 'TERMINUS_HOST', 'terminus.getpantheon.com' );
+  define( 'TERMINUS_HOST', 'dashboard.getpantheon.com' );
 }
 define( 'TERMINUS_PORT', '443' );
 

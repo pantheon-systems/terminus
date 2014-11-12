@@ -45,13 +45,18 @@ class Terminus {
   }
 
   static function get_runner() {
-    static $runner;
+    // the entire process needs an exception wrapper
+    try {
+      static $runner;
 
-    if ( !$runner ) {
-      $runner = new Terminus\Runner;
+      if ( !$runner ) {
+        $runner = new Terminus\Runner;
+      }
+
+      return $runner;
+    } catch(\Exception $e) {
+      Terminus::error($e->getMessage());
     }
-
-    return $runner;
   }
 
   /**
@@ -69,7 +74,7 @@ class Terminus {
       $dir = getenv( 'TERMINUS_CACHE_DIR' ) ? : "$home/.terminus/cache";
 
       // 6 months, 300mb
-      $cache = new FileCache( $dir, 15552000, 314572800 );
+      $cache = new FileCache( $dir, 86400, 314572800 );
 
       // clean older files on shutdown with 1/50 probability
       if ( 0 === mt_rand( 0, 50 ) ) {
@@ -130,7 +135,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function prompt( $message = '' ) {
+  static function prompt( $message = '', $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     return \cli\prompt( $message );
   }
 
@@ -139,7 +147,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function line( $message = '' ) {
+  static function line( $message = '', $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     echo \cli\line($message);
   }
 
@@ -148,7 +159,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function log( $message ) {
+  static function log( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->info( $message );
   }
 
@@ -157,7 +171,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function success( $message ) {
+  static function success( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->success( $message );
   }
 
@@ -166,7 +183,10 @@ class Terminus {
    *
    * @param string $message
    */
-  static function warning( $message ) {
+  static function warning( $message, $params = array() ) {
+    if ( !empty($params) ) {
+      $message = vsprintf($message, $params);
+    }
     self::$logger->warning( self::error_to_string( $message ) );
   }
 
@@ -197,6 +217,7 @@ class Terminus {
 
       if ( 'y' != $answer )
         exit;
+      return true;
     }
   }
 
@@ -321,7 +342,11 @@ class Terminus {
 
     $php_bin = self::get_php_binary();
 
-    $script_path = $GLOBALS['argv'][0];
+    if (Terminus::is_test()) {
+      $script_path = __DIR__.'/boot-fs.php';
+    } else {
+      $script_path = $GLOBALS['argv'][0];
+    }
 
     $args = implode( ' ', array_map( 'escapeshellarg', $args ) );
     $assoc_args = \Terminus\Utils\assoc_args_to_str( $assoc_args );
@@ -357,6 +382,15 @@ class Terminus {
     return self::get_runner()->config[ $key ];
   }
 
+  static function menu( $data, $default = null, $text = "Select one", $return_value=false ) {
+    echo PHP_EOL;
+    $index = \cli\Streams::menu($data,$default,$text);
+    if ($return_value) {
+      return $data[$index];
+    }
+    return $index;
+  }
+
   /**
    * Run a given command.
    *
@@ -365,5 +399,16 @@ class Terminus {
    */
   static function run_command( $args, $assoc_args = array() ) {
     self::get_runner()->run_command( $args, $assoc_args );
+  }
+
+  /**
+   * Terminus is in test mode
+   */
+  static function is_test() {
+    if (defined('CLI_TEST_MODE') AND false !== CLI_TEST_MODE)
+      return true;
+    if (getenv("CLI_TEST_MODE"))
+      return true;
+    return false;
   }
 }

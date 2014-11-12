@@ -7,13 +7,13 @@
  use Terminus\Utils;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
+ use Terminus\Session;
 
 class Auth_Command extends Terminus_Command {
   private $sessionid;
   private $session_cookie_name='X-Pantheon-Session';
   private $uuid;
   private $logged_in = false;
-
 
 
   /**
@@ -47,18 +47,13 @@ class Auth_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         Terminus::line( "Logging in as $email" );
-        if ( Utils\is_hermes() ) {
-          $data = $this->doLogin($email, $password);
-        } else {
-          $data = \Terminus\Login\auth( $email, $password );
-        }
+        $data = $this->doLogin($email, $password);
 
         if ( $data != FALSE ) {
           if (array_key_exists("debug", $assoc_args)){
             $this->_debug(get_defined_vars());
           }
           //Terminus::line( "Success!" );
-          $this->cache->put_data('session', $data);
           Terminus::launch_self("art", array("fist"));
         }
         else {
@@ -75,7 +70,7 @@ class Auth_Command extends Terminus_Command {
    */
   public function logout() {
     Terminus::line( "Logging out of Pantheon." );
-    $this->cache->remove('session');
+    Terminus::launch_self("cli",array('cache-clear'));
   }
 
   /**
@@ -117,51 +112,39 @@ class Auth_Command extends Terminus_Command {
    */
   private function doLogin($email,$password)
   {
-    try {
-      // First send a GET and scape the CSRF info from the response
-      $url = sprintf( "https://%s/login", TERMINUS_HOST );
-      $response = Request::send($url,'GET');
-      $cookie = $this->getCsrfCookie( $response );
-      $token = $this->getCsrfInput( $response->getBody(TRUE) );
-
-      // Now send back with the login info
-      $params = array(
-        'postdata' => array(
-          'email' => $email,
-          'password' => $password,
-          '_csrf' => $token,
-        ),
-        'cookies' => array(
-          '_csrf' => $cookie,
-          ),
-      );
-      $response = Request::send($url, "POST", $params);
-
-
-      if ( '302' != $response->getStatusCode() ) {
-        \Terminus::error("[auth_error]: unsuccessful login".$response->getStatusCode());
+      if (Terminus::is_test()) {
+        $data = array(
+          'user_uuid' => '77629472-3050-457c-8c3d-32b2cabf992b',
+          'session' => '77629472-3050-457c-8c3d-32b2cabf992b:7dc42f40-65f8-11e4-b314-bc764e100eb1:ZHR0TgtQYsKcOOwMOd0tk',
+          'session_expire_time' => '1417727066',
+          'email' => 'wink@getpantheon.com',
+        );
+        return $data;
       }
-      $result = $response->getRawHeaders();
-      $cookie = $response->getSetCookie();
-      $parser = new CookieParser();
-      $cookie = $parser->parseCookie($cookie);
-      $this->session = urldecode($cookie['cookies']['X-Pantheon-Session']);
-      $this->uuid = $this->getUUIDFromSession();
-      $expires = strtotime( $cookie['expires'] );
+
+      $options = array(
+          'body' => json_encode(array(
+            'email' => $email,
+            'password' => $password,
+          )),
+          'headers' => array('Content-type'=>'application/json'),
+      );
+
+      $response = Terminus_Command::request('login','','','POST',$options);
+      if ( !$response OR '200' != @$response['info']['http_code'] ) {
+        \Terminus::error("[auth_error]: unsuccessful login");
+      }
 
       // Prepare credentials for storage.
       $data = array(
-        'user_uuid' => $this->uuid,
-        'session' => $this->session,
-        'session_expire_time' => $expires,
+        'user_uuid' => $response['data']->user_id,
+        'session' => $response['data']->session,
+        'session_expire_time' => $response['data']->expires_at,
         'email' => $email,
       );
-
+      // creates a session instance
+      Session::instance()->setData($data);
       return $data;
-
-    } catch (\Exception $e) {
-      \Terminus::error("[auth_error]: %s", array($e->getMessage()));
-    }
   }
 
   public function getUUIDFromSession() {
