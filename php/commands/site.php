@@ -708,7 +708,7 @@ class Site_Command extends Terminus_Command {
 
      $this->_constructTableForResponse($data, array('Environment','Status') );
      if (empty($upstream->update_log)) Terminus::success("No updates to show");
-     $upstreams = (array) $upstream->update_log
+     $upstreams = (array) $upstream->update_log;
      if (!empty($upstreams)) {
        $data = array();
        foreach ($upstreams as $commit) {
