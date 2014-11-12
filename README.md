@@ -13,8 +13,8 @@ If you would like to contribute, pull requests are welcome!
 Important articles on the wiki to read
 ------------
 
-[Installation](https://github.com/pantheon-systems/cli/wiki/Installation)
-[Usage](https://github.com/pantheon-systems/cli/wiki/Usage)
+* [Installation](https://github.com/pantheon-systems/cli/wiki/Installation)
+* [Usage](https://github.com/pantheon-systems/cli/wiki/Usage)
 
 Credits
 -------
