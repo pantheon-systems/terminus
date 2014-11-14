@@ -13,6 +13,9 @@ include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
 \Terminus\Utils\load_dependencies();
 
+# Set a custom exception handler
+set_exception_handler('\Terminus\Utils\handle_exception');
+
 if (isset($_SERVER['TERMINUS_HOST']) && $_SERVER['TERMINUS_HOST'] != '') {
   define( 'TERMINUS_HOST', $_SERVER['TERMINUS_HOST'] );
   \cli\line(\cli\Colors::colorize('%YNote: using custom target "'. $_SERVER['TERMINUS_HOST'] .'"%n'));
