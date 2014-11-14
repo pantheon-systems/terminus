@@ -3,9 +3,11 @@
 namespace Terminus\Loggers;
 
 class Regular {
+  static $instance;
 
   function __construct( $in_color ) {
     $this->in_color = $in_color;
+    self::$instance = $this;
   }
 
   protected function write( $handle, $str ) {
@@ -32,5 +34,14 @@ class Regular {
   function error( $message ) {
     $this->_line( $message, 'Error', '%R', STDERR );
   }
-}
 
+  static function notify( $message ) {
+    return new \cli\notify\Dots($message, 5, 0);
+  }
+
+  static function redLine($message = " ") {
+    $cli = new Self('%1%K');
+    $message = \cli\Colors::colorize( "%1%K$message%n", $cli->in_color );
+    $cli->write( STDOUT, "$message\n");
+  }
+}
