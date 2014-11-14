@@ -490,3 +490,15 @@ function destination_is_valid($destination,$make=true) {
 
   return $destination;
 }
+
+function handle_exception($exception) {
+
+  if (!empty($exception->getTrace())) {
+      foreach( $exception->getTrace() as $line ) {
+        $out_line = sprintf("%s%s%s [%s:%s]", @$line['class'], @$line['type'], @$line['function'], @$line['file'], @$line['line']);
+        \Terminus\Loggers\Regular::redLine(">> $out_line");
+      }
+  }
+  //\Terminus::line(var_export($exception->getTrace(), 1));
+  \Terminus::error("Exception thrown - %s", array($exception->getMessage()));
+}
