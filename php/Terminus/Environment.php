@@ -18,7 +18,7 @@ abstract class Environment {
   protected $backups;
 
   public function __construct( Site $site, $environment = null ) {
-    $this->site->getId() = $site;
+    $this->site = $site;
 
     if (is_object($environment)) {
       // if we receive an environment object from the api hydrate the vars
