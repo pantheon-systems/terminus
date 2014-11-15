@@ -40,7 +40,7 @@ class Site {
 
     // instantiate local objects
     foreach ( $this->environments as $name => $env) {
-      $this->environments->$name = EnvironmentFactory::load($this->getId(), $name, array(
+      $this->environments->$name = EnvironmentFactory::load($this, $name, array(
         'hydrate_with' => $env,
       ));
     }

@@ -3,19 +3,19 @@ namespace Terminus;
 use \ReflectionClass;
 
 abstract class Environment {
-  protected $name = 'dev';
-  protected $site = false;
-  protected $diffstat;
-  protected $dns_zone;
-  protected $environment_created;
-  protected $lock;
-  protected $on_server_development;
-  protected $randseed;
-  protected $styx_cluster;
-  protected $target_commit;
-  protected $target_ref;
-  protected $watchers;
-  protected $backups;
+  public $name = 'dev';
+  public $site = false;
+  public $diffstat;
+  public $dns_zone;
+  public $environment_created;
+  public $lock;
+  public $on_server_development;
+  public $randseed;
+  public $styx_cluster;
+  public $target_commit;
+  public $target_ref;
+  public $watchers;
+  public $backups;
 
   public function __construct( Site $site, $environment = null ) {
     $this->site = $site;
@@ -143,4 +143,11 @@ abstract class Environment {
     return $response['data'];
   }
 
+  /**
+   * Generate environment URL
+   */
+  public function domain() {
+    $host = sprintf( "%s-%s.%s", $this->name, $this->site->getName(), $this->dns_zone );
+    return $host;
+  }
 }

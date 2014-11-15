@@ -538,7 +538,7 @@ class Site_Command extends Terminus_Command {
    * Fetch a valid environment
    */
    private function getValidEnv($site, $env = null, $message = false) {
-     $envs = $this->getAvailableEnvs($site);
+     $envs = SiteFactory::instance($site)->availableEnvironments();
 
      if (!$message) {
        $message = "Specify a environment";
@@ -555,14 +555,6 @@ class Site_Command extends Terminus_Command {
 
      return $env;
    }
-
-  /**
-   * Fetch available environments
-   * @deprecated
-   */
-  private function getAvailableEnvs($site) {
-    return $this->getEnvironments($site);
-  }
 
   /**
    * Fetch the UUID for a site name
@@ -582,17 +574,22 @@ class Site_Command extends Terminus_Command {
    *
    */
   function environments($args, $assoc_args) {
-    $data = $this->getEnvironments($assoc_args['site']);
+    $site = SiteFactory::instance($assoc_args['site']);
+    $environments = $site->environments();
+    $data = array();
+    foreach ($environments as $env) {
+      $data[] = array(
+        'Name' => $env->name,
+        'Created' => $env->environment_created,
+        'Domain' => $env->domain(),
+        'OnServer Dev?' => $env->on_server_development ? 'true' : 'false',
+        'Locked?' => $env->lock->locked ? 'true' : 'false',
+      );
+    }
     $this->handleDisplay($data,$args);
     return $data;
   }
 
-  // @TODO this is going away and will be replaced by Site and Environment Objects
-  private function getEnvironments($site) {
-    $site = SiteFactory::instance($site);
-    $environments = $site->availableEnvironments();
-    return $environments;
-  }
 
   /**
    * List enviroments for a site
