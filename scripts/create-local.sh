@@ -95,7 +95,7 @@ if [ -f /etc/nginx/nginx-$framework-common.conf ]; then
 	sudo nginx -t && sudo service nginx restart
 fi
 
-ipaddress=$( /sbin/ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}' )
+ipaddress=$( ifconfig eth1 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}' )
 echo "All done, but don't forget you'll need to add the line below to your computers /etc/hosts file in order to view the site with a web browsers
 
 $ipaddress local.$SITENAME.dev"
