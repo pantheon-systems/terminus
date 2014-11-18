@@ -601,6 +601,60 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * Hostname operations
+   *
+   * ## Options
+   *
+   * <list|add|remove>
+   * : Options are list, add, delete
+   *
+   * --site=<site>
+   * : Site to use
+   *
+   * --env=<env>
+   * : environment to use
+   *
+   * [--hostname=<hostname>]
+   * : hostname to add
+   *
+   */
+   public function hostnames($args, $assoc_args) {
+     $action = array_shift($args);
+     $site = SiteFactory::instance(@$assoc_args['site']);
+     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+     switch ($action) {
+       case 'list':
+        $hostnames = $data = (array) $site->environment($env)->hostnames();
+        if (!Terminus::get_config('json')) {
+          // if were not just dumping the json then we should reformat the data
+          $data = array();
+          foreach ($hostnames as $hostname => $details ) {
+            $data[] = array_merge( array('domain' => $hostname), (array) $details);
+          }
+        }
+        $this->handleDisplay($data);
+        break;
+       case 'add':
+          if (!isset($assoc_args['hostname'])) {
+            Terminus::error("Must specify hostname with --hostname");
+          }
+          $data = $site->environment($env)->hostnameadd($assoc_args['hostname']);
+          if (Terminus::get_config('verbose')) {
+            \Terminus\Utils\json_dump($data);
+          }
+          Terminus::success("Added %s to %s-%s", array( $assoc_args['hostname'], $site->getName(), $env));
+          break;
+       case 'remove':
+          if (!isset($assoc_args['hostname'])) {
+            Terminus::error("Must specify hostname with --hostname");
+          }
+          $data = $site->environment($env)->hostnamedelete($assoc_args['hostname']);
+          Terminus::success("Deleted %s from %s-%s", array( $assoc_args['hostname'], $site->getName(), $env));
+        break;
+     }
+     return $data;
+   }
+  /**
    * ## Options
    *
    * --site=<site>
@@ -668,7 +722,7 @@ class Site_Command extends Terminus_Command {
       Terminus::error("Must install sshfs first");
     }
 
-    $destination = \Terminus\Util\destination_is_valid($assoc_args['destination']);
+    $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
 
     $site = SiteFactory::instance($assoc_args['site']);
     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
