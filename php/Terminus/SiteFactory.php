@@ -15,10 +15,8 @@ class SiteFactory {
 
   private function hydrate() {
     $cache = \Terminus::get_cache();
-
     $request = Terminus_Command::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
     $sites = $request['data'];
-
     foreach( $sites as $site_id => $site_data ) {
       $site_data->id = $site_id;
       $this->sites[$site_data->information->name] = $site_data;
@@ -47,7 +45,7 @@ class SiteFactory {
     }
     if (isset($this->sites[$sitename])) {
       // if we haven't instatiated yet, do that now
-      if("Terminus\Site" != get_class($this->sites[$sitename])) {
+      if ("Terminus\Site" != get_class($this->sites[$sitename])) {
         $this->sites[$sitename] = new Site($this->sites[$sitename]);
       }
       return $this->sites[$sitename];
