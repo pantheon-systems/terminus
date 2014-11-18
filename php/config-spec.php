@@ -30,5 +30,11 @@ return array(
     'desc' => 'Suppress output',
   ),
 
-);
+  'json' => array(
+    'runtime' => '',
+    'file'  => '<bool>',
+    'default' => false,
+    'desc' => 'Force json output',
+  ),
 
+);
