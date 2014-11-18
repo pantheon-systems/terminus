@@ -74,7 +74,7 @@ abstract class Environment {
     $path = sprintf("environments/%s/backups/catalog/%s/%s/s3token", $this->name, $bucket, $element);
     $data = array('method'=>'GET');
     $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('sites', $this->site->getId()->getId(), $path, 'POST', $options);
+    $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
     return $response['data'];
   }
 
@@ -108,14 +108,14 @@ abstract class Environment {
    * Delete an environment lock.
    */
   public function unlock() {
-    $response = Terminus_Command::request("site", $this->site->getId(),  'environments/' . $this->name . '/lock', "DELETE");
+    $response = Terminus_Command::request("sites", $this->site->getId(),  'environments/' . $this->name . '/lock', "DELETE");
   }
 
   /**
    * Get Info on an environment lock
    */
   public function lockinfo() {
-    $response = Terminus_Command::request("site", $this->site->getId(), 'environments/'.$this->name.'/lock', "GET");
+    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/'.$this->name.'/lock', "GET");
     return $response['data'];
   }
 
@@ -123,7 +123,7 @@ abstract class Environment {
    * list hotnames for environment
    */
   public function hostnames() {
-    $response = Terminus_Command::request("site", $this->site->getId(), 'environments/' . $this->name . '/hostnames', 'GET');
+    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames', 'GET');
     return $response['data'];
   }
 
@@ -131,7 +131,7 @@ abstract class Environment {
    * Add hostname to environment
    */
   public function hostnameadd($hostname) {
-    $response = Terminus_Command::request("site", $this->site->getId(), 'environments/' . $this->_env . '/hostnames/' . rawurlencode($hostname), "PUT");
+    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "PUT");
     return $response['data'];
   }
 
@@ -139,7 +139,7 @@ abstract class Environment {
    * Delete hostname from environment
    */
   public function hostnamedelete($hostname) {
-    $response = Terminus_Command::request("site", $this->site->getId(), 'environments/' . $this->_env . '/hostnames/' . rawurlencode($hostname), "DELETE");
+    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "DELETE");
     return $response['data'];
   }
 
