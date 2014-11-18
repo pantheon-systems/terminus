@@ -103,12 +103,25 @@ abstract class Environment {
     return $response['data'];
   }
 
+  /**
+   * Lock environment
+   */
+  public function lock($username, $password) {
+    $data = json_encode(array('username' => $username, 'password' => $password));
+    $options = array(
+      'body' => $data,
+      'headers' => array('Content-type'=>'application/json')
+    );
+    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/lock', "PUT", $options);
+    $response['data'];
+  }
 
   /**
    * Delete an environment lock.
    */
   public function unlock() {
-    $response = Terminus_Command::request("sites", $this->site->getId(),  'environments/' . $this->name . '/lock', "DELETE");
+    $response = \Terminus_Command::request("sites", $this->site->getId(),  'environments/' . $this->name . '/lock', "DELETE");
+    return $response['data'];
   }
 
   /**

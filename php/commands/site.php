@@ -654,6 +654,68 @@ class Site_Command extends Terminus_Command {
      }
      return $data;
    }
+
+  /**
+   * ## Options
+   *
+   * <info|add|remove>
+   * : action to execute ( i.e. info, add, remove )
+   *
+   * --site=<site>
+   * : site name
+   *
+   * [--env=<env>]
+   * : site environment
+   *
+   * [--username=<username>]
+   * : your username
+   *
+   * [--password=<password>]
+   * : your password
+   *
+  **/
+  function lock($args, $assoc_args) {
+    $action = array_shift($args);
+    $site = SiteFactory::instance(@$assoc_args['site']);
+    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+    switch ($action) {
+      case 'info':
+        $data = $locks = $site->environment($env)->lockinfo();
+        if (!Terminus::get_config('json')) {
+          $data = array($data);
+        }
+        $this->handleDisplay($data);
+        break;
+      case 'add':
+        Terminus::line("Creating new lock on %s -> %s", array($site->getName(), $env));
+        if (!isset($assoc_args['username'])) {
+          $email = Terminus::prompt("Username for the lock");
+        } else {
+          $email = $assoc_args['username'];
+        }
+        if (!isset($assoc_args['password'] ) ) {
+          exec("stty -echo");
+          $password = Terminus::prompt( "Password for the lock" );
+          exec("stty echo");
+          Terminus::line();
+        } else {
+          $password = $assoc_args['password'];
+        }
+        $data = $site->environment($env)->lock($email, $password);
+        if ( property_exists($data,'id') ) {
+          $this->waitOnWorkflow('sites',$data->site_id, $data->id);
+        }
+        Terminus::success('Success');
+        break;
+      case 'remove':
+        Terminus::line("Removing lock from %s -> %s", array($site->getName(), $env));
+        $data = $site->environment($env)->unlock();
+        if ( property_exists($data,'id') ) {
+          $this->waitOnWorkflow('sites',$data->site_id, $data->id);
+        }
+        Terminus::success('Success');
+    }
+  }
   /**
    * ## Options
    *
