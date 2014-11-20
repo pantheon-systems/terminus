@@ -8,6 +8,8 @@ class Help_Command extends Terminus_Command {
   /**
    * Get help on a certain command.
    *
+   * <command>
+   *
    * ## EXAMPLES
    *
    *     # get help for `core` command
@@ -43,8 +45,8 @@ class Help_Command extends Terminus_Command {
   }
 
   private static function show_help( $command ) {
-    $out = self::get_initial_markdown( $command );
 
+    $out = self::get_initial_markdown( $command );
     $longdesc = $command->get_longdesc();
     if ( $longdesc ) {
       $out .= wordwrap( $longdesc, 79 ) . "\n";
@@ -142,4 +144,3 @@ class Help_Command extends Terminus_Command {
 }
 
 Terminus::add_command( 'help', 'Help_Command' );
-

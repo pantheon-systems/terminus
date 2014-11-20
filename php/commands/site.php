@@ -9,6 +9,7 @@ use Terminus\Auth;
 use Terminus\SiteFactory;
 use Terminus\Site;
 use \Guzzle\Http\Client;
+use \Terminus\Loggers\Regular as Logger;
 
 class Site_Command extends Terminus_Command {
 
@@ -20,13 +21,10 @@ class Site_Command extends Terminus_Command {
 
   /**
    *
-   * ## Options
+   * ## OPTIONS
    *
-   * --site=<site>
-   * : site to create branch of
-
-   * --branch=<branch>
-   * : name of new branch
+   * --site=<site> : site to create branch of
+   * --branch=<branch> : name of new branch
    *
    * ## EXAMPLES
    *
@@ -39,7 +37,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : site to use
@@ -61,7 +59,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : name of the site
@@ -93,7 +91,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : name of the site to work with
@@ -139,7 +137,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : name of the site to work with
@@ -160,236 +158,171 @@ class Site_Command extends Terminus_Command {
 
   }
 
-  /**
-   * Show a list of your sites on Pantheon
-   *
-   * ## Options
-   *
-   * --site=<site>
-   * : Site to use
-   *
-   * [--env=<env>]
-   * : Environment
-   * [--nocache]
-   * : Bypass cache
-   * [--latest]
-   * : show the most recent backup
-   *
-   * ## EXAMPLES
-   *
-   */
-   public function backups($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
-    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
-    $backups = $site->environment($env)->backups();
-
-    $data = array();
-    foreach ($backups as $id => $backup) {
-      if (!isset($backup->filename)) continue;
-      $data[] = array(
-        $backup->filename,
-        sprintf("%dMB", $backup->size / 1024 / 1024),
-        date("Y-m-d H:i:s", $backup->finish_time),
-      );
-    }
-
-    if (empty($backups)) {
-      \Terminus::error("No backups found.");
-      return false;
-    } else {
-      //munging data
-      $this->handleDisplay($data,$args);
-      return $data;
-    }
-
-   }
-
  /**
-  * Get a backup
+  * Get, load, or create backup
+  *
   *
   * ## OPTIONS
   *
-  * --site=<site>
-  * : Site to load
+  * <action> : function to run
   *
-  * [--env=<env>]
-  * : Environment to load
-  * [--element=<code|files|db>]
-  * : Element to download
-  * [--to-directory=<directory>]
-  * : Download the file if set
+  * --site=<site> : Site to load
+  *
+  * [--env=<env>] : Environment to load
+  * [--element=<code|files|db>] : Element to download
+  * [--to-directory=<directory>] : Download the file if set
   *
   * ## EXAMPLES
   *
-  * @subcommand get-backup
   */
-   public function get_backup($args, $assoc_args) {
+   public function backup($args, $assoc_args) {
+     $action = array_shift($args);
+     if (!@$assoc_args['site']) Terminus::error("Must specify --site=<site>");
      $site = SiteFactory::instance($assoc_args['site']);
      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+     switch ($action) {
+       case 'get':
+         // prompt for backup type
+         if (!$element = @$assoc_args['element']) {
+           $element = Terminus::menu(array('code','files','database'), null, "Select type backup", TRUE);
+         }
 
-     // prompt for backup type
-     if (!$element = @$assoc_args['element']) {
-       $element = Terminus::menu(array('code','files','database'), null, "Select type backup", TRUE);
-     }
+         if (!in_array($element,array('code','files','database'))) {
+           Terminus::error("Invalid backup element specified.");
+         }
 
-     if (!in_array($element,array('code','files','database'))) {
-       Terminus::error("Invalid backup element specified.");
-     }
+         if (!$backups = $this->cache->get_data("{$site->getName()}:$env:{$element}")) {
+           $backups = $site->environment($env)->backups($element);
+           $this->cache->put_data("{$site->getName()}:$env:{$element}", $backups);
+         }
+         $menu = $folders = array();
 
-     if (!$backups = $this->cache->get_data("{$site->getName()}:$env:{$element}")) {
-       $backups = $site->environment($env)->backups($element);
-       $this->cache->put_data("{$site->getName()}:$env:{$element}", $backups);
-     }
-     $menu = $folders = array();
+         // build a menu for selecting back ups
+         foreach( $backups as $backup ) {
+           if (!isset($backup->filename)) continue;
+           $buckets[] = $backup->folder;
+           $menu[] = $backup->filename;
+         }
 
-     // build a menu for selecting back ups
-     foreach( $backups as $backup ) {
-       if (!isset($backup->filename)) continue;
-       $buckets[] = $backup->folder;
-       $menu[] = $backup->filename;
-     }
+         if (empty($menu)) {
+           Terminus::error("No backups available. Create one with `terminus site backup-make --site=%s`", array($site->getName()));
+         }
 
-     if (empty($menu)) {
-       Terminus::error("No backups available. Create one with `terminus site backup-make --site=%s`", array($site->getName()));
-     }
+         $index = Terminus::menu($menu, null, "Select backup");
+         $bucket = $buckets[$index];
+         $filename = $menu[$index];
 
-     $index = Terminus::menu($menu, null, "Select backup");
-     $bucket = $buckets[$index];
-     $filename = $menu[$index];
+         $url = $site->environment($env)->backupUrl($bucket,$element);
 
-     $url = $site->environment($env)->backupUrl($bucket,$element);
+         if (isset($assoc_args['to-directory'])) {
+           Terminus::line("Downloading ... please wait ...");
+           $filename = \Terminus\Utils\get_filename_from_url($url->url);
+           $target = sprintf("%s/%s", $assoc_args['to-directory'], $filename);
+           if (Terminus_Command::download($url->url,$target)) {
+             Terminus::success("Downloaded %s", $target);
+             return $target;
+           } else {
+             Terminus::error("Could not download file");
+           }
+         }
+         echo $url->url;
+         return $url->url;
+         break;
+      case 'load':
+        $assoc_args['download-to'] = '/tmp';
+        $assoc_args['element'] = 'database';
+        $database = @$assoc_args['database'] ?: false;
+        $username = @$assoc_args['username'] ?: false;
+        $password = @$assoc_args['password'] ?: false;
 
-     if (isset($assoc_args['to-directory'])) {
-       Terminus::line("Downloading ... please wait ...");
-       $filename = \Terminus\Utils\get_filename_from_url($url->url);
-       $target = sprintf("%s/%s", $assoc_args['to-directory'], $filename);
-       if (Terminus_Command::download($url->url,$target)) {
-         Terminus::success("Downloaded %s", $target);
-         return $target;
-       } else {
-         Terminus::error("Could not download file");
-       }
-     }
-     echo $url->url;
-     return $url->url;
+        exec("mysql -e 'show databases'",$stdout, $exit);
+        if ( 0 != $exit ) {
+          Terminus::error("MySQL does not appear to be installed on your server.");
+        }
 
+        $target = $this->get_backup($args, $assoc_args);
+
+        if (!file_exists($target)) {
+          Terminus::error("Can't read database file %s", array($target));
+        }
+
+        Terminus::line("Unziping database");
+        exec("gunzip $target", $stdout, $exit);
+
+        // trim the gz of the target
+        $target = Terminus\Utils\sql_from_zip($target);
+        $target = escapeshellarg($target);
+
+        if (!$database)
+          $database = escapeshellarg(Terminus::prompt("Name of database to import to"));
+        if (!$username)
+          $username = escapeshellarg(Terminus::prompt("Username"));
+        if (!$password)
+          $password = escapeshellarg(Terminus::prompt("Password"));
+
+        exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
+        if (0 != $exit) {
+          Terminus::error("Could not import database");
+        }
+
+        Terminus::success("%s successfuly imported to %s", array($target, $database));
+        return true;
+        break;
+      case 'create':
+        $type='backup';
+        $path = sprintf('environments/%s/backups/create', $env);
+        $site_id = $this->getSiteId( $assoc_args['site'] );
+
+        $data = array(
+         'entry_type' => $type,
+         'scheduled_for' => time(),
+         'code' =>  @$assoc_args['code'] ? true : false,
+         'database' => @$assoc_args['db'] ? true : false,
+         'files' => @$assoc_args['files'] ? true : false,
+        );
+        $Options = array(
+           'body' => json_encode($data) ,
+           'headers'=> array('Content-type'=>'application/json')
+         );
+        $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options);
+
+        if( @$response['data']->id ) {
+         $workflow_id = $response['data']->id;
+         $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
+         if( $result ) {
+           \Terminus::success("Successfully created backup");
+         }
+        }
+        return true;
+        break;
+      case 'list':
+      case 'default':
+        $backups = $site->environment($env)->backups();
+        $element = @$assoc_args['element'];
+        $data = array();
+        foreach ($backups as $id => $backup) {
+          if (!isset($backup->filename)) continue;
+          $data[] = array(
+            $backup->filename,
+            sprintf("%dMB", $backup->size / 1024 / 1024),
+            date("Y-m-d H:i:s", $backup->finish_time),
+          );
+        }
+
+        if (empty($backups)) {
+          \Terminus::error("No backups found.");
+          return false;
+        } else {
+          //munging data
+          $this->handleDisplay($data, $args, array('File','Size','Date'));
+          return $data;
+        }
+      break;
+    }
    }
 
   /**
-   * ## Options
-   *
-   * --site=<site>
-   * : Site to load
-   *
-   * [--env=<env>]
-   * : Environment to load
-   * [--element=<code|files|db>]
-   * : Element to download
-   * [--to-directory=<directory>]
-   * : Download the file if set
-   *
-   * ## Examples
-   *    terminus site load-backup --site=test --env=dev --download-to=/tmp
-   *
-   *
-   * @subcommand load-backup
-   */
-   public function load_backup($args, $assoc_args) {
-      $assoc_args['download-to'] = '/tmp';
-      $assoc_args['element'] = 'database';
-      $database = @$assoc_args['database'] ?: false;
-      $username = @$assoc_args['username'] ?: false;
-      $password = @$assoc_args['password'] ?: false;
-
-      exec("mysql -e 'show databases'",$stdout, $exit);
-      if ( 0 != $exit ) {
-        Terminus::error("MySQL does not appear to be installed on your server.");
-      }
-
-      $target = $this->get_backup($args, $assoc_args);
-
-      if (!file_exists($target)) {
-        Terminus::error("Can't read database file %s", array($target));
-      }
-
-      Terminus::line("Unziping database");
-      exec("gunzip $target", $stdout, $exit);
-
-      // trim the gz of the target
-      $target = Terminus\Utils\sql_from_zip($target);
-      $target = escapeshellarg($target);
-
-      if (!$database)
-        $database = escapeshellarg(Terminus::prompt("Name of database to import to"));
-      if (!$username)
-        $username = escapeshellarg(Terminus::prompt("Username"));
-      if (!$password)
-        $password = escapeshellarg(Terminus::prompt("Password"));
-
-      exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
-      if (0 != $exit) {
-        Terminus::error("Could not import database");
-      }
-
-      Terminus::success("%s successfuly imported to %s", array($target, $database));
-      return true;
-
-   }
-
-
-  /**
-   * ## Options
-   *
-   * --env=<env>
-   * : site environment to run backup from
-   *
-   * --site=<site>
-   * : Site to use
-   *
-   * [--code]
-   * : Include code in backup? default 'yes'
-   *
-   * [--files]
-   * : Include media and files in backup? default 'no'
-   *
-   * [--db]
-   * : Include dump of database? default 'yes'
-   *
-   * ## EXAMPLES
-   *
-   * @subcommand backup-make
-   */
-   public function backup_make($args, $assoc_args) {
-     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
-     $type='backup';
-     $path = sprintf('environments/%s/backups/create', $env);
-     $site_id = $this->getSiteId( $assoc_args['site'] );
-
-     $data = array(
-      'entry_type' => $type,
-      'scheduled_for' => time(),
-      'code' =>  @$assoc_args['code'] ? true : false,
-      'database' => @$assoc_args['db'] ? true : false,
-      'files' => @$assoc_args['files'] ? true : false,
-     );
-     $Options = array(
-        'body' => json_encode($data) ,
-        'headers'=> array('Content-type'=>'application/json')
-      );
-     $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options);
-
-     if( @$response['data']->id ) {
-      $workflow_id = $response['data']->id;
-      $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
-      if( $result ) {
-        \Terminus::success("Successfully created backup");
-      }
-     }
-     return true;
-   }
-
-  /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to use
@@ -465,7 +398,7 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to use
@@ -495,7 +428,7 @@ class Site_Command extends Terminus_Command {
    /**
     * Deploy dev environment to test or live
     *
-    * ## Options
+    * ## OPTIONS
     *
     * --site=<site>
     * : Site to deploy from
@@ -567,7 +500,7 @@ class Site_Command extends Terminus_Command {
   /**
    * List enviroments for a site
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Name of site to check
@@ -603,7 +536,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Hostname operations
    *
-   * ## Options
+   * ## OPTIONS
    *
    * <list|add|remove>
    * : Options are list, add, delete
@@ -656,7 +589,7 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * <info|add|remove>
    * : action to execute ( i.e. info, add, remove )
@@ -717,7 +650,7 @@ class Site_Command extends Terminus_Command {
     }
   }
   /**
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to use
@@ -742,7 +675,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Deploy dev environment to test or live
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to deploy from
@@ -766,7 +699,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Mount a site with sshfs
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to deploy from
@@ -796,6 +729,7 @@ class Site_Command extends Terminus_Command {
      $darwin = True;
     }
 
+    // @todo I'd prefer this was done with sprintf for a little validation
     $user = $env.'.'.$site->getId();
     $host = 'appserver.' . $env . '.' . $site->getId() . '.drush.in';
     $darwin_args = $darwin ? '-o defer_permissions ' : '';
@@ -809,9 +743,53 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+   * Interacts with redis
+   *
+   * ## OPTIONS
+   *
+   *    <subcommands> :
+            clear - Clear redis cache on remote server
+   *
+   *    --site=<site> : site name
+   *
+   *    [--env=<env>] : environment
+   *
+   * ## Examples
+   *
+   *    terminus site redis clear --site=mikes-wp-test --env=live
+   *
+   */
+  public function redis($args, $assoc_args) {
+    $action = array_shift($args);
+    $site = SiteFactory::instance(@$assoc_args['site']);
+    $env = @$assoc_args['env'];
+    switch ($action) {
+      case 'clear':
+        $bindings = $site->bindings('cacheserver');
+        $commands = array();
+        foreach($bindings as $binding) {
+          if ( @$env AND $env != $binding->environment) continue;
+          // @$todo ... should probably do this with symfony Process lib
+          $args = array( $binding->environment, $site->getId(), $binding->environment, $site->getId(), $binding->host, $binding->port, $binding->password );
+          array_filter($args, function($a) { return escapeshellarg($a); });
+          $commands[$binding->environment] = vsprintf(
+            'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in "redis-cli -h %s -p %s -a %s flushall"',
+            $args
+          );
+        }
+        foreach ($commands as $env => $command) {
+          Terminus::line("Clearing redis on %s ", array($env));
+          exec($command, $stdout, $return);
+          echo Logger::greenLine($stdout[0]);
+        }
+        break;
+    }
+  }
+
+  /**
    * Show upstream updates
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to check
@@ -827,7 +805,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Show upstream updates
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to check
@@ -880,7 +858,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Complete wipe and reset a site
    *
-   * ## Options
+   * ## OPTIONS
    *
    * --site=<site>
    * : Site to use
