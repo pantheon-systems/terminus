@@ -44,4 +44,27 @@ class Regular {
     $message = \cli\Colors::colorize( "%1%K$message%n", $cli->in_color );
     $cli->write( STDOUT, "$message\n");
   }
+
+  static function greenLine($message = " ") {
+    $cli = new Self('%2%K');
+    $message = \cli\Colors::colorize( "%2%K$message%n", $cli->in_color );
+    $cli->write( STDOUT, "$message\n");
+  }
+
+  static function coloredOutput($message = "", $print = true) {
+    $cli = new Self('');
+    // we're not using regex here because simple str_replace is faster. However,
+    // we may need to go that route if this function gets too complex
+    $message = str_replace('</M>','%n', str_replace('<M>','%M',$message) );
+    $message = str_replace('</m>','%n', str_replace('<m>','%m',$message) );
+    $message = str_replace('</G>','%n', str_replace('<G>','%G',$message) );
+    $message = str_replace('</y>','%n', str_replace('<y>','%y',$message) );
+    $message = str_replace('</Y>','%n', str_replace('<Y>','%Y',$message) );
+    $message = str_replace('</R>','%n', str_replace('<R>','%R',$message) );
+    $message = str_replace('</r>','%n', str_replace('<r>','%r',$message) );
+    $message = \cli\Colors::colorize( "$message", $cli->in_color );
+    if ($print)
+      $cli->write( STDOUT, "$message\n");
+    return $message;
+  }
 }
