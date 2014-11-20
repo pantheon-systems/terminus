@@ -284,13 +284,13 @@ abstract class Terminus_Command {
     }
   }
 
-  protected function handleDisplay($data,$args = array()) {
+  protected function handleDisplay($data,$args = array(), $headers = null) {
     if (array_key_exists("json", $args) OR Terminus::get_config('json') )
       echo \Terminus\Utils\json_dump($data);
     else if (array_key_exists("bash", $args))
       echo \Terminus\Utils\bash_out((array)$data);
     else
-      $this->_constructTableForResponse((array)$data);
+      $this->_constructTableForResponse((array)$data,$headers);
   }
 
   protected function _debug($vars) {
