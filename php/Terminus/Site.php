@@ -9,6 +9,7 @@ class Site {
   public $metadata;
   public $environments = array();
   public $jobs;
+  public $bindings;
 
   /**
    * Needs site object from the api to instantiate
@@ -22,6 +23,24 @@ class Site {
     $this->metadata = @$site->metadata ?: new \stdClass();
 
     return $this;
+  }
+
+  /**
+   * Fetch Binding info
+   */
+  public function bindings($type=null) {
+    if (empty($this->bindings)) {
+      $path = "bindings";
+      $response = \Terminus_Command::request('sites', $this->getId(), $path, "GET");
+      foreach ($response['data'] as $id => $binding) {
+        $binding->id = $id;
+        $this->bindings[$binding->type][] = $binding;
+      }
+    }
+    if ($type) {
+      return $this->bindings[$type];
+    }
+    return $this->bindings;
   }
 
   /**
