@@ -16,6 +16,7 @@ abstract class Environment {
   public $target_ref;
   public $watchers;
   public $backups;
+  public $bindings;
 
   public function __construct( Site $site, $environment = null ) {
     $this->site = $site;
@@ -34,7 +35,8 @@ abstract class Environment {
   }
 
   public function wipe() {
-    return \Terminus_Command::request('sites', $this->site->getId()->getName(), "environments/{$this->name}/wipe", 'POST');
+    $path = sprintf("environments/%s/wipe", $this->name);
+    return \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST');
   }
 
   public function diffstat() {
