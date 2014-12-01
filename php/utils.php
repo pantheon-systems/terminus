@@ -493,7 +493,7 @@ function destination_is_valid($destination,$make=true) {
 
 function handle_exception($exception) {
   $trace = $exception->getTrace();
-  if (!empty($trace)) {
+  if (!empty($trace) AND \Terminus::get_config('verbose')) {
       foreach( $exception->getTrace() as $line ) {
         $out_line = sprintf("%s%s%s [%s:%s]", @$line['class'], @$line['type'], @$line['function'], @$line['file'], @$line['line']);
         \Terminus\Loggers\Regular::redLine(">> $out_line");
