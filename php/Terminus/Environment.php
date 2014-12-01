@@ -1,6 +1,6 @@
 <?php
 namespace Terminus;
-use \ReflectionClass;
+use \ReflectionClass, \Terminus\Request;
 
 abstract class Environment {
   public $name = 'dev';
@@ -164,5 +164,22 @@ abstract class Environment {
   public function domain() {
     $host = sprintf( "%s-%s.%s", $this->name, $this->site->getName(), $this->dns_zone );
     return $host;
+  }
+
+  /**
+   * "Wake" a site
+   */
+  public function wake() {
+    $hostnames = $this->hostnames();
+    $target = key($hostnames);
+    $response = Request::send( "http://$target/pantheon_healthcheck", 'GET');
+    $return_data = array(
+      'success'  => $response->isSuccessful(),
+      'time' => $response->getInfo('total_time'),
+      'styx' => $response->getHeader('X-Pantheon-Styx-Hostname'),
+      'response' => $response,
+      'target' => $target,
+    );
+    return $return_data;
   }
 }

@@ -382,6 +382,8 @@ class Site_Command extends Terminus_Command {
      return true;
    }
 
+
+   // @todo this should be moved to a namespaced class CloneObject
    private function cloneObject($to_env, $from_env, $site_id, $object_type) {
      $path = sprintf("environments/%s/database", $to_env);
      $data = array('clone-from-environment'=>$from_env);
@@ -854,6 +856,38 @@ class Site_Command extends Terminus_Command {
      }
 
    }
+
+  /**
+   * Pings a site to ensure it responds
+   *
+   * ## OPTIONS
+   *
+   * --site=<site>
+   * : site to ping
+   *
+   * [--env=<env>]
+   * : environment to ping
+   *
+   * ## Examples
+   *  terminus site wake --site='testsite' --env=dev
+  */
+  public function wake($args, $assoc_args) {
+    $site = SiteFactory::instance(@$assoc_args['site']);
+    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+    $data = $site->environment($env)->wake();
+    if (!$data['success']) {
+      Logger::redLine(sprintf("Could not reach %s", $data['target']));
+      return;
+    }
+
+    if (!$data['styx']) {
+      Logger::redLine("Pantheon headers missing, which isn't quite right.");
+      return;
+    }
+
+    Logger::greenLine(sprintf( "OK >> %s responded in %s", $data['target'], $data['time']));
+
+  }
 
   /**
    * Complete wipe and reset a site
