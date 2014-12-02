@@ -37,4 +37,26 @@ return array(
     'desc' => 'Force json output',
   ),
 
+  'nocache' => array(
+    'runtime' => '',
+    'file'  => '<bool>',
+    'default' => false,
+    'desc'  => 'Bypass cache',
+  ),
+
+  'debug' => array(
+    'runtime' => '',
+    'file'  => '<bool>',
+    'default' => false,
+    'desc'  => 'Get debug output',
+  ),
+
+  'bash' => array(
+    'runtime' => '',
+    'file'  => '<bool>',
+    'default' => false,
+    'desc'  => 'Bash-friendly output',
+  ),
+
+
 );

@@ -4,6 +4,7 @@ use \Terminus\Request;
 use \Terminus\Fixtures;
 use \Terminus\Session;
 use \Terminus\Auth;
+use \Terminus\Loggers\Regular as Logger;
 
 /**
  * Base class for Terminus commands
@@ -115,25 +116,42 @@ abstract class Terminus_Command {
     }
 
     try {
+      $cache = Terminus::get_cache();
+
+      // combine session realm uuid and path to get a unique key
+      $cachekey = sprintf("%s-%s-%s", Session::getValue('user_uuid'),$realm, $path);
+      $data = $cache->get_data($cachekey);
+      // check the request cache
+      if ("GET" == $method AND !Terminus::get_config('nocache')) {
+        if (Terminus::get_config('debug')) {
+          Logger::coloredOutput('<Y>Cached Request</Y>');
+        }
+        return (array) $data;
+      }
+
       if ($realm != 'login') {
         $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
         $options['verify'] = false;
       }
+
       $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
       $resp = Request::send($url, $method, $options);
+      $json = $resp->getBody(TRUE);
+      $data = array(
+        'info' => $resp->getInfo(),
+        'headers' => $resp->getRawHeaders(),
+        'json' => $json,
+        'data' => json_decode($json)
+      );
+
+      $cache->put_data($cachekey, $data);
+      return $data;
     } catch( Exception $e ) {
       $response = $e->getResponse();
       \Terminus::error("%s", $response->getBody(TRUE));
     }
 
-    $json = $resp->getBody(TRUE);
 
-    return array(
-      'info' => $resp->getInfo(),
-      'headers' => $resp->getRawHeaders(),
-      'json' => $json,
-      'data' => json_decode($json)
-    );
   }
 
   public static function download($url, $target) {
@@ -287,7 +305,7 @@ abstract class Terminus_Command {
   protected function handleDisplay($data,$args = array(), $headers = null) {
     if (array_key_exists("json", $args) OR Terminus::get_config('json') )
       echo \Terminus\Utils\json_dump($data);
-    else if (array_key_exists("bash", $args))
+    else if (array_key_exists("bash", $args) OR Terminus::get_config('bash'))
       echo \Terminus\Utils\bash_out((array)$data);
     else
       $this->_constructTableForResponse((array)$data,$headers);

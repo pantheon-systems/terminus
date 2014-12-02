@@ -78,7 +78,12 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * ## OPTIONS
+   * Code related commands
+   *
+   * ## Options
+   *
+   * <action>
+   * : options are log,branches
    *
    * --site=<site>
    * : name of the site
@@ -86,27 +91,34 @@ class Site_Command extends Terminus_Command {
    * [--env=<env>]
    * : site nvironment
    *
-   * ## Examples
-   *    terminus site code-log --site=test --env=dev
-   *
-   * @subcommand code-log
    */
-  public function code_log($args, $assoc_args) {
+  public function code($args, $assoc_args) {
+      $subcommand = array_shift($args);
       $site = SiteFactory::instance(@$assoc_args['site']);
-      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
-      $logs = $site->environment($env)->log();
-      $data = array();
-      foreach ($logs as $log) {
-        $data[] = array(
-          'time' => $log->datetime,
-          'author' => $log->author,
-          'labels' => join(", ", $log->labels),
-          'hash'  => $log->hash,
-          'message' => trim(str_replace("\n",'',str_replace("\t",'',substr($log->message,0,50)))),
-        );
+      $data = $headers = array();
+      switch($subcommand) {
+        case 'log':
+          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $logs = $site->environment($env)->log();
+          $data = array();
+          foreach ($logs as $log) {
+            $data[] = array(
+              'time' => $log->datetime,
+              'author' => $log->author,
+              'labels' => join(", ", $log->labels),
+              'hash'  => $log->hash,
+              'message' => trim(str_replace("\n",'',str_replace("\t",'',substr($log->message,0,50)))),
+            );
+          }
+          break;
+        case 'branches':
+          $data = $site->tips();
+          $headers = array('Branch','Commit');
+          break;
       }
-      $this->handleDisplay($data);
-      return $log;
+      if(!empty($data))
+        $this->handleDisplay($data, array(), $headers);
+      return $data;
   }
 
   /**
