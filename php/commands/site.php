@@ -20,6 +20,25 @@ class Site_Command extends Terminus_Command {
   protected $_headers = false;
 
   /**
+  *
+  * ## OPTIONS
+  *
+  * --site=<site>
+  * : site to check attributes on
+  *
+  * [--env=<env>]
+  * : environment
+  *
+  * ## EXAMPLES
+  *
+  **/
+  public function attributes($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $data = $site->attributes();
+    $this->handleDisplay($data, array(), array('Attribute','Value'));
+  }
+
+  /**
    *
    * ## OPTIONS
    *

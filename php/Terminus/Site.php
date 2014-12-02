@@ -26,6 +26,16 @@ class Site {
   }
 
   /**
+   * returns array of attributes
+   */
+  public function attributes() {
+    $path = "attributes";
+    $method = "GET";
+    $atts = \Terminus_Command::request('sites',$this->getId(),$path,$method);
+    return $atts['data'];
+  }
+
+  /**
    * Fetch Binding info
    */
   public function bindings($type=null) {
