@@ -122,7 +122,7 @@ abstract class Terminus_Command {
       $cachekey = sprintf("%s-%s-%s", Session::getValue('user_uuid'),$realm, $path);
       $data = $cache->get_data($cachekey);
       // check the request cache
-      if ("GET" == $method AND !Terminus::get_config('nocache')) {
+      if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE')) {
         if (Terminus::get_config('debug')) {
           Logger::coloredOutput('<Y>Cached Request</Y>');
         }
