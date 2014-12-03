@@ -119,14 +119,20 @@ abstract class Terminus_Command {
       $cache = Terminus::get_cache();
 
       // combine session realm uuid and path to get a unique key
-      $cachekey = sprintf("%s-%s-%s", Session::getValue('user_uuid'),$realm, $path);
+      // @todo need cache "groups"
+      $cachekey = md5( Session::getValue('user_uuid').$realm.$path );
       $data = $cache->get_data($cachekey);
       // check the request cache
-      if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE')) {
+      if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE') AND !empty($data)) {
         if (Terminus::get_config('debug')) {
           Logger::coloredOutput('<Y>Cached Request</Y>');
         }
         return (array) $data;
+      }
+
+      // for some methods we'll assume the cache should be invalidated
+      if ( in_array($method, array("POST","PUT","DELETE")) ) {
+        $cache->flush(null, 'session');
       }
 
       if ($realm != 'login') {
@@ -143,7 +149,6 @@ abstract class Terminus_Command {
         'json' => $json,
         'data' => json_decode($json)
       );
-
       $cache->put_data($cachekey, $data);
       return $data;
     } catch( Exception $e ) {
