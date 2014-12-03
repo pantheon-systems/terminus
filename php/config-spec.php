@@ -58,5 +58,12 @@ return array(
     'desc'  => 'Bash-friendly output',
   ),
 
+  'yes' => array(
+    'runtime' => '',
+    'file'  => '<bool>',
+    'default' => false,
+    'desc'  => 'Answer yes to all prompts',
+  ),
+
 
 );
