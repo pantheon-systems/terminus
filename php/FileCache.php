@@ -31,7 +31,7 @@ class FileCache {
   /**
    * @var int files time to live
    */
-  protected $ttl;
+  protected $ttl = 36000;
   /**
    * @var int max total size
    */
@@ -136,7 +136,6 @@ class FileCache {
   public function put_data( $key, $array ) {
     $json = json_encode( $array );
     $result = $this->write( $key, $json );
-
     return $result;
   }
 
@@ -347,11 +346,12 @@ class FileCache {
     return Finder::create()->in( $this->root )->files();
   }
 
-  public function flush($cache=null) {
+  public function flush($cache=null,$exclude=null) {
     $finder = $this->get_finder();
     foreach( $finder as $file ) {
       // if a cache to clear was specified skip those that don't match
-      if($cache AND $cache != $file->getFilename() ) continue;
+      if ($cache AND $cache != $file->getFilename() ) continue;
+      if ($exclude AND $exclude == $file->getFilename()) continue;
       unlink($file->getRealPath());
     }
   }
