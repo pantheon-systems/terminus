@@ -83,13 +83,16 @@ class Site_Command extends Terminus_Command {
    * ## Options
    *
    * <action>
-   * : options are log,branches
+   * : options are log,branches,diffstat,commit
    *
    * --site=<site>
    * : name of the site
    *
    * [--env=<env>]
-   * : site nvironment
+   * : site environment
+   *
+   * [--message=<message>]
+   * : message to use when committing on server changes
    *
    */
   public function code($args, $assoc_args) {
@@ -115,55 +118,95 @@ class Site_Command extends Terminus_Command {
           $data = $site->tips();
           $headers = array('Branch','Commit');
           break;
+        case 'commit':
+          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $diff = $site->environment($env)->diffstat();
+          $count = count($diff);
+          if (!Terminus::get_config('yes')) {
+            Terminus::confirm("Commit %s changes?", $assoc_args, array($count));
+          }
+          $message = @$assoc_args['message'] ?: "Terminus commit.";
+          $data = $site->environment($env)->onServerDev(null, $message);
+          Terminus::success("Successfully commited.");
+          \Terminus::launch_self('site',array('code','log'), array(
+              'nocache' => true,
+              'site' => $site->getName(),
+              'env' => $env,
+            )
+          );
+          return true;
+          break;
+        case 'diffstat':
+          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $diff = (array) $site->environment($env)->diffstat();
+          if (empty($diff)) {
+            Terminus::success("No changes on server.");
+            return true;
+          }
+          $data = array();
+          // munge the data
+          $filter = @$assoc_args['filter'] ?: false;
+          foreach ($diff as $file => $stats) {
+            if ($filter) {
+              $filter = preg_quote($filter,'/');
+              $regex = '/'.$filter.'/';
+              if (!preg_match($regex, $file)) {
+                continue;
+              }
+            }
+            $data[] = array_merge( array('file'=>$file), (array) $stats );
+          }
+          break;
       }
-      if(!empty($data))
+
+      if(!empty($data)) {
         $this->handleDisplay($data, array(), $headers);
+      }
       return $data;
   }
 
   /**
-   * ## OPTIONS
-   *
-   * --site=<site>
-   * : name of the site to work with
-   *
-   * --env=<env>
-   * : environment to check
-   *
-   * [--filter]
-   * : Use a regex to filter the diffstat for certain files
-   *
-   * [--nocache]
-   * : bypass the local cache
-   *
-   * [--bash]
-   * : bash friendly output
-   *
-   * ## EXAMPLES
-   *  terminus site diffstat --site=test --env=dev
-   *
-   */
-  public function diffstat($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
-    $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
-    $diff = (array) $site->environment($env)->diffstat();
-
-    $data = array();
-    // munge the data
-    $filter = @$assoc_args['filter'] ?: false;
-    foreach ($diff as $file => $stats) {
-      if ($filter) {
-        $filter = preg_quote($filter,'/');
-        $regex = '/'.$filter.'/';
-        if (!preg_match($regex, $file)) {
-          continue;
-        }
-      }
-      $data[] = array_merge( array('file'=>$file), (array) $stats );
+  * Connection related commands
+  *
+  * ## Options
+  *
+  * --site=<site>
+  * : name of the site
+  *
+  * [--env=<env>]
+  * : site environment
+  *
+  * [--set=<value>]
+  * : set connection to sftp or git
+  *
+  * @subcommand connection-mode
+  */
+  public function connection_mode($args, $assoc_args) {
+    $site = SiteFactory::instance(@$assoc_args['site']);
+    $action = 'show';
+    $mode = @$assoc_args['set'] ?: false;
+    if (@$assoc_args['set']) {
+      $action = 'set';
     }
-
-    $this->handleDisplay($data,$args);
-
+    $env = $this->getValidEnv(@$site->getName(), @$assoc_args['env']);
+    $data = $headers = array();
+    switch($action) {
+      case 'show':
+        $data = $site->environment($env)->onServerDev();
+        $mode = $data->enabled ? 'Sftp' : 'Git';
+        Logger::coloredOutput("<Y>Connection mode:</Y> $mode");
+        return;
+        break;
+      case 'set':
+        if (!$mode) {
+          Terminus::error("You must specify the mode with --set=<sftp|git>");
+        }
+        $data = $site->environment($env)->onServerDev($mode);
+        break;
+    }
+    if(!empty($data)) {
+      $this->handleDisplay($data, array(), $headers);
+    }
     return $data;
   }
 

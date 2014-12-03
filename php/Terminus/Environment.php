@@ -40,7 +40,9 @@ abstract class Environment {
   }
 
   public function diffstat() {
-    return $this->diffstat;
+    $path = sprintf('environments/%s/on-server-development/diffstat', $this->name);
+    $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+    return $data['data'];
   }
 
   /**
@@ -94,6 +96,39 @@ abstract class Environment {
     $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
 
     return $response['data'];
+  }
+
+  /**
+  * OnServer Dev Handler
+  *
+  * @param $value string optional -- git or sftp, connection mode to set
+  * @param $commit string optional -- should be the commit message to use if
+  * committing on server changes
+  */
+  public function onServerDev($value = null, $commit = null ) {
+    $path = sprintf("environments/%s/on-server-development", $this->name);
+    if ($commit) {
+      $path = sprintf("%s/commit", $path);
+      $data = ($commit) ? array('message' => $commit, 'user' => Session::getValue('user_uuid')) : NULL;
+      $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
+      $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
+    } else {
+      if (null == $value) {
+        $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+      } else {
+        $enabled = ($value == 'sftp') ? true : false;
+        $data = array(
+          'enabled' => $enabled,
+        );
+        $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
+        $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'PUT', $options);
+      }
+    }
+
+    if (empty($data)) {
+      return false;
+    }
+    return $data['data'];
   }
 
   /**
