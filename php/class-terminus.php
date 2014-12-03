@@ -209,8 +209,9 @@ class Terminus {
   /**
    * Ask for confirmation before running a destructive operation.
    */
-  static function confirm( $question, $assoc_args = array() ) {
+  static function confirm( $question, $assoc_args = array(), $params ) {
     if ( !isset( $assoc_args['yes'] ) ) {
+      $question = vsprintf($question, $params);
       fwrite( STDOUT, $question . " [y/n] " );
 
       $answer = trim( fgets( STDIN ) );
