@@ -80,7 +80,7 @@ class Site_Command extends Terminus_Command {
   /**
    * Code related commands
    *
-   * ## Options
+   * ## OPTIONS
    *
    * <action>
    * : options are log,branches,diffstat,commit
@@ -168,7 +168,7 @@ class Site_Command extends Terminus_Command {
   /**
   * Connection related commands
   *
-  * ## Options
+  * ## OPTIONS
   *
   * --site=<site>
   * : name of the site
@@ -194,7 +194,7 @@ class Site_Command extends Terminus_Command {
       case 'show':
         $data = $site->environment($env)->onServerDev();
         $mode = $data->enabled ? 'Sftp' : 'Git';
-        Logger::coloredOutput("<Y>Connection mode:</Y> $mode");
+        Logger::GOutput("<Y>Connection mode:</Y> $mode");
         return;
         break;
       case 'set':
@@ -208,6 +208,22 @@ class Site_Command extends Terminus_Command {
       $this->handleDisplay($data, array(), $headers);
     }
     return $data;
+  }
+
+  /**
+   * Open the Pantheon site dashboard a browser
+   *
+   * ## OPTIONS
+   *
+   * --site=<site>
+   * : site dashboard to open
+   *
+  */
+  public function dashboard($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    Terminus::confirm("Do you want to open your dashboard link in a web browser?");
+    $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
+    exec($command);
   }
 
   /**
@@ -354,11 +370,11 @@ class Site_Command extends Terminus_Command {
          'database' => @$assoc_args['db'] ? true : false,
          'files' => @$assoc_args['files'] ? true : false,
         );
-        $Options = array(
+        $OPTIONS = array(
            'body' => json_encode($data) ,
            'headers'=> array('Content-type'=>'application/json')
          );
-        $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $Options);
+        $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $OPTIONS);
 
         if( @$response['data']->id ) {
          $workflow_id = $response['data']->id;
@@ -461,11 +477,11 @@ class Site_Command extends Terminus_Command {
    private function cloneObject($to_env, $from_env, $site_id, $object_type) {
      $path = sprintf("environments/%s/database", $to_env);
      $data = array('clone-from-environment'=>$from_env);
-     $Options = array(
+     $OPTIONS = array(
        'body' => json_encode($data) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $Options);
+     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $OPTIONS);
      if ($response) {
        $this->waitOnWorkflow("sites", $site_id, $response['data']->id);
        return $response;
@@ -492,11 +508,11 @@ class Site_Command extends Terminus_Command {
        \Terminus::error("The %s environment already exists", array($env));
      }
      $path = sprintf('environments/%s', $env);
-     $Options = array(
+     $OPTIONS = array(
        'body' => json_encode(array()) ,
        'headers'=> array('Content-type'=>'application/json')
      );
-     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $Options);
+     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $OPTIONS);
     \Terminus::success("Created %s environment", array($env));
 
    }
@@ -566,14 +582,6 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * Fetch the UUID for a site name
-   */
-  private function getSiteId( $name ) {
-    $site = SiteFactory::instance($name);
-    return $site->getId();
-  }
-
-  /**
    * List enviroments for a site
    *
    * ## OPTIONS
@@ -615,7 +623,7 @@ class Site_Command extends Terminus_Command {
    * ## OPTIONS
    *
    * <list|add|remove>
-   * : Options are list, add, delete
+   * : OPTIONS are list, add, delete
    *
    * --site=<site>
    * : Site to use
@@ -819,6 +827,48 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+  * Get New Relic Info for site
+  *
+  * ## OPTIONS
+  *
+  * --site=<site>
+  * : site for which to retreive notifications
+  *
+  * @subcommand new-relic
+  */
+  public function new_relic($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $data = $site->newRelic();
+    $this->handleDisplay($data->account,$assoc_args,array('Key','Value'));
+  }
+
+  /**
+  * Open the Pantheon site dashboard a browser
+  *
+  * ## OPTIONS
+  *
+  * --site=<site>
+  * : site for which to retreive notifications
+  *
+  */
+  public function notifications($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $notifications = $site->notifications();
+    $data = array();
+    foreach ($notifications as $note) {
+      $data[] = array(
+        'time'  => $note->start,
+        'name'  => $note->name,
+        'id'    => $note->build->number."@".$note->build->environment->HOSTNAME,
+        'status'=> $note->build->status,
+        'phase' => $note->build->phase,
+        'duration' => $note->build->estimated_duration,
+      );
+    }
+    $this->handleDisplay($data);
+  }
+
+  /**
    * Interacts with redis
    *
    * ## OPTIONS
@@ -860,6 +910,30 @@ class Site_Command extends Terminus_Command {
         }
         break;
     }
+  }
+
+  /**
+  * Show upstream updates
+  *
+  * ## OPTIONS
+  *
+  * --site=<site>
+  * : Site to check
+  *
+  * [--set=<value>]
+  * : new service level to set
+  *
+  * @subcommand service-level
+  */
+  public function service_level($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $info = $site->info('service_level');
+    if (@$assoc_args['set']) {
+      $data = $site->updateServiceLevel($assoc_args['set']);
+      print_r($data);
+    }
+    Logger::coloredOutput("%2<K>Service Level is '$info'%n");
+    return true;
   }
 
   /**

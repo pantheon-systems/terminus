@@ -62,6 +62,7 @@ class Regular {
     $message = str_replace('</Y>','%n', str_replace('<Y>','%Y',$message) );
     $message = str_replace('</R>','%n', str_replace('<R>','%R',$message) );
     $message = str_replace('</r>','%n', str_replace('<r>','%r',$message) );
+    $message = str_replace('</K>','%n', str_replace('<K>','%K',$message) );
     $message = \cli\Colors::colorize( "$message", $cli->in_color );
     if ($print)
       $cli->write( STDOUT, "$message\n");

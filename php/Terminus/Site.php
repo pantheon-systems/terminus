@@ -108,8 +108,24 @@ class Site {
   /**
    * Load site info
    */
-  public function info() {
+  public function info($key = null) {
+    $info = $this->information;
+    if ($key AND property_exists($info, $key)) {
+      return $info->$key;
+    }
     return $this->information;
+  }
+
+  /**
+   * Update service level
+   */
+  public function updateServiceLevel($level) {
+    $path = "service-level";
+    $method = 'PUT';
+    $data = $level;
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    return $response['data'];
   }
 
   /**
@@ -176,6 +192,25 @@ class Site {
     }
     return $this->jobs;
   }
+
+  /**
+   * Retrieve New Relic Info
+   */
+  public function newRelic() {
+    $path = 'new-relic';
+    $response = \Terminus_Command::request('sites', $this->getId(), 'new-relic', 'GET');
+    return $response['data'];
+  }
+
+  /**
+   * fetch notifications
+  **/
+  public function notifications() {
+    $path = 'notifications';
+    $data = \Terminus_Command::request('sites', $this->getId(), $path, 'GET');
+    return $data['data'];
+  }
+
 
   /**
    * Import Archive
