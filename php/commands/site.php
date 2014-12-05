@@ -869,6 +869,25 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+  * Get or set owner
+  *
+  * ## OPTIONS
+  *
+  * --site=<site>
+  * : Site to check
+  *
+  * [--set=<value>]
+  * : new owner to set
+  *
+  * @subcommand owner
+  */
+  public function owner($args, $assoc_args) {
+    $site = SiteFactory::instance($assoc_args['site']);
+    $data = $site->owner();
+    $this->handleOutput($data);
+  }
+
+  /**
    * Interacts with redis
    *
    * ## OPTIONS
@@ -913,27 +932,72 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-  * Show upstream updates
-  *
-  * ## OPTIONS
-  *
-  * --site=<site>
-  * : Site to check
-  *
-  * [--set=<value>]
-  * : new service level to set
-  *
-  * @subcommand service-level
-  */
+   * Get or set service level
+   *
+   * ## OPTIONS
+   *
+   * --site=<site>
+   * : Site to check
+   *
+   * [--set=<value>]
+   * : new service level to set
+   *
+   * @subcommand service-level
+   */
   public function service_level($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
     $info = $site->info('service_level');
     if (@$assoc_args['set']) {
       $data = $site->updateServiceLevel($assoc_args['set']);
-      print_r($data);
+      Logger::coloredOutput(sprintf("%2<K>Service Level has been updated to '%s'%n", $info));
     }
     Logger::coloredOutput("%2<K>Service Level is '$info'%n");
     return true;
+  }
+
+  /**
+  * Get or set team members
+  *
+  * ## OPTIONS
+  *
+  * <action> : i.e. add or remove
+  *
+  * --site=<site> : Site to check
+  *
+  * [--member=<email>] : Email of the member to add. Member will receive an invite
+  *
+  * @subcommand team
+  */
+  public function team($args, $assoc_args) {
+    $action = array_shift($args) ?: 'list';
+    $site = SiteFactory::instance($assoc_args['site']);
+    $data = array();
+    switch($action) {
+      case 'add-member':
+        $team = $site->teamAddMember($assoc_args['member']);
+        Logger::coloredOutput("%2<K>Team member added!</K>");
+        break;
+      case 'remove-member':
+        $team = $site->teamRemoveMember($assoc_args['member']);
+        Logger::coloredOutput("%2<K>Team member removed!</K>");
+        break;
+      case 'list':
+      case 'default':
+        $team = $site->team();
+        foreach ($team as $uuid => $user) {
+          $data[] = array(
+            'First' => $user->profile->firstname,
+            'Last'  => $user->profile->lastname,
+            'Email' => $user->email,
+            'UUID'  => $uuid,
+          );
+        }
+        ksort($data);
+        break;
+    }
+    if (!empty($data)) {
+      $this->handleDisplay($data);
+    }
   }
 
   /**

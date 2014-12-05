@@ -238,6 +238,46 @@ class Site {
   }
 
   /**
+   * Owner handler
+   */
+  public function owner($owner=null) {
+    if ($owner !== null) {
+      $method = 'PUT';
+      $options = array( 'body' => json_encode($owner) , 'headers'=>array('Content-type'=>'application/json') );
+    } else {
+      $method = 'GET';
+      $options = array();
+    }
+    $path = 'site-owner';
+    $response = \Terminus_Command::request('sites', $site->getId(), $path, $method, $options);
+    return $response['data'];
+  }
+
+  public function team() {
+    $method = 'GET';
+    $path = 'team';
+    $options = array();
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    return $response['data'];
+  }
+
+  public function teamAddMember($email) {
+    $method = 'POST';
+    $path = sprintf('team/%s', urlencode($email));
+    $data = array('invited_by' => Session::getValue('user_uuid'));
+    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json'));
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    return $response['data'];
+  }
+
+  public function teamRemoveMember($uuid) {
+    $method = 'DELETE';
+    $path = sprintf('team/%s', $uuid);
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
+    return $response['data'];
+  }
+
+  /**
   * Code branches
   */
   function tips() {
