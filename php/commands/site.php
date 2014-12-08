@@ -361,7 +361,6 @@ class Site_Command extends Terminus_Command {
       case 'create':
         $type='backup';
         $path = sprintf('environments/%s/backups/create', $env);
-        $site_id = $this->getSiteId( $assoc_args['site'] );
 
         $data = array(
          'entry_type' => $type,
@@ -374,7 +373,7 @@ class Site_Command extends Terminus_Command {
            'body' => json_encode($data) ,
            'headers'=> array('Content-type'=>'application/json')
          );
-        $response = \Terminus_Command::request( "sites", $site_id, $path, 'POST', $OPTIONS);
+        $response = \Terminus_Command::request( "sites", $site->getId(), $path, 'POST', $OPTIONS);
 
         if( @$response['data']->id ) {
          $workflow_id = $response['data']->id;
@@ -432,7 +431,8 @@ class Site_Command extends Terminus_Command {
    * @subcommand clone-env
    */
    public function clone_env($args, $assoc_args) {
-     $site_id = $this->getSiteId($assoc_args['site']);
+     $site = SiteFactory::instance($assoc_args['site']);
+     $site_id = $site->getId();
      $from_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['from-env'], "Choose environment you want to clone from");
      $to_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['to-env'], "Choose environment you want to clone to");
 
@@ -503,7 +503,8 @@ class Site_Command extends Terminus_Command {
    public function create_env($args, $assoc_args) {
      Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
      $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
-     $site_id = $this->getSiteId($assoc_args['site']);
+     $site = SiteFactory::instance($assoc_args['site']);
+     $site_id = $site->getId();
      if ($this->envExists($site_id,$env)) {
        \Terminus::error("The %s environment already exists", array($env));
      }
@@ -537,7 +538,7 @@ class Site_Command extends Terminus_Command {
     */
    public function deploy($args, $assoc_args) {
      $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env'], "Select environment to deploy to");
-
+     $site = SiteFactory::instance($assoc_args['site']);
      $cc = $update = 0;
      if (array_key_exists('cc',$assoc_args)) {
        $cc = 1;
@@ -550,7 +551,7 @@ class Site_Command extends Terminus_Command {
        'update' => $update,
        'cc' => $cc
      );
-     $site_id = $this->getSiteId($assoc_args['site']);
+     $site_id = $site->getId();
      $path = sprintf('environments/%s/code?%s', $env, http_build_query($params));
      $response = \Terminus_Command::request('sites', $site_id, $path, 'POST');
      $result = $this->waitOnWorkflow('sites', $site_id, $response['data']->id);
@@ -1027,6 +1028,9 @@ class Site_Command extends Terminus_Command {
    * [--apply-to=<env>]
    * : A flag to apply to a specified environment
    *
+   * [--update]
+   * : Do update on dev env
+   *
    * @subcommand upstream-updates
    */
    public function upstream_updates($args, $assoc_args) {
@@ -1044,7 +1048,7 @@ class Site_Command extends Terminus_Command {
      }
 
      $this->_constructTableForResponse($data, array('Environment','Status') );
-     if (empty($upstream->update_log)) Terminus::success("No updates to show");
+     if (!isset($upstream) OR empty(@$upstream->update_log)) Terminus::success("No updates to show");
      $upstreams = (array) $upstream->update_log;
      if (!empty($upstreams)) {
        $data = array();
@@ -1060,11 +1064,15 @@ class Site_Command extends Terminus_Command {
        }
      }
 
-     if (isset($assoc_args['apply-to'])) {
-       $env = $this->getValidEnv($site->getName(),$assoc_args['apply-to']);
-       Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s:%s", $site->getName(), $env));
+     if (isset($assoc_args['update']) AND !empty(@$upstream->update_log)) {
+       $env = 'dev';
+       Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
        $response = $site->applyUpstreamUpdates($env);
-       $this->waitOnWorkflow('sites', $site->getId(), $response->id);
+       if (@$response->id) {
+         $this->waitOnWorkflow('sites', $site->getId(), $response->id);
+       } else {
+         Terminus::success("Updates applied");
+       }
      }
 
    }

@@ -165,7 +165,7 @@ class Site {
    * @param $optionx boolean (optional) -- auto resolve merge conflicts
    * @todo This currently doesn't work and is block upstream
    */
-  public function applyUpstreamUpdates($env, $updatedb = false, $xoption = false) {
+  public function applyUpstreamUpdates($env, $updatedb = true, $xoption = 'theirs') {
     $data = array('updatedb' => $updatedb, 'xoption' => $xoption );
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
     $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream-updates', 'POST', $options);
