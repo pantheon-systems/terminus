@@ -3,7 +3,7 @@
 set -ex
 
 # Basic lint test
-for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "^D" | awk '{print $2}') ; do php -l $f ; done
+#for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "^D" | awk '{print $2}') ; do php -l $f ; done
 
 # Run the unit tests
 # phpunit
