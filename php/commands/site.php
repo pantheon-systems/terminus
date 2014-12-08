@@ -227,22 +227,26 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+   * Retrieve information about the site
+   *
    * ## OPTIONS
    *
-   * --site=<site>
-   * : name of the site to work with
-   *
-   * [--nocache]
-   * : bypass the local cache
-   * [--bash]
-   * : bash friendly output
+   * --site=<site> : name of the site to work with
+   * [--nocache] : bypass the local cache
+   * [--bash] : bash friendly output
+   * [--field=<field>] : field to return
    *
    * ## EXAMPLES
    *
    */
   public function info($args, $assoc_args) {
     $site = SiteFactory::instance($assoc_args['site']);
-    $data = (array) $site->info();
+    $field = @$assoc_args['field'] ?: null;
+    $data = (array) $site->info($field);
+    if ($field) {
+      Terminus::line($data[0]);
+      return true;
+    }
     $this->handleDisplay($data,$args);
     return $data;
 
