@@ -60,7 +60,7 @@ class Organizations_Command extends Terminus_Command {
 
     $org = new Organization($selected_org);
 
-    if (isset($assoc_args['add']) {
+    if (isset($assoc_args['add'])) {
         $add = SiteFactory::instance($assoc_args['add']);
 
         Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
