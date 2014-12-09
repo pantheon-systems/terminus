@@ -52,7 +52,7 @@ class Organizations_Command extends Terminus_Command {
       $orgs[$id] = $org->name;
     }
 
-    if (empty(@$assoc_args['org'])) {
+    if (!isset($assoc_args['org'])) {
       $selected_org = Terminus::menu($orgs,false,"Choose an organization");
     } else {
       $selected_org = @$assoc_args['org'];

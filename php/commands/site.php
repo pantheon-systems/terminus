@@ -1043,16 +1043,16 @@ class Site_Command extends Terminus_Command {
 
      // data munging as usual
      $data = array();
-     $data['dev'] = ( @$upstream->dev->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+     $data['dev'] = ( isset($upstream->test->is_up_to_date_with_upstream) AND $upstream->dev->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
      if (isset($upstream->test)) {
-       $data['test'] = ( @$upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+       $data['test'] = ( isset($upstream->test->is_up_to_date_with_upstream) AND $upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
      }
      if (isset($upstream->live)) {
-       $data['test'] = ( @$upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
+       $data['test'] = ( isset($upstream->test->is_up_to_date_with_upstream) AND $upstream->test->is_up_to_date_with_upstream ) ?"Up-to-date":"Updates Available";
      }
 
      $this->_constructTableForResponse($data, array('Environment','Status') );
-     if (!isset($upstream) OR empty(@$upstream->update_log)) Terminus::success("No updates to show");
+     if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
      $upstreams = (array) $upstream->update_log;
      if (!empty($upstreams)) {
        $data = array();
