@@ -52,16 +52,16 @@ class Organizations_Command extends Terminus_Command {
       $orgs[$id] = $org->name;
     }
 
-    if (!isset($assoc_args['org'])) {
+    if (!isset($assoc_args['org']) OR empty($assoc_args['org'])) {
       $selected_org = Terminus::menu($orgs,false,"Choose an organization");
     } else {
-      $selected_org = @$assoc_args['org'];
+      $selected_org = $assoc_args['org'];
     }
 
     $org = new Organization($selected_org);
 
-    if (@$assoc_args['add']) {
-        $add = SiteFactory::instance(@$assoc_args['add']);
+    if (isset($assoc_args['add']) {
+        $add = SiteFactory::instance($assoc_args['add']);
 
         Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
         $org->addSite($add);
@@ -69,8 +69,8 @@ class Organizations_Command extends Terminus_Command {
         return true;
     }
 
-    if (@$assoc_args['remove']) {
-      $remove = SiteFactory::instance(@$assoc_args['remove']);
+    if (isset($assoc_args['remove'])) {
+      $remove = SiteFactory::instance($assoc_args['remove']);
 
       Terminus::confirm("Are you sure you want to remove %s to %s ?", $assoc_args, array($remove->getName(), $org->name));
       $org->removeSite($remove);
@@ -83,8 +83,8 @@ class Organizations_Command extends Terminus_Command {
     foreach ($sites as $site) {
       $data[] = array(
         'name' => $site->name,
-        'service level' => @$site->service_level,
-        'framework' => @$site->framework,
+        'service level' => $site->service_level,
+        'framework' => $site->framework,
         'created' => date('Y-m-d H:i:s', $site->created),
       );
     }

@@ -1068,7 +1068,7 @@ class Site_Command extends Terminus_Command {
        }
      }
 
-     if (isset($assoc_args['update']) AND !empty(@$upstream->update_log)) {
+     if (isset($assoc_args['update']) AND !empty($upstream->update_log)) {
        $env = 'dev';
        Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
        $response = $site->applyUpstreamUpdates($env);
