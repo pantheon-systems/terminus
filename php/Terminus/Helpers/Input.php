@@ -1,6 +1,8 @@
 <?php
 namespace Terminus\Helpers;
 
+use \Terminus\User;
+
 class Input {
 
   static public function environment($existing, $default, $message) {
@@ -20,6 +22,15 @@ class Input {
 
     return $env;
 
+  }
+
+  public static function orglist() {
+    $orgs = array('-'=>'None');
+    $user = new User;
+    foreach ($user->organizations() as $id => $org) {
+      $orgs[$id] = $org->name;
+    }
+    return $orgs;
   }
 
 }
