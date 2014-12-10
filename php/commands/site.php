@@ -20,6 +20,7 @@ class Site_Command extends Terminus_Command {
   protected $_headers = false;
 
   /**
+  * Get or set site attributes
   *
   * ## OPTIONS
   *
@@ -39,6 +40,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+   * Create a branch for developing
    *
    * ## OPTIONS
    *
@@ -61,6 +63,8 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+   * Clear all site caches
+   *
    * ## OPTIONS
    *
    * --site=<site>
@@ -512,6 +516,8 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * Create a site environment ( Coming soon ) 
+   *
    * ## OPTIONS
    *
    * --site=<site>
