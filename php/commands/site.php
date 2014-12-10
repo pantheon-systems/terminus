@@ -431,6 +431,8 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * Clone dev to test or test to live
+   *
    * ## OPTIONS
    *
    * --site=<site>
@@ -628,10 +630,6 @@ class Site_Command extends Terminus_Command {
     return $data;
   }
 
-
-  /**
-   * List enviroments for a site
-   */
    private function envExists($site_id, $env) {
      $response = \Terminus_Command::request('sites', $site_id, 'code-tips', 'GET');
      $envs = (array) $response['data'];
@@ -694,6 +692,8 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * Lock an environment to prevent changes
+   *
    * ## OPTIONS
    *
    * <info|add|remove>
@@ -754,7 +754,11 @@ class Site_Command extends Terminus_Command {
         Terminus::success('Success');
     }
   }
+
   /**
+   * Import a zip archive == see this article for more info:
+   * http://helpdesk.getpantheon.com/customer/portal/articles/1458058-importing-a-wordpress-site
+   *
    * ## OPTIONS
    *
    * --site=<site>
@@ -778,7 +782,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * Deploy dev environment to test or live
+   * List a site's job history
    *
    * ## OPTIONS
    *
@@ -1043,7 +1047,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * Show upstream updates
+   * Show or apply upstream updates
    *
    * ## OPTIONS
    *
