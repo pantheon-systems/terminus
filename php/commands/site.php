@@ -42,10 +42,15 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site> : site to create branch of
-   * --branch=<branch> : name of new branch
+   * --site=<site>
+   * : site to create branch of
+   *
+   * --branch=<branch>
+   * : name of new branch
    *
    * ## EXAMPLES
+   *
+   * terminus branch-create --site=yoursite --branch=carebearsandunicorns
    *
    * @subcommand branch-create
   **/
@@ -231,10 +236,11 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site> : name of the site to work with
-   * [--nocache] : bypass the local cache
-   * [--bash] : bash friendly output
-   * [--field=<field>] : field to return
+   * --site=<site>
+   * : name of the site to work with
+   *
+   * [--field=<field>]
+   * : field to return
    *
    * ## EXAMPLES
    *
@@ -258,13 +264,20 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * <action> : function to run
+  * <action>
+  * : function to run - get,load,or create
   *
-  * --site=<site> : Site to load
+  * --site=<site>
+  * : Site to load
   *
-  * [--env=<env>] : Environment to load
-  * [--element=<code|files|db>] : Element to download
-  * [--to-directory=<directory>] : Download the file if set
+  * [--env=<env>]
+  * : Environment to load
+  *
+  * [--element=<code|files|db>]
+  * : Element to download
+  *
+  * [--to-directory=<directory>]
+  * : Download the file if set
   *
   * ## EXAMPLES
   *
@@ -323,7 +336,7 @@ class Site_Command extends Terminus_Command {
          return $url->url;
          break;
       case 'load':
-        $assoc_args['download-to'] = '/tmp';
+        $assoc_args['to-directory'] = '/tmp';
         $assoc_args['element'] = 'database';
         $database = @$assoc_args['database'] ?: false;
         $username = @$assoc_args['username'] ?: false;
@@ -334,7 +347,10 @@ class Site_Command extends Terminus_Command {
           Terminus::error("MySQL does not appear to be installed on your server.");
         }
 
-        $target = $this->get_backup($args, $assoc_args);
+        $assoc_args['env'] = $env;
+        $target = $this->backup(array('get'), $assoc_args);
+        $target = \Terminus\Utils\get_filename_from_url($target);
+        $target = "/tmp/$target";
 
         if (!file_exists($target)) {
           Terminus::error("Can't read database file %s", array($target));
@@ -754,7 +770,7 @@ class Site_Command extends Terminus_Command {
     if (!isset($assoc_args['url'])) {
       Terminus::error("You must specify a url for the archive you want to import.");
     }
-
+    $url = $assoc_args['url'];
     $import = $site->import($url);
     if ($import) {
       Terminus::success("Import queued");
@@ -897,12 +913,14 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   *    <subcommands> :
-            clear - Clear redis cache on remote server
+   * <clear>
+   * : clear - Clear redis cache on remote server
    *
-   *    --site=<site> : site name
+   * --site=<site>
+   * : site name
    *
-   *    [--env=<env>] : environment
+   * [--env=<env>]
+   * : environment
    *
    * ## Examples
    *
@@ -954,7 +972,7 @@ class Site_Command extends Terminus_Command {
     $info = $site->info('service_level');
     if (@$assoc_args['set']) {
       $data = $site->updateServiceLevel($assoc_args['set']);
-      Logger::coloredOutput(sprintf("%2<K>Service Level has been updated to '%s'%n", $info));
+      Logger::coloredOutput("%2<K>Service Level has been updated to '$info'%n");
     }
     Logger::coloredOutput("%2<K>Service Level is '$info'%n");
     return true;
@@ -965,11 +983,14 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * <action> : i.e. add or remove
+  * <action>
+  * : i.e. add or remove
   *
-  * --site=<site> : Site to check
+  * --site=<site>
+  * : Site to check
   *
-  * [--member=<email>] : Email of the member to add. Member will receive an invite
+  * [--member=<email>]
+  * : Email of the member to add. Member will receive an invite
   *
   * @subcommand team
   */
