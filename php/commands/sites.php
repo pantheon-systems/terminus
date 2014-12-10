@@ -7,6 +7,7 @@ use Terminus\Products;
 use Terminus\Session;
 use Terminus\SiteFactory;
 use Terminus\Auth;
+use Terminus\Helpers\Input;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -59,13 +60,22 @@ class Sites_Command extends Terminus_Command {
    * : Name of the site to create (machine-readable)
    * [--label]
    * : Label for the site
+   * [--org=<org>]
+   * : UUID of organization to add this site to
    */
   public function create($args, $assoc_args) {
     $sites = SiteFactory::instance();
     $data = array();
     // @TODO clean this up and move to separate method
     $data['label'] = @$assoc_args['label'] ?: Terminus::prompt("Human readable label for the site");
-    $data['name'] = @$assoc_args['name'] ?: Terminus::prompt("Machine name of the site; used as part of the default URL [ i.e. ".$this->sanitizeName( $data['label'] )."]");
+    $slug = $this->sanitizeName( $data['label'] );
+    $data['name'] = @$assoc_args['name'] ?: Terminus::prompt("Machine name of the site; used as part of the default URL [ if left blank will be $slug]", array(), $slug);
+    if (!isset($assoc_args['org'])) {
+      $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
+      if ('-' !== $organization) {
+        $data['organization'] = $organization;
+      }
+    }
     require_once __DIR__.'/products.php';
     if (isset($assoc_args['product'])) {
       $product = Products_Command::getById($assoc_args['product']);
