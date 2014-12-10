@@ -135,11 +135,15 @@ class Terminus {
    *
    * @param string $message
    */
-  static function prompt( $message = '', $params = array() ) {
+  static function prompt( $message = '', $params = array(), $default=null ) {
     if ( !empty($params) ) {
       $message = vsprintf($message, $params);
     }
-    return \cli\prompt( $message );
+    $response = \cli\prompt( $message );
+    if(empty($response) AND $default) {
+      $response = $default;
+    }
+    return $response;
   }
 
   /**
