@@ -10,6 +10,7 @@ use Terminus\SiteFactory;
 use Terminus\Site;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
+use \Terminus\Helpers\Input;
 
 class Site_Command extends Terminus_Command {
 
@@ -24,7 +25,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * --site=<site>
+  * [--site=<site>]
   * : site to check attributes on
   *
   * [--env=<env>]
@@ -34,7 +35,7 @@ class Site_Command extends Terminus_Command {
   *
   **/
   public function attributes($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $data = $site->attributes();
     $this->handleDisplay($data, array(), array('Attribute','Value'));
   }
@@ -44,7 +45,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site to create branch of
    *
    * --branch=<branch>
@@ -57,7 +58,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand branch-create
   **/
   public function branch_create($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $branch = preg_replace('#[-_\s]+#',"",@$assoc_args['branch']);
     $branch = $site->createBranch($branch);
   }
@@ -67,7 +68,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site to use
    *
    * [--env=<env>]
@@ -79,7 +80,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand clear-caches
    */
   public function clear_caches($args, $assoc_args) {
-      $site = SiteFactory::instance($assoc_args['site']);
+      $site = SiteFactory::instance(Input::site($assoc_args));
       $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
       $response = $site->environment($env)->workflow("clear_cache");
       $this->waitOnWorkFlow('sites', $site->getId(), $response->id);
@@ -94,7 +95,7 @@ class Site_Command extends Terminus_Command {
    * <action>
    * : options are log,branches,diffstat,commit
    *
-   * --site=<site>
+   * [--site=<site>]
    * : name of the site
    *
    * [--env=<env>]
@@ -106,7 +107,7 @@ class Site_Command extends Terminus_Command {
    */
   public function code($args, $assoc_args) {
       $subcommand = array_shift($args);
-      $site = SiteFactory::instance(@$assoc_args['site']);
+      $site = SiteFactory::instance(Input::site($assoc_args));
       $data = $headers = array();
       switch($subcommand) {
         case 'log':
@@ -179,7 +180,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * --site=<site>
+  * [--site=<site>]
   * : name of the site
   *
   * [--env=<env>]
@@ -191,7 +192,7 @@ class Site_Command extends Terminus_Command {
   * @subcommand connection-mode
   */
   public function connection_mode($args, $assoc_args) {
-    $site = SiteFactory::instance(@$assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $action = 'show';
     $mode = @$assoc_args['set'] ?: false;
     if (@$assoc_args['set']) {
@@ -202,8 +203,8 @@ class Site_Command extends Terminus_Command {
     switch($action) {
       case 'show':
         $data = $site->environment($env)->onServerDev();
-        $mode = $data->enabled ? 'Sftp' : 'Git';
-        Logger::GOutput("<Y>Connection mode:</Y> $mode");
+        $mode = isset($data->enabled) ? 'Sftp' : 'Git';
+        Logger::coloredOutput("%YConnection mode:%n $mode");
         return;
         break;
       case 'set':
@@ -224,12 +225,12 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site dashboard to open
    *
   */
   public function dashboard($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     Terminus::confirm("Do you want to open your dashboard link in a web browser?");
     $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
     exec($command);
@@ -240,7 +241,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : name of the site to work with
    *
    * [--field=<field>]
@@ -250,7 +251,7 @@ class Site_Command extends Terminus_Command {
    *
    */
   public function info($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance( Input::site( $assoc_args ) );
     $field = @$assoc_args['field'] ?: null;
     $data = (array) $site->info($field);
     if ($field) {
@@ -271,8 +272,8 @@ class Site_Command extends Terminus_Command {
   * <action>
   * : function to run - get,load,or create
   *
-  * --site=<site>
-  * : Site to load
+  * [--site=<site>]
+  : Site to load
   *
   * [--env=<env>]
   * : Environment to load
@@ -288,8 +289,7 @@ class Site_Command extends Terminus_Command {
   */
    public function backup($args, $assoc_args) {
      $action = array_shift($args);
-     if (!@$assoc_args['site']) Terminus::error("Must specify --site=<site>");
-     $site = SiteFactory::instance($assoc_args['site']);
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
      switch ($action) {
        case 'get':
@@ -439,7 +439,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to use
    *
    * [--from-env]
@@ -457,7 +457,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand clone-env
    */
    public function clone_env($args, $assoc_args) {
-     $site = SiteFactory::instance($assoc_args['site']);
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $site_id = $site->getId();
      $from_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['from-env'], "Choose environment you want to clone from");
      $to_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['to-env'], "Choose environment you want to clone to");
@@ -482,7 +482,7 @@ class Site_Command extends Terminus_Command {
      \Terminus::confirm($confirm);
 
       if ( !$this->envExists($site_id, $to_env) ) {
-        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env --site=<env>`");
+        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env [--site=<env>]`");
       }
 
      if ($db) {
@@ -516,11 +516,11 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * Create a site environment ( Coming soon ) 
+   * Create a site environment ( Coming soon )
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to use
    *
    * --env=<env>
@@ -531,7 +531,7 @@ class Site_Command extends Terminus_Command {
    public function create_env($args, $assoc_args) {
      Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
      $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
-     $site = SiteFactory::instance($assoc_args['site']);
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $site_id = $site->getId();
      if ($this->envExists($site_id,$env)) {
        \Terminus::error("The %s environment already exists", array($env));
@@ -551,7 +551,7 @@ class Site_Command extends Terminus_Command {
     *
     * ## OPTIONS
     *
-    * --site=<site>
+    * [--site=<site>]
     * : Site to deploy from
     *
     * [--env=<env>]
@@ -566,7 +566,7 @@ class Site_Command extends Terminus_Command {
     */
    public function deploy($args, $assoc_args) {
      $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env'], "Select environment to deploy to");
-     $site = SiteFactory::instance($assoc_args['site']);
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $cc = $update = 0;
      if (array_key_exists('cc',$assoc_args)) {
        $cc = 1;
@@ -615,12 +615,12 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Name of site to check
    *
    */
   function environments($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance( Input::site( $assoc_args ) );
     $environments = $site->environments();
     $data = array();
     foreach ($environments as $env) {
@@ -650,7 +650,7 @@ class Site_Command extends Terminus_Command {
    * <list|add|remove>
    * : OPTIONS are list, add, delete
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to use
    *
    * --env=<env>
@@ -662,7 +662,7 @@ class Site_Command extends Terminus_Command {
    */
    public function hostnames($args, $assoc_args) {
      $action = array_shift($args);
-     $site = SiteFactory::instance(@$assoc_args['site']);
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
      switch ($action) {
        case 'list':
@@ -705,7 +705,7 @@ class Site_Command extends Terminus_Command {
    * <info|add|remove>
    * : action to execute ( i.e. info, add, remove )
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site name
    *
    * [--env=<env>]
@@ -720,7 +720,7 @@ class Site_Command extends Terminus_Command {
   **/
   function lock($args, $assoc_args) {
     $action = array_shift($args);
-    $site = SiteFactory::instance(@$assoc_args['site']);
+    $site = SiteFactory::instance( Input::site( $assoc_args ) );
     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
     switch ($action) {
       case 'info':
@@ -767,7 +767,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to use
    *
    * --url=<url>
@@ -776,7 +776,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand import
    */
   public function import($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance( Input::site( $assoc_args ) );
     if (!isset($assoc_args['url'])) {
       Terminus::error("You must specify a url for the archive you want to import.");
     }
@@ -792,11 +792,11 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to deploy from
   **/
   public function jobs($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $jobs = $site->jobs();
     $data = array();
     foreach ($jobs as $job) {
@@ -816,7 +816,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to deploy from
    *
    * --destination=<path>
@@ -834,7 +834,7 @@ class Site_Command extends Terminus_Command {
 
     $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
 
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
 
     // Darwin check ... not sure what this is really ... borrowed from terminus 1
@@ -862,13 +862,13 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * --site=<site>
+  * [--site=<site>]
   * : site for which to retreive notifications
   *
   * @subcommand new-relic
   */
   public function new_relic($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $data = $site->newRelic();
     $this->handleDisplay($data->account,$assoc_args,array('Key','Value'));
   }
@@ -878,12 +878,12 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * --site=<site>
+  * [--site=<site>]
   * : site for which to retreive notifications
   *
   */
   public function notifications($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $notifications = $site->notifications();
     $data = array();
     foreach ($notifications as $note) {
@@ -904,7 +904,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * --site=<site>
+  * [--site=<site>]
   * : Site to check
   *
   * [--set=<value>]
@@ -913,7 +913,7 @@ class Site_Command extends Terminus_Command {
   * @subcommand owner
   */
   public function owner($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $data = $site->owner();
     $this->handleOutput($data);
   }
@@ -926,7 +926,7 @@ class Site_Command extends Terminus_Command {
    * <clear>
    * : clear - Clear redis cache on remote server
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site name
    *
    * [--env=<env>]
@@ -939,7 +939,7 @@ class Site_Command extends Terminus_Command {
    */
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
-    $site = SiteFactory::instance(@$assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $env = @$assoc_args['env'];
     switch ($action) {
       case 'clear':
@@ -969,7 +969,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to check
    *
    * [--set=<value>]
@@ -978,7 +978,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand service-level
    */
   public function service_level($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $info = $site->info('service_level');
     if (@$assoc_args['set']) {
       $data = $site->updateServiceLevel($assoc_args['set']);
@@ -996,7 +996,7 @@ class Site_Command extends Terminus_Command {
   * <action>
   * : i.e. add or remove
   *
-  * --site=<site>
+  * [--site=<site>]
   * : Site to check
   *
   * [--member=<email>]
@@ -1006,7 +1006,7 @@ class Site_Command extends Terminus_Command {
   */
   public function team($args, $assoc_args) {
     $action = array_shift($args) ?: 'list';
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $data = array();
     switch($action) {
       case 'add-member':
@@ -1041,13 +1041,13 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to check
    *
    * @subcommand upstream-info
    */
   public function upstream_info($args, $assoc_args) {
-    $site = SiteFactory::instance($assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $upstream = $site->getUpstream();
     $this->handleDisplay($upstream,$args);
   }
@@ -1057,7 +1057,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to check
    *
    * [--apply-to=<env>]
@@ -1069,7 +1069,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand upstream-updates
    */
    public function upstream_updates($args, $assoc_args) {
-     $site = SiteFactory::instance($assoc_args['site']);
+     $site = SiteFactory::instance(Input::site($assoc_args));
      $upstream = $site->getUpstreamUpdates();
 
      // data munging as usual
@@ -1117,7 +1117,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : site to ping
    *
    * [--env=<env>]
@@ -1127,7 +1127,7 @@ class Site_Command extends Terminus_Command {
    *  terminus site wake --site='testsite' --env=dev
   */
   public function wake($args, $assoc_args) {
-    $site = SiteFactory::instance(@$assoc_args['site']);
+    $site = SiteFactory::instance(Input::site($assoc_args));
     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
     $data = $site->environment($env)->wake();
     if (!$data['success']) {
@@ -1149,7 +1149,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * --site=<site>
+   * [--site=<site>]
    * : Site to use
    *
    * [--env=<env>]
@@ -1158,7 +1158,7 @@ class Site_Command extends Terminus_Command {
    public function wipe($args, $assoc_args) {
      try {
        $env = @$assoc_args['env'] ?: 'dev';
-       $site = SiteFactory::instance($assoc_args['site']);
+       $site = SiteFactory::instance(Input::site($assoc_args));
        $site_id = $site->getId();
        $env = $this->getValidEnv($assoc_args['site'], $env);
        Terminus::line("Wiping %s %s", array($site_id, $env));

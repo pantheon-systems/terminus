@@ -6,7 +6,7 @@ use \Terminus_Command;
 
 class SiteFactory {
   private static $instance = null;
-  private $sites;
+  private $sites = array();
 
   public function __construct() {
     $this->hydrate();
@@ -17,6 +17,8 @@ class SiteFactory {
     $request = Terminus_Command::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
     $sites = $request['data'];
     foreach ($sites as $site_id => $site_data) {
+      // we need to skip sites that are in the build process still
+      if (!isset($site_data->information)) continue;
       $site_data->id = $site_id;
       $this->sites[$site_data->information->name] = $site_data;
     }

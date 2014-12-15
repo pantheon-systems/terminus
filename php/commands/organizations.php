@@ -4,6 +4,7 @@ use \Terminus\Utils;
 use \Terminus\Auth;
 use \Terminus\SiteFactory;
 use \Terminus\Organization;
+use \Terminus\Helper\Input;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 
@@ -61,7 +62,7 @@ class Organizations_Command extends Terminus_Command {
     $org = new Organization($selected_org);
 
     if (isset($assoc_args['add'])) {
-        $add = SiteFactory::instance($assoc_args['add']);
+        $add = SiteFactory::instance(Input::site($assoc_args,'add'));
 
         Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
         $org->addSite($add);
@@ -70,7 +71,7 @@ class Organizations_Command extends Terminus_Command {
     }
 
     if (isset($assoc_args['remove'])) {
-      $remove = SiteFactory::instance($assoc_args['remove']);
+      $remove = SiteFactory::instance(Input::site($assoc_args,'remove'));
 
       Terminus::confirm("Are you sure you want to remove %s to %s ?", $assoc_args, array($remove->getName(), $org->name));
       $org->removeSite($remove);
