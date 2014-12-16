@@ -236,12 +236,16 @@ abstract class Terminus_Command {
    */
   protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
     print "working .";
+    Terminus::set_config('nocache',true);
     $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
       $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
+      if (Terminus::get_config('debug')) {
+        print_r($workflow);
+      }
       sleep(3);
       print ".";
       $tries++;

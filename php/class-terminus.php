@@ -387,6 +387,14 @@ class Terminus {
     return self::get_runner()->config[ $key ];
   }
 
+  static function set_config($key, $value) {
+    self::get_runner()->config[ $key ] = $value;
+    return self::get_runner()->config;
+  }
+
+  /**
+   * @deprecated
+   */
   static function menu( $data, $default = null, $text = "Select one", $return_value=false ) {
     echo PHP_EOL;
     $index = \cli\Streams::menu($data,$default,$text);

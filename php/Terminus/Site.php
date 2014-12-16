@@ -1,7 +1,7 @@
 <?php
 namespace Terminus;
 use Terminus\Request;
-
+use Terminus\Deploy;
 
 class Site {
   public $id;

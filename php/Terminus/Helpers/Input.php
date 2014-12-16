@@ -39,7 +39,7 @@ class Input {
    *
    * @param $args array -- The args passed in from argv
   */
-  public static function site( $args = array(), $key = 'site' ) {
+  public static function site( $args = array(), $key = 'site', $label = 'Choose site') {
       // early return if a valid site has been offered
       if ( isset($args[$key]) ) {
         if ( $site = SiteFactory::instance($args[$key]) ) {
@@ -52,14 +52,24 @@ class Input {
       foreach( $sites as $site ) {
         $choices[$site->information->name] = $site->information->name;
       }
-      return self::menu($choices, $default = null, "Choose site");
+      return self::menu($choices, $default = null, $label);
+  }
+
+  public static function env( $args = array(), $key = 'env', $label = 'Choose environment') {
+    $available = array('live','dev','test');
+    if ( isset($args[$key]) and in_array($args[$key], $available)) {
+      return $args[$key];
+    }
+
+    return self::menu($available, $default='dev', "Select $label", true);
+
   }
 
   static function menu( $choices, $default = null, $text = "Select one", $return_value=false ) {
     echo PHP_EOL;
     $index = \cli\Streams::menu($choices,$default,$text);
     if ($return_value) {
-      return $data[$index];
+      return $choices[$index];
     }
     return $index;
   }

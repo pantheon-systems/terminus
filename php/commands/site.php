@@ -11,6 +11,7 @@ use Terminus\Site;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
+use \Terminus\Deploy;
 
 class Site_Command extends Terminus_Command {
 
@@ -557,32 +558,48 @@ class Site_Command extends Terminus_Command {
     * [--env=<env>]
     * : Environment to deploy to
     *
+    * [--from=<env>]
+    * : Environment to deploy from
+    *
     * [--cc]
     * : Clear cache after deploy?
     *
-    * [--update]
+    * [--updatedb]
     * : (Drupal only) run update.php after deploy?
+    *
+    *
+    * [--note=<note>]
+    * : deploy log message
     *
     */
    public function deploy($args, $assoc_args) {
-     $env = $this->getValidEnv(@$assoc_args['site'], @$assoc_args['env'], "Select environment to deploy to");
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $cc = $update = 0;
+     $env = Input::env($assoc_args);
+     $from = Input::env($assoc_args, 'from', "Choose environment you want to deploy from");
+     if (!isset($assoc_args['note'])) {
+       $note = Terminus::prompt("Custom note for the Deploy Log", array(), "Deploy from Terminus 2.0");
+     } else {
+       $note = $assoc_args['note'];
+     }
+
+     $cc = $updatedb = 0;
      if (array_key_exists('cc',$assoc_args)) {
        $cc = 1;
      }
-     if (array_key_exists('update',$assoc_args)) {
-       $update = 1;
+     if (array_key_exists('updatedb',$assoc_args)) {
+       $updatedb = 1;
      }
 
      $params = array(
-       'update' => $update,
-       'cc' => $cc
+       'updatedb' => $updatedb,
+       'cc' => $cc,
+       'from' => $from,
+       'annotation' => $note
      );
-     $site_id = $site->getId();
-     $path = sprintf('environments/%s/code?%s', $env, http_build_query($params));
-     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST');
-     $result = $this->waitOnWorkflow('sites', $site_id, $response['data']->id);
+
+     $deploy = new Deploy($site->environment($env), $params);
+     $response = $deploy->run();
+     $result = $this->waitOnWorkflow('sites', $site->getId(), $response->id);
      if ($result) {
        \Terminus::success("Woot! Code deployed to %s", array($env));
      }

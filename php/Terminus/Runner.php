@@ -10,7 +10,7 @@ class Runner {
 
   private $global_config_path, $project_config_path;
 
-  private $config, $extra_config;
+  public $config, $extra_config;
 
   private $arguments, $assoc_args;
 
