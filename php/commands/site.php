@@ -93,8 +93,8 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * <action>
-   * : options are log,branches,diffstat,commit
+   * <log|branches|branch-create|diffstat|commit>
+   * : options are log, branches, branch-create, diffstat, commit
    *
    * [--site=<site>]
    * : name of the site
@@ -105,6 +105,8 @@ class Site_Command extends Terminus_Command {
    * [--message=<message>]
    * : message to use when committing on server changes
    *
+   * [--branchname=<branchname>]
+   * : When using branch-create specify the branchname
    */
   public function code($args, $assoc_args) {
       $subcommand = array_shift($args);
@@ -128,6 +130,16 @@ class Site_Command extends Terminus_Command {
         case 'branches':
           $data = $site->tips();
           $headers = array('Branch','Commit');
+          break;
+        case 'branch-create':
+          if (!isset($assoc_args['branchname'])) {
+            $branch = Terminus::prompt("Name of new branch");
+          } else {
+            $branch = $assoc_args['branchname'];
+          }
+          $branch = preg_replace('#[-_\s]+#',"",@$assoc_args['branchname']);
+          $branch = $site->createBranch($branch);
+          Terminus::success('Branch created');
           break;
         case 'commit':
           $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
@@ -274,7 +286,7 @@ class Site_Command extends Terminus_Command {
   * : function to run - get,load,or create
   *
   * [--site=<site>]
-  : Site to load
+  * : Site to load
   *
   * [--env=<env>]
   * : Environment to load
@@ -317,7 +329,7 @@ class Site_Command extends Terminus_Command {
          }
 
          if (empty($menu)) {
-           Terminus::error("No backups available. Create one with `terminus site backup-make --site=%s`", array($site->getName()));
+           Terminus::error("No backups available. Create one with `terminus site backup create --site=%s`", array($site->getName()));
          }
 
          $index = Terminus::menu($menu, null, "Select backup");
@@ -493,7 +505,7 @@ class Site_Command extends Terminus_Command {
 
      if ($files) {
       print "Cloning files ... ";
-      $this->cloneObject( $to_env, $from_env, $site_id, 'database');
+      $this->cloneObject( $to_env, $from_env, $site_id, 'files');
      }
      \Terminus::success("Clone complete!");
      return true;
@@ -502,7 +514,8 @@ class Site_Command extends Terminus_Command {
 
    // @todo this should be moved to a namespaced class CloneObject
    private function cloneObject($to_env, $from_env, $site_id, $object_type) {
-     $path = sprintf("environments/%s/database", $to_env);
+     $path = sprintf("environments/%s/%s", $to_env, $object_type);
+
      $data = array('clone-from-environment'=>$from_env);
      $OPTIONS = array(
        'body' => json_encode($data) ,
@@ -524,28 +537,58 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to use
    *
-   * --env=<env>
-   * : Pantheon environment create
+   * [--env=<env>]
+   * : Pantheon environment to create
+   *
+   * [--from-env=<env>]
+   * : Pantheon environment to clone from
    *
    * @subcommand create-env
    */
    public function create_env($args, $assoc_args) {
-     Terminus::error("Feature currently unavailable. Please create environments in you pantheon dashboard at http://dashboard.getpantheon.com.");
-     $env = $this->getValidEnv($assoc_args['site'], @$assoc_args['env']);
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
+     $env = Input::env($assoc_args);
+     $from_env = Input::env($assoc_args, "from-env", "Clone from?");
      $site_id = $site->getId();
-     if ($this->envExists($site_id,$env)) {
-       \Terminus::error("The %s environment already exists", array($env));
+     $branches = (array) $site->tips();
+     if (!in_array($env, array_keys($branches))) {
+       // create the branch
+       Terminus::line("Creating branch");
+      $response = $site->createBranch($env);
      }
-     $path = sprintf('environments/%s', $env);
-     $OPTIONS = array(
-       'body' => json_encode(array()) ,
-       'headers'=> array('Content-type'=>'application/json')
-     );
-     $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $OPTIONS);
-    \Terminus::success("Created %s environment", array($env));
 
+     Terminus::line("Creating Environment");
+     $response = (array) $site->createEnvironment($env);
+     $branches = (array) $site->tips();
+
+     Terminus::line("Cloning files");
+     $this->cloneObject($env, $from_env, $site->getId(), 'files');
+     Terminus::line("Cloning database");
+     $this->cloneObject($env, $from_env, $site->getId(), 'database');
+
+     Terminus::success("Succesfully created Environment!");
    }
+
+   /**
+   * Delete a site environment
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Site to use
+   *
+   * [--env=<env>]
+   * : Pantheon environment to delete
+   *
+   * @subcommand delete-env
+   */
+   public function delete_env($args, $assoc_args) {
+     $site = SiteFactory::instance( Input::site( $assoc_args ) );
+     $env = Input::env($assoc_args, 'env', null, $site->environments());
+     Terminus::confirm("Are you sure you want to delete '$env' from {$site->getName()}");
+     $site->deleteEnvironment($env);
+   }
+
 
    /**
     * Deploy dev environment to test or live

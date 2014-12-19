@@ -40,9 +40,12 @@ class Organizations_Command extends Terminus_Command {
    *
    * ## Options
    *
-   * [--org=<org>] : Organization name or Id
-   * [--add=<site>] : Site to add to organization
-   * [--remove=<site>] : Site to remove from organization
+   * [--org=<org>]
+   * : Organization name or Id
+   * [--add=<site>]
+   * : Site to add to organization
+   * [--remove=<site>]
+   * : Site to remove from organization
    *
    */
   public function sites($args, $assoc_args) {

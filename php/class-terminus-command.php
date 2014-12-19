@@ -141,8 +141,10 @@ abstract class Terminus_Command {
       }
 
       $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
+
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(TRUE);
+
       $data = array(
         'info' => $resp->getInfo(),
         'headers' => $resp->getRawHeaders(),
@@ -239,8 +241,10 @@ abstract class Terminus_Command {
     Terminus::set_config('nocache',true);
     $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
+    $desc = $workflow['data']->active_description;
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
+      if ( 'failed' == $result ) Terminus::error("Couldn't complete jobs '{$desc}'".PHP_EOL);
       $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
       if (Terminus::get_config('debug')) {

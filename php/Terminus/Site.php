@@ -227,14 +227,16 @@ class Site {
    * Create an environment
    */
   public function createEnvironment($env) {
-    return \Terminus_Command::request("sites", $this->getId() , "environments/$env", "POST");
+    $response = \Terminus_Command::request("sites", $this->getId() , "environments/$env", "POST");
+    return $response['data'];
   }
 
   /**
    * Delete an environment
    */
   public function deleteEnvironment($env) {
-    return \Terminus_Command::request("sites", $this->getId() , "environments/$env", "DELETE");
+    $response = \Terminus_Command::request("sites", $this->getId() , "environments/$env", "DELETE");
+    return $response['data'];
   }
 
   /**

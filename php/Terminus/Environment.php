@@ -2,7 +2,7 @@
 namespace Terminus;
 use \ReflectionClass, \Terminus\Request;
 
-abstract class Environment {
+class Environment {
   public $name = 'dev';
   public $site = false;
   public $diffstat;
@@ -31,7 +31,6 @@ abstract class Environment {
         }
       }
     }
-
   }
 
   public function wipe() {
@@ -199,6 +198,19 @@ abstract class Environment {
   public function domain() {
     $host = sprintf( "%s-%s.%s", $this->name, $this->site->getName(), $this->dns_zone );
     return $host;
+  }
+
+  /**
+   * creates a new environment
+   *
+  */
+  public function create($env_name) {
+    $path = sprintf('environments/%s', $env_name);
+    $OPTIONS = array(
+      'headers'=> array('Content-type'=>'application/json')
+    );
+    $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $OPTIONS);
+    return $response['data'];
   }
 
   /**

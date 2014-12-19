@@ -55,13 +55,15 @@ class Input {
       return self::menu($choices, $default = null, $label);
   }
 
-  public static function env( $args = array(), $key = 'env', $label = 'Choose environment') {
-    $available = array('live','dev','test');
-    if ( isset($args[$key]) and in_array($args[$key], $available)) {
+  public static function env( $args = array(), $key = 'env', $label = 'Choose environment', $choices = null) {
+    if (!$choices) {
+      $choices = array('dev','test','live');
+    }
+    if ( isset($args[$key]) ) {
       return $args[$key];
     }
 
-    return self::menu($available, $default='dev', "Select $label", true);
+    return self::menu($choices, $default='dev', "Select $label", true);
 
   }
 
