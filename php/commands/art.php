@@ -16,7 +16,7 @@ class Art_Command extends Terminus_Command {
    *
    */
   function __invoke( $args, $assoc_args ) {
-    $artwork = array_shift($args) ?: array_keys($this->works, 0);
+    $artwork = array_shift($args) ?: key($this->works); 
 
     if (!empty($artwork) && array_key_exists($artwork, $this->works)){
       echo Terminus::colorize("%g".base64_decode($this->works[$artwork])."%n")."\n";
