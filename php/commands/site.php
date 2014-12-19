@@ -561,9 +561,9 @@ class Site_Command extends Terminus_Command {
      $response = (array) $site->createEnvironment($env);
      $branches = (array) $site->tips();
 
-     Terminus::line("Cloning files");
+     Terminus::line("Cloning files ...");
      $this->cloneObject($env, $from_env, $site->getId(), 'files');
-     Terminus::line("Cloning database");
+     Terminus::line("Cloning database ...");
      $this->cloneObject($env, $from_env, $site->getId(), 'database');
 
      Terminus::success("Succesfully created Environment!");
@@ -1120,14 +1120,11 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to check
    *
-   * [--apply-to=<env>]
-   * : A flag to apply to a specified environment
-   *
-   * [--update]
+   * [--update=<env>]
    * : Do update on dev env
    *
-   * @subcommand upstream-updates
-   */
+   * @alias upstream-updates
+  **/
    public function upstream_updates($args, $assoc_args) {
      $site = SiteFactory::instance(Input::site($assoc_args));
      $upstream = $site->getUpstreamUpdates();
