@@ -156,7 +156,7 @@ class Auth_Command extends Terminus_Command {
     $response = Request::send($endpoint, "GET", array(
       'allow_redirects'=>true,
       'cookies'=>
-        array('X-Pantheon-Session'=>$this->session)
+        array('X-Pantheon-Session'=>$this->session->get())
       )
     );
 
