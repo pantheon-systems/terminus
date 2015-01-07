@@ -21,14 +21,10 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
-   *  ## OPTIONS
+   * Show sites
    *
-   * [--nocache]
-   * : Get a fresh list of sites from the server side.
-   * [--bash]
-   * : Get bash friendly output
-   * [--json]
-   * : Json output
+   * ## OPTIONS
+   *
    */
   public function show($args, $assoc_args) {
     $sites = SiteFactory::instance();
@@ -50,18 +46,19 @@ class Sites_Command extends Terminus_Command {
 
   /**
    * Create a new site
-   * @package 2.0
    *
    * ## OPTIONS
    *
-   * [--product]
+   * [--product=<productid>]
    * : Specify the product to create
-   * [--name]
+   * [--name=<name>]
    * : Name of the site to create (machine-readable)
-   * [--label]
+   * [--label=<label>]
    * : Label for the site
    * [--org=<org>]
    * : UUID of organization to add this site to
+   * [--import=<url>]
+   * : A url to import a valid archive from
    */
   public function create($args, $assoc_args) {
     $sites = SiteFactory::instance();
@@ -91,11 +88,55 @@ class Sites_Command extends Terminus_Command {
     $site = $response['data'];
     $workflow_id = $site->id;
     $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
+
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
       $this->cache->flush('sites');
     }
+
+    if (isset($assoc_args['import'])) {
+      Terminus::launch_self('site', array('import'), array('url'=>$assoc_args['import'], 'site'=>$data['name'], 'nocache' => True));
+    }
+
     return true;
+  }
+
+  /**
+  * Import a new site
+  * @package 2.0
+  *
+  * ## OPTIONS
+  *
+  * [--url=<url>]
+  * : Url of archive to import
+  *
+  * [--name=<name>]
+  * : Name of the site to create (machine-readable)
+  *
+  * [--label=<label>]
+  * : Label for the site
+  *
+  * [--org=<org>]
+  * : UUID of organization to add this site to
+  *
+  * @subcommand create-from-import
+  */
+  public function import($args, $assoc_args) {
+    $url = Input::string($assoc_args, 'url', "Url of archive to import");
+    $label = Input::string($assoc_args, 'label', "Human readable label for the site");
+    $slug = $this->sanitizeName( $label );
+    $name = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]");
+    $name = $name ? $name : $slug;
+    $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
+    if (!$url) {
+      Terminus::error("Please enter a url.");
+    }
+    Terminus::launch_self('sites', array('create'), array(
+      'label' => $label,
+      'name'  => $name,
+      'org'   => $organization,
+    ));
+    Terminus::launch_self('site', array('import'), array('url'=>$url, 'site'=>$name, 'nocache' => True));
   }
 
   /**

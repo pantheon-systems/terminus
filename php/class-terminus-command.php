@@ -237,14 +237,15 @@ abstract class Terminus_Command {
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
   protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
-    print "working .";
+    print "Working .";
     Terminus::set_config('nocache',true);
     $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
     $result = $workflow['data']->result;
     $desc = $workflow['data']->active_description;
+    $type = $workflow['data']->type;
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
-      if ( 'failed' == $result ) Terminus::error("Couldn't complete jobs '{$desc}'".PHP_EOL);
+      if ( 'failed' == $result ) Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
       $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
       if (Terminus::get_config('debug')) {

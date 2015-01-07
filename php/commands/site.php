@@ -495,7 +495,7 @@ class Site_Command extends Terminus_Command {
      \Terminus::confirm($confirm);
 
       if ( !$this->envExists($site_id, $to_env) ) {
-        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env [--site=<env>]`");
+        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env [--site=<env>]`", $to_env);
       }
 
      if ($db) {
@@ -512,7 +512,7 @@ class Site_Command extends Terminus_Command {
    }
 
 
-   // @todo this should be moved to a namespaced class CloneObject
+   // @todo this should be moved to a namespaced class CloneResource
    private function cloneObject($to_env, $from_env, $site_id, $object_type) {
      $path = sprintf("environments/%s/%s", $to_env, $object_type);
 
@@ -843,7 +843,9 @@ class Site_Command extends Terminus_Command {
     $url = $assoc_args['url'];
     $import = $site->import($url);
     if ($import) {
-      Terminus::success("Import queued");
+      Terminus::line('Import started, you can now safely kill this script without interfering.');
+      $this->waitOnWorkflow('sites', $site->getId(), $import->id);
+      Terminus::success("Import complete");
     }
   }
 

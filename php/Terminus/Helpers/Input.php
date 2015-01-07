@@ -75,4 +75,12 @@ class Input {
     }
     return $index;
   }
+
+  static function string( $args, $key, $label = "Enter") {
+    if ( isset($args[$key]) ) {
+      return $args[$key];
+    }
+    $string = \Terminus::prompt($label);
+    return $string;
+  }
 }
