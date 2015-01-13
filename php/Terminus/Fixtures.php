@@ -16,7 +16,13 @@ class Fixtures {
 
     // if there's already a fixture, assume we want to overwrite it
     if (file_exists($fixture)) {
+      //print_r($args);
+      //echo "Removing $fixture".PHP_EOL;
+
       @unlink($fixture);
+    } else {
+      //print_r($args);
+      //echo "ADDING $fixture".PHP_EOL;
     }
 
     file_put_contents($fixture, serialize($data), LOCK_EX);
@@ -38,6 +44,11 @@ class Fixtures {
 
   static function getArgsKey($args)
   {
+    $data = $args[2];
+    if (isset($data['cookies'])) {
+      unset($data['cookies']);
+    }
+    $args[2] = $data;
     return md5(serialize($args));
   }
 
