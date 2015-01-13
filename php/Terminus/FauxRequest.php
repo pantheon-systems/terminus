@@ -19,7 +19,6 @@ class FauxRequest {
   public $responses = array();
 
   public static function send( $url, $method, $data = array() ) {
-    unset($data['cookies']);
     return Fixtures::get(array($url,$method,$data));
   }
 
