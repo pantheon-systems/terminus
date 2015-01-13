@@ -8,7 +8,8 @@ class Fixtures {
   /**
    * This creates a "phony" data blob that we can use for unit testing.
    */
-  static function put( $args, $data) {
+  static function put($args, $data) {
+    print_r($args);
     $key = Fixtures::getArgsKey($args);
     $cli_root = dirname(dirname(__DIR__));
 
@@ -39,6 +40,10 @@ class Fixtures {
   static function getArgsKey($args)
   {
     // save the cli args for later just in case we're debugging
+    if (isset($args['cookies'])) {
+      $args['cookies'] = array();
+    }
+    
     return md5(serialize($args));
   }
 
