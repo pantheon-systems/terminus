@@ -40,7 +40,7 @@ class Fixtures {
   {
     // save the cli args for later just in case we're debugging
     if (isset($args[2]['cookies'])) {
-      $args[2]['cookies'] = array();
+      unset($args[2]['cookies']);
     }
     return md5(serialize($args));
   }
