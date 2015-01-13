@@ -75,10 +75,10 @@ class Sites_Command extends Terminus_Command {
     }
     require_once __DIR__.'/products.php';
     if (isset($assoc_args['product'])) {
-      $product = Products_Command::getById($assoc_args['product']);
+      $product = Products::getById($assoc_args['product']);
     } else {
-      $product = Terminus::menu( Products_Command::selectList() );
-      $product = Products_Command::getByIndex($product);
+      $product = Terminus::menu( Products::selectList() );
+      $product = Products::getByIndex($product);
     }
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
