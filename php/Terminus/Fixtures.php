@@ -38,10 +38,6 @@ class Fixtures {
 
   static function getArgsKey($args)
   {
-    // save the cli args for later just in case we're debugging
-    if (isset($args[2]['cookies'])) {
-      unset($args[2]['cookies']);
-    }
     return md5(serialize($args));
   }
 
