@@ -46,7 +46,7 @@ class Fixtures {
   {
     $data = $args[2];
     if (isset($data['cookies']) AND !empty($data['cookies'])) {
-      unset($data['cookies']);
+      $data['cookies'] = '';
     }
     $args[2] = $data;
     return md5(serialize($args));
