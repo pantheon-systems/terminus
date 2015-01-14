@@ -10,7 +10,12 @@ class Fixtures {
    */
   static function put($args, $data) {
     $key = Fixtures::getArgsKey($args);
-    $cli_root = dirname(dirname(__DIR__));
+
+    if (!defined("WP_CLI_ROOT")) {
+      $cli_root = dirname(dirname(__DIR__));
+    } else {
+      $cli_root = constant('WP_CLI_ROOT');
+    }
 
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
 
@@ -32,6 +37,7 @@ class Fixtures {
   static function get($args)
   {
       $key = self::$current_fixture ?: Fixtures::getArgsKey($args);
+      echo __LINE__.":".$key.PHP_EOL;
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
       if( file_exists($filename) ) {
