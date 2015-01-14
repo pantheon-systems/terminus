@@ -27,7 +27,7 @@ class Fixtures {
       @unlink($fixture);
     } else {
       //print_r($args);
-      //echo "ADDING $fixture".PHP_EOL;
+      echo "ADDING $fixture".PHP_EOL;
     }
 
     file_put_contents($fixture, serialize($data), LOCK_EX);
