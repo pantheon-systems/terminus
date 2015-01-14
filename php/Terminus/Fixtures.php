@@ -13,7 +13,6 @@ class Fixtures {
 
     if (!defined('CLI_ROOT')) {
       $cli_root = dirname(dirname(__DIR__));
-      echo $cli_root;
     } else {
       $cli_root = constant('CLI_ROOT');
     }
@@ -25,7 +24,7 @@ class Fixtures {
 
   static function get($args)
   {
-      $key = self::$current_fixture ?: Fixtures::getArgsKey($args);
+      $key = Fixtures::getArgsKey($args);
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
       echo "getting $filename;".PHP_EOL;
@@ -39,12 +38,13 @@ class Fixtures {
 
   static function getArgsKey($args)
   {
-    $data = $args[2];
-    if (isset($data['cookies']) AND !empty($data['cookies'])) {
-      $data['cookies'] = '';
+    if (isset($args[2]['cookies']) AND !empty($args[2]['cookies'])) {
+      $args[2]['cookies'] = '';
     }
-    $args[2] = $data;
-    return md5(serialize($args));
+    print_r($args);
+    $key = md5(serialize($args));
+    echo "KEY: $key";
+    return $key;
   }
 
   static function setFixture($fixture) {
