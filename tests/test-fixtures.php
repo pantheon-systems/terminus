@@ -19,8 +19,10 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    Fixtures::put($test, $data);
 
    // test manually
-   $this->assertFileExists(CLI_ROOT.'/tests/fixtures/'.md5(serialize($test)));
-   $content = unserialize(file_get_contents(CLI_ROOT.'/tests/fixtures/'.md5(serialize($test))));
+   $filename = dirname(dirname(__FILE__)).'/tests/fixtures/'.md5(serialize($test));
+   $this->assertFileExists($filename);
+
+   $content = unserialize(file_get_contents($filename));
    $this->assertInstanceOf( get_class($content), $content );
    $this->assertEquals( "success", $content->msg );
 
