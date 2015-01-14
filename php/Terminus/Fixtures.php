@@ -17,8 +17,8 @@ class Fixtures {
     } else {
       $cli_root = constant('CLI_ROOT');
     }
-
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
+    echo "putting $fixture;".PHP_EOL;
     file_put_contents($fixture, serialize($data), LOCK_EX);
   }
 
@@ -26,9 +26,9 @@ class Fixtures {
   static function get($args)
   {
       $key = self::$current_fixture ?: Fixtures::getArgsKey($args);
-      echo __LINE__.":".$key.PHP_EOL;
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
+      echo "getting $filename;".PHP_EOL;
       if( file_exists($filename) ) {
         return unserialize(file_get_contents("$filename"));
       } else {
