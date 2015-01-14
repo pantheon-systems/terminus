@@ -17,7 +17,6 @@ class Fixtures {
       $cli_root = constant('CLI_ROOT');
     }
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
-    echo "putting $fixture;".PHP_EOL;
     file_put_contents($fixture, serialize($data));
   }
 
@@ -27,7 +26,6 @@ class Fixtures {
       $key = Fixtures::getArgsKey($args);
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
-      echo "getting $filename;".PHP_EOL;
       if( file_exists($filename) ) {
         return unserialize(file_get_contents("$filename"));
       } else {
@@ -41,9 +39,7 @@ class Fixtures {
     if (isset($args[2]['cookies']) AND !empty($args[2]['cookies'])) {
       $args[2]['cookies'] = '';
     }
-    print_r($args);
     $key = md5(serialize($args));
-    echo "KEY: $key";
     return $key;
   }
 
