@@ -19,17 +19,6 @@ class Fixtures {
 
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
 
-    // if there's already a fixture, assume we want to overwrite it
-    if (file_exists($fixture)) {
-      //print_r($args);
-      //echo "Removing $fixture".PHP_EOL;
-
-      @unlink($fixture);
-    } else {
-      //print_r($args);
-      echo "ADDING $fixture".PHP_EOL;
-    }
-
     file_put_contents($fixture, serialize($data), LOCK_EX);
   }
 
