@@ -45,7 +45,7 @@ class Fixtures {
   static function getArgsKey($args)
   {
     $data = $args[2];
-    if (isset($data['cookies'])) {
+    if (isset($data['cookies']) AND !empty($data['cookies'])) {
       unset($data['cookies']);
     }
     $args[2] = $data;
