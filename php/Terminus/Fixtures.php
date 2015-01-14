@@ -19,7 +19,7 @@ class Fixtures {
     }
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
     echo "putting $fixture;".PHP_EOL;
-    file_put_contents($fixture, serialize($data), LOCK_EX);
+    file_put_contents($fixture, serialize($data));
   }
 
 
