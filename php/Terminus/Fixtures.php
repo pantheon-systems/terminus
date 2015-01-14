@@ -11,14 +11,14 @@ class Fixtures {
   static function put($args, $data) {
     $key = Fixtures::getArgsKey($args);
 
-    if (!defined("WP_CLI_ROOT")) {
+    if (!defined('CLI_ROOT')) {
       $cli_root = dirname(dirname(__DIR__));
+      echo $cli_root;
     } else {
-      $cli_root = constant('WP_CLI_ROOT');
+      $cli_root = constant('CLI_ROOT');
     }
 
     $fixture =  sprintf( "%s/%s/%s", $cli_root, self::$fixtures_dir, $key );
-
     file_put_contents($fixture, serialize($data), LOCK_EX);
   }
 
