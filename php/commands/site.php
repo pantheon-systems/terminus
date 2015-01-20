@@ -852,6 +852,33 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
+   * Change the site payment instrument
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Site to use
+   *
+   * [--change-to-org=<org>]
+   * : Change the instrument to an Org by setting the id. ( must be admin )
+   *
+   * ## EXAMPLES
+   *
+   *  terminus site instrument --site=sitename
+   */
+  public function instrument($args, $assoc_args) {
+    $site = SiteFactory::instance( Input::site( $assoc_args ) );
+    $org = Input::optional('change-to-org', $assoc_args);
+    $data = $site->instrument($org);
+    if ($org) {
+      $this->waitOnWorkflow('workflow', $site->getId(), $data->id);
+      $data = $site->instrument();
+    }
+    \Terminus::line("Successfully updated payment instrument.");
+    $this->handleDisplay($data);
+  }
+
+  /**
    * List a site's job history
    *
    * ## OPTIONS

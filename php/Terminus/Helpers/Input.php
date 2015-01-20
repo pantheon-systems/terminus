@@ -83,4 +83,13 @@ class Input {
     $string = \Terminus::prompt($label);
     return $string;
   }
+
+  static function optional( $key, $args, $default = null ) {
+    if (isset($args[$key])) {
+      return $args[$key];
+    } elseif ($default !== null) {
+      return $default;
+    }
+    return $default; 
+  }
 }

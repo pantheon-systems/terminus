@@ -228,6 +228,27 @@ class Site {
   }
 
   /**
+   * get site instrument
+   */
+  public function instrument($org=null) {
+    $path = 'instrument';
+    $method = 'GET';
+    $options = null;
+    if ($org) {
+      $data = array(
+          'type'    => 'transfer_site_payment_to_organization',
+          'params'  => array(
+              'to_organization_id' => $org,
+          ),
+        );
+      $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
+      $method = 'POST';
+    }
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    return $response['data'];
+  }
+
+  /**
    * Create an environment
    */
   public function createEnvironment($env) {
