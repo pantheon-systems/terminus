@@ -315,15 +315,17 @@ class Site_Command extends Terminus_Command {
            Terminus::error("Invalid backup element specified.");
          }
 
-         if (!$backups = $this->cache->get_data("{$site->getName()}:$env:{$element}")) {
-           $backups = $site->environment($env)->backups($element);
-           $this->cache->put_data("{$site->getName()}:$env:{$element}", $backups);
+         $backups = $site->environment($env)->backups($element);
+         if (empty($backups)) {
+           \Terminus::error('No backups available.');
          }
          $menu = $folders = array();
 
          // build a menu for selecting back ups
-         foreach( $backups as $backup ) {
+
+         foreach( $backups as $folder => $backup ) {
            if (!isset($backup->filename)) continue;
+           if (!isset($backup->folder)) $backup->folder = $folder;
            $buckets[] = $backup->folder;
            $menu[] = $backup->filename;
          }
