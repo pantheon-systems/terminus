@@ -235,6 +235,7 @@ class Site {
     $method = 'GET';
     $options = null;
     if ($org) {
+      $path = 'workflows';
       $data = array(
           'type'    => 'transfer_site_payment_to_organization',
           'params'  => array(
