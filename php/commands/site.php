@@ -870,8 +870,18 @@ class Site_Command extends Terminus_Command {
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
     $org = Input::optional('change-to-org', $assoc_args);
     $data = $site->instrument($org);
+    // @TODO we need a "workflow" class to handle these exceptions and whatnot
     if ($org) {
-      $this->waitOnWorkflow('workflow', $site->getId(), $data->id);
+      if ( 'failed' == $data->result || 'aborted' == $data->result ) {
+        if (isset($data->final_task) AND !empty($data->final_task->messages)) {
+          foreach( (array) $data->final_task->messages as $date => $message) {
+            \Terminus::error('%s', $message->message);
+          }
+        }
+      }
+      if ($data->result != 'succeeded') {
+        $this->waitOnWorkflow('workflow', $site->getId(), $data->id);
+      }
       $data = $site->instrument();
     }
     \Terminus::line("Successfully updated payment instrument.");

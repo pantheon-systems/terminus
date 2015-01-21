@@ -4,7 +4,7 @@ use \Terminus\Utils;
 use \Terminus\Auth;
 use \Terminus\SiteFactory;
 use \Terminus\Organization;
-use \Terminus\Helper\Input;
+use \Terminus\Helpers\Input;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 

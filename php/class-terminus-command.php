@@ -141,7 +141,6 @@ abstract class Terminus_Command {
       }
 
       $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
-
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(TRUE);
 
@@ -155,9 +154,8 @@ abstract class Terminus_Command {
       return $data;
     } catch( Exception $e ) {
       $response = $e->getResponse();
-      \Terminus::error("%s", $response->getBody(TRUE));
+      \Terminus::error("%s", $response->getBody(TRUE) );
     }
-
 
   }
 
@@ -245,7 +243,15 @@ abstract class Terminus_Command {
     $type = $workflow['data']->type;
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
-      if ( 'failed' == $result ) Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
+      if ( 'failed' == $result OR 'aborted' == $result ) {
+        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages)) {
+          foreach($workflow['data']->final_task->messages as $data => $message) {
+            sprintf('[%s] %s', $message->level, $message->body);
+          }
+        } else {
+          Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
+        }
+      }
       $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
       $result = $workflow['data']->result;
       if (Terminus::get_config('debug')) {
