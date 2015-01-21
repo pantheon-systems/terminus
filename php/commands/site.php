@@ -12,6 +12,7 @@ use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
+use \Terminus\SiteWorkflow;
 
 class Site_Command extends Terminus_Command {
 
@@ -274,6 +275,61 @@ class Site_Command extends Terminus_Command {
     $this->handleDisplay($data,$args);
     return $data;
 
+  }
+
+  /**
+   * List site organizations
+   *
+   * ## OPTIONS
+   *
+   * <list|add|remove>
+   * : subfunction to run
+   *
+   * [--site=<site>]
+   * : Site's name
+   *
+   * [--org=<org>]
+   * : Organization name
+   *
+   * [--role=<role>]
+   * : Max role for organization on this site ... default "team_member"
+   *
+   */
+  public function organizations($args, $assoc_args) {
+    $action = array_shift($args);
+    $site = SiteFactory::instance( Input::site($assoc_args) );
+    $data = array();
+    switch ($action) {
+        case 'list':
+        case 'add':
+          $role = Input::optional('role', $assoc_args, 'team_member');
+          $org = Input::orgname($assoc_args,'org');
+          $workflow = $site->addMembership('organization',$org, $role);
+          $workflow->wait();
+          Terminus::success("Organization successfully added");
+          $orgs = $site->memberships();
+          break;
+        case 'remove':
+          $org = Input::orgid($assoc_args, 'org');
+          $workflow = $site->removeMembership('organization',$org);
+          $workflow->wait();
+          Terminus::success("Organization successfully removed");
+          $orgs = $site->memberships();
+        case 'default':
+          $orgs = $site->memberships();
+          break;
+    }
+    // format the data
+    foreach ($orgs as $org) {
+      $data[] = array(
+        'label' => "'{$org->organization->profile->name}'",
+        'name'  => $org->organization->profile->machine_name,
+        'role'  => $org->role,
+        'id' => $org->organization_id,
+      );
+    }
+
+    $this->handleDisplay($data);
   }
 
  /**

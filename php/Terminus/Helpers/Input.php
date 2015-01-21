@@ -22,7 +22,6 @@ class Input {
     }
 
     return $env;
-
   }
 
   public static function orglist() {
@@ -32,6 +31,26 @@ class Input {
       $orgs[$id] = $org->name;
     }
     return $orgs;
+  }
+
+  public static function orgname($args, $key, $default=null) {
+    if (isset($args[$key])) {
+      return $args['key'];
+    }
+
+    $orglist = Input::orglist();
+    $org = \Terminus::menu($orglist, false, "Choose organization");
+    return $orglist[$org];
+  }
+
+  public static function orgid($args, $key, $default=null) {
+    if (isset($args[$key])) {
+      return $args['key'];
+    }
+
+    $orglist = Input::orglist();
+    $org = \Terminus::menu($orglist, false, "Choose organization");
+    return $org;
   }
 
   /**
@@ -90,6 +109,6 @@ class Input {
     } elseif ($default !== null) {
       return $default;
     }
-    return $default; 
+    return $default;
   }
 }

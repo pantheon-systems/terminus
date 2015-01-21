@@ -2,6 +2,7 @@
 namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
+use \Terminus\SiteWorkflow;
 
 class Site {
   public $id;
@@ -312,5 +313,47 @@ class Site {
     $path = 'code-tips';
     $data = \Terminus_Command::request('sites',$this->getId(), $path, 'GET');
     return $data['data'];
+  }
+
+  /**
+   * Add membshipship, either org or user
+   *
+   * @param $type string identifiying type of membership ... i.e. organization or user
+   * @param $name string identifying the machine name of organization/user
+   *
+   * @return Workflow object
+   **/
+  public function addMembership($type,$name,$role='team_member') {
+    $type = sprintf('add_site_%s_membership',$type);
+    $workflow = new SiteWorkflow($type,$this);
+    $workflow->setParams(array('params'=> array('organization_name'=>$name,'role'=>$role)));
+    $workflow->start('POST');
+    return $workflow;
+  }
+
+  /**
+  * Remove membshipship, either org or user
+  *
+  * @param $type string identifiying type of membership ... i.e. organization or user
+  * @param $uuid string identifying the machine name of organization/user
+  *
+  * @return Workflow object
+  **/
+  public function removeMembership($type,$uuid) {
+    $type = sprintf('remove_site_%s_membership',$type);
+    $workflow = new SiteWorkflow($type,$this);
+    $workflow->setParams(array('params'=> array('organization_id'=>$uuid)));
+    $workflow->start('POST');
+    return $workflow;
+  }
+
+  /**
+   * Get memberships for a site
+  */
+  function memberships($type='organizations') {
+    $path = sprintf('memberships/%s', $type);
+    $method = 'GET';
+    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
+    return $response['data'];
   }
 }
