@@ -72,6 +72,8 @@ class Sites_Command extends Terminus_Command {
       if ('-' !== $organization) {
         $data['organization'] = $organization;
       }
+    } else {
+      $data['organization'] = $assoc_args['org'];
     }
     require_once __DIR__.'/products.php';
     if (isset($assoc_args['product'])) {
