@@ -1,6 +1,4 @@
-s:340:"POST /api/sites/1dd5bfa3-52dc-4c1c-8fd5-b51a9996c2ab/workflows HTTP/1.1
+s:242:"GET /api/products HTTP/1.1
 Host: dashboard.getpantheon.com
 User-Agent: Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4
-Content-Length: 116
-Cookie: X-Pantheon-Session=94212cf6-b7e1-44fc-bfc8-8a48214aa5fd:9e52e56a-a268-11e4-b1f3-bc764e111d20:dYkux8ngKYek4pYEiqGC1
-Content-type: application/json";
+Cookie: X-Pantheon-Session=dca4f8cd-9ec2-4117-957f-fc5230c23737:d05caebc-a284-11e4-93fd-bc764e100926:AFMJB4yqJwCQJPfcSFcz4";
