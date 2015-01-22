@@ -300,7 +300,6 @@ class Site_Command extends Terminus_Command {
     $site = SiteFactory::instance( Input::site($assoc_args) );
     $data = array();
     switch ($action) {
-        case 'list':
         case 'add':
           $role = Input::optional('role', $assoc_args, 'team_member');
           $org = Input::orgname($assoc_args,'org');
@@ -315,7 +314,9 @@ class Site_Command extends Terminus_Command {
           $workflow->wait();
           Terminus::success("Organization successfully removed");
           $orgs = $site->memberships();
+          break;
         case 'default':
+        case 'list':
           $orgs = $site->memberships();
           break;
     }
