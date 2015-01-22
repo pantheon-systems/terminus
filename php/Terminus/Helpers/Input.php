@@ -24,7 +24,7 @@ class Input {
     return $env;
   }
 
-  public static function orglist() {
+  public static function orglist($site=null) {
     $orgs = array('-'=>'None');
     $user = new User;
     foreach ($user->organizations() as $id => $org) {
@@ -34,17 +34,25 @@ class Input {
   }
 
   public static function orgname($args, $key, $default=null) {
+    $orglist = Input::orglist();
     if (isset($args[$key])) {
+      // if org id is sent fetch the name
+      if (array_key_exists($args[$key], $orglist)) {
+        return $orglist[$args[$key]];
+      }
       return $args[$key];
     }
-
-    $orglist = Input::orglist();
     $org = \Terminus::menu($orglist, false, "Choose organization");
     return $orglist[$org];
   }
 
   public static function orgid($args, $key, $default=null) {
-    if (isset($args[$key])) {
+    $orglist = Input::orglist();
+    $flip = array_flip($orglist);
+    if (isset($args[$key]) AND array_key_exists($args[$key], $flip)) {
+      // if we have a valid name provided and we need the id
+      return $flip[$args[$key]];
+    } elseif(isset($args[$key]) AND  array_key_exists($args[$key],$orglist)) {
       return $args[$key];
     }
 
@@ -65,7 +73,6 @@ class Input {
           return $site->getName();
         }
       }
-
       $sites = SiteFactory::instance();
       $choices = array();
       foreach( $sites as $site ) {
