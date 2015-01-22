@@ -45,7 +45,7 @@ class Input {
 
   public static function orgid($args, $key, $default=null) {
     if (isset($args[$key])) {
-      return $args['key'];
+      return $args[$key];
     }
 
     $orglist = Input::orglist();
