@@ -36,8 +36,9 @@ class Fixtures {
 
   static function getArgsKey($args)
   {
-
-    $key = sprintf('%s%s', $args[1], strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $args[0]))));
+    // strip UUIDs
+    $string = preg_replace('#https://dashboard.getpantheon.com/api/(sites|users|ogranizations)\/(.+)\/(.+)$#s','$1/$3',$args[0]);
+    $key = sprintf('%s%s', $args[1], strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $string))));
     return $key;
   }
 
