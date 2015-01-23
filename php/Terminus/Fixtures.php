@@ -36,10 +36,8 @@ class Fixtures {
 
   static function getArgsKey($args)
   {
-    if (isset($args[2]['cookies']) AND !empty($args[2]['cookies'])) {
-      $args[2]['cookies'] = '';
-    }
-    $key = md5(serialize($args));
+
+    $key = sprintf('%s%s', $args[1], strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $args[0]))));
     return $key;
   }
 
