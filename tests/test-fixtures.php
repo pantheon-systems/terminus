@@ -11,7 +11,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
  function testPutAndGet() {
 
    // this takes the place of the global argv
-   $test = array( 'sites', 'show', '--site=dummy','--nocache' );
+   $test = array( 'sites/test/one', 'POST' );
 
    $data = new stdClass;
    $data->file = __FILE__;
@@ -19,7 +19,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    Fixtures::put($test, $data);
 
    // test manually
-   $filename = dirname(dirname(__FILE__)).'/tests/fixtures/'.md5(serialize($test));
+   $filename = dirname(dirname(__FILE__)).'/tests/fixtures/POSTsites-test-one';
    $this->assertFileExists($filename);
 
    $content = unserialize(file_get_contents($filename));
