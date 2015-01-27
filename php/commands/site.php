@@ -217,7 +217,7 @@ class Site_Command extends Terminus_Command {
     switch($action) {
       case 'show':
         $data = $site->environment($env)->onServerDev();
-        $mode = isset($data->enabled) ? 'Sftp' : 'Git';
+        $mode = (isset($data->enabled) && (int)$data->enabled===1) ? 'Sftp' : 'Git';
         Logger::coloredOutput("%YConnection mode:%n $mode");
         return;
         break;
