@@ -34,7 +34,7 @@ class Sites_Command extends Terminus_Command {
     foreach($sites as $id => $site) {
       $toReturn['data'][] = array(
         'Site' => $site->information->name,
-        'Framwork' => isset($site->information->framework) ? $site->information->framework : '',
+        'Framework' => isset($site->information->framework) ? $site->information->framework : '',
         'Service Level' => $site->information->service_level,
         'UUID' => $id
       );
