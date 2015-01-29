@@ -93,7 +93,7 @@ class Sites_Command extends Terminus_Command {
 
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
-      $this->cache->flush('sites');
+      $this->cache->flush(null,'session');
     }
 
     if (isset($assoc_args['import'])) {
@@ -164,13 +164,12 @@ class Sites_Command extends Terminus_Command {
         $site_to_delete = $sites[$index];
       }
 
-      if (!isset($assoc_args['force'])) {
+      if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
         // if the force option isn't used we'll ask you some annoying questions
         Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
         Terminus::confirm( "Are you really sure?" );
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
-
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
 
       Terminus::launch_self("sites",array('show'),array('nocache'=>1));
