@@ -320,6 +320,10 @@ class Site_Command extends Terminus_Command {
           $orgs = $site->memberships();
           break;
     }
+    if (empty($data)) {
+      Terminus::error("No organizations");
+    }
+
     // format the data
     foreach ($orgs as $org) {
       $data[] = array(
@@ -339,7 +343,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * <action>
+  * <get|load|create>
   * : function to run - get,load,or create
   *
   * [--site=<site>]
@@ -1151,7 +1155,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * <action>
+  * <list|add-member|remove-member>
   * : i.e. add or remove
   *
   * [--site=<site>]

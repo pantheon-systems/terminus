@@ -2,6 +2,8 @@
 
 namespace Terminus;
 
+use Terminus\Loggers\Regular as Logger;
+
 /**
  * Checks if the list of parameters matches the specification defined in the synopsis.
  */
@@ -26,6 +28,30 @@ class SynopsisValidator {
     ) );
 
     return count( $args ) >= count( $positional );
+  }
+
+
+  public function invalid_positionals($args) {
+    $positionals = $this->query_spec( array(
+      'type' => 'positional',
+    ));
+
+    for ($i=0;$i<count($args);$i++) {
+      $token =  preg_replace('#\<([a-zA-Z].*)\>.*#s', '$1', $positionals[$i]['token']);
+      if ("commands" == trim($token)){
+        // we exit here because the wp and drush commands need to not have validation running since their commands are dependent on their respective code bases.
+        return false;
+      }
+      $regex = "#^($token)$#s";
+      if (\Terminus::get_config('debug')) {
+        Logger::coloredOutput("<Y>Positional match $regex</Y>");
+      }
+
+      if (!preg_match($regex, $args[$i])) {
+        return $args[$i];
+      }
+    }
+    return false;
   }
 
   public function unknown_positionals( $args ) {
@@ -125,4 +151,3 @@ class SynopsisValidator {
     return $filtered;
   }
 }
-

@@ -177,7 +177,12 @@ class Subcommand extends CompositeCommand {
       exit(1);
     }
 
-    $unknown_positionals = $validator->unknown_positionals( $args );
+    $invalid = $validator->invalid_positionals($args);
+    if($invalid) {
+      \Terminus::error("Invalid positional value: $invalid");
+    }
+
+    $unknown_positionals = $validator->unknown_positionals($args);
     if ( !empty( $unknown_positionals ) ) {
       \Terminus::error( 'Too many positional arguments: ' .
         implode( ' ', $unknown_positionals ) );
@@ -220,4 +225,3 @@ class Subcommand extends CompositeCommand {
     call_user_func( $this->when_invoked, $args, array_merge( $extra_args, $assoc_args ) );
   }
 }
-
