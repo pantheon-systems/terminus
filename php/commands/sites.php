@@ -77,11 +77,15 @@ class Sites_Command extends Terminus_Command {
     }
     require_once __DIR__.'/products.php';
     if (isset($assoc_args['product'])) {
-      $product = Products::getById($assoc_args['product']);
+      $product = Products::getByIdOrName($assoc_args['product']);
+      if (!$product) {
+        Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
+      }
     } else {
       $product = Terminus::menu( Products::selectList() );
       $product = Products::getByIndex($product);
     }
+
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
@@ -89,7 +93,7 @@ class Sites_Command extends Terminus_Command {
     // if we made it this far we need to query the work flow to wait for response
     $site = $response['data'];
     $workflow_id = $site->id;
-    $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
+    $result = $this->waitOnWorkFlow('sites', $site->site_id, $workflow_id);
 
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
