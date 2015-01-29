@@ -51,12 +51,16 @@ class Sites_Command extends Terminus_Command {
    *
    * [--product=<productid>]
    * : Specify the product to create
+   *
    * [--name=<name>]
    * : Name of the site to create (machine-readable)
+   *
    * [--label=<label>]
    * : Label for the site
+   *
    * [--org=<org>]
    * : UUID of organization to add this site to
+   *
    * [--import=<url>]
    * : A url to import a valid archive from
    */
@@ -146,15 +150,18 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
-   * Delete site
+   * Delete a site from pantheon
+   *
+   * ## OPTIONS
    * --site=<site>
-   *  : Id of the site you want to delete
-
+   * : Id of the site you want to delete
+   *
    * [--all]
-   *  : Just kidding ... we won't let you do that.
+   * : Just kidding ... we won't let you do that.
    *
    * [--force]
-   *  : to skip the confirmations
+   * : to skip the confirmations
+   *
    */
   function delete($args, $assoc_args) {
       $site_to_delete = SiteFactory::instance(@$assoc_args['site']);
