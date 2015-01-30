@@ -25,6 +25,8 @@ class Sites_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
+   * @subcommand list
+   * @alias show
    */
   public function show($args, $assoc_args) {
     $sites = SiteFactory::instance();
