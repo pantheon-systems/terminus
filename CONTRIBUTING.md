@@ -1,6 +1,11 @@
 Contribute
 ==========
 
+Creating Issues
+---------------
+
+Run `terminus cli version` and confirm you are  [running the latest version](https://github.com/pantheon-systems/cli/wiki/Installation) before opening a new issue.
+
 Setting up
 ----------
 
