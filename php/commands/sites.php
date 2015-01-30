@@ -51,12 +51,16 @@ class Sites_Command extends Terminus_Command {
    *
    * [--product=<productid>]
    * : Specify the product to create
+   *
    * [--name=<name>]
    * : Name of the site to create (machine-readable)
+   *
    * [--label=<label>]
    * : Label for the site
+   *
    * [--org=<org>]
    * : UUID of organization to add this site to
+   *
    * [--import=<url>]
    * : A url to import a valid archive from
    */
@@ -77,11 +81,15 @@ class Sites_Command extends Terminus_Command {
     }
     require_once __DIR__.'/products.php';
     if (isset($assoc_args['product'])) {
-      $product = Products::getById($assoc_args['product']);
+      $product = Products::getByIdOrName($assoc_args['product']);
+      if (!$product) {
+        Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
+      }
     } else {
       $product = Terminus::menu( Products::selectList() );
       $product = Products::getByIndex($product);
     }
+
     Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
     $data['product'] = $product['id'];
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
@@ -89,11 +97,11 @@ class Sites_Command extends Terminus_Command {
     // if we made it this far we need to query the work flow to wait for response
     $site = $response['data'];
     $workflow_id = $site->id;
-    $result = $this->waitOnWorkFlow( 'sites', $site->site_id, $workflow_id );
+    $result = $this->waitOnWorkFlow('sites', $site->site_id, $workflow_id);
 
     if( $result ) {
       Terminus::success("Pow! You created a new site!");
-      $this->cache->flush('sites');
+      $this->cache->flush(null,'session');
     }
 
     if (isset($assoc_args['import'])) {
@@ -142,15 +150,18 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
-   * Delete site
+   * Delete a site from pantheon
+   *
+   * ## OPTIONS
    * --site=<site>
-   *  : Id of the site you want to delete
-
+   * : Id of the site you want to delete
+   *
    * [--all]
-   *  : Just kidding ... we won't let you do that.
+   * : Just kidding ... we won't let you do that.
    *
    * [--force]
-   *  : to skip the confirmations
+   * : to skip the confirmations
+   *
    */
   function delete($args, $assoc_args) {
       $site_to_delete = SiteFactory::instance(@$assoc_args['site']);
@@ -164,13 +175,12 @@ class Sites_Command extends Terminus_Command {
         $site_to_delete = $sites[$index];
       }
 
-      if (!isset($assoc_args['force'])) {
+      if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
         // if the force option isn't used we'll ask you some annoying questions
         Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
         Terminus::confirm( "Are you really sure?" );
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
-
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
 
       Terminus::launch_self("sites",array('show'),array('nocache'=>1));

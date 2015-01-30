@@ -40,19 +40,19 @@ class Regular {
   }
 
   static function redLine($message = " ") {
-    $cli = new Self('%1%K');
+    $cli = new self('%1%K');
     $message = \cli\Colors::colorize( "%1%K$message%n", $cli->in_color );
     $cli->write( STDOUT, "$message\n");
   }
 
   static function greenLine($message = " ") {
-    $cli = new Self('%2%K');
+    $cli = new self('%2%K');
     $message = \cli\Colors::colorize( "%2%K$message%n", $cli->in_color );
     $cli->write( STDOUT, "$message\n");
   }
 
   static function coloredOutput($message = "", $print = true) {
-    $cli = new Self('');
+    $cli = new self('');
     // we're not using regex here because simple str_replace is faster. However,
     // we may need to go that route if this function gets too complex
     $message = str_replace('</M>','%n', str_replace('<M>','%M',$message) );

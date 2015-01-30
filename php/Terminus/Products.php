@@ -87,6 +87,12 @@ class Products {
     return $products[$index];
   }
 
+  /**
+   * Search available products by $id
+   * @param $id string - expects valid uuid-format. i.e. e8fe8550-1ab9-4964-8838-2b9abdccf4bf
+   *
+   * @return product array
+   */
   public static function getById($id) {
     $products = self::get(TRUE);
     foreach ($products as $product) {
@@ -94,7 +100,28 @@ class Products {
         return $product;
       }
     }
+    return false;
   }
+
+  /**
+   * Search available products by $id
+   * @param $id_or_name string - can be $id or name
+   *
+   * @return product array
+   */
+  public static function getByIdOrName($id_or_name) {
+    $products = self::get(TRUE);
+    foreach ($products as $product) {
+      if ($product['id'] == $id_or_name) {
+        return $product;
+      }
+      if (strtolower($product['longname']) == strtolower($id_or_name)) {
+        return $product;
+      }
+    }
+    return false;
+  }
+
 
   public static function instance() {
     static $instance;

@@ -47,13 +47,14 @@ class Environment {
   /**
    * @param $element sting code,file,backup
    */
-  public function backups($element = null) {
-    if (null === $this->backups ) {
+  public function backups($element = null, $latest_only = false) {
+    if (null === $this->backups) {
       $path = sprintf("environments/%s/backups/catalog", $this->name);
       $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
       $this->backups = $response['data'];
     }
     $backups = (array) $this->backups;
+    ksort($backups);
     if ($element) {
       foreach ($this->backups as $id => $backup) {
         if (!isset($backup->filename)) {
@@ -65,6 +66,9 @@ class Environment {
           continue;
         }
       }
+    }
+    if ($latest_only) {
+      return array(array_pop($backups));
     }
     return $backups;
   }
@@ -149,7 +153,7 @@ class Environment {
       'headers' => array('Content-type'=>'application/json')
     );
     $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/lock', "PUT", $options);
-    $response['data'];
+    return $response['data'];
   }
 
   /**

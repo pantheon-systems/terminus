@@ -28,7 +28,7 @@ fi
 
 cd code
 
-if [ -f .git/config ]; then
+if [ -e .git/config ]; then
 	git pull origin master
 else
 	git clone $GIT_REMOTE .

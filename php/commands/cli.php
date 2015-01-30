@@ -123,7 +123,7 @@ class CLI_Command extends Terminus_Command {
   * @subcommand cache-clear
   */
   public function cache_clear($cache = null) {
-    $this->cache->flush($cache);
+    $this->cache->flush($cache,'session');
   }
 
 }
