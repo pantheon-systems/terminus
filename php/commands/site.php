@@ -358,6 +358,9 @@ class Site_Command extends Terminus_Command {
   * [--to-directory=<directory>]
   * : Download the file if set
   *
+  * [--latest]
+  * : if set no the latest backup will be selected automatically
+  *
   * ## EXAMPLES
   *
   */
@@ -375,15 +378,14 @@ class Site_Command extends Terminus_Command {
          if (!in_array($element,array('code','files','database'))) {
            Terminus::error("Invalid backup element specified.");
          }
-
-         $backups = $site->environment($env)->backups($element);
+         $latest = Input::optional('latest',$assoc_args,false);
+         $backups = $site->environment($env)->backups($element, $latest);
          if (empty($backups)) {
            \Terminus::error('No backups available.');
          }
          $menu = $folders = array();
 
          // build a menu for selecting back ups
-
          foreach( $backups as $folder => $backup ) {
            if (!isset($backup->filename)) continue;
            if (!isset($backup->folder)) $backup->folder = $folder;
@@ -392,10 +394,13 @@ class Site_Command extends Terminus_Command {
          }
 
          if (empty($menu)) {
-           Terminus::error("No backups available. Create one with `terminus site backup create --site=%s`", array($site->getName()));
+           Terminus::error("No backups available. Create one with `terminus site backup create --site=%s --env=%s`", array($site->getName(),$env));
          }
 
-         $index = Terminus::menu($menu, null, "Select backup");
+         $index = 0;
+         if (!$latest) {
+           $index = Terminus::menu($menu, null, "Select backup");
+         }
          $bucket = $buckets[$index];
          $filename = $menu[$index];
 
@@ -869,7 +874,7 @@ class Site_Command extends Terminus_Command {
           $password = $assoc_args['password'];
         }
         $data = $site->environment($env)->lock($email, $password);
-        if ( property_exists($data,'id') ) {
+        if ( $data AND property_exists($data,'id') ) {
           $this->waitOnWorkflow('sites',$data->site_id, $data->id);
         }
         Terminus::success('Success');
@@ -1032,7 +1037,11 @@ class Site_Command extends Terminus_Command {
   public function new_relic($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
     $data = $site->newRelic();
-    $this->handleDisplay($data->account,$assoc_args,array('Key','Value'));
+    if($data) {
+      $this->handleDisplay($data->account,$assoc_args,array('Key','Value'));
+    } else {
+      Logger::coloredOutput("%YNew Relic is not enabled.%n");
+    }
   }
 
   /**
@@ -1142,9 +1151,10 @@ class Site_Command extends Terminus_Command {
   public function service_level($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
     $info = $site->info('service_level');
-    if (@$assoc_args['set']) {
-      $data = $site->updateServiceLevel($assoc_args['set']);
-      Logger::coloredOutput("%2<K>Service Level has been updated to '$info'%n");
+    if (isset($assoc_args['set'])) {
+      $set = $assoc_args['set'];
+      $data = $site->updateServiceLevel($set);
+      Logger::coloredOutput("%2<K>Service Level has been updated to '$set'%n");
     }
     Logger::coloredOutput("%2<K>Service Level is '$info'%n");
     return true;
