@@ -37,8 +37,8 @@ class SynopsisValidator {
     ));
 
     for ($i=0;$i<count($args);$i++) {
-      $token =  preg_replace('#\<([a-zA-Z].*)\>.*#s', '$1', $positionals[$i]['token']);
-      if ("commands" == trim($token)){
+      $token =  preg_replace('#\[?\<([a-zA-Z].*)\>\]?.*#s', '$1', $positionals[$i]['token']);
+      if ("commands" == trim($token) || "email" == trim($token)){
         // we exit here because the wp and drush commands need to not have validation running since their commands are dependent on their respective code bases.
         return false;
       }

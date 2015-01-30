@@ -17,6 +17,9 @@ class Products_Command extends Terminus_Command {
   * [--framework=<drupal|wordpress>]
   * : Filter based on framework
   *
+  * @subcommand list
+  * @alias all
+  *
   **/
   public function all( $args = array(), $assoc_args = array()) {
 
