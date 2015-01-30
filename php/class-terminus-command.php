@@ -153,9 +153,14 @@ abstract class Terminus_Command {
       );
       $cache->put_data($cachekey, $data);
       return $data;
-    } catch( Exception $e ) {
+    } catch( Guzzle\Http\Exception\BadResponseException $e ) {
       $response = $e->getResponse();
       \Terminus::error("%s", $response->getBody(TRUE) );
+    } catch( Guzzle\Http\Exception\BadResponseException $e ) {
+      $request = $e->getRequest();
+      \Terminus::error("Request %s had failed: %s", (string)$request, $e->getMessage() );
+    } catch( Exception $e ) {
+      \Terminus::error("Unrecognised request failure: %s", $e->getMessage() );
     }
 
   }
