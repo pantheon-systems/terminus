@@ -19,7 +19,7 @@ class Organizations_Command extends Terminus_Command {
    *
    * @subcommand list
    *
-  */
+   */
   public function all($args, $assoc_args) {
      $user = new User();
      $data = array();
@@ -36,16 +36,18 @@ class Organizations_Command extends Terminus_Command {
   /**
    * List an organizations sites
    *
-   * @subcommand sites
-   *
-   * ## Options
+   * ## OPTIONS
    *
    * [--org=<org>]
    * : Organization name or Id
+   *
    * [--add=<site>]
    * : Site to add to organization
+   *
    * [--remove=<site>]
    * : Site to remove from organization
+   *
+   * @subcommand sites
    *
    */
   public function sites($args, $assoc_args) {
