@@ -177,9 +177,11 @@ class Subcommand extends CompositeCommand {
       exit(1);
     }
 
-    $invalid = $validator->invalid_positionals($args);
-    if($invalid) {
-      \Terminus::error("Invalid positional value: $invalid");
+    if ( $this->name != 'help') {
+      $invalid = $validator->invalid_positionals($args);
+      if($invalid) {
+        \Terminus::error("Invalid positional value: $invalid");
+      }
     }
 
     $unknown_positionals = $validator->unknown_positionals($args);
