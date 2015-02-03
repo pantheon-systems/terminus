@@ -83,7 +83,7 @@ class Site_Command extends Terminus_Command {
    */
   public function clear_caches($args, $assoc_args) {
       $site = SiteFactory::instance(Input::site($assoc_args));
-      $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+      $env = Input::env($assoc_args, 'env');
       $response = $site->environment($env)->workflow("clear_cache");
       $this->waitOnWorkFlow('sites', $site->getId(), $response->id);
       Terminus::success("Caches cleared");
@@ -115,7 +115,7 @@ class Site_Command extends Terminus_Command {
       $data = $headers = array();
       switch($subcommand) {
         case 'log':
-          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $env = Input::env($assoc_args, 'env');
           $logs = $site->environment($env)->log();
           $data = array();
           foreach ($logs as $log) {
@@ -143,7 +143,7 @@ class Site_Command extends Terminus_Command {
           Terminus::success('Branch created');
           break;
         case 'commit':
-          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $env = Input::env($assoc_args, 'env');
           $diff = $site->environment($env)->diffstat();
           $count = count($diff);
           if (!Terminus::get_config('yes')) {
@@ -161,7 +161,7 @@ class Site_Command extends Terminus_Command {
           return true;
           break;
         case 'diffstat':
-          $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+          $env = Input::env($assoc_args, 'env');
           $diff = (array) $site->environment($env)->diffstat();
           if (empty($diff)) {
             Terminus::success("No changes on server.");
@@ -212,7 +212,7 @@ class Site_Command extends Terminus_Command {
     if (@$assoc_args['set']) {
       $action = 'set';
     }
-    $env = $this->getValidEnv(@$site->getName(), @$assoc_args['env']);
+    $env = Input::env($assoc_args, 'env');
     $data = $headers = array();
     switch($action) {
       case 'show':
@@ -367,7 +367,7 @@ class Site_Command extends Terminus_Command {
    public function backup($args, $assoc_args) {
      $action = array_shift($args);
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+     $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'get':
          // prompt for backup type
@@ -540,8 +540,8 @@ class Site_Command extends Terminus_Command {
    public function clone_env($args, $assoc_args) {
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $site_id = $site->getId();
-     $from_env = $this->getValidEnv($site->getName(), @$assoc_args['from-env'], "Choose environment you want to clone from");
-     $to_env = $this->getValidEnv($site->getName(), @$assoc_args['to-env'], "Choose environment you want to clone to");
+     $from_env = Input::env($assoc_args, 'from-env', "Choose environment you want to clone from");
+     $to_env = Input::env($assoc_args, 'to-env', "Choose environment you want to clone to");
 
      $db = $files = false;
      $db = isset($assoc_args['db']) ?: false;
@@ -717,28 +717,6 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * Fetch a valid environment
-   */
-   private function getValidEnv($site, $env = null, $message = false) {
-     $envs = SiteFactory::instance($site)->availableEnvironments();
-
-     if (!$message) {
-       $message = "Specify a environment";
-     }
-
-     if (!$env OR array_search($env, $envs) === false) {
-       $env = \Terminus::menu( $envs , null, $message );
-       $env = $envs[$env];
-     }
-
-     if (!$env) {
-       \Terminus::error("Environment '%s' unavailable", array($env));
-     }
-
-     return $env;
-   }
-
-  /**
    * List enviroments for a site
    *
    * ## OPTIONS
@@ -791,7 +769,7 @@ class Site_Command extends Terminus_Command {
    public function hostnames($args, $assoc_args) {
      $action = array_shift($args);
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+     $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'list':
         $hostnames = $data = (array) $site->environment($env)->hostnames();
@@ -849,7 +827,7 @@ class Site_Command extends Terminus_Command {
   function lock($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+    $env = Input::env($assoc_args, 'env');
     switch ($action) {
       case 'info':
         $data = $locks = $site->environment($env)->lockinfo();
@@ -1002,7 +980,7 @@ class Site_Command extends Terminus_Command {
     $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
 
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+    $env = Input::env($assoc_args, 'env');
 
     // Darwin check ... not sure what this is really ... borrowed from terminus 1
     $darwin = false;
@@ -1297,7 +1275,7 @@ class Site_Command extends Terminus_Command {
   */
   public function wake($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = $this->getValidEnv($site->getName(), @$assoc_args['env']);
+    $env = Input::env($assoc_args, 'env');
     $data = $site->environment($env)->wake();
     if (!$data['success']) {
       Logger::redLine(sprintf("Could not reach %s", $data['target']));
@@ -1329,7 +1307,7 @@ class Site_Command extends Terminus_Command {
        $env = @$assoc_args['env'] ?: 'dev';
        $site = SiteFactory::instance(Input::site($assoc_args));
        $site_id = $site->getId();
-       $env = $this->getValidEnv($site->getName(), $env);
+       $env = Input::env($assoc_args, 'env');
        Terminus::line("Wiping %s %s", array($site_id, $env));
        $resp = $site->environment($env)->wipe();
        if ($resp) {
