@@ -10,5 +10,6 @@ putenv('BUILD_FIXTURES=0');
 putenv('USE_FIXTURES=1');
 require_once CLI_ROOT.'/php/boot-fs.php';
 Terminus::set_config('nocache',TRUE);
+Terminus::set_config('debug',1);
 use Terminus\Fixtures;
 use Terminus\Session;

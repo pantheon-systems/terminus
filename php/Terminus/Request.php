@@ -4,6 +4,7 @@ namespace Terminus;
 use Guzzle\Http\Client as Browser;
 use \Terminus\Fixtures;
 use \Terminus\FauxRequest;
+use \Terminus\Loggers\Regular;
 /**
  * Handles requests made by terminus
  *
@@ -53,11 +54,10 @@ class Request {
       }
     }
 
-    if ( getenv("debug") == 1 ) {
-      print "####### DEBUG #######".PHP_EOL;
-      print $request->getRawHeaders();
-      print_r($data);
-      print "####### END DEBUG #####".PHP_EOL.PHP_EOL;
+    if (\Terminus::get_config("debug")) {
+      $debug = "#### REQUEST ####".PHP_EOL;
+      $debug .= $request->getRawHeaders();
+      \Terminus\Loggers\Regular::debug($debug);
     }
 
     if ( getenv("BUILD_FIXTURES") ) {

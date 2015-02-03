@@ -120,13 +120,13 @@ abstract class Terminus_Command {
 
       // combine session realm uuid and path to get a unique key
       // @todo need cache "groups"
-      $cachekey = md5( Session::getValue('user_uuid').$realm.$path );
+      $cachekey = md5( Session::getValue('user_uuid').$uuid.$realm.$path );
       $data = $cache->get_data($cachekey);
 
       // check the request cache
       if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE') AND !empty($data)) {
         if (Terminus::get_config('debug')) {
-          Logger::coloredOutput('<Y>Cached Request. Key: '.$cachekey.'</Y>');
+          Logger::debug('CacheKey: '.$cachekey);
         }
         return (array) $data;
       }
@@ -142,6 +142,9 @@ abstract class Terminus_Command {
       }
 
       $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
+      if (Terminus::get_config('debug')) {
+        Logger::debug('Request URL: '.$url);
+      }
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(TRUE);
 
