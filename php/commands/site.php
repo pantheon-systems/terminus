@@ -540,13 +540,8 @@ class Site_Command extends Terminus_Command {
    public function clone_env($args, $assoc_args) {
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $site_id = $site->getId();
-<<<<<<< HEAD
      $from_env = Input::env($assoc_args, 'from-env', "Choose environment you want to clone from");
      $to_env = Input::env($assoc_args, 'to-env', "Choose environment you want to clone to");
-=======
-     $from_env = $this->getValidEnv($site->getName(), @$assoc_args['from-env'], "Choose environment you want to clone from");
-     $to_env = $this->getValidEnv($site->getName(), @$assoc_args['to-env'], "Choose environment you want to clone to");
->>>>>>> f2a6a80... Fix `site clone-env` and `site wipe` when using interactive args
 
      $db = $files = false;
      $db = isset($assoc_args['db']) ?: false;
