@@ -540,8 +540,8 @@ class Site_Command extends Terminus_Command {
    public function clone_env($args, $assoc_args) {
      $site = SiteFactory::instance( Input::site( $assoc_args ) );
      $site_id = $site->getId();
-     $from_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['from-env'], "Choose environment you want to clone from");
-     $to_env = $this->getValidEnv($assoc_args['site'], @$assoc_args['to-env'], "Choose environment you want to clone to");
+     $from_env = $this->getValidEnv($site->getName(), @$assoc_args['from-env'], "Choose environment you want to clone from");
+     $to_env = $this->getValidEnv($site->getName(), @$assoc_args['to-env'], "Choose environment you want to clone to");
 
      $db = $files = false;
      $db = isset($assoc_args['db']) ?: false;
@@ -1329,7 +1329,7 @@ class Site_Command extends Terminus_Command {
        $env = @$assoc_args['env'] ?: 'dev';
        $site = SiteFactory::instance(Input::site($assoc_args));
        $site_id = $site->getId();
-       $env = $this->getValidEnv($assoc_args['site'], $env);
+       $env = $this->getValidEnv($site->getName(), $env);
        Terminus::line("Wiping %s %s", array($site_id, $env));
        $resp = $site->environment($env)->wipe();
        if ($resp) {
