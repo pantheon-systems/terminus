@@ -176,7 +176,10 @@ class Environment {
    * list hotnames for environment
    */
   public function hostnames() {
+    $current_nocache = \Terminus::get_config('nocache');
+    \Terminus::set_config('nocache',true);
     $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames', 'GET');
+    \Terminus::set_config('nocache',$current_nocache);
     return $response['data'];
   }
 
