@@ -7,6 +7,8 @@ class User {
   static $instance;
   public $id;
   private $organizations;
+  private $profile;
+  private $aliases;
 
   public function __construct($id = null) {
     if (null===$id) {
@@ -14,15 +16,36 @@ class User {
     } else {
       $this->id = $id;
     }
+    $this->getProfile();
     self::$instance = $this;
     return $this;
   }
 
   static function instance($id = null) {
     if (self::$instance) {
-      new Self($id);
+      new self($id);
     }
     return self::$instance;
+  }
+
+  public function getProfile() {
+    if (!$this->profile) {
+      $path = 'profile';
+      $method = 'GET';
+      $response = \Terminus_Command::request('users', $this->id, $path, $method);
+      $this->profile = $response['data'];
+    }
+    return $this->profile;
+  }
+
+  public function getAliases() {
+    if (!$this->aliases) {
+      $path = 'drush_aliases';
+      $method = 'GET';
+      $response = \Terminus_Command::request('users', $this->id, $path, $method);
+      $this->aliases = $response['data']->drush_aliases;
+    }
+    return $this->aliases;
   }
 
   public function organizations() {

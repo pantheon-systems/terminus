@@ -8,6 +8,9 @@ use Terminus\Session;
 use Terminus\SiteFactory;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
+use Terminus\User;
+use Symfony\Component\Finder\SplFileInfo;
+use Terminus\Loggers\Regular as Logger;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -188,6 +191,43 @@ class Sites_Command extends Terminus_Command {
       Terminus::launch_self("sites",array('show'),array('nocache'=>1));
   }
 
+  /**
+   * Print and save drush aliases
+   *
+   * ## OPTIONS
+   *
+   * [--print]
+   * : print aliases to screen
+   *
+   * [--location=<location>]
+   * : specify the location of the alias file, default it ~/.drush/pantheon.drushrc.php
+   *
+   */
+  public function aliases($args, $assoc_args) {
+    $user = new User();
+    $print = Input::optional('print', $assoc_args, false);
+    $json = \Terminus::get_config('json');
+    $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.drushrc.php');
+    $message = "Pantheon aliases updated.";
+    if (!file_exists($location)) {
+      $message = "Pantheon aliases created.";
+    }
+    $content = $user->getAliases();
+    $h = fopen($location, 'w+');
+    fwrite($h, $content);
+    fclose($h);
+    chmod($location, '0777');
+    Logger::coloredOutput("%2%K$message%n");
+
+    if ($json) {
+      include $location;
+      print \Terminus\Utils\json_dump($aliases);
+    } elseif ($print) {
+      print $content;
+    }
+
+
+  }
 
   private function getIdFromName($name) {
     $sites = $menu = array();
@@ -199,6 +239,7 @@ class Sites_Command extends Terminus_Command {
     }
     return false;
   }
+
   /**
    * Sanitize the site name field
    * @package 2.0
