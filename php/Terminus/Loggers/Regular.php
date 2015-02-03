@@ -51,6 +51,10 @@ class Regular {
     $cli->write( STDOUT, "$message\n");
   }
 
+  static function debug($message) {
+    self::coloredOutput('%3<K>'.$message.'%n');
+  }
+
   static function coloredOutput($message = "", $print = true) {
     $cli = new self('');
     // we're not using regex here because simple str_replace is faster. However,
