@@ -53,7 +53,7 @@ class Site {
         return $this->bindings[$type];
       } else {
         return false;
-      }      
+      }
     }
     return $this->bindings;
   }
@@ -107,6 +107,12 @@ class Site {
     foreach ($this->environments as $name => $data) {
       $envs[] = $name;
     }
+
+    # Reorder environments to put dev/test/live first
+    $default_envs = array('dev', 'test', 'live');
+    $multidev_envs = array_diff($envs, $default_envs);
+    $envs = array_merge($default_envs, $multidev_envs);
+
     return $envs;
   }
 
