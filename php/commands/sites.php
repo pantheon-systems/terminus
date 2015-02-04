@@ -207,7 +207,7 @@ class Sites_Command extends Terminus_Command {
     $user = new User();
     $print = Input::optional('print', $assoc_args, false);
     $json = \Terminus::get_config('json');
-    $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.drushrc.php');
+    $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
     $message = "Pantheon aliases updated.";
     if (!file_exists($location)) {
       $message = "Pantheon aliases created.";
