@@ -49,7 +49,11 @@ class Site {
       }
     }
     if ($type) {
-      return $this->bindings[$type];
+      if (isset($this->bindings[$type])) {
+        return $this->bindings[$type];
+      } else {
+        return false;
+      }      
     }
     return $this->bindings;
   }

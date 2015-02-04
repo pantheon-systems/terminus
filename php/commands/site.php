@@ -1093,6 +1093,9 @@ class Site_Command extends Terminus_Command {
     switch ($action) {
       case 'clear':
         $bindings = $site->bindings('cacheserver');
+        if (empty($bindings)) {
+          \Terminus::error("Redis cache not enabled");
+        }
         $commands = array();
         foreach($bindings as $binding) {
           if ( @$env AND $env != $binding->environment) continue;
