@@ -622,7 +622,7 @@ class Site_Command extends Terminus_Command {
        $env = Terminus::prompt("Name of new MultiDev environment");
      }
 
-     $src = $this->getValidEnv($site->getName(), @$assoc_args['from-env'], "Environment to clone content from");
+     $src = Input::env($assoc_args, 'env', "Environment to clone content from", $site->availableEnvironments());
 
      $workflow = $site->createEnvironment($env, $src);
      $workflow->wait();
@@ -644,7 +644,9 @@ class Site_Command extends Terminus_Command {
    */
    public function delete_env($args, $assoc_args) {
      $site = SiteFactory::instance(Input::site($assoc_args));
-     $env = $this->getValidEnv($site->getName(), @$assoc_args['env'], "Environment to delete", array('skip' => array('dev', 'test', 'live')));
+
+     $multidev_envs = array_diff($site->availableEnvironments(), array('dev', 'test', 'live'));
+     $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
 
      Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
 
@@ -709,33 +711,6 @@ class Site_Command extends Terminus_Command {
      if ($result) {
        \Terminus::success("Woot! Code deployed to %s", array($env));
      }
-   }
-
-  /**
-   * Fetch a valid environment
-   */
-   private function getValidEnv($site, $env = null, $message = false, $options = array()) {
-     $envs = SiteFactory::instance($site)->availableEnvironments();
-
-     # Remove any environments that are in the skip list
-     if (isset($options['skip'])) {
-       $envs = array_diff($envs, $options['skip']);
-     }
-
-     if (!$message) {
-       $message = "Specify a environment";
-     }
-
-     if (!$env OR array_search($env, $envs) === false) {
-       $env = \Terminus::menu( $envs , null, $message );
-       $env = $envs[$env];
-     }
-
-     if (!$env) {
-       \Terminus::error("Environment '%s' unavailable", array($env));
-     }
-
-     return $env;
    }
 
   /**
