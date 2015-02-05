@@ -1244,27 +1244,31 @@ class Site_Command extends Terminus_Command {
      // data munging as usual
      $data = array();
 
-     // The $upstream object returns a value of [behind] -> 1 if there is an
-     // upstream update that has not been applied to Dev.
-     $data[$upstream->remote_url] = ($upstream->behind == 1 ? "Updates Available":"Up-to-date");
+     if(isset($upstream->remote_url) && isset($upstream->behind)) {
+       // The $upstream object returns a value of [behind] -> 1 if there is an
+       // upstream update that has not been applied to Dev.
+       $data[$upstream->remote_url] = ($upstream->behind == 1 ? "Updates Available":"Up-to-date");
 
-     $this->_constructTableForResponse($data, array('Upstream','Status') );
-     if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
-     $upstreams = (array) $upstream->update_log;
-     if (!empty($upstreams)) {
-       $data = array();
-       foreach ($upstreams as $commit) {
-         $data = array(
-           'hash' => $commit->hash,
-           'datetime'=> $commit->datetime,
-           'message' => $commit->message,
-           'author' => $commit->author,
-         );
-         $this->handleDisplay($data,$args);
-         echo PHP_EOL;
+       $this->_constructTableForResponse($data, array('Upstream','Status') );
+       if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
+       $upstreams = (array) $upstream->update_log;
+       if (!empty($upstreams)) {
+         $data = array();
+         foreach ($upstreams as $commit) {
+           $data = array(
+             'hash' => $commit->hash,
+             'datetime'=> $commit->datetime,
+             'message' => $commit->message,
+             'author' => $commit->author,
+           );
+           $this->handleDisplay($data,$args);
+           echo PHP_EOL;
+         }
        }
+     } else {
+       $this->handleDisplay('There was a problem checking your upstream status. Please try again.');
+       echo PHP_EOL;
      }
-
      if (isset($assoc_args['update']) AND !empty($upstream->update_log)) {
        $env = 'dev';
        Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
