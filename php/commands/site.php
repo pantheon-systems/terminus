@@ -1244,27 +1244,11 @@ class Site_Command extends Terminus_Command {
      // data munging as usual
      $data = array();
 
-     // The $upstream->{env} object only returns value 1 if True.
-     // If is_up_to_date_with_upstream is empty, the {env} hasn't been made yet.
-     if (!empty($upstream->dev->is_up_to_date_with_upstream)) {
-       $data['dev'] = ($upstream->dev->is_up_to_date_with_upstream == 1 ? "Up-to-date":"Updates Available");
-     } else {
-       $data['dev'] = "Environment not created yet.";
-     }
+     // The $upstream object returns a value of [behind] -> 1 if there is an
+     // upstream update that has not been applied to Dev.
+     $data[$upstream->remote_url] = ($upstream->behind == 1 ? "Updates Available":"Up-to-date");
 
-     if (!empty($upstream->test->is_up_to_date_with_upstream)) {
-       $data['test'] = ($upstream->test->is_up_to_date_with_upstream == 1 ? "Up-to-date":"Updates Available");
-     } else {
-       $data['test'] = "Environment not created yet.";
-     }
-
-     if (!empty($upstream->live->is_up_to_date_with_upstream)) {
-       $data['live'] = ($upstream->live->is_up_to_date_with_upstream == 1 ? "Up-to-date":"Updates Available");
-     } else {
-       $data['live'] = "Environment not created yet.";
-     }
-
-     $this->_constructTableForResponse($data, array('Environment','Status') );
+     $this->_constructTableForResponse($data, array('Upstream','Status') );
      if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
      $upstreams = (array) $upstream->update_log;
      if (!empty($upstreams)) {
