@@ -650,7 +650,7 @@ class Site_Command extends Terminus_Command {
 
      Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
 
-     $workflow = $site->deleteEnvironment($env, $src);
+     $workflow = $site->deleteEnvironment($env);
      $workflow->wait();
      Terminus::success("Deleted the $env environment");
    }
