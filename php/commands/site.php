@@ -235,17 +235,18 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * Open the Pantheon site dashboard a browser
+   * Open the Pantheon site dashboard in a browser
    *
    * ## OPTIONS
    *
    * [--site=<site>]
    * : site dashboard to open
    *
+   * @subcommand dashboard
   */
   public function dashboard($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
-    Terminus::confirm("Do you want to open your dashboard link in a web browser?");
+    Terminus::confirm("Do you want to open your dashboard link in a web browser?", Terminus::get_config());
     $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
     exec($command);
   }
