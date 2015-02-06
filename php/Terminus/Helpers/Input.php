@@ -3,6 +3,7 @@ namespace Terminus\Helpers;
 
 use \Terminus\User;
 use \Terminus\SiteFactory;
+use \Terminus\Products;
 
 class Input {
 
@@ -22,6 +23,28 @@ class Input {
     }
 
     return $env;
+  }
+
+  /**
+   * @param $args array of args to parse value from.
+   * @param $exit (boolean) if true throw error when no value is found.
+   *
+   * @return product array
+   */
+  public static function product($args, $key, $exit=true) {
+    if (isset($assoc_args[$key])) {
+      $product = Products::getByIdOrName($assoc_args[$key]);
+      if (!$product) {
+        \Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
+      }
+    } else {
+      $product = \Terminus::menu( Products::selectList() );
+      $product = Products::getByIndex($product);
+    }
+    if (!$product AND $exit) {
+      \Terminus::error("Product is required.");
+    }
+    return $product;
   }
 
   public static function orglist($site=null) {
@@ -102,11 +125,14 @@ class Input {
     return $index;
   }
 
-  static function string( $args, $key, $label = "Enter") {
+  static function string( $args, $key, $label = "Enter", $default = null) {
     if ( isset($args[$key]) ) {
       return $args[$key];
     }
     $string = \Terminus::prompt($label);
+    if ('' == $string AND null !== $default) {
+      return $default;
+    }
     return $string;
   }
 
