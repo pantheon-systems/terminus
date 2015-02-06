@@ -598,7 +598,7 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * Create a site environment ( Coming soon )
+   * Create a MultiDev environment
    *
    * ## OPTIONS
    *
@@ -606,39 +606,31 @@ class Site_Command extends Terminus_Command {
    * : Site to use
    *
    * [--env=<env>]
-   * : Pantheon environment to create
+   * : Name of environment to create
    *
    * [--from-env=<env>]
-   * : Pantheon environment to clone from
+   * : Environment clone content from, default = dev
    *
    * @subcommand create-env
    */
    public function create_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = Input::env($assoc_args);
-     $from_env = Input::env($assoc_args, "from-env", "Clone from?");
-     $site_id = $site->getId();
-     $branches = (array) $site->tips();
-     if (!in_array($env, array_keys($branches))) {
-       // create the branch
-       Terminus::line("Creating branch");
-      $response = $site->createBranch($env);
+     $site = SiteFactory::instance(Input::site($assoc_args));
+
+     if (isset($assoc_args['env'])) {
+       $env = $assoc_args['env'];
+     } else {
+       $env = Terminus::prompt("Name of new MultiDev environment");
      }
 
-     Terminus::line("Creating Environment");
-     $response = (array) $site->createEnvironment($env);
-     $branches = (array) $site->tips();
+     $src = Input::env($assoc_args, 'env', "Environment to clone content from", $site->availableEnvironments());
 
-     Terminus::line("Cloning files ...");
-     $this->cloneObject($env, $from_env, $site->getId(), 'files');
-     Terminus::line("Cloning database ...");
-     $this->cloneObject($env, $from_env, $site->getId(), 'database');
-
-     Terminus::success("Succesfully created Environment!");
+     $workflow = $site->createEnvironment($env, $src);
+     $workflow->wait();
+     Terminus::success("Created the $env environment");
    }
 
    /**
-   * Delete a site environment
+   * Delete a MultiDev environment
    *
    * ## OPTIONS
    *
@@ -646,17 +638,22 @@ class Site_Command extends Terminus_Command {
    * : Site to use
    *
    * [--env=<env>]
-   * : Pantheon environment to delete
+   * : name of environment to delete
    *
    * @subcommand delete-env
    */
    public function delete_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = Input::env($assoc_args, 'env', null, $site->environments());
-     Terminus::confirm("Are you sure you want to delete '$env' from {$site->getName()}");
-     $site->deleteEnvironment($env);
-   }
+     $site = SiteFactory::instance(Input::site($assoc_args));
 
+     $multidev_envs = array_diff($site->availableEnvironments(), array('dev', 'test', 'live'));
+     $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
+
+     Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
+
+     $workflow = $site->deleteEnvironment($env);
+     $workflow->wait();
+     Terminus::success("Deleted the $env environment");
+   }
 
    /**
     * Deploy dev environment to test or live
