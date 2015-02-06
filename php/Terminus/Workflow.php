@@ -76,7 +76,6 @@ class Workflow {
 
   public function refresh() {
     $response = \Terminus_Command::request($this->realm, $this->object->getId(), "workflows/".$this->id, 'GET');
-    print_r($response);
     $this->status = $response['data'];
     $this->id = $response['data']->id;
     $this->result = $this->status->result;
