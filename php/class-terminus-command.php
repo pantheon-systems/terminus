@@ -159,7 +159,7 @@ abstract class Terminus_Command {
     } catch( Guzzle\Http\Exception\BadResponseException $e ) {
       $response = $e->getResponse();
       \Terminus::error("%s", $response->getBody(TRUE) );
-    } catch( Guzzle\Http\Exception\BadResponseException $e ) {
+    } catch( Guzzle\Http\Exception\HttpException $e ) {
       $request = $e->getRequest();
       \Terminus::error("Request %s had failed: %s", (string)$request, $e->getMessage() );
     } catch( Exception $e ) {
