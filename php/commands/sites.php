@@ -79,7 +79,9 @@ class Sites_Command extends Terminus_Command {
     $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
     $slug = Utils\sanitize_name( $data['label'] );
     $data['site_name'] = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
-    $data['organization_id'] = Input::orgid($assoc_args,'org', false);
+    if ($orgid = Input::orgid($assoc_args,'org', false)) {
+      $data['organization_id'] = $orgid;
+    }
     $product = Input::product($assoc_args,'product');
     $data['deploy_product'] = array('product_id' => $product['id']);
     Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));

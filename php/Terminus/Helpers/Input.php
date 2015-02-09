@@ -81,6 +81,9 @@ class Input {
 
     $orglist = Input::orglist();
     $org = \Terminus::menu($orglist, false, "Choose organization");
+    if ('-' === $org) {
+      return $default;
+    }
     return $org;
   }
 
