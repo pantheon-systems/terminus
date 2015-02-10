@@ -242,13 +242,22 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : site dashboard to open
    *
+   * [--print]
+   * : don't try to open the link, just print it to the console (useful
+   * if you're not using Mac OS X)
+   *
    * @subcommand dashboard
   */
   public function dashboard($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
-    Terminus::confirm("Do you want to open your dashboard link in a web browser?", Terminus::get_config());
-    $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
-    exec($command);
+    if ( isset($assoc_args['print']) ) {
+      Logger::coloredOutput("%GDashboard URL:%n " . sprintf('https://dashboard.getpantheon.com/sites/%s', $site->getId()));
+    }
+    else {
+      Terminus::confirm("Do you want to open your dashboard link in a web browser?", Terminus::get_config());
+      $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
+      exec($command);
+    }
   }
 
   /**
