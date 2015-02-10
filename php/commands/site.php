@@ -242,8 +242,11 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : site dashboard to open
    *
+   * [--env=<env>]
+   * : site environment to display in the dashboard
+   *
    * [--print]
-   * : don't try to open the link, just print it to the console
+   * : don't try to open the link, just print it
    *
    * @subcommand dashboard
   */
@@ -257,12 +260,14 @@ class Site_Command extends Terminus_Command {
         $cmd = "start"; break;
     }
     $site = SiteFactory::instance(Input::site($assoc_args));
+    $env = @$assoc_args['env'] ? sprintf("#%s", $assoc_args['env']) : null;
+    $url = sprintf("https://dashboard.getpantheon.com/sites/%s%s", $site->getId(), $env);
     if ( isset($assoc_args['print']) ) {
-      Logger::coloredOutput("%GDashboard URL:%n " . sprintf('https://dashboard.getpantheon.com/sites/%s', $site->getId()));
+      Logger::coloredOutput("%GDashboard URL:%n " . $url);
     }
     else {
       Terminus::confirm("Do you want to open your dashboard link in a web browser?", Terminus::get_config());
-      $command = sprintf("%s https://dashboard.getpantheon.com/sites/%s", $cmd, $site->getId());
+      $command = sprintf("%s %s", $cmd, $url);
       exec($command);
     }
   }
