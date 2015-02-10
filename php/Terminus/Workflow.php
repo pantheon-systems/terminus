@@ -62,7 +62,7 @@ class Workflow {
       $data['headers'] = array('Content-type'=>'application/json');
     } else {
       $path = "$path?type=".$this->type;
-    }
+    } 
 
     $response = \Terminus_Command::request($this->realm, $this->object->getId(), $path, $this->getMethod(), $data);
 

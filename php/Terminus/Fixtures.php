@@ -26,6 +26,9 @@ class Fixtures {
       $key = Fixtures::getArgsKey($args);
       $cli_root = dirname(dirname(__DIR__));
       $filename = sprintf('%s/%s/%s', $cli_root, self::$fixtures_dir, $key);
+      if (\Terminus::get_config('debug')) {
+        \Terminus\Loggers\Regular::debug($filename);
+      }
       if( file_exists($filename) ) {
         return unserialize(file_get_contents("$filename"));
       } else {
