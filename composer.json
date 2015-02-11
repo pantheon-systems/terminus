@@ -19,11 +19,16 @@
     "symfony/css-selector": "2.5.5",
     "guzzle/http": "3.8",
     "guzzle/parser": "3.8",
-    "nb/oxymel": "0.1.0"
+    "nb/oxymel": "0.1.0",
+    "behat/behat": "2.4.*@stable"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },
     "files": [ "php/Spyc.php" ],
     "classmap": [ "php/export" ]
+  },
+  "require-dev": {
+    "php-vcr/php-vcr": "~1.2",
+    "php-vcr/phpunit-testlistener-vcr": "*"
   }
 }
