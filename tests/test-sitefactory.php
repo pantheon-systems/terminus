@@ -9,6 +9,9 @@ use \Symfony\Component\Process\Process;
  */
  class SiteFactoryTest extends PHPUnit_Framework_TestCase {
 
+   /**
+    * @vcr sitefactory_instance
+    */
    function testInstance() {
      $sites = SiteFactory::instance();
      $this->assertTrue(is_array($sites));

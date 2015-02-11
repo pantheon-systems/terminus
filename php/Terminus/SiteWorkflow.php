@@ -49,21 +49,17 @@ class SiteWorkflow {
       $path = "$path?type=".$this->type;
     }
     $response = \Terminus_Command::request('sites', $this->site->getId(), $path, $method, $data);
-
-    if (is_object($response['data'])) {
-      $this->status = $response['data'];
-      $this->id = $this->status->id;
-      $this->result = $this->status->result;
-    }
+    $this->status = $response['data'][0];
+    $this->id = $response['data'][0]->id;
+    $this->result = $response['data'][0]->result;
     return $this;
   }
 
   public function refresh() {
-    $response = self::request('sites', $this->site->getId(), "workflows/".$this->id(), 'GET');
-    print_r($response);
-    $this->status = $response['data'];
-    $this->id = $this->status->id;
-    $this->result = $this->status->result;
+    $response = \Terminus_Command::request('sites', $this->site->getId(), "workflows/".$this->id, 'GET');
+    $this->status = $response['data'][0];
+    $this->id = $response['data'][0]->id;
+    $this->result = $response['data'][0]->result;
   }
 
   /**
@@ -84,6 +80,7 @@ class SiteWorkflow {
         }
       }
       sleep(3);
+      $this->refresh();
       print ".";
       $tries++;
     }
