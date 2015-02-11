@@ -46,15 +46,15 @@ class FeatureContext extends BehatContext
         // and pipe stderr to stdout
         $terminus_cmd = sprintf('bin/terminus', $this->cliroot );
         $command = str_replace("terminus",$terminus_cmd, $command);
-				$fixture = "{$this->cliroot}/tests/fixtures/".md5($command);
-				if (file_exists($fixture)) {
-					$this->output = trim(file_get_contents($fixture));
-					return true;
-				}
+        $fixture = "{$this->cliroot}/tests/fixtures/".md5($command);
+        if (file_exists($fixture)) {
+          $this->output = trim(file_get_contents($fixture));
+          return true;
+        }
         $output = shell_exec($command);
         $this->output = trim($output);
-				file_put_contents($fixture,$this->output);
-				chmod($fixture,0777);
+        file_put_contents($fixture,$this->output);
+        chmod($fixture,0777);
     }
 
     /** @Then /^I should get:$/ */
