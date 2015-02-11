@@ -216,7 +216,7 @@ class Sites_Command extends Terminus_Command {
     $h = fopen($location, 'w+');
     fwrite($h, $content);
     fclose($h);
-    chmod($location, '0777');
+    chmod($location, 0777);
     Logger::coloredOutput("%2%K$message%n");
 
     if ($json) {
