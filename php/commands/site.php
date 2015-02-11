@@ -152,12 +152,6 @@ class Site_Command extends Terminus_Command {
           $message = @$assoc_args['message'] ?: "Terminus commit.";
           $data = $site->environment($env)->onServerDev(null, $message);
           Terminus::success("Successfully commited.");
-          \Terminus::launch_self('site',array('code','log'), array(
-              'nocache' => true,
-              'site' => $site->getName(),
-              'env' => $env,
-            )
-          );
           return true;
           break;
         case 'diffstat':
@@ -226,6 +220,7 @@ class Site_Command extends Terminus_Command {
           Terminus::error("You must specify the mode with --set=<sftp|git>");
         }
         $data = $site->environment($env)->onServerDev($mode);
+        Terminus::success("Successfully changed connection mode to $mode");
         break;
     }
     if(!empty($data)) {
