@@ -161,7 +161,7 @@ abstract class Terminus_Command {
       \Terminus::error("%s", $response->getBody(TRUE) );
     } catch( Guzzle\Http\Exception\HttpException $e ) {
       $request = $e->getRequest();
-      \Terminus::error("Request %s had failed: %s", (string)$request, $e->getMessage() );
+      \Terminus::error("Request %s had failed: %s", array((string)$request, $e->getMessage()) );
     } catch( Exception $e ) {
       \Terminus::error("Unrecognised request failure: %s", $e->getMessage() );
     }
