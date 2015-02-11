@@ -339,13 +339,12 @@ class Site_Command extends Terminus_Command {
   }
 
  /**
-  * Get, load, or create backup
-  *
+  * Get, load, create, or list backup information
   *
   * ## OPTIONS
   *
-  * <get|load|create>
-  * : function to run - get,load,or create
+  * <get|load|create|list>
+  * : function to run - get, load, create, or list
   *
   * [--site=<site>]
   * : Site to load
@@ -362,7 +361,7 @@ class Site_Command extends Terminus_Command {
   * [--latest]
   * : if set no the latest backup will be selected automatically
   *
-  * ## EXAMPLES
+  * @subcommand backup
   *
   */
    public function backup($args, $assoc_args) {
