@@ -21,9 +21,7 @@ class Request {
   public $responses = array();
 
   public static function send($url, $method, $data = array()) {
-    if (getenv("USE_FIXTURES") == 1) {
-      return FauxRequest::send($url, $method, $data);
-    }
+
     // create a new Guzzle\Http\Client
     $browser = new Browser;
     $options = array();

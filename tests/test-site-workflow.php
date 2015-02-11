@@ -8,11 +8,12 @@ use \Terminus\SiteWorkflow;
 use \Terminus\SiteFactory;
 use \VCR\VCR;
 
+/**
+ * @vcr workflowtest
+ */
  class SiteWorkFlowTest extends PHPUnit_Framework_TestCase {
 
    function testSiteWorkflowCreate() {
-     VCR::turnOn('workflows');
-     VCR::insertCassette('workflowtest');
      $site = SiteFactory::instance('phpunittest');
      $workflow = SiteWorkflow::createWorkflow('update_site_status', $site);
      $this->assertInstanceOf('Terminus\SiteWorkflow',$workflow);
