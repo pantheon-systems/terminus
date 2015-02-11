@@ -53,8 +53,7 @@ class Auth_Command extends Terminus_Command {
         if (array_key_exists("debug", $assoc_args)){
           $this->_debug(get_defined_vars());
         }
-        //Terminus::line( "Success!" );
-        Terminus::launch_self("art", array("fist"));
+        Terminus::launch_self("art");
       }
       else {
         Terminus::error( "Login Failed!" );

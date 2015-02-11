@@ -1,26 +1,28 @@
 <?php
 namespace Terminus;
 
-class SiteWorkflow {
-  public $result;
-  public $id;
-  public $realm;
-  public $type;
-  public $params = array();
-  public $site;
-  public $status;
+class Workflow {
+  protected $result;
+  protected $id;
+  protected $realm;
+  protected $type;
+  protected $params = array();
+  protected $object;
+  protected $status;
+  protected $user;
+  protected $method;
 
-  public function __construct($type, Site $site) {
+  public function __construct($type, $realm, $object) {
     $this->type = $type;
-    $this->setParams(array('type'=> $type));
-    $this->site = $site;
+    $this->realm = $realm;
+    $this->object = $object;
   }
 
   /**
    * Factory method
    */
-  public static function createWorkflow($type, Site $site) {
-    return new SiteWorkflow($type, $site);
+  public static function createWorkflow($type, $realm, $object) {
+    return new Workflow($type, $realm, $object);
   }
 
   /**
@@ -36,30 +38,47 @@ class SiteWorkflow {
     return $this;
   }
 
+  public function setMethod($method) {
+    $this->method = $method;
+  }
+
+  public function getMethod() {
+    return $this->method;
+  }
+
   /**
    * Send the workflow to the api
    */
-  public function start($method='GET') {
+  public function start() {
     $data = array();
     $path = 'workflows';
-    if ('POST' == $method) {
-      $data['body'] = json_encode($this->params);
+    if ('POST' == $this->getMethod()) {
+      $data['body'] = json_encode(
+        array(
+          'type' => $this->type,
+          'params' => $this->params
+        )
+      );
       $data['headers'] = array('Content-type'=>'application/json');
     } else {
       $path = "$path?type=".$this->type;
+    } 
+
+    $response = \Terminus_Command::request($this->realm, $this->object->getId(), $path, $this->getMethod(), $data);
+
+    if (is_object($response['data'])) {
+      $this->status = $response['data'];
+      $this->id = $this->status->id;
+      $this->result = $this->status->result;
     }
-    $response = \Terminus_Command::request('sites', $this->site->getId(), $path, $method, $data);
-    $this->status = $response['data'][0];
-    $this->id = $response['data'][0]->id;
-    $this->result = $response['data'][0]->result;
     return $this;
   }
 
   public function refresh() {
-    $response = \Terminus_Command::request('sites', $this->site->getId(), "workflows/".$this->id, 'GET');
-    $this->status = $response['data'][0];
-    $this->id = $response['data'][0]->id;
-    $this->result = $response['data'][0]->result;
+    $response = \Terminus_Command::request($this->realm, $this->object->getId(), "workflows/".$this->id, 'GET');
+    $this->status = $response['data'];
+    $this->id = $response['data']->id;
+    $this->result = $this->status->result;
   }
 
   /**

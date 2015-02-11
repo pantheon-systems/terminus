@@ -1,4 +1,0 @@
-s:287:"GET /api/sites/4ff603ab-57cd-4b66-aebd-781a58e3b3fd/attributes HTTP/1.1
-Host: dashboard.getpantheon.com
-User-Agent: Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4
-Cookie: X-Pantheon-Session=dca4f8cd-9ec2-4117-957f-fc5230c23737:19c571e0-abce-11e4-94d1-bc764e100926:N6VlEozDXCz4On5Q4SzH1";
