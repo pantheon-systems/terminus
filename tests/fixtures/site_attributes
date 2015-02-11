@@ -1,0 +1,28 @@
+
+-
+    request:
+        method: GET
+        url: 'https://dashboard.getpantheon.com/api/sites/4ff603ab-57cd-4b66-aebd-781a58e3b3fd/attributes'
+        headers:
+            Host: dashboard.getpantheon.com
+            Accept: null
+            User-Agent: 'Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4'
+            Cookie: 'X-Pantheon-Session=dca4f8cd-9ec2-4117-957f-fc5230c23737:20e4ceb0-b224-11e4-94f5-bc764e111d20:jakuWJ8hw4PGMq9Plm9wk'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Wed, 11 Feb 2015 20:33:27 GMT'
+            Content-Type: application/json
+            Content-Length: '77'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 6b62f25e-bee4-432b-8faf-62c9ebe3e2a6
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: 'https://dashboard.getpantheon.com'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"label": "phpunittest", "status_check_last_run": "2015-02-11T20:06:29.402Z"}'

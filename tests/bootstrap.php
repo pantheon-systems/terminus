@@ -11,7 +11,13 @@ Terminus::set_config('debug',false);
 use Terminus\Fixtures;
 use Terminus\Session;
 
-
+// Set some dummy credentials
+Session::setData(json_decode('{
+    "user_uuid": "dca4f8cd-9ec2-4117-957f-fc5230c23737",
+    "session": "dca4f8cd-9ec2-4117-957f-fc5230c23737:20e4ceb0-b224-11e4-94f5-bc764e111d20:jakuWJ8hw4PGMq9Plm9wk",
+    "session_expire_time": 1739299351,
+    "email": "mike+test@mikevanwinkle.com"
+}'));
 
 /**
  * Modified match function to replace VCR\RequestMatcher::matchHeaders() Returns true if the headers of both specified requests match.
