@@ -60,6 +60,9 @@ class Sites_Command extends Terminus_Command {
    * : Specify the product to create
    *
    * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--site=<site>]
    * : Name of the site to create (machine-readable)
    *
    * [--label=<label>]
@@ -78,7 +81,14 @@ class Sites_Command extends Terminus_Command {
     $data = array();
     $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
     $slug = Utils\sanitize_name( $data['label'] );
-    $data['site_name'] = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
+    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release. 
+    if (array_key_exists('name',$assoc_args)) {
+      $data['site_name'] = $assoc_args['name'];
+    } elseif (array_key_exists('site',$assoc_args)) {    
+      $data['site_name'] = $assoc_args['site'];
+    } else {
+      $data['site_name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
+    }
     if ($orgid = Input::orgid($assoc_args,'org', false)) {
       $data['organization_id'] = $orgid;
     }
