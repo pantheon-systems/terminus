@@ -24,6 +24,7 @@ class Request {
 
     // create a new Guzzle\Http\Client
     $browser = new Browser;
+    $browser->setUserAgent(self::userAgent());
     $options = array();
     $options['allow_redirects'] = @$data['allow_redirects'] ?: false;
     $options['json'] = @$data['json'] ?: false;
@@ -59,6 +60,8 @@ class Request {
       $debug = "#### REQUEST ####".PHP_EOL;
       $debug .= $request->getRawHeaders();
       \Terminus\Loggers\Regular::debug($debug);
+      if (isset($data['body']))
+        \Terminus\Loggers\Regular::debug($data['body']);
     }
 
     if ( getenv("BUILD_FIXTURES") ) {
@@ -72,6 +75,11 @@ class Request {
     }
 
     return $response;
+  }
+
+  static function userAgent() {
+    $agent = sprintf("Terminus/%s (php_version=%s&script=%s)", constant('TERMINUS_VERSION'), phpversion(), constant('TERMINUS_SCRIPT'));
+    return $agent;
   }
 
   public static function download($url,$target) {
