@@ -60,7 +60,7 @@ class User {
 
   public function sites($organization=null) {
     if ($organization) {
-      $path = sprintf("organizations/%s/sites", $organization);
+      $path = sprintf("organizations/%s/memberships/sites", $organization);
     } else {
       $path = "sites";
     }

@@ -29,6 +29,9 @@ class Request {
     $options['json'] = @$data['json'] ?: false;
     if( @$data['body'] ) {
       $options['body'] = $data['body'];
+      if (\Terminus::get_config("debug")) {
+        \Terminus\Loggers\Regular::debug($data['body']);
+      }
     }
     $options['verify'] = false;
 
