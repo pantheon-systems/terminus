@@ -260,7 +260,8 @@ class Site_Command extends Terminus_Command {
         $cmd = "start"; break;
     }
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = @$assoc_args['env'] ? sprintf("#%s", $assoc_args['env']) : null;
+    $env = Input::optional( 'env', $assoc_args );
+    $env = $env ? sprintf ( "#%s", $env ) : null;
     $url = sprintf("https://dashboard.getpantheon.com/sites/%s%s", $site->getId(), $env);
     if ( isset($assoc_args['print']) ) {
       Logger::coloredOutput("%GDashboard URL:%n " . $url);
