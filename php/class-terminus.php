@@ -214,7 +214,7 @@ class Terminus {
    * Ask for confirmation before running a destructive operation.
    */
   static function confirm( $question, $assoc_args = array(), $params = array()) {
-    if ( !isset( $assoc_args['yes'] ) ) {
+      if (\Terminus::get_config('yes')) return true;
       $question = vsprintf($question, $params);
       fwrite( STDOUT, $question . " [y/n] " );
 
@@ -223,7 +223,6 @@ class Terminus {
       if ( 'y' != $answer )
         exit;
       return true;
-    }
   }
 
   /**
