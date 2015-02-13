@@ -22,7 +22,7 @@ class Workflow {
    * Factory method
    */
   public static function createWorkflow($type, $realm, $object) {
-    return new Workflow($type, $realm, $object);
+    return new self($type, $realm, $object);
   }
 
   /**
