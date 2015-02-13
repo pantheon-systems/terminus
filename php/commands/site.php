@@ -347,14 +347,17 @@ class Site_Command extends Terminus_Command {
   * [--env=<env>]
   * : Environment to load
   *
-  * [--element=<code|files|db>]
-  * : Element to download
+  * [--element=<code|files|db|all>]
+  * : Element to download or create. *all* only used for the 'create'
   *
   * [--to-directory=<directory>]
   * : Download the file if set
   *
   * [--latest]
   * : if set no the latest backup will be selected automatically
+  *
+  * [--keep-for]
+  * : number of days to keep this backup. 
   *
   * @subcommand backup
   *
@@ -459,30 +462,15 @@ class Site_Command extends Terminus_Command {
         return true;
         break;
       case 'create':
-        $type='backup';
-        $path = sprintf('environments/%s/backups/create', $env);
-
-        $data = array(
-         'entry_type' => $type,
-         'scheduled_for' => time(),
-         'code' =>  @$assoc_args['code'] ? true : false,
-         'database' => @$assoc_args['db'] ? true : false,
-         'files' => @$assoc_args['files'] ? true : false,
-        );
-        $OPTIONS = array(
-           'body' => json_encode($data) ,
-           'headers'=> array('Content-type'=>'application/json')
-         );
-        $response = \Terminus_Command::request( "sites", $site->getId(), $path, 'POST', $OPTIONS);
-
-        if( @$response['data']->id ) {
-         $workflow_id = $response['data']->id;
-         $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
-         if( $result ) {
-           \Terminus::success("Successfully created backup");
-         }
+        if (!array_key_exists('element',$assoc_args)) {
+          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element"); 
         }
-        return true;
+        $result = $site->environment($env)->createBackup($assoc_args);
+        if ($result) {
+          Terminus::success("Created backup");
+        } else {
+          Terminus::error("Couldn't create backup.");
+        }
         break;
       case 'list':
       case 'default':
