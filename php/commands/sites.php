@@ -184,8 +184,8 @@ class Sites_Command extends Terminus_Command {
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
-
-      Terminus::launch_self("sites",array('show'),array('nocache'=>1));
+      
+      Terminus::success("Deleted %s!", $site_to_delete->information->name);
   }
 
   /**
