@@ -49,9 +49,9 @@ class SiteWorkflow {
       $path = "$path?type=".$this->type;
     }
     $response = \Terminus_Command::request('sites', $this->site->getId(), $path, $method, $data);
-    $this->status = $response['data'][0];
-    $this->id = $response['data'][0]->id;
-    $this->result = $response['data'][0]->result;
+    $this->status = $response['data'];
+    $this->id = $response['data']->id;
+    $this->result = $response['data']->result;
     return $this;
   }
 
