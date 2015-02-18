@@ -115,7 +115,7 @@ class Input {
       return $args[$key];
     }
 
-    return self::menu($choices, $default='dev', "Select $label", true);
+    return self::menu($choices, $default='dev', $label, true);
 
   }
 
