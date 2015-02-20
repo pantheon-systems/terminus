@@ -222,8 +222,62 @@ class Sites_Command extends Terminus_Command {
     } elseif ($print) {
       print $content;
     }
+  }
+  
 
-
+/**
+ * Update alls dev sites with an upstream update available. 
+ * 
+ * ## OPTIONS
+ * 
+ * [--confirm]
+ * : Run the updates in interactive mode
+ *
+ * [--report] 
+ * : If set output will contain list of sites and whether they are up-to-date
+ * 
+ * [--framework=<framework>]
+ * : Specify drupal or wordpress
+ * 
+ * [--no-updatedb]
+ * : Use flag to skip running update.php after the update has applied
+ *
+ * [--xoption=<theirs|ours>]
+ * : Corresponds to git's -X option, set to 'theirs' by default -- https://www.kernel.org/pub/software/scm/git/docs/git-merge.html
+ *
+ * @subcommand mass-update
+ */
+  public function mass_update($args, $assoc_args) {
+    $sites = SiteFactory::instance();
+    $framework = Input::optional($assoc_args, 'framework', false);
+    $data = array();
+    $report = Input::optional($assoc_args, 'report', false);
+    $confirm = Input::optional($assoc_args, 'confirm', false);
+var_dump(get_defined_vars());
+    foreach( $sites as $site ) {
+      if ( $framework AND $site->info('framework') !== $framework ) continue;
+      $updates = $site->getUpstreamUpdates();
+      if( $updates->behind > 0 ) {
+        $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update"); 
+        $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
+        $update = $noupdatedb ? false : true;
+        $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
+        if (!$report) {
+          if( $confirm ) {
+            Terminus::confirm("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
+          }
+        }
+      } else {
+        if (isset($assoc_args['report'])) {
+          $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date"); 
+        } 
+      }
+    }
+ 
+    if (!empty($data)) {
+      sort($data);
+      $this->handleDisplay($data);
+    }  
   }
 
   private function getIdFromName($name) {
