@@ -8,13 +8,13 @@
 php php/boot-fs.php products all || echo "ERROR LINE" $LINENO
 php php/boot-fs.php sites create --name=behat-test --label=behattest --product='wordpress' --org='d59379eb-0c23-429c-a7bc-ff51e0a960c2' || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site info --site=behat-test --nocache=1 || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site backup create --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
+php php/boot-fs.php site backup create --site=behat-test --env=dev --element=all || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site environments --site=behat-test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site backup get --site=behat-test --env=dev --element=files --latest || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site code log --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev --set=git || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site connection-mode --site=behat-test --env=dev | grep "git" || echo "ERROR LINE" $LINENO
+php php/boot-fs.php site connection-mode --site=behat-test --env=dev | grep -i "git" || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev --set=sftp || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site mount --site=behat-test --destination=/home/vagrant/mount --env=dev
 echo "//testing" >> /home/vagrant/mount/code/index.php || echo "ERROR LINE" $LINENO
@@ -22,8 +22,6 @@ php php/boot-fs.php site code commit --site=behat-test --env=dev --message='Test
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev --set=git || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site service-level --site=behat-test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site service-level --site=behat-test --set=pro || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site redis clear --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site new-relic --site=behat-test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site lock info --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site lock add --site=behat-test --env=dev --username=test --password=test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site lock remove --site=behat-test --env=dev --username=test --password=test || echo "ERROR LINE" $LINENO

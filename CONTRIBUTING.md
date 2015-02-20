@@ -68,6 +68,32 @@ Or to test a single feature:
 
 More info can be found from `php behat.phar --help`.
 
+Versioning ...
+--------------
+
+### Versions 
+
+In keeping with the standards of semantic versioning, backward-incompatible fixes will be targeted to "Major" versions. "Minor" versions will be reserved for significant feature/bug releases needed between major versions. "Patch" releases will be reserved only for critical security issues and other bugs critical to stabilizing the release. 
+
+After a new major version is released, previous major versions will be actively supported for 1 year. 
+
+What qualifies as a backward incompatible change?
+
+Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --json or --bash formats we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, will not be consider incompatible. 
+
+### Version branches 
+
+If you are using terminus in a production environment you should be deploying the executable for the latest release. ( github.com/pantheon-systems/cli/releases )
+
+Ongoing development on the next planned release will be on the master branch and should not be considered stable as changes will be taking place on a daily basis. 
+
+We will maintain a separate branch for all minor point releases going forward, i.e. 1.0.x, 0.5.x. Any critical patches should be submitted against those branches. If the fix is applicable to master a separate pull request can be made.
+
+### What this means for users ?
+
+0.5.0 will include only changes that are backward incompatible. After it's released we will create a 0.5.x branch that will be used for any critical bugs or patches that need to be addressed. All other bugs/features/issues will be addressed in the next major point  release 1.0.0. The master branch will effectively become the 1.0.x branch. There is currently no plan for a version 0.6.x. 
+
+
 Finally...
 ----------
 
