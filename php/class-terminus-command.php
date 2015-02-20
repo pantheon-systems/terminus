@@ -16,7 +16,6 @@ abstract class Terminus_Command {
   public $cache;
   public $session;
   public $sites;
-  static $instance = false;
 
   protected $_func;
   protected $_siteInfo;
@@ -27,14 +26,6 @@ abstract class Terminus_Command {
     $this->cache = Terminus::get_cache();
     $this->session = Session::instance();
     $this->sites = $this->cache->get_data('sites');
-    self::$instance = $this;
-  }
-
-  public static function instance() {
-    if (!self::$instance) {
-      Terminus::error("No valid instance available");
-    }
-    return self::$instance;
   }
 
   /**
