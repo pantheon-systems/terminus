@@ -262,6 +262,9 @@ class Sites_Command extends Terminus_Command {
     foreach( $sites as $site ) {
       if ( $framework AND $site->info('framework') !== $framework ) continue;
       $updates = $site->getUpstreamUpdates();
+      if (!isset($updates->behind)) {
+        continue;
+      }
       if( $updates->behind > 0 ) {
         $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update"); 
         $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
