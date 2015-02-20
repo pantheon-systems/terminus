@@ -230,17 +230,6 @@ class Sites_Command extends Terminus_Command {
 
 
   }
-
-  private function getIdFromName($name) {
-    $sites = $menu = array();
-    foreach( $this->fetch_sites(true) as $id => $site ) {
-       if ( $site->information->name == $name ) {
-         $site->id = $id;
-         return $site;
-       }
-    }
-    return false;
-  }
 }
 
 Terminus::add_command( 'sites', 'Sites_Command' );
