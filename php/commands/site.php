@@ -223,9 +223,6 @@ class Site_Command extends Terminus_Command {
         Terminus::success("Successfully changed connection mode to $mode");
         break;
     }
-    if(!empty($data)) {
-      $this->handleDisplay($data, array(), $headers);
-    }
     return $data;
   }
 
@@ -1230,7 +1227,7 @@ class Site_Command extends Terminus_Command {
      if(isset($upstream->remote_url) && isset($upstream->behind)) {
        // The $upstream object returns a value of [behind] -> 1 if there is an
        // upstream update that has not been applied to Dev.
-       $data[$upstream->remote_url] = ($upstream->behind == 1 ? "Updates Available":"Up-to-date");
+       $data[$upstream->remote_url] = ($upstream->behind > 0 ? "Updates Available":"Up-to-date");
 
        $this->_constructTableForResponse($data, array('Upstream','Status') );
        if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
