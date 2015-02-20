@@ -26,19 +26,32 @@ class Organization {
   }
 
   public function addSite( Site $site ) {
-    $path = sprintf("organizations/%s/sites/%s", $this->id, $site->getId());
-    $method = 'PUT';
-    $user = User::id();
-    $response = \Terminus_Command::request('users', $user, $path, $method);
-    return $response['data'];
+    $workflow = new Workflow('add_organization_site_membership', 'organizations', $this);
+    $workflow->setParams(array('site_id' => $site->getId(), 'role' => 'team_member'));
+    $workflow->setMethod("POST");
+    $workflow->start();
+    $workflow->wait();
+    return $workflow;
   }
 
   public function removeSite( Site $site ) {
-    $path = sprintf("organizations/%s/sites/%s", $this->id, $site->getId());
-    $method = 'DELETE';
-    $user = User::id();
-    $response = \Terminus_Command::request('users', $user, $path, $method);
+    $workflow = new Workflow('remove_organization_site_membership', 'organizations', $this);
+    $workflow->setParams(array('site_id' => $site->getId()));
+    $workflow->setMethod("POST");
+    $workflow->start();
+    $workflow->wait();
+    return $workflow;
+  }
+
+  public function getSites() {
+    $path = 'memberships/sites';
+    $method = 'GET';
+    $response = \Terminus_Command::request('organizations', $this->id, $path, $method);
     return $response['data'];
+  }
+
+  public function getId() {
+    return $this->id;
   }
 
 }

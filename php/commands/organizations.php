@@ -68,7 +68,6 @@ class Organizations_Command extends Terminus_Command {
 
     if (isset($assoc_args['add'])) {
         $add = SiteFactory::instance(Input::site($assoc_args,'add'));
-
         Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
         $org->addSite($add);
         Terminus::success("Added site!");
@@ -77,21 +76,20 @@ class Organizations_Command extends Terminus_Command {
 
     if (isset($assoc_args['remove'])) {
       $remove = SiteFactory::instance(Input::site($assoc_args,'remove'));
-
       Terminus::confirm("Are you sure you want to remove %s to %s ?", $assoc_args, array($remove->getName(), $org->name));
       $org->removeSite($remove);
       Terminus::success("Removed site!");
       return true;
     }
 
-    $sites = $user->sites($selected_org);
+    $sites = $org->getSites();
     $data = array();
     foreach ($sites as $site) {
       $data[] = array(
-        'name' => $site->name,
-        'service level' => $site->service_level,
-        'framework' => $site->framework,
-        'created' => date('Y-m-d H:i:s', $site->created),
+        'name' => $site->site->name,
+        'service level' => isset($site->site->service_level) ? $site->site->service_level : '',
+        'framework' => isset($site->site->framework) ? $site->site->framework : '',
+        'created' => date('Y-m-d H:i:s', $site->site->created),
       );
     }
     $this->handleDisplay($data);

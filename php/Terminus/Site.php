@@ -53,7 +53,7 @@ class Site {
         return $this->bindings[$type];
       } else {
         return false;
-      }      
+      }
     }
     return $this->bindings;
   }
@@ -107,6 +107,12 @@ class Site {
     foreach ($this->environments as $name => $data) {
       $envs[] = $name;
     }
+
+    # Reorder environments to put dev/test/live first
+    $default_envs = array('dev', 'test', 'live');
+    $multidev_envs = array_diff($envs, $default_envs);
+    $envs = array_merge($default_envs, $multidev_envs);
+
     return $envs;
   }
 
@@ -255,19 +261,32 @@ class Site {
   }
 
   /**
-   * Create an environment
+   * Create a multidev environment
    */
-  public function createEnvironment($env) {
-    $response = \Terminus_Command::request("sites", $this->getId() , "environments/$env", "POST");
-    return $response['data'];
+  public function createEnvironment($env, $src = 'dev') {
+    $workflow = new SiteWorkflow('create_cloud_development_environment', $this);
+    $workflow->setParams(array(
+      'params' => array(
+        'environment_id' => $env,
+        'deploy' => array(
+          'clone_database' => array( 'from_environment' => $src),
+          'clone_files' => array( 'from_environment' => $src),
+          'annotation' => sprintf("Create the '%s' environment.", $env)
+        )
+      )
+    ));
+    $workflow->start('POST');
+    return $workflow;
   }
 
   /**
-   * Delete an environment
+   * Delete a multidev environment
    */
   public function deleteEnvironment($env) {
-    $response = \Terminus_Command::request("sites", $this->getId() , "environments/$env", "DELETE");
-    return $response['data'];
+    $workflow = new SiteWorkflow('delete_cloud_development_environment', $this);
+    $workflow->setParams(array('params' => array('environment_id' => $env)));
+    $workflow->start('POST');
+    return $workflow;
   }
 
   /**

@@ -152,12 +152,6 @@ class Site_Command extends Terminus_Command {
           $message = @$assoc_args['message'] ?: "Terminus commit.";
           $data = $site->environment($env)->onServerDev(null, $message);
           Terminus::success("Successfully commited.");
-          \Terminus::launch_self('site',array('code','log'), array(
-              'nocache' => true,
-              'site' => $site->getName(),
-              'env' => $env,
-            )
-          );
           return true;
           break;
         case 'diffstat':
@@ -226,6 +220,7 @@ class Site_Command extends Terminus_Command {
           Terminus::error("You must specify the mode with --set=<sftp|git>");
         }
         $data = $site->environment($env)->onServerDev($mode);
+        Terminus::success("Successfully changed connection mode to $mode");
         break;
     }
     if(!empty($data)) {
@@ -235,19 +230,42 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * Open the Pantheon site dashboard a browser
+   * Open the Pantheon site dashboard in a browser
    *
    * ## OPTIONS
    *
    * [--site=<site>]
    * : site dashboard to open
    *
+   * [--env=<env>]
+   * : site environment to display in the dashboard
+   *
+   * [--print]
+   * : don't try to open the link, just print it
+   *
+   * @subcommand dashboard
   */
   public function dashboard($args, $assoc_args) {
+    switch ( php_uname('s') ) {
+      case "Linux":
+        $cmd = "xdg-open"; break;
+      case "Darwin":
+        $cmd = "open"; break;
+      case "Windows NT":
+        $cmd = "start"; break;
+    }
     $site = SiteFactory::instance(Input::site($assoc_args));
-    Terminus::confirm("Do you want to open your dashboard link in a web browser?");
-    $command = sprintf("open 'https://dashboard.getpantheon.com/sites/%s'", $site->getId());
-    exec($command);
+    $env = Input::optional( 'env', $assoc_args );
+    $env = $env ? sprintf( "#%s", $env ) : null;
+    $url = sprintf("https://dashboard.getpantheon.com/sites/%s%s", $site->getId(), $env);
+    if ( isset($assoc_args['print']) ) {
+      Logger::coloredOutput("%GDashboard URL:%n " . $url);
+    }
+    else {
+      Terminus::confirm("Do you want to open your dashboard link in a web browser?", Terminus::get_config());
+      $command = sprintf("%s %s", $cmd, $url);
+      exec($command);
+    }
   }
 
   /**
@@ -320,14 +338,14 @@ class Site_Command extends Terminus_Command {
           $orgs = $site->memberships();
           break;
     }
-    if (empty($data)) {
+    if (empty($orgs)) {
       Terminus::error("No organizations");
     }
-
+    
     // format the data
     foreach ($orgs as $org) {
       $data[] = array(
-        'label' => "'{$org->organization->profile->name}'",
+        'label' => "{$org->organization->profile->name}",
         'name'  => $org->organization->profile->machine_name,
         'role'  => $org->role,
         'id' => $org->organization_id,
@@ -338,13 +356,12 @@ class Site_Command extends Terminus_Command {
   }
 
  /**
-  * Get, load, or create backup
-  *
+  * Get, load, create, or list backup information
   *
   * ## OPTIONS
   *
-  * <get|load|create>
-  * : function to run - get,load,or create
+  * <get|load|create|list>
+  * : function to run - get, load, create, or list
   *
   * [--site=<site>]
   * : Site to load
@@ -352,8 +369,8 @@ class Site_Command extends Terminus_Command {
   * [--env=<env>]
   * : Environment to load
   *
-  * [--element=<code|files|db>]
-  * : Element to download
+  * [--element=<code|files|db|all>]
+  * : Element to download or create. *all* only used for the 'create'
   *
   * [--to-directory=<directory>]
   * : Download the file if set
@@ -361,7 +378,10 @@ class Site_Command extends Terminus_Command {
   * [--latest]
   * : if set no the latest backup will be selected automatically
   *
-  * ## EXAMPLES
+  * [--keep-for]
+  * : number of days to keep this backup. 
+  *
+  * @subcommand backup
   *
   */
    public function backup($args, $assoc_args) {
@@ -464,30 +484,15 @@ class Site_Command extends Terminus_Command {
         return true;
         break;
       case 'create':
-        $type='backup';
-        $path = sprintf('environments/%s/backups/create', $env);
-
-        $data = array(
-         'entry_type' => $type,
-         'scheduled_for' => time(),
-         'code' =>  @$assoc_args['code'] ? true : false,
-         'database' => @$assoc_args['db'] ? true : false,
-         'files' => @$assoc_args['files'] ? true : false,
-        );
-        $OPTIONS = array(
-           'body' => json_encode($data) ,
-           'headers'=> array('Content-type'=>'application/json')
-         );
-        $response = \Terminus_Command::request( "sites", $site->getId(), $path, 'POST', $OPTIONS);
-
-        if( @$response['data']->id ) {
-         $workflow_id = $response['data']->id;
-         $result = $this->waitOnWorkFlow( 'sites', $response['data']->site_id, $workflow_id);
-         if( $result ) {
-           \Terminus::success("Successfully created backup");
-         }
+        if (!array_key_exists('element',$assoc_args)) {
+          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element"); 
         }
-        return true;
+        $result = $site->environment($env)->createBackup($assoc_args);
+        if ($result) {
+          Terminus::success("Created backup");
+        } else {
+          Terminus::error("Couldn't create backup.");
+        }
         break;
       case 'list':
       case 'default':
@@ -598,7 +603,7 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
-   * Create a site environment ( Coming soon )
+   * Create a MultiDev environment
    *
    * ## OPTIONS
    *
@@ -606,39 +611,31 @@ class Site_Command extends Terminus_Command {
    * : Site to use
    *
    * [--env=<env>]
-   * : Pantheon environment to create
+   * : Name of environment to create
    *
    * [--from-env=<env>]
-   * : Pantheon environment to clone from
+   * : Environment clone content from, default = dev
    *
    * @subcommand create-env
    */
    public function create_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = Input::env($assoc_args);
-     $from_env = Input::env($assoc_args, "from-env", "Clone from?");
-     $site_id = $site->getId();
-     $branches = (array) $site->tips();
-     if (!in_array($env, array_keys($branches))) {
-       // create the branch
-       Terminus::line("Creating branch");
-      $response = $site->createBranch($env);
+     $site = SiteFactory::instance(Input::site($assoc_args));
+
+     if (isset($assoc_args['env'])) {
+       $env = $assoc_args['env'];
+     } else {
+       $env = Terminus::prompt("Name of new MultiDev environment");
      }
 
-     Terminus::line("Creating Environment");
-     $response = (array) $site->createEnvironment($env);
-     $branches = (array) $site->tips();
+     $src = Input::env($assoc_args, 'env', "Environment to clone content from", $site->availableEnvironments());
 
-     Terminus::line("Cloning files ...");
-     $this->cloneObject($env, $from_env, $site->getId(), 'files');
-     Terminus::line("Cloning database ...");
-     $this->cloneObject($env, $from_env, $site->getId(), 'database');
-
-     Terminus::success("Succesfully created Environment!");
+     $workflow = $site->createEnvironment($env, $src);
+     $workflow->wait();
+     Terminus::success("Created the $env environment");
    }
 
    /**
-   * Delete a site environment
+   * Delete a MultiDev environment
    *
    * ## OPTIONS
    *
@@ -646,17 +643,22 @@ class Site_Command extends Terminus_Command {
    * : Site to use
    *
    * [--env=<env>]
-   * : Pantheon environment to delete
+   * : name of environment to delete
    *
    * @subcommand delete-env
    */
    public function delete_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = Input::env($assoc_args, 'env', null, $site->environments());
-     Terminus::confirm("Are you sure you want to delete '$env' from {$site->getName()}");
-     $site->deleteEnvironment($env);
-   }
+     $site = SiteFactory::instance(Input::site($assoc_args));
 
+     $multidev_envs = array_diff($site->availableEnvironments(), array('dev', 'test', 'live'));
+     $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
+
+     Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
+
+     $workflow = $site->deleteEnvironment($env);
+     $workflow->wait();
+     Terminus::success("Deleted the $env environment");
+   }
 
    /**
     * Deploy dev environment to test or live

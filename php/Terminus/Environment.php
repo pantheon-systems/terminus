@@ -1,6 +1,6 @@
 <?php
 namespace Terminus;
-use \ReflectionClass, \Terminus\Request;
+use \ReflectionClass, \Terminus\Request, \Terminus\EnvironmentWorkflow;
 
 class Environment {
   public $name = 'dev';
@@ -42,6 +42,56 @@ class Environment {
     $path = sprintf('environments/%s/on-server-development/diffstat', $this->name);
     $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
     return $data['data'];
+  }
+
+
+  /** 
+   * Create a backup
+   * 
+   * @param $args 
+  **/
+  public function createBackup($args) {
+    $type = 'backup';
+    if (array_key_exists('type',$args)) {
+      $type = $args['type'];
+    } 
+
+    $ttl = 86400*365;
+    if (array_key_exists('keep-for', $args)) {
+      $ttl = 86400 * (int) $args['keep-for'];
+    }
+
+    switch ($args['element']) {
+      case 'db':
+        $args['database'] = true;
+        break;
+      case 'code':
+        $args['code'] = true;
+        break;
+      case 'files':
+        $args['files'] = true;
+        break;
+      case 'all':
+        $args['files'] = true;
+        $args['code'] = true;
+        $args['database'] = true;
+        break;
+    }
+    
+    $params = array(
+      'entry_type' => $type,
+      'code' => isset($args['code']),
+      'database' => isset($args['database']),
+      'files' => isset($args['files']),
+      'ttl' => $ttl
+    );
+    
+    $workflow = new EnvironmentWorkflow('do_export','sites',$this);
+    $workflow->setMethod('POST');
+    $workflow->setParams($params);
+    $workflow->start()->wait();
+
+    return $workflow;
   }
 
   /**

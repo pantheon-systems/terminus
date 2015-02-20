@@ -3,6 +3,7 @@
  * Actions on multiple sites
  *
  */
+use Terminus\Utils;
 use Terminus\Products;
 use Terminus\Session;
 use Terminus\SiteFactory;
@@ -11,6 +12,7 @@ use Terminus\Helpers\Input;
 use Terminus\User;
 use Symfony\Component\Finder\SplFileInfo;
 use Terminus\Loggers\Regular as Logger;
+use Terminus\Workflow;
 
 class Sites_Command extends Terminus_Command {
   /**
@@ -58,6 +60,9 @@ class Sites_Command extends Terminus_Command {
    * : Specify the product to create
    *
    * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--site=<site>]
    * : Name of the site to create (machine-readable)
    *
    * [--label=<label>]
@@ -71,43 +76,40 @@ class Sites_Command extends Terminus_Command {
    */
   public function create($args, $assoc_args) {
     $sites = SiteFactory::instance();
+
+    // setup data
     $data = array();
-    // @TODO clean this up and move to separate method
-    $data['label'] = @$assoc_args['label'] ?: Terminus::prompt("Human readable label for the site");
-    $slug = $this->sanitizeName( $data['label'] );
-    $data['name'] = @$assoc_args['name'] ?: Terminus::prompt("Machine name of the site; used as part of the default URL [ if left blank will be $slug]", array(), $slug);
-    if (!isset($assoc_args['org'])) {
-      $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
-      if ('-' !== $organization) {
-        $data['organization'] = $organization;
-      }
+    $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
+    $slug = Utils\sanitize_name( $data['label'] );
+    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release. 
+    if (array_key_exists('name',$assoc_args)) {
+      $data['site_name'] = $assoc_args['name'];
+    } elseif (array_key_exists('site',$assoc_args)) {    
+      $data['site_name'] = $assoc_args['site'];
     } else {
-      $data['organization'] = $assoc_args['org'];
+      $data['site_name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
     }
-    require_once __DIR__.'/products.php';
-    if (isset($assoc_args['product'])) {
-      $product = Products::getByIdOrName($assoc_args['product']);
-      if (!$product) {
-        Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
-      }
-    } else {
-      $product = Terminus::menu( Products::selectList() );
-      $product = Products::getByIndex($product);
+    if ($orgid = Input::orgid($assoc_args,'org', false)) {
+      $data['organization_id'] = $orgid;
     }
+    $product = Input::product($assoc_args,'product');
+    $data['deploy_product'] = array('product_id' => $product['id']);
+    Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));
+    $params = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
 
-    Terminus::line( sprintf( "Creating new %s installation ... ", $product['longname'] ) );
-    $data['product'] = $product['id'];
-    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request( "users", Session::getValue('user_uuid'), "sites", 'POST', $options );
-    // if we made it this far we need to query the work flow to wait for response
-    $site = $response['data'];
-    $workflow_id = $site->id;
-    $result = $this->waitOnWorkFlow('sites', $site->site_id, $workflow_id);
-
-    if( $result ) {
-      Terminus::success("Pow! You created a new site!");
-      $this->cache->flush(null,'session');
+    // run the workflow
+    $workflow = Workflow::createWorkflow('create_site','users', new User());
+    $workflow->setMethod('POST');
+    $workflow->setParams($data);
+    $workflow->start();
+    $workflow->refresh();
+    $details = $workflow->status();
+    if ($details->result !== 'failed' AND $details->result !== 'aborted') {
+      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id))); 
     }
+    $workflow->wait();
+    Terminus::success("Pow! You created a new site!");
+    $this->cache->flush(null,'session');
 
     if (isset($assoc_args['import'])) {
       Terminus::launch_self('site', array('import'), array('url'=>$assoc_args['import'], 'site'=>$data['name'], 'nocache' => True));
@@ -139,7 +141,7 @@ class Sites_Command extends Terminus_Command {
   public function import($args, $assoc_args) {
     $url = Input::string($assoc_args, 'url', "Url of archive to import");
     $label = Input::string($assoc_args, 'label', "Human readable label for the site");
-    $slug = $this->sanitizeName( $label );
+    $slug = Utils\sanitize_name( $label );
     $name = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]");
     $name = $name ? $name : $slug;
     $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
@@ -187,8 +189,8 @@ class Sites_Command extends Terminus_Command {
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
-
-      Terminus::launch_self("sites",array('show'),array('nocache'=>1));
+      
+      Terminus::success("Deleted %s!", $site_to_delete->information->name);
   }
 
   /**
@@ -216,7 +218,7 @@ class Sites_Command extends Terminus_Command {
     $h = fopen($location, 'w+');
     fwrite($h, $content);
     fclose($h);
-    chmod($location, '0777');
+    chmod($location, 0777);
     Logger::coloredOutput("%2%K$message%n");
 
     if ($json) {
@@ -238,16 +240,6 @@ class Sites_Command extends Terminus_Command {
        }
     }
     return false;
-  }
-
-  /**
-   * Sanitize the site name field
-   * @package 2.0
-   */
-  private function sanitizeName( $str ) {
-    $name = preg_replace("#[^A-Za-z0-9]#","", $str);
-    $name = strtolower($name);
-    return $name;
   }
 }
 

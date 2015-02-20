@@ -502,3 +502,13 @@ function handle_exception($exception) {
   //\Terminus::line(var_export($exception->getTrace(), 1));
   \Terminus::error("Exception thrown - %s", array($exception->getMessage()));
 }
+
+/**
+ * Sanitize the site name field
+ * @package 2.0
+ */
+ function sanitize_name( $str ) {
+  $name = preg_replace("#[^A-Za-z0-9]#","", $str);
+  $name = strtolower($name);
+  return $name;
+}

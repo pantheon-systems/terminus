@@ -2,8 +2,13 @@
 // Can be used by plugins/themes to check if Terminus is running or not
 define( 'Terminus', true );
 define( 'TERMINUS_VERSION', '0.4-beta');
+$source = 'unknown';
+if ('cli' === PHP_SAPI && isset($argv)) {
+    $source = explode('/',$argv[0]);
+    $source = end($source);
+}
+define('TERMINUS_SCRIPT',$source);
 date_default_timezone_set('UTC');
-
 include TERMINUS_ROOT . '/php/utils.php';
 include TERMINUS_ROOT . '/php/login.php';
 include TERMINUS_ROOT . '/php/FileCache.php';
