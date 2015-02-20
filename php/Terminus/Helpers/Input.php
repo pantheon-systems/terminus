@@ -32,10 +32,10 @@ class Input {
    * @return product array
    */
   public static function product($args, $key, $exit=true) {
-    if (isset($assoc_args[$key])) {
-      $product = Products::getByIdOrName($assoc_args[$key]);
+    if (isset($args[$key])) {
+      $product = Products::getByIdOrName($args[$key]);
       if (!$product) {
-        \Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
+        \Terminus::error("Couldn't find product: %s", array($args['product']));
       }
     } else {
       $product = \Terminus::menu( Products::selectList() );
@@ -115,7 +115,7 @@ class Input {
       return $args[$key];
     }
 
-    return self::menu($choices, $default='dev', "Select $label", true);
+    return self::menu($choices, $default='dev', $label, true);
 
   }
 

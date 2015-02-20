@@ -31,7 +31,7 @@ class CLI_Command extends Terminus_Command {
    * Print Terminus version.
    */
   function version() {
-    Terminus::line( 'Terminus ' . TERMINUS_VERSION );
+    Terminus::line('Terminus version: ' . TERMINUS_VERSION . "\nTerminus script: ".TERMINUS_SCRIPT);
   }
 
   /**
