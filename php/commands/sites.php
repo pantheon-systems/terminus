@@ -254,14 +254,17 @@ class Sites_Command extends Terminus_Command {
  */
   public function mass_update($args, $assoc_args) {
     $sites = SiteFactory::instance();
-    $framework = Input::optional($assoc_args, 'framework', false);
+    $env = 'dev';
+    $framework = Input::optional('framework', $assoc_args, false);
     $data = array();
-    $report = Input::optional($assoc_args, 'report', false);
-    $confirm = Input::optional($assoc_args, 'confirm', false);
-var_dump(get_defined_vars());
+    $report = Input::optional('report', $assoc_args, false);
+    $confirm = Input::optional('confirm', $assoc_args, false);
     foreach( $sites as $site ) {
       if ( $framework AND $site->info('framework') !== $framework ) continue;
       $updates = $site->getUpstreamUpdates();
+      if (!isset($updates->behind)) {
+        continue;
+      }
       if( $updates->behind > 0 ) {
         $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update"); 
         $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
@@ -269,13 +272,19 @@ var_dump(get_defined_vars());
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
           if( $confirm ) {
-            Terminus::confirm("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
-          }
+            // skip if we don't confirm
+            $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
+            if( !$confirmed ) continue;
+          } 
+        
+          // apply the update, failure here would trigger a guzzle exception so no need to validate success.   
+          $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+          $data[$site->getName()]['status'] = 'Updated'; 
         }
       } else {
         if (isset($assoc_args['report'])) {
           $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date"); 
-        } 
+        }  
       }
     }
  

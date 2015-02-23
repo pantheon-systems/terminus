@@ -32,10 +32,10 @@ class Input {
    * @return product array
    */
   public static function product($args, $key, $exit=true) {
-    if (isset($assoc_args[$key])) {
-      $product = Products::getByIdOrName($assoc_args[$key]);
+    if (isset($args[$key])) {
+      $product = Products::getByIdOrName($args[$key]);
       if (!$product) {
-        \Terminus::error("Couldn't find product: %s", array($assoc_args['product']));
+        \Terminus::error("Couldn't find product: %s", array($args['product']));
       }
     } else {
       $product = \Terminus::menu( Products::selectList() );
@@ -137,6 +137,26 @@ class Input {
       return $default;
     }
     return $string;
+  }
+  
+  /**
+   * Same as confirm but doesn't exit.
+   * @param $question string -- question to ask
+   * @param $assoc_args array -- an input array to parse the answer from
+   * @param $params array -- args for vsprintf()
+   *
+   * @return (bool)
+   */
+  static function yesno($question, $assoc_args = array(), $params = array()) {
+      if (\Terminus::get_config('yes')) return true;
+      $question = vsprintf($question, $params);
+      fwrite( STDOUT, $question . " [y/n] " );
+
+      $answer = trim( fgets( STDIN ) );
+
+      if ( 'y' != $answer )
+        return false;
+      return true;
   }
 
   static function optional( $key, $args, $default = null ) {

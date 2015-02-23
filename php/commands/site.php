@@ -223,9 +223,6 @@ class Site_Command extends Terminus_Command {
         Terminus::success("Successfully changed connection mode to $mode");
         break;
     }
-    if(!empty($data)) {
-      $this->handleDisplay($data, array(), $headers);
-    }
     return $data;
   }
 
