@@ -432,7 +432,7 @@ function is_hermes() {
 **/
 function result_is_multiobj( $result ) {
   $iter = new ArrayIterator($result);
-  if( is_object( $iter->current() ) OR is_array( $iter->current() ) ) {
+  if(is_int($iter->key()) AND (is_object( $iter->current() ) OR is_array( $iter->current()))) {
     return true;
   }
   unset($iter);
