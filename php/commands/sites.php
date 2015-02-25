@@ -81,10 +81,10 @@ class Sites_Command extends Terminus_Command {
     $data = array();
     $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
     $slug = Utils\sanitize_name( $data['label'] );
-    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release. 
+    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release.
     if (array_key_exists('name',$assoc_args)) {
       $data['site_name'] = $assoc_args['name'];
-    } elseif (array_key_exists('site',$assoc_args)) {    
+    } elseif (array_key_exists('site',$assoc_args)) {
       $data['site_name'] = $assoc_args['site'];
     } else {
       $data['site_name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
@@ -105,7 +105,7 @@ class Sites_Command extends Terminus_Command {
     $workflow->refresh();
     $details = $workflow->status();
     if ($details->result !== 'failed' AND $details->result !== 'aborted') {
-      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id))); 
+      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id)));
     }
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
@@ -189,7 +189,7 @@ class Sites_Command extends Terminus_Command {
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
-      
+
       Terminus::success("Deleted %s!", $site_to_delete->information->name);
   }
 
@@ -228,22 +228,19 @@ class Sites_Command extends Terminus_Command {
       print $content;
     }
   }
-  
+
 
 /**
- * Update alls dev sites with an upstream update available. 
- * 
- * ## OPTIONS
- * 
- * [--confirm]
- * : Run the updates in interactive mode
+ * Update alls dev sites with an available upstream update.
  *
- * [--report] 
+ * ## OPTIONS
+ *
+ * [--report]
  * : If set output will contain list of sites and whether they are up-to-date
- * 
+ *
  * [--framework=<framework>]
  * : Specify drupal or wordpress
- * 
+ *
  * [--no-updatedb]
  * : Use flag to skip running update.php after the update has applied
  *
@@ -266,32 +263,45 @@ class Sites_Command extends Terminus_Command {
         continue;
       }
       if( $updates->behind > 0 ) {
-        $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update"); 
+        $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update");
         $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
         $update = $noupdatedb ? false : true;
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
-          if( $confirm ) {
-            // skip if we don't confirm
-            $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
-            if( !$confirmed ) continue;
-          } 
-        
-          // apply the update, failure here would trigger a guzzle exception so no need to validate success.   
-          $response = $site->applyUpstreamUpdates($env, $update, $xoption);
-          $data[$site->getName()]['status'] = 'Updated'; 
+          $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
+          if( !$confirmed ) continue;
+
+          // Backup the DB so the client can restore if something goes wrong.
+          echo 'Backing up '.$site->getName().'.';
+          echo PHP_EOL;
+          $backup = $site->environment('dev')->createBackup(array('element'=>'all'));
+          // Only continue if the backup was successful.
+          if($backup) {
+            Terminus::success("Backup of ".$site->getName()." created.");
+            echo 'Updating '.$site->getName();
+            echo PHP_EOL;
+            // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
+            $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+            $data[$site->getName()]['status'] = 'Updated';
+            Terminus::success($site->getName().' is updated.');
+            echo PHP_EOL;
+          } else {
+            Terminus::error("Couldn't create backup of ".$site->getName().". Please check your site Dashboard for errors and try again.");
+            echo 'There was a problem backing up '.$site->getName().'. Update aborted.';
+            echo PHP_EOL;
+          }
         }
       } else {
         if (isset($assoc_args['report'])) {
-          $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date"); 
-        }  
+          $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date");
+        }
       }
     }
- 
+
     if (!empty($data)) {
       sort($data);
       $this->handleDisplay($data);
-    }  
+    }
   }
 
   private function getIdFromName($name) {
