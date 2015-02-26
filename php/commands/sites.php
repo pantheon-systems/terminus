@@ -238,8 +238,8 @@ class Sites_Command extends Terminus_Command {
  * [--report]
  * : If set output will contain list of sites and whether they are up-to-date
  *
- * [--framework=<framework>]
- * : Specify drupal or wordpress
+ * [--upstream=<upstream>]
+ * : Specify a specific upstream to check for updating.
  *
  * [--no-updatedb]
  * : Use flag to skip running update.php after the update has applied
@@ -252,16 +252,31 @@ class Sites_Command extends Terminus_Command {
   public function mass_update($args, $assoc_args) {
     $sites = SiteFactory::instance();
     $env = 'dev';
-    $framework = Input::optional('framework', $assoc_args, false);
+    $upstream = Input::optional('upstream', $assoc_args, false);
     $data = array();
     $report = Input::optional('report', $assoc_args, false);
     $confirm = Input::optional('confirm', $assoc_args, false);
+
+    // Start status messages.
+    Terminus::line('Starting mass-update.');
+    if($upstream) Terminus::line('Looking for sites using '.$upstream.'.');
+
     foreach( $sites as $site ) {
-      if ( $framework AND $site->info('framework') !== $framework ) continue;
+
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
+        // No updates, go back to start.
         continue;
       }
+      // Check for upstream argument and site upstream URL match.
+      $siteUpstream = $site->info('upstream');
+      if ( $upstream AND isset($siteUpstream->url)) {
+        if($siteUpstream->url <> $upstream ) {
+          // Uptream doesn't match, go back to start.
+          continue;
+        }
+      }
+
       if( $updates->behind > 0 ) {
         $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update");
         $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
@@ -269,7 +284,7 @@ class Sites_Command extends Terminus_Command {
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
           $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
-          if( !$confirmed ) continue;
+          if( !$confirmed ) continue; // Suer says No, go back to start.
 
           // Backup the DB so the client can restore if something goes wrong.
           Terminus::line('Backing up '.$site->getName().'.');
@@ -279,12 +294,12 @@ class Sites_Command extends Terminus_Command {
             Terminus::success("Backup of ".$site->getName()." created.");
             Terminus::line('Updating '.$site->getName().'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
-            $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+            // $response = $site->applyUpstreamUpdates($env, $update, $xoption);
             $data[$site->getName()]['status'] = 'Updated';
             Terminus::success($site->getName().' is updated.');
           } else {
-            Terminus::error("Couldn't create backup of ".$site->getName().". Please check your site Dashboard for errors and try again.");
-            Terminus::line('There was a problem backing up '.$site->getName().'. Update aborted.');
+            $data[$site->getName()]['status'] = 'Backup failed';
+            Terminus::error('There was a problem backing up '.$site->getName().'. Update aborted.');
           }
         }
       } else {
@@ -297,6 +312,8 @@ class Sites_Command extends Terminus_Command {
     if (!empty($data)) {
       sort($data);
       $this->handleDisplay($data);
+    } else {
+      Terminus::line('No sites in need up updating.');
     }
   }
 
