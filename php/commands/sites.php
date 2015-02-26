@@ -272,23 +272,19 @@ class Sites_Command extends Terminus_Command {
           if( !$confirmed ) continue;
 
           // Backup the DB so the client can restore if something goes wrong.
-          echo 'Backing up '.$site->getName().'.';
-          echo PHP_EOL;
+          Terminus::line('Backing up '.$site->getName().'.');
           $backup = $site->environment('dev')->createBackup(array('element'=>'all'));
           // Only continue if the backup was successful.
           if($backup) {
             Terminus::success("Backup of ".$site->getName()." created.");
-            echo 'Updating '.$site->getName();
-            echo PHP_EOL;
+            Terminus::line('Updating '.$site->getName().'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
             $response = $site->applyUpstreamUpdates($env, $update, $xoption);
             $data[$site->getName()]['status'] = 'Updated';
             Terminus::success($site->getName().' is updated.');
-            echo PHP_EOL;
           } else {
             Terminus::error("Couldn't create backup of ".$site->getName().". Please check your site Dashboard for errors and try again.");
-            echo 'There was a problem backing up '.$site->getName().'. Update aborted.';
-            echo PHP_EOL;
+            Terminus::line('There was a problem backing up '.$site->getName().'. Update aborted.');
           }
         }
       } else {
