@@ -624,7 +624,7 @@ class Site_Command extends Terminus_Command {
        $env = Terminus::prompt("Name of new MultiDev environment");
      }
 
-     $src = Input::env($assoc_args, 'env', "Environment to clone content from", $site->availableEnvironments());
+     $src = Input::env($assoc_args, 'from-env', "Environment to clone content from", $site->availableEnvironments());
 
      $workflow = $site->createEnvironment($env, $src);
      $workflow->wait();
