@@ -498,10 +498,14 @@ class Site_Command extends Terminus_Command {
         $data = array();
         foreach ($backups as $id => $backup) {
           if (!isset($backup->filename)) continue;
+          $date = 'Pending';
+          if (isset($backup->finish_time)) {
+            $date = date("Y-m-d H:i:s", $backup->finish_time);
+          } 
           $data[] = array(
             $backup->filename,
             sprintf("%dMB", $backup->size / 1024 / 1024),
-            date("Y-m-d H:i:s", $backup->finish_time),
+            $date,
           );
         }
 
