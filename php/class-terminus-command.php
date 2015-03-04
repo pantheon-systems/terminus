@@ -111,7 +111,7 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if (!in_array($realm,array('login','public')) AND !Terminus::is_test()) {
+    if (!in_array($realm,array('login','user','public')) AND !Terminus::is_test()) {
       Auth::loggedIn();
     }
 
@@ -136,7 +136,7 @@ abstract class Terminus_Command {
         $cache->flush(null, 'session');
       }
 
-      if ($realm != 'login') {
+      if (!in_array($realm,array('login','user'))) {
         $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
         $options['verify'] = false;
       }
