@@ -25,10 +25,30 @@ class Auth_Command extends Terminus_Command {
    *
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
+   * [--session=<value>]
+   * : Authenticate using an existing session token
    * [--debug]
    * : dump call information when logging in.
    */
   public function login( $args, $assoc_args ) {
+    # First try to login using a session token if provided
+    if (isset($assoc_args['session'])) {
+      Terminus::line( "Validating session token" );
+      $data = $this->doLoginFromSessionToken($assoc_args['session']);
+      if ( $data != FALSE ) {
+        if (array_key_exists("debug", $assoc_args)){
+          $this->_debug(get_defined_vars());
+        }
+        Terminus::line( "Logged in as ". $data['email'] );
+        Terminus::launch_self("art", array("fist"));
+      }
+      else {
+        Terminus::error( "Login Failed!" );
+      }
+      return;
+    }
+
+    # Otherwise do a normal email/password-based login
     if ( empty( $args ) ) {
       $email = Terminus::prompt( "Your email address?", NULL );
     }
@@ -141,6 +161,42 @@ class Auth_Command extends Terminus_Command {
       'session_expire_time' => $response['data']->expires_at,
       'email' => $email,
     );
+    // creates a session instance
+    Session::instance()->setData($data);
+    return $data;
+  }
+
+  /**
+   * Execute the login based on an existing session token
+   *
+   * @param $session_token string (required)
+   * @return array
+   */
+  private function doLoginFromSessionToken($session_token)
+  {
+
+    $options = array(
+        'headers' => array('Content-type'=>'application/json'),
+        'cookies' => array('X-Pantheon-Session' => $session_token),
+    );
+
+    # Temporarily disable the cache for this GET call
+    Terminus::set_config('nocache',TRUE);
+    $response = Terminus_Command::request('user', '', '', 'GET', $options);
+    Terminus::set_config('nocache',FALSE);
+
+    if ( !$response OR '200' != @$response['info']['http_code'] ) {
+      \Terminus::error("[auth_error]: session token not valid");
+    }
+
+    // Prepare credentials for storage.
+    $data = array(
+      'user_uuid' => $response['data']->id,
+      'session' => $session_token,
+      'session_expire_time' => 0, # there is not an API to provide this for a given session token
+      'email' => $response['data']->email,
+    );
+
     // creates a session instance
     Session::instance()->setData($data);
     return $data;
