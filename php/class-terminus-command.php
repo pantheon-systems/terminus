@@ -16,7 +16,6 @@ abstract class Terminus_Command {
   public $cache;
   public $session;
   public $sites;
-  static $instance = false;
 
   protected $_func;
   protected $_siteInfo;
@@ -27,68 +26,6 @@ abstract class Terminus_Command {
     $this->cache = Terminus::get_cache();
     $this->session = Session::instance();
     $this->sites = $this->cache->get_data('sites');
-    self::$instance = $this;
-  }
-
-  public static function instance() {
-    if (!self::$instance) {
-      Terminus::error("No valid instance available");
-    }
-    return self::$instance;
-  }
-
-  /**
-   * Helper code to grab sites and manage local cache.
-   */
-  protected function fetch_sites( $nocache = false ) {
-    if (!$this->sites || $nocache) {
-      $this->_fetch_sites();
-    }
-    return $this->sites;
-  }
-
-  /**
-   * Actually go out and get the sites.
-   */
-  protected function _fetch_sites() {
-    Terminus::log('Fetching site list from Pantheon');
-
-    $request = self::request( 'user', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true));
-
-    # TODO: handle errors well.
-    $sites = $request['data'];
-    $this->cache->put_data( 'sites', $sites );
-    $this->sites = $sites;
-    return $sites;
-  }
-
-  /**
-   * Helper function to grab a single site's data from cache if possible.
-   */
-  protected function fetch_site( $site_name, $nocache = false ) {
-    if ( $this->_fetch_site($site_name) !== false && !$nocache ) {
-      return $this->_fetch_site($site_name);
-    }
-    # No? Refresh that list.
-    $this->_fetch_sites();
-    if ( $this->_fetch_site($site_name) !== false ) {
-      return $this->_fetch_site($site_name);
-    }
-    Terminus::error("The site named '%s' does not exist. Run `terminus sites show` for a list of sites.", array($site_name));
-  }
-
-  /**
-   * Private function to deal with our data object for sites and return one
-   * by name that includes its uuid.
-   */
-  private function _fetch_site( $site_name ) {
-    foreach ($this->sites as $site_uuid => $data) {
-      if ( $data->information->name == $site_name ) {
-        $data->information->site_uuid = $site_uuid;
-        return $data->information;
-      }
-    }
-    return false;
   }
 
   /**
@@ -177,18 +114,6 @@ abstract class Terminus_Command {
     }
   }
 
-  protected function _validateSiteUuid($site) {
-    if (\Terminus\Utils\is_valid_uuid($site) && property_exists($this->sites, $site)){
-      $this->_siteInfo =& $this->sites[$site];
-      $this->_siteInfo->site_uuid = $site;
-    } elseif($this->_siteInfo = $this->fetch_site($site)) {
-      $site = $this->_siteInfo->site_uuid;
-    } else {
-      Terminus::error("Unable to locate the requested site.");
-    }
-    return $site;
-  }
-
   protected function _constructTableForResponse($data,$headers = array()) {
     $table = new \cli\Table();
     if (is_object($data)) {
@@ -241,6 +166,7 @@ abstract class Terminus_Command {
    * @param $object_id string -- coresponding id
    * @param $workflow_id string -- workflow to wait on
    *
+   * @deprecated Use new WorkFlow() object instead
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
   protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
@@ -277,60 +203,6 @@ abstract class Terminus_Command {
     unset($workflow);
   }
 
-
-  protected function _handleEnvArg(&$args, $assoc_args = array()) {
-    if (array_key_exists("env", $assoc_args)) {
-      $this->_getEnvBindings($args, $assoc_args);
-    } else  {
-      Terminus::error("Please specify the site => environment with --env=<environment> option.");
-    }
-
-    if (!is_object($this->_bindings)) {
-      if (array_key_exists("debug", $assoc_args)){
-        $this->_debug(get_defined_vars());
-      }
-      Terminus::error("Unable to obtain the bindings for the requested environment.\n\n");
-    } else {
-      if (property_exists($this->_bindings, $assoc_args['env'])) {
-        $this->_env = $assoc_args['env'];
-      } else {
-        Terminus::error("The requested environment either does not exist or you don't have access to it.");
-      }
-    }
-  }
-
-  protected function _getEnvBindings(&$args, $assoc_args) {
-    $b = self::request("site", $this->_siteInfo->site_uuid, 'environments/'. $this->_env .'/bindings', "GET");
-    if (!empty($b) && is_array($b) && array_key_exists("data", $b)) {
-      $this->_bindings = $b['data'];
-    }
-  }
-
-  protected function _execute( array $args = array() , array $assoc_args = array() ){
-    $success = $this->{$this->_func}( $args, $assoc_args);
-    if (array_key_exists("debug", $assoc_args)){
-      $this->_debug(get_defined_vars());
-    }
-    if (!empty($success)){
-      if (is_array($success) && array_key_exists("data", $success)) {
-        if (array_key_exists("json", $assoc_args)) {
-          echo \Terminus\Utils\json_dump($success["data"]);
-        } elseif (array_key_exists("bash", $assoc_args)) {
-          echo \Terminus\Utils\bash_out($success['data']);
-        } else {
-          $this->_constructTableForResponse($success['data']);
-        }
-      } elseif (is_string($success)) {
-        echo Terminus::line($success);
-      }
-    } else {
-      if (array_key_exists("debug", $assoc_args)){
-        $this->_debug(get_defined_vars());
-      }
-      Terminus::error("There was an error attempting to execute the requested task.\n\n");
-    }
-  }
-
   protected function handleDisplay($data,$args = array(), $headers = null) {
     if (array_key_exists("json", $args) OR Terminus::get_config('json') )
       echo \Terminus\Utils\json_dump($data);
@@ -338,11 +210,6 @@ abstract class Terminus_Command {
       echo \Terminus\Utils\bash_out((array)$data);
     else
       $this->_constructTableForResponse((array)$data,$headers);
-  }
-
-  protected function _debug($vars) {
-    Terminus::line(print_r($this, true));
-    Terminus::line(print_r($vars, true));
   }
 
 }
