@@ -52,6 +52,44 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
+   * Create a site report
+   *
+   * ## OPTIONS 
+   * 
+   * [--fields=<field>] :
+   * A comma-separated list of fields to include, to see available fields use ```terminus site info```
+   * 
+   * [--filter=<field:value>] :
+   * Specify a filter on field:value. For instance upstream:.*wordpress.* would filter for sites with upstreams matching wordpress
+   * 
+   */
+  public function report($args, $assoc_args) {
+    $sites = SiteFactory::instance();
+    $data = array();
+    foreach ($sites as $site) {
+      $report = array(
+        'name' => $site->getName(),
+      );
+      
+      $fields = Input::optional('fields', $assoc_args, false);
+      if ($fields) {
+        $fields = explode(',',$fields);
+        foreach ($fields as $field) { 
+          $report[$field] = $site->info($field);
+        }
+      } else { 
+        $info = $site->info();
+        foreach ($info as $key=>$value) {
+          $report[$key] = $value;
+        }
+      }
+
+      $data[] = $report;
+    }
+
+    $this->handleDisplay($data);
+  }
+  /**
    * Create a new site
    *
    * ## OPTIONS
@@ -258,7 +296,6 @@ class Sites_Command extends Terminus_Command {
     $confirm = Input::optional('confirm', $assoc_args, false);
 
     // Start status messages.
-    Terminus::line('Starting mass-update.');
     if($upstream) Terminus::line('Looking for sites using '.$upstream.'.');
 
     foreach( $sites as $site ) {
@@ -294,7 +331,7 @@ class Sites_Command extends Terminus_Command {
             Terminus::success("Backup of ".$site->getName()." created.");
             Terminus::line('Updating '.$site->getName().'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
-            // $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+            $response = $site->applyUpstreamUpdates($env, $update, $xoption);
             $data[$site->getName()]['status'] = 'Updated';
             Terminus::success($site->getName().' is updated.');
           } else {
