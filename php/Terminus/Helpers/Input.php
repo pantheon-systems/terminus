@@ -138,6 +138,26 @@ class Input {
     }
     return $string;
   }
+  
+  /**
+   * Same as confirm but doesn't exit.
+   * @param $question string -- question to ask
+   * @param $assoc_args array -- an input array to parse the answer from
+   * @param $params array -- args for vsprintf()
+   *
+   * @return (bool)
+   */
+  static function yesno($question, $assoc_args = array(), $params = array()) {
+      if (\Terminus::get_config('yes')) return true;
+      $question = vsprintf($question, $params);
+      fwrite( STDOUT, $question . " [y/n] " );
+
+      $answer = trim( fgets( STDIN ) );
+
+      if ( 'y' != $answer )
+        return false;
+      return true;
+  }
 
   static function optional( $key, $args, $default = null ) {
     if (isset($args[$key])) {

@@ -52,6 +52,44 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
+   * Create a site report
+   *
+   * ## OPTIONS 
+   * 
+   * [--fields=<field>] :
+   * A comma-separated list of fields to include, to see available fields use ```terminus site info```
+   * 
+   * [--filter=<field:value>] :
+   * Specify a filter on field:value. For instance upstream:.*wordpress.* would filter for sites with upstreams matching wordpress
+   * 
+   */
+  public function report($args, $assoc_args) {
+    $sites = SiteFactory::instance();
+    $data = array();
+    foreach ($sites as $site) {
+      $report = array(
+        'name' => $site->getName(),
+      );
+      
+      $fields = Input::optional('fields', $assoc_args, false);
+      if ($fields) {
+        $fields = explode(',',$fields);
+        foreach ($fields as $field) { 
+          $report[$field] = $site->info($field);
+        }
+      } else { 
+        $info = $site->info();
+        foreach ($info as $key=>$value) {
+          $report[$key] = $value;
+        }
+      }
+
+      $data[] = $report;
+    }
+
+    $this->handleDisplay($data);
+  }
+  /**
    * Create a new site
    *
    * ## OPTIONS
@@ -81,10 +119,10 @@ class Sites_Command extends Terminus_Command {
     $data = array();
     $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
     $slug = Utils\sanitize_name( $data['label'] );
-    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release. 
+    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release.
     if (array_key_exists('name',$assoc_args)) {
       $data['site_name'] = $assoc_args['name'];
-    } elseif (array_key_exists('site',$assoc_args)) {    
+    } elseif (array_key_exists('site',$assoc_args)) {
       $data['site_name'] = $assoc_args['site'];
     } else {
       $data['site_name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
@@ -105,7 +143,7 @@ class Sites_Command extends Terminus_Command {
     $workflow->refresh();
     $details = $workflow->status();
     if ($details->result !== 'failed' AND $details->result !== 'aborted') {
-      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id))); 
+      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id)));
     }
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
@@ -189,7 +227,7 @@ class Sites_Command extends Terminus_Command {
       }
       Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
       $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
-      
+
       Terminus::success("Deleted %s!", $site_to_delete->information->name);
   }
 
@@ -227,8 +265,93 @@ class Sites_Command extends Terminus_Command {
     } elseif ($print) {
       print $content;
     }
+  }
 
 
+/**
+ * Update alls dev sites with an available upstream update.
+ *
+ * ## OPTIONS
+ *
+ * [--report]
+ * : If set output will contain list of sites and whether they are up-to-date
+ *
+ * [--upstream=<upstream>]
+ * : Specify a specific upstream to check for updating.
+ *
+ * [--no-updatedb]
+ * : Use flag to skip running update.php after the update has applied
+ *
+ * [--xoption=<theirs|ours>]
+ * : Corresponds to git's -X option, set to 'theirs' by default -- https://www.kernel.org/pub/software/scm/git/docs/git-merge.html
+ *
+ * @subcommand mass-update
+ */
+  public function mass_update($args, $assoc_args) {
+    $sites = SiteFactory::instance();
+    $env = 'dev';
+    $upstream = Input::optional('upstream', $assoc_args, false);
+    $data = array();
+    $report = Input::optional('report', $assoc_args, false);
+    $confirm = Input::optional('confirm', $assoc_args, false);
+
+    // Start status messages.
+    if($upstream) Terminus::line('Looking for sites using '.$upstream.'.');
+
+    foreach( $sites as $site ) {
+
+      $updates = $site->getUpstreamUpdates();
+      if (!isset($updates->behind)) {
+        // No updates, go back to start.
+        continue;
+      }
+      // Check for upstream argument and site upstream URL match.
+      $siteUpstream = $site->info('upstream');
+      if ( $upstream AND isset($siteUpstream->url)) {
+        if($siteUpstream->url <> $upstream ) {
+          // Uptream doesn't match, go back to start.
+          continue;
+        }
+      }
+
+      if( $updates->behind > 0 ) {
+        $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update");
+        $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
+        $update = $noupdatedb ? false : true;
+        $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
+        if (!$report) {
+          $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
+          if( !$confirmed ) continue; // Suer says No, go back to start.
+
+          // Backup the DB so the client can restore if something goes wrong.
+          Terminus::line('Backing up '.$site->getName().'.');
+          $backup = $site->environment('dev')->createBackup(array('element'=>'all'));
+          // Only continue if the backup was successful.
+          if($backup) {
+            Terminus::success("Backup of ".$site->getName()." created.");
+            Terminus::line('Updating '.$site->getName().'.');
+            // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
+            $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+            $data[$site->getName()]['status'] = 'Updated';
+            Terminus::success($site->getName().' is updated.');
+          } else {
+            $data[$site->getName()]['status'] = 'Backup failed';
+            Terminus::error('There was a problem backing up '.$site->getName().'. Update aborted.');
+          }
+        }
+      } else {
+        if (isset($assoc_args['report'])) {
+          $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date");
+        }
+      }
+    }
+
+    if (!empty($data)) {
+      sort($data);
+      $this->handleDisplay($data);
+    } else {
+      Terminus::line('No sites in need up updating.');
+    }
   }
 }
 

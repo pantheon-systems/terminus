@@ -20,7 +20,7 @@ class SiteFactory {
       // we need to skip sites that are in the build process still
       if (!isset($site_data->information)) continue;
       $site_data->id = $site_id;
-      $this->sites[$site_data->information->name] = $site_data;
+      $this->sites[$site_data->information->name] = new Site($site_data);
     }
 
     return $this;
