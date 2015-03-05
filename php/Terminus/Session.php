@@ -65,4 +65,10 @@ class Session {
     }
   }
 
+  public static function destroy() {
+    $cache = Terminus::get_cache();
+    $cache->put_data('session', null);
+    return;
+  }
+
 }

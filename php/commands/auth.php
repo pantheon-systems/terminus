@@ -5,9 +5,10 @@
  */
  use Terminus\Request as Request;
  use Terminus\Utils;
+ use Terminus\Session;
+ use Terminus\Auth;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
- use Terminus\Session;
 
 class Auth_Command extends Terminus_Command {
   private $sessionid;
@@ -66,18 +67,9 @@ class Auth_Command extends Terminus_Command {
       else {
         $password = $assoc_args['password'];
       }
-      Terminus::line( "Logging in as $email" );
-      $data = $this->doLogin($email, $password);
-
-      if ( $data != FALSE ) {
-        if (array_key_exists("debug", $assoc_args)){
-          $this->_debug(get_defined_vars());
-        }
-        Terminus::launch_self("art", array("fist"));
-      }
-      else {
-        Terminus::error( "Login Failed!" );
-      }
+      Terminus::line("Logging in as $email");
+      Auth::login($email, $password);
+      Terminus::launch_self("art", array("fist"));
     }
     else {
       Terminus::error( "Error: invalid email address" );
@@ -89,7 +81,7 @@ class Auth_Command extends Terminus_Command {
    */
   public function logout() {
     Terminus::line( "Logging out of Pantheon." );
-    Terminus::launch_self("cli",array('cache-clear'));
+    Auth::logout();
   }
 
   /**
@@ -131,16 +123,6 @@ class Auth_Command extends Terminus_Command {
    */
   private function doLogin($email,$password)
   {
-    if (Terminus::is_test()) {
-      $data = array(
-        'user_uuid' => '77629472-3050-457c-8c3d-32b2cabf992b',
-        'session' => '77629472-3050-457c-8c3d-32b2cabf992b:7dc42f40-65f8-11e4-b314-bc764e100eb1:ZHR0TgtQYsKcOOwMOd0tk',
-        'session_expire_time' => '1417727066',
-        'email' => 'wink@getpantheon.com',
-      );
-      return $data;
-    }
-
     $options = array(
         'body' => json_encode(array(
           'email' => $email,
