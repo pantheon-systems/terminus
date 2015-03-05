@@ -3,6 +3,7 @@
 use \Terminus\Utils;
 use \Terminus\Dispatcher;
 use \Terminus\FileCache;
+use \Terminus\Request;
 
 /**
  * Various utilities for Terminus commands.
@@ -171,6 +172,16 @@ class Terminus {
   }
 
   /**
+   * Colorized logging
+   * 
+   * @param $message string
+   * @param $params array
+  **/
+  static function color($message) {
+    \Terminus\Loggers\Regular::coloredOutput($message);
+  }
+
+  /**
    * Display a success in the CLI and end with a newline
    *
    * @param string $message
@@ -191,7 +202,10 @@ class Terminus {
     if ( !empty($params) ) {
       $message = vsprintf($message, $params);
     }
-    self::$logger->warning( self::error_to_string( $message ) );
+    if (!Terminus::$logger) {
+      Terminus::set_logger(new \Terminus\Loggers\Regular(TRUE));
+    }
+    Terminus::$logger->warning( self::error_to_string( $message ) );
   }
 
   /**
@@ -422,5 +436,28 @@ class Terminus {
     if (getenv("CLI_TEST_MODE"))
       return true;
     return false;
+  }
+
+  /**
+   * Latest release
+  */
+  static function version_available() {
+    $cache = Terminus::get_cache();
+    if (! $release = $cache->get_data(__FUNCTION__) ) {
+      $url = "https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1";
+      $response = Request::send($url,'GET');   
+      $json = $response->getBody(TRUE);
+      $release = array_shift(json_decode($json));
+      $cache->put_data(__FUNCTION__,$release);
+    }
+    return $release->tag_name;
+  }
+
+  static public function update_available() {
+    $latest = Terminus::version_available();
+    if (version_compare($latest, TERMINUS_VERSION, ">")) {
+      return true;
+    }
+    return false; 
   }
 }
