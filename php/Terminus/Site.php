@@ -62,16 +62,10 @@ class Site {
    * Return all environments for a site
    */
   public function environments() {
-    $cache = \Terminus::get_cache();
-    if (empty($this->environments)) {
-      if (!$environments = $cache->get_data("environments:{$this->id}")) {
-        $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
-        $environments = $results['data'];
-        $cache->put_data("environments:{$this->id}",$environments);
-      }
-      $this->environments = $environments;
-    }
-
+    $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
+    $environments = $results['data'];
+    $this->environments = $environments;
+  
     // instantiate local objects
     foreach ( $this->environments as $name => $env) {
       $this->environments->$name = EnvironmentFactory::load($this, $name, array(
@@ -92,8 +86,12 @@ class Site {
     } else {
       // load the environments
       $this->environments();
+      if (array_key_exists($environment,$this->environments)) {
+        return $this->environments->$environment;
+      } else {
+        throw new \Terminus\Iterators\Exception("No such environment $environment.");
+      }
     }
-    return $this->environments->$environment;
   }
 
   /**

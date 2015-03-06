@@ -13,6 +13,7 @@ use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
 use \Terminus\SiteWorkflow;
+use \Terminus\EnvironmentWorkflow;
 
 class Site_Command extends Terminus_Command {
 
@@ -563,20 +564,25 @@ class Site_Command extends Terminus_Command {
 
      $confirm = sprintf("Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n", strtoupper($from_env), strtoupper($to_env), $append);
      \Terminus::confirm($confirm);
-
-      if ( !$this->envExists($site_id, $to_env) ) {
-        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env [--site=<env>]`", $to_env);
-      }
+     $to_env = $site->environment($to_env);
+     $from_env = $site->environment($from_env);
 
      if ($db) {
-       print "Cloning database ... ";
-       $this->cloneObject( $to_env, $from_env, $site_id, 'database');
+      print "Cloning database ... ";
+      $workflow = new EnvironmentWorkflow('clone_database','sites', $to_env);
+      $workflow->setParams(array('from_environment' => $from_env->name));
+      $workflow->setMethod('POST');
+      $workflow->start()->wait();;  
      }
 
      if ($files) {
       print "Cloning files ... ";
-      $this->cloneObject( $to_env, $from_env, $site_id, 'files');
+      $workflow = new EnvironmentWorkflow('clone_files','sites', $to_env);
+      $workflow->setParams(array('from_environment' => $from_env->name));
+      $workflow->setMethod('POST');
+      $workflow->start()->wait();
      }
+
      \Terminus::success("Clone complete!");
      return true;
    }
@@ -740,12 +746,6 @@ class Site_Command extends Terminus_Command {
     $this->handleDisplay($data,$args);
     return $data;
   }
-
-   private function envExists($site_id, $env) {
-     $response = \Terminus_Command::request('sites', $site_id, 'code-tips', 'GET');
-     $envs = (array) $response['data'];
-     return array_key_exists($env, $envs);
-   }
 
   /**
    * Hostname operations
