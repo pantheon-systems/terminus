@@ -393,7 +393,7 @@ class Terminus {
     }
 
     if ( !isset( self::get_runner()->config[ $key ] ) ) {
-      self::warning( "Unknown config option '$key'." );
+      //self::warning( "Unknown config option '$key'." );
       return null;
     }
 
