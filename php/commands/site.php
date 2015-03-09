@@ -358,7 +358,7 @@ class Site_Command extends Terminus_Command {
   * ## OPTIONS
   *
   * <get|load|create|list>
-  * : function to run - get, load, create, or list
+  * : Function to run - get, load, create, or list
   *
   * [--site=<site>]
   * : Site to load
@@ -367,16 +367,16 @@ class Site_Command extends Terminus_Command {
   * : Environment to load
   *
   * [--element=<code|files|db|all>]
-  * : Element to download or create. *all* only used for the 'create'
+  * : Element to download or create. *all* only used for 'create'
   *
   * [--to-directory=<directory>]
   * : Download the file if set
   *
   * [--latest]
-  * : if set no the latest backup will be selected automatically
+  * : If set the latest backup will be selected automatically
   *
   * [--keep-for]
-  * : number of days to keep this backup. 
+  * : Number of days to keep this backup
   *
   * @subcommand backup
   *
