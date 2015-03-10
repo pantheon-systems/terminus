@@ -35,43 +35,23 @@ class Sites_Command extends Terminus_Command {
    */
   public function show($args, $assoc_args) {
     $sites = SiteFactory::instance();
-    $toReturn = array();
-    $toReturn['sites'] = $sites;
-    $toReturn['data'] = array();
-    foreach($sites as $id => $site) {
-      $toReturn['data'][] = array(
-        'Site' => $site->information->name,
-        'Framework' => isset($site->information->framework) ? $site->information->framework : '',
-        'Service Level' => $site->information->service_level,
-        'UUID' => $id
-      );
-    }
-
-    $this->handleDisplay($toReturn['data']);
-    return $toReturn;
-  }
-
-  /**
-   * Create a site report
-   *
-   * ## OPTIONS 
-   * 
-   * [--fields=<field>] :
-   * A comma-separated list of fields to include, to see available fields use ```terminus site info```
-   * 
-   * [--filter=<field:value>] :
-   * Specify a filter on field:value. For instance upstream:.*wordpress.* would filter for sites with upstreams matching wordpress
-   * 
-   */
-  public function report($args, $assoc_args) {
-    $sites = SiteFactory::instance();
     $data = array();
     foreach ($sites as $site) {
       $report = array(
         'name' => $site->getName(),
       );
       
-      $fields = Input::optional('fields', $assoc_args, false);
+      $fields = Input::optional('fields', $assoc_args, 'name,framework,service_level,id');
+      $filter = Input::optional('filter', $assoc_args, false);
+      if ($filter) {
+        if (!strpos($filter,":")) Terminus::error("Improperly formatted filter");
+        $filter = explode(':',$filter);
+        list($filter_field, $filter_value) = $filter;
+        if (!preg_match("#".preg_quote($filter_value)."#", $site->info($filter_field))) {
+          // skip rows not matching our filter
+          continue;
+        }
+      }
       if ($fields) {
         $fields = explode(',',$fields);
         foreach ($fields as $field) { 
@@ -88,7 +68,10 @@ class Sites_Command extends Terminus_Command {
     }
 
     $this->handleDisplay($data);
+    return $data;
   }
+
+
   /**
    * Create a new site
    *
