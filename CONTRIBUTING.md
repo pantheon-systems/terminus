@@ -97,5 +97,5 @@ We will maintain a separate branch for all minor point releases going forward, i
 Finally...
 ----------
 
-Thanks! Hacking on WP-CLI should be fun. If you find any of this hard to figure
+Thanks! Hacking on Terminus should be fun. If you find any of this hard to figure
 out, let us know so we can improve our process or documentation!
