@@ -16,9 +16,18 @@ class Art_Command extends Terminus_Command {
   /**
    * View Pantheon artwork
    *
+   * ## Options
+   *
+   * fist
+   *
+   * unicorn
+   *
+   * druplicon
+   *
+   * wordpress
    */
   function __invoke( $args, $assoc_args ) {
-    $artwork = array_shift($args) ?: array_rand($this->works); 
+    $artwork = array_shift($args) ?: array_rand($this->works);
 
     if (!empty($artwork) && array_key_exists($artwork, $this->works)){
       echo Terminus::colorize("%g".base64_decode($this->works[$artwork])."%n")."\n";

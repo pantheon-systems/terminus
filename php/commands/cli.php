@@ -112,6 +112,7 @@ class CLI_Command extends Terminus_Command {
   }
 
   /**
+  * Dump session data
   * @subcommand session-dump
   */
   public function session_dump() {
@@ -120,6 +121,7 @@ class CLI_Command extends Terminus_Command {
   }
 
   /**
+  * Clear session cache
   * @subcommand cache-clear
   */
   public function cache_clear($cache = null) {
