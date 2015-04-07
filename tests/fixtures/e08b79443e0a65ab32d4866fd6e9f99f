@@ -1,7 +1,2 @@
 Deleting behat-test ...
-Site	Framework	Service Level	UUID
-winktest3	wordpress	free	winktest3
-winktest9	wordpress	free	winktest9
-phpunittest	drupal	free	phpunittest
-winktest8	wordpress	free	winktest8
-workdemo4	wordpress	free	workdemo4
+[32;1mSuccess:[0m Deleted behat-test!

@@ -16,7 +16,7 @@ Feature: sites
     When I run "terminus sites create --name='behat-test' --label='behattest' --org='d59379eb-0c23-429c-a7bc-ff51e0a960c2' --product='e8fe8550-1ab9-4964-8838-2b9abdccf4bf'"
     Then I should get:
     """
-    Pow!
+    Creating new WordPress installation
     """
     And I run "terminus site info --bash --site=behat-test"
     Then I should get:
