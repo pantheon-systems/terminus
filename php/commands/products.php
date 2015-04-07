@@ -1,6 +1,10 @@
 <?php
 use \Terminus\Products;
 
+/**
+ * Show Pantheon product information
+ *
+ */
 class Products_Command extends Terminus_Command {
 
   /**

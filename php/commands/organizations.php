@@ -8,6 +8,10 @@ use \Terminus\Helpers\Input;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 
+/**
+ * Show information for your Pantheon organizations
+ *
+ */
 class Organizations_Command extends Terminus_Command {
 
   public function __construct() {
@@ -15,7 +19,7 @@ class Organizations_Command extends Terminus_Command {
   }
 
   /**
-   * API call to get a user's organizations.
+   * Show a list of your organizations on Pantheon
    *
    * @subcommand list
    *
