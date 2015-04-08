@@ -1,0 +1,29 @@
+
+-
+    request:
+        method: GET
+        url: 'https://dashboard.getpantheon.com/api/sites/4ff603ab-57cd-4b66-aebd-781a58e3b3fd/environments'
+        headers:
+            Host: dashboard.getpantheon.com
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.14&script=unknown)'
+            Cookie: X-Pantheon-Session=0ffec038-4410-43d0-a404-46997f672d7a%3A6dc10b96-dd7a-11e4-8758-bc764e1113b5%3ASnT0EvWm3hAFLPP6YLBgr
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 07 Apr 2015 23:26:22 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '1500'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 8048c260-dd7d-11e4-b0d1-af17478ef1b3
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: 'https://dashboard.getpantheon.com'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"ma/f4459mnCHPrUKx9Pptg=="'
+            Vary: Accept-Encoding
+        body: '{"test": {"environment_created": 1415402675, "dns_zone": "pantheon.io", "randseed": "79NF16NJ66M3B9ZI8W7XFO61076DF4M5", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}, "phptest": {"environment_created": 1425426366, "dns_zone": "pantheon.io", "randseed": "F4Z1Y6EU61FQG5RLWHQV6WPBNPT7K8JB", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": true, "environment_created": 1415402674, "dns_zone": "pantheon.io", "randseed": "6OGE0HAB7TRD18BW4ABS5G7BVD7YVUHF", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "3e35e95ba07e588b34f6428058d55134924240a6", "styx_cluster": "styx-01.pantheon.io"}, "live": {"environment_created": 1415402676, "dns_zone": "pantheon.io", "randseed": "BZRU2X93P53Y6GY4K1BMBJR76ZX1B0N9", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}, "phptest2": {"environment_created": 1425426527, "dns_zone": "pantheon.io", "randseed": "4D33S4VASDUWIMRIUEEOSFCP1PYQO117", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}, "phptest1": {"environment_created": 1425426420, "dns_zone": "pantheon.io", "randseed": "4MEIP6MRLT0ZFEIF8CMJIFD6IEPQ63X7", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}}'

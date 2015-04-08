@@ -3,7 +3,7 @@
 set -ex
 
 # Basic lint test
-if [[ ! $TRAVIS_COMMIT ]]; then 
+if [[ ! $TRAVIS_COMMIT ]]; then
 	TRAVIS_COMMIT=$( git log --format=oneline | head -n1 | awk '{print $1}' )
 fi
 
@@ -11,7 +11,7 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "
 
 # Run the unit tests
 # phpunit
-phpunit
+vendor/bin/phpunit --debug
 
 # Run the functional tests
-bin/behat --format pretty
+vendor/bin/behat

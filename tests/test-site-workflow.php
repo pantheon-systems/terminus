@@ -7,11 +7,12 @@ use \Terminus\Helpers\Input;
 use \Terminus\SiteWorkflow;
 use \Terminus\SiteFactory;
 
-/**
- * @vcr workflowtest
- */
+
  class SiteWorkFlowTest extends PHPUnit_Framework_TestCase {
 
+   /**
+    * @vcr site_workflow_create
+    */
    function testSiteWorkflowCreate() {
      $site = SiteFactory::instance('phpunittest');
 

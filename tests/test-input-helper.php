@@ -8,6 +8,9 @@ use \Terminus\Helpers\Input,
 
  class InputHelperTest extends PHPUnit_Framework_TestCase {
 
+   /**
+    * @vcr input_helper_org_helpers
+    */
    function testOrgHelpers() {
       $site = SiteFactory::instance("phpunittest");
       $orglist = Input::orglist();

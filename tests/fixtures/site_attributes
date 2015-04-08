@@ -6,8 +6,8 @@
         headers:
             Host: dashboard.getpantheon.com
             Accept: null
-            User-Agent: 'Guzzle/3.8.0 curl/7.35.0 PHP/5.5.9-1ubuntu4.4'
-            Cookie: 'X-Pantheon-Session=dca4f8cd-9ec2-4117-957f-fc5230c23737:20e4ceb0-b224-11e4-94f5-bc764e111d20:jakuWJ8hw4PGMq9Plm9wk'
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.14&script=unknown)'
+            Cookie: X-Pantheon-Session=0ffec038-4410-43d0-a404-46997f672d7a%3A6dc10b96-dd7a-11e4-8758-bc764e1113b5%3ASnT0EvWm3hAFLPP6YLBgr
     response:
         status:
             http_version: '1.1'
@@ -15,14 +15,15 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 11 Feb 2015 20:33:27 GMT'
-            Content-Type: application/json
+            Date: 'Tue, 07 Apr 2015 23:26:22 GMT'
+            Content-Type: 'application/json; charset=utf-8'
             Content-Length: '77'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 6b62f25e-bee4-432b-8faf-62c9ebe3e2a6
+            X-Pantheon-Trace-Id: 80899bf0-dd7d-11e4-b0d1-af17478ef1b3
             X-Frame-Options: deny
             Access-Control-Allow-Origin: 'https://dashboard.getpantheon.com'
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"4d-a2dc26d9"'
             Vary: Accept-Encoding
-        body: '{"label": "phpunittest", "status_check_last_run": "2015-02-11T20:06:29.402Z"}'
+        body: '{"label": "phpunittest", "status_check_last_run": "2015-04-07T23:16:02.670Z"}'

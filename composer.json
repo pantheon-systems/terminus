@@ -20,7 +20,8 @@
     "guzzle/http": "3.8",
     "guzzle/parser": "3.8",
     "nb/oxymel": "0.1.0",
-    "behat/behat": "2.4.*@stable"
+    "behat/behat": "2.4.*@stable",
+    "phpunit/phpunit": "~4.6"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },

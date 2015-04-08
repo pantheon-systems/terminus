@@ -1,6 +1,2 @@
-Site	Framework	Service Level	UUID
-winktest3	wordpress	free	winktest3
-winktest9	wordpress	free	winktest9
-phpunittest	drupal	free	phpunittest
-winktest8	wordpress	free	winktest8
-workdemo4	wordpress	free	workdemo4
+Name	Framework	Service_level	Id
+phpunittest	drupal	free	4ff603ab-57cd-4b66-aebd-781a58e3b3fd
