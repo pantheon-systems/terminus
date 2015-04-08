@@ -2085,16 +2085,16 @@
         },
         {
             "name": "php-vcr/php-vcr",
-            "version": "1.2",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-vcr/php-vcr.git",
-                "reference": "ffbf7504a2300eacd70bf8236b38ad19f3eaeb16"
+                "reference": "9520791496302c092898c122b176ab9fc450e5e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/ffbf7504a2300eacd70bf8236b38ad19f3eaeb16",
-                "reference": "ffbf7504a2300eacd70bf8236b38ad19f3eaeb16",
+                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/9520791496302c092898c122b176ab9fc450e5e1",
+                "reference": "9520791496302c092898c122b176ab9fc450e5e1",
                 "shasum": ""
             },
             "require": {
@@ -2125,7 +2125,7 @@
                 }
             ],
             "description": "Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests.",
-            "time": "2015-01-24 13:50:53"
+            "time": "2015-03-02 08:54:36"
         },
         {
             "name": "php-vcr/phpunit-testlistener-vcr",

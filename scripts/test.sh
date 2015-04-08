@@ -11,7 +11,7 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "
 
 # Run the unit tests
 # phpunit
-vendor/bin/phpunit
+vendor/bin/phpunit --debug
 
 # Run the functional tests
 vendor/bin/behat
