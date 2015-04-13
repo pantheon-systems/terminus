@@ -95,7 +95,7 @@ class Environment {
   }
 
   /**
-   * @param null $element code,file,db
+   * @param null $element string: code,file,db
    * @param bool $latest_only
    * @return array
    */
