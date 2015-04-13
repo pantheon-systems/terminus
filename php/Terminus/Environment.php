@@ -111,6 +111,12 @@ class Environment {
           unset($backups[$id]);
           continue;
         }
+        // since we pass element as 'db'
+        // and .sql files are named with 'database'
+        // when element is db, let's replace it with 'database'
+        if($element == 'db') {
+          $element = 'database';
+        }
         if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
           unset($backups[$id]);
           continue;
