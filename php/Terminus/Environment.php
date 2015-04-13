@@ -95,7 +95,9 @@ class Environment {
   }
 
   /**
-   * @param $element sting code,file,backup
+   * @param null $element code,file,db
+   * @param bool $latest_only
+   * @return array
    */
   public function backups($element = null, $latest_only = false) {
     if (null === $this->backups) {
