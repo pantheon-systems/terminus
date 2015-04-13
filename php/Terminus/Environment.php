@@ -106,16 +106,11 @@ class Environment {
     $backups = (array) $this->backups;
     ksort($backups);
     if ($element) {
+      $element = $this->element_as_database($element);
       foreach ($this->backups as $id => $backup) {
         if (!isset($backup->filename)) {
           unset($backups[$id]);
           continue;
-        }
-        // since we pass element as 'db'
-        // and .sql files are named with 'database'
-        // when element is db, let's replace it with 'database'
-        if($element == 'db') {
-          $element = 'database';
         }
         if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
           unset($backups[$id]);
@@ -134,6 +129,7 @@ class Environment {
    * @param $element string -- files,code,database
    */
   public function backupUrl($bucket, $element) {
+    $element = $this->element_as_database($element);
     $path = sprintf("environments/%s/backups/catalog/%s/%s/s3token", $this->name, $bucket, $element);
     $data = array('method'=>'GET');
     $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json') );
@@ -288,5 +284,19 @@ class Environment {
       'target' => $target,
     );
     return $return_data;
+  }
+
+  /**
+   * since we pass element as 'db'
+   * and .sql files are named with 'database'
+   * when element is db, let's replace it with 'database'
+   * @param $element
+   * @return string
+   */
+  private function element_as_database($element) {
+    if ($element == 'db') {
+      return 'database';
+    }
+    return $element;
   }
 }
