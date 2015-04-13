@@ -389,10 +389,10 @@ class Site_Command extends Terminus_Command {
        case 'get':
          // prompt for backup type
          if (!$element = @$assoc_args['element']) {
-           $element = Terminus::menu(array('code','files','database'), null, "Select type backup", TRUE);
+           $element = Terminus::menu(array('code','files','db'), null, "Select type backup", TRUE);
          }
 
-         if (!in_array($element,array('code','files','database'))) {
+         if (!in_array($element,array('code','files','db'))) {
            Terminus::error("Invalid backup element specified.");
          }
          $latest = Input::optional('latest',$assoc_args,false);
