@@ -387,16 +387,16 @@ class Site_Command extends Terminus_Command {
      $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'get':
-         // prompt for backup type
-         if (!$element = @$assoc_args['element']) {
-           $element = Terminus::menu(array('code','files','db'), null, "Select type backup", TRUE);
-         }
-
          // backward compatability supports database as a valid element value.
          if($element == 'database') {
            $element = 'db';
          }
          
+         // prompt for backup type
+         if (!$element = @$assoc_args['element']) {
+           $element = Terminus::menu(array('code','files','db'), null, "Select type backup", TRUE);
+         }
+
          if (!in_array($element,array('code','files','db'))) {
            Terminus::error("Invalid backup element specified.");
          }
