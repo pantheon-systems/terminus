@@ -392,6 +392,11 @@ class Site_Command extends Terminus_Command {
            $element = Terminus::menu(array('code','files','db'), null, "Select type backup", TRUE);
          }
 
+         // backward compatability supports database as a valid element value.
+         if($element == 'database') {
+           $element = 'db';
+         }
+         
          if (!in_array($element,array('code','files','db'))) {
            Terminus::error("Invalid backup element specified.");
          }
