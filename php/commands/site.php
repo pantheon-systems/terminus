@@ -388,10 +388,10 @@ class Site_Command extends Terminus_Command {
      switch ($action) {
        case 'get':
          // backward compatability supports database as a valid element value.
-         if($element == 'database') {
-           $element = 'db';
+         if(@$assoc_args['element'] == 'database') {
+           $assoc_args['element'] = 'db';
          }
-         
+
          // prompt for backup type
          if (!$element = @$assoc_args['element']) {
            $element = Terminus::menu(array('code','files','db'), null, "Select type backup", TRUE);
