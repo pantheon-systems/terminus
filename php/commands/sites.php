@@ -149,32 +149,27 @@ class Sites_Command extends Terminus_Command {
   * : Url of archive to import
   *
   * [--name=<name>]
+  * : (deprecated) use --site instead
+  *
+  * [--site=<site>]
   * : Name of the site to create (machine-readable)
   *
   * [--label=<label>]
   * : Label for the site
   *
   * [--org=<org>]
-  * : UUID of organization to add this site to
+  * : UUID of organization to add this site to; or "None"
   *
   * @subcommand create-from-import
   */
   public function import($args, $assoc_args) {
     $url = Input::string($assoc_args, 'url', "Url of archive to import");
-    $label = Input::string($assoc_args, 'label', "Human readable label for the site");
-    $slug = Utils\sanitize_name( $label );
-    $name = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]");
-    $name = $name ? $name : $slug;
-    $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
     if (!$url) {
       Terminus::error("Please enter a url.");
     }
-    Terminus::launch_self('sites', array('create'), array(
-      'label' => $label,
-      'name'  => $name,
-      'org'   => $organization,
-    ));
-    Terminus::launch_self('site', array('import'), array('url'=>$url, 'site'=>$name, 'nocache' => True));
+    $assoc_args['import'] = url;
+
+    $self->create($args, $assoc_args);
   }
 
   /**
