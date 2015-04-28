@@ -7,6 +7,8 @@ use \Terminus\Products;
 
 class Input {
 
+  public static $NULL_INPUTS = array('', 'false', 'None', 'Null', '0');
+
   static public function environment($existing, $default, $message) {
 
     if (!$message) {
@@ -75,8 +77,10 @@ class Input {
     if (isset($args[$key]) AND array_key_exists($args[$key], $flip)) {
       // if we have a valid name provided and we need the id
       return $flip[$args[$key]];
-    } elseif(isset($args[$key]) AND  array_key_exists($args[$key],$orglist)) {
+    } elseif(isset($args[$key]) AND array_key_exists($args[$key], $orglist)) {
       return $args[$key];
+    } elseif(isset($args[$key]) AND in_array($args[$key], self::$NULL_INPUTS)) {
+      return $default;
     }
 
     $orglist = Input::orglist();

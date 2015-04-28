@@ -90,7 +90,7 @@ class Sites_Command extends Terminus_Command {
    * : Label for the site
    *
    * [--org=<org>]
-   * : UUID of organization to add this site to
+   * : UUID of organization to add this site to; or "None"
    *
    * [--import=<url>]
    * : A url to import a valid archive from
