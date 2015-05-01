@@ -90,7 +90,7 @@ class Sites_Command extends Terminus_Command {
    * : Label for the site
    *
    * [--org=<org>]
-   * : UUID of organization to add this site to
+   * : UUID of organization to add this site to; or "None"
    *
    * [--import=<url>]
    * : A url to import a valid archive from
@@ -113,9 +113,12 @@ class Sites_Command extends Terminus_Command {
     if ($orgid = Input::orgid($assoc_args,'org', false)) {
       $data['organization_id'] = $orgid;
     }
-    $product = Input::product($assoc_args,'product');
-    $data['deploy_product'] = array('product_id' => $product['id']);
-    Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));
+    if (!isset($assoc_args['import'])) {
+      $product = Input::product($assoc_args,'product');
+      $data['deploy_product'] = array('product_id' => $product['id']);
+      Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));
+    }
+
     $params = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
 
     // run the workflow
@@ -124,16 +127,23 @@ class Sites_Command extends Terminus_Command {
     $workflow->setParams($data);
     $workflow->start();
     $workflow->refresh();
+
     $details = $workflow->status();
+    $site_id = $details->waiting_for_task->site_id;
+
     if ($details->result !== 'failed' AND $details->result !== 'aborted') {
-      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($details->waiting_for_task->params->site_name, $details->waiting_for_task->params->site_id)));
+      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($data['site_name'], $site_id)));
     }
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
     $this->cache->flush(null,'session');
 
     if (isset($assoc_args['import'])) {
-      Terminus::launch_self('site', array('import'), array('url'=>$assoc_args['import'], 'site'=>$data['name'], 'nocache' => True));
+      Terminus::launch_self('site', array('import'), array(
+        'url' => $assoc_args['import'],
+        'site' => $data['site_name'],
+        'nocache' => True
+      ));
     }
 
     return true;
@@ -149,32 +159,27 @@ class Sites_Command extends Terminus_Command {
   * : Url of archive to import
   *
   * [--name=<name>]
+  * : (deprecated) use --site instead
+  *
+  * [--site=<site>]
   * : Name of the site to create (machine-readable)
   *
   * [--label=<label>]
   * : Label for the site
   *
   * [--org=<org>]
-  * : UUID of organization to add this site to
+  * : UUID of organization to add this site to; or "None"
   *
   * @subcommand create-from-import
   */
   public function import($args, $assoc_args) {
     $url = Input::string($assoc_args, 'url', "Url of archive to import");
-    $label = Input::string($assoc_args, 'label', "Human readable label for the site");
-    $slug = Utils\sanitize_name( $label );
-    $name = Input::string($assoc_args, 'name', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]");
-    $name = $name ? $name : $slug;
-    $organization = Terminus::menu(Input::orglist(), false, "Choose organization");
     if (!$url) {
       Terminus::error("Please enter a url.");
     }
-    Terminus::launch_self('sites', array('create'), array(
-      'label' => $label,
-      'name'  => $name,
-      'org'   => $organization,
-    ));
-    Terminus::launch_self('site', array('import'), array('url'=>$url, 'site'=>$name, 'nocache' => True));
+    $assoc_args['import'] = url;
+
+    Terminus::launch_self('sites', array('create'), $assoc_args);
   }
 
   /**
