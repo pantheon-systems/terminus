@@ -12,7 +12,7 @@ Setting up
 1. Clone this git repository on your local machine.
 2. Install [Composer](https://getcomposer.org/) if you don't already have it.
 2. Run `composer install` to fetch all the dependencies.
-3. Run `./bin/wp --info` to test if everything was installed properly.
+3. Run `./bin/terminus --info` to test if everything was installed properly.
 4. Download PHPUnit: `curl -L https://phar.phpunit.de/phpunit.phar > phpunit.phar`
 5. Download Behat: `curl -L http://behat.org/downloads/behat.phar > behat.phar`
 
@@ -21,8 +21,8 @@ Submitting patches
 
 Whether you want to fix a bug or implement a new feature, the process is pretty much the same:
 
-0. [Search existing issues](https://github.com/terminus/terminus/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
-1. [Fork](https://github.com/terminus/terminus/fork) the repository.
+0. [Search existing issues](https://github.com/pantheon-systems/cli/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
+1. [Fork](https://github.com/pantheon-systems/cli/fork) the repository.
 2. Push the code changes from your local clone to your fork.
 3. Open a pull request.
 
