@@ -387,7 +387,7 @@ class Site_Command extends Terminus_Command {
      $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'get':
-         // backward compatability supports database as a valid element value.
+         //Backward compatability supports "database" as a valid element value.
          if(@$assoc_args['element'] == 'database') {
            $assoc_args['element'] = 'db';
          }
