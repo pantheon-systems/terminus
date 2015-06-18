@@ -16,7 +16,7 @@ fi
 cd $LOCAL_DIR
 
 $TERMINUS site backup get --site=$SITENAME --element=files --env='dev' --to-directory=$LOCAL_DIR --latest || exit 1
-$TERMINUS site backup get --site=$SITENAME --element=database --env='dev' --to-directory=$LOCAL_DIR --latest || exit 1
+$TERMINUS site backup get --site=$SITENAME --element=db --env='dev' --to-directory=$LOCAL_DIR --latest || exit 1
 
 DB=$( ls . | grep "database.*gz" )
 FILES=$( ls . | grep "files.*gz" )
