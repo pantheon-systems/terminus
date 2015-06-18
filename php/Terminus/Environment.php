@@ -95,7 +95,7 @@ class Environment {
   }
 
   /**
-   * @param null $element string: code,file,db
+   * @param null $element string -- code, file, db
    * @param bool $latest_only
    * @return array
    */
@@ -289,10 +289,8 @@ class Environment {
   }
 
   /**
-   * since we pass element as 'db'
-   * and .sql files are named with 'database'
-   * when element is db, let's replace it with 'database'
-   * @param $element
+   * Returns its argument unless that argument is "db", then returns "database"
+   * @param element $string -- Represents the request element
    * @return string
    */
   private function element_as_database($element) {
