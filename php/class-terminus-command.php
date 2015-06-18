@@ -20,6 +20,7 @@ abstract class Terminus_Command {
   protected $_func;
   protected $_siteInfo;
   protected $_bindings;
+  protected static $_blacklist = array('password');
 
   public function __construct() {
     # Load commonly used data from cache.
@@ -98,7 +99,9 @@ abstract class Terminus_Command {
       \Terminus::error("%s", $response->getBody(TRUE) );
     } catch( Guzzle\Http\Exception\HttpException $e ) {
       $request = $e->getRequest();
-      \Terminus::error("Request %s had failed: %s", array((string)$request, $e->getMessage()) );
+      //die(Terminus_Command::stripSensitiveData());
+      $sanitized_request = Terminus_Command::stripSensitiveData((string)$request, Terminus_Command::$_blacklist);
+      \Terminus::error("Request %s had failed: %s", array($sanitized_request, $e->getMessage()) );
     } catch( Exception $e ) {
       \Terminus::error("Unrecognised request failure: %s", $e->getMessage() );
     }
@@ -210,6 +213,30 @@ abstract class Terminus_Command {
       echo \Terminus\Utils\bash_out((array)$data);
     else
       $this->_constructTableForResponse((array)$data,$headers);
+  }
+
+  /**
+   * Strips sensitive data out of the JSON printed in a request string
+   * @package Terminus
+   * @version 2.0
+   * @param request string -- the string from which to strip data
+   * @param blacklist array -- an array of strings which are the keys to remove from request
+   */
+  protected function stripSensitiveData($request, $blacklist = []) {
+    //Locate the JSON in the string, turn to array
+    $regex = '~\{(.*)\}~';
+    preg_match($regex, $request, $matches);
+    $request_array = json_decode($matches[0], true);
+
+    //See if a blacklisted items are in the arrayed JSON, replace
+    foreach($blacklist as $blacklisted_item) {
+      if(isset($request_array[$blacklisted_item])) 
+        $request_array[$blacklisted_item] = '*****';
+    }
+
+    //Turn array back to JSON, put back in string
+    $result = str_replace($matches[0], json_encode($request_array), $request);
+    return $result;
   }
 
 }
