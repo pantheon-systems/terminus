@@ -61,7 +61,7 @@ class Site_Command extends Terminus_Command {
   **/
   public function branch_create($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $branch = preg_replace('#[-_\s]+#',"",@$assoc_args['branch']);
+    $branch = preg_replace('#[_\s]+#',"",@$assoc_args['branch']);
     $branch = $site->createBranch($branch);
   }
 
@@ -138,7 +138,7 @@ class Site_Command extends Terminus_Command {
           } else {
             $branch = $assoc_args['branchname'];
           }
-          $branch = preg_replace('#[-_\s]+#',"",@$assoc_args['branchname']);
+          $branch = preg_replace('#[_\s]+#',"",@$assoc_args['branchname']);
           $branch = $site->createBranch($branch);
           Terminus::success('Branch created');
           break;
