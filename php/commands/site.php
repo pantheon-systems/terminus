@@ -898,8 +898,12 @@ class Site_Command extends Terminus_Command {
     $import = $site->import($url);
     if ($import) {
       Terminus::line('Import started, you can now safely kill this script without interfering.');
-      $this->waitOnWorkflow('sites', $site->getId(), $import->id);
-      Terminus::success("Import complete");
+      $result = $this->waitOnWorkflow('sites', $site->getId(), $import->id);
+      if('success' !== $result->result) {
+        Terminus::error($result->reason);
+      } else {
+        Terminus::success("Import complete");
+      }
     }
   }
 

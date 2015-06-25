@@ -14,4 +14,4 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "
 vendor/bin/phpunit --debug
 
 # Run the functional tests
-vendor/bin/behat
+vendor/bin/behat -c=tests/config/behat.yml

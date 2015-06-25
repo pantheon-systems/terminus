@@ -229,7 +229,7 @@ class Site {
   public function import($url) {
     $path = 'environments/dev/import';
     $drush_archive = 1;
-    if ("wordpress" == $this->information->framework) {
+    if (isset($this->information->framework) && ("wordpress" == $this->information->framework)) {
       $drush_archive = 0;
     }
     $data = array('url'=>$url,'drush_archive' => $drush_archive);

@@ -129,7 +129,7 @@ class Sites_Command extends Terminus_Command {
     $workflow->refresh();
 
     $details = $workflow->status();
-    $site_id = $details->waiting_for_task->site_id;
+    $site_id = $details->final_task->site_id;
 
     if ($details->result !== 'failed' AND $details->result !== 'aborted') {
       Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($data['site_name'], $site_id)));
@@ -177,7 +177,7 @@ class Sites_Command extends Terminus_Command {
     if (!$url) {
       Terminus::error("Please enter a url.");
     }
-    $assoc_args['import'] = url;
+    $assoc_args['import'] = $url;
 
     Terminus::launch_self('sites', array('create'), $assoc_args);
   }
