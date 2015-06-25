@@ -19,7 +19,7 @@ class FixturesTest extends PHPUnit_Framework_TestCase {
    Fixtures::put($test, $data);
 
    // test manually
-   $filename = dirname(dirname(__FILE__)).'/tests/fixtures/POSTsites-test-one';
+   $filename = TEST_DIR . '/fixtures/POSTsites-test-one';
    $this->assertFileExists($filename);
 
    $content = unserialize(file_get_contents($filename));
