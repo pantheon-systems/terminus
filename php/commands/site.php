@@ -887,7 +887,7 @@ class Site_Command extends Terminus_Command {
    * --url=<url>
    * : Archive to import
    *
-   * @subcommand create-from-import
+   * @subcommand import
    */
   public function import($args, $assoc_args) {
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
