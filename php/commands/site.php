@@ -887,7 +887,7 @@ class Site_Command extends Terminus_Command {
    * --url=<url>
    * : Archive to import
    *
-   * @subcommand import
+   * @subcommand create-from-import
    */
   public function import($args, $assoc_args) {
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
@@ -901,9 +901,6 @@ class Site_Command extends Terminus_Command {
         $this->waitOnWorkflow('sites', $site->getId(), $import->id);
         Terminus::success("Import complete");
     }
-    else{
-		Terminus::line('Failed at testing point');
-	}
 	   
     
   }
