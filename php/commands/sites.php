@@ -80,9 +80,6 @@ class Sites_Command extends Terminus_Command {
    * [--product=<productid>]
    * : Specify the product to create
    *
-   * [--name=<name>]
-   * : (deprecated) use --site instead
-   *
    * [--site=<site>]
    * : Name of the site to create (machine-readable)
    *
@@ -170,7 +167,6 @@ class Sites_Command extends Terminus_Command {
   * [--org=<org>]
   * : UUID of organization to add this site to; or "None"
   *
-  * @subcommand create-from-import
   */
   public function import($args, $assoc_args) {
     $url = Input::string($assoc_args, 'url', "Url of archive to import");
