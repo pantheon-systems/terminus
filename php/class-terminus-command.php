@@ -182,7 +182,7 @@ abstract class Terminus_Command {
     $tries = 0;
     while( $result !== 'succeeded' AND $tries < 100) {
       if ( 'failed' == $result OR 'aborted' == $result ) {
-        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages) and property_exists($workflow, body)) {
+        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages) and property_exists($message, body)) {
           foreach($workflow['data']->final_task->messages as $data => $message) {
             sprintf('[%s] %s', $message->level, $message->body);
           }
