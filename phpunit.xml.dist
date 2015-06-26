@@ -1,12 +1,12 @@
 <phpunit
-  bootstrap="tests/bootstrap.php"
+  bootstrap="tests/unit_tests/bootstrap.php"
   colors="true"
   >
   <testsuites>
     <testsuite>
-			<file>tests/test-session.php</file>
-      <directory prefix="spec-" suffix=".php">tests/</directory>
-      <directory prefix="test-" suffix=".php">tests/</directory>
+      <file>tests/unit_tests/test-session.php</file>
+      <directory prefix="spec-" suffix=".php">tests/unit_tests/</directory>
+      <directory prefix="test-" suffix=".php">tests/unit_tests/</directory>
     </testsuite>
   </testsuites>
   <listeners>

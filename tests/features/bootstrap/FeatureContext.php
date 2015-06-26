@@ -15,6 +15,7 @@ use VCR\VCR;
 class FeatureContext extends BehatContext
 {
     public $cliroot = '';
+    private $testroot = 'tests';
     /**
      * Initializes context.
      * Every scenario gets it's own context object.
@@ -46,7 +47,7 @@ class FeatureContext extends BehatContext
         // and pipe stderr to stdout
         $terminus_cmd = sprintf('bin/terminus', $this->cliroot );
         $command = str_replace("terminus",$terminus_cmd, $command);
-        $fixture = "{$this->cliroot}/tests/fixtures/".md5($command);
+        $fixture = "{$this->testroot}/fixtures/".md5($command);
         if (file_exists($fixture)) {
           $this->output = trim(file_get_contents($fixture));
           return true;
