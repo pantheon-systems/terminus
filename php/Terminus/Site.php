@@ -229,9 +229,7 @@ class Site {
   public function import($url) {
     $path = 'environments/dev/import';
     $drush_archive = 1;
-    if ("wordpress" == $this->information->framework) {
-      $drush_archive = 0;
-    }
+    if($this->hasFramework("wordpress")) $drush_archive = 0;
     $data = array('url'=>$url,'drush_archive' => $drush_archive);
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
     $response = \Terminus_Command::request('sites', $this->getId(), $path, 'POST', $options);
@@ -378,5 +376,16 @@ class Site {
     $method = 'GET';
     $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
     return $response['data'];
+  }
+
+  /**
+  * Verifies if the given framework is in use
+  *
+  * @param $framework_name [String]
+  *
+  * @return [boolean]
+  **/
+  private function hasFramework($framework_name) {
+    return isset($this->information->framework) && ($framework_name == $this->information->framework);
   }
 }
