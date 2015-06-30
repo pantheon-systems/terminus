@@ -5,85 +5,183 @@ use Behat\Behat\Context\ClosuredContextInterface,
     Behat\Behat\Context\BehatContext,
     Behat\Behat\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode,
-    Behat\Gherkin\Node\TableNode;
-
-use VCR\VCR;
+    Behat\Gherkin\Node\TableNode,
+    Behat\Gherkin\Node\ScenarioNode;
 
 /**
  * Features context.
  */
-class FeatureContext extends BehatContext
-{
+class FeatureContext extends BehatContext {
     public $cliroot = '';
-    private $testroot = 'tests';
+    private $cassette_name;
+    private $fixtures_dir = '/tests/fixtures'; //SARA: find out how to get this from VCR
+    private $output;
+
     /**
-     * Initializes context.
-     * Every scenario gets it's own context object.
-     *
-     * @param array $parameters context parameters (set them up through behat.yml)
-     */
-    public function __construct(array $parameters)
-    {
-        $this->cliroot = dirname(dirname(__DIR__));
-        
-        // Initialize your context here
+    * Initializes context. Sets directories for navigation.
+    * 
+    * @param $parameters [array] context parameters (set them up through behat.yml)
+    */
+    public function __construct(array $parameters) {
+      $this->cliroot = dirname(dirname(__DIR__)) . '/..';
     }
 
-    /** @Given /^I am in directory "([^"]*)"$/ */
-    public function iAmInDirectory( $dir )
-    {
-      if( !file_exists('bin/terminus') ) {
-        //must be in the wrong directory so chdir
-        chdir($this->cliroot);
-      }
+    /**
+    * @BeforeScenario
+    * Runs before each scenario
+    * 
+    * @param $event [ScenarioEvent]
+    */
+    public function before($event) {
+      $this->setCassetteName($event);
+    }
+
+    /**
+    * @Given /^I am in directory "([^"]*)"$/
+    * Changes the directory to given subdir of Terminus root directory
+    * 
+    * @param $dir [string]
+    */
+    public function iAmInDirectory($dir) {
+      chdir($this->cliroot . $dir);
       return true;
-
     }
 
-      /** @When /^I run "([^"]*)"$/ */
-    public function iRun($command)
-    {
-        // replace terminus with the path to the php
-        // and pipe stderr to stdout
-        $terminus_cmd = sprintf('bin/terminus', $this->cliroot );
-        $command = str_replace("terminus",$terminus_cmd, $command);
-        $fixture = "{$this->testroot}/fixtures/".md5($command);
-        if (file_exists($fixture)) {
-          $this->output = trim(file_get_contents($fixture));
-          return true;
-        }
-        $output = shell_exec($command);
-        $this->output = trim($output);
-        file_put_contents($fixture,$this->output);
-        chmod($fixture,0777);
+    /**
+    * @Then /^I enter "([^"]*)"$/ 
+    * 
+    * @param $string [string]
+    */
+    public function iEnter($string) {
+      $fh = fopen("php://stdin", 'w');
+      fwrite($fh, "$string\n");
     }
 
-    /** @Then /^I should get:$/ */
-    public function iShouldGet(PyStringNode $string)
-    {
-        if ( !preg_match( "#".preg_quote( (string) $string )."#s", $this->output ) ) {
-            throw new Exception(
-                "Actual output is:\n" . $this->output
-            );
-        }
+    /**
+    * @When /^I run "([^"]*)"$/
+    * Runs command and saves output
+    * 
+    * @param $command [string]
+    */
+    public function iRun($command) {
+      if(!file_exists($this->getCassetteFilename())) {
+        $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
+        $command = 'VCR_CASSETTE=' . $this->cassette_name . ' ' . str_replace("terminus", $terminus_cmd, $command) . ' &';
+        shell_exec($command);
+      }
+      $output = $this->getOutput();
+      $this->output = $output['response']['body'];
     }
 
-    /** @Then /^I enter "([^"]*)"$/ */
-    public function iEnter( $string )
-    {
-      $fh = fopen( "php://stdin" , 'w' );
-      fwrite( $fh, "$string\n" );
+    /**
+    * @Then /^I should get:$/ 
+    * 
+    * @param $string [string]
+    */
+    public function iShouldGet(PyStringNode $string) {
+      if (!preg_match("#" . preg_quote((string) $string) . "#s", $this->output)) {
+        throw new Exception(
+          "Actual output is:\n" . $this->output
+        );
+      }
     }
 
-//
-// Place your definition and hook methods here:
-//
-//    /**
-//     * @Given /^I have done something with "([^"]*)"$/
-//     */
-//    public function iHaveDoneSomethingWith($argument)
-//    {
-//        doSomethingWith($argument);
-//    }
-//
+    /**
+    * Returns cassette filename
+    *
+    * @return [string] cassette filename full path
+    */
+    private function getCassetteFilename() {
+      return $this->cliroot . '/' . $this->fixtures_dir . '/' . $this->cassette_name;
+    }
+
+    /**
+    * Returns tags in easy-to-use array format.
+    * 
+    * @param $event [ScenarioEvent]
+    * @return $tags [array] An array of strings corresponding to tags
+    */
+    private function getTags($event) {
+      $unformatted_tags = $event->getScenario()->getTags();
+      $tags = [];
+
+      foreach($unformatted_tags as $tag) {
+        $tag_elements = explode(' ', $tag);
+        $index = null;
+        if(count($tag_elements < 1)) $index = array_shift($tag_elements);
+        if(count($tag_elements == 1)) $tag_elements = array_shift($tag_elements);
+        $tags[$index] = $tag_elements;
+      }
+
+      return $tags;
+    }
+
+    /**
+    * Decodes the data from either JSON or YAML format
+    * 
+    * @param $data [string] data to be encoded
+    * @param $format [string] Either JSON or YAML
+    * @return $output [mixed] 
+    */
+    private function decode($data, $format) {
+      switch($format) {
+        case 'json':
+          $function_name = 'json_decode';
+          $format_argument = true;
+
+          break;
+        case 'yaml':
+          $function_name = 'yaml_parse';
+          $format_argument = -1;
+          break;
+        default:
+          return $data;
+      }
+
+      if(function_exists($function_name)) return $function_name($data, $format_argument);
+      return $data;
+    }
+
+    /**
+    * Get contents of cassette
+    *
+    * @return [array] decoded cassette contents
+    */
+    private function getOutput() {
+      $output = $this->decode(file_get_contents($this->getCassetteFilename()), 'json'); //SARA: find out how to get this from VCR
+      return array_shift($output);
+    }
+
+    /**
+    * Returns tags in easy-to-use array format.
+    * 
+    * @param $event [ScenarioEvent]
+    * @return $tags [array] An array of strings corresponding to tags
+    */
+    private function getScenarioTags($event) {
+      $unformatted_tags = $event->getScenario()->getTags();
+      $tags = [];
+
+      foreach($unformatted_tags as $tag) {
+        $tag_elements = explode(' ', $tag);
+        $index = null;
+        if(count($tag_elements < 1)) $index = array_shift($tag_elements);
+        if(count($tag_elements == 1)) $tag_elements = array_shift($tag_elements);
+        $tags[$index] = $tag_elements;
+      }
+
+      return $tags;
+    }
+
+    /**
+    * Sets $this->cassette_name and returns name of the cassette to be used.
+    * 
+    * @param $event [SuiteEvent]
+    * @return [string] Of scneario name, lowercase, with underscores and suffix
+    */
+    private function setCassetteName($event) {
+      $tags = $this->getScenarioTags($event);
+      $this->cassette_name = $tags['vcr'];
+      return $this->cassette_name;
+    }
 }
