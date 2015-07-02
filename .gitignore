@@ -3,7 +3,6 @@
 /phpunit.xml
 
 /builds
-/tests/config/behat.yml
 
 .DS_Store
 *.swp

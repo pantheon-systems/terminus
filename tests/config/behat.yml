@@ -4,8 +4,8 @@ default:
     bootstrap: ../features/bootstrap
   context:
     parameters:
-      username: tesladethray@gmail.com
-      password: sakura21
+      username: devuser@pantheon.io
+      password: password1
       host: onebox
 
 annotations:
