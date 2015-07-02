@@ -15,7 +15,6 @@ class FeatureContext extends BehatContext {
     public $cliroot = '';
     private $cassette_name;
     private $connection_info = [];
-    private $fixtures_dir = '/tests/fixtures'; //SARA: find out how to get this from VCR
     private $output;
 
     /**
@@ -36,6 +35,15 @@ class FeatureContext extends BehatContext {
     */
     public function before($event) {
       $this->setCassetteName($event);
+    }
+
+    /**
+     * @When /^I am authenticating$/
+     */
+    public function iAmAuthenticating() {
+      if(!isset($this->connection_info['username']) || !isset($this->connection_info['password'])) 
+        throw new Exception("Check your configuration file to ensure proper configuration.");
+      $this->iRun('terminus auth login ' . $this->connection_info['username'] . ' --password=' . $this->connection_info['password']);
     }
 
     /**
@@ -77,23 +85,19 @@ class FeatureContext extends BehatContext {
     /**
     * @Then /^I should get:$/ 
     * 
-    * @param $string [string]
+    * @param $string [PyStringNode]
     */
     public function iShouldGet(PyStringNode $string) {
-      if(!preg_match("#" . preg_quote((string) $string) . "#s", $this->output)) {
-        throw new Exception(
-          "Actual output is:\n" . $this->output
-        );
-      }
+      $this->checkWhatIGot($string, $should_get_this = true);
     }
 
     /**
-     * @Given /^Terminus is authenticating$/
-     */
-    public function terminusIsAuthenticating() {
-      if(!isset($this->connection_info['username']) || !isset($this->connection_info['password'])) 
-        throw new Exception("Check your configuration file to ensure proper configuration.");
-      $this->iRun('terminus auth login ' . $this->connection_info['username'] . ' --password=' . $this->connection_info['password']);
+    * @Then /^I should not get:$/ 
+    * 
+    * @param $string [PyStringNode]
+    */
+    public function iShouldNotGet(PyStringNode $string) {
+      $this->checkWhatIGot($string, $should_get_this = false);
     }
 
     /**
@@ -115,6 +119,18 @@ class FeatureContext extends BehatContext {
       }
 
       return $tags;
+    }
+
+    /**
+    * Checks the output against the given string
+    * 
+    * @param $string [PyStringNode]
+    * @param $should_get_this [boolean] true if the inputted string is desired in the output
+    */
+    private function checkWhatIGot(PyStringNode $string, $should_get_this) {
+      $check = (preg_match("#" . preg_quote((string) $string) . "#s", $this->output));
+      if(!$should_get_this) $check = !$check;
+      if(!$check) throw new Exception("Actual output is:\n" . $this->output);
     }
 
     /**

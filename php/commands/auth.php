@@ -150,7 +150,8 @@ class Auth_Command extends Terminus_Command {
     );
 
     $response = Terminus_Command::request('login','','','POST',$options);
-    if ( !$response OR '200' != @$response['info']['http_code'] ) {
+    if(!isset($response['headers']) OR (strpos($response['headers'], 'HTTP/1.1 200 OK') === false)) {
+    //if ( !$response OR '200' != @$response['info']['http_code'] ) {
       \Terminus::error("[auth_error]: unsuccessful login");
     }
 

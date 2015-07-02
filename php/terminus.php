@@ -26,7 +26,7 @@ set_exception_handler('\Terminus\Utils\handle_exception');
 
 if(isset($_SERVER['TERMINUS_HOST']) && $_SERVER['TERMINUS_HOST'] != '') {
   define('TERMINUS_HOST', $_SERVER['TERMINUS_HOST']);
-  \cli\line(\cli\Colors::colorize('%YNote: using custom target "'. $_SERVER['TERMINUS_HOST'] .'"%n'));
+  //\cli\line(\cli\Colors::colorize('%YNote: using custom target "'. $_SERVER['TERMINUS_HOST'] .'"%n'));
 } else {
   define('TERMINUS_HOST', 'dashboard.getpantheon.com');
 }
@@ -35,7 +35,6 @@ define('TERMINUS_PORT', '443');
 if(isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
   \VCR\VCR::configure()->setMode('once');
-  \VCR\VCR::configure()->setStorage('json');
   \VCR\VCR::turnOn();
   \VCR\VCR::insertCassette($_SERVER['VCR_CASSETTE']);
 }

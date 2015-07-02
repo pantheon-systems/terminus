@@ -1,0 +1,29 @@
+
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Content-type: application/json
+        body: '{"email":"fake@email.com","password":"BAD_PASSWORD"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '404'
+            message: 'Not Found'
+        headers:
+            Server: nginx
+            Date: 'Thu, 02 Jul 2015 21:27:36 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '22'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 28c87d60-2101-11e5-a1e1-0d64ef38b19d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Authorization failed"'
