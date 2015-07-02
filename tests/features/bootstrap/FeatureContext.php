@@ -14,6 +14,7 @@ use Behat\Gherkin\Node\PyStringNode,
 class FeatureContext extends BehatContext {
     public $cliroot = '';
     private $cassette_name;
+    private $connection_info = [];
     private $fixtures_dir = '/tests/fixtures'; //SARA: find out how to get this from VCR
     private $output;
 
@@ -24,6 +25,7 @@ class FeatureContext extends BehatContext {
     */
     public function __construct(array $parameters) {
       $this->cliroot = dirname(dirname(__DIR__)) . '/..';
+      $this->connection_info = $parameters;
     }
 
     /**
@@ -64,13 +66,12 @@ class FeatureContext extends BehatContext {
     * @param $command [string]
     */
     public function iRun($command) {
-      if(!file_exists($this->getCassetteFilename())) {
-        $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
-        $command = 'VCR_CASSETTE=' . $this->cassette_name . ' ' . str_replace("terminus", $terminus_cmd, $command) . ' &';
-        shell_exec($command);
-      }
-      $output = $this->getOutput();
-      $this->output = $output['response']['body'];
+      $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
+      $command = 'VCR_CASSETTE=' . $this->cassette_name 
+        . ' ' . str_replace("terminus", $terminus_cmd, $command) . ' --nocache';
+      if(isset($this->connection_info['host'])) $command = 
+        'TERMINUS_HOST=' . $this->connection_info['host'] . ' ' . $command;
+      $this->output = shell_exec($command);
     }
 
     /**
@@ -79,7 +80,7 @@ class FeatureContext extends BehatContext {
     * @param $string [string]
     */
     public function iShouldGet(PyStringNode $string) {
-      if (!preg_match("#" . preg_quote((string) $string) . "#s", $this->output)) {
+      if(!preg_match("#" . preg_quote((string) $string) . "#s", $this->output)) {
         throw new Exception(
           "Actual output is:\n" . $this->output
         );
@@ -87,12 +88,12 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-    * Returns cassette filename
-    *
-    * @return [string] cassette filename full path
-    */
-    private function getCassetteFilename() {
-      return $this->cliroot . '/' . $this->fixtures_dir . '/' . $this->cassette_name;
+     * @Given /^Terminus is authenticating$/
+     */
+    public function terminusIsAuthenticating() {
+      if(!isset($this->connection_info['username']) || !isset($this->connection_info['password'])) 
+        throw new Exception("Check your configuration file to ensure proper configuration.");
+      $this->iRun('terminus auth login ' . $this->connection_info['username'] . ' --password=' . $this->connection_info['password']);
     }
 
     /**
@@ -117,70 +118,13 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-    * Decodes the data from either JSON or YAML format
-    * 
-    * @param $data [string] data to be encoded
-    * @param $format [string] Either JSON or YAML
-    * @return $output [mixed] 
-    */
-    private function decode($data, $format) {
-      switch($format) {
-        case 'json':
-          $function_name = 'json_decode';
-          $format_argument = true;
-
-          break;
-        case 'yaml':
-          $function_name = 'yaml_parse';
-          $format_argument = -1;
-          break;
-        default:
-          return $data;
-      }
-
-      if(function_exists($function_name)) return $function_name($data, $format_argument);
-      return $data;
-    }
-
-    /**
-    * Get contents of cassette
-    *
-    * @return [array] decoded cassette contents
-    */
-    private function getOutput() {
-      $output = $this->decode(file_get_contents($this->getCassetteFilename()), 'json'); //SARA: find out how to get this from VCR
-      return array_shift($output);
-    }
-
-    /**
-    * Returns tags in easy-to-use array format.
-    * 
-    * @param $event [ScenarioEvent]
-    * @return $tags [array] An array of strings corresponding to tags
-    */
-    private function getScenarioTags($event) {
-      $unformatted_tags = $event->getScenario()->getTags();
-      $tags = [];
-
-      foreach($unformatted_tags as $tag) {
-        $tag_elements = explode(' ', $tag);
-        $index = null;
-        if(count($tag_elements < 1)) $index = array_shift($tag_elements);
-        if(count($tag_elements == 1)) $tag_elements = array_shift($tag_elements);
-        $tags[$index] = $tag_elements;
-      }
-
-      return $tags;
-    }
-
-    /**
     * Sets $this->cassette_name and returns name of the cassette to be used.
     * 
     * @param $event [SuiteEvent]
     * @return [string] Of scneario name, lowercase, with underscores and suffix
     */
     private function setCassetteName($event) {
-      $tags = $this->getScenarioTags($event);
+      $tags = $this->getTags($event);
       $this->cassette_name = $tags['vcr'];
       return $this->cassette_name;
     }

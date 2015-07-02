@@ -1,0 +1,17 @@
+default:
+  paths:
+    features:  ../features
+    bootstrap: ../features/bootstrap
+  context:
+    parameters:
+      username: tesladethray@gmail.com
+      password: sakura21
+      host: onebox
+
+annotations:
+  paths:
+    features: ../features/annotations
+
+closures:
+  paths:
+    features: ../features/closures
