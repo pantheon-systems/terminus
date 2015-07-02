@@ -90,7 +90,8 @@ abstract class Terminus_Command {
         'info' => $resp->getInfo(),
         'headers' => $resp->getRawHeaders(),
         'json' => $json,
-        'data' => json_decode($json)
+        'data' => json_decode($json),
+        'status_code' => $resp->getStatusCode()
       );
       $cache->put_data($cachekey, $data);
       return $data;
@@ -180,11 +181,11 @@ abstract class Terminus_Command {
     $desc = $workflow['data']->active_description;
     $type = $workflow['data']->type;
     $tries = 0;
-    while(($result !== 'succeeded') AND ($result !== 'aborted') AND ($tries < 100)) {
+    while( $result !== 'succeeded' AND $tries < 100) {
       if ( 'failed' == $result OR 'aborted' == $result ) {
         if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages)) {
           foreach($workflow['data']->final_task->messages as $data => $message) {
-            sprintf('[%s] %s', $message->level, $message->message);
+            sprintf('[%s] %s', $message->level, $message->body);
           }
         } else {
           Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
@@ -200,9 +201,8 @@ abstract class Terminus_Command {
       $tries++;
     }
     print PHP_EOL;
-    if(("succeeded" === $workflow['data']->result) OR ("aborted" === $workflow['data']->result))
+    if( "succeeded" === $workflow['data']->result )
       return $workflow['data'];
-    
     return false;
     unset($workflow);
   }

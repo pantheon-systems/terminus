@@ -88,7 +88,8 @@ class FeatureContext extends BehatContext {
     * @param $string [PyStringNode]
     */
     public function iShouldGet(PyStringNode $string) {
-      $this->checkWhatIGot($string, $should_get_this = true);
+      if(!$this->checkResult((string)$string, $this->output))
+        throw new Exception("Actual output:\n" . $this->output);
     }
 
     /**
@@ -97,7 +98,19 @@ class FeatureContext extends BehatContext {
     * @param $string [PyStringNode]
     */
     public function iShouldNotGet(PyStringNode $string) {
-      $this->checkWhatIGot($string, $should_get_this = false);
+      if($this->checkResult((string)$string, $this->output))
+        throw new Exception("Actual output:\n" . $this->output);
+    }
+
+    /**
+    * Checks the the haystack for the needle
+    * 
+    * @param $needle [string]
+    * @param $haystack [string]
+    * @return [boolean] true if $nededle was found in $haystack
+    */
+    private function checkResult($needle, $haystack) {
+      return preg_match("#" . preg_quote($needle . "#s"), $haystack);
     }
 
     /**
@@ -119,18 +132,6 @@ class FeatureContext extends BehatContext {
       }
 
       return $tags;
-    }
-
-    /**
-    * Checks the output against the given string
-    * 
-    * @param $string [PyStringNode]
-    * @param $should_get_this [boolean] true if the inputted string is desired in the output
-    */
-    private function checkWhatIGot(PyStringNode $string, $should_get_this) {
-      $check = (preg_match("#" . preg_quote((string) $string) . "#s", $this->output));
-      if(!$should_get_this) $check = !$check;
-      if(!$check) throw new Exception("Actual output is:\n" . $this->output);
     }
 
     /**
