@@ -5,15 +5,17 @@ Feature: sites
 
   Scenario: List sites
     @vcr list-sites
+    Given Terminus is authenticating
     When I run "terminus sites show"
     Then I should get:
     """
-    phpunittest
+    Name
     """
 
   Scenario: Create sites
     @vcr create-sites
-    When I run "terminus sites create --name='behat-test' --label='behattest' --org='d59379eb-0c23-429c-a7bc-ff51e0a960c2' --product='e8fe8550-1ab9-4964-8838-2b9abdccf4bf'"
+    Given Terminus is authenticating
+    When I run "terminus sites create --name='behat-test' --label='Behat Test' --org=None --product=WordPress"
     Then I should get:
     """
     Creating new WordPress installation
@@ -26,6 +28,7 @@ Feature: sites
 
   Scenario: Site backups
     @vcr site-backups
+    Given Terminus is authenticating
     When I run "terminus site backup get --site=behat-test --env=dev --element=code 2>&1"
     Then I should get:
     """
@@ -34,6 +37,7 @@ Feature: sites
 
   Scenario: Delete sites
     @vcr delete-sites
+    Given Terminus is authenticating
     When I run "terminus sites delete --site=behat-test --yes"
     Then I should get:
     """
