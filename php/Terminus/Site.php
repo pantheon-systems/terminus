@@ -228,9 +228,8 @@ class Site {
    */
   public function import($url) {
     $path = 'environments/dev/import';
-    $drush_archive = 1;
-    if($this->hasFramework("wordpress")) $drush_archive = 0;
-    $data = array('url'=>$url,'drush_archive' => $drush_archive);
+    $drush_archive = !(isset($this->information->framework) AND ($this->information->framework == 'wordpress'));
+    $data = array('url'=>$url,'drush_archive' => (int)$drush_archive);
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
     $response = \Terminus_Command::request('sites', $this->getId(), $path, 'POST', $options);
     return $response['data'];

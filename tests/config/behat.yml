@@ -2,6 +2,11 @@ default:
   paths:
     features:  ../features
     bootstrap: ../features/bootstrap
+  context:
+    parameters:
+      username: devuser@pantheon.io
+      password: password1
+      host: onebox
 
 annotations:
   paths:

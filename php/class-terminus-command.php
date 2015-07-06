@@ -90,7 +90,8 @@ abstract class Terminus_Command {
         'info' => $resp->getInfo(),
         'headers' => $resp->getRawHeaders(),
         'json' => $json,
-        'data' => json_decode($json)
+        'data' => json_decode($json),
+        'status_code' => $resp->getStatusCode()
       );
       $cache->put_data($cachekey, $data);
       return $data;
