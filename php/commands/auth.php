@@ -88,8 +88,8 @@ class Auth_Command extends Terminus_Command {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    Terminus::line( "Logging out of Pantheon." );
-    Terminus::launch_self("cli",array('cache-clear'));
+    Terminus::line("Logging out of Pantheon.");
+    $this->cache->flush(null);
   }
 
   /**
