@@ -88,8 +88,8 @@ class Auth_Command extends Terminus_Command {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    Terminus::line( "Logging out of Pantheon." );
-    Terminus::launch_self("cli",array('cache-clear'));
+    Terminus::line("Logging out of Pantheon.");
+    $this->cache->flush(null);
   }
 
   /**
@@ -150,7 +150,7 @@ class Auth_Command extends Terminus_Command {
     );
 
     $response = Terminus_Command::request('login','','','POST',$options);
-    if ( !$response OR '200' != @$response['info']['http_code'] ) {
+    if($response['status_code'] != '200') {
       \Terminus::error("[auth_error]: unsuccessful login");
     }
 
@@ -182,10 +182,9 @@ class Auth_Command extends Terminus_Command {
 
     # Temporarily disable the cache for this GET call
     Terminus::set_config('nocache',TRUE);
-    $response = Terminus_Command::request('user', '', '', 'GET', $options);
+    $response = \Terminus_Command::request('user', '', '', 'GET', $options);
     Terminus::set_config('nocache',FALSE);
-
-    if ( !$response OR '200' != @$response['info']['http_code'] ) {
+    if($response['status_code'] != '200') {
       \Terminus::error("[auth_error]: session token not valid");
     }
 
