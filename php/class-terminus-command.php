@@ -181,7 +181,7 @@ abstract class Terminus_Command {
     $desc = $workflow['data']->active_description;
     $type = $workflow['data']->type;
     $tries = 0;
-    while( $result !== 'succeeded' AND $tries < 100) {
+    while(!isset($result) AND ($tries < 100)) {
       if ( 'failed' == $result OR 'aborted' == $result ) {
         if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages)) {
           foreach($workflow['data']->final_task->messages as $data => $message) {

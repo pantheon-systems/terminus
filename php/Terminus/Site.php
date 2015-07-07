@@ -376,4 +376,15 @@ class Site {
     $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
     return $response['data'];
   }
+
+  /**
+  * Verifies if the given framework is in use
+  *
+  * @param $framework_name [String]
+  *
+  * @return [boolean]
+  **/
+  private function hasFramework($framework_name) {
+    return isset($this->information->framework) && ($framework_name == $this->information->framework);
+  }
 }
