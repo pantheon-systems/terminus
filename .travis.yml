@@ -46,7 +46,7 @@ before_script:
   - ./scripts/prepare.sh
   - ./scripts/build.sh
 
-script: ./scripts/test.sh
+script: ./scripts/test.sh ci
 
 after_success: ./scripts/package.sh
 

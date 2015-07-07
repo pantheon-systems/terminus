@@ -2,6 +2,23 @@ default:
   paths:
     features:  ../features
     bootstrap: ../features/bootstrap
+  context:
+    parameters:
+      username: devuser@pantheon.io
+      password: password1
+      host: onebox
+      vcr_mode: new_episodes
+
+ci:
+  paths:
+    features:  ../features
+    bootstrap: ../features/bootstrap
+  context:
+    parameters:
+      username: devuser@pantheon.io
+      password: password1
+      host: onebox
+      vcr_mode: once
 
 annotations:
   paths:
