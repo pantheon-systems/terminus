@@ -3,7 +3,7 @@
  * actions on an individual site
  *
  */
-require('aliases.php');
+
 
 
 
@@ -1339,13 +1339,21 @@ class Site_Command extends Terminus_Command {
    }
    ///////////////
    public function import_db($args) {
-	  foreach($aliases as $alias) {
-	     print_r($alias);
-       }
-	  exec('ssh ' . $aliases['frombackup.dev'][''] 
-	  . '@' . $aliases['frombackup.dev'][''] 
-	  . ' ' . $aliases['frombackup.dev']['ssh-options']);
+      exec("terminus sites aliases --location=/tmp/aliases.php");
+
+      require('aliases.php');
+
+      foreach($aliases as $alias) {
+
+         exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
+
+         exec('scp user@hostwithfiles:mysqlfilename .');
+
+         exec('mysql dbname -u dbuser -p dbpassword < mysqlfilename');
+
+      }
+
+
    }
-}
 
 \Terminus::add_command( 'site', 'Site_Command' );
