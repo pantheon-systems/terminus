@@ -1369,9 +1369,9 @@ class Site_Command extends Terminus_Command {
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); });
           $commands[$binding->environment] = vsprintf(
-            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon', ///
+            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon', 
             $args
-          );
+          );  ////////
         }
         foreach ($commands as $env => $command) {
           Terminus::line("Clearing mysql on %s ", array($env));
