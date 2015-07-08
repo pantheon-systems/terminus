@@ -1342,7 +1342,9 @@ class Site_Command extends Terminus_Command {
 	  foreach($aliases as $alias) {
 	     print_r($alias);
        }
-	  exec('ssh ' . $aliases['frombackup.dev']['dev.49cee568-1267-4279-ac1b-40981739e846'] . '@' . $aliases['frombackup.dev']['appserver.dev.49cee568-1267-4279-ac1b-40981739e846.drush.in'] . ' ' . $aliases['frombackup.dev']['ssh-options']
+	  exec('ssh ' . $aliases['frombackup.dev'][''] 
+	  . '@' . $aliases['frombackup.dev'][''] 
+	  . ' ' . $aliases['frombackup.dev']['ssh-options']);
    }
 }
 
