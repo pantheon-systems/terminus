@@ -4,9 +4,6 @@
  *
  */
 require('aliases.php');
-foreach($aliases as $alias) {
-	print_r($alias);
-}
 
 
 
@@ -1342,6 +1339,9 @@ class Site_Command extends Terminus_Command {
    }
    ///////////////
    public function import_db($args, $assoc_args) {
+	  foreach($aliases as $alias) {
+	     print_r($alias);
+       }
 	  exec(ssh $aliases['frombackup.test']['test.49cee568-1267-4279-ac1b-40981739e846'] . '@' . $aliases['frombackup.test']['appserver.test.49cee568-1267-4279-ac1b-40981739e846.drush.in'] . ' ' . $aliases['frombackup.test']['-p 2222 -o "AddressFamily inet"'];
    }
 }
