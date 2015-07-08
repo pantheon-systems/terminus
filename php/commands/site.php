@@ -1342,7 +1342,7 @@ class Site_Command extends Terminus_Command {
 	  foreach($aliases as $alias) {
 	     print_r($alias);
        }
-	  exec(ssh $aliases['frombackup.test']['test.49cee568-1267-4279-ac1b-40981739e846'] . '@' . $aliases['frombackup.test']['appserver.test.49cee568-1267-4279-ac1b-40981739e846.drush.in'] . ' ' . $aliases['frombackup.test']['-p 2222 -o "AddressFamily inet"'];
+	  exec(ssh $aliases['frombackup.dev']['dev.49cee568-1267-4279-ac1b-40981739e846'] . '@' . $aliases['frombackup.dev']['appserver.dev.49cee568-1267-4279-ac1b-40981739e846.drush.in'] . ' ' . $aliases['frombackup.dev']['-p 2222 -o "AddressFamily inet"'];
    }
 }
 
