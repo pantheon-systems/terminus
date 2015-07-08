@@ -1338,7 +1338,7 @@ class Site_Command extends Terminus_Command {
     }
    }
    ///////////////
-   public function import_db($aliases) {
+   public function import_db($args) {
 	  foreach($aliases as $alias) {
 	     print_r($alias);
        }
