@@ -1365,7 +1365,7 @@ class Site_Command extends Terminus_Command {
         }
         $commands = array();
         foreach($bindings as $binding) {
-          if ( @$env AND $env == $binding->environment) continue;
+          if ( @$env AND $env != $binding->environment) continue;
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); });
           $commands[$binding->environment] = vsprintf(
@@ -1373,6 +1373,7 @@ class Site_Command extends Terminus_Command {
             $args
           );  ////////
         }
+        var_dump($commands);
         foreach ($commands as $env => $command) {
           Terminus::line("Clearing mysql on %s ", array($env));
           exec($command, $stdout, $return);
