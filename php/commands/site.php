@@ -1362,18 +1362,18 @@ class Site_Command extends Terminus_Command {
         $bindings = $site->bindings('dbserver');
         if (empty($bindings)) {
           \Terminus::error("Mysql cache not enabled");
-        }
+        }///////////the bindings aren't empty
         $commands = array();
         foreach($bindings as $binding) {
           if ( @$env AND $env != $binding->environment) continue;
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
-          array_filter($args, function($a) { return escapeshellarg($a); });
+
           $commands[$binding->environment] = vsprintf(
             'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon', 
             $args
           );  ////////
         }
-        echo 'hello world :/';
+        //////////////it's breaking before this point
         foreach ($commands as $env => $command) {
           Terminus::line("Clearing mysql on %s ", array($env));
           exec($command, $stdout, $return);
