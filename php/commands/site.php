@@ -3,6 +3,13 @@
  * actions on an individual site
  *
  */
+require('aliases.php');
+foreach($aliases as $alias) {
+	print_r($alias);
+}
+
+
+
 
 use Terminus\Utils;
 use Terminus\Auth;
@@ -13,7 +20,7 @@ use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
 use \Terminus\SiteWorkflow;
-include '/tmp/aliases.php';
+
 
 class Site_Command extends Terminus_Command {
 
