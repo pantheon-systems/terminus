@@ -13,6 +13,7 @@ use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
 use \Terminus\SiteWorkflow;
+include '/tmp/aliases.php';
 
 class Site_Command extends Terminus_Command {
 
