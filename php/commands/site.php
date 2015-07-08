@@ -1352,12 +1352,31 @@ class Site_Command extends Terminus_Command {
    }
    
    /////////////////////
+    /**
+   * Interacts with mysql
+   *
+   * ## OPTIONS
+   *
+   * <clear>
+   * : clear - Clear mysql cache on remote server
+   *
+   * [--site=<site>]
+   * : site name
+   *
+   * [--env=<env>]
+   * : environment
+   *
+   * ## Examples
+   *
+   *    terminus site redis clear --site=mikes-wp-test --env=live
+   *
+   */
      public function sqldb($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
     $env = @$assoc_args['env'];
     switch ($action) {
-      case 'clear':
+      case 'clear': ////////////command
         $bindings = $site->bindings('dbserver');
         if (empty($bindings)) {
           \Terminus::error("Mysql cache not enabled");
@@ -1369,12 +1388,12 @@ class Site_Command extends Terminus_Command {
           $args = array( $binding->environment, $site->getId(), $binding->environment, $site->getId(), $binding->host, $binding->port, $binding->password );
           array_filter($args, function($a) { return escapeshellarg($a); });
           $commands[$binding->environment] = vsprintf(
-            'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in "mysql-cli -h %s -p %s -a %s flushall"',
+            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s.%s.%s.drush.in -P %s pantheon', ///
             $args
           );
         }
         foreach ($commands as $env => $command) {
-          Terminus::line("Clearing redis on %s ", array($env));
+          Terminus::line("Clearing mysql on %s ", array($env));
           exec($command, $stdout, $return);
           echo Logger::greenLine($stdout[0]);
         }
