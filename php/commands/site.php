@@ -1332,14 +1332,14 @@ class Site_Command extends Terminus_Command {
       Terminus::error("%s",array($e->getMessage()));
     }
    }
-   
-   ////////////////////////////////////////
-   public function import_database($args, $assoc_args) {
-	   //connection to the database
-       $dbhandle = mysql_connect($hostname, $username, $password)
-           or die("Unable to connect to MySQL");
-       echo "Connected to MySQL<br>";
-   }
+   ///////////////
+   public function import_db($args, $assoc_args) {
+	   $mysqli = new mysqli("localhost", "user", "password", "database");
+       if ($mysqli->connect_errno) {
+          echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+       }
+       echo $mysqli->host_info . "\n";
+
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
