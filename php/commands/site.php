@@ -1373,7 +1373,7 @@ class Site_Command extends Terminus_Command {
             $args
           );  ////////
         }
-        var_dump($commands);
+        echo 'hello world :/';
         foreach ($commands as $env => $command) {
           Terminus::line("Clearing mysql on %s ", array($env));
           exec($command, $stdout, $return);
