@@ -1338,18 +1338,18 @@ class Site_Command extends Terminus_Command {
     }
    }
    ///////////////
-   public function import_db($args) {
-      exec("terminus sites aliases --location=/tmp/aliases.php");
-      require('/tmp/aliases.php');
-      foreach($aliases as $binding => $alias) {
-         if(strpos($binding, '.dev.') !== false) {
-            exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
-            exec('scp user@hostwithfiles:dbfilename .');
-            exec('mysql dbname --user=dbuser --password=dbpassword < dbfilename');
-            exec('exit');
-         }
-      }
-   }
+  // public function import_db($args) {
+    //  exec("terminus sites aliases --location=/tmp/aliases.php");
+      //require('/tmp/aliases.php');
+      //foreach($aliases as $binding => $alias) {
+        // if(strpos($binding, '.dev.') !== false) {
+          //  exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
+            //exec('scp user@hostwithfiles:dbfilename .');
+            //exec('mysql dbname --user=dbuser --password=dbpassword < dbfilename');
+            //exec('exit');
+      //   }
+      //}
+   //}
    
    /////////////////////
 
@@ -1365,7 +1365,7 @@ class Site_Command extends Terminus_Command {
         }
         $commands = array();
         foreach($bindings as $binding) {
-          if ( @$env AND $env != $binding->environment) continue;
+          if ( @$env AND $env == $binding->environment) continue;
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); });
           $commands[$binding->environment] = vsprintf(
