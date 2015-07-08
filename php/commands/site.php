@@ -1340,16 +1340,14 @@ class Site_Command extends Terminus_Command {
    ///////////////
    public function import_db($args) {
       exec("terminus sites aliases --location=/tmp/aliases.php");
+      require('/tmp/aliases.php');
+      foreach($aliases as $binding => $alias) {
+         if(strpos($binding, '.dev.') !== false) {
+            exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
+            exec('scp user@hostwithfiles:mysqlfilename .');
+            exec('mysql dbname -u dbuser -p dbpassword < mysqlfilename');
 
-      require('aliases.php');
-
-      foreach($aliases as $alias) {
-
-         exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
-
-         exec('scp user@hostwithfiles:mysqlfilename .');
-
-         exec('mysql dbname -u dbuser -p dbpassword < mysqlfilename');
+         }
 
       }
 
