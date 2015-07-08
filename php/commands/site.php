@@ -1350,5 +1350,38 @@ class Site_Command extends Terminus_Command {
          }
       }
    }
+   
+   /////////////////////
+     public function sqldb($args, $assoc_args) {
+    $action = array_shift($args);
+    $site = SiteFactory::instance(Input::site($assoc_args));
+    $env = @$assoc_args['env'];
+    switch ($action) {
+      case 'clear':
+        $bindings = $site->bindings('dbserver');
+        if (empty($bindings)) {
+          \Terminus::error("Mysql cache not enabled");
+        }
+        $commands = array();
+        foreach($bindings as $binding) {
+          if ( @$env AND $env != $binding->environment) continue;
+          // @$todo ... should probably do this with symfony Process lib
+          $args = array( $binding->environment, $site->getId(), $binding->environment, $site->getId(), $binding->host, $binding->port, $binding->password );
+          array_filter($args, function($a) { return escapeshellarg($a); });
+          $commands[$binding->environment] = vsprintf(
+            'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in "mysql-cli -h %s -p %s -a %s flushall"',
+            $args
+          );
+        }
+        foreach ($commands as $env => $command) {
+          Terminus::line("Clearing redis on %s ", array($env));
+          exec($command, $stdout, $return);
+          echo Logger::greenLine($stdout[0]);
+        }
+        break;
+    }
+  }
+   
+   
 }
 \Terminus::add_command( 'site', 'Site_Command' );
