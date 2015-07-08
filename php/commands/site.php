@@ -1352,25 +1352,7 @@ class Site_Command extends Terminus_Command {
    }
    
    /////////////////////
-    /**
-   * Interacts with mysql
-   *
-   * ## OPTIONS
-   *
-   * <clear>
-   * : clear - Clear mysql cache on remote server
-   *
-   * [--site=<site>]
-   * : site name
-   *
-   * [--env=<env>]
-   * : environment
-   *
-   * ## Examples
-   *
-   *    terminus site redis clear --site=mikes-wp-test --env=live
-   *
-   */
+
      public function sqldb($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
