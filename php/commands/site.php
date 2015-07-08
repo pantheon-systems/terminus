@@ -1334,18 +1334,8 @@ class Site_Command extends Terminus_Command {
    }
    ///////////////
    public function import_db($args, $assoc_args) {
-	   $mysqli = new mysqli("localhost", "pantheon", "5ceaee7d00654b9c81aa992a4f079ddf", "pantheon");
-	   if ($mysqli->connect_errno) {
-          echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-       }
-	   echo $mysqli->host_info . "\n";
-
-	   $mysqli = new mysqli("127.0.0.1", "user", "password", "database", 3306);
-	   if ($mysqli->connect_errno) {
-          echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
-       }
-
-	   echo $mysqli->host_info . "\n";
+	  exec(ssh $aliases['frombackup.test']['test.49cee568-1267-4279-ac1b-40981739e846'] . '@' . $aliases['frombackup.test']['appserver.test.49cee568-1267-4279-ac1b-40981739e846.drush.in'] . ' ' . $aliases['frombackup.test']['-p 2222 -o "AddressFamily inet"'];
+   }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
