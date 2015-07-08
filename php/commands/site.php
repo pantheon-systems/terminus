@@ -1332,7 +1332,14 @@ class Site_Command extends Terminus_Command {
       Terminus::error("%s",array($e->getMessage()));
     }
    }
-
+   
+   ////////////////////////////////////////
+   public function import_database($args, $assoc_args) {
+	   //connection to the database
+       $dbhandle = mysql_connect($hostname, $username, $password)
+           or die("Unable to connect to MySQL");
+       echo "Connected to MySQL<br>";
+   }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
