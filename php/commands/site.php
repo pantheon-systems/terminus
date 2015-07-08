@@ -3,7 +3,7 @@
  * actions on an individual site
  *
  */
-require('aliases.php');
+require('Alias.php');
 
 
 
