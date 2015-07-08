@@ -1358,7 +1358,7 @@ class Site_Command extends Terminus_Command {
     $site = SiteFactory::instance(Input::site($assoc_args));
     $env = @$assoc_args['env'];
     switch ($action) {
-      case 'clear': ////////////command
+      case 'checkdb': ////////////command
         $bindings = $site->bindings('dbserver');
         if (empty($bindings)) {
           \Terminus::error("Mysql cache not enabled");
@@ -1366,11 +1366,10 @@ class Site_Command extends Terminus_Command {
         $commands = array();
         foreach($bindings as $binding) {
           if ( @$env AND $env != $binding->environment) continue;
-          // @$todo ... should probably do this with symfony Process lib
-          $args = array( $binding->environment, $site->getId(), $binding->environment, $site->getId(), $binding->host, $binding->port, $binding->password );
+          $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); });
           $commands[$binding->environment] = vsprintf(
-            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s.%s.%s.drush.in -P %s pantheon', ///
+            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon', ///
             $args
           );
         }
