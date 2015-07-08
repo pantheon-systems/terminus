@@ -1344,15 +1344,11 @@ class Site_Command extends Terminus_Command {
       foreach($aliases as $binding => $alias) {
          if(strpos($binding, '.dev.') !== false) {
             exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
-            exec('scp user@hostwithfiles:mysqlfilename .');
-            exec('mysql dbname -u dbuser -p dbpassword < mysqlfilename');
-
+            exec('scp user@hostwithfiles:dbfilename .');
+            exec('mysql dbname --user=dbuser --password=dbpassword < dbfilename');
+            exec('exit');
          }
-
       }
-
-
    }
-   
 }
 \Terminus::add_command( 'site', 'Site_Command' );
