@@ -1353,5 +1353,6 @@ class Site_Command extends Terminus_Command {
 
 
    }
-
+   
+}
 \Terminus::add_command( 'site', 'Site_Command' );
