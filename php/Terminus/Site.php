@@ -121,10 +121,12 @@ class Site {
    */
   public function info($key = null) {
     $info = $this->information;
-    if ($key AND property_exists($info, $key)) {
-      return $info->$key;
+    if ($key) {
+      return property_exists($info, $key) ? $info->$key : null;
     }
-    return $this->information;
+    else {
+      return $info;
+    }
   }
 
   /**
