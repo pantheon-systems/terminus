@@ -1395,7 +1395,7 @@ public function sqldb($args, $assoc_args) {
         }
         foreach ($commands as $env => $command) {
           //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
-          exec($command, $stdout, $return);
+          echo exec($command);
           //echo Logger::greenLine($stdout[0]);
         }
         break;
