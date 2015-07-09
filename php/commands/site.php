@@ -343,7 +343,7 @@ class Site_Command extends Terminus_Command {
     if (empty($orgs)) {
       Terminus::error("No organizations");
     }
-    
+
     // format the data
     foreach ($orgs as $org) {
       $data[] = array(
@@ -492,7 +492,7 @@ class Site_Command extends Terminus_Command {
         break;
       case 'create':
         if (!array_key_exists('element',$assoc_args)) {
-          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element"); 
+          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element");
         }
         $result = $site->environment($env)->createBackup($assoc_args);
         if ($result) {
@@ -511,7 +511,7 @@ class Site_Command extends Terminus_Command {
           $date = 'Pending';
           if (isset($backup->finish_time)) {
             $date = date("Y-m-d H:i:s", $backup->finish_time);
-          } 
+          }
           $data[] = array(
             $backup->filename,
             sprintf("%dMB", $backup->size / 1024 / 1024),
@@ -906,8 +906,8 @@ class Site_Command extends Terminus_Command {
         $this->waitOnWorkflow('sites', $site->getId(), $import->id);
         Terminus::success("Import complete");
     }
-	   
-    
+
+
   }
 
   /**
@@ -1350,7 +1350,7 @@ class Site_Command extends Terminus_Command {
       //   }
       //}
    //}
-   
+
    /////////////////////
 
      public function sqldb($args, $assoc_args) {
@@ -1366,12 +1366,13 @@ class Site_Command extends Terminus_Command {
         $commands = array();
         foreach($bindings as $binding) {
           if ( @$env AND $env != $binding->environment) continue;
-          $args = array( $binding->user, $binding->password, $binding->host, $binding->port);
+          $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
+          var_dump($args);
           $commands[$binding->environment] = vsprintf(
-            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon', 
+            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
             $args
-          );  
+          );
         }
         //////////////it's breaking before this point
         foreach ($commands as $env => $command) {
@@ -1382,7 +1383,7 @@ class Site_Command extends Terminus_Command {
         break;
     }
   }
-   
-   
+
+
 }
 \Terminus::add_command( 'site', 'Site_Command' );
