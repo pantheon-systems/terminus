@@ -1365,21 +1365,20 @@ class Site_Command extends Terminus_Command {
         }
         $commands = array();
         foreach($bindings as $binding) {
-          if ( @$env ) continue;////////////////ERROR 
+          if ( @$env ) continue;// AND $env != $binding->environment) continue;////////////////ERROR 
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
-          echo 'testing echo succeeded!';
+        
           $commands[$binding->environment] = vsprintf(
             'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
             $args
           );
         }
-        
-        //////////////it's breaking before this point
         foreach ($commands as $env => $command) {
-          Terminus::line("Clearing mysql on %s ", array($env));
-          exec($command, $stdout, $return);
-          echo Logger::greenLine($stdout[0]);
+		  var_dump($args);
+          //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
+          //exec($command, $stdout, $return);
+          //echo Logger::greenLine($stdout[0]);
         }
         break;
     }
