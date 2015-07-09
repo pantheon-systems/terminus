@@ -1367,7 +1367,7 @@ class Site_Command extends Terminus_Command {
         foreach($bindings as $binding) {
           $args = array( $site->getId(), $binding->password, $binding->host, $binding->port);
           array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
-          var_dump('$args');
+          var_dump($args);
           $commands[$binding->environment] = vsprintf(
             'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
             $args
