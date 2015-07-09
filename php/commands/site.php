@@ -1385,6 +1385,7 @@ class Site_Command extends Terminus_Command {
         }
         $commands = array();
         foreach($bindings as $binding) {
+		  echo 'first continue failing';
           if (@$env) continue;
           var_dump($env);
           var_dump($bindings->environment);
