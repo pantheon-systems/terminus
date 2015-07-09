@@ -1376,7 +1376,7 @@ public function sqldb($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
     switch ($action) {
-      case 'checkdb': ////////////command
+      case 'checkdb': 
         $bindings = $site->bindings('dbserver');
         if (empty($bindings)) {
           \Terminus::error("Mysql cache not enabled");
@@ -1390,12 +1390,12 @@ public function sqldb($args, $assoc_args) {
               'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
               $args
             );
-            var_dump($commands);
+            //var_dump($commands);
 	        }
         }
         foreach ($commands as $env => $command) {
           //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
-          //exec($command, $stdout, $return);
+          exec($command, $stdout, $return);
           //echo Logger::greenLine($stdout[0]);
         }
         break;
