@@ -1357,6 +1357,9 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
+   * <checkdb>
+   * : get info about mysql database
+   *
    * [--site=<site>]
    * : site name
    *
@@ -1365,7 +1368,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## Examples
    *
-   *    terminus site sqldb checkdb --site=mikes-wp-test --env=live
+   *    terminus site mysql checkdb --site=mikes-wp-test --env=live
    *
    */
 
