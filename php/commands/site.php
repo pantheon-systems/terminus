@@ -1384,19 +1384,24 @@ public function sqldb($args, $assoc_args) {
         $commands = array();
         foreach($bindings as $binding) {
           if (is_null($env) || $env === $binding->environment) {
-            $args = array( $binding->username, $binding->password, $binding->host, $binding->port); //is set successfully
+            if(!isset($binding->site_uuid)) {
+              $siteid = $binding->site;
+            }
+            else {
+              $siteid = $binding->site_uuid;
+            }
+            $args = array( $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
             array_filter($args, function($a) { return escapeshellarg($a); });
             $commands[$binding->environment] = vsprintf( 
-              'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
+              'echo "SHOW tables" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon -A',
               $args
             );
-            //var_dump($commands);
 	        }
         }
         foreach ($commands as $env => $command) {
-          //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
-          echo exec($command);
-          //echo Logger::greenLine($stdout[0]);
+          //////////////insert import command here whenready
+          exec($command, $stdout, $return);
+          var_dump($stdout);
         }
         break;
     }
@@ -1405,3 +1410,9 @@ public function sqldb($args, $assoc_args) {
 
 }
 \Terminus::add_command( 'site', 'Site_Command' );
+
+
+
+
+
+
