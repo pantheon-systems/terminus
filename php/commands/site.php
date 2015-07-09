@@ -1386,17 +1386,18 @@ public function sqldb($args, $assoc_args) {
           //var_dump($binding->environment);
           //var_dump($env);
           if (is_null($env) || $env === $binding->environment) {
-            //echo 'continue succeeded!';
-            $args = array( $binding->username, $binding->password, $binding->host, $binding->port);
-            array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
-            $commands[$binding->environment] = vsprintf(
+            //echo 'continue succeeded!';  //successful
+            $args = array( $binding->username, $binding->password, $binding->host, $binding->port); //is set successfully
+            array_filter($args, function($a) { return escapeshellarg($a); });
+            $commands[$binding->environment] = vsprintf( //failing
               'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
               $args
             );
+            var_dump($commands);
 	        }
         }
         foreach ($commands as $env => $command) {
-		      //var_dump($args);
+		      var_dump($args);  //successful; $args is set
           //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
           //exec($command, $stdout, $return);
           //echo Logger::greenLine($stdout[0]);
