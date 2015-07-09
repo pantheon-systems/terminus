@@ -1352,6 +1352,23 @@ class Site_Command extends Terminus_Command {
    //}
 
    /////////////////////
+	 /**
+   * Interacts with mysql
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : site name
+   *
+   * [--env=<env>]
+   * : environment
+   *
+   * ## Examples
+   *
+   *    terminus site sqldb checkdb --site=mikes-wp-test --env=live
+   *
+   */
+
 
      public function sqldb($args, $assoc_args) {
     $action = array_shift($args);
