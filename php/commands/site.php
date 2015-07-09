@@ -1386,7 +1386,7 @@ class Site_Command extends Terminus_Command {
         $commands = array();
         foreach($bindings as $binding) {
           if (@$env) continue;
-          var_dump($binding);
+          var_dump($binding->environment);
           if (!isset($env) || is_null($env) || $env !== $binding->environment) continue;
           echo 'continue succeeded!';
           $args = array( $binding->username, $binding->password, $binding->host, $binding->port);
