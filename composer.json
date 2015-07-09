@@ -30,6 +30,8 @@
     "behat/behat": "2.4.*@stable",
     "phpunit/phpunit": "~4.6",
     "php-vcr/php-vcr": "~1.2",
-    "php-vcr/phpunit-testlistener-vcr": "*"
+    "php-vcr/phpunit-testlistener-vcr": "*",
+    "sebastian/phpcpd": "*",
+    "instaclick/php-code-sniffer": "1.4.*"
   }
 }
