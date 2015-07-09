@@ -1371,12 +1371,10 @@ class Site_Command extends Terminus_Command {
    *    terminus site mysql checkdb --site=mikes-wp-test --env=live
    *
    */
-
-
-     public function sqldb($args, $assoc_args) {
+public function sqldb($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = @$assoc_args['env'];
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
     switch ($action) {
       case 'checkdb': ////////////command
         $bindings = $site->bindings('dbserver');
@@ -1385,19 +1383,20 @@ class Site_Command extends Terminus_Command {
         }
         $commands = array();
         foreach($bindings as $binding) {
-          if (@$env) continue;
-          var_dump($binding->environment);
-          if (!isset($env) || is_null($env) || $env !== $binding->environment) continue;
-          echo 'continue succeeded!';
-          $args = array( $binding->username, $binding->password, $binding->host, $binding->port);
-          array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
-          $commands[$binding->environment] = vsprintf(
-            'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
-            $args
-          );
+          //var_dump($binding->environment);
+          //var_dump($env);
+          if (is_null($env) || $env === $binding->environment) {
+            //echo 'continue succeeded!';
+            $args = array( $binding->username, $binding->password, $binding->host, $binding->port);
+            array_filter($args, function($a) { return escapeshellarg($a); }); //iterates over $args and combines them into a single string !!without marring the original array
+            $commands[$binding->environment] = vsprintf(
+              'echo "SHOW TABLES;" | mysql -u %s -p %s -h %s -P %s pantheon',
+              $args
+            );
+	        }
         }
         foreach ($commands as $env => $command) {
-		  var_dump($args);
+		      //var_dump($args);
           //Terminus::line("Clearing mysql on %s ", array($env)); //////////////insert import command here 
           //exec($command, $stdout, $return);
           //echo Logger::greenLine($stdout[0]);
