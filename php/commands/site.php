@@ -207,6 +207,9 @@ class Site_Command extends Terminus_Command {
       $action = 'set';
     }
     $env = Input::env($assoc_args, 'env');
+    if (($env == 'test' || $env == 'live') && $action == 'set') {
+      Terminus::error("Connection mode cannot be set in Test or Live environments");
+    }
     $data = $headers = array();
     switch($action) {
       case 'show':
