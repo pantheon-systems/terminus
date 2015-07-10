@@ -1,0 +1,56 @@
+
+-
+    request:
+        method: DELETE
+        url: 'https://onebox/api/sites/473c580e-d468-4c2d-a7e6-97b205e4c22e'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5a9d2a98-2994-11e5-ab54-bc764e117665:i7kxngxfSJXp8uB4IwHk5'
+            Content-Length: '0'
+    response:
+        status:
+            http_version: '1.1'
+            code: '202'
+            message: Accepted
+        headers:
+            Server: nginx
+            Date: 'Mon, 13 Jul 2015 22:53:34 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: fd53b5a0-29b1-11e5-a1e1-0d64ef38b19d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"params": {}, "role": "owner", "site_id": "473c580e-d468-4c2d-a7e6-97b205e4c22e", "task_ids": ["fd57e292-29b1-11e5-938c-bc764e117665", "fd5cddd8-29b1-11e5-938c-bc764e117665", "fd5ce7a6-29b1-11e5-938c-bc764e117665", "fd6225ea-29b1-11e5-938c-bc764e117665", "fd622f4a-29b1-11e5-938c-bc764e117665", "fd67b136-29b1-11e5-938c-bc764e117665", "fd67bbcc-29b1-11e5-938c-bc764e117665", "fd67c4be-29b1-11e5-938c-bc764e117665"], "trace_id": "fd53b5a0-29b1-11e5-a1e1-0d64ef38b19d", "type": "delete_site", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "id": "fd575f70-29b1-11e5-938c-bc764e117665", "key": "1436824800", "waiting_for_task_id": "fd57e292-29b1-11e5-938c-bc764e117665", "environment_id": null, "keep_forever": false, "phase": "created", "queued_time": null, "run_time": null, "created_at": 1436828014.098008, "reason": "", "environment": null, "final_task_id": null, "result": null, "total_time": null, "active_description": "Delete site", "description": "Delete site", "step": 1, "number_of_tasks": 8, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=fd53b5a0-29b1-11e5-a1e1-0d64ef38b19d&from_iso_date=2015-07-13T22:48:34.098008Z&to_iso_date=now", "waiting_for_task": {"environment": null, "finished_at": 1436828014.376201, "fn_name": "trigger_task", "params": {"site_id": "473c580e-d468-4c2d-a7e6-97b205e4c22e", "task_type": "delete_site", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "queued_at": 1436828014.237721, "responses": [{"code": 200, "body": "Deleted site 473c580e-d468-4c2d-a7e6-97b205e4c22e"}], "result": "succeeded", "site_id": "473c580e-d468-4c2d-a7e6-97b205e4c22e", "started_at": 1436828014.237723, "trace_id": "fd53b5a0-29b1-11e5-a1e1-0d64ef38b19d", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "fd575f70-29b1-11e5-938c-bc764e117665", "id": "fd57e292-29b1-11e5-938c-bc764e117665", "key": "1436824800", "created_at": 1436828014.101365, "queued_time": 2.1457672119140625e-06, "run_time": 0.13847780227661133, "phase": "finished", "allow_concurrent": false, "total_time": 0.27483582496643066, "internal_reason": "", "build_url": null, "messages": {"2015-07-13T22:53:34.429179": {"message": "Deleted site 473c580e-d468-4c2d-a7e6-97b205e4c22e", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=fd53b5a0-29b1-11e5-a1e1-0d64ef38b19d&from_iso_date=2015-07-13T22:48:34.101365Z&to_iso_date=2015-07-13T22:58:34.376201Z", "type": "delete_site"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/sites'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5a9d2a98-2994-11e5-ab54-bc764e117665:i7kxngxfSJXp8uB4IwHk5'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Mon, 13 Jul 2015 22:53:35 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '535'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: fe4568a0-29b1-11e5-a1e1-0d64ef38b19d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"217-efbafaaf"'
+            Vary: Accept-Encoding
+        body: '{"c1b96540-e81b-46a5-90e6-26ddb748997f": {"information": {"created_by_user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "holder_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "name": "my-awesome-site", "created": 1435803893, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "d4689428-3759-465b-95f6-57ba58471461", "branch": "master"}, "owner": "25069e79-eae7-4d41-8925-1f728a114cb8", "preferred_zone": "onebox"}, "metadata": null}}'

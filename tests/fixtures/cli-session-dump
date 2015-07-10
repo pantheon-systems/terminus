@@ -1,3 +1,4 @@
+
 -
     request:
         method: POST
@@ -6,23 +7,23 @@
             Host: onebox
             Expect: null
             Accept: null
-            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
             Content-type: application/json
-        body: '{"email":"fake@email.com","password":"BAD_PASSWORD"}'
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
     response:
         status:
             http_version: '1.1'
-            code: '404'
-            message: 'Not Found'
+            code: '200'
+            message: OK
         headers:
             Server: nginx
-            Date: 'Thu, 02 Jul 2015 21:27:36 GMT'
+            Date: 'Mon, 13 Jul 2015 19:21:25 GMT'
             Content-Type: 'application/json; charset=utf-8'
-            Content-Length: '22'
+            Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 28c87d60-2101-11e5-a1e1-0d64ef38b19d
+            X-Pantheon-Trace-Id: 5a97e1f0-2994-11e5-a1e1-0d64ef38b19d
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '"Authorization failed"'
+        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:5a9d2a98-2994-11e5-ab54-bc764e117665:i7kxngxfSJXp8uB4IwHk5","expires_at":1439234485,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
