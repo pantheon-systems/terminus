@@ -1352,13 +1352,13 @@ class Site_Command extends Terminus_Command {
    //}
 
    /////////////////////
-	 /**
+     /**
    * Interacts with mysql
    *
    * ## OPTIONS
    *
-   * <checkdb>
-   * : get info about mysql database
+   * <act>
+   * : input an action to execute in mysql
    *
    * [--site=<site>]
    * : site name
@@ -1368,15 +1368,15 @@ class Site_Command extends Terminus_Command {
    *
    * ## Examples
    *
-   *    terminus site mysql checkdb --site=mikes-wp-test --env=live
+   *    terminus site mysql act --site=mikes-wp-test --env=live
    *
    */
-public function sqldb($args, $assoc_args) {
+public function sql_comm($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
     switch ($action) {
-      case 'checkdb': 
+      case 'act':
         $bindings = $site->bindings('dbserver');
         if (empty($bindings)) {
           \Terminus::error("Mysql cache not enabled");
@@ -1390,13 +1390,18 @@ public function sqldb($args, $assoc_args) {
             else {
               $siteid = $binding->site_uuid;
             }
-            $args = array( $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
+            if (!isset($not_input) or $not_input == true) {
+				$u_input = readline("MySQL Command: ");
+				readline_add_history($u_input);
+				$not_input = false;
+		    }   
+            $args = array($u_input, $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
             array_filter($args, function($a) { return escapeshellarg($a); });
-            $commands[$binding->environment] = vsprintf( 
-              'echo "SHOW tables" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon -A',
+            $commands[$binding->environment] = vsprintf(
+              'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon -A',
               $args
             );
-	        }
+            }
         }
         foreach ($commands as $env => $command) {
           //////////////insert import command here whenready
@@ -1407,12 +1412,65 @@ public function sqldb($args, $assoc_args) {
     }
   }
 
+     /**
+   * Interacts with mysql
+   *
+   * ## OPTIONS
+   *
+   * <pdo>
+   * : get info about mysql database
+   *
+   * [--site=<site>]
+   * : site name
+   *
+   * [--env=<env>]
+   * : environment
+   *
+   * ## Examples
+   *
+   *    terminus site mysql act --site=mikes-wp-test --env=live
+   *
+   */
 
+   public function sql_pdo($args, $assoc_args) {
+    $action = array_shift($args);
+    $site = SiteFactory::instance(Input::site($assoc_args));
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+    switch ($action) {
+      case 'pdo':
+        $bindings = $site->bindings('dbserver');
+        if (empty($bindings)) {
+          \Terminus::error("Sql bindings empty.");
+        }
+        foreach($bindings as $binding) {
+          if (is_null($env) || $env === $binding->environment) {
+			if (is_null($env)) {
+				$env = 'dev';
+			}
+            $host = $binding->host;
+            $database = $binding->database;
+            $user = $binding->username;
+            $pass = $binding->password;
+            $port = $binding->port;
+            if (!isset($not_input) or $not_input == true) {
+				$u_input = readline("MySQL Command: ");
+				readline_add_history($u_input);
+				$not_input = false;
+		    }   
+            try {
+                $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
+                foreach($db->query($u_input) as $row) {
+                   print_r($row);
+                }
+                $db = null;
+            } catch (PDOException $e) {
+               print "Error!: " . $e->getMessage() . "\n";
+               die();
+            }
+        }
+        }
+        break;
+    }
+  }
 }
 \Terminus::add_command( 'site', 'Site_Command' );
-
-
-
-
-
-
