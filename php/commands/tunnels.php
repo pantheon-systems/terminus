@@ -3,11 +3,10 @@
  * High level CLI for managing SSH tunnels.
  */
 
-use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\Tunnels;
 use Terminus\SiteFactory;
-use \Terminus\Helpers\Input;
+use Terminus\Helpers\Input;
 
 
 class Tunnels_Command extends Terminus_Command {
@@ -24,7 +23,6 @@ class Tunnels_Command extends Terminus_Command {
 
   /**
   * List all open tunnels.
-  *
   **/
   public function show($args, $assoc_args) {
     $data = $this->Tunnels->get_all();
@@ -56,6 +54,8 @@ class Tunnels_Command extends Terminus_Command {
   * : check host key; we disable this by default to facilitate automation
   * ## EXAMPLES
   *
+  * terminus tunnels create --site=mysite --env=dev --type=dbserver --strict 
+  *
   **/
   public function create($args, $assoc_args) {
     $site = SiteFactory::instance(Input::site($assoc_args));
@@ -65,7 +65,7 @@ class Tunnels_Command extends Terminus_Command {
     $strict = array_key_exists('strict', $assoc_args);
     $data = $this->Tunnels->create($site, $env, $type, $port, $strict);
     if ($data) {
-      Terminus::success('Tunnel created!');
+      Terminus::success('Tunnel open!');
       Terminus::line('');
       $this->handleDisplay($data, array(), array('', 'Tunnel Data')); 
       if ($type == 'dbserver') {
@@ -93,7 +93,7 @@ class Tunnels_Command extends Terminus_Command {
   * : kill 'em all
   */
   public function close($args, $assoc_args) {
-    $pid = Input::optional($assoc_args, 'pid', FALSE);
+    $pid = Input::optional('pid', $assoc_args, false);
     $all = array_key_exists('all', $assoc_args);
     if ($all) {
       Terminus::log('Closing all tunnels...');

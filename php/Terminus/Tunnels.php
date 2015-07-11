@@ -95,9 +95,12 @@ class Tunnels {
         \Terminus::line(sprintf('Tunnel already open to %s:%d.', $tunnel['host'], $tunnel['port']));
       }
       else {
-        \Terminus::error(sprintf('Port %d is already in use with a different service or host.', $port));
+        \Terminus::error(sprintf('Local port %d is already in use with a different service or host.', $port));
         return false;
       }
+    }
+    elseif ($tunnel = $this->get_by_site($site, $env, $type)) {
+      \Terminus::line(sprintf('Tunnel already open to %s:%d.', $tunnel['host'], $tunnel['port']));
     }
     else {
       $cmd = "ssh -f -N -L {$port}:127.0.0.1:{$binding->port} -p 2222 {$env}.{$site->id}@{$rhost}";
@@ -146,7 +149,7 @@ class Tunnels {
   public function get_by_port($port) {
     $tunnels = $this->get_all();
     foreach($tunnels as $t) {
-      if ($t['port'] == $site_uuid_or_port) {
+      if ($t['port'] == $port) {
         return $t;
       }
     }
