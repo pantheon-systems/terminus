@@ -2,7 +2,6 @@
 namespace Terminus;
 
 use Terminus\SiteFactory;
-use Terminus\Site;
 
 /**
  * @file
@@ -14,6 +13,8 @@ class Tunnels {
   /**
    * Helper function to shell out, return status code, handle errors in a 
    * regular way. 
+   * @param $cmd (string) the shell command to run.
+   * @param $lines (array) pass-by-reference variable for getting the output back out.
    */
   private function shellout($cmd, &$lines=array()) {
     if (\Terminus::get_config('verbose')) {
@@ -31,6 +32,7 @@ class Tunnels {
    * Helper function to open a new process.
    * Inspired by Drush's drush_shell_proc_open()
    * https://github.com/drush-ops/drush/blob/master/includes/exec.inc
+   * @param $cmd (string) the shell command to run.
    */
   private function proc_open($cmd) {
     if (\Terminus::get_config('verbose')) {
@@ -71,6 +73,11 @@ class Tunnels {
 
   /**
    * Opens a tunnel if one is not already open.
+   * @param $site (site object) requred: the target site
+   * @param $env (string) required: the target environment
+   * @param $type (string) which binding to connect to
+   * @param $port (int) local port to bind
+   * @param $strict (bool) check hostnames?
    */
   public function create($site, $env, $type = 'dbserver', $port = null, $strict = false) {
     $binding = $site->find_binding($env, $type);
@@ -83,7 +90,7 @@ class Tunnels {
     $tunnel = null;
     $port = isset($port) ? $port : $binding->port;
     $rhost = $this->remote_hostname($site->id, $env, $type);
-    if ($tunnel = $this->get($port)) {
+    if ($tunnel = $this->get_by_port($port)) {
       if ($rhost == $tunnel['host']) {
         \Terminus::line(sprintf('Tunnel already open to %s:%d.', $tunnel['host'], $tunnel['port']));
       }
@@ -100,7 +107,7 @@ class Tunnels {
       }
       $status = $this->proc_open($cmd);
 
-      if ($status == 0 && $tunnel = $this->get($site->id, $env, $type)) {
+      if ($status == 0 && $tunnel = $this->get_by_site($site, $env, $type)) {
         \Terminus::log(sprintf('Tunnel opened to %s:%s.', $tunnel['host'], $tunnel['port']));
       }
       else {
@@ -114,6 +121,7 @@ class Tunnels {
 
   /**
    * Kill tunnel(s)
+   * @param $pid (int) specific process to kill; otherwise kill 'em all
    */
   public function close($pid=null) {
     if (isset($pid)) {
@@ -132,28 +140,35 @@ class Tunnels {
   }
 
   /**
-   * Helper function to retrieve an open tunnel.
+   * Helper function to retrieve data about an open tunnel.
+   * @param $port (int) local port binding
    */
-  public function get($site_uuid_or_port, $environment = NULL, $type = NULL) {
+  public function get_by_port($port) {
     $tunnels = $this->get_all();
-    if (is_numeric($site_uuid_or_port)) {
-      foreach($tunnels as $t) {
-        if ($t['port'] == $site_uuid_or_port) {
-          return $t;
-        }
-      }
-    }
-    else {
-      $hostname = $this->remote_hostname($site_uuid_or_port, $environment, $type);
-      foreach($tunnels as $t) {
-        if ($t['host'] == $hostname) {
-          return $t;
-        }
+    foreach($tunnels as $t) {
+      if ($t['port'] == $site_uuid_or_port) {
+        return $t;
       }
     }
     return false;
   }
 
+  /**
+   * Helper function to retrieve data about an open tunnel.
+   * @param $site_uuid (string) site name
+   * @param $env (string) environment
+   * @param $type (string) type of binding
+   */
+  public function get_by_site($site, $environment, $type) {
+    $tunnels = $this->get_all();
+    $hostname = $this->remote_hostname($site->id, $environment, $type);
+    foreach($tunnels as $t) {
+      if ($t['host'] == $hostname) {
+        return $t;
+      }
+    }
+    return false;
+  }
 
   /**
    * Helper public function to build a key used to identify open tunnels.

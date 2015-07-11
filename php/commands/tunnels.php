@@ -52,6 +52,8 @@ class Tunnels_Command extends Terminus_Command {
   * [--port=<port>]
   * : local port to bind to
   *
+  * [--strict]
+  * : check host key; we disable this by default to facilitate automation
   * ## EXAMPLES
   *
   **/
@@ -60,7 +62,8 @@ class Tunnels_Command extends Terminus_Command {
     $env = Input::env($assoc_args, 'env');
     $type = Input::optional('type', $assoc_args, 'dbserver');
     $port = Input::optional('port', $assoc_args, null);
-    $data = $this->Tunnels->create($site, $env, $type, $port);
+    $strict = array_key_exists('strict', $assoc_args);
+    $data = $this->Tunnels->create($site, $env, $type, $port, $strict);
     if ($data) {
       Terminus::success('Tunnel created!');
       Terminus::line('');

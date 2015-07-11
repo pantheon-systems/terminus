@@ -54,6 +54,9 @@ class SiteFactory {
     return false;
   }
 
+  /**
+   * Helper for getting a site by UUID.
+   */
   public function getSiteByUUID($site_uuid) {
     foreach ($this->sites as $sitename => $site) {
       if ($site->id == $site_uuid) {
