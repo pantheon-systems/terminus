@@ -42,7 +42,7 @@ class SiteFactory {
 
   public function getSite($sitename) {
     if (!array_key_exists($sitename,$this->sites)) {
-      throw new \Exception('No site exists with this name');
+      throw new \Exception(sprintf('No site exists named "%s"', $sitename));
     }
     if (isset($this->sites[$sitename])) {
       // if we haven't instatiated yet, do that now
@@ -52,6 +52,27 @@ class SiteFactory {
       return $this->sites[$sitename];
     }
     return false;
+  }
+
+  public function getSiteByUUID($site_uuid) {
+    foreach ($this->sites as $sitename => $site) {
+      if ($site->id == $site_uuid) {
+        break;
+      }
+      else {
+        $site = FALSE;
+      }
+    }
+    if (!$site) {
+      throw new \Exception(sprintf('No site exists with the UUID "%s"', $site_uuid));
+    }
+    if (isset($this->sites[$sitename])) {
+      // if we haven't instatiated yet, do that now
+      if ("Terminus\Site" != get_class($this->sites[$sitename])) {
+        $this->sites[$sitename] = new Site($this->sites[$sitename]);
+      }
+      return $this->sites[$sitename];
+    }
   }
 
   public function getAll() {

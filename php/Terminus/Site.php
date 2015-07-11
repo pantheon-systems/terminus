@@ -59,6 +59,23 @@ class Site {
   }
 
   /**
+   * Get a specific binding.
+   */
+  public function find_binding($environment, $type, $slave_of=null) {
+    $bindings = $this->bindings();
+    foreach ($bindings as $b) {
+      if (isset($bindings[$type])) {
+        foreach ($bindings[$type] as $b) {
+          if ($b->environment === $environment && $slave_of === $b->slave_of) {
+            return $b;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
    * Return all environments for a site
    */
   public function environments() {
