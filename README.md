@@ -44,21 +44,21 @@ To use Terminus HEAD, you should clone this repository and run Terminus directly
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
 1. Clone the repository. If you plan on contributing to the project, create a fork and clone the fork instead.
-```bash
-cd $HOME
-git clone https://github.com/pantheon-systems/cli.git pantheon-cli
-```
+  ```bash
+  cd $HOME
+  git clone https://github.com/pantheon-systems/cli.git pantheon-cli
+  ```
 Or replace $HOME with the directory to which you would like to install.
-2. Install the Composer dependencies.
-```bash
-cd pantheon-cli
-composer install
-```
 
+2. Install the Composer dependencies.
+  ```bash
+  cd pantheon-cli
+  composer install
+  ```
 You can now run the bleeding-edge version of Terminus via:
-```bash
-bin/terminus
-```
+  ```bash
+  bin/terminus
+  ```
 
 **Optionally**, for ease of development, we suggest aliasing or setting the path to this script in your Bash configuration file. This file is located at ~/.bashrc on Linux and ~/.bash_profile on Mac.
 ```bash
@@ -89,18 +89,20 @@ Head over to [your support tickets in the Pantheon Dashboard](https://dashboard.
 Contributions
 ------------
 Here are steps to follow if you would like to contribute to Terminus:
+
 1. Add an issue to GitHub issues regarding how you feel your change should be implemented any what it will accomplish.
 2. Fork the repository.
 3. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
-```bash
-cd $HOME/pantheon-cli
-./scripts/lint.sh
-```
+  ```bash
+  cd $HOME/pantheon-cli
+  ./scripts/lint.sh
+  ```
 And run your tests via:
-```bash
-cd $HOME/pantheon-cli
-./scripts/tests.sh
-```
+  ```bash
+  cd $HOME/pantheon-cli
+  ./scripts/tests.sh
+  ```
+  
 4. Open a pull request on GitHub so that we may evaluate and merge your changes.
 
 Credits
