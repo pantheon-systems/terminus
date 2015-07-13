@@ -1360,6 +1360,9 @@ class Site_Command extends Terminus_Command {
    * <act>
    * : input an action to execute in mysql
    *
+   * [--import]
+   * : import an .sql file 
+   * 
    * [--site=<site>]
    * : site name
    *
@@ -1375,6 +1378,9 @@ public function sql_comm($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+    if (!isset($env)) {
+		$env = 'dev';
+	}
     switch ($action) {
       case 'act':
         $bindings = $site->bindings('dbserver');
@@ -1390,15 +1396,20 @@ public function sql_comm($args, $assoc_args) {
             else {
               $siteid = $binding->site_uuid;
             }
-            if (!isset($not_input) or $not_input == true) {
+            if (isset($assoc_args['import'])) {
+			   $importneeds = array($binding->username, $binding->password, $binding->type, $binding->environment, $siteid);
+			   $u_input = ' < frombackup_dev_2015-07-10T19-59-20_UTC_database.sql;';
+			   $not_input = false;
+			}
+            if (!isset($not_input) or $not_input != false) {
 				$u_input = readline("MySQL Command: ");
 				readline_add_history($u_input);
 				$not_input = false;
-		    }   
+		    }  
             $args = array($u_input, $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
             array_filter($args, function($a) { return escapeshellarg($a); });
             $commands[$binding->environment] = vsprintf(
-              'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon -A',
+              'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon',
               $args
             );
             }
@@ -1408,9 +1419,11 @@ public function sql_comm($args, $assoc_args) {
           exec($command, $stdout, $return);
           var_dump($stdout);
         }
-        break;
+      break;
+      //
     }
   }
+
 
      /**
    * Interacts with mysql
@@ -1420,6 +1433,9 @@ public function sql_comm($args, $assoc_args) {
    * <pdo>
    * : get info about mysql database
    *
+   * [--import]
+   * : import an sql database
+   * 
    * [--site=<site>]
    * : site name
    *
@@ -1443,8 +1459,8 @@ public function sql_comm($args, $assoc_args) {
           \Terminus::error("Sql bindings empty.");
         }
         foreach($bindings as $binding) {
-          if (is_null($env) || $env === $binding->environment) {
-			if (is_null($env)) {
+          if (!isset($env) || $env === $binding->environment) {
+			if (!isset($env)) {
 				$env = 'dev';
 			}
             $host = $binding->host;
@@ -1452,13 +1468,43 @@ public function sql_comm($args, $assoc_args) {
             $user = $binding->username;
             $pass = $binding->password;
             $port = $binding->port;
-            if (!isset($not_input) or $not_input == true) {
-				$u_input = readline("MySQL Command: ");
+            if ((!isset($not_input) or $not_input == true) and !isset($assoc_args['import'])) {//if user input is needed
+				$u_input = readline("MySQL Command: ");  //user input is asked & received
 				readline_add_history($u_input);
 				$not_input = false;
 		    }   
+		    else {
+				$import = 'yes'; 
+			}
             try {
                 $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
+                if (isset($import)) {
+					$filename = 'frombackup_dev_2015-07-10T19-59-20_UTC_database.sql';
+					if(strpos($filename, '.gz') !== false) {
+						$file = gzopen($filename, 'r');
+						echo 'the file was unzipped';
+					}
+					else { //temporary
+						echo 'the file is a .sql';
+						$file = fopen($filename, 'r');
+					}
+					$i = 0;
+					$line_of_text = '';
+					while (!feof($file)) {
+						if (strpos(fgets($file), '/*') !== false or strpos(fgets($file), '--') !== false) {
+							//echo 'this line was a comment';
+						}
+						else{
+							$line_of_text .= fgets($file);//
+							//$u_input = $db->query($line_of_text);
+							$u_input = $line_of_text;
+							
+							//echo 'uncommented input';
+						}
+					}
+					$line_by_line = explode("\n", $line_of_text);
+					fclose($file);
+				}
                 foreach($db->query($u_input) as $row) {
                    print_r($row);
                 }
