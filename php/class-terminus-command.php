@@ -224,7 +224,7 @@ abstract class Terminus_Command {
    * @param request string -- the string from which to strip data
    * @param blacklist array -- an array of strings which are the keys to remove from request
    */
-  protected function stripSensitiveData($request, $blacklist = []) {
+  protected function stripSensitiveData($request, $blacklist = array()) {
     //Locate the JSON in the string, turn to array
     $regex = '~\{(.*)\}~';
     preg_match($regex, $request, $matches);
