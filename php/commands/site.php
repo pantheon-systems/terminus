@@ -887,18 +887,30 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to use
    *
-   * --url=<url>
-   * : Archive to import
+   * [--url=<url>]
+   * : URL of archive to import
+   *
+   * [--element=<element>]
+   * : Site element to import (i.e. code, files, db, or all)
    *
    * @subcommand import
    */
   public function import($args, $assoc_args) {
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-    if (!isset($assoc_args['url'])) {
-      Terminus::error("You must specify a url for the archive you want to import.");
+    $url = Input::string($assoc_args, 'url', "URL of archive to import");
+    if (!$url) {
+      Terminus::error("Please enter a URL.");
     }
-    $url = $assoc_args['url'];
-    $import = $site->import($url);
+
+    if(!isset($assoc_args['element'])) {
+      $element_options = array('code', 'database', 'files', 'all');
+      $element_key = Input::menu($element_options, 'all', 'Which element are you importing?');
+      $element = $element_options[$element_key];
+    } else {
+      $element = $assoc_args['element'];
+    }
+    $import = $site->import($url, $element);
+
     if ($import) {
       Terminus::line('Import started, you can now safely kill this script without interfering.');
       $result = $this->waitOnWorkflow('sites', $site->getId(), $import->id);
