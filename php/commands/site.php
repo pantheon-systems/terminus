@@ -1479,19 +1479,15 @@ public function sql_comm($args, $assoc_args) {
             try {
                 $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
                 if (isset($import)) {
-					$filename = readline("Which dump would you like to import?  Please include the relative path.  "); //user inputs their file name
+					$filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
 					readline_add_history($filename);
-					//$filename = 'php/commands/frombackup_dev_2015-07-10T19-59-20_UTC_database.sql.gz';
 					var_dump('the file exists? ', file_exists($filename));
-					//var_dump('the dirname of the file is: ', dirname($filename));
 					$file_exti = pathinfo($filename);
-					//var_dump('the file extension is: ', $path_parts['extension']);
-					//var_dump($filename);
 					if($file_exti['extension'] == 'gz') {
 						$file = gzopen($filename, 'r');
 						echo 'the file was unzipped';
 					}
-					else if ($file_exti['extension'] == 'sql') { //temporary
+					else if ($file_exti['extension'] == 'sql') { 
 						echo 'the file is a .sql';
 						$file = fopen($filename, 'r');
 					}
@@ -1499,7 +1495,6 @@ public function sql_comm($args, $assoc_args) {
 						echo 'this file is not a valid SQL file.';
 						die();
 					}
-					$i = 0;
 					$line_of_text = '';
 					while (!feof($file)) {
 						if (strpos(fgets($file), '/*') !== false or strpos(fgets($file), '--') !== false) {
@@ -1507,19 +1502,22 @@ public function sql_comm($args, $assoc_args) {
 						}
 						else{
 							$line_of_text .= fgets($file);//
-							//$u_input = $db->query($line_of_text);
-							$u_input = $line_of_text;
-							
-							echo 'uncommented input';
+							$u_input = $line_of_text;							
+							echo 'TO BE EXECUTED';
+							foreach($db->query($u_input) as $row) {
+								print_r($row);
+							}
 						}
 					}
 					$line_by_line = explode("\n", $line_of_text);
 					fclose($file);
 				}
-                foreach($db->query($u_input) as $row) {
-                   print_r($row);
-                }
-                $db = null;
+				if(!isset($import)) {
+					foreach($db->query($u_input) as $row) {
+						print_r($row);
+					}
+				}
+				$db = null;
             } catch (PDOException $e) {
                print "Error!: " . $e->getMessage() . "\n";
                die();
