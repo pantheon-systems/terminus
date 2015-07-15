@@ -8,6 +8,7 @@ default:
       password: password1
       host: onebox
       vcr_mode: new_episodes
+      test_site_name: behat-test
 
 ci:
   paths:
@@ -19,6 +20,7 @@ ci:
       password: password1
       host: onebox
       vcr_mode: once
+      test_site_name: behat-test
 
 annotations:
   paths:

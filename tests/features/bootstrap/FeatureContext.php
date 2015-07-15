@@ -1,70 +1,55 @@
 <?php
 
-use Behat\Behat\Context\ClosuredContextInterface,
-    Behat\Behat\Context\TranslatedContextInterface,
-    Behat\Behat\Context\BehatContext,
-    Behat\Behat\Exception\PendingException;
-use Behat\Gherkin\Node\PyStringNode,
-    Behat\Gherkin\Node\TableNode,
-    Behat\Gherkin\Node\ScenarioNode;
+use Behat\Behat\Context\ClosuredContextInterface;
+use Behat\Behat\Context\TranslatedContextInterface;
+use Behat\Behat\Context\BehatContext;
+use Behat\Behat\Exception\PendingException;
+use Behat\Gherkin\Node\PyStringNode;
+use Behat\Gherkin\Node\TableNode;
+use Behat\Gherkin\Node\ScenarioNode;
 
 /**
- * Features context.
+ * Features context for Behat feature testing
  */
 class FeatureContext extends BehatContext {
     public $cliroot = '';
-    private $cassette_name;
-    private $connection_info = [];
-    private $output;
+    private $_cassette_name;
+    private $_connection_info;
+    private $_parameters;
+    private $_output;
 
     /**
     * Initializes context. Sets directories for navigation.
     * 
-    * @param $parameters [array] context parameters (set them up through behat.yml)
+    * @param [array] $parameters Context parameters, set through behat.yml
+    * @return [void]
     */
     public function __construct(array $parameters) {
-      $this->cliroot = dirname(dirname(__DIR__)) . '/..';
-      $this->connection_info = $parameters;
+      $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
+      $this->_parameters      = $parameters;
+      $this->_connection_info = array(
+        'username' => $parameters['username'],
+        'password' => $parameters['password'],
+        'host'     => $parameters['host']
+      );
     }
 
     /**
     * @BeforeScenario
     * Runs before each scenario
     * 
-    * @param $event [ScenarioEvent]
+    * @param [ScenarioEvent] $event Feature information from Behat
+    * @return [void]
     */
     public function before($event) {
-      $this->setCassetteName($event);
-    }
-
-    /**
-     * @When /^I am authenticating$/
-     */
-    public function iAmAuthenticating() {
-      if(
-        !isset($this->connection_info['username']) 
-        || !isset($this->connection_info['password'])
-      ) 
-        throw new Exception("Check your configuration file to ensure proper configuration.");
-      $this->iRun('terminus auth login ' . $this->connection_info['username'] 
-        . ' --password=' . $this->connection_info['password']);
-    }
-
-    /**
-    * @Given /^I am in directory "([^"]*)"$/
-    * Changes the directory to given subdir of Terminus root directory
-    * 
-    * @param $dir [string]
-    */
-    public function iAmInDirectory($dir) {
-      chdir($this->cliroot . $dir);
-      return true;
+      $this->_setCassetteName($event);
     }
 
     /**
     * @Then /^I enter "([^"]*)"$/ 
     * 
-    * @param $string [string]
+    * @param [string] $string To be treated as CL stdin
+    * @return [void]
     */
     public function iEnter($string) {
       $fh = fopen("php://stdin", 'w');
@@ -75,65 +60,83 @@ class FeatureContext extends BehatContext {
     * @When /^I run "([^"]*)"$/
     * Runs command and saves output
     * 
-    * @param $command [string]
+    * @param [string] $command To be entered as CL stdin
+    * @return [void]
     */
     public function iRun($command) {
+      $command      = $this->_replacePlaceholders($command);
+      $regex        = '/(?<!\.)terminus/';
       $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
-      $command = 'VCR_CASSETTE=' . $this->cassette_name 
-        . ' ' . str_replace("terminus", $terminus_cmd, $command);
-      if(isset($this->connection_info['vcr_mode'])) $command = 
-        'VCR_MODE=' . $this->connection_info['vcr_mode'] . ' ' . $command;
-      if(isset($this->connection_info['host'])) $command = 
-        'TERMINUS_HOST=' . $this->connection_info['host'] . ' ' . $command;
-      $this->output = shell_exec($command);
+      $command      = 'VCR_CASSETTE=' . $this->_cassette_name 
+        . ' ' . preg_replace($regex, $terminus_cmd, $command);
+      if(isset($this->_parameters['vcr_mode'])) {
+        $command = 'VCR_MODE=' . $this->_parameters['vcr_mode'] 
+          . ' ' . $command;
+      }
+      if(isset($this->_connection_info['host'])) {
+        $command = 'TERMINUS_HOST=' . $this->_connection_info['host'] 
+          . ' ' . $command;
+      }
+      $this->_output = shell_exec($command);
     }
 
     /**
     * @Then /^I should get:$/ 
+    * Swap in $this->_parameters elements by putting them in [[double brackets]]
     * 
-    * @param $string [PyStringNode]
+    * @param [PyStringNode] $string Content which ought not be in the output
+    * @return [void]
     */
     public function iShouldGet(PyStringNode $string) {
-      if(!$this->checkResult((string)$string, $this->output))
-        throw new Exception("Actual output:\n" . $this->output);
+      if(!$this->_checkResult((string)$string, $this->_output)) {
+        throw new Exception("Actual output:\n" . $this->_output);
+      }
     }
 
     /**
     * @Then /^I should not get:$/ 
     * 
-    * @param $string [PyStringNode]
+    * @param [PyStringNode] $string Content which ought not be in the output
+    * @return [void]
     */
     public function iShouldNotGet(PyStringNode $string) {
-      if($this->checkResult((string)$string, $this->output))
-        throw new Exception("Actual output:\n" . $this->output);
+      if($this->_checkResult((string)$string, $this->_output)) {
+        throw new Exception("Actual _output:\n" . $this->_output);
+      }
     }
 
     /**
     * Checks the the haystack for the needle
     * 
-    * @param $needle [string]
-    * @param $haystack [string]
-    * @return [boolean] true if $nededle was found in $haystack
+    * @param [string] $needle   That which is searched for
+    * @param [string] $haystack That which is searched inside
+    * @return [boolean] $result True if $nededle was found in $haystack
     */
-    private function checkResult($needle, $haystack) {
-      return preg_match("#" . preg_quote($needle . "#s"), $haystack);
+    private function _checkResult($needle, $haystack) {
+      $needle = $this->_replacePlaceholders($needle);
+      $result = preg_match("#" . preg_quote($needle . "#s"), $haystack);
+      return $result;
     }
 
     /**
     * Returns tags in easy-to-use array format.
     * 
-    * @param $event [ScenarioEvent]
+    * @param [ScenarioEvent] $event Feature information from Behat
     * @return $tags [array] An array of strings corresponding to tags
     */
-    private function getTags($event) {
+    private function _getTags($event) {
       $unformatted_tags = $event->getScenario()->getTags();
       $tags = [];
 
       foreach($unformatted_tags as $tag) {
         $tag_elements = explode(' ', $tag);
-        $index = null;
-        if(count($tag_elements < 1)) $index = array_shift($tag_elements);
-        if(count($tag_elements == 1)) $tag_elements = array_shift($tag_elements);
+        $index        = null;
+        if(count($tag_elements < 1)) {
+          $index = array_shift($tag_elements);
+        }
+        if(count($tag_elements == 1)) {
+          $tag_elements = array_shift($tag_elements);
+        }
         $tags[$index] = $tag_elements;
       }
 
@@ -141,14 +144,35 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-    * Sets $this->cassette_name and returns name of the cassette to be used.
+    * Exchanges values in given string with square brackets for values
+    * in $this->_parameters
     * 
-    * @param $event [SuiteEvent]
+    * @param [string] $string The string to perform replacements on
+    * @return [string] $string The modified param string
+    */
+    private function _replacePlaceholders($string) {
+      $regex = '~\[\[(.*?)\]\]~';
+      preg_match_all($regex, $string, $matches);
+
+      foreach($matches[1] as $id => $replacement_key) {
+        if(isset($this->_parameters[$replacement_key])) {
+          $replacement = $this->_parameters[$replacement_key];
+          $string      = str_replace($matches[0][$id], $replacement, $string);
+        }
+      }
+
+      return $string;
+    }
+
+    /**
+    * Sets $this->_cassette_name and returns name of the cassette to be used.
+    * 
+    * @param [ScenarioEvent] $event Feature information from Behat
     * @return [string] Of scneario name, lowercase, with underscores and suffix
     */
-    private function setCassetteName($event) {
-      $tags = $this->getTags($event);
-      $this->cassette_name = $tags['vcr'];
-      return $this->cassette_name;
+    private function _setCassetteName($event) {
+      $tags = $this->_getTags($event);
+      $this->_cassette_name = $tags['vcr'];
+      return $this->_cassette_name;
     }
 }

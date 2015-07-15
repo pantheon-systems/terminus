@@ -1,29 +1,53 @@
 Feature: sites
-  In order to develop
-  As a UNIX user
-  I need to be able to see a list of pantheon sites
-
-  Scenario: Not Authed
-    @vcr not-authed
-  When I run "terminus auth login fake@email.com --password=BAD_PASSWORD"
-    Then I should not get:
-    """
-    Saving session data
-    """
-
-  Scenario: Auth Login
-    @vcr auth-login
-    When I am authenticating
-    Then I should get:
-    """
-    Saving session data
-    """
 
   Scenario: List Sites
-    @vcr list-sites
-    Given I am authenticating
+    @vcr sites-list
     When I run "terminus sites list"
     Then I should get:
     """
     Name
     """
+
+  Scenario: Create Site
+    @vcr sites-create
+    When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --org=0 --product=WordPress"
+    And I run "terminus sites list"
+    Then I should get:
+    """
+    [[test_site_name]]
+    """
+
+  Scenario: Delete Site
+    @vcr sites-delete
+    When I run "terminus sites delete --site=[[test_site_name]] --yes"
+    And I run "terminus sites list"
+    Then I should not get:
+    """
+    [[test_site_name]]
+    """
+
+  #Scenario: Create Site From Import
+    ##@vcr sites-create-from-import
+    #Given I am authenticating
+    #When I run "terminus sites import --site=[[test_site_name]] --url=https://pantheon-infrastructure.s3.amazonaws.com/testing/drush_archive_josh_and_rina.tar.gz"
+    #Then I should get:
+    #"""
+    #Name
+    #"""
+
+  #Scenario: List Aliases
+    #@vcr sites-aliases
+    #When I run "terminus sites aliases --print"
+    #Then I should get:
+    #"""
+    #[[test_site_name]].dev
+    #"""
+
+  Scenario: Mass-Update Sites
+    @vcr sites-mass-update
+    When I run "terminus sites mass-update"
+    Then I should not get:
+    """
+    Needs update
+    """
+

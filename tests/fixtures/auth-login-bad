@@ -9,21 +9,21 @@
             Accept: null
             User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
             Content-type: application/json
-        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+        body: '{"email":"fake@email.com","password":"BAD_PASSWORD"}'
     response:
         status:
             http_version: '1.1'
-            code: '200'
-            message: OK
+            code: '404'
+            message: 'Not Found'
         headers:
             Server: nginx
-            Date: 'Mon, 13 Jul 2015 19:28:13 GMT'
+            Date: 'Mon, 13 Jul 2015 19:28:12 GMT'
             Content-Type: 'application/json; charset=utf-8'
-            Content-Length: '182'
+            Content-Length: '22'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 4d90f680-2995-11e5-a1e1-0d64ef38b19d
+            X-Pantheon-Trace-Id: 4ce8cfa0-2995-11e5-a1e1-0d64ef38b19d
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI","expires_at":1439234893,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
+        body: '"Authorization failed"'
