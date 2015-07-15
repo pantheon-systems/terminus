@@ -78,6 +78,7 @@ Support
 Please make ready the steps to reproduce the issue, outputs, pertinent information about your system, and what you believe the correct reaction of the system ought to be. Reporting of issues encountered should happen in one of two ways:
 
 **If yours is a problem with Terminus itself:**
+
 1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/cli/issues) to see whether another user has reported the same issue you are experiencing.
 2. If the problem you are experiencing is not in the issues, you can open a new issue. Please include the helpful information you have gathered.
 3. If you find your problem in an issue, feel free to add your issue information in the comments and/or subscribe to the issue's notifications.
@@ -90,9 +91,8 @@ Contributions
 ------------
 Here are steps to follow if you would like to contribute to Terminus:
 
-1. Add an issue to GitHub issues regarding how you feel your change should be implemented any what it will accomplish.
-2. Fork the repository.
-3. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
+1. Fork the repository.
+2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
   ```bash
   cd $HOME/pantheon-cli
   ./scripts/lint.sh
@@ -102,8 +102,8 @@ And run your tests via:
   cd $HOME/pantheon-cli
   ./scripts/tests.sh
   ```
-  
-4. Open a pull request on GitHub so that we may evaluate and merge your changes.
+
+3. Open a pull request on GitHub so that we may evaluate and merge your changes.
 
 Credits
 ------------
