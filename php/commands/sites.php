@@ -142,6 +142,7 @@ class Sites_Command extends Terminus_Command {
       Terminus::launch_self('site', array('import'), array(
         'url' => $assoc_args['import'],
         'site' => $data['site_name'],
+        'element' => 'all',
         'nocache' => True
       ));
     }
@@ -156,7 +157,7 @@ class Sites_Command extends Terminus_Command {
   * ## OPTIONS
   *
   * [--url=<url>]
-  * : Url of archive to import
+  * : URL of archive to import
   *
   * [--name=<name>]
   * : (deprecated) use --site instead
@@ -173,9 +174,9 @@ class Sites_Command extends Terminus_Command {
   * @subcommand create-from-import
   */
   public function import($args, $assoc_args) {
-    $url = Input::string($assoc_args, 'url', "Url of archive to import");
+    $url = Input::string($assoc_args, 'url', "URL of archive to import");
     if (!$url) {
-      Terminus::error("Please enter a url.");
+      Terminus::error("Please enter a URL.");
     }
     $assoc_args['import'] = $url;
 
