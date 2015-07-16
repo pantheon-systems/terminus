@@ -1495,11 +1495,14 @@ public function sql_comm($args, $assoc_args) {
 						$part_one =  preg_replace($pattern, '', $part_one); //regex gets rid of commented lines
 						$opattern = '--';
 						$part_one = preg_replace('/--.*/s', '', $part_one);
-						if(strpos($tilltheend_oftheline, ';')!==false and empty($part_one) ==false) {
+						if(strpos($tilltheend_oftheline, ';')!==false and !empty($part_one)) {
 								$part_one .= ';dontuseme';
 								$newparts = explode('dontuseme', $part_one, 2);
-								$part_one = $newparts[0];
-								$index = strpos($part_one, 'dontuseme');
+								$part_one = $newparts[0]; 
+								$part_one = strstr($part_one, ';', true) . ';';
+								var_dump($part_one);
+								sleep(2);
+								continue;
 								$ptwoexistsa = true;
 						}
 						if(empty($part_one)==true) {continue;}
