@@ -1501,8 +1501,6 @@ public function sql_comm($args, $assoc_args) {
 								$part_one = $newparts[0]; 
 								$part_one = strstr($part_one, ';', true) . ';';
 								var_dump($part_one);
-								sleep(2);
-								continue;
 								$ptwoexistsa = true;
 						}
 						if(empty($part_one)==true) {continue;}
@@ -1520,7 +1518,6 @@ public function sql_comm($args, $assoc_args) {
 							print_r($row);
 						}
 						if(!empty($part_one)){var_dump($part_one);}//////////////////////////////////////
-						sleep(3);
 					}
 					$line_by_line = explode("\n", $line_of_text);
 					fclose($file);
