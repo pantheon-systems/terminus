@@ -1337,19 +1337,7 @@ class Site_Command extends Terminus_Command {
       Terminus::error("%s",array($e->getMessage()));
     }
    }
-   ///////////////
-  // public function import_db($args) {
-    //  exec("terminus sites aliases --location=/tmp/aliases.php");
-      //require('/tmp/aliases.php');
-      //foreach($aliases as $binding => $alias) {
-        // if(strpos($binding, '.dev.') !== false) {
-          //  exec('ssh ' . $alias['remote-user'] . '@' . $alias['remote-host'] . ' ' . $alias['ssh-options']);
-            //exec('scp user@hostwithfiles:dbfilename .');
-            //exec('mysql dbname --user=dbuser --password=dbpassword < dbfilename');
-            //exec('exit');
-      //   }
-      //}
-   //}
+
 
    /////////////////////
      /**
@@ -1425,6 +1413,8 @@ public function sql_comm($args, $assoc_args) {
   }
 
 
+
+
      /**
    * Interacts with mysql
    *
@@ -1444,10 +1434,10 @@ public function sql_comm($args, $assoc_args) {
    *
    * ## Examples
    *
-   *    terminus site mysql act --site=mikes-wp-test --env=live
+   *    terminus site sql_pdo pdo --import --site=mikes-wp-test --env=live
    *
    */
-
+ 
    public function sql_pdo($args, $assoc_args) {
     $action = array_shift($args);
     $site = SiteFactory::instance(Input::site($assoc_args));
@@ -1481,33 +1471,53 @@ public function sql_comm($args, $assoc_args) {
                 if (isset($import)) {
 					$filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
 					readline_add_history($filename);
-					var_dump('the file exists? ', file_exists($filename));
 					$file_exti = pathinfo($filename);
 					if($file_exti['extension'] == 'gz') {
 						$file = gzopen($filename, 'r');
-						echo 'the file was unzipped';
 					}
 					else if ($file_exti['extension'] == 'sql') { 
-						echo 'the file is a .sql';
 						$file = fopen($filename, 'r');
 					}
 					else {
 						echo 'this file is not a valid SQL file.';
 						die();
 					}
+					echo 'Waiting...';
 					$line_of_text = '';
 					while (!feof($file)) {
-						if (strpos(fgets($file), '/*') !== false or strpos(fgets($file), '--') !== false) {
-							echo 'this line was a comment';
+						if (!isset($ptwoexists) or $ptwoexists !=true or !isset($ptwoexistsa) or $ptwoexistsa !=true) { // if there is no previous part 2 move the file pointer
+							$tilltheend_oftheline = fgets($file);
+							$parts = explode(';', $tilltheend_oftheline, 2); 
+							$part_one = $parts[0];
 						}
-						else{
-							$line_of_text .= fgets($file);//
-							$u_input = $line_of_text;							
-							echo 'TO BE EXECUTED';
-							foreach($db->query($u_input) as $row) {
-								print_r($row);
-							}
+						if (!isset($part_one)){ continue; } 
+						$pattern = '#/\*.+?\*/#s';
+						$part_one =  preg_replace($pattern, '', $part_one); //regex gets rid of commented lines
+						$opattern = '--';
+						$part_one = preg_replace('/--.*/s', '', $part_one);
+						if(strpos($tilltheend_oftheline, ';')!==false and empty($part_one) ==false) {
+								$part_one .= ';dontuseme';
+								$newparts = explode('dontuseme', $part_one, 2);
+								$part_one = $newparts[0];
+								$index = strpos($part_one, 'dontuseme');
+								$ptwoexistsa = true;
 						}
+						if(empty($part_one)==true) {continue;}
+						if(isset($parts[2])) { //if a part 2 exists set the new part 1 as old part 2 and bypass file pointer
+							$part_one = $parts[2];
+							$ptwoexists = true;
+						}
+						$commatest = str_split($part_one); 
+						while (strrpos($part_one, ',') !==false and strrpos($part_one, ',') > $commatest[count($commatest)-1] or strpos($part_one, '(') !== false and strpos($part_one, ')') == false) {
+							$part_one .= fgets($file);
+							$commatest = str_split($part_one);
+							if(strpos($part_one, ';')!==false){break;} //if the end of the command is found
+						}
+						foreach($db->query($part_one) as $row) {
+							print_r($row);
+						}
+						if(!empty($part_one)){var_dump($part_one);}//////////////////////////////////////
+						sleep(3);
 					}
 					$line_by_line = explode("\n", $line_of_text);
 					fclose($file);
@@ -1528,4 +1538,5 @@ public function sql_comm($args, $assoc_args) {
     }
   }
 }
+
 \Terminus::add_command( 'site', 'Site_Command' );
