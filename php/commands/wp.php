@@ -69,7 +69,7 @@ class WPCLI_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    Terminus::line( "Running wp %s %s on %s-%s", array($command,$flags,$site->getName(),$environment));
+    fputs( STDERR, vsprintf( "Running wp %s %s on %s-%s\n", array($command,$flags,$site->getName(),$environment) ) );
     $this->send_command($server, 'wp', $args, $assoc_args );
 
   }
