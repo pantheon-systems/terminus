@@ -309,7 +309,7 @@ class Sites_Command extends Terminus_Command {
         $update = $noupdatedb ? false : true;
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
-          $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", $assoc_args, array($site->getName(), var_export($update,1), var_export($xoption,1)));
+          $confirmed = Input::yesno("Apply upstream updatefs to %s ( run update.php:%s, xoption:%s ) ", array($site->getName(), var_export($update,1), var_export($xoption,1)));
           if( !$confirmed ) continue; // Suer says No, go back to start.
 
           // Backup the DB so the client can restore if something goes wrong.
