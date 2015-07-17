@@ -20,7 +20,7 @@ class FeatureContext extends BehatContext {
 
     /**
     * Initializes context. Sets directories for navigation.
-    * 
+    *
     * @param [array] $parameters Context parameters, set through behat.yml
     * @return [void]
     */
@@ -37,7 +37,7 @@ class FeatureContext extends BehatContext {
     /**
     * @BeforeScenario
     * Runs before each scenario
-    * 
+    *
     * @param [ScenarioEvent] $event Feature information from Behat
     * @return [void]
     */
@@ -46,8 +46,8 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-    * @Then /^I enter "([^"]*)"$/ 
-    * 
+    * @Then /^I enter "([^"]*)"$/
+    *
     * @param [string] $string To be treated as CL stdin
     * @return [void]
     */
@@ -57,9 +57,21 @@ class FeatureContext extends BehatContext {
     }
 
     /**
+     * @Given /^a site named "([^"]*)"$/
+     */
+    public function aSiteNamed($site_name) {
+      $output = $this->iRun('terminus site info --site=' .  $site_name);
+      if ($this->_checkResult('created', $output)) {
+        return true;
+      } else {
+        $this->iRun('terminus sites create --site=' .  $site_name);
+      }
+    }
+
+    /**
     * @When /^I run "([^"]*)"$/
     * Runs command and saves output
-    * 
+    *
     * @param [string] $command To be entered as CL stdin
     * @return [void]
     */
@@ -67,23 +79,24 @@ class FeatureContext extends BehatContext {
       $command      = $this->_replacePlaceholders($command);
       $regex        = '/(?<!\.)terminus/';
       $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
-      $command      = 'VCR_CASSETTE=' . $this->_cassette_name 
+      $command      = 'VCR_CASSETTE=' . $this->_cassette_name
         . ' ' . preg_replace($regex, $terminus_cmd, $command);
       if(isset($this->_parameters['vcr_mode'])) {
-        $command = 'VCR_MODE=' . $this->_parameters['vcr_mode'] 
+        $command = 'VCR_MODE=' . $this->_parameters['vcr_mode']
           . ' ' . $command;
       }
       if(isset($this->_connection_info['host'])) {
-        $command = 'TERMINUS_HOST=' . $this->_connection_info['host'] 
+        $command = 'TERMINUS_HOST=' . $this->_connection_info['host']
           . ' ' . $command;
       }
       $this->_output = shell_exec($command);
+      return $this->_output;
     }
 
     /**
-    * @Then /^I should get:$/ 
+    * @Then /^I should get:$/
     * Swap in $this->_parameters elements by putting them in [[double brackets]]
-    * 
+    *
     * @param [PyStringNode] $string Content which ought not be in the output
     * @return [void]
     */
@@ -94,8 +107,8 @@ class FeatureContext extends BehatContext {
     }
 
     /**
-    * @Then /^I should not get:$/ 
-    * 
+    * @Then /^I should not get:$/
+    *
     * @param [PyStringNode] $string Content which ought not be in the output
     * @return [void]
     */
@@ -107,7 +120,7 @@ class FeatureContext extends BehatContext {
 
     /**
     * Checks the the haystack for the needle
-    * 
+    *
     * @param [string] $needle   That which is searched for
     * @param [string] $haystack That which is searched inside
     * @return [boolean] $result True if $nededle was found in $haystack
@@ -120,7 +133,7 @@ class FeatureContext extends BehatContext {
 
     /**
     * Returns tags in easy-to-use array format.
-    * 
+    *
     * @param [ScenarioEvent] $event Feature information from Behat
     * @return $tags [array] An array of strings corresponding to tags
     */
@@ -146,7 +159,7 @@ class FeatureContext extends BehatContext {
     /**
     * Exchanges values in given string with square brackets for values
     * in $this->_parameters
-    * 
+    *
     * @param [string] $string The string to perform replacements on
     * @return [string] $string The modified param string
     */
@@ -166,7 +179,7 @@ class FeatureContext extends BehatContext {
 
     /**
     * Sets $this->_cassette_name and returns name of the cassette to be used.
-    * 
+    *
     * @param [ScenarioEvent] $event Feature information from Behat
     * @return [string] Of scneario name, lowercase, with underscores and suffix
     */
