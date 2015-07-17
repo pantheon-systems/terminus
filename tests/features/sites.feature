@@ -10,7 +10,7 @@ Feature: sites
 
   Scenario: Create Site
     @vcr sites-create
-    When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --org=0 --product=WordPress"
+    When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --product=WordPress"
     And I run "terminus sites list"
     Then I should get:
     """
