@@ -206,7 +206,11 @@ class Site_Command extends Terminus_Command {
     if (@$assoc_args['set']) {
       $action = 'set';
     }
-    $env = Input::env($assoc_args, 'env');
+
+    # Omit test/live environments from options
+    $environments =  array_diff($site->availableEnvironments(), array('test', 'live'));
+
+    $env = Input::env($assoc_args, 'env', 'Choose environment', $environments);
     if (($env == 'test' || $env == 'live') && $action == 'set') {
       Terminus::error("Connection mode cannot be set in Test or Live environments");
     }
