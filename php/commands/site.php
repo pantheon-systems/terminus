@@ -341,7 +341,7 @@ class Site_Command extends Terminus_Command {
     if (empty($orgs)) {
       Terminus::error("No organizations");
     }
-    
+
     // format the data
     foreach ($orgs as $org) {
       $data[] = array(
@@ -490,7 +490,7 @@ class Site_Command extends Terminus_Command {
         break;
       case 'create':
         if (!array_key_exists('element',$assoc_args)) {
-          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element"); 
+          $assoc_args['element'] = Input::menu(array('code','db','files','all'), 'all', "Select element");
         }
         $result = $site->environment($env)->createBackup($assoc_args);
         if ($result) {
@@ -509,7 +509,7 @@ class Site_Command extends Terminus_Command {
           $date = 'Pending';
           if (isset($backup->finish_time)) {
             $date = date("Y-m-d H:i:s", $backup->finish_time);
-          } 
+          }
           $data[] = array(
             $backup->filename,
             sprintf("%dMB", $backup->size / 1024 / 1024),
@@ -577,7 +577,7 @@ class Site_Command extends Terminus_Command {
      \Terminus::confirm($confirm);
 
       if ( !$this->envExists($site_id, $to_env) ) {
-        \Terminus::error("The %s environment has not been created yet. run `terminus site create-env [--site=<env>]`", $to_env);
+        \Terminus::error("The %s environment was not found.", $to_env);
       }
 
      if ($db) {
@@ -754,7 +754,7 @@ class Site_Command extends Terminus_Command {
   }
 
    private function envExists($site_id, $env) {
-     $response = \Terminus_Command::request('sites', $site_id, 'code-tips', 'GET');
+     $response = \Terminus_Command::request('sites', $site_id, 'environments', 'GET');
      $envs = (array) $response['data'];
      return array_key_exists($env, $envs);
    }
