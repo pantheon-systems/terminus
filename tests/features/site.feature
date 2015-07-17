@@ -8,3 +8,12 @@ Feature: site
     """
     Cloning files ... Working .
     """
+
+  Scenario: Site Connection Mode
+    @vcr site-connection-mode
+    Given a site named "[[test_site_name]]"
+    When I run "terminus site connection-mode --site=behat-test --env=dev"
+    Then I should get:
+    """
+    Git
+    """

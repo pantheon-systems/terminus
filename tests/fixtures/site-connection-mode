@@ -1,0 +1,113 @@
+
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/sites'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:ff699b28-2cbf-11e5-afd8-bc764e115846:VXTb5d3oL9xwGk7i2KeKf'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 17 Jul 2015 20:25:36 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '605'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: fba960c0-2cc1-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"25d-8bf6b62f"'
+            Vary: Accept-Encoding
+        body: '{"9e92823c-c980-4b0e-8889-f557bfd02aaa": {"information": {"created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "behat-test", "created": 1437161220, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "git://github.com/pantheon-systems/drops-7.git", "product_id": "8f4d5df2-c975-4e95-8c30-9615773d8b6a", "branch": "master"}, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "last_code_push": {"timestamp": "2015-07-17T19:27:10", "user_uuid": null}, "preferred_zone": "onebox"}, "metadata": null}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/9e92823c-c980-4b0e-8889-f557bfd02aaa/environments'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:ff699b28-2cbf-11e5-afd8-bc764e115846:VXTb5d3oL9xwGk7i2KeKf'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 17 Jul 2015 20:25:38 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: fc775f20-2cc1-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"ZTd0yhFvWwa1KNne0C5EQQ=="'
+            Vary: Accept-Encoding
+        body: '{"dev": {"environment_created": 1437161220, "dns_zone": "onebox.pantheon.io", "randseed": "A9GOYE60ZDVFYEJV5Z7ZIZEFWK0ICSG6", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "96b21c31099d9d72604d26f73d50f8a2ff98c3f2", "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}, "test": {"environment_created": 1437161220, "dns_zone": "onebox.pantheon.io", "randseed": "W46NASBN13HHJIKBYS2UR9WSAC8VSOFT", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}, "testenv": {"environment_created": 1437164557, "dns_zone": "onebox.pantheon.io", "randseed": "QYYC256ZALNLB71EDO7H3P7O4R1TC4LQ", "target_ref": "refs/heads/testenv", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "96b21c31099d9d72604d26f73d50f8a2ff98c3f2", "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}, "live": {"environment_created": 1437161220, "dns_zone": "onebox.pantheon.io", "randseed": "WUHBD5FEPLGVTCWXBSZSTYPISV8AVNIV", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/sites'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:ff699b28-2cbf-11e5-afd8-bc764e115846:VXTb5d3oL9xwGk7i2KeKf'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 17 Jul 2015 20:28:12 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '605'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 587b2090-2cc2-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"25d-8bf6b62f"'
+            Vary: Accept-Encoding
+        body: '{"9e92823c-c980-4b0e-8889-f557bfd02aaa": {"information": {"created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "behat-test", "created": 1437161220, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "git://github.com/pantheon-systems/drops-7.git", "product_id": "8f4d5df2-c975-4e95-8c30-9615773d8b6a", "branch": "master"}, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "last_code_push": {"timestamp": "2015-07-17T19:27:10", "user_uuid": null}, "preferred_zone": "onebox"}, "metadata": null}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/9e92823c-c980-4b0e-8889-f557bfd02aaa/environments/dev/on-server-development'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:ff699b28-2cbf-11e5-afd8-bc764e115846:VXTb5d3oL9xwGk7i2KeKf'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 17 Jul 2015 20:28:13 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '18'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 594d8bc0-2cc2-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"12-f2f55b85"'
+            Vary: Accept-Encoding
+        body: '{"enabled": false}'
