@@ -173,27 +173,27 @@ abstract class Terminus_Command {
    * @deprecated Use new WorkFlow() object instead
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
-  protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
+  protected function waitOnWorkflow($object_name, $object_id, $workflow_id ) {
     print "Working .";
     Terminus::set_config('nocache',true);
-    $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
+    $workflow = self::request($object_name, $object_id, "workflows/$workflow_id", 'GET');
     $result = $workflow['data']->result;
     $desc = $workflow['data']->active_description;
     $type = $workflow['data']->type;
     $tries = 0;
-    while(!isset($result) AND ($tries < 100)) {
-      if ( 'failed' == $result OR 'aborted' == $result ) {
+    while(!isset($result)) {
+      if ('failed' == $result OR 'aborted' == $result) {
         if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages)) {
           foreach($workflow['data']->final_task->messages as $data => $message) {
             sprintf('[%s] %s', $message->level, $message->message);
           }
         } else {
-          Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
+          Terminus::error(PHP_EOL . "Couldn't complete jobs: '{$type}'" . PHP_EOL);
         }
       }
-      $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
+      $workflow = self::request($object_name, $object_id, "workflows/{$workflow_id}", 'GET');
       $result = $workflow['data']->result;
-      if (Terminus::get_config('debug')) {
+      if(Terminus::get_config('debug')) {
         print_r($workflow);
       }
       sleep(3);
@@ -201,11 +201,11 @@ abstract class Terminus_Command {
       $tries++;
     }
     print PHP_EOL;
-    if(("succeeded" === $workflow['data']->result) OR ("aborted" === $workflow['data']->result))
+    if(in_array($workflow['data']->result, array("succeeded", "aborted"))) {
       return $workflow['data'];
+    }
     
     return false;
-    unset($workflow);
   }
 
   protected function handleDisplay($data,$args = array(), $headers = null) {
