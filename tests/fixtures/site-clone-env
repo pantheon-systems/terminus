@@ -2,7 +2,7 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/sites'
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/sites'
         headers:
             Host: onebox
             Accept: null
