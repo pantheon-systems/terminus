@@ -35,6 +35,7 @@
 <rule ref="Generic.PHP.LowerCaseConstant"/>
 <rule ref="Generic.PHP.NoSilencedErrors"/>
 <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
 <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 <rule ref="Generic.WhiteSpace.ScopeIndent">
     <properties>
