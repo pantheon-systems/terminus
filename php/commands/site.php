@@ -1362,57 +1362,55 @@ class Site_Command extends Terminus_Command {
    *    terminus site mysql act --site=mikes-wp-test --env=live
    *
    */
-public function sql_comm($args, $assoc_args) {
-    $action = array_shift($args);
-    $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-    if (!isset($env)) {
-        $env = 'dev';
-    }
-    switch ($action) {
-      case 'act':
-        $bindings = $site->bindings('dbserver');
-        if (empty($bindings)) {
-          \Terminus::error("Mysql cache not enabled");
-        }
-        $commands = array();
-        foreach($bindings as $binding) {
-          if (is_null($env) || $env === $binding->environment) {
-            if(!isset($binding->site_uuid)) {
-              $siteid = $binding->site;
-            }
-            else {
-              $siteid = $binding->site_uuid;
-            }
-            if (isset($assoc_args['import'])) {
-               $importneeds = array($binding->username, $binding->password, $binding->type, $binding->environment, $siteid);
-               $u_input = ' < frombackup_dev_2015-07-10T19-59-20_UTC_database.sql;';
-               $not_input = false;
-            }
-            if (!isset($not_input) or $not_input != false) {
-                $u_input = readline("MySQL Command: ");
-                readline_add_history($u_input);
-                $not_input = false;
-            }
-            $args = array($u_input, $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
-            array_filter($args, function($a) { return escapeshellarg($a); });
-            $commands[$binding->environment] = vsprintf(
-              'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon',
-              $args
-            );
-            }
-        }
-        foreach ($commands as $env => $command) {
+//public function sql_comm($args, $assoc_args) {
+  //  $action = array_shift($args);
+    //$site = SiteFactory::instance(Input::site($assoc_args));
+    //$env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+    //if (!isset($env)) {
+     //   $env = 'dev';
+    //}
+    //switch ($action) {
+      //case 'act':
+        //$bindings = $site->bindings('dbserver');
+        //if (empty($bindings)) {
+          //\Terminus::error("Mysql cache not enabled");
+        //}
+        //$commands = array();
+        //foreach($bindings as $binding) {
+          //if (is_null($env) || $env === $binding->environment) {
+            //if(!isset($binding->site_uuid)) {
+              //$siteid = $binding->site;
+          //  }
+            //else {
+              //$siteid = $binding->site_uuid;
+          //  }
+            //if (isset($assoc_args['import'])) {
+              // $importneeds = array($binding->username, $binding->password, $binding->type, $binding->environment, $siteid);
+               //$u_input = ' < frombackup_dev_2015-07-10T19-59-20_UTC_database.sql;';
+               //$not_input = false;
+            //}
+            //if (!isset($not_input) or $not_input != false) {
+              //  $u_input = readline("MySQL Command: ");
+                //readline_add_history($u_input);
+                //$not_input = false;
+            //}
+            //$args = array($u_input, $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
+            //array_filter($args, function($a) { return escapeshellarg($a); });
+            //$commands[$binding->environment] = vsprintf(
+              //'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon',
+             // $args
+            //);
+           // }
+        //}
+        //foreach ($commands as $env => $command) {
           //////////////insert import command here whenready
-          exec($command, $stdout, $return);
-          var_dump($stdout);
-        }
-      break;
+          //exec($command, $stdout, $return);
+         // var_dump($stdout);
+        //}
+     // break;
       //
-    }
-  }
-
-
+  //  }
+  //}
 
 
      /**
@@ -1420,11 +1418,14 @@ public function sql_comm($args, $assoc_args) {
    *
    * ## OPTIONS
    *
-   * <pdo>
-   * : get info about mysql database
-   *
-   * [--import]
-   * : import an sql database
+   * <act>
+   * : input a command to use in MySQL
+   * 
+   * [--encrypt]
+   * : use an encrypted PDO connection
+   * 
+   * [--tunnel]
+   * : tunnel the database connection over SSH
    *
    * [--site=<site>]
    * : site name
@@ -1438,21 +1439,23 @@ public function sql_comm($args, $assoc_args) {
    *
    */
 
-   public function sql_pdo($args, $assoc_args) {
+   public function mysql_connect($args, $assoc_args) {
      $action = array_shift($args);
+     if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
+			 echo 'Options --encrypt and --tunnel cannot be used at once.';
+		 	 die();
+		 }
      $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
      switch ($action) {
-       case 'pdo':
+       case 'act':
          $bindings = $site->bindings('dbserver');
          if (empty($bindings)) {
            \Terminus::error("Sql bindings empty.");
          }
          foreach($bindings as $binding) {
            if (!isset($env) || $env === $binding->environment) {
-             if (!isset($env)) {
-               $env = 'dev';
-             }
+             if (!isset($env) || $env == null) {$env = 'dev';}
              $host = $binding->host;
              $database = $binding->database;
              $user = $binding->username;
@@ -1463,68 +1466,16 @@ public function sql_comm($args, $assoc_args) {
                readline_add_history($u_input);
                $not_input = false;
              }
-             else {
-               $import = 'yes';
-             }
              try {
-               $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
-               if (isset($import)) {
-                 $filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
-                 readline_add_history($filename);
-                 $file_exti = pathinfo($filename);
-                 if ($file_exti['extension'] == 'gz') {
-                   $file = gzopen($filename, 'r');
-                 }
-                 elseif ($file_exti['extension'] == 'sql') {
-                   $file = fopen($filename, 'r');
-                 }
-                 else {
-                   echo 'this file is not a valid SQL file.';
-                   die();
-                 }
-                 echo 'Importing: ';
-                 $line_of_text = '';
-                 while (!feof($file)) {
-                   if (!isset($ptwoexists) or $ptwoexists !== true or !isset($ptwoexistsa) or $ptwoexistsa !== true) {
-                     $tilltheend_oftheline = fgets($file);
-                     $parts = explode(';', $tilltheend_oftheline, 2);
-                     $part_one = $parts[0];
-                   }
-                   if (!isset($part_one)){ continue; }
-                   $pattern = '#/\*.+?\*/#s';
-                   $part_one =  preg_replace($pattern, '', $part_one);
-                   $opattern = '--';
-                   $part_one = preg_replace('/--.*/s', '', $part_one);
-                   if (strpos($tilltheend_oftheline, ';') !== false and !empty($part_one)) {
-                     $part_one .= ';dontuseme';
-                     $newparts = explode('dontuseme', $part_one, 2);
-                     $part_one = $newparts[0];
-                     $part_one = strstr($part_one, ';', true) . ';';
-                     $ptwoexistsa = true;
-                   }
-                   if (empty($part_one) == true) {continue;}
-                   if (isset($parts[2])) {
-                     $part_one = $parts[2];
-                     $ptwoexists = true;
-                   }
-                   $commatest = str_split($part_one);
-                   while (strrpos($part_one, ',') !== false and strrpos($part_one, ',') > $commatest[count($commatest)-1] 
-                   or strpos($part_one, '(') !== false and strpos($part_one, ')') == false) {
-                     $part_one .= fgets($file);
-                     $commatest = str_split($part_one);
-                     if (strpos($part_one, ';') !==  false){break;}
-                   }
-                   foreach ((array) $db->query($part_one) as $row) {
-                     print_r($row);
-                   }
-                 }  
-                 $line_by_line = explode("\n", $line_of_text);
-                 fclose($file);
-               } 
-               if (!isset($import)) {
-                 foreach($db->query($u_input) as $row) {
-                   print_r($row);
-                 }
+               if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
+               else {
+								 $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+								 $hostarr = array($binding->type, $env, $binding->site_uuid);
+								 $host = vsprintf('%.%.%.drush.in', $hostarr);
+							 	 $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
+							 }
+               foreach($db->query($u_input) as $row) {
+                 print_r($row);
                }
                $db = null;
                } catch (PDOException $e) {
@@ -1535,6 +1486,121 @@ public function sql_comm($args, $assoc_args) {
          }  
          break;
       }
+   }
+
+
+     /**
+   * Imports a SQL dump to MySQL
+   *
+   * ## OPTIONS
+   *
+   * [--encrypt]
+   * : use an encrypted PDO connection
+   * 
+   * [--tunnel]
+   * : tunnel the database connection over SSH
+   *
+   * [--site=<site>]
+   * : site name
+   *
+   * [--env=<env>]
+   * : environment
+   *
+   * ## Examples
+   *
+   *    terminus site mysql_import dump --site=mikes-wp-test --env=live
+   *
+   */
+
+   public function mysql_import($args, $assoc_args) {
+     $action = array_shift($args);
+     if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
+			 echo 'Options --encrypt and --tunnel cannot be used at once.';
+		 	 die();
+		 }
+     $site = SiteFactory::instance(Input::site($assoc_args));
+     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+     $bindings = $site->bindings('dbserver');
+     if (empty($bindings)) {
+       \Terminus::error("Sql bindings empty.");
+     }
+     foreach($bindings as $binding) {
+       if (!isset($env) || $env === $binding->environment) {
+         if (!isset($env) || $env == null) {
+           $env = 'dev';
+         }
+         $host = $binding->host;
+         $database = $binding->database;
+         $user = $binding->username;
+         $pass = $binding->password;
+         $port = $binding->port;
+         $import = 'yes';  
+         try {
+           if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
+           else {
+					   $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+						 $hostarr = array($binding->type, $env, $binding->site_uuid);
+						 $host = vsprintf('%.%.%.drush.in', $hostarr);
+					 	 $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
+					 }
+           $filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
+           readline_add_history($filename);
+           $file_exti = pathinfo($filename);
+           if ($file_exti['extension'] == 'gz') {
+             $file = gzopen($filename, 'r');
+           }
+           elseif ($file_exti['extension'] == 'sql') {
+            $file = fopen($filename, 'r');
+           }
+           else {
+            echo 'this file is not a valid SQL file.';
+            die();
+           }
+           echo 'Importing: ';
+           $line_of_text = '';
+           while (!feof($file)) {
+             if (!isset($ptwoexists) || $ptwoexists !== true || !isset($ptwoexistsa) || $ptwoexistsa !== true) {
+               $tilltheend_oftheline = fgets($file);
+               $parts = explode(';', $tilltheend_oftheline, 2);
+               $part_one = $parts[0];
+             }
+             if (!isset($part_one)){ continue; }
+             $pattern = '#/\*.+?\*/#s';
+             $part_one =  preg_replace($pattern, '', $part_one);
+             $opattern = '--';
+             $part_one = preg_replace('/--.*/s', '', $part_one);
+             if (strpos($tilltheend_oftheline, ';') !== false && !empty($part_one)) {
+               $part_one .= ';dontuseme';
+               $newparts = explode('dontuseme', $part_one, 2);
+               $part_one = $newparts[0];
+               $part_one = strstr($part_one, ';', true) . ';';
+               $ptwoexistsa = true;
+             }
+             if (empty($part_one) == true) {continue;}
+             if (isset($parts[2])) {
+              $part_one = $parts[2];
+               $ptwoexists = true;
+             }
+             $commatest = str_split($part_one);
+             while (strrpos($part_one, ',') !== false && strrpos($part_one, ',') > $commatest[count($commatest)-1] 
+             || strpos($part_one, '(') !== false && strpos($part_one, ')') == false) {
+               $part_one .= fgets($file);
+               $commatest = str_split($part_one);
+               if (strpos($part_one, ';') !==  false){break;}
+             }
+             foreach ((array) $db->query($part_one) as $row) {
+               print_r($row);
+             }
+           }  
+           $line_by_line = explode("\n", $line_of_text);
+           fclose($file);
+           $db = null;
+           } catch (PDOException $e) {
+             print "Error!: " . $e->getMessage() . "\n";
+             die();
+           }
+       }
+     }  
    }
 }
 
