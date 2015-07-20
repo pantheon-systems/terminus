@@ -1471,8 +1471,6 @@ class Site_Command extends Terminus_Command {
              $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
              $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
              $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
-             $sameport = $port;
-             $samepass = $pass;
            }
            foreach($db->query($u_input) as $row) {
              print_r($row);
@@ -1487,8 +1485,6 @@ class Site_Command extends Terminus_Command {
        }
      }
    }
-
-
 
      /**
    * Imports a SQL dump to MySQL
@@ -1535,14 +1531,14 @@ class Site_Command extends Terminus_Command {
          $user = $binding->username;
          $pass = $binding->password;
          $port = $binding->port;
+         $uuid = $binding->site;
          $import = 'yes';
          try {
            if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
            else {
-             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-             $hostarr = array($binding->type, $env, $binding->site_uuid);
-             $host = vsprintf('%.%.%.drush.in', $hostarr);
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
+            $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
            }
            $filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
            readline_add_history($filename);
@@ -1566,8 +1562,8 @@ class Site_Command extends Terminus_Command {
                $part_one = $parts[0];
              }
              if (!isset($part_one)){ continue; }
-             $pattern = '#/\*.+?\*/#s';
-             $part_one =  preg_replace($pattern, '', $part_one);
+             //$pattern = '#/\*.+?\*/#s';
+             //$part_one =  preg_replace($pattern, '', $part_one);
              $opattern = '--';
              $part_one = preg_replace('/--.*/s', '', $part_one);
              if (strpos($tilltheend_oftheline, ';') !== false && !empty($part_one)) {
