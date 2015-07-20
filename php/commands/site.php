@@ -1413,17 +1413,15 @@ class Site_Command extends Terminus_Command {
   //}
 
 
+
      /**
    * Interacts with mysql
    *
    * ## OPTIONS
    *
-   * <act>
-   * : input a command to use in MySQL
-   * 
    * [--encrypt]
    * : use an encrypted PDO connection
-   * 
+   *
    * [--tunnel]
    * : tunnel the database connection over SSH
    *
@@ -1442,51 +1440,54 @@ class Site_Command extends Terminus_Command {
    public function mysql_connect($args, $assoc_args) {
      $action = array_shift($args);
      if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
-			 echo 'Options --encrypt and --tunnel cannot be used at once.';
-		 	 die();
-		 }
+       echo 'Options --encrypt and --tunnel cannot be used at once.';
+       die();
+     }
      $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-     switch ($action) {
-       case 'act':
-         $bindings = $site->bindings('dbserver');
-         if (empty($bindings)) {
-           \Terminus::error("Sql bindings empty.");
+     $bindings = $site->bindings('dbserver');
+     if (empty($bindings)) {
+       \Terminus::error("Sql bindings empty.");
+     }
+     foreach($bindings as $binding) {
+       if (!isset($env) || $env === $binding->environment || $env = null) {
+         if (!isset($env) || $env == null) {$env = 'dev';}
+         $host = $binding->host;
+         $database = $binding->database;
+         $user = $binding->username;
+         $pass = $binding->password;
+         $port = $binding->port;
+         $uuid = $binding->site;
+         if (!isset($not_input) or $not_input == true) {
+           $u_input = readline("MySQL Command: ");
+           readline_add_history($u_input);
+           $not_input = false;
          }
-         foreach($bindings as $binding) {
-           if (!isset($env) || $env === $binding->environment) {
-             if (!isset($env) || $env == null) {$env = 'dev';}
-             $host = $binding->host;
-             $database = $binding->database;
-             $user = $binding->username;
-             $pass = $binding->password;
-             $port = $binding->port;
-             if ((!isset($not_input) or $not_input == true) and !isset($assoc_args['import'])) {
-               $u_input = readline("MySQL Command: ");  
-               readline_add_history($u_input);
-               $not_input = false;
-             }
-             try {
-               if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
-               else {
-								 $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-								 $hostarr = array($binding->type, $env, $binding->site_uuid);
-								 $host = vsprintf('%.%.%.drush.in', $hostarr);
-							 	 $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
-							 }
-               foreach($db->query($u_input) as $row) {
-                 print_r($row);
-               }
-               $db = null;
-               } catch (PDOException $e) {
-                 print "Error!: " . $e->getMessage() . "\n";
-                 die();
-               }
+         try {
+           if(!isset($assoc_args['encrypt'])){
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
            }
-         }  
-         break;
-      }
+           else {//
+             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
+             $sameport = $port;
+             $samepass = $pass;
+           }
+           foreach($db->query($u_input) as $row) {
+             print_r($row);
+           }
+           $db = null;
+           break;
+         } catch (PDOException $e) {
+           print "Error!: " . $e->getMessage() . "\n";
+           var_dump($port, $pass);
+           die();
+         }
+       }
+     }
    }
+
 
 
      /**
@@ -1496,7 +1497,7 @@ class Site_Command extends Terminus_Command {
    *
    * [--encrypt]
    * : use an encrypted PDO connection
-   * 
+   *
    * [--tunnel]
    * : tunnel the database connection over SSH
    *
@@ -1515,9 +1516,9 @@ class Site_Command extends Terminus_Command {
    public function mysql_import($args, $assoc_args) {
      $action = array_shift($args);
      if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
-			 echo 'Options --encrypt and --tunnel cannot be used at once.';
-		 	 die();
-		 }
+       echo 'Options --encrypt and --tunnel cannot be used at once.';
+       die();
+     }
      $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
      $bindings = $site->bindings('dbserver');
@@ -1534,15 +1535,15 @@ class Site_Command extends Terminus_Command {
          $user = $binding->username;
          $pass = $binding->password;
          $port = $binding->port;
-         $import = 'yes';  
+         $import = 'yes';
          try {
            if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
            else {
-					   $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-						 $hostarr = array($binding->type, $env, $binding->site_uuid);
-						 $host = vsprintf('%.%.%.drush.in', $hostarr);
-					 	 $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
-					 }
+             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+             $hostarr = array($binding->type, $env, $binding->site_uuid);
+             $host = vsprintf('%.%.%.drush.in', $hostarr);
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port;options=$options", $user, $pass);
+           }
            $filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
            readline_add_history($filename);
            $file_exti = pathinfo($filename);
@@ -1582,7 +1583,7 @@ class Site_Command extends Terminus_Command {
                $ptwoexists = true;
              }
              $commatest = str_split($part_one);
-             while (strrpos($part_one, ',') !== false && strrpos($part_one, ',') > $commatest[count($commatest)-1] 
+             while (strrpos($part_one, ',') !== false && strrpos($part_one, ',') > $commatest[count($commatest)-1]
              || strpos($part_one, '(') !== false && strpos($part_one, ')') == false) {
                $part_one .= fgets($file);
                $commatest = str_split($part_one);
@@ -1591,7 +1592,7 @@ class Site_Command extends Terminus_Command {
              foreach ((array) $db->query($part_one) as $row) {
                print_r($row);
              }
-           }  
+           }
            $line_by_line = explode("\n", $line_of_text);
            fclose($file);
            $db = null;
@@ -1600,7 +1601,7 @@ class Site_Command extends Terminus_Command {
              die();
            }
        }
-     }  
+     }
    }
 }
 
