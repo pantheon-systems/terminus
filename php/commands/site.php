@@ -1536,35 +1536,18 @@ class Site_Command extends Terminus_Command {
 
    public function mysql_import($args, $assoc_args) {
      $action = array_shift($args);
-     if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
-       echo 'Options --encrypt and --tunnel cannot be used at once.';
-       die();
-     }
-     $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-     $bindings = $site->bindings('dbserver');
-     if (empty($bindings)) {
-       \Terminus::error("Sql bindings empty.");
-     }
-     foreach($bindings as $binding) {
-       if (!isset($env) || $env === $binding->environment) {
-         if (!isset($env) || $env == null) {
-           $env = 'dev';
-         }
-         $host = $binding->host;
-         $database = $binding->database;
-         $user = $binding->username;
-         $pass = $binding->password;
-         $port = $binding->port;
-         $uuid = $binding->site;
-         $import = 'yes';
-         try {
-           if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
-           else {
-            $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
-           }
+		if (!isset($env) || $env === $binding->environment || $env = null) {
+       if (!isset($env) || $env == null) {$env = 'dev';}    
+       try {
+           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){
+						 $extra = 'tunnel';
+					 }
+           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {
+						 $extra = 'encrypt';
+					 }
+					 elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+					 $db = $this->mysql_conn();
            function getLines() {
               $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
               readline_add_history($filename);
@@ -1609,7 +1592,7 @@ class Site_Command extends Terminus_Command {
 			  }
 			}
    }
- }
+
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
