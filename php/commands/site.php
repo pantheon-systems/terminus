@@ -1414,6 +1414,48 @@ class Site_Command extends Terminus_Command {
 
 
 
+     private function mysql_conn() {
+		 if(isset($db)){$db = null;}
+     $assoc_args = array();
+     $site = SiteFactory::instance(Input::site($assoc_args));
+     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+     if(isset($extra)) {$assoc_args = array($site, $env, $extra);}
+     else {
+			 $assoc_args = array($site, $env);
+		 }
+     $bindings = $site->bindings('dbserver');
+     if (empty($bindings)) {
+       \Terminus::error("Sql bindings empty.");
+     }
+     foreach($bindings as $binding) {
+       if (!isset($env) || $env === $binding->environment) {
+         if (!isset($env) || $env == null) {
+           $env = 'dev';
+         }
+         $host = $binding->host;
+         $database = $binding->database;
+         $user = $binding->username;
+         $pass = $binding->password;
+         $port = $binding->port;
+         $uuid = $binding->site;
+         try {
+           if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
+           else {
+             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
+           }
+					 return $db;
+				 } catch (PDOException $e) {
+					 print "Error!: " . $e->getMessage() . "\n";
+           die();
+	       }
+   	   }
+     }
+   }
+
+
+
      /**
    * Interacts with mysql
    *
@@ -1433,57 +1475,40 @@ class Site_Command extends Terminus_Command {
    *
    * ## Examples
    *
-   *    terminus site sql_pdo pdo --import --site=mikes-wp-test --env=live
+   *    terminus site mysql_act --site=mikes-wp-test --env=live
    *
    */
 
-   public function mysql_connect($args, $assoc_args) {
+   public function mysql_act($args, $assoc_args) {
      $action = array_shift($args);
-     if (isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {
-       echo 'Options --encrypt and --tunnel cannot be used at once.';
-       die();
-     }
-     $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-     $bindings = $site->bindings('dbserver');
-     if (empty($bindings)) {
-       \Terminus::error("Sql bindings empty.");
-     }
-     foreach($bindings as $binding) {
+
        if (!isset($env) || $env === $binding->environment || $env = null) {
          if (!isset($env) || $env == null) {$env = 'dev';}
-         $host = $binding->host;
-         $database = $binding->database;
-         $user = $binding->username;
-         $pass = $binding->password;
-         $port = $binding->port;
-         $uuid = $binding->site;
-         if (!isset($not_input) or $not_input == true) {
+         
+         try {
+           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){
+						 $extra = 'tunnel';
+					 }
+           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {
+						 $extra = 'encrypt';
+					 }
+					 elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+					 $db = $this->mysql_conn();
+					 if (!isset($not_input) or $not_input == true) {
            $u_input = readline("MySQL Command: ");
            readline_add_history($u_input);
            $not_input = false;
-         }
-         try {
-           if(!isset($assoc_args['encrypt'])){
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
-           }
-           else {//
-             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
-           }
+					}
            foreach($db->query($u_input) as $row) {
              print_r($row);
            }
-           $db = null;
-           break;
          } catch (PDOException $e) {
            print "Error!: " . $e->getMessage() . "\n";
-           var_dump($port, $pass);
            die();
          }
        }
-     }
+     
    }
 
      /**
@@ -1505,7 +1530,7 @@ class Site_Command extends Terminus_Command {
    *
    * ## Examples
    *
-   *    terminus site mysql_import dump --site=mikes-wp-test --env=live
+   *    terminus site mysql_import --site=mikes-wp-test --env=live
    *
    */
 
@@ -1540,65 +1565,51 @@ class Site_Command extends Terminus_Command {
              $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
              $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
            }
-           $filename = readline('Which dump would you like to import?  Please include the relative path.  '); //user inputs their file name
-           readline_add_history($filename);
-           $file_exti = pathinfo($filename);
-           if ($file_exti['extension'] == 'gz') {
-             $file = gzopen($filename, 'r');
+           function getLines() {
+              $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
+              readline_add_history($filename);
+              $file_exti = pathinfo($filename);
+              if ($file_exti['extension'] == 'gz') {
+                $file = gzopen($filename, 'r');
+              }
+              elseif ($file_exti['extension'] == 'sql') {
+                $file = fopen($filename, 'r');
+              }
+              else {die('this file is not a valid SQL file.');}
+              $next_command = '';
+              try {
+                while ($line = fgets($file)) {
+                  if(strpos($line, '--') !== false){continue;} 
+                  $parts = explode(';', $line);
+                  $parts[0] = $next_command . $parts[0]; 
+                  $next_command = '';
+                  if ($parts[count($parts) - 1] !== '') { 
+                    $next_command = $parts[count($parts) - 1];
+                  }
+                  unset($parts[count($parts) - 1]);
+                  foreach ($parts as $command) {
+                    if(strpos($command, ';') == false) {$command .= ';';} 
+                      yield $command;
+                  }
+                }
+              }
+              finally {
+                  fclose($file);
+              }
            }
-           elseif ($file_exti['extension'] == 'sql') {
-            $file = fopen($filename, 'r');
-           }
-           else {
-            echo 'this file is not a valid SQL file.';
-            die();
-           }
-           echo 'Importing: ';
-           $line_of_text = '';
-           while (!feof($file)) {
-             if (!isset($ptwoexists) || $ptwoexists !== true || !isset($ptwoexistsa) || $ptwoexistsa !== true) {
-               $tilltheend_oftheline = fgets($file);
-               $parts = explode(';', $tilltheend_oftheline, 2);
-               $part_one = $parts[0];
-             }
-             if (!isset($part_one)){ continue; }
-             //$pattern = '#/\*.+?\*/#s';
-             //$part_one =  preg_replace($pattern, '', $part_one);
-             $opattern = '--';
-             $part_one = preg_replace('/--.*/s', '', $part_one);
-             if (strpos($tilltheend_oftheline, ';') !== false && !empty($part_one)) {
-               $part_one .= ';dontuseme';
-               $newparts = explode('dontuseme', $part_one, 2);
-               $part_one = $newparts[0];
-               $part_one = strstr($part_one, ';', true) . ';';
-               $ptwoexistsa = true;
-             }
-             if (empty($part_one) == true) {continue;}
-             if (isset($parts[2])) {
-              $part_one = $parts[2];
-               $ptwoexists = true;
-             }
-             $commatest = str_split($part_one);
-             while (strrpos($part_one, ',') !== false && strrpos($part_one, ',') > $commatest[count($commatest)-1]
-             || strpos($part_one, '(') !== false && strpos($part_one, ')') == false) {
-               $part_one .= fgets($file);
-               $commatest = str_split($part_one);
-               if (strpos($part_one, ';') !==  false){break;}
-             }
-             foreach ((array) $db->query($part_one) as $row) {
+           foreach (getLines() as $command) {
+             foreach ((array) $db->query($command) as $row) {
                print_r($row);
              }
            }
-           $line_by_line = explode("\n", $line_of_text);
-           fclose($file);
-           $db = null;
-           } catch (PDOException $e) {
-             print "Error!: " . $e->getMessage() . "\n";
-             die();
-           }
-       }
-     }
+         
+				} catch (PDOException $e) {
+				print "Error!: " . $e->getMessage() . "\n";
+				die();
+			  }
+			}
    }
+ }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
