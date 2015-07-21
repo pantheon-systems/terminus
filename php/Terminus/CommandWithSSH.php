@@ -15,18 +15,20 @@ abstract class CommandWithSSH extends \Terminus_Command {
 
     $remote_cmd = $remote_exec . ' ';
 
-    $remote_cmd .= implode(' ', $args);
+    foreach ($args as $arg) {
+      $remote_cmd .= escapeshellarg($arg) . ' ';
+    }
 
     foreach ($assoc_args as $key => $value) {
       if ($value != 1) {
-        $remote_cmd .= ' --' . $key . '=' . $value;
+        $remote_cmd .= ' --' . $key . '=' . escapeshellarg($value);
       }
       else {
         $remote_cmd .= ' --' . $key;
       }
     }
 
-    $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " '" . $remote_cmd . "'";
+    $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " " . escapeshellarg($remote_cmd);
 
     passthru( $cmd, $exit_code );
     if ($exit_code == 255) {

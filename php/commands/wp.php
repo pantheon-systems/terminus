@@ -63,7 +63,7 @@ class WPCLI_Command extends CommandWithSSH {
     $flags = '';
     foreach ( $assoc_args as $k => $v ) {
       if (isset($v) && (string) $v != '') {
-        $flags .= "--$k=$v ";
+        $flags .= "--$k=" . escapeshellarg($v) . ' ';
       }
       else {
         $flags .= "--$k ";
