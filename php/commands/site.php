@@ -1414,15 +1414,15 @@ class Site_Command extends Terminus_Command {
 
 
 
-     private function mysql_conn() {
-		 if(isset($db)){$db = null;}
+     private function mysql_conn($extra) {
+     if(isset($db)){$db = null;}
      $assoc_args = array();
      $site = SiteFactory::instance(Input::site($assoc_args));
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
      if(isset($extra)) {$assoc_args = array($site, $env, $extra);}
      else {
-			 $assoc_args = array($site, $env);
-		 }
+       $assoc_args = array($site, $env);
+     }
      $bindings = $site->bindings('dbserver');
      if (empty($bindings)) {
        \Terminus::error("Sql bindings empty.");
@@ -1439,18 +1439,25 @@ class Site_Command extends Terminus_Command {
          $port = $binding->port;
          $uuid = $binding->site;
          try {
-           if(!isset($assoc_args['encrypt'])){$db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);}
-           else {
+           if(!isset($extra)){
+						 $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
+						 }
+           elseif($extra == 'encrypt') {
              $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
              $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
              $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
            }
-					 return $db;
-				 } catch (PDOException $e) {
-					 print "Error!: " . $e->getMessage() . "\n";
+           elseif($extra == 'tunnel') {
+						 $session = ssh2_connect($host, $port, $pass);
+						 $st = ssh2_tunnel($session, $host, $port);
+						 $db = new PDO("mysql:host=$host'dbname=$database;$port=$port", $user, $pass);
+					 }
+           return $db;
+         } catch (PDOException $e) {
+           print "Error!: " . $e->getMessage() . "\n";
            die();
-	       }
-   	   }
+         }
+       }
      }
    }
 
@@ -1473,6 +1480,9 @@ class Site_Command extends Terminus_Command {
    * [--env=<env>]
    * : environment
    *
+   * [--c=<command>]
+   * : desired MySQL command
+   * 
    * ## Examples
    *
    *    terminus site mysql_act --site=mikes-wp-test --env=live
@@ -1482,24 +1492,24 @@ class Site_Command extends Terminus_Command {
    public function mysql_act($args, $assoc_args) {
      $action = array_shift($args);
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-
        if (!isset($env) || $env === $binding->environment || $env = null) {
          if (!isset($env) || $env == null) {$env = 'dev';}
-         
          try {
-           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){
-						 $extra = 'tunnel';
-					 }
-           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {
-						 $extra = 'encrypt';
-					 }
-					 elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
-					 $db = $this->mysql_conn();
-					 if (!isset($not_input) or $not_input == true) {
-           $u_input = readline("MySQL Command: ");
-           readline_add_history($u_input);
-           $not_input = false;
-					}
+           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
+           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
+           elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+           $db = $this->mysql_conn($extra);
+           while (!isset($not_input) or $not_input == true) {
+             if(isset($assoc_args['c'])) {
+               $u_input = $assoc_args['c'];
+               var_dump($u_input);
+               $not_input = false;
+               continue;
+             }
+             $u_input = readline("MySQL Command: ");
+             readline_add_history($u_input);
+             $not_input = false;
+           }
            foreach($db->query($u_input) as $row) {
              print_r($row);
            }
@@ -1507,8 +1517,7 @@ class Site_Command extends Terminus_Command {
            print "Error!: " . $e->getMessage() . "\n";
            die();
          }
-       }
-     
+       }  
    }
 
      /**
@@ -1527,7 +1536,7 @@ class Site_Command extends Terminus_Command {
    *
    * [--env=<env>]
    * : environment
-   *
+   * 
    * ## Examples
    *
    *    terminus site mysql_import --site=mikes-wp-test --env=live
@@ -1537,27 +1546,19 @@ class Site_Command extends Terminus_Command {
    public function mysql_import($args, $assoc_args) {
      $action = array_shift($args);
      $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-		if (!isset($env) || $env === $binding->environment || $env = null) {
+    if (!isset($env) || $env === $binding->environment || $env = null) {
        if (!isset($env) || $env == null) {$env = 'dev';}    
        try {
-           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){
-						 $extra = 'tunnel';
-					 }
-           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {
-						 $extra = 'encrypt';
-					 }
-					 elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
-					 $db = $this->mysql_conn();
+           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
+           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
+           elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+           $db = $this->mysql_conn($extra);
            function getLines() {
               $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
               readline_add_history($filename);
               $file_exti = pathinfo($filename);
-              if ($file_exti['extension'] == 'gz') {
-                $file = gzopen($filename, 'r');
-              }
-              elseif ($file_exti['extension'] == 'sql') {
-                $file = fopen($filename, 'r');
-              }
+              if ($file_exti['extension'] == 'gz') {$file = gzopen($filename, 'r');}
+              elseif ($file_exti['extension'] == 'sql') {$file = fopen($filename, 'r');}
               else {die('this file is not a valid SQL file.');}
               $next_command = '';
               try {
@@ -1586,13 +1587,12 @@ class Site_Command extends Terminus_Command {
              }
            }
          
-				} catch (PDOException $e) {
-				print "Error!: " . $e->getMessage() . "\n";
-				die();
-			  }
-			}
+        } catch (PDOException $e) {
+        print "Error!: " . $e->getMessage() . "\n";
+        die();
+        }
+      }
    }
-
-}
+ }
 
 \Terminus::add_command( 'site', 'Site_Command' );
