@@ -1440,19 +1440,25 @@ class Site_Command extends Terminus_Command {
          $uuid = $binding->site;
          try {
            if(!isset($extra)){
-						 $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
-						 }
+             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
+           }
            elseif($extra == 'encrypt') {
              $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
              $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
              $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
            }
            elseif($extra == 'tunnel') {
-						 $session = ssh2_connect($host, $port, $pass);
-						 $st = ssh2_tunnel($session, $host, $port);
-						 $db = new PDO("mysql:host=$host'dbname=$database;$port=$port", $user, $pass);
-					 }
-           return $db;
+             $host = 'appserver.'.$env.'.'.$uuid.'.drush.in'; 
+             $ruser = $env.'.'.$uuid; 
+             if(!($con = ssh2_connect($host, 2222, array('hostkey'=>'ssh-rsa')))){echo "fail: unable to establish connection\n";}
+             if (ssh2_auth_pubkey_file($con, $ruser, '~/.ssh/id_rsa.pub', '~/.ssh/id_rsa')) {
+               $command = 'ssh -i ~/.ssh/id_rsa -T -N -L 3308:dbserver.'.$ruser.'.drush.in:'.$binding->port. ' -p2222 appserver.'.$ruser.'@'.$host.'    > /dev/null 2>&1 &';
+               exec($command);
+               $db = new PDO("mysql:host=127.0.0.1;dbname=$database;port=3308", $user, $pass);
+             } 
+             else {die('Public Key Authentication Failed');}
+          }     
+          return $db;
          } catch (PDOException $e) {
            print "Error!: " . $e->getMessage() . "\n";
            die();
@@ -1460,9 +1466,7 @@ class Site_Command extends Terminus_Command {
        }
      }
    }
-
-
-
+   
      /**
    * Interacts with mysql
    *
