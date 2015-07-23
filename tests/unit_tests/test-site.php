@@ -1,5 +1,4 @@
 <?php
-use \Terminus\Fixtures;
 use \Terminus\SiteFactory;
 use \Terminus\Site;
 

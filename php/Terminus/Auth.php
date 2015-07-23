@@ -8,7 +8,7 @@ use Terminus\Session;
 class Auth {
 
   public static function loggedIn() {
-    if ( false === Session::instance()->getValue('session',false) AND !Terminus::is_test() ) {
+    if (Session::instance()->getValue('session', false) === false) {
       \Terminus::error("Please login first with `terminus auth login`");
     }
   }
