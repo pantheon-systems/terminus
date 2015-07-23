@@ -287,16 +287,15 @@ class Site_Command extends Terminus_Command {
    *
    */
   public function info($args, $assoc_args) {
-    $site = SiteFactory::instance( Input::site( $assoc_args ) );
-    $field = @$assoc_args['field'] ?: null;
-    $data = (array) $site->info($field);
-    if ($field) {
-      Terminus::line($data[0]);
-      return true;
-    }
-    $this->handleDisplay($data,$args);
-    return $data;
+    $sitename = Input::site($assoc_args);
+    $site = Site::createFromName($sitename);
 
+    if (isset($assoc_args['field'])) {
+      $field = $assoc_args['field'];
+      Terminus::line($site->info($field));
+    } else {
+      $this->handleDisplay($site->info(), $args);
+    }
   }
 
   /**
