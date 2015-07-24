@@ -90,7 +90,7 @@ class Sites_Command extends Terminus_Command {
    * : Label for the site
    *
    * [--org=<org>]
-   * : UUID of organization to add this site to; or "None"
+   * : UUID of organization into which to add this site
    *
    * [--import=<url>]
    * : A url to import a valid archive from
@@ -139,6 +139,7 @@ class Sites_Command extends Terminus_Command {
     $this->cache->flush(null,'session');
 
     if (isset($assoc_args['import'])) {
+      sleep(10); //To stop erroenous site-DNE errors
       Terminus::launch_self('site', array('import'), array(
         'url' => $assoc_args['import'],
         'site' => $data['site_name'],
@@ -169,7 +170,7 @@ class Sites_Command extends Terminus_Command {
   * : Label for the site
   *
   * [--org=<org>]
-  * : UUID of organization to add this site to; or "None"
+  * : UUID of organization into which to add this site
   *
   * @subcommand create-from-import
   */
@@ -179,6 +180,7 @@ class Sites_Command extends Terminus_Command {
       Terminus::error("Please enter a URL.");
     }
     $assoc_args['import'] = $url;
+    unset($assoc_args['url']);
 
     Terminus::launch_self('sites', array('create'), $assoc_args);
   }

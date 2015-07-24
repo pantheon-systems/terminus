@@ -12,7 +12,7 @@ Feature: site
   Scenario: Site Connection Mode
     @vcr site-connection-mode
     Given a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=behat-test --env=dev"
+    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
     Git

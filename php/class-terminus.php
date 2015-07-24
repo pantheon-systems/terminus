@@ -8,27 +8,24 @@ use \Terminus\FileCache;
  * Various utilities for Terminus commands.
  */
 class Terminus {
-
   private static $configurator;
-
   private static $logger;
-
   private static $hooks = array(), $hooks_passed = array();
 
   /**
    * Set the logger instance.
    *
-   * @param object $logger
+   * @param [object] $logger
    */
-  static function set_logger( $logger ) {
+  static function set_logger($logger) {
     self::$logger = $logger;
   }
 
   static function get_configurator() {
     static $configurator;
 
-    if ( !$configurator ) {
-      $configurator = new Terminus\Configurator( TERMINUS_ROOT . '/php/config-spec.php' );
+    if(!$configurator) {
+      $configurator = new Terminus\Configurator(TERMINUS_ROOT . '/php/config-spec.php');
     }
 
     return $configurator;
@@ -37,7 +34,7 @@ class Terminus {
   static function get_root_command() {
     static $root;
 
-    if ( !$root ) {
+    if(!$root) {
       $root = new Dispatcher\RootCommand;
     }
 
@@ -49,7 +46,7 @@ class Terminus {
     try {
       static $runner;
 
-      if ( !$runner ) {
+      if(!$runner) {
         $runner = new Terminus\Runner;
       }
 
@@ -65,24 +62,24 @@ class Terminus {
   public static function get_cache() {
     static $cache;
 
-    if ( !$cache ) {
-      $home = getenv( 'HOME' );
-      if ( !$home ) {
+    if(!$cache) {
+      $home = getenv('HOME');
+      if(!$home) {
         // sometime in windows $HOME is not defined
-        $home = getenv( 'HOMEDRIVE' ) . '/' . getenv( 'HOMEPATH' );
+        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
       }
-      $dir = getenv( 'TERMINUS_CACHE_DIR' ) ? : "$home/.terminus/cache";
+      $dir = getenv('TERMINUS_CACHE_DIR') ? : "$home/.terminus/cache";
 
       // 6 months, 300mb
-      $cache = new FileCache( $dir, 86400, 314572800 );
+      $cache = new FileCache($dir, 86400, 314572800);
     }
     $cache->clean();
 
     return $cache;
   }
 
-  static function colorize( $string ) {
-    return \cli\Colors::colorize( $string, self::get_runner()->in_color() );
+  static function colorize($string) {
+    return \cli\Colors::colorize($string, self::get_runner()->in_color());
   }
 
   /**
@@ -93,35 +90,35 @@ class Terminus {
    * @param array $args An associative array with additional parameters:
    *   'before_invoke' => callback to execute before invoking the command
    */
-  static function add_command( $name, $class, $args = array() ) {
+  static function add_command($name, $class, $args = array()) {
 
-    $path = preg_split( '/\s+/', $name );
+    $path = preg_split('/\s+/', $name);
 
-    $leaf_name = array_pop( $path );
+    $leaf_name = array_pop($path);
     $full_path = $path;
 
     $command = self::get_root_command();
 
-    while ( !empty( $path ) ) {
+    while (!empty($path)) {
       $subcommand_name = $path[0];
-      $subcommand = $command->find_subcommand( $path );
+      $subcommand = $command->find_subcommand($path);
       // create an empty container
-      if ( !$subcommand ) {
-        $subcommand = new Dispatcher\CompositeCommand( $command, $subcommand_name,
-          new \Terminus\DocParser( '' ) );
-        $command->add_subcommand( $subcommand_name, $subcommand );
+      if(!$subcommand) {
+        $subcommand = new Dispatcher\CompositeCommand($command, $subcommand_name,
+          new \Terminus\DocParser(''));
+        $command->add_subcommand($subcommand_name, $subcommand);
       }
 
       $command = $subcommand;
     }
 
-    $leaf_command = Dispatcher\CommandFactory::create( $leaf_name, $class, $command );
+    $leaf_command = Dispatcher\CommandFactory::create($leaf_name, $class, $command);
 
-    if ( ! $command->can_have_subcommands() ) {
-      throw new Exception( sprintf( "'%s' can't have subcommands.",
-        implode( ' ' , Dispatcher\get_path( $command ) ) ) );
+    if(! $command->can_have_subcommands()) {
+      throw new Exception(sprintf("'%s' can't have subcommands.",
+        implode(' ' , Dispatcher\get_path($command))));
     }
-    $command->add_subcommand( $leaf_name, $leaf_command );
+    $command->add_subcommand($leaf_name, $leaf_command);
   }
 
   /**
@@ -129,11 +126,11 @@ class Terminus {
    *
    * @param string $message
    */
-  static function prompt( $message = '', $params = array(), $default=null ) {
-    if ( !empty($params) ) {
+  static function prompt($message = '', $params = array(), $default=null) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    $response = \cli\prompt( $message );
+    $response = \cli\prompt($message);
     if(empty($response) AND $default) {
       $response = $default;
     }
@@ -145,8 +142,8 @@ class Terminus {
    *
    * @param string $message
    */
-  static function line( $message = '', $params = array() ) {
-    if ( !empty($params) ) {
+  static function line($message = '', $params = array()) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
     echo \cli\line($message);
@@ -157,11 +154,11 @@ class Terminus {
    *
    * @param string $message
    */
-  static function log( $message, $params = array() ) {
-    if ( !empty($params) ) {
+  static function log($message, $params = array()) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    self::$logger->info( $message );
+    self::$logger->info($message);
   }
 
   /**
@@ -169,11 +166,11 @@ class Terminus {
    *
    * @param string $message
    */
-  static function success( $message, $params = array() ) {
-    if ( !empty($params) ) {
+  static function success($message, $params = array()) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    self::$logger->success( $message );
+    self::$logger->success($message);
   }
 
   /**
@@ -181,11 +178,11 @@ class Terminus {
    *
    * @param string $message
    */
-  static function warning( $message, $params = array() ) {
-    if ( !empty($params) ) {
+  static function warning($message, $params = array()) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    self::$logger->warning( self::error_to_string( $message ) );
+    self::$logger->warning(self::error_to_string($message));
   }
 
   /**
@@ -193,12 +190,12 @@ class Terminus {
    *
    * @param string $message
    */
-  static function error( $message, $params = array() ) {
-    if ( !empty($params) ) {
+  static function error($message, $params = array()) {
+    if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    if ( ! isset( self::get_runner()->assoc_args[ 'completions' ] ) ) {
-      self::$logger->error( self::error_to_string( $message ) );
+    if(! isset(self::get_runner()->assoc_args[ 'completions' ])) {
+      self::$logger->error(self::error_to_string($message));
     }
 
     exit(1);
@@ -207,14 +204,14 @@ class Terminus {
   /**
    * Ask for confirmation before running a destructive operation.
    */
-  static function confirm( $question, $assoc_args = array(), $params = array()) {
-      if (\Terminus::get_config('yes')) return true;
+  static function confirm($question, $assoc_args = array(), $params = array()) {
+      if(\Terminus::get_config('yes')) return true;
       $question = vsprintf($question, $params);
-      fwrite( STDOUT, $question . " [y/n] " );
+      fwrite(STDOUT, $question . " [y/n] ");
 
-      $answer = trim( fgets( STDIN ) );
+      $answer = trim(fgets(STDIN));
 
-      if ( 'y' != $answer )
+      if('y' != $answer)
         exit;
       return true;
   }
@@ -227,14 +224,14 @@ class Terminus {
    *
    * @return string
    */
-  public static function get_value_from_arg_or_stdin( $args, $index ) {
-    if ( isset( $args[ $index ] ) ) {
+  public static function get_value_from_arg_or_stdin($args, $index) {
+    if(isset($args[ $index ])) {
       $raw_value = $args[ $index ];
     } else {
       // We don't use file_get_contents() here because it doesn't handle
       // Ctrl-D properly, when typing in the value interactively.
       $raw_value = '';
-      while ( ( $line = fgets( STDIN ) ) !== false ) {
+      while (($line = fgets(STDIN)) !== false) {
         $raw_value .= $line;
       }
     }
@@ -248,11 +245,11 @@ class Terminus {
    * @param mixed $value
    * @param array $assoc_args
    */
-  static function read_value( $raw_value, $assoc_args = array() ) {
-    if ( isset( $assoc_args['format'] ) && 'json' == $assoc_args['format'] ) {
-      $value = json_decode( $raw_value, true );
-      if ( null === $value ) {
-        Terminus::error( sprintf( 'Invalid JSON: %s', $raw_value ) );
+  static function read_value($raw_value, $assoc_args = array()) {
+    if(isset($assoc_args['format']) && 'json' == $assoc_args['format']) {
+      $value = json_decode($raw_value, true);
+      if(null === $value) {
+        Terminus::error(sprintf('Invalid JSON: %s', $raw_value));
       }
     } else {
       $value = $raw_value;
@@ -267,11 +264,11 @@ class Terminus {
    * @param mixed $value
    * @param array $assoc_args
    */
-  static function print_value( $value, $assoc_args = array() ) {
-    if ( isset( $assoc_args['format'] ) && 'json' == $assoc_args['format'] ) {
-      $value = json_encode( $value );
-    } elseif ( is_array( $value ) || is_object( $value ) ) {
-      $value = var_export( $value );
+  static function print_value($value, $assoc_args = array()) {
+    if(isset($assoc_args['format']) && 'json' == $assoc_args['format']) {
+      $value = json_encode($value);
+    } elseif(is_array($value) || is_object($value)) {
+      $value = var_export($value);
     }
 
     echo $value . "\n";
@@ -283,14 +280,14 @@ class Terminus {
    * @param mixed $errors
    * @return string
    */
-  static function error_to_string( $errors ) {
-    if ( is_string( $errors ) ) {
+  static function error_to_string($errors) {
+    if(is_string($errors)) {
       return $errors;
     }
 
-    if ( is_object( $errors ) && is_a( $errors, 'WP_Error' ) ) {
-      foreach ( $errors->get_error_messages() as $message ) {
-        if ( $errors->get_error_data() )
+    if(is_object($errors) && is_a($errors, 'WP_Error')) {
+      foreach($errors->get_error_messages() as $message) {
+        if($errors->get_error_data())
           return $message . ' ' . $errors->get_error_data();
         else
           return $message;
@@ -306,10 +303,10 @@ class Terminus {
    *
    * @return int The command exit status
    */
-  static function launch( $command, $exit_on_error = true ) {
-    $r = proc_close( proc_open( $command, array( STDIN, STDOUT, STDERR ), $pipes ) );
+  static function launch($command, $exit_on_error = true) {
+    $r = proc_close(proc_open($command, array(STDIN, STDOUT, STDERR), $pipes));
 
-    if ( $r && $exit_on_error )
+    if($r && $exit_on_error)
       exit($r);
 
     return $r;
@@ -325,55 +322,55 @@ class Terminus {
    *
    * @return int The command exit status
    */
-  static function launch_self( $command, $args = array(), $assoc_args = array(), $exit_on_error = true ) {
+  static function launch_self($command, $args = array(), $assoc_args = array(), $exit_on_error = true) {
     $reused_runtime_args = array(
       'path',
       'url',
       'user',
       'allow-root',
-    );
+   );
 
-    foreach ( $reused_runtime_args as $key ) {
-      if ( array_key_exists( $key, self::get_runner()->config ) )
+    foreach($reused_runtime_args as $key) {
+      if(array_key_exists($key, self::get_runner()->config))
         $assoc_args[ $key ] = self::get_runner()->config[$key];
     }
 
     $php_bin = self::get_php_binary();
 
-    if (Terminus::is_test()) {
+    if(Terminus::is_test()) {
       $script_path = __DIR__.'/boot-fs.php';
     } else {
       $script_path = $GLOBALS['argv'][0];
     }
 
-    $args = implode( ' ', array_map( 'escapeshellarg', $args ) );
-    $assoc_args = \Terminus\Utils\assoc_args_to_str( $assoc_args );
+    $args = implode(' ', array_map('escapeshellarg', $args));
+    $assoc_args = \Terminus\Utils\assoc_args_to_str($assoc_args);
 
     $full_command = "{$php_bin} {$script_path} {$command} {$args} {$assoc_args}";
 
-    return self::launch( $full_command, $exit_on_error );
+    return self::launch($full_command, $exit_on_error);
   }
 
   private static function get_php_binary() {
-    if ( defined( 'PHP_BINARY' ) )
+    if(defined('PHP_BINARY'))
       return PHP_BINARY;
 
-    if ( getenv( 'TERMINUS_PHP_USED' ) )
-      return getenv( 'TERMINUS_PHP_USED' );
+    if(getenv('TERMINUS_PHP_USED'))
+      return getenv('TERMINUS_PHP_USED');
 
-    if ( getenv( 'TERMINUS_PHP' ) )
-      return getenv( 'TERMINUS_PHP' );
+    if(getenv('TERMINUS_PHP'))
+      return getenv('TERMINUS_PHP');
 
     return 'php';
   }
 
-  static function get_config( $key = null ) {
-    if ( null === $key ) {
+  static function get_config($key = null) {
+    if(null === $key) {
       return self::get_runner()->config;
     }
 
-    if ( !isset( self::get_runner()->config[ $key ] ) ) {
-      self::warning( "Unknown config option '$key'." );
+    if(!isset(self::get_runner()->config[ $key ])) {
+      self::warning("Unknown config option '$key'.");
       return null;
     }
 
@@ -388,10 +385,10 @@ class Terminus {
   /**
    * @deprecated
    */
-  static function menu( $data, $default = null, $text = "Select one", $return_value=false ) {
+  static function menu($data, $default = null, $text = "Select one", $return_value=false) {
     echo PHP_EOL;
     $index = \cli\Streams::menu($data,$default,$text);
-    if ($return_value) {
+    if($return_value) {
       return $data[$index];
     }
     return $index;
@@ -403,18 +400,18 @@ class Terminus {
    * @param array
    * @param array
    */
-  static function run_command( $args, $assoc_args = array() ) {
-    self::get_runner()->run_command( $args, $assoc_args );
+  static function run_command($args, $assoc_args = array()) {
+    self::get_runner()->run_command($args, $assoc_args);
   }
 
   /**
    * Terminus is in test mode
    */
   static function is_test() {
-    if (defined('CLI_TEST_MODE') AND false !== CLI_TEST_MODE)
+    if(defined('CLI_TEST_MODE') && (CLI_TEST_MODE !== false)) {
       return true;
-    if (getenv("CLI_TEST_MODE"))
-      return true;
-    return false;
+    }
+    $is_test = (boolean)getenv("CLI_TEST_MODE");
+    return $is_test;
   }
 }
