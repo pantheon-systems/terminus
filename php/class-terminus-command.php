@@ -1,7 +1,6 @@
 <?php
 use \Terminus\Endpoint;
 use \Terminus\Request;
-use \Terminus\Fixtures;
 use \Terminus\Session;
 use \Terminus\Auth;
 use \Terminus\Loggers\Regular as Logger;
@@ -49,7 +48,7 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if (!in_array($realm,array('login','user','public')) AND !Terminus::is_test()) {
+    if (!in_array($realm, array('login','user','public'))) {
       Auth::loggedIn();
     }
 
@@ -204,7 +203,7 @@ abstract class Terminus_Command {
     if(in_array($workflow['data']->result, array("succeeded", "aborted"))) {
       return $workflow['data'];
     }
-    
+
     return false;
   }
 
@@ -232,7 +231,7 @@ abstract class Terminus_Command {
 
     //See if a blacklisted items are in the arrayed JSON, replace
     foreach($blacklist as $blacklisted_item) {
-      if(isset($request_array[$blacklisted_item])) 
+      if(isset($request_array[$blacklisted_item]))
         $request_array[$blacklisted_item] = '*****';
     }
 

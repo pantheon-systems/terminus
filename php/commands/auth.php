@@ -129,18 +129,7 @@ class Auth_Command extends Terminus_Command {
    * @version 0.04-alpha
    * @return string
    */
-  private function doLogin($email,$password)
-  {
-    if (Terminus::is_test()) {
-      $data = array(
-        'user_uuid' => '77629472-3050-457c-8c3d-32b2cabf992b',
-        'session' => '77629472-3050-457c-8c3d-32b2cabf992b:7dc42f40-65f8-11e4-b314-bc764e100eb1:ZHR0TgtQYsKcOOwMOd0tk',
-        'session_expire_time' => '1417727066',
-        'email' => 'wink@getpantheon.com',
-      );
-      return $data;
-    }
-
+  private function doLogin($email,$password) {
     $options = array(
         'body' => json_encode(array(
           'email' => $email,

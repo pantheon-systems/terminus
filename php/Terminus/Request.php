@@ -2,8 +2,6 @@
 namespace Terminus;
 
 use Guzzle\Http\Client as Browser;
-use \Terminus\Fixtures;
-use \Terminus\FauxRequest;
 use \Terminus\Loggers\Regular;
 /**
  * Handles requests made by terminus
@@ -64,15 +62,7 @@ class Request {
         \Terminus\Loggers\Regular::debug($data['body']);
     }
 
-    if ( getenv("BUILD_FIXTURES") ) {
-      Fixtures::put("request_headers", $request->getRawHeaders());
-    }
-
     $response = $request->send();
-
-    if ( getenv("BUILD_FIXTURES") ) {
-      Fixtures::put(array($url,$method,$data), $response);
-    }
 
     return $response;
   }
