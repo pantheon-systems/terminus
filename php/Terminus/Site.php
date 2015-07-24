@@ -4,9 +4,12 @@ namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
 use \Terminus\SiteWorkflow;
+use Terminus\SitesCache;
+use \Terminus_Command;
 
 class Site {
   public $id;
+  public $attributes;
   public $information;
   public $metadata;
   public $environments = array();
@@ -17,14 +20,45 @@ class Site {
    * Needs site object from the api to instantiate
    * @param $site (object) required - api site object
    */
-  public function __construct($site) {
-    $this->id = $site->id;
-    $this->information = $site->information;
+  public function __construct($attributes) {
+    if (is_string($attributes)) {
+      $this->id = $attributes;
+      $attributes = new \stdClass();
+    } else {
+      $this->id = $attributes->id;
+    }
+
+    if (property_exists($attributes, 'information')) {
+      # If the attributes has `information` property
+      # unwrap it and massage the data into proper format
+      $this->attributes = $attributes->information;
+      $this->attributes->id = $attributes->id;
+    } else {
+      $this->attributes = $attributes;
+    }
+
+    # deprecated properties
+    # this->information is deprecated, use $this->attributes
+    $this->information = $this->attributes;
     // cosmetic reasons for this
-    $this->information->id = $this->id;
-    $this->metadata = @$site->metadata ?: new \stdClass();
+    $this->metadata = @$this->attributes->metadata ?: new \stdClass();
+    # /deprecated properties
 
     return $this;
+  }
+
+  public static function createFromName($sitename) {
+    $sites_cache = new SitesCache();
+    $site_id = $sites_cache->find($sitename);
+
+    if ($site_id) {
+      $response = Terminus_Command::simple_request('sites/' . $site_id . '?site_state=true');
+      $site_data = $response['data'];
+      $site = new Site($site_data);
+      return $site;
+    } else {
+      throw new \Exception('We cannot access a site with this name');
+    }
   }
 
   /**
@@ -121,9 +155,23 @@ class Site {
    * Load site info
    */
   public function info($key = null) {
-    $info = $this->information;
+    $info = array(
+      'id' => $this->id,
+      'name' => $this->information->name,
+      'label' => property_exists($this->information, 'label') ? $this->information->label : '',
+      'created' => $this->information->created,
+      'framework' => property_exists($this->information, 'framework') ? $this->information->framework : '',
+      'organization' => property_exists($this->information, 'organization') ? $this->information->organization : '',
+      'service_level' => $this->information->service_level,
+      'upstream' => property_exists($this->information, 'upstream') ? (array) $this->information->upstream : '',
+      'php_version' => property_exists($this->information, 'organization') ? $this->information->php_version : '',
+      'holder_type' =>  $this->information->holder_type,
+      'holder_id' => $this->information->holder_id,
+      'owner' => $this->information->owner,
+    );
+
     if ($key) {
-      return property_exists($info, $key) ? $info->$key : null;
+      return isset($info[$key]) ? $info[$key] : null;
     }
     else {
       return $info;
@@ -229,7 +277,7 @@ class Site {
   /**
    * Import Archive
    */
-  public function import($url, $element) { 
+  public function import($url, $element) {
     $path = 'environments/dev/import';
     $data = array(
       'url' => $url,

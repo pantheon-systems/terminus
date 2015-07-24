@@ -6,6 +6,7 @@
 use Terminus\Utils;
 use Terminus\Products;
 use Terminus\Session;
+use Terminus\SitesCache;
 use Terminus\SiteFactory;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
@@ -26,6 +27,34 @@ class Sites_Command extends Terminus_Command {
   }
 
   /**
+   * List Sites in Cache
+   *
+   * ## OPTIONS
+   *
+   * [--rebuild]
+   * @subcommand cache
+   */
+  public function cache($args, $assoc_args) {
+    $sites_cache = new Terminus\SitesCache();
+
+    if (isset($assoc_args['rebuild'])) {
+      $sites_cache->rebuild();
+    }
+
+    $sites = $sites_cache->all();
+
+    $data = array();
+    foreach ($sites as $name => $id) {
+      $data[] = array(
+        'name' => $name,
+        'id' => $id
+      );
+    }
+
+    $this->handleDisplay($data, $args);
+  }
+
+  /**
    * Show sites
    *
    * ## OPTIONS
@@ -40,7 +69,7 @@ class Sites_Command extends Terminus_Command {
       $report = array(
         'name' => $site->getName(),
       );
-      
+
       $fields = Input::optional('fields', $assoc_args, 'name,framework,service_level,id');
       $filter = Input::optional('filter', $assoc_args, false);
       if ($filter) {
@@ -54,10 +83,10 @@ class Sites_Command extends Terminus_Command {
       }
       if ($fields) {
         $fields = explode(',',$fields);
-        foreach ($fields as $field) { 
+        foreach ($fields as $field) {
           $report[$field] = $site->info($field);
         }
-      } else { 
+      } else {
         $info = $site->info();
         foreach ($info as $key=>$value) {
           $report[$key] = $value;

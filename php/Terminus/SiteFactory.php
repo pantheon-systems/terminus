@@ -42,7 +42,7 @@ class SiteFactory {
 
   public function getSite($sitename) {
     if (!array_key_exists($sitename,$this->sites)) {
-      throw new \Exception('No site exists with this name');
+      throw new \Exception(sprintf('Cannot find site with the name "%s"', $sitename));
     }
     if (isset($this->sites[$sitename])) {
       // if we haven't instatiated yet, do that now

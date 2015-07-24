@@ -57,6 +57,16 @@ class FeatureContext extends BehatContext {
     }
 
     /**
+     * @Given /^I am authenticated$/
+     */
+    public function iAmAuthenticated() {
+      $output = $this->iRun("terminus auth login [[username]] --password=[[password]]");
+      if ($this->_checkResult('created', $output)) {
+        return true;
+      }
+    }
+
+    /**
      * @Given /^a site named "([^"]*)"$/
      */
     public function aSiteNamed($site_name) {
