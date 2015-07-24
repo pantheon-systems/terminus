@@ -151,7 +151,7 @@ class Site_Command extends Terminus_Command {
           }
           $message = @$assoc_args['message'] ?: "Terminus commit.";
           $data = $site->environment($env)->onServerDev(null, $message);
-          Terminus::success("Successfully commited.");
+          Terminus::success("Successfully committed.");
           return true;
           break;
         case 'diffstat':
