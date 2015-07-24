@@ -1339,264 +1339,199 @@ class Site_Command extends Terminus_Command {
    }
 
 
-   /////////////////////
-     /**
-   * Interacts with mysql
-   *
-   * ## OPTIONS
-   *
-   * <act>
-   * : input an action to execute in mysql
-   *
-   * [--import]
-   * : import an .sql file
-   *
-   * [--site=<site>]
-   * : site name
-   *
-   * [--env=<env>]
-   * : environment
-   *
-   * ## Examples
-   *
-   *    terminus site mysql act --site=mikes-wp-test --env=live
-   *
-   */
-//public function sql_comm($args, $assoc_args) {
-  //  $action = array_shift($args);
-    //$site = SiteFactory::instance(Input::site($assoc_args));
-    //$env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-    //if (!isset($env)) {
-     //   $env = 'dev';
-    //}
-    //switch ($action) {
-      //case 'act':
-        //$bindings = $site->bindings('dbserver');
-        //if (empty($bindings)) {
-          //\Terminus::error("Mysql cache not enabled");
-        //}
-        //$commands = array();
-        //foreach($bindings as $binding) {
-          //if (is_null($env) || $env === $binding->environment) {
-            //if(!isset($binding->site_uuid)) {
-              //$siteid = $binding->site;
-          //  }
-            //else {
-              //$siteid = $binding->site_uuid;
-          //  }
-            //if (isset($assoc_args['import'])) {
-              // $importneeds = array($binding->username, $binding->password, $binding->type, $binding->environment, $siteid);
-               //$u_input = ' < frombackup_dev_2015-07-10T19-59-20_UTC_database.sql;';
-               //$not_input = false;
-            //}
-            //if (!isset($not_input) or $not_input != false) {
-              //  $u_input = readline("MySQL Command: ");
-                //readline_add_history($u_input);
-                //$not_input = false;
-            //}
-            //$args = array($u_input, $binding->username, $binding->password, $binding->type, $binding->environment, $siteid , $binding->port); //is set successfully
-            //array_filter($args, function($a) { return escapeshellarg($a); });
-            //$commands[$binding->environment] = vsprintf(
-              //'echo "%s" | mysql -u %s -p%s -h %s.%s.%s.drush.in -P %s pantheon',
-             // $args
-            //);
-           // }
-        //}
-        //foreach ($commands as $env => $command) {
-          //////////////insert import command here whenready
-          //exec($command, $stdout, $return);
-         // var_dump($stdout);
-        //}
-     // break;
-      //
-  //  }
-  //}
 
-
-
-     private function mysql_conn($extra) {
-     if(isset($db)){$db = null;}
-     $assoc_args = array();
-     $site = SiteFactory::instance(Input::site($assoc_args));
-     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-     if(isset($extra)) {$assoc_args = array($site, $env, $extra);}
-     else {
-       $assoc_args = array($site, $env);
-     }
-     $bindings = $site->bindings('dbserver');
-     if (empty($bindings)) {
-       \Terminus::error("Sql bindings empty.");
-     }
-     foreach($bindings as $binding) {
-       if (!isset($env) || $env === $binding->environment) {
-         if (!isset($env) || $env == null) {
-           $env = 'dev';
-         }
-         $host = $binding->host;
-         $database = $binding->database;
-         $user = $binding->username;
-         $pass = $binding->password;
-         $port = $binding->port;
-         $uuid = $binding->site;
-         try {
-           if(!isset($extra)){
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
-           }
-           elseif($extra == 'encrypt') {
-             $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
-             $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
-             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
-           }
-           elseif($extra == 'tunnel') {
-             $host = 'appserver.'.$env.'.'.$uuid.'.drush.in'; 
-             $ruser = $env.'.'.$uuid; 
-             if(!($con = ssh2_connect($host, 2222, array('hostkey'=>'ssh-rsa')))){echo "fail: unable to establish connection\n";}
-             if (ssh2_auth_pubkey_file($con, $ruser, '~/.ssh/id_rsa.pub', '~/.ssh/id_rsa')) {
-               $command = 'ssh -i ~/.ssh/id_rsa -T -N -L 3308:dbserver.'.$ruser.'.drush.in:'.$binding->port. ' -p2222 appserver.'.$ruser.'@'.$host.'    > /dev/null 2>&1 &';
-               exec($command);
-               $db = new PDO("mysql:host=127.0.0.1;dbname=$database;port=3308", $user, $pass);
-             } 
-             else {die('Public Key Authentication Failed');}
+  private function mysql_conn($extra) {
+    if(isset($db)){$db = null;}
+    $assoc_args = array();
+    $site = SiteFactory::instance(Input::site($assoc_args));
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+    if(isset($extra)) {$assoc_args = array($site, $env, $extra);}
+    else {
+      $assoc_args = array($site, $env);
+    }
+    $bindings = $site->bindings('dbserver');
+    if (empty($bindings)) {
+      \Terminus::error("Sql bindings empty.");
+    }
+    foreach($bindings as $binding) {
+      if (!isset($env) || $env === $binding->environment) {
+        if (!isset($env) || $env == null) {
+          $env = 'dev';
+        }
+        $host = $binding->host;
+        $database = $binding->database;
+        $user = $binding->username;
+        $pass = $binding->password;
+        $port = $binding->port;
+        $uuid = $binding->site;
+        try {
+          if(!isset($extra) || $extra = 'none'){
+            $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass);
+          }
+          elseif($extra == 'encrypt') {
+            $options = array(PDO::MYSQL_ATTR_SSL_CA   => 'ca.crt');
+            $host = 'dbserver.'.$env.'.'.$uuid.'.drush.in';
+            $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
+          }
+          elseif($extra == 'tunnel') {
+            $host = 'appserver.'.$env.'.'.$uuid.'.drush.in'; 
+            $ruser = $env.'.'.$uuid; 
+            if(!($con = ssh2_connect($host, 2222, array('hostkey'=>'ssh-rsa')))){echo "fail: unable to establish connection\n";}
+            if (ssh2_auth_pubkey_file($con, $ruser, '~/.ssh/id_rsa.pub', '~/.ssh/id_rsa')) {
+              $command = 'ssh -i ~/.ssh/id_rsa -T -N -L 3308:dbserver.'.$ruser.'.drush.in:'.$binding->port. ' -p2222 appserver.'.$ruser.'@'.$host.'    > /dev/null 2>&1 &';
+              exec($command);
+              $db = new PDO("mysql:host=127.0.0.1;dbname=$database;port=3308", $user, $pass);
+            } 
+            else {die('Public Key Authentication Failed');}
           }     
           return $db;
-         } catch (PDOException $e) {
-           print "Error!: " . $e->getMessage() . "\n";
-           die();
-         }
-       }
-     }
-   }
-   
-     /**
-   * Interacts with mysql
-   *
-   * ## OPTIONS
-   *
-   * [--encrypt]
-   * : use an encrypted PDO connection
-   *
-   * [--tunnel]
-   * : tunnel the database connection over SSH
-   *
-   * [--site=<site>]
-   * : site name
-   *
-   * [--env=<env>]
-   * : environment
-   *
-   * [--c=<command>]
-   * : desired MySQL command
-   * 
-   * ## Examples
-   *
-   *    terminus site mysql_act --site=mikes-wp-test --env=live
-   *
-   */
-
-   public function mysql_act($args, $assoc_args) {
-     $action = array_shift($args);
-     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-       if (!isset($env) || $env === $binding->environment || $env = null) {
-         if (!isset($env) || $env == null) {$env = 'dev';}
-         try {
-           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
-           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
-           elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
-           $db = $this->mysql_conn($extra);
-           while (!isset($not_input) or $not_input == true) {
-             if(isset($assoc_args['c'])) {
-               $u_input = $assoc_args['c'];
-               var_dump($u_input);
-               $not_input = false;
-               continue;
-             }
-             $u_input = readline("MySQL Command: ");
-             readline_add_history($u_input);
-             $not_input = false;
-           }
-           foreach($db->query($u_input) as $row) {
-             print_r($row);
-           }
-         } catch (PDOException $e) {
-           print "Error!: " . $e->getMessage() . "\n";
-           die();
-         }
-       }  
-   }
-
-     /**
-   * Imports a SQL dump to MySQL
-   *
-   * ## OPTIONS
-   *
-   * [--encrypt]
-   * : use an encrypted PDO connection
-   *
-   * [--tunnel]
-   * : tunnel the database connection over SSH
-   *
-   * [--site=<site>]
-   * : site name
-   *
-   * [--env=<env>]
-   * : environment
-   * 
-   * ## Examples
-   *
-   *    terminus site mysql_import --site=mikes-wp-test --env=live
-   *
-   */
-
-   public function mysql_import($args, $assoc_args) {
-     $action = array_shift($args);
-     $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-    if (!isset($env) || $env === $binding->environment || $env = null) {
-       if (!isset($env) || $env == null) {$env = 'dev';}    
-       try {
-           if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
-           elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
-           elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
-           $db = $this->mysql_conn($extra);
-           function getLines() {
-              $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
-              readline_add_history($filename);
-              $file_exti = pathinfo($filename);
-              if ($file_exti['extension'] == 'gz') {$file = gzopen($filename, 'r');}
-              elseif ($file_exti['extension'] == 'sql') {$file = fopen($filename, 'r');}
-              else {die('this file is not a valid SQL file.');}
-              $next_command = '';
-              try {
-                while ($line = fgets($file)) {
-                  if(strpos($line, '--') !== false){continue;} 
-                  $parts = explode(';', $line);
-                  $parts[0] = $next_command . $parts[0]; 
-                  $next_command = '';
-                  if ($parts[count($parts) - 1] !== '') { 
-                    $next_command = $parts[count($parts) - 1];
-                  }
-                  unset($parts[count($parts) - 1]);
-                  foreach ($parts as $command) {
-                    if(strpos($command, ';') == false) {$command .= ';';} 
-                      yield $command;
-                  }
-                }
-              }
-              finally {
-                  fclose($file);
-              }
-           }
-           foreach (getLines() as $command) {
-             foreach ((array) $db->query($command) as $row) {
-               print_r($row);
-             }
-           }
-         
         } catch (PDOException $e) {
-        print "Error!: " . $e->getMessage() . "\n";
-        die();
+          print "Error!: " . $e->getMessage() . "\n";
+          die();
         }
       }
-   }
- }
+    }
+  }
+   
+ /**
+  * Interacts with mysql
+  *
+  * ## OPTIONS
+  *
+  * [--encrypt]
+  * : use an encrypted PDO connection
+  *
+  * [--tunnel]
+  * : tunnel the database connection over SSH
+  *
+  * [--site=<site>]
+  * : site name
+  *
+  * [--env=<env>]
+  * : environment
+  *
+  * [--c=<command>]
+  * : desired MySQL command
+  * 
+  * ## Examples
+  *
+  *    terminus site mysql_act --site=mikes-wp-test --env=live
+  *
+  */
+
+  public function mysql_act($args, $assoc_args) {
+    $action = array_shift($args);
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
+    if (!isset($env) || $env === $binding->environment || $env = null) {
+      if (!isset($env) || $env == null) {$env = 'dev';}
+      try {
+        if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
+        elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
+        elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+        else {$extra = 'none';}
+        $db = $this->mysql_conn($extra);
+        while (!isset($not_input) or $not_input == true) {
+          if(isset($assoc_args['c'])) {
+            $u_input = $assoc_args['c'];
+            var_dump($u_input);
+            $not_input = false;
+            continue;
+          }
+          $u_input = readline("MySQL Command: ");
+          readline_add_history($u_input);
+          $not_input = false;
+        }
+        foreach($db->query($u_input) as $row) {
+          print_r($row);
+        }
+      } catch (PDOException $e) {
+        print "Error!: " . $e->getMessage() . "\n";
+        die();
+      }
+    }  
+  }
+
+
+  private function getLines($filename) {  
+    $file_exti = pathinfo($filename);         
+    if ($file_exti['extension'] == 'gz') {$file = gzopen($filename, 'r');}
+    elseif ($file_exti['extension'] == 'sql') {$file = fopen($filename, 'r');}
+    else {die('this file is not a valid SQL file.');}
+    $next_command = '';
+    try {
+      while ($line = fgets($file)) {
+        if(strpos($line, '--') !== false){continue;} 
+        $parts = explode(';', $line);
+        $parts[0] = $next_command . $parts[0]; 
+        $next_command = '';
+        if ($parts[count($parts) - 1] !== '') { 
+          $next_command = $parts[count($parts) - 1];
+        }
+        unset($parts[count($parts) - 1]);
+        foreach ($parts as $command) {
+          if(strpos($command, ';') == false) {$command .= ';';}
+          yield $command;
+        }
+      }
+    }
+    finally {
+      fclose($file);
+    }
+  }
+
+
+
+
+ /**
+  * Imports a SQL dump to MySQL
+  *
+  * ## OPTIONS
+  *
+  * [--encrypt]
+  * : use an encrypted PDO connection
+  *
+  * [--tunnel]
+  * : tunnel the database connection over SSH
+  *
+  * [--site=<site>]
+  * : site name
+  *
+  * [--env=<env>]
+  * : environment
+  * 
+  * [--f=<file>]
+  * :dump file to import
+  * 
+  * ## Examples
+  *
+  *    terminus site mysql_import --site=mikes-wp-test --env=live
+  *
+  */
+
+  public function mysql_import($args, $assoc_args) {
+    $action = array_shift($args);
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : 'dev';
+    try {
+      if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
+      elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
+      elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+      else {$extra = 'none';}
+      $db = $this->mysql_conn($extra); 
+      if(!isset($assoc_args['f']) || $assoc_args['f'] == null){
+        $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
+        readline_add_history($filename);
+      } else {$filename = $assoc_args['f'];}
+      foreach ($this->getLines($filename) as $command) {
+        foreach ((array) $db->query($command) as $row) {
+          print_r($row);
+          if(empty($row)){exec($command);}
+        }
+      }   
+    } catch (PDOException $e) {
+        print "Error!: " . $e->getMessage() . "\n";
+        die();
+    }
+  }
+}
 
 \Terminus::add_command( 'site', 'Site_Command' );
