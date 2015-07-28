@@ -3,6 +3,9 @@ namespace Terminus;
 use \ReflectionClass, \Terminus\Request, \Terminus\EnvironmentWorkflow;
 
 class Environment {
+  public $id;
+  public $attributes;
+
   public $name = 'dev';
   public $site = false;
   public $diffstat;
@@ -18,12 +21,16 @@ class Environment {
   public $backups;
   public $bindings;
 
-  public function __construct( Site $site, $environment = null ) {
+  public function __construct( Site $site, $data = null) {
     $this->site = $site;
+    if (property_exists($data, 'id')) {
+      $this->id = $data->id;
+    }
+    $this->attributes = $data;
 
-    if (is_object($environment)) {
+    if (is_object($data)) {
       // if we receive an environment object from the api hydrate the vars
-      $environment_properties = get_object_vars($environment);
+      $environment_properties = get_object_vars($data);
       // iterate our local properties setting them where available in the imported object
       foreach (get_object_vars($this) as $key => $value) {
         if(array_key_exists($key,$environment_properties)) {
@@ -45,16 +52,16 @@ class Environment {
   }
 
 
-  /** 
+  /**
    * Create a backup
-   * 
-   * @param $args 
+   *
+   * @param $args
   **/
   public function createBackup($args) {
     $type = 'backup';
     if (array_key_exists('type',$args)) {
       $type = $args['type'];
-    } 
+    }
 
     $ttl = 86400*365;
     if (array_key_exists('keep-for', $args)) {
@@ -77,7 +84,7 @@ class Environment {
         $args['database'] = true;
         break;
     }
-    
+
     $params = array(
       'entry_type' => $type,
       'code' => isset($args['code']),
@@ -85,7 +92,7 @@ class Environment {
       'files' => isset($args['files']),
       'ttl' => $ttl
     );
-    
+
     $workflow = new EnvironmentWorkflow('do_export','sites',$this);
     $workflow->setMethod('POST');
     $workflow->setParams($params);
@@ -286,6 +293,27 @@ class Environment {
       'target' => $target,
     );
     return $return_data;
+  }
+
+  /**
+   * Return the SFTP connection URL for this environment
+   */
+  public function sftp_url() {
+    $username = sprintf("%s.%s", $this->id, $this->site->getId());
+    $host = sprintf("appserver.%s.%s.drush.in", $this->id, $this->site->getId());
+    $port = 2222;
+
+    return sprintf("sftp://%s@%s:%s", $username, $host, $port);
+  }
+
+  /**
+   * Return the GIT connection URL for this environment
+   */
+  public function git_url() {
+    $username = sprintf("codeserver.dev.%s", $this->site->getId());
+    $host = sprintf("codeserver.dev.%s.drush.in", $this->site->getId());
+    $port = 2222;
+    return sprintf("git://%s@%s:%s", $username, $host, $port);
   }
 
   /**
