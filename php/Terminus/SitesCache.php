@@ -13,12 +13,20 @@ class SitesCache {
   protected $cache;
   protected $cachekey = 'sites';
 
+  /**
+   * Searches the SitesCache for an ID given a name
+   *
+   */
+  static function find($name, $options = array()) {
+    $instance = new SitesCache();
+    return $instance->_find($name, $options);
+  }
+
   public function __construct() {
     $this->cache = Terminus::get_cache();
   }
 
-  // Returns the UUID of the site
-  public function find($name, $options = array()) {
+  public function _find($name, $options = array()) {
     if (!isset($options['rebuild'])) {
       $options['rebuild'] = true;
     }
