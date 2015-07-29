@@ -6,6 +6,7 @@ use Terminus\Deploy;
 use \Terminus\SiteWorkflow;
 use Terminus\SitesCache;
 use \Terminus_Command;
+use Terminus\Environments;
 
 class Site {
   public $id;
@@ -13,6 +14,7 @@ class Site {
   public $information;
   public $metadata;
   public $environments = array();
+  public $environmentsCollection;
   public $jobs;
   public $bindings;
 
@@ -43,6 +45,8 @@ class Site {
     // cosmetic reasons for this
     $this->metadata = @$this->attributes->metadata ?: new \stdClass();
     # /deprecated properties
+
+    $this->environmentsCollection = new Environments(array('site' => $this));
 
     return $this;
   }
@@ -155,6 +159,8 @@ class Site {
    * Load site info
    */
   public function info($key = null) {
+    $dev_environment = $this->environmentsCollection->get('dev');
+
     $info = array(
       'id' => $this->id,
       'name' => $this->information->name,
@@ -165,6 +171,8 @@ class Site {
       'service_level' => $this->information->service_level,
       'upstream' => property_exists($this->information, 'upstream') ? (array) $this->information->upstream : '',
       'php_version' => property_exists($this->information, 'organization') ? $this->information->php_version : '',
+      'sftp_url' => $dev_environment ? $dev_environment->sftp_url() : '',
+      'git_url' => $dev_environment ? $dev_environment->git_url() : '',
       'holder_type' =>  $this->information->holder_type,
       'holder_id' => $this->information->holder_id,
       'owner' => $this->information->owner,

@@ -290,6 +290,9 @@ class Site_Command extends Terminus_Command {
     $sitename = Input::site($assoc_args);
     $site = Site::createFromName($sitename);
 
+    # Fetch environment data for sftp/git connection info
+    $site->environmentsCollection->fetch();
+
     if (isset($assoc_args['field'])) {
       $field = $assoc_args['field'];
       Terminus::line($site->info($field));

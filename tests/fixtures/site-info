@@ -1,0 +1,170 @@
+
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Content-type: application/json
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:20 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e159d430-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"session":"74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF","expires_at":1440524060,"user_id":"74d3797f-5ff0-432a-8fb8-388fcdb170e0"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/sites'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:22 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '613'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e238c280-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"265-788c4e4c"'
+            Vary: Accept-Encoding
+        body: '{"cc1c5b73-d9e3-4515-98a0-1df84e504800": {"information": {"created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "behat-test", "created": 1438104800, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "https://github.com/linnovate/openideal-on-drops-7.git", "product_id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1", "branch": "master"}, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "last_code_push": {"timestamp": "2015-07-28T17:33:41", "user_uuid": null}, "preferred_zone": "onebox"}, "metadata": null}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:23 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e2738190-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"UaWrjedQq18nOx0MnqcMJw=="'
+            Vary: Accept-Encoding
+        body: '[{"archived": false, "invited_by_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "role": "team_member", "id": "cc1c5b73-d9e3-4515-98a0-1df84e504800", "key": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "site_id": "cc1c5b73-d9e3-4515-98a0-1df84e504800", "user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "site": {"created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "user_in_charge_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "product": {"id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1", "longname": "OpenIdeaL"}, "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "behat-test", "user_in_charge": {"profile": {"utm_campaign": "", "tracking_first_site_create": 1437161220, "lead_type": "", "firstname": "Devuser", "utm_term": "", "lastname": "Devuser", "pda_campaign": null, "modified": 1437160970, "utm_source": "", "utm_device": "", "job_function": null, "experiments": {"welcome_video": "shown"}, "utm_medium": "", "verify": "75ffe64b9cd9ddac8528ca605dcf1403", "maxdevsites": 2, "utm_content": "", "google_adwords_account_registered_sent": 1437600670, "organization": null, "web_services_business": null}, "id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "email": "devuser@pantheon.io"}, "created": 1438104800, "upstream_updates_by_environment": {"remote_head": "38b632901087eea0e50dccf1bdfc7c336bb30662", "ahead": 1, "remote_branch": "refs/remotes/origin/master", "live": {}, "dev": {"has_code": true, "is_up_to_date_with_upstream": true}, "behind": 0, "has_code": true, "test": {}, "has_remote_head": true, "remote_url": "https://github.com/linnovate/openideal-on-drops-7.git"}, "last_code_push": {"timestamp": "2015-07-28T17:33:41", "user_uuid": null}, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "https://github.com/linnovate/openideal-on-drops-7.git", "product_id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1", "branch": "master"}, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "attributes": {"label": "behat-test"}, "holder": {"profile": {"utm_campaign": "", "tracking_first_site_create": 1437161220, "lead_type": "", "firstname": "Devuser", "utm_term": "", "lastname": "Devuser", "pda_campaign": null, "modified": 1437160970, "utm_source": "", "utm_device": "", "job_function": null, "experiments": {"welcome_video": "shown"}, "utm_medium": "", "verify": "75ffe64b9cd9ddac8528ca605dcf1403", "maxdevsites": 2, "utm_content": "", "google_adwords_account_registered_sent": 1437600670, "organization": null, "web_services_business": null}, "id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "email": "devuser@pantheon.io"}, "id": "cc1c5b73-d9e3-4515-98a0-1df84e504800", "preferred_zone": "onebox", "product_id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1"}}]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/memberships/organizations?limit=100'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:23 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e30428d0-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"2-d4cbb29"'
+            Vary: Accept-Encoding
+        body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/cc1c5b73-d9e3-4515-98a0-1df84e504800?site_state=true'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:24 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '2381'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e3385830-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"w6zbWwG4tzffEvjQ/N4hYg=="'
+            Vary: Accept-Encoding
+        body: '{"created": 1438104800, "created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "framework": "unknown", "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "holder_type": "user", "last_code_push": {"timestamp": "2015-07-28T17:33:41", "user_uuid": null}, "name": "behat-test", "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "preferred_zone": "onebox", "service_level": "free", "upstream": {"url": "https://github.com/linnovate/openideal-on-drops-7.git", "product_id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1", "branch": "master"}, "label": "behat-test", "id": "cc1c5b73-d9e3-4515-98a0-1df84e504800", "holder": {"profile": {"utm_campaign": "", "tracking_first_site_create": 1437161220, "lead_type": "", "firstname": "Devuser", "utm_term": "", "lastname": "Devuser", "pda_campaign": null, "modified": 1437160970, "utm_source": "", "utm_device": "", "job_function": null, "experiments": {"welcome_video": "shown"}, "utm_medium": "", "verify": "75ffe64b9cd9ddac8528ca605dcf1403", "maxdevsites": 2, "utm_content": "", "google_adwords_account_registered_sent": 1437600670, "organization": null, "web_services_business": null}, "id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "email": "devuser@pantheon.io"}, "settings": {"allow_domains": false, "max_num_cdes": 10, "environment_styx_scheme": "https", "min_backups": 0, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "secure_runtime_access": false, "pingdom": 0, "created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "failover_appserver": 0, "cacheserver": 1, "drush_version": 5, "label": "behat-test", "appserver": 1, "allow_read_slaves": false, "indexserver": 1, "php_version": 53, "php_channel": "stable", "allow_cacheserver": false, "ssl_enabled": null, "service_level": "free", "dedicated_ip": null, "dbserver": 1, "framework": "unknown", "upstream": {"url": "https://github.com/linnovate/openideal-on-drops-7.git", "product_id": "b9bb4de3-164b-41f5-a0ea-92631e11e0d1", "branch": "master"}, "allow_indexserver": false, "preferred_zone": "onebox", "pingdom_chance": 0, "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "behat-test", "created": 1438104800, "max_backups": 0, "holder_type": "user", "number_allow_domains": 0, "pingdom_manually_enabled": false, "last_code_push": {"timestamp": "2015-07-28T17:33:41", "user_uuid": null}}, "base_domain": null, "attributes": {"label": "behat-test"}, "add_ons": []}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/cc1c5b73-d9e3-4515-98a0-1df84e504800/environments'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:e15efbf4-354e-11e5-88af-bc764e115846:Yaz5W0C5YCi17Ela1liuF'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 28 Jul 2015 17:34:24 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e372c920-354e-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"360-e9707e7e"'
+            Vary: Accept-Encoding
+        body: '{"test": {"environment_created": 1438104800, "dns_zone": "onebox.pantheon.io", "randseed": "3AHUKLB3JO60GMRMY18MKBSID6E02PUB", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}, "dev": {"on_server_development": true, "environment_created": 1438104800, "dns_zone": "onebox.pantheon.io", "randseed": "T9F9MRDXADZXYH3302MF3COOIL6JC7QY", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "3598ed18674cded96d9076cc400faf064d25e6c0", "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}, "live": {"environment_created": 1438104800, "dns_zone": "onebox.pantheon.io", "randseed": "2NDAU3EUYPM8Z25CCMW43LAFHPQVSMTP", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-ben-onebox10.onebox.pantheon.io"}}'
