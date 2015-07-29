@@ -26,7 +26,7 @@ class SitesCache {
     $this->cache = Terminus::get_cache();
   }
 
-  public function _find($name, $options = array()) {
+  private function _find($name, $options = array()) {
     if (!isset($options['rebuild'])) {
       $options['rebuild'] = true;
     }
