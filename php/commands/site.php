@@ -13,6 +13,8 @@ use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
 use \Terminus\SiteWorkflow;
+use Terminus\SitesCache;
+
 
 class Site_Command extends Terminus_Command {
 
@@ -288,7 +290,10 @@ class Site_Command extends Terminus_Command {
    */
   public function info($args, $assoc_args) {
     $sitename = Input::site($assoc_args);
-    $site = Site::createFromName($sitename);
+    $site_id = SitesCache::find($sitename);
+    $site = new Site($site_id);
+
+    $site->fetch();
 
     # Fetch environment data for sftp/git connection info
     $site->environmentsCollection->fetch();

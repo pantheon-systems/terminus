@@ -4,7 +4,6 @@ namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
 use \Terminus\SiteWorkflow;
-use Terminus\SitesCache;
 use \Terminus_Command;
 use Terminus\Environments;
 
@@ -51,18 +50,13 @@ class Site {
     return $this;
   }
 
-  public static function createFromName($sitename) {
-    $sites_cache = new SitesCache();
-    $site_id = $sites_cache->find($sitename);
+  public function fetch() {
+    $response = Terminus_Command::simple_request(sprintf('sites/%s?site_state=true', $this->id));
+    $this->attributes = $response['data'];
+    # backwards compatibility
+    $this->information = $this->attributes;
 
-    if ($site_id) {
-      $response = Terminus_Command::simple_request('sites/' . $site_id . '?site_state=true');
-      $site_data = $response['data'];
-      $site = new Site($site_data);
-      return $site;
-    } else {
-      throw new \Exception('We cannot access a site with this name');
-    }
+    return $this;
   }
 
   /**
