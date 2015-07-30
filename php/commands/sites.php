@@ -125,8 +125,6 @@ class Sites_Command extends Terminus_Command {
    * : A url to import a valid archive from
    */
   public function create($args, $assoc_args) {
-    $sites = SiteFactory::instance();
-
     // setup data
     $data = array();
     $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");

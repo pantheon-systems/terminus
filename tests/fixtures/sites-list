@@ -1,13 +1,15 @@
 
 -
     request:
-        method: GET
-        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/sites'
+        method: POST
+        url: 'https://onebox/api/authorize'
         headers:
             Host: onebox
+            Expect: null
             Accept: null
-            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5a9d2a98-2994-11e5-ab54-bc764e117665:i7kxngxfSJXp8uB4IwHk5'
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Content-type: application/json
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
     response:
         status:
             http_version: '1.1'
@@ -15,14 +17,42 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Mon, 13 Jul 2015 19:57:29 GMT'
+            Date: 'Thu, 30 Jul 2015 22:03:31 GMT'
             Content-Type: 'application/json; charset=utf-8'
-            Content-Length: '1065'
+            Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 643f18e0-2999-11e5-a1e1-0d64ef38b19d
+            X-Pantheon-Trace-Id: d05d3910-3706-11e5-b6a3-7fb233bbf6b7
             X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"5RWw5+X1FRV8SQ3QnOknmQ=="'
             Vary: Accept-Encoding
-        body: '{"c1b96540-e81b-46a5-90e6-26ddb748997f": {"information": {"created_by_user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "holder_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "name": "my-awesome-site", "created": 1435803893, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "d4689428-3759-465b-95f6-57ba58471461", "branch": "master"}, "owner": "25069e79-eae7-4d41-8925-1f728a114cb8", "preferred_zone": "onebox"}, "metadata": null}, "8479e864-a997-4889-b172-719ead650c1f": {"information": {"created_by_user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "holder_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "name": "behat-test", "created": 1436483396, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "d4689428-3759-465b-95f6-57ba58471461", "branch": "master"}, "owner": "25069e79-eae7-4d41-8925-1f728a114cb8", "preferred_zone": "onebox"}, "metadata": null}}'
+        body: '{"session":"74d3797f-5ff0-432a-8fb8-388fcdb170e0:d06215b6-3706-11e5-85d8-bc764e115846:u0i6nkYbLUjqwqKWuvz6O","expires_at":1440713011,"user_id":"74d3797f-5ff0-432a-8fb8-388fcdb170e0"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/sites'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:d06215b6-3706-11e5-85d8-bc764e115846:u0i6nkYbLUjqwqKWuvz6O'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 30 Jul 2015 22:03:32 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '608'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: d12a4d10-3706-11e5-b6a3-7fb233bbf6b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Origin: '*'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"260-806f5667"'
+            Vary: Accept-Encoding
+        body: '{"30443e9d-25b9-4fbc-b4e5-e57474918224": {"information": {"created_by_user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "holder_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "name": "saras-qa-test", "created": 1438287813, "framework": "unknown", "holder_type": "user", "service_level": "free", "upstream": {"url": "git://github.com/pantheon-systems/drops-7.git", "product_id": "8f4d5df2-c975-4e95-8c30-9615773d8b6a", "branch": "master"}, "owner": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "last_code_push": {"timestamp": "2015-07-30T20:23:44", "user_uuid": null}, "preferred_zone": "onebox"}, "metadata": null}}'
