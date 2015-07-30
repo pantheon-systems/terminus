@@ -53,9 +53,11 @@ class SiteWorkflow {
     if (!\Terminus\utils\result_is_multiobj($response['data'])) {
       $response['data'] = array($response['data']);
     }
-    $this->status = $response['data'][0];
-    $this->id = $response['data'][0]->id;
-    $this->result = $response['data'][0]->result;
+    if(is_array($response['data'])) {
+      $this->status = $response['data'][0];
+      $this->id = $response['data'][0]->id;
+      $this->result = $response['data'][0]->result;
+    }
     return $this;
   }
 
@@ -65,9 +67,11 @@ class SiteWorkflow {
     if (!\Terminus\utils\result_is_multiobj($response['data'])) {
       $response['data'] = array( $response['data'] );
     }
-    $this->status = $response['data'][0];
-    $this->id = $response['data'][0]->id;
-    $this->result = $response['data'][0]->result;
+    if(is_array($response['data'])) {
+      $this->status = $response['data'][0];
+      $this->id = $response['data'][0]->id;
+      $this->result = $response['data'][0]->result;
+    }
   }
 
   /**
