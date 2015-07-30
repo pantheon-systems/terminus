@@ -35,7 +35,7 @@ return array(
     'runtime' => '',
     'file'  => '<bool>',
     'default' => false,
-    'desc'  => 'Bypass cache',
+    'desc'  => '[DEPRECATED] Bypass cache',
   ),
   'debug' => array(
     'runtime' => '',
