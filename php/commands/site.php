@@ -4,10 +4,6 @@
  *
  */
 
-
-
-
-
 use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\SiteFactory;
@@ -1374,16 +1370,16 @@ class Site_Command extends Terminus_Command {
             $db = new PDO("mysql:host=$host;dbname=$database;port=$port", $user, $pass, $options);
           }
           elseif($extra == 'tunnel') {
-            $host = 'appserver.'.$env.'.'.$uuid.'.drush.in'; 
-            $ruser = $env.'.'.$uuid; 
+            $host = 'appserver.'.$env.'.'.$uuid.'.drush.in';
+            $ruser = $env.'.'.$uuid;
             if(!($con = ssh2_connect($host, 2222, array('hostkey'=>'ssh-rsa')))){echo "fail: unable to establish connection\n";}
             if (ssh2_auth_pubkey_file($con, $ruser, '~/.ssh/id_rsa.pub', '~/.ssh/id_rsa')) {
               $command = 'ssh -i ~/.ssh/id_rsa -T -N -L 3308:dbserver.'.$ruser.'.drush.in:'.$binding->port. ' -p2222 appserver.'.$ruser.'@'.$host.'    > /dev/null 2>&1 &';
               exec($command);
               $db = new PDO("mysql:host=127.0.0.1;dbname=$database;port=3308", $user, $pass);
-            } 
+            }
             else {die('Public Key Authentication Failed');}
-          }     
+          }
           return $db;
         } catch (PDOException $e) {
           print "Error!: " . $e->getMessage() . "\n";
@@ -1392,7 +1388,7 @@ class Site_Command extends Terminus_Command {
       }
     }
   }
-   
+
  /**
   * Interacts with mysql
   *
@@ -1412,7 +1408,7 @@ class Site_Command extends Terminus_Command {
   *
   * [--c=<command>]
   * : desired MySQL command
-  * 
+  *
   * ## Examples
   *
   *    terminus site mysql_act --site=mikes-wp-test --env=live
@@ -1448,29 +1444,36 @@ class Site_Command extends Terminus_Command {
         print "Error!: " . $e->getMessage() . "\n";
         die();
       }
-    }  
+    }
   }
 
 
-  private function getLines($filename) {  
-    $file_exti = pathinfo($filename);         
+ function getLines($filename) {
+    $file_exti = pathinfo($filename);
     if ($file_exti['extension'] == 'gz') {$file = gzopen($filename, 'r');}
     elseif ($file_exti['extension'] == 'sql') {$file = fopen($filename, 'r');}
     else {die('this file is not a valid SQL file.');}
     $next_command = '';
     try {
       while ($line = fgets($file)) {
-        if(strpos($line, '--') !== false){continue;} 
-        $parts = explode(';', $line);
-        $parts[0] = $next_command . $parts[0]; 
-        $next_command = '';
-        if ($parts[count($parts) - 1] !== '') { 
-          $next_command = $parts[count($parts) - 1];
-        }
-        unset($parts[count($parts) - 1]);
-        foreach ($parts as $command) {
-          if(strpos($command, ';') == false) {$command .= ';';}
+        if(strpos($line, '--') !== false){continue;}
+        if(strpos($line, ';') !== strrpos($line, ';')) { 
+          $command = array(trim($line), true);
           yield $command;
+          continue;
+        } else {
+          $parts = explode(';', $line);
+          $parts[0] = $next_command . $parts[0];
+          $next_command = '';
+          if ($parts[count($parts) - 1] !== '') {
+            $next_command = $parts[count($parts) - 1];
+          }
+          unset($parts[count($parts) - 1]);
+          foreach ($parts as $command) {
+            if(strpos($command, ';') == false) {$command .= ';';}
+            $command = array(trim($command), false);
+            yield $command;
+          }
         }
       }
     }
@@ -1498,10 +1501,10 @@ class Site_Command extends Terminus_Command {
   *
   * [--env=<env>]
   * : environment
-  * 
+  *
   * [--f=<file>]
   * :dump file to import
-  * 
+  *
   * ## Examples
   *
   *    terminus site mysql_import --site=mikes-wp-test --env=live
@@ -1516,17 +1519,32 @@ class Site_Command extends Terminus_Command {
       elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
       elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
       else {$extra = 'none';}
-      $db = $this->mysql_conn($extra); 
+      $db = $this->mysql_conn($extra);
       if(!isset($assoc_args['f']) || $assoc_args['f'] == null){
-        $filename = readline('Which dump would you like to import?  Please include the relative path.  '); 
+        $filename = readline('Which dump would you like to import?  Please include the relative path.  ');
         readline_add_history($filename);
       } else {$filename = $assoc_args['f'];}
       foreach ($this->getLines($filename) as $command) {
-        foreach ((array) $db->query($command) as $row) {
-          print_r($row);
-          if(empty($row)){exec($command);}
+        if( $command[1] == false) {
+          foreach ((array) $db->query($command[0]) as $row) {
+            print_r($row);
+            echo PHP_EOL;
+            if(empty($row)){
+							$db->exec($command[0]);
+							print_r($command[0]);
+							echo PHP_EOL;
+						}
+          }
+        } else { 
+          $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
+          foreach ((array) $db->exec($command[0]) as $row) {
+            print_r($command[0]);
+            echo PHP_EOL;
+          }
+          $command[1] = false;
+          continue;
         }
-      }   
+      }
     } catch (PDOException $e) {
         print "Error!: " . $e->getMessage() . "\n";
         die();
