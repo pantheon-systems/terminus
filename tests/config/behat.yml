@@ -25,7 +25,7 @@ ci:
 qa:
   paths:
     features: ../qa_features
-    bootstrap: %behat.paths.features%/bootstrap
+    bootstrap: ../features/bootstrap
   context:
     parameters:
       username:             devuser@pantheon.io
