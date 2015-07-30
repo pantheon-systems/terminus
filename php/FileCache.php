@@ -346,12 +346,13 @@ class FileCache {
     return Finder::create()->in( $this->root )->files();
   }
 
-  public function flush($cache=null,$exclude=null) {
+  /**
+   * Flushes all caches
+   *
+   */
+  public function flush($key = null) {
     $finder = $this->get_finder();
-    foreach( $finder as $file ) {
-      // if a cache to clear was specified skip those that don't match
-      if ($cache AND $cache != $file->getFilename() ) continue;
-      if ($exclude AND $exclude == $file->getFilename()) continue;
+    foreach($finder as $file) {
       unlink($file->getRealPath());
     }
   }

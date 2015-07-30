@@ -160,12 +160,15 @@ class Sites_Command extends Terminus_Command {
     $details = $workflow->status();
     $site_id = $details->final_task->site_id;
 
+    // Add Name->ID mapping to SitesCache
+    $sites_cache = new Terminus\SitesCache();
+    $sites_cache->add(array($data['site_name'] => $site_id));
+
     if ($details->result !== 'failed' AND $details->result !== 'aborted') {
       Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($data['site_name'], $site_id)));
     }
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
-    $this->cache->flush(null,'session');
 
     if (isset($assoc_args['import'])) {
       sleep(10); //To stop erroenous site-DNE errors
