@@ -84,3 +84,30 @@
             ETag: 'W/"157-b60f1230"'
             Vary: Accept-Encoding
         body: '{"remote_head": "096faba6a8a65efca20d948899c23188db6009da", "ahead": 1, "update_log": {}, "remote_branch": "refs/remotes/origin/master", "behind": 0, "dev": {"has_code": true, "is_up_to_date_with_upstream": true}, "live": {}, "has_code": true, "test": {}, "has_remote_head": true, "remote_url": "git://github.com/pantheon-systems/drops-7.git"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/4dae8c20-bf2e-4e30-97db-8d5219599b3c/code-upstream-updates'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:d434f7a6-3708-11e5-8afd-bc764e115846:bGtmTQNzo2bwkY1oG2ZwL'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Fri, 31 Jul 2015 17:51:44 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: ce9bd590-37ac-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"39-37024390"'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

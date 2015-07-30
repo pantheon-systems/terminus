@@ -2,7 +2,6 @@ Feature: sites
 
   Scenario: List Sites
     @vcr sites-list
-    Given I am authenticated
     When I run "terminus sites list"
     Then I should get:
     """
@@ -15,17 +14,16 @@ Feature: sites
     When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --product=WordPress"
     Then I should get:
     """
-    Pow! You created a new site!
+    New "site" [[test_site_name]] now building
     """
 
   Scenario: Delete Site
     @vcr sites-delete
     Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus sites delete --site=[[test_site_name]] --yes"
     Then I should get:
     """
-    Deleted [[test_site_name]]!
+    Deleting [[test_site_name]] ...
     """
 
   #Scenario: Create Site From Import
@@ -48,9 +46,9 @@ Feature: sites
 
   Scenario: Mass-Update Sites
     @vcr sites-mass-update
-    Given I am authenticated
     When I run "terminus sites mass-update"
     Then I should not get:
     """
     Needs update
     """
+
