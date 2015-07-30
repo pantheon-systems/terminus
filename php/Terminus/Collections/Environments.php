@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Collections;
 use Terminus\Request;
 use Terminus\Environment;
 use \Terminus_Command;
@@ -23,7 +23,7 @@ class Environments {
       $this->models[$id] = new Environment($this->site, $environment_data);
     }
 
-    return $this->all();
+    return $this;
   }
 
   public function get($id) {

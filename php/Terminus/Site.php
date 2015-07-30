@@ -5,7 +5,7 @@ use Terminus\Request;
 use Terminus\Deploy;
 use \Terminus\SiteWorkflow;
 use \Terminus_Command;
-use Terminus\Environments;
+use Terminus\Collections\Environments;
 
 class Site {
   public $id;

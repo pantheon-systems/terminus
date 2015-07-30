@@ -1,10 +1,14 @@
 <?php
 namespace Terminus;
-use \ReflectionClass, \Terminus\Request, \Terminus\EnvironmentWorkflow;
+use \ReflectionClass;
+use \Terminus\Request;
+use \Terminus\EnvironmentWorkflow;
+use \Terminus\Collections\Bindings;
 
 class Environment {
   public $id;
   public $attributes;
+  public $bindings;
 
   public $name = 'dev';
   public $site = false;
@@ -19,7 +23,6 @@ class Environment {
   public $target_ref;
   public $watchers;
   public $backups;
-  public $bindings;
 
   public function __construct( Site $site, $data = null) {
     $this->site = $site;
@@ -27,6 +30,8 @@ class Environment {
       $this->id = $data->id;
     }
     $this->attributes = $data;
+
+    $this->bindings = new Bindings(array('environment' => $this));
 
     if (is_object($data)) {
       // if we receive an environment object from the api hydrate the vars
