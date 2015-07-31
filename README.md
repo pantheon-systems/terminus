@@ -33,6 +33,16 @@ Logging in as user@pantheon.io
 Success!
 ```
 
+Tab completion
+--------------
+Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/cli/blob/master/utils/terminus-completion.bash) and source it from ``~/.bash_profile`:
+
+```bash
+source /FULL/PATH/TO/wp-completion.bash
+```
+
+(Don’t forget to run `source ~/.bash_profile` afterwards)
+
 Development
 ------------
 To use Terminus HEAD, you should clone this repository and run Terminus directly. Be sure you have the dependencies below installed.
