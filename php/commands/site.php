@@ -541,6 +541,42 @@ class Site_Command extends Terminus_Command {
    }
 
   /**
+   * Init dev to test or test to live
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Site to use
+   *
+   * [--env]
+   * : Environment you want to initialize
+   *
+   * @subcommand init-env
+   */
+   public function init_env($args, $assoc_args) {
+     $site = SiteFactory::instance(Input::site($assoc_args));
+     $environments = array('dev', 'test', 'live');
+     $env = $site->environment(Input::env(
+       $assoc_args,
+       'env',
+       'Choose environment you want to initialize',
+       array('test', 'live')
+     ));
+     $from_env = $environments[(array_search($env->getName(), $environments) - 1)];
+
+     $deploy_args = array(
+       'annotation' => 'Initial Commit',
+       'from' => $from_env
+     );
+     $result = $env->initializeBinding($deploy_args);
+
+     if($result) {
+       \Terminus::success("Initialization complete!");
+     }
+     return true;
+   }
+
+  /**
    * Clone dev to test or test to live
    *
    * ## OPTIONS
@@ -699,7 +735,6 @@ class Site_Command extends Terminus_Command {
     *
     * [--updatedb]
     * : (Drupal only) run update.php after deploy?
-    *
     *
     * [--note=<note>]
     * : deploy log message

@@ -4,11 +4,12 @@ default:
     bootstrap: ../features/bootstrap
   context:
     parameters:
-      username: devuser@pantheon.io
-      password: password1
-      host: onebox
-      vcr_mode: new_episodes
-      test_site_name: behat-test
+      username:        devuser@pantheon.io
+      password:        password1
+      host:            onebox
+      vcr_mode:        new_episodes
+      test_site_name:  behat-test
+      php_site_domain: onebox.pantheon.io
 
 ci:
   paths:
@@ -37,6 +38,7 @@ qa:
       other_user:           sara@getpantheon.com
       dashboard_host:       localhost:4000
       dashboard_admin_host: localhost:4001
+      php_site_domain:      onebox.pantheon.io
   formatter:
     name: Behat\Behat\Formatter\TerminusHtmlFormatter
     parameters:

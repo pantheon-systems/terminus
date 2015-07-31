@@ -6,7 +6,7 @@ class Workflow {
   protected $id;
   protected $realm;
   protected $type;
-  protected $params = array();
+  protected $params;
   protected $object;
   protected $status;
   protected $user;
@@ -32,6 +32,9 @@ class Workflow {
    * @return workflow object
    */
   public function setParams($args) {
+    if(!isset($this->params)) {
+      $this->params = array();
+    }
     foreach($args as $key => $value) {
       $this->params[$key] = $value;
     }
@@ -53,12 +56,11 @@ class Workflow {
     $data = array();
     $path = 'workflows';
     if ('POST' == $this->getMethod()) {
-      $data['body'] = json_encode(
-        array(
-          'type' => $this->type,
-          'params' => $this->params
-        )
-      );
+      $data['body'] = array('type' => $this->type);
+      if(isset($this->params)) {
+        $data['body']['params'] = $this->params;
+      }
+      $data['body'] = json_encode($data['body']);
       $data['headers'] = array('Content-type'=>'application/json');
     } else {
       $path = "$path?type=".$this->type;

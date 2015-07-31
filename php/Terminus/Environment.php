@@ -332,4 +332,60 @@ class Environment {
     }
     return $element;
   }
+
+  /**
+   * Deploys the given environment
+   *
+   * @param [array] $args Arguments for deployment
+   *        [string] $args['from'] Environment from which to deploy
+   *        [string] $args['annotation'] Commit message
+   * @return [array] Data from the request
+   */
+  public function deploy($args) {
+    $default_params = array(
+      'from' => 'dev',
+      'annotation' => 'Terminus deploy',
+      'clear_cache' => true,
+      'updatedb' => true,
+    );
+    $params = array_merge($default_params, $args);
+
+    $workflow = new EnvironmentWorkflow('deploy', 'sites', $this);
+    $workflow->setMethod('POST');
+    $workflow->start()->wait();
+    return $workflow;
+  }
+
+  /**
+   * Converges the given environment
+   *
+   * @return [array] Data from the request
+   */
+  public function converge() {
+    $workflow = new EnvironmentWorkflow('converge_environment', 'sites', $this);
+    $workflow->setMethod('POST');
+    $workflow->start()->wait();
+    return $workflow;
+  }
+
+  /**
+   * Initializes an environment
+   *
+   * @param [array] $args Arguments for deployment
+   * @return [array] Data from the request
+   */
+  public function initializeBinding($args) {
+    $this->converge();
+    $task = $this->deploy($args);
+    return $task;
+  }
+
+  /**
+   * Returns the environment's name
+   *
+   * @return [string] $this->name
+   */
+  public function getName() {
+    return $this->name;
+  }
 }
