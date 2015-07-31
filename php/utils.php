@@ -104,13 +104,13 @@ function esc_cmd($cmd) {
 }
 
 /**
- * Search for file by walking up the directory tree until the first file is 
+ * Search for file by walking up the directory tree until the first file is
  * found or until $stop_check($dir) returns true
  *
  * @param [array]    $files      The file(s) to search for
- * @param [string]   $dir        The directory to start searching from, 
+ * @param [string]   $dir        The directory to start searching from,
  *                                 defaults to CWD
- * @param [function] $stop_check Passed the current dir each time a directory 
+ * @param [function] $stop_check Passed the current dir each time a directory
  *                                 level is traversed
  * @return [string] $path File name if found, null if the file was not found
  */
@@ -146,7 +146,7 @@ function find_file_upward($files, $dir = null, $stop_check = null) {
  *
  * @param [string] $format Format to use: 'table', 'json', 'csv', 'ids', 'count'
  * @param [array]  $items  Data to output
- * @param [array]  $fields Named fields for each datum, 
+ * @param [array]  $fields Named fields for each datum,
  *                           array or comma-separated string
  * @return [void]
  */
@@ -196,11 +196,11 @@ function handle_exception($exception) {
   if(!empty($trace) AND \Terminus::get_config('verbose')) {
     foreach($exception->getTrace() as $line) {
       $out_line = sprintf(
-        "%s%s%s [%s:%s]", 
-        $line['class'], 
-        $line['type'], 
-        $line['function'], 
-        $line['file'], 
+        "%s%s%s [%s:%s]",
+        $line['class'],
+        $line['type'],
+        $line['function'],
+        $line['file'],
         $line['line']
       );
       \Terminus\Loggers\Regular::redLine(">> $out_line");
@@ -374,7 +374,7 @@ function load_dependencies() {
 }
 
 /**
- * Using require() directly inside a class grants access to private methods 
+ * Using require() directly inside a class grants access to private methods
  * to the loaded code
  *
  * @param [string] $path Path to the file to be required
@@ -489,10 +489,10 @@ function mysql_host_to_cli_args($raw_host) {
 }
 
 /**
- * Parses a URL and returns its components 
+ * Parses a URL and returns its components
  * Overrides native PHP parse_url(string)
  *
- * @param [string] $url URL to parse 
+ * @param [string] $url URL to parse
  * @return [array] $url_parts An array of URL components
  */
 function parse_url($url) {
@@ -589,7 +589,7 @@ function run_mysql_command($cmd, $assoc_args, $descriptors = null ) {
 
   if(isset($assoc_args['host'])) {
     $assoc_args = array_merge(
-      $assoc_args, 
+      $assoc_args,
       mysql_host_to_cli_args($assoc_args['host'])
     );
   }
@@ -621,7 +621,13 @@ function run_mysql_command($cmd, $assoc_args, $descriptors = null ) {
  * @return [string] $name Param string, sanitized
  */
 function sanitize_name($string) {
-  $name = strtolower(preg_replace("#[^A-Za-z0-9]#", "", $string));
+  $name = $string;
+  // squash whitespace
+  $name = trim(preg_replace('#\s+#', ' ', $name));
+  // replace spacers with hyphens
+  $name = preg_replace("#[\._ ]#", "-", $name);
+  // crush everything else
+  $name = strtolower(preg_replace("#[^A-Za-z0-9-]#", "", $name));
   return $name;
 }
 

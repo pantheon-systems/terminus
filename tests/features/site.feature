@@ -18,7 +18,6 @@ Feature: site
     git://
     """
 
-
   Scenario: Site Clone Environment
     @vcr site-clone-env
     Given I am authenticated

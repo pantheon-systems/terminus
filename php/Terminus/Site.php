@@ -18,6 +18,41 @@ class Site {
   public $bindings;
 
   /**
+  * Create a new Site
+  * @param $options (array)
+  *   @param $options label(string)
+  *   @param $options name(string)
+  *   @option $options organization_id(string)
+  *   @option product_id(string)
+  *
+  * @return Workflow
+  *
+  */
+  static function create($options = array()) {
+    $data = array(
+      'label' => $options['label'],
+      'site_name' => $options['name']
+    );
+
+    if (isset($options['organization_id'])) {
+      $data['organization_id'] = $options['organization_id'];
+    }
+
+    if (isset($options['product_id'])) {
+      $data['deploy_product'] = array(
+        'product_id' => $options['product_id']
+      );
+    }
+
+    $workflow = Workflow::createWorkflow('create_site', 'users', new User());
+    $workflow->setMethod('POST');
+    $workflow->setParams($data);
+    $workflow->start();
+
+    return $workflow;
+  }
+
+  /**
    * Needs site object from the api to instantiate
    * @param $site (object) required - api site object
    */

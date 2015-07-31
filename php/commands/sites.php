@@ -7,6 +7,7 @@ use Terminus\Utils;
 use Terminus\Products;
 use Terminus\Session;
 use Terminus\SitesCache;
+use Terminus\Site;
 use Terminus\SiteFactory;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
@@ -106,75 +107,66 @@ class Sites_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * [--product=<productid>]
-   * : Specify the product to create
+   * [--site=<site>]
+   * : Name of the site to create (machine-readable)
    *
    * [--name=<name>]
    * : (deprecated) use --site instead
    *
-   * [--site=<site>]
-   * : Name of the site to create (machine-readable)
-   *
    * [--label=<label>]
    * : Label for the site
+   *
+   * [--product=<productid>]
+   * : Specify the upstream product to use
+   *
+   * [--import=<url>]
+   * : A url to import a valid archive
    *
    * [--org=<org>]
    * : UUID of organization into which to add this site
    *
-   * [--import=<url>]
-   * : A url to import a valid archive from
    */
   public function create($args, $assoc_args) {
-    // setup data
-    $data = array();
-    $data['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
-    $slug = Utils\sanitize_name( $data['label'] );
-    // this ugly logic is temporarily if to handle the deprecated --name flag and preserve backward compatibility. it can be removed in the next major release.
-    if (array_key_exists('name',$assoc_args)) {
-      $data['site_name'] = $assoc_args['name'];
-    } elseif (array_key_exists('site',$assoc_args)) {
-      $data['site_name'] = $assoc_args['site'];
+    $options = array();
+    $options['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
+    $suggested_name = Utils\sanitize_name( $options['label'] );
+
+    if (array_key_exists('name', $assoc_args)) {
+      // Deprecated but kept for backwards compatibility
+      $options['name'] = $assoc_args['name'];
+    } elseif (array_key_exists('site', $assoc_args)) {
+      $options['name'] = $assoc_args['site'];
     } else {
-      $data['site_name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL [ if left blank will be $slug]", $slug);
+      $options['name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)", $suggested_name);
     }
-    if ($orgid = Input::orgid($assoc_args,'org', false)) {
-      $data['organization_id'] = $orgid;
+    if ($org_id = Input::orgid($assoc_args, 'org', false)) {
+      $options['organization_id'] = $org_id;
     }
     if (!isset($assoc_args['import'])) {
-      $product = Input::product($assoc_args,'product');
-      $data['deploy_product'] = array('product_id' => $product['id']);
+      $product = Input::product($assoc_args, 'product');
+      $options['product_id'] = $product['id'];
       Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));
     }
 
-    $params = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-
-    // run the workflow
-    $workflow = Workflow::createWorkflow('create_site','users', new User());
-    $workflow->setMethod('POST');
-    $workflow->setParams($data);
-    $workflow->start();
-    $workflow->refresh();
-
-    $details = $workflow->status();
-    $site_id = $details->final_task->site_id;
-
-    // Add Name->ID mapping to SitesCache
-    $sites_cache = new Terminus\SitesCache();
-    $sites_cache->add(array($data['site_name'] => $site_id));
-
-    if ($details->result !== 'failed' AND $details->result !== 'aborted') {
-      Terminus\Loggers\Regular::coloredOutput('%G'.vsprintf('New "site" %s now building with "UUID" %s', array($data['site_name'], $site_id)));
-    }
+    $workflow = Site::create($options);
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
+
+    // Add Name->ID mapping to SitesCache
+    $site_id = $workflow->status()->final_task->site_id;
+    $sites_cache = new Terminus\SitesCache();
+    $sites_cache->add(array($options['name'] => $site_id));
 
     if (isset($assoc_args['import'])) {
       sleep(10); //To stop erroenous site-DNE errors
       Terminus::launch_self('site', array('import'), array(
         'url' => $assoc_args['import'],
-        'site' => $data['site_name'],
-        'element' => 'all',
-        'nocache' => True
+        'site' => $options['name'],
+        'element' => 'all'
+      ));
+    } else {
+      Terminus::launch_self('site', array('info'), array(
+        'site' => $options['name'],
       ));
     }
 
