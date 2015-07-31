@@ -248,7 +248,7 @@ class Input {
    * @param [string] $question Question to ask
    * @param [array]  $params   Args for vsprintf()
    *
-   * @return [boolean] $is_no
+   * @return [boolean] $is_yes
    */
   public static function yesno($question, $params = array()) {
     if(\Terminus::get_config('yes')) {
@@ -259,7 +259,8 @@ class Input {
 
     $answer = trim(fgets(STDIN));
 
-    $is_no = ($answer != 'y');
-    return $is_no;
+    $is_yes = (boolean)($answer == 'y');
+    return $is_yes;
+
   }
 }
