@@ -123,19 +123,11 @@ class Workflow {
    }
 
    public function isFinished() {
-     if ($this->status->result) {
-       return true;
-     } else {
-       return false;
-     }
+     return (boolean)$this->status->result;
    }
 
    public function isSuccessful() {
-     if ($this->isFinished() && $this->status->result == 'succeeded') {
-       return true;
-     } else {
-       return false;
-     }
+     return $this->status->result == 'succeeded';
    }
 
    public function logMessages() {
