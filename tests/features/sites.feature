@@ -1,14 +1,5 @@
 Feature: sites
 
-  Scenario: List Sites
-    @vcr sites-list
-    Given I am authenticated
-    When I run "terminus sites list"
-    Then I should get:
-    """
-    Name
-    """
-
   Scenario: Delete Site
     @vcr sites-delete
     Given I am authenticated
@@ -44,4 +35,3 @@ Feature: sites
     """
     Needs update
     """
-

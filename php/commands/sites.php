@@ -65,6 +65,12 @@ class Sites_Command extends Terminus_Command {
    */
   public function show($args, $assoc_args) {
     $sites = SiteFactory::instance();
+
+    if (count($sites) == 0) {
+      Terminus::log("You have no sites.");
+      exit(0);
+    }
+
     $data = array();
     foreach ($sites as $site) {
       $report = array(
