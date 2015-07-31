@@ -25,7 +25,6 @@ abstract class Terminus_Command {
     # Load commonly used data from cache.
     $this->cache = Terminus::get_cache();
     $this->session = Session::instance();
-    $this->sites = $this->cache->get_data('sites');
   }
 
   /**
@@ -55,24 +54,6 @@ abstract class Terminus_Command {
     try {
       $cache = Terminus::get_cache();
 
-      // combine session realm uuid and path to get a unique key
-      // @todo need cache "groups"
-      $cachekey = md5( Session::getValue('user_uuid').$uuid.$realm.$path );
-      $data = $cache->get_data($cachekey);
-
-      // check the request cache
-      if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE') AND !empty($data)) {
-        if (Terminus::get_config('debug')) {
-          Logger::debug('CacheKey: '.$cachekey);
-        }
-        return (array) $data;
-      }
-
-      // for some methods we'll assume the cache should be invalidated
-      if ( in_array($method, array("POST","PUT","DELETE")) ) {
-        $cache->flush(null, 'session');
-      }
-
       if (!in_array($realm,array('login','user'))) {
         $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
         $options['verify'] = false;
@@ -92,7 +73,6 @@ abstract class Terminus_Command {
         'data' => json_decode($json),
         'status_code' => $resp->getStatusCode()
       );
-      $cache->put_data($cachekey, $data);
       return $data;
     } catch( Guzzle\Http\Exception\BadResponseException $e ) {
       $response = $e->getResponse();
@@ -277,7 +257,6 @@ abstract class Terminus_Command {
    */
   protected function waitOnWorkflow($object_name, $object_id, $workflow_id ) {
     print "Working .";
-    Terminus::set_config('nocache',true);
     $workflow = self::request($object_name, $object_id, "workflows/$workflow_id", 'GET');
     $result = $workflow['data']->result;
     $desc = $workflow['data']->active_description;

@@ -89,7 +89,7 @@ class Auth_Command extends Terminus_Command {
    */
   public function logout() {
     Terminus::line( "Logging out of Pantheon." );
-    $this->cache->flush();
+    $this->cache->remove('session');
   }
 
   /**

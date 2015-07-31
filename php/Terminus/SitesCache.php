@@ -58,15 +58,20 @@ class SitesCache {
   }
 
   public function rebuild() {
-    $this->cache->put_data($this->cachekey, array());
+    // Add user's own sites
     $this->add($this->fetch_user_sites());
 
+    // Add all sites for each of user's organizations
     $org_ids = array_keys($this->fetch_user_organizations());
     foreach ($org_ids as $org_id) {
       $this->add($this->fetch_organization_sites($org_id));
     }
 
     return $this->all();
+  }
+
+  public function clear() {
+    $this->cache->put_data($this->cachekey, array());
   }
 
   public function fetch_user_sites() {

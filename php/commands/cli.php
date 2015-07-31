@@ -121,13 +121,22 @@ class CLI_Command extends Terminus_Command {
   }
 
   /**
-  * Clear session cache
+  * Clear cached data
+  *
+  * ## OPTIONS
+  *
+  * [--cache=<cache>]
+  * : specific cache key to clear
+  *
   * @subcommand cache-clear
   */
-  public function cache_clear($cache = null) {
-    $this->cache->flush($cache,'session');
+  public function cache_clear($args, $assoc_args) {
+    if (isset($assoc_args['cache'])) {
+      $this->cache->remove($assoc_args['cache']);
+    } else {
+      $this->cache->flush();
+    }
   }
-
 }
 
-Terminus::add_command( 'cli', 'CLI_Command' );
+Terminus::add_command('cli', 'CLI_Command');

@@ -95,18 +95,11 @@ class Site {
    * Return all environments for a site
    */
   public function environments() {
-    $cache = \Terminus::get_cache();
-    if (empty($this->environments)) {
-      if (!$environments = $cache->get_data("environments:{$this->id}")) {
-        $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
-        $environments = $results['data'];
-        $cache->put_data("environments:{$this->id}",$environments);
-      }
-      $this->environments = $environments;
-    }
+    $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
+    $this->environments = $results['data'];
 
     // instantiate local objects
-    foreach ( $this->environments as $name => $env) {
+    foreach ($this->environments as $name => $env) {
       $this->environments->$name = EnvironmentFactory::load($this, $name, array(
         'hydrate_with' => $env,
       ));
