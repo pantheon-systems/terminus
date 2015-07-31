@@ -132,11 +132,13 @@ class FeatureContext extends BehatContext {
 
   /**
    * Logs in user with username and password set in behat.yml
+   * And a blank slate cache
    * @Given /^I am authenticated$/
    *
    * @return [void]
    */
   public function iAmAuthenticated() {
+    $this->iRun("terminus cli cache-clear");
     $this->iLogIn();
   }
 
@@ -201,7 +203,7 @@ class FeatureContext extends BehatContext {
   }
 
   /**
-   * Clears the Terminus cache
+   * Clears the Terminus Sites Cache
    * @Then /^I clear the Terminus cache$/
    *
    * @return [void]
