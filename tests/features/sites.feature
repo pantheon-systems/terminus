@@ -2,28 +2,21 @@ Feature: sites
 
   Scenario: List Sites
     @vcr sites-list
+    Given I am authenticated
     When I run "terminus sites list"
     Then I should get:
     """
     Name
     """
 
-  Scenario: Create Site
-    @vcr sites-create
-    Given I am authenticated
-    When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --product=WordPress"
-    Then I should get:
-    """
-    New "site" [[test_site_name]] now building
-    """
-
   Scenario: Delete Site
     @vcr sites-delete
     Given I am authenticated
+    And a site named "[[test_site_name]]"
     When I run "terminus sites delete --site=[[test_site_name]] --yes"
     Then I should get:
     """
-    Deleting [[test_site_name]] ...
+    Deleted [[test_site_name]]!
     """
 
   #Scenario: Create Site From Import

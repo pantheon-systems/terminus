@@ -85,7 +85,6 @@ class Workflow {
    * Wait on workflow to complete
    */
   public function wait() {
-    \Terminus::set_config('nocache',true);
     $tries = 0;
     while( $this->status('result') !== 'succeeded' AND $tries < 100) {
       if ( 'failed' == $this->status('result') OR 'aborted' == $this->status('result') ) {
@@ -95,7 +94,7 @@ class Workflow {
             exit;
           }
         } else {
-          \Terminus::error(PHP_EOL."Couldn't complete jobs: '{$this->type}'".PHP_EOL);
+          \Terminus::error(PHP_EOL."Couldn't complete workflow: '{$this->type}'".PHP_EOL);
         }
       }
       sleep(3);
@@ -115,7 +114,7 @@ class Workflow {
    * @param $key string optional -- property to return
    */
    public function status($key=null) {
-     if ($key AND is_object($this->status) AND property_exists($this->status,$key)) {
+     if ($key AND is_object($this->status) AND property_exists($this->status, $key)) {
        return $this->status->$key;
      } elseif ($key AND is_object($this->status) AND !property_exists($this->status,$key)) {
        return false;
@@ -123,4 +122,17 @@ class Workflow {
      return $this->status;
    }
 
+   public function isFinished() {
+     return (boolean)$this->status->result;
+   }
+
+   public function isSuccessful() {
+     return $this->status->result == 'succeeded';
+   }
+
+   public function logMessages() {
+     foreach($this->status->final_task->messages as $data => $message) {
+       \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
+     }
+   }
 }

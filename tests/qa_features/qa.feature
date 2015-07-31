@@ -2,9 +2,8 @@ Feature: Daily Terminus QA Report
   Scenario: Create site
     @create-site
     Given I am authenticated
-    #And no site named "[[test_site_name]]"
-    #When I create a "Drupal 7" site named "[[test_site_name]]"
-    #And I list the sites
+    And no site named "[[test_site_name]]"
+    When I create a "Drupal 7" site named "[[test_site_name]]"
     When I list the sites
     Then I should get:
     """
