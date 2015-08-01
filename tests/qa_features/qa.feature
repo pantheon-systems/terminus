@@ -56,20 +56,18 @@ Feature: Daily Terminus QA Report
     """
 
   Scenario: Initialize test environment
-    #Need a way to determine whether a default environment has been initialized from within Terminus.
     @init-test-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I am prompted to "Initialize the test environment" on "[[test_site_name]]" at "http://[[dashboard_host]]/sites/[[id]]#test/code"
-    And I initialize the "test" environment on "[[test_site_name]]"
+    When I initialize the "test" environment on "[[test_site_name]]"
+    Then I check the URL "http://test-[[test_site_name]].[[php_site_domain]]" for validity
 
   Scenario: Initializing the live environment
-    #Need a way to determine whether a default environment has been initialized from within Terminus.
     @init-live-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I am prompted to "Initialize the live environment" on "[[test_site_name]]" at "http://[[dashboard_host]]/sites/[[id]]#live/code"
-    And I initialize the "live" environment on "[[test_site_name]]"
+    When I initialize the "live" environment on "[[test_site_name]]"
+    Then I check the URL "http://live-[[test_site_name]].[[php_site_domain]]" for validity
 
   Scenario: Connection mode Git
     @connection-mode-git

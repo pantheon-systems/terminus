@@ -169,6 +169,19 @@ class FeatureContext extends BehatContext {
   }
 
   /**
+   * Checks to see if a URL is valid
+   * @Then /^I check the URL "([^"]*)" for validity$/
+   *
+   * @param [string] $url URL to check for validity
+   */
+  public function iCheckTheUrlForValidity($url) {
+    $url = $this->_replacePlaceholders($url);
+    if(filter_var($url, FILTER_VALIDATE_URL) === false) {
+      throw new Exception("$url URL is not valid.");
+    }
+  }
+
+  /**
    * Checks which user Terminus is operating as
    * @Given /^I check the user I am logged in as$/
    *
@@ -313,7 +326,7 @@ class FeatureContext extends BehatContext {
     * @return [void]
     */
   public function iInitializeTheEnvironmentOn($env, $site) {
-    $this->setTestStatus('pending');
+    $this->iRun("terminus site init-env --site=$site --env=$env");
   }
 
   /**
