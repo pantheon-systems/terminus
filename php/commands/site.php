@@ -1209,14 +1209,14 @@ class Site_Command extends Terminus_Command {
         Logger::coloredOutput("%2<K>Team member removed!</K>");
         break;
       case 'list':
-      case 'default':
+      default:
         $team = $site->team();
         foreach ($team as $uuid => $user) {
           $data[] = array(
-            'First' => $user->profile->firstname,
-            'Last'  => $user->profile->lastname,
-            'Email' => $user->email,
-            'UUID'  => $uuid,
+            'First' => $user->user->profile->firstname,
+            'Last'  => $user->user->profile->lastname,
+            'Email' => $user->user->email,
+            'UUID'  => $user->user->id,
           );
         }
         ksort($data);
