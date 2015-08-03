@@ -384,7 +384,7 @@ class Site_Command extends Terminus_Command {
   * : Element to download or create. *all* only used for 'create'
   *
   * [--to-directory=<directory>]
-  * : Download the file if set
+  * : Absolute path of directory to download the file
   *
   * [--latest]
   * : If set the latest backup will be selected automatically
