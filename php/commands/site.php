@@ -523,7 +523,7 @@ class Site_Command extends Terminus_Command {
           }
 
           $size =  $backup->size / 1024 / 1024;
-          if ($size > 0 && $size > 0.1) {
+          if ($size > 0.1) {
             $size = sprintf("%.1fMB", $size);
           } elseif ($size > 0) {
             $size = "0.1MB";
