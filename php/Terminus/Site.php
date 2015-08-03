@@ -357,10 +357,8 @@ class Site {
   }
 
   public function team() {
-    $method = 'GET';
-    $path = 'team';
     $options = array();
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    $response = \Terminus_Command::paged_request('sites/' . $this->getId() . '/memberships/users', $options);
     return $response['data'];
   }
 
