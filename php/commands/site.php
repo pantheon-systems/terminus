@@ -209,8 +209,9 @@ class Site_Command extends Terminus_Command {
       $action = 'set';
     }
 
-    # Omit test/live environments from options
-    $environments =  array_diff($site->availableEnvironments(), array('test', 'live'));
+    # Only present dev and multidev environments; Test/Live cannot be modified
+    $site->environmentsCollection->fetch();
+    $environments = array_diff($site->environmentsCollection->ids(), array('test', 'live'));
 
     $env = Input::env($assoc_args, 'env', 'Choose environment', $environments);
     if (($env == 'test' || $env == 'live') && $action == 'set') {
@@ -647,7 +648,8 @@ class Site_Command extends Terminus_Command {
        $env = Terminus::prompt("Name of new MultiDev environment");
      }
 
-     $src = Input::env($assoc_args, 'from-env', "Environment to clone content from", $site->availableEnvironments());
+     $site->environmentsCollection->fetch();
+     $src = Input::env($assoc_args, 'from-env', "Environment to clone content from", $site->environmentsCollection->ids());
 
      $workflow = $site->createEnvironment($env, $src);
      $workflow->wait();
@@ -669,8 +671,8 @@ class Site_Command extends Terminus_Command {
    */
    public function delete_env($args, $assoc_args) {
      $site = SiteFactory::instance(Input::site($assoc_args));
-
-     $multidev_envs = array_diff($site->availableEnvironments(), array('dev', 'test', 'live'));
+     $site->environmentsCollection->fetch();
+     $multidev_envs = array_diff($site->environmentsCollection->ids(), array('dev', 'test', 'live'));
      $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
 
      Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
@@ -749,18 +751,20 @@ class Site_Command extends Terminus_Command {
    */
   function environments($args, $assoc_args) {
     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-    $environments = $site->environments();
+    $site->environmentsCollection->fetch();
+    $environments = $site->environmentsCollection->all();
+
     $data = array();
     foreach ($environments as $env) {
       $data[] = array(
-        'Name' => $env->name,
+        'Name' => $env->id,
         'Created' => $env->environment_created,
         'Domain' => $env->domain(),
         'OnServer Dev?' => $env->on_server_development ? 'true' : 'false',
         'Locked?' => $env->lock->locked ? 'true' : 'false',
       );
     }
-    $this->handleDisplay($data,$args);
+    $this->handleDisplay($data, $args);
     return $data;
   }
 

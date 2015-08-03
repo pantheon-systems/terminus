@@ -24,7 +24,7 @@ class Environment {
   public $watchers;
   public $backups;
 
-  public function __construct( Site $site, $data = null) {
+  public function __construct(Site $site, $data = null) {
     $this->site = $site;
     if (property_exists($data, 'id')) {
       $this->id = $data->id;

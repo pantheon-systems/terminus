@@ -25,17 +25,6 @@ class SiteTest extends PHPUnit_Framework_TestCase {
  }
 
  /**
-  * @vcr site_environments
-  */
- function testEnvironments() {
-   $site = SiteFactory::instance('phpunittest');
-   $environments = $site->environments();
-   $this->assertInstanceOf('\Terminus\EnvironmentDev', $environments->dev);
-   $this->assertInstanceOf('\Terminus\EnvironmentTest', $environments->test);
-   $this->assertInstanceOf('\Terminus\EnvironmentLive', $environments->live);
- }
-
- /**
   * @vcr site_info
   */
  function testInfo() {

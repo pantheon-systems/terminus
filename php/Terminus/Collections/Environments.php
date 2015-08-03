@@ -26,6 +26,22 @@ class Environments {
     return $this;
   }
 
+  /**
+   * List Environment IDs, with Dev/Test/Live first
+   *
+   */
+
+  public function ids() {
+    $ids = array_keys($this->models);
+
+    # Reorder environments to put dev/test/live first
+    $default_ids = array('dev', 'test', 'live');
+    $multidev_ids = array_diff($ids, $default_ids);
+    $ids = array_merge($default_ids, $multidev_ids);
+
+    return $ids;
+  }
+
   public function get($id) {
     return array_key_exists($id, $this->models) ? $this->models[$id] : null;
   }
