@@ -447,7 +447,7 @@ class Site_Command extends Terminus_Command {
            Terminus::line("Downloading ... please wait ...");
            $filename = \Terminus\Utils\get_filename_from_url($url->url);
            $target = sprintf("%s/%s", $assoc_args['to-directory'], $filename);
-           if (Terminus_Command::download($url->url,$target)) {
+           if (Terminus_Command::download($url->url, $target)) {
              Terminus::success("Downloaded %s", $target);
              return $target;
            } else {
@@ -522,9 +522,19 @@ class Site_Command extends Terminus_Command {
           if (isset($backup->finish_time)) {
             $date = date("Y-m-d H:i:s", $backup->finish_time);
           }
+
+          $size =  $backup->size / 1024 / 1024;
+          if ($size > 0.1) {
+            $size = sprintf("%.1fMB", $size);
+          } elseif ($size > 0) {
+            $size = "0.1MB";
+          } else {
+            $size = "0MB";
+          }
+
           $data[] = array(
             $backup->filename,
-            sprintf("%dMB", $backup->size / 1024 / 1024),
+            $size,
             $date,
           );
         }
