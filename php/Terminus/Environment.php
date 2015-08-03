@@ -2,7 +2,6 @@
 namespace Terminus;
 use \ReflectionClass;
 use \Terminus\Request;
-use \Terminus\EnvironmentWorkflow;
 use \Terminus\Collections\Bindings;
 
 class Environment {
@@ -98,10 +97,11 @@ class Environment {
       'ttl' => $ttl
     );
 
-    $workflow = new EnvironmentWorkflow('do_export','sites',$this);
-    $workflow->setMethod('POST');
-    $workflow->setParams($params);
-    $workflow->start()->wait();
+    $workflow = $this->site->workflows->create('do_export', array(
+      'environment' => $this->id,
+      'params' => $params
+    ));
+    $workflow->wait();
 
     return $workflow;
   }
@@ -343,16 +343,14 @@ class Environment {
    */
   public function deploy($args) {
     $default_params = array(
-      'from' => 'dev',
-      'annotation' => 'Terminus deploy',
-      'clear_cache' => true,
-      'updatedb' => true,
+      'annotation' => 'Terminus deploy'
     );
     $params = array_merge($default_params, $args);
 
-    $workflow = new EnvironmentWorkflow('deploy', 'sites', $this);
-    $workflow->setMethod('POST');
-    $workflow->start()->wait();
+    $workflow = $this->site->workflows->create('deploy', array(
+      'environment' => $this->id,
+      'params' => $params
+    ));
     return $workflow;
   }
 
@@ -362,9 +360,7 @@ class Environment {
    * @return [array] Data from the request
    */
   public function converge() {
-    $workflow = new EnvironmentWorkflow('converge_environment', 'sites', $this);
-    $workflow->setMethod('POST');
-    $workflow->start()->wait();
+    $workflow = $this->site->workflows->create('converge_environment', array('environment' => $this->id));
     return $workflow;
   }
 
@@ -374,10 +370,24 @@ class Environment {
    * @param [array] $args Arguments for deployment
    * @return [array] Data from the request
    */
-  public function initializeBinding($args) {
-    $this->converge();
-    $task = $this->deploy($args);
-    return $task;
+  public function initializeBindings() {
+    $converge_workflow = $this->converge();
+    $converge_workflow->wait();
+
+    if ($this->id == 'test') {
+      $from_env_id = 'dev';
+    } elseif ($this->id == 'live') {
+      $from_env_id = 'test';
+    }
+
+    $deploy_args = array(
+      'annotation' => sprintf('Create the %s environment', $this->id),
+      'clone_database' => array('from_environment' => $from_env_id),
+      'clone_files' => array('from_environment' => $from_env_id),
+    );
+
+    $deploy_workflow = $this->deploy($deploy_args);
+    return $deploy_workflow;
   }
 
   /**

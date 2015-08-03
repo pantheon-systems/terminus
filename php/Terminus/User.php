@@ -2,10 +2,12 @@
 namespace Terminus;
 
 use \Terminus\Organization;
+use \Terminus\Collections\Workflows;
 
 class User {
   static $instance;
   public $id;
+  public $workflows;
   private $organizations;
   private $profile;
   private $aliases;
@@ -16,6 +18,8 @@ class User {
     } else {
       $this->id = $id;
     }
+
+    $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'user'));
     $this->getProfile();
     self::$instance = $this;
     return $this;

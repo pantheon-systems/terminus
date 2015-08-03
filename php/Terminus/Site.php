@@ -3,10 +3,10 @@
 namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
-use \Terminus\SiteWorkflow;
 use \Terminus_Command;
 use Terminus\Collections\Environments;
 use \Terminus\Environment;
+use Terminus\Collections\Workflows;
 
 class Site {
   public $id;
@@ -15,6 +15,7 @@ class Site {
   public $metadata;
   public $environments = array();
   public $environmentsCollection;
+  public $workflows;
   public $jobs;
   public $bindings;
 
@@ -45,10 +46,10 @@ class Site {
       );
     }
 
-    $workflow = Workflow::createWorkflow('create_site', 'users', new User());
-    $workflow->setMethod('POST');
-    $workflow->setParams($data);
-    $workflow->start();
+    $user = User::instance();
+    $workflow = $user->workflows->create('create_site', array(
+      'params' => $data
+    ));
 
     return $workflow;
   }
@@ -82,6 +83,7 @@ class Site {
     # /deprecated properties
 
     $this->environmentsCollection = new Environments(array('site' => $this));
+    $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'site'));
 
     return $this;
   }
@@ -315,8 +317,7 @@ class Site {
    * Create a multidev environment
    */
   public function createEnvironment($env, $src = 'dev') {
-    $workflow = new SiteWorkflow('create_cloud_development_environment', $this);
-    $workflow->setParams(array(
+    $workflow = $this->workflows->create('create_cloud_development_environment', array(
       'params' => array(
         'environment_id' => $env,
         'deploy' => array(
@@ -326,7 +327,6 @@ class Site {
         )
       )
     ));
-    $workflow->start('POST');
     return $workflow;
   }
 
@@ -334,9 +334,11 @@ class Site {
    * Delete a multidev environment
    */
   public function deleteEnvironment($env) {
-    $workflow = new SiteWorkflow('delete_cloud_development_environment', $this);
-    $workflow->setParams(array('params' => array('environment_id' => $env)));
-    $workflow->start('POST');
+    $workflow = $this->workflows->create('delete_cloud_development_environment', array(
+      'params' => array(
+        'environment_id' => $env
+      )
+    ));
     return $workflow;
   }
 
@@ -395,11 +397,14 @@ class Site {
    *
    * @return Workflow object
    **/
-  public function addMembership($type,$name,$role='team_member') {
-    $type = sprintf('add_site_%s_membership',$type);
-    $workflow = new SiteWorkflow($type,$this);
-    $workflow->setParams(array('params'=> array('organization_name'=>$name,'role'=>$role)));
-    $workflow->start('POST');
+  public function addMembership($type, $name, $role = 'team_member') {
+    $type = sprintf('add_site_%s_membership', $type);
+    $workflow = $this->workflows->create($type, array(
+      'params'=> array(
+        'organization_name' => $name,
+        'role' => $role
+      )
+    ));
     return $workflow;
   }
 
@@ -413,9 +418,11 @@ class Site {
   **/
   public function removeMembership($type,$uuid) {
     $type = sprintf('remove_site_%s_membership',$type);
-    $workflow = new SiteWorkflow($type,$this);
-    $workflow->setParams(array('params'=> array('organization_id'=>$uuid)));
-    $workflow->start('POST');
+    $workflow = $this->workflows->create($type, array(
+      'params'=> array(
+        'organization_id'=>$uuid
+      )
+    ));
     return $workflow;
   }
 

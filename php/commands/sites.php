@@ -159,7 +159,7 @@ class Sites_Command extends Terminus_Command {
     Terminus::success("Pow! You created a new site!");
 
     // Add Name->ID mapping to SitesCache
-    $site_id = $workflow->status()->final_task->site_id;
+    $site_id = $workflow->attributes->final_task->site_id;
     $sites_cache = new Terminus\SitesCache();
     $sites_cache->add(array($options['name'] => $site_id));
 
