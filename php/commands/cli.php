@@ -1,7 +1,10 @@
 <?php
 
-use \Terminus\Dispatcher,
-  \Terminus\Utils;
+use \Terminus\Dispatcher;
+use \Terminus\Utils;
+use \Terminus\SitesCache;
+use Terminus\Site;
+use Terminus\User;
 
 /**
  * Get information about Terminus itself.
@@ -136,6 +139,27 @@ class CLI_Command extends Terminus_Command {
     } else {
       $this->cache->flush();
     }
+  }
+
+  /**
+  * Instantiate a console within Terminus
+  *
+  * ## OPTIONS
+  *
+  * [--site=<site>]
+  * : name of site to load
+  *
+  * @subcommand console
+  */
+  public function console($args, $assoc_args) {
+    $user = new User;
+    if (isset($assoc_args['site'])) {
+      $sitename = $assoc_args['site'];
+      $site_id = SitesCache::find($sitename);
+      $site = new Site($site_id);
+    }
+
+    eval(\Psy\sh());
   }
 }
 

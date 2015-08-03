@@ -18,7 +18,8 @@
     "symfony/dom-crawler": "2.7",
     "symfony/css-selector": "2.7",
     "guzzle/guzzle": "3.9.*@stable",
-    "nb/oxymel": "0.1.0"
+    "nb/oxymel": "0.1.0",
+    "psy/psysh": "@stable"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },
