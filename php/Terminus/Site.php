@@ -6,6 +6,7 @@ use Terminus\Deploy;
 use \Terminus\SiteWorkflow;
 use \Terminus_Command;
 use Terminus\Collections\Environments;
+use \Terminus\Environment;
 
 class Site {
   public $id;
@@ -127,54 +128,12 @@ class Site {
   }
 
   /**
-   * Return all environments for a site
-   */
-  public function environments() {
-    $results = \Terminus_Command::request("sites", $this->getId(), "environments", "GET");
-    $this->environments = $results['data'];
-
-    // instantiate local objects
-    foreach ($this->environments as $name => $env) {
-      $this->environments->$name = EnvironmentFactory::load($this, $name, array(
-        'hydrate_with' => $env,
-      ));
-    }
-
-    return $this->environments;
-  }
-
-  /**
-   * Return environment object from site
+   * Return a specifc environment on the site
    * @param $environment string required
    */
-  public function environment($environment) {
-    if (array_key_exists($environment,$this->environments)) {
-      return $this->environments->$environment;
-    } else {
-      // load the environments
-      $this->environments();
-    }
-    return $this->environments->$environment;
-  }
-
-  /**
-   * Returns the available environments
-   */
-  public function availableEnvironments() {
-    $envs = array();
-    if (empty($this->environments)) {
-      $this->environments();
-    }
-    foreach ($this->environments as $name => $data) {
-      $envs[] = $name;
-    }
-
-    # Reorder environments to put dev/test/live first
-    $default_envs = array('dev', 'test', 'live');
-    $multidev_envs = array_diff($envs, $default_envs);
-    $envs = array_merge($default_envs, $multidev_envs);
-
-    return $envs;
+  public function environment($env_id) {
+    $this->environmentsCollection->fetch();
+    return $this->environmentsCollection->get($env_id);
   }
 
   /**
