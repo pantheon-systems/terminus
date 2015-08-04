@@ -43,7 +43,6 @@ class FeatureContext extends BehatContext {
    * @return [boolean] Always true, else errs
    */
   public function aSiteNamed($site) {
-    $this->iRebuildTheTerminusCache();
     $output = $this->iGetInfoForTheSite($site);
     if(!$this->_checkResult('created', $output)) {
       $this->iCreateASiteNamed('Drupal 7', $site);
@@ -204,7 +203,7 @@ class FeatureContext extends BehatContext {
   }
 
   /**
-    * @Given /^I clone the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
+    * @When /^I clone the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
     *
     * @param [string] $from_env Environment to clone from
     * @param [string] $to_env   Environment to clone into
@@ -212,7 +211,7 @@ class FeatureContext extends BehatContext {
     * @return [void]
     */
   public function iCloneTheEnvironment($from_env, $to_env, $site) {
-    $this->setTestStatus('pending');
+    $this->iRun("terminus site clone-env --site=$site --from-env=$from_env --to-env=$to_env --files --db --yes");
   }
 
   /**
@@ -547,7 +546,6 @@ class FeatureContext extends BehatContext {
    * @return [boolean] Always returns true
    */
   public function noSiteNamed($site) {
-    $this->iRebuildTheTerminusCache();
     $output = $this->iGetInfoForTheSite($site);
     if($this->_checkResult('created', $output)) {
       $this->iDeleteTheSiteNamed($site);
