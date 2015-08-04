@@ -12,7 +12,6 @@ use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
-use \Terminus\SiteWorkflow;
 use Terminus\SitesCache;
 
 
@@ -573,13 +572,9 @@ class Site_Command extends Terminus_Command {
        'Choose environment you want to initialize',
        array('test', 'live')
      ));
-     $from_env = $environments[(array_search($env->getName(), $environments) - 1)];
 
-     $deploy_args = array(
-       'annotation' => 'Initial Commit',
-       'from' => $from_env
-     );
-     $result = $env->initializeBinding($deploy_args);
+     $workflow = $env->initializeBindings($deploy_args);
+     $workflow->wait();
 
      if($result) {
        \Terminus::success("Initialization complete!");
