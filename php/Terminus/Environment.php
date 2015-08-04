@@ -301,6 +301,54 @@ class Environment {
   }
 
   /**
+   * Merge the Master Branch (Dev Environment) into this Multidev Branch (Environment)
+   *
+   */
+  public function mergeFromMaster($options = array()) {
+    if (!$this->isMultidev()) {
+      throw new Exception(sprintf("The %s environment is not a multidev environment", $this->id));
+    }
+
+    $default_params = array(
+      'updatedb' => false
+    );
+    $params = array_merge($default_params, $options);
+
+    $workflow = $this->site->workflows->create('merge_dev_into_cloud_development_environment', array(
+      'environment' => $this->id,
+      'params' => $params
+    ));
+
+    return $workflow;
+  }
+
+  /**
+   * Merge this Multidev Branch (Environment) into the Master Branch (Dev Environment)
+   *
+   */
+  public function mergeToMaster($options = array()) {
+    if (!$this->isMultidev()) {
+      throw new Exception(sprintf("The %s environment is not a multidev environment", $this->id));
+    }
+
+    $default_params = array(
+      'updatedb' => false
+    );
+    $params = array_merge($default_params, $options);
+
+    // This function is a little odd because we invoke it on a
+    // multidev environment, but it applies a workflow to the 'dev' environment
+    $params['from_environment'] = $this->id;
+    $workflow = $this->site->workflows->create('merge_cloud_development_environment_into_dev', array(
+      'environment' => 'dev',
+      'params' => $params
+    ));
+
+    return $workflow;
+  }
+
+
+  /**
    * Return the SFTP connection URL for this environment
    */
   public function sftp_url() {
@@ -397,5 +445,13 @@ class Environment {
    */
   public function getName() {
     return $this->name;
+  }
+
+  /**
+   * Is this Branch a multidev environment
+   */
+  public function isMultidev() {
+    $is_multidev = !in_array($this->id, array('dev', 'test', 'live'));
+    return $is_multidev;
   }
 }

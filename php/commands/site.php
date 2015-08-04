@@ -698,6 +698,60 @@ class Site_Command extends Terminus_Command {
    }
 
    /**
+    * Merge a Multidev Environment into Dev Environment
+    *
+    * ## OPTIONS
+    *
+    * [--site=<site>]
+    * : Site to use
+    *
+    * [--env=<env>]
+    * : Name of multidev to environment to merge into Dev
+    *
+    * @subcommand merge-to-dev
+    */
+    public function merge_to_dev($args, $assoc_args) {
+      $site = SiteFactory::instance(Input::site($assoc_args));
+      $site->environmentsCollection->fetch();
+
+      $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
+      $multidev_id = Input::env($assoc_args, 'env', "Multidev environment to merge into Dev Environment", $multidev_ids);
+      $environment = $site->environmentsCollection->get($multidev_id);
+
+      $workflow = $environment->mergeToMaster();
+      $workflow->wait();
+
+      Terminus::success(sprintf('Merged the %s environment into Dev', $environment->id));
+    }
+
+    /**
+     * Merge the Dev Environment (Master) into a Multidev Environment
+     *
+     * ## OPTIONS
+     *
+     * [--site=<site>]
+     * : Site to use
+     *
+     * [--env=<env>]
+     * : Name of multidev to environment to merge Dev into
+     *
+     * @subcommand merge-from-dev
+     */
+     public function merge_from_dev($args, $assoc_args) {
+       $site = SiteFactory::instance(Input::site($assoc_args));
+       $site->environmentsCollection->fetch();
+
+       $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
+       $multidev_id = Input::env($assoc_args, 'env', "Multidev environment that the Dev Environment will be merged into", $multidev_ids);
+       $environment = $site->environmentsCollection->get($multidev_id);
+
+       $workflow = $environment->mergeFromMaster();
+       $workflow->wait();
+
+       Terminus::success(sprintf('Merged the Dev environment into the %s environment ', $environment->id));
+     }
+
+   /**
    * Delete a MultiDev environment
    *
    * ## OPTIONS
