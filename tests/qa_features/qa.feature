@@ -125,13 +125,21 @@ Feature: Daily Terminus QA Report
     @deploy-test-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I clone the "live" environment into the "test" environment on "[[test_site_name]]"
+    When I deploy the "live" environment from "test" of "[[test_site_name]]" with the message "test deploy"
+    Then I should get:
+    """
+    Woot! Code deployed to test
+    """
 
   Scenario: Deploying the live environment
     @deploy-live-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I deploy the "live" environment of "[[test_site_name]]"
+    When I deploy the "live" environment from "test" of "[[test_site_name]]" with the message "test deploy2"
+    Then I should get:
+    """
+    Woot! Code deployed to live
+    """
 
   Scenario: Clear caches on live
     @clear-caches

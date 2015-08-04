@@ -26,7 +26,7 @@ Feature: cli
     When I run "terminus cli info"
     Then I should get:
     """
-    /php.ini
+    1.0.0
     """
 
   Scenario: Dumping Parameters

@@ -737,38 +737,45 @@ class Site_Command extends Terminus_Command {
     * : deploy log message
     *
     */
-   public function deploy($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
-     $env = Input::env($assoc_args);
-     $from = Input::env($assoc_args, 'from', "Choose environment you want to deploy from");
-     if (!isset($assoc_args['note'])) {
-       $note = Terminus::prompt("Custom note for the Deploy Log", array(), "Deploy from Terminus 2.0");
-     } else {
-       $note = $assoc_args['note'];
-     }
+  public function deploy($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::site($assoc_args));
+    $env  = $site->environment(Input::env(
+      $assoc_args,
+      'env',
+      'Choose environment to deploy'
+    ));
+    $from = Input::env(
+      $assoc_args,
+      'from',
+      'Choose environment you want to deploy from'
+    );
+    if(!isset($assoc_args['note'])) {
+      $annotation = Terminus::prompt(
+        'Custom note for the deploy log',
+        array(),
+        'Deploy from Terminus 2.0');
+    } else {
+      $annotation = $assoc_args['note'];
+    }
 
-     $cc = $updatedb = 0;
-     if (array_key_exists('cc',$assoc_args)) {
-       $cc = 1;
-     }
-     if (array_key_exists('updatedb',$assoc_args)) {
-       $updatedb = 1;
-     }
+    $cc       = (integer)array_key_exists('cc', $assoc_args);
+    $updatedb = (integer)array_key_exists('updatedb', $assoc_args);
 
-     $params = array(
-       'updatedb' => $updatedb,
-       'cc' => $cc,
-       'from' => $from,
-       'annotation' => $note
-     );
+    $params = array(
+      'updatedb'       => $updatedb,
+      'clear_cache'    => $cc,
+      'annotation'     => $annotation,
+      'clone_database' => array('from_environment' => $from),
+      'clone_files'    => array('from_environment' => $from),
+    );
 
-     $deploy = new Deploy($site->environment($env), $params);
-     $response = $deploy->run();
-     $result = $this->waitOnWorkflow('sites', $site->getId(), $response->id);
-     if ($result) {
-       \Terminus::success("Woot! Code deployed to %s", array($env));
-     }
-   }
+    $workflow = $env->deploy($params);
+    $workflow->wait();
+
+    if($workflow->isSuccessful()) {
+      \Terminus::success("Woot! Code deployed to %s", array($env->getName()));
+    }
+  }
 
   /**
    * List enviroments for a site
