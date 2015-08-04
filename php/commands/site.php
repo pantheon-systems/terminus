@@ -635,33 +635,23 @@ class Site_Command extends Terminus_Command {
 
      if ($db) {
        print "Cloning database ... ";
-       $this->cloneObject( $to_env, $from_env, $site_id, 'database');
+       $workflow = $site->workflows->create("clone_database", array(
+         'environment' => $to_env,
+         'params' => array('from_environment' => $from_env)
+       ));
+       $workflow->wait();
      }
 
      if ($files) {
       print "Cloning files ... ";
-      $this->cloneObject( $to_env, $from_env, $site_id, 'files');
+      $workflow = $site->workflows->create("clone_files", array(
+        'environment' => $to_env,
+        'params' => array('from_environment' => $from_env)
+      ));
+      $workflow->wait();
      }
      \Terminus::success("Clone complete!");
      return true;
-   }
-
-
-   // @todo this should be moved to a namespaced class CloneResource
-   private function cloneObject($to_env, $from_env, $site_id, $object_type) {
-     $path = sprintf("environments/%s/%s", $to_env, $object_type);
-
-     $data = array('clone-from-environment'=>$from_env);
-     $OPTIONS = array(
-       'body' => json_encode($data) ,
-       'headers'=> array('Content-type'=>'application/json')
-     );
-     $response = \Terminus_Command::request("sites", $site_id, $path, "POST", $OPTIONS);
-     if ($response) {
-       $this->waitOnWorkflow("sites", $site_id, $response['data']->id);
-       return $response;
-     }
-     return false;
    }
 
   /**
