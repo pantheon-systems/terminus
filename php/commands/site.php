@@ -1340,11 +1340,7 @@ class Site_Command extends Terminus_Command {
     if(isset($db)){$db = null;}
     $assoc_args = array();
     $site = SiteFactory::instance(Input::site($assoc_args));
-    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-    if(isset($extra)) {$assoc_args = array($site, $env, $extra);}
-    else {
-      $assoc_args = array($site, $env);
-    }
+    $env = isset($assoc_args['env']) ? $assoc_args['env'] : 'dev';
     $bindings = $site->bindings('dbserver');
     if (empty($bindings)) {
       \Terminus::error("Sql bindings empty.");
@@ -1382,6 +1378,10 @@ class Site_Command extends Terminus_Command {
           }
           return $db;
         } catch (PDOException $e) {
+      if ($e->getMessage() == 'SQLSTATE[HY000] [2002] Connection refused') {
+        $waking = $site->environment($env)->wake();
+        continue;
+        }
           print "Error!: " . $e->getMessage() . "\n";
           die();
         }
@@ -1417,33 +1417,29 @@ class Site_Command extends Terminus_Command {
 
   public function mysql_act($args, $assoc_args) {
     $action = array_shift($args);
-    $env = isset($assoc_args['env']) ? $assoc_args['env'] : NULL;
-    if (!isset($env) || $env === $binding->environment || $env = null) {
-      if (!isset($env) || $env == null) {$env = 'dev';}
-      try {
-        if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
-        elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
-        elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
-        else {$extra = 'none';}
-        $db = $this->mysql_conn($extra);
-        while (!isset($not_input) or $not_input == true) {
-          if(isset($assoc_args['c'])) {
-            $u_input = $assoc_args['c'];
-            var_dump($u_input);
-            $not_input = false;
-            continue;
-          }
-          $u_input = readline("MySQL Command: ");
-          readline_add_history($u_input);
+    try {
+      if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {$extra = 'tunnel';}
+      elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
+      elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
+      else {$extra = 'none';}
+      $db = $this->mysql_conn($extra);
+      while (!isset($not_input) or $not_input == true) {
+        if (isset($assoc_args['c'])) {
+          $u_input = $assoc_args['c'];
+          var_dump($u_input);
           $not_input = false;
+          continue;
         }
-        foreach($db->query($u_input) as $row) {
-          print_r($row);
-        }
-      } catch (PDOException $e) {
-        print "Error!: " . $e->getMessage() . "\n";
-        die();
+        $u_input = readline("MySQL Command: ");
+        readline_add_history($u_input);
+        $not_input = false;
       }
+      foreach($db->query($u_input) as $row) {
+        print_r($row);
+      }
+    } catch (PDOException $e) {
+      print "Error!: " . $e->getMessage() . "\n";
+      die();
     }
   }
 
@@ -1453,28 +1449,9 @@ class Site_Command extends Terminus_Command {
     if ($file_exti['extension'] == 'gz') {$file = gzopen($filename, 'r');}
     elseif ($file_exti['extension'] == 'sql') {$file = fopen($filename, 'r');}
     else {die('this file is not a valid SQL file.');}
-    $next_command = '';
     try {
       while ($line = fgets($file)) {
-        if(strpos($line, '--') !== false){continue;}
-        if(strpos($line, ';') !== strrpos($line, ';')) { 
-          $command = array(trim($line), true);
-          yield $command;
-          continue;
-        } else {
-          $parts = explode(';', $line);
-          $parts[0] = $next_command . $parts[0];
-          $next_command = '';
-          if ($parts[count($parts) - 1] !== '') {
-            $next_command = $parts[count($parts) - 1];
-          }
-          unset($parts[count($parts) - 1]);
-          foreach ($parts as $command) {
-            if(strpos($command, ';') == false) {$command .= ';';}
-            $command = array(trim($command), false);
-            yield $command;
-          }
-        }
+        yield $line;
       }
     }
     finally {
@@ -1482,8 +1459,63 @@ class Site_Command extends Terminus_Command {
     }
   }
 
+  function getQueries($linesource) {
+    foreach ($linesource as $line) {
+      if (strpos($line, '--') !== false){continue;}
+      if (strpos($line, ';') !== strrpos($line, ';')) {
+        $command = array(trim($line), true);
+        yield $command;
+        continue;
+      } else {
+        $parts = explode(';', $line);
+        if(!isset($next_command)) {$next_command = '';}
+        $parts[0] = $next_command . $parts[0];
+        $next_command = '';
+        if ($parts[count($parts) - 1] !== '') {
+          $next_command = $parts[count($parts) - 1];
+        }
+        unset($parts[count($parts) - 1]);
+        foreach ($parts as $command) {
+          if (strpos($command, ';') == false) {$command .= ';';}
+          $command = array(trim($command), false);
+          yield $command;
+        }
+      }
+    }
+  }
 
-
+  function getCombined($querysource) {
+    foreach ($querysource as $command) {
+			if (strpos($command[0], '/*') !== false) {
+		    yield $command;
+		    continue;
+			}
+      else if (strpos($command[0], 'INSERT INTO') !== false && !isset($p_one) && $command[1] !== true) {
+        $p_one = substr($command[0], 0, strpos($command[0], ')') + 1);
+        $p_two = $command[1];
+        continue;
+      }      
+      if (isset($p_two) && $p_two === false && $command[1] == true) {
+				$multiple = $command[0];
+				$command = array($p_one . ';', false);
+				yield $command; //single-command query
+				unset($p_one);
+				unset($p_two);
+				$command = array($multiple, true);
+				yield $command; //multiple-command query
+				continue;
+			}
+      else if (isset($p_one) && substr($command[0], 0, strpos($command[0], '(')) == substr($p_one, 0, strpos($p_one, '(')) && $command[1] == false && $p_two == false) {
+        $command[0] = substr($p_one, 0, strlen($p_one)) . ' , ' . substr($command[0], strpos($command[0], '('));
+        yield $command;
+        unset($p_one);
+      }
+      else {
+				unset($p_one, $p_two);
+        yield $command;
+      }
+    }
+  }
 
  /**
   * Imports a SQL dump to MySQL
@@ -1513,38 +1545,40 @@ class Site_Command extends Terminus_Command {
 
   public function mysql_import($args, $assoc_args) {
     $action = array_shift($args);
-    $env = isset($assoc_args['env']) ? $assoc_args['env'] : 'dev';
     try {
-      if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])){$extra = 'tunnel';}
+      if (!isset($assoc_args['encrypt']) && isset($assoc_args['tunnel'])) {$extra = 'tunnel';}
       elseif (!isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {$extra = 'encrypt';}
       elseif (isset($assoc_args['tunnel']) && isset($assoc_args['encrypt'])) {die('Options "encrypt" and "tunnel" cannot be used simultaneously.');}
       else {$extra = 'none';}
       $db = $this->mysql_conn($extra);
-      if(!isset($assoc_args['f']) || $assoc_args['f'] == null){
+      if (!isset($assoc_args['f']) || $assoc_args['f'] == null) {
         $filename = readline('Which dump would you like to import?  Please include the relative path.  ');
         readline_add_history($filename);
       } else {$filename = $assoc_args['f'];}
-      foreach ($this->getLines($filename) as $command) {
-        if( $command[1] == false) {
-          foreach ((array) $db->query($command[0]) as $row) {
-            print_r($row);
-            echo PHP_EOL;
-            if(empty($row)){
-							$db->exec($command[0]);
-							print_r($command[0]);
-							echo PHP_EOL;
-						}
+      echo 'Waiting...';
+      $ct = 0;
+      $linesource = $this->getLines($filename);
+      $querysource = $this->getQueries($linesource);
+      foreach ($this->getCombined($querysource) as $command) {
+        if ($command[1] == false) {
+          foreach ((array)$db->query($command[0]) as $row) {
+            if (empty($row)) {
+              $db->exec($command[0]);
+              $ct += 1;
+              if ($ct % 100 == 0) {echo vsprintf('Status: %s statements sent.'."\n", $ct);}
+            }
           }
-        } else { 
+        } else {
           $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
-          foreach ((array) $db->exec($command[0]) as $row) {
-            print_r($command[0]);
-            echo PHP_EOL;
+          foreach ((array)$db->exec($command[0]) as $row) {
+            $ct += 1;
+            if ($ct % 100 == 0) {echo vsprintf('Status: %s statements sent.'."\n", $ct);}
           }
           $command[1] = false;
           continue;
         }
       }
+      echo 'Import complete!' . "\n";
     } catch (PDOException $e) {
         print "Error!: " . $e->getMessage() . "\n";
         die();
