@@ -16,7 +16,7 @@ function newTestGen() {
     yield array("INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);", false);
     yield array("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", false);
     yield array("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", true);
-    yield array('INSERT INTO `wp_term_relationships VALUES("1051", "75", "0");', false);
+    yield array('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0");', false);
     yield array('INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");', false);
 }
 
