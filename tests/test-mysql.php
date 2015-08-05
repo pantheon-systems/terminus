@@ -9,15 +9,15 @@ $sitefile = dirname(__FILE__).'/'.$siteinfo['dirname'].'/'.$siteinfo['basename']
 include $sitefile;
 
 function newTestGen() {
-	$lines = array();
-	yield array('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1");', false);
-	yield array('INSERT INTO `wp_bp_user_blogs` VALUES("3", "4", "1");', false);
-	yield array("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000);", false);
-	yield array("INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);", false);
-	yield array("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", false);
-	yield array("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", true);
-	yield array('INSERT INTO `wp_term_relationships VALUES("1051", "75", "0");', false);
-	yield array('INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");', false);
+    $lines = array();
+    yield array('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1");', false);
+    yield array('INSERT INTO `wp_bp_user_blogs` VALUES("3", "4", "1");', false);
+    yield array("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000);", false);
+    yield array("INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);", false);
+    yield array("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", false);
+    yield array("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", true);
+    yield array('INSERT INTO `wp_term_relationships VALUES("1051", "75", "0");', false);
+    yield array('INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");', false);
 }
 
 class mysqlpdoTest extends PHPUnit_Framework_TestCase {
@@ -125,17 +125,17 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
         $comarr = Site_Command::getCombined(newTestGen());
         $combined = iterator_to_array($comarr);
         $a = $combined[0];
-		$this->assertEquals('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1") , ("3", "4", "1");', $a[0]);
-		$this->assertEquals(false, $a[1]);
-		$a = $combined[1];
-		$this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000);", $a[0]);
-		$this->assertEquals(false, $a[1]);
-		$a = $combined[2];
-		$this->assertEquals("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", $a[0]);
-		$this->assertEquals(false, $a[1]);
-		$a = $combined[3];
-		$this->assertEquals("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", $a[0]);
-		$this->assertEquals(true, $a[1]);
+        $this->assertEquals('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1") , ("3", "4", "1");', $a[0]);
+        $this->assertEquals(false, $a[1]);
+        $a = $combined[1];
+        $this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000);", $a[0]);
+        $this->assertEquals(false, $a[1]);
+        $a = $combined[2];
+        $this->assertEquals("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", $a[0]);
+        $this->assertEquals(false, $a[1]);
+        $a = $combined[3];
+        $this->assertEquals("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", $a[0]);
+        $this->assertEquals(true, $a[1]);
         $a = $combined[4];
         $this->assertEquals('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0") , ("1041", "70", "0");', $a[0]);
         $this->assertEquals(false, $a[1]);
