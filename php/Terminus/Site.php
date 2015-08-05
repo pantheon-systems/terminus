@@ -292,25 +292,54 @@ class Site {
   }
 
   /**
-   * get site instrument
+   * Changes payment instrument of given site
+   *
+   * @params [string] $uuid UUID of new payment instrument
+   * @return [Workflow] $workflow Workflow object for the request
    */
-  public function instrument($org=null) {
-    $path = 'instrument';
-    $method = 'GET';
-    $options = null;
-    if ($org) {
-      $path = 'workflows';
-      $data = array(
-          'type'    => 'transfer_site_payment_to_organization',
-          'params'  => array(
-              'to_organization_id' => $org,
-          ),
-        );
-      $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-      $method = 'POST';
+  public function changeInstrument($uuid = 0) {
+    if($uuid == 0) {
+      $workflow = $this->_removeInstrument();
+    } else {
+      $workflow = $this->_addInstrument($uuid);
     }
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
-    return $response['data'];
+    return $workflow;
+  }
+
+  /**
+   * Adds payment instrument of given site
+   *
+   * @params [string] $uuid UUID of new payment instrument
+   * @return [Workflow] $workflow Workflow object for the request
+   */
+  private function _addInstrument($uuid) {
+    $args = array(
+      'site'   => $this->id,
+      'params' => array(
+        'instrument_id' => $uuid
+      )
+    );
+    $workflow = $this->workflows->create('associate_site_instrument', $args);
+    return $workflow;
+  }
+
+  /**
+   * Removes payment instrument of given site
+   *
+   * @params [string] $uuid UUID of new payment instrument
+   * @return [Workflow] $workflow Workflow object for the request
+   */
+  private function _removeInstrument() {
+    $args = array(
+      'site'   => $this->id,
+    );
+    $workflow = $this->workflows->create('disassociate_site_instrument', $args);
+    return $workflow;
+  }
+
+  /**
+   * Returns the environment's name
+   *
   }
 
   /**
@@ -445,5 +474,12 @@ class Site {
   **/
   private function hasFramework($framework_name) {
     return isset($this->information->framework) && ($framework_name == $this->information->framework);
+  }
+
+  public function get($attribute = 'id') {
+    if(isset($this->attributes->$attribute)) {
+      return $this->attributes->$attribute;
+    }
+    return null;
   }
 }

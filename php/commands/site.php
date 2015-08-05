@@ -8,6 +8,8 @@ use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\SiteFactory;
 use Terminus\Site;
+use Terminus\User;
+use Terminus\Collections\Instruments;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
@@ -985,33 +987,63 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to use
    *
-   * [--change-to-org=<org>]
-   * : Change the instrument to an Org by setting the id. ( must be admin )
+   * [--change-to=<UUID>]
+   * : Change the instrument by setting the ID
    *
    * ## EXAMPLES
    *
    *  terminus site instrument --site=sitename
    */
   public function instrument($args, $assoc_args) {
-    $site = SiteFactory::instance( Input::site( $assoc_args ) );
-    $org = Input::optional('change-to-org', $assoc_args);
-    $data = $site->instrument($org);
-    // @TODO we need a "workflow" class to handle these exceptions and whatnot
-    if ($org) {
-      if ( 'failed' == $data->result || 'aborted' == $data->result ) {
-        if (isset($data->final_task) AND !empty($data->final_task->messages)) {
-          foreach( (array) $data->final_task->messages as $date => $message) {
-            \Terminus::error('%s', $message->message);
+    $user        = new User();
+    $instruments = $user->instruments()->all();
+    $data = array('none');
+    foreach($instruments as $instrument) {
+      $data[$instrument->getId()] = $instrument->get('label');
+    }
+
+    //If site is not set, show all user's payment instruments
+    if(!isset($assoc_args['site'])) {
+      $this->handleDisplay($data, array(), array('UUID', 'Label'));
+    } else {
+      $site = SiteFactory::instance($assoc_args['site']);
+      //If change-to is not present, show the site's current instrument
+      if(!isset($assoc_args['change-to'])) {
+        $instrument_uuid = $site->get('instrument');
+        if($instrument_uuid == null) {
+          \Terminus::line(
+            $site->get('name') . ' does not have an attached payment instrument.'
+          );
+        } else {
+          \Terminus::line(
+            $site->get('name') . ' is being charged to ' . $data[$instrument_uuid]
+            . ', UUID: ' . $instrument_uuid
+          );
+        }
+      } else {
+        //Both are present. Ensure sure UUID is valid.
+        //This prevents users from selecting instruments which do not belong to them.
+        $new_instrument = $assoc_args['change-to'];
+        if(!isset($data[$new_instrument])) {
+          $location = array_search($new_instrument, $data);
+          if($location !== false) {
+            $new_instrument = $location;
+          } else {
+            $uuids          = array_keys($data);
+            $new_instrument = Input::menu(
+              $data,
+              null,
+              'Select a payment instrument'
+            );
           }
         }
+        //Change the instrument once we have a valid instrument.
+        $workflow = $site->changeInstrument($new_instrument);
+        $workflow->wait();
+         
+        \Terminus::line("Successfully updated payment instrument to $new_instrument.");
       }
-      if ($data->result != 'succeeded') {
-        $this->waitOnWorkflow('workflow', $site->getId(), $data->id);
-      }
-      $data = $site->instrument();
     }
-    \Terminus::line("Successfully updated payment instrument.");
-    $this->handleDisplay($data);
   }
 
   /**
