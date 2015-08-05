@@ -1,34 +1,27 @@
 <?php
 use \Terminus\Endpoint;
 use \Terminus\Request;
-use \Terminus\Fixtures;
 use \Terminus\Session;
 use \Terminus\Auth;
 use \Terminus\Loggers\Regular as Logger;
-
 /**
  * Base class for Terminus commands
  *
  * @package terminus
  */
 abstract class Terminus_Command {
-
   public $cache;
   public $session;
   public $sites;
-
   protected $_func;
   protected $_siteInfo;
   protected $_bindings;
   protected static $_blacklist = array('password');
-
   public function __construct() {
     # Load commonly used data from cache.
     $this->cache = Terminus::get_cache();
     $this->session = Session::instance();
-    $this->sites = $this->cache->get_data('sites');
   }
-
   /**
    * Make a request to the Dashbord's internal API.
    *
@@ -49,54 +42,32 @@ abstract class Terminus_Command {
    *    sent along with the request. Will be encoded as JSON for you.
    */
   public static function request($realm, $uuid, $path = FALSE, $method = 'GET', $options = NULL) {
-    if (!in_array($realm,array('login','user','public')) AND !Terminus::is_test()) {
+    if (!in_array($realm, array('login','user','public'))) {
       Auth::loggedIn();
     }
-
     try {
       $cache = Terminus::get_cache();
-
-      // combine session realm uuid and path to get a unique key
-      // @todo need cache "groups"
-      $cachekey = md5( Session::getValue('user_uuid').$uuid.$realm.$path );
-      $data = $cache->get_data($cachekey);
-
-      // check the request cache
-      if ("GET" == $method AND !Terminus::get_config('nocache') AND !getenv('CLI_TEST_MODE') AND !empty($data)) {
-        if (Terminus::get_config('debug')) {
-          Logger::debug('CacheKey: '.$cachekey);
-        }
-        return (array) $data;
-      }
-
-      // for some methods we'll assume the cache should be invalidated
-      if ( in_array($method, array("POST","PUT","DELETE")) ) {
-        $cache->flush(null, 'session');
-      }
-
       if (!in_array($realm,array('login','user'))) {
         $options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
         $options['verify'] = false;
       }
-
       $url = Endpoint::get(array('realm'=>$realm, 'uuid'=>$uuid, 'path'=>$path));
       if (Terminus::get_config('debug')) {
         Logger::debug('Request URL: '.$url);
       }
       $resp = Request::send($url, $method, $options);
-      $json = $resp->getBody(TRUE);
-
+      $json = $resp->getBody(true);
       $data = array(
         'info' => $resp->getInfo(),
         'headers' => $resp->getRawHeaders(),
         'json' => $json,
-        'data' => json_decode($json)
+        'data' => json_decode($json),
+        'status_code' => $resp->getStatusCode()
       );
-      $cache->put_data($cachekey, $data);
       return $data;
     } catch( Guzzle\Http\Exception\BadResponseException $e ) {
       $response = $e->getResponse();
-      \Terminus::error("%s", $response->getBody(TRUE) );
+      \Terminus::error("%s", $response->getBody(true) );
     } catch( Guzzle\Http\Exception\HttpException $e ) {
       $request = $e->getRequest();
       //die(Terminus_Command::stripSensitiveData());
@@ -105,9 +76,95 @@ abstract class Terminus_Command {
     } catch( Exception $e ) {
       \Terminus::error("Unrecognised request failure: %s", $e->getMessage() );
     }
-
   }
-
+  /**
+   * Make a request to the Dashbord's internal API.
+   *
+   * @param $path
+   *    API path
+   *
+   * @param $options
+   *   @param method: GET is default
+   *   @param data:  A native PHP data structure (int, string, arary or simple object) to be
+   *   sent along with the request. Will be encoded as JSON for you.
+   *
+   *
+   */
+  public static function paged_request($path, $options = array()) {
+    $limit = isset($options['limit']) ? $options['limit'] : 100;
+    # results is an associative array so we don't refetch
+    $results = array();
+    $finished = false;
+    $start = NULL;
+    while (!$finished) {
+      $paged_path = $path;
+      $paged_path .= '?limit=' . $limit;
+      if ($start) {
+        $paged_path .= '&start=' . $start;
+      }
+      $resp = self::simple_request($paged_path);
+      $data = $resp['data'];
+      if (count($data) > 0) {
+        $start = end($data)->id;
+        # if the last item of the results has previously been received
+        # that means there are no more pages to fetch
+        if (isset($results[$start])) {
+          $finished = true;
+          continue;
+        }
+        foreach ($data as $item) {
+          $results[$item->id] = $item;
+        }
+      } else {
+        $finished = true;
+      }
+    }
+    return array(
+      'data' => array_values($results)
+    );
+  }
+  /**
+   * Simplified request method for Pantheon API.
+   *
+   * @param $path
+   *    API path
+   *
+   * @param $options
+   *   @param method: GET is default
+   *   @param data:  A native PHP data structure (int, string, arary or simple object) to be
+   *   sent along with the request. Will be encoded as JSON for you.
+   *
+   */
+  public static function simple_request($path, $options = array()) {
+    $req_options = array();
+    $method = 'get';
+    if (isset($options['method'])) {
+      $method = $options['method'];
+    }
+    if (isset($options['data'])) {
+      $req_options['body'] = json_encode($options['data']);
+      $req_options['headers'] = array('Content-type' => 'application/json');
+    }
+    $url = 'https://' . TERMINUS_HOST . '/api/' . $path;
+    if (Session::getValue('session')) {
+      $req_options['cookies'] = array('X-Pantheon-Session' => Session::getValue('session'));
+      $req_options['verify'] = false;
+    }
+    try {
+      $resp = Request::send($url, $method, $req_options);
+    } catch( Guzzle\Http\Exception\BadResponseException $e ) {
+      \Terminus::error("Request Failure: %s", $e->getMessage());
+      return;
+    }
+    $json = $resp->getBody(true);
+    return array(
+      'info' => $resp->getInfo(),
+      'headers' => $resp->getRawHeaders(),
+      'json' => $json,
+      'data' => json_decode($json),
+      'status_code' => $resp->getStatusCode()
+    );
+  }
   public static function download($url, $target) {
     try {
       $response = Request::download($url,$target);
@@ -116,13 +173,11 @@ abstract class Terminus_Command {
       Terminus::error($e->getMessage());
     }
   }
-
   protected function _constructTableForResponse($data,$headers = array()) {
     $table = new \cli\Table();
     if (is_object($data)) {
       $data = (array)$data;
     }
-
     if (\Terminus\Utils\result_is_multiobj($data)) {
       if (!empty($headers)) {
         $table->setHeaders($headers);
@@ -133,7 +188,6 @@ abstract class Terminus_Command {
       } else {
         $table->setHeaders(\Terminus\Utils\result_get_response_fields($data));
       }
-
       foreach ($data as $row => $row_data) {
         $row = array();
         foreach( $row_data as $key => $value) {
@@ -157,10 +211,8 @@ abstract class Terminus_Command {
         $table->addRow( array( $key, $value ) );
       }
     }
-
     $table->display();
   }
-
   /**
    * Waits and returns response from workflow.
    * @package Terminus
@@ -172,31 +224,26 @@ abstract class Terminus_Command {
    * @deprecated Use new WorkFlow() object instead
    * Example: $this->waitOnWorkflow( "sites", "68b99b50-8942-4c66-b7e3-22b67445f55d", "e4f7e832-5644-11e4-81d4-bc764e111d20");
    */
-  protected function waitOnWorkflow( $object_name, $object_id, $workflow_id ) {
+  protected function waitOnWorkflow($object_name, $object_id, $workflow_id ) {
     print "Working .";
-    Terminus::set_config('nocache',true);
-    $workflow = self::request( $object_name, $object_id, "workflows/$workflow_id", 'GET' );
+    $workflow = self::request($object_name, $object_id, "workflows/$workflow_id", 'GET');
     $result = $workflow['data']->result;
     $desc = $workflow['data']->active_description;
     $type = $workflow['data']->type;
     $tries = 0;
-    while( $result !== 'succeeded' AND $tries < 100) {
-      if ( 'failed' == $result OR 'aborted' == $result ) {
-<<<<<<< HEAD
-        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages) and property_exists($message, body)) {
-=======
-        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages) and property_exists(->body)) {
->>>>>>> 8b9c8cf93f353436ee00457a00e89df28b5b673f
+    while(!isset($result)) {
+      if ('failed' == $result OR 'aborted' == $result) {
+        if (isset($workflow['data']->final_task) and !empty($workflow['data']->final_task->messages)) {
           foreach($workflow['data']->final_task->messages as $data => $message) {
-            sprintf('[%s] %s', $message->level, $message->body);
+            sprintf('[%s] %s', $message->level, $message->message);
           }
         } else {
-          Terminus::error(PHP_EOL."Couldn't complete jobs: '{$type}'".PHP_EOL);
+          Terminus::error(PHP_EOL . "Couldn't complete jobs: '{$type}'" . PHP_EOL);
         }
       }
-      $workflow = self::request( $object_name, $object_id, "workflows/{$workflow_id}", 'GET' );
+      $workflow = self::request($object_name, $object_id, "workflows/{$workflow_id}", 'GET');
       $result = $workflow['data']->result;
-      if (Terminus::get_config('debug')) {
+      if(Terminus::get_config('debug')) {
         print_r($workflow);
       }
       sleep(3);
@@ -204,12 +251,11 @@ abstract class Terminus_Command {
       $tries++;
     }
     print PHP_EOL;
-    if( "succeeded" === $workflow['data']->result )
+    if(in_array($workflow['data']->result, array("succeeded", "aborted"))) {
       return $workflow['data'];
+    }
     return false;
-    unset($workflow);
   }
-
   protected function handleDisplay($data,$args = array(), $headers = null) {
     if (array_key_exists("json", $args) OR Terminus::get_config('json') )
       echo \Terminus\Utils\json_dump($data);
@@ -218,7 +264,6 @@ abstract class Terminus_Command {
     else
       $this->_constructTableForResponse((array)$data,$headers);
   }
-
   /**
    * Strips sensitive data out of the JSON printed in a request string
    * @package Terminus
@@ -226,21 +271,18 @@ abstract class Terminus_Command {
    * @param request string -- the string from which to strip data
    * @param blacklist array -- an array of strings which are the keys to remove from request
    */
-  protected function stripSensitiveData($request, $blacklist = []) {
+  protected function stripSensitiveData($request, $blacklist = array()) {
     //Locate the JSON in the string, turn to array
     $regex = '~\{(.*)\}~';
     preg_match($regex, $request, $matches);
     $request_array = json_decode($matches[0], true);
-
     //See if a blacklisted items are in the arrayed JSON, replace
     foreach($blacklist as $blacklisted_item) {
-      if(isset($request_array[$blacklisted_item])) 
+      if(isset($request_array[$blacklisted_item]))
         $request_array[$blacklisted_item] = '*****';
     }
-
     //Turn array back to JSON, put back in string
     $result = str_replace($matches[0], json_encode($request_array), $request);
     return $result;
   }
-
 }
