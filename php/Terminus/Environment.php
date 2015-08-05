@@ -355,39 +355,28 @@ class Environment {
   }
 
   /**
-   * Converges the given environment
+   * Initializes the Test/Live environments on a newly created Site
+   * and clones content from previous environment
+   * (e.g. Test clones Dev content, Live clones Test content)
    *
-   * @return [array] Data from the request
-   */
-  public function converge() {
-    $workflow = $this->site->workflows->create('converge_environment', array('environment' => $this->id));
-    return $workflow;
-  }
-
-  /**
-   * Initializes an environment
-   *
-   * @param [array] $args Arguments for deployment
-   * @return [array] Data from the request
+   * @return [Workflow] in-progress workflow
    */
   public function initializeBindings() {
-    $converge_workflow = $this->converge();
-    $converge_workflow->wait();
-
     if ($this->id == 'test') {
       $from_env_id = 'dev';
     } elseif ($this->id == 'live') {
       $from_env_id = 'test';
     }
 
-    $deploy_args = array(
-      'annotation' => sprintf('Create the %s environment', $this->id),
-      'clone_database' => array('from_environment' => $from_env_id),
-      'clone_files' => array('from_environment' => $from_env_id),
-    );
-
-    $deploy_workflow = $this->deploy($deploy_args);
-    return $deploy_workflow;
+    $workflow = $this->site->workflows->create('deploy', array(
+      'environment' => $this->id,
+      'params' => array(
+        'annotation' => sprintf('Create the %s environment', $this->id),
+        'clone_database' => array('from_environment' => $from_env_id),
+        'clone_files' => array('from_environment' => $from_env_id)
+      )
+    ));
+    return $workflow;
   }
 
   /**
