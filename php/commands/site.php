@@ -573,7 +573,7 @@ class Site_Command extends Terminus_Command {
        array('test', 'live')
      ));
 
-     $workflow = $env->initializeBindings($deploy_args);
+     $workflow = $env->initializeBindings();
      $workflow->wait();
 
      if($result) {
