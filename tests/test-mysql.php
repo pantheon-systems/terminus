@@ -121,6 +121,22 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(false, $c[1]);
     }
 
+    public function testgetUnquotedParts() {
+        $cases = array(
+            '1;2;3' => array('1;', '2;', '3'),
+            '1; \'2;3\'' => array('1;', ' \'2;3\''),
+            '1; "2;3"' => array('1;', ' "2;3"'),
+            '1;"2\';3"' => array('1;', '"2\';3"'),
+            '1;`2;3`' => array('1;', '`2;3`'),
+            '1;2;3;' => array('1;', '2;', '3;', ''),
+        );
+
+        foreach ($cases as $input => $expected_output) {
+            $output = iterator_to_array(Site_Command::getUnquotedParts($input));
+            $this->assertEquals($expected_output, $output);
+        }
+    }
+
     public function testgetCombined() {
         $comarr = Site_Command::getCombined(newTestGen());
         $combined = iterator_to_array($comarr);

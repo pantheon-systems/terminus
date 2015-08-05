@@ -1459,27 +1459,78 @@ class Site_Command extends Terminus_Command {
     }
   }
 
-  function getQueries($linesource) {
-    foreach ($linesource as $line) {
-      if (strpos($line, '--') !== false){continue;}
-      if (strpos($line, ';') !== strrpos($line, ';')) {
-        $command = array(trim($line), true);
-        yield $command;
+  function getUnquotedParts($line) {
+    $buffer = '';
+    $in_single_quoted = false;
+    $in_double_quoted = false;
+    $in_backticked = false;
+    $previous = NULL;
+    $line_len = strlen($line);
+    for ($i = 0; $i < $line_len; $i++) {
+      $character = $line[$i];
+      $buffer .= $character;
+
+      // If it's two backslashes in a row, it's an escaped backslash
+      // and should not escape other characters.
+      if ($character === '\\' && $previous === '\\') {
+        $previous = NULL;
         continue;
-      } else {
-        $parts = explode(';', $line);
-        if(!isset($next_command)) {$next_command = '';}
-        $parts[0] = $next_command . $parts[0];
-        $next_command = '';
-        if ($parts[count($parts) - 1] !== '') {
-          $next_command = $parts[count($parts) - 1];
-        }
-        unset($parts[count($parts) - 1]);
-        foreach ($parts as $command) {
-          if (strpos($command, ';') == false) {$command .= ';';}
-          $command = array(trim($command), false);
-          yield $command;
-        }
+      }
+
+      // Toggle double-quoted status.
+      if ($character === '"' && $previous !== '\\' && !$in_single_quoted && !$in_backticked) {
+        $in_double_quoted = !$in_double_quoted;
+      }
+
+      // Toggle single-quoted status.
+      if ($character === '\'' && $previous !== '\\' && !$in_double_quoted && !$in_backticked) {
+        $in_single_quoted = !$in_single_quoted;
+      }
+
+      // Toggle backtick-quoted status.
+      if ($character === '`' && !$in_double_quoted && !$in_single_quoted) {
+        $in_backticked = !$in_backticked;
+      }
+
+      if ($character === ';' && !$in_double_quoted && !$in_single_quoted && !$in_backticked) {
+        yield $buffer;
+        $buffer = '';
+      }
+
+      $previous = $character;
+    }
+
+    yield $buffer;
+  }
+
+  function getQueries($linesource) {
+    $next_command = '';
+    foreach ($linesource as $line) {
+      // Skip comments.
+      if (strpos($line, '--') !== false) {
+          continue;
+      }
+
+      // Prepend any buffer from the previous line to the first query
+      // on this line.
+      $line = $next_command . $line;
+      $next_command = '';
+
+      // Separate the current line along unquoted semicolons.
+      $parts = iterator_to_array(Site_Command::getUnquotedParts($line));
+
+      // If there's an empty string at the end of the $parts array,
+      // that means the current line ends with a semicolon. Otherwise,
+      // buffer the incomplete query for use on the next line.
+      if ($parts[count($parts) - 1] !== '') {
+        $next_command = $parts[count($parts) - 1];
+      }
+      unset($parts[count($parts) - 1]);
+
+      // Issue each complete part as a query.
+      foreach ($parts as $command) {
+
+        yield array(trim($command), false);
       }
     }
   }
