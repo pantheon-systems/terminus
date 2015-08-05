@@ -1486,32 +1486,32 @@ class Site_Command extends Terminus_Command {
 
   function getCombined($querysource) {
     foreach ($querysource as $command) {
-			if (strpos($command[0], '/*') !== false) {
-		    yield $command;
-		    continue;
-			}
+      if (strpos($command[0], '/*') !== false) {
+        yield $command;
+        continue;
+      }
       else if (strpos($command[0], 'INSERT INTO') !== false && !isset($p_one) && $command[1] !== true) {
         $p_one = substr($command[0], 0, strpos($command[0], ')') + 1);
         $p_two = $command[1];
         continue;
-      }      
+      }
       if (isset($p_two) && $p_two === false && $command[1] == true) {
-				$multiple = $command[0];
-				$command = array($p_one . ';', false);
-				yield $command; //single-command query
-				unset($p_one);
-				unset($p_two);
-				$command = array($multiple, true);
-				yield $command; //multiple-command query
-				continue;
-			}
+        $multiple = $command[0];
+        $command = array($p_one . ';', false);
+        yield $command; //single-command query
+        unset($p_one);
+        unset($p_two);
+        $command = array($multiple, true);
+        yield $command; //multiple-command query
+        continue;
+      }
       else if (isset($p_one) && substr($command[0], 0, strpos($command[0], '(')) == substr($p_one, 0, strpos($p_one, '(')) && $command[1] == false && $p_two == false) {
         $command[0] = substr($p_one, 0, strlen($p_one)) . ' , ' . substr($command[0], strpos($command[0], '('));
         yield $command;
         unset($p_one);
       }
       else {
-				unset($p_one, $p_two);
+        unset($p_one, $p_two);
         yield $command;
       }
     }
