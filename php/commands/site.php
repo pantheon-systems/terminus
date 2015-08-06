@@ -718,7 +718,7 @@ class Site_Command extends Terminus_Command {
       $multidev_id = Input::env($assoc_args, 'env', "Multidev environment to merge into Dev Environment", $multidev_ids);
       $environment = $site->environmentsCollection->get($multidev_id);
 
-      $workflow = $environment->mergeToMaster();
+      $workflow = $environment->mergeToDev();
       $workflow->wait();
 
       Terminus::success(sprintf('Merged the %s environment into Dev', $environment->id));
@@ -745,7 +745,7 @@ class Site_Command extends Terminus_Command {
        $multidev_id = Input::env($assoc_args, 'env', "Multidev environment that the Dev Environment will be merged into", $multidev_ids);
        $environment = $site->environmentsCollection->get($multidev_id);
 
-       $workflow = $environment->mergeFromMaster();
+       $workflow = $environment->mergeFromDev();
        $workflow->wait();
 
        Terminus::success(sprintf('Merged the Dev environment into the %s environment ', $environment->id));

@@ -301,10 +301,10 @@ class Environment {
   }
 
   /**
-   * Merge the Master Branch (Dev Environment) into this Multidev Branch (Environment)
+   * Merge code from the Dev Environment into this Multidev Environment
    *
    */
-  public function mergeFromMaster($options = array()) {
+  public function mergeFromDev($options = array()) {
     if (!$this->isMultidev()) {
       throw new Exception(sprintf("The %s environment is not a multidev environment", $this->id));
     }
@@ -323,10 +323,10 @@ class Environment {
   }
 
   /**
-   * Merge this Multidev Branch (Environment) into the Master Branch (Dev Environment)
+   * Merge code from this Multidev Environment into the Dev Environment
    *
    */
-  public function mergeToMaster($options = array()) {
+  public function mergeToDev($options = array()) {
     if (!$this->isMultidev()) {
       throw new Exception(sprintf("The %s environment is not a multidev environment", $this->id));
     }
