@@ -16,7 +16,7 @@ function newTestGen() {
     yield array("INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);", false);
     yield array("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", false);
     yield array("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", true);
-    yield array('INSERT INTO `wp_term_relationships VALUES("1051", "75", "0");', false);
+    yield array('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0");', false);
     yield array('INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");', false);
 }
 
@@ -119,6 +119,22 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
         $c = $q[2];
         $this->assertEquals("INSERT INTO `testtable` VALUES (1,'A','ABC', 1000);", $c[0]);
         $this->assertEquals(false, $c[1]);
+    }
+
+    public function testgetUnquotedParts() {
+        $cases = array(
+            '1;2;3' => array('1;', '2;', '3'),
+            '1; \'2;3\'' => array('1;', ' \'2;3\''),
+            '1; "2;3"' => array('1;', ' "2;3"'),
+            '1;"2\';3"' => array('1;', '"2\';3"'),
+            '1;`2;3`' => array('1;', '`2;3`'),
+            '1;2;3;' => array('1;', '2;', '3;', ''),
+        );
+
+        foreach ($cases as $input => $expected_output) {
+            $output = iterator_to_array(Site_Command::getUnquotedParts($input));
+            $this->assertEquals($expected_output, $output);
+        }
     }
 
     public function testgetCombined() {
