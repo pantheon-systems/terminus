@@ -9,15 +9,13 @@ $sitefile = dirname(__FILE__).'/'.$siteinfo['dirname'].'/'.$siteinfo['basename']
 include $sitefile;
 
 function newTestGen() {
-    $lines = array();
-    yield array('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1");', false);
-    yield array('INSERT INTO `wp_bp_user_blogs` VALUES("3", "4", "1");', false);
-    yield array("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000);", false);
-    yield array("INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);", false);
-    yield array("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", false);
-    yield array("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", true);
-    yield array('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0");', false);
-    yield array('INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");', false);
+    yield 'INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1");';
+    yield 'INSERT INTO `wp_bp_user_blogs` VALUES("3", "4", "1");';
+    yield "INSERT INTO `testtable` VALUES (3,'C','GHI', 3000);";
+    yield "INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);";
+    yield "INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);";
+    yield 'INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0");';
+    yield 'INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");';
 }
 
 class mysqlpdoTest extends PHPUnit_Framework_TestCase {
@@ -110,15 +108,9 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
         }
         $qfl = Site_Command::getQueries(myTestGen());
         $q = iterator_to_array($qfl);
-        $a = $q[0];
-        $this->assertEquals("CREATE TABLE `testtable` (`ID` int(11) NOT NULL AUTO_INCREMENT,`Letter` char(35) NOT NULL DEFAULT '',`Triletter` char(3) NOT NULL DEFAULT '',`Thousand` int(11) NOT NULL DEFAULT '0',PRIMARY KEY (`ID`),KEY `Triletter` (`Triletter`),CONSTRAINT `testtable_ibfk_1` FOREIGN KEY (`Triletter`) REFERENCES `Tri` (`Letter`)) ENGINE=InnoDB AUTO_INCREMENT=4080 DEFAULT CHARSET=latin1;", $a[0]);
-        $this->assertEquals(false, $a[1]);
-        $b = $q[1];
-        $this->assertEquals("/*!40101 SET character_set_client = @saved_cs_client */;", $b[0]);
-        $this->assertEquals(false, $b[1]);
-        $c = $q[2];
-        $this->assertEquals("INSERT INTO `testtable` VALUES (1,'A','ABC', 1000);", $c[0]);
-        $this->assertEquals(false, $c[1]);
+        $this->assertEquals("CREATE TABLE `testtable` (`ID` int(11) NOT NULL AUTO_INCREMENT,`Letter` char(35) NOT NULL DEFAULT '',`Triletter` char(3) NOT NULL DEFAULT '',`Thousand` int(11) NOT NULL DEFAULT '0',PRIMARY KEY (`ID`),KEY `Triletter` (`Triletter`),CONSTRAINT `testtable_ibfk_1` FOREIGN KEY (`Triletter`) REFERENCES `Tri` (`Letter`)) ENGINE=InnoDB AUTO_INCREMENT=4080 DEFAULT CHARSET=latin1;", $q[0]);
+        $this->assertEquals("/*!40101 SET character_set_client = @saved_cs_client */;", $q[1]);
+        $this->assertEquals("INSERT INTO `testtable` VALUES (1,'A','ABC', 1000);", $q[2]);
     }
 
     public function testgetUnquotedParts() {
@@ -140,21 +132,9 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
     public function testgetCombined() {
         $comarr = Site_Command::getCombined(newTestGen());
         $combined = iterator_to_array($comarr);
-        $a = $combined[0];
-        $this->assertEquals('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1") , ("3", "4", "1");', $a[0]);
-        $this->assertEquals(false, $a[1]);
-        $a = $combined[1];
-        $this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000);", $a[0]);
-        $this->assertEquals(false, $a[1]);
-        $a = $combined[2];
-        $this->assertEquals("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", $a[0]);
-        $this->assertEquals(false, $a[1]);
-        $a = $combined[3];
-        $this->assertEquals("INSERT INTO `testtable` VALUES (6,'F','PQR', 6000); INSERT INTO `testtable` VALUES (7,'G','STU', 7000);", $a[0]);
-        $this->assertEquals(true, $a[1]);
-        $a = $combined[4];
-        $this->assertEquals('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0") , ("1041", "70", "0");', $a[0]);
-        $this->assertEquals(false, $a[1]);
-
+        $this->assertEquals('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1") , ("3", "4", "1");', $combined[0]);
+        $this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000);", $combined[1]);
+        $this->assertEquals("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", $combined[2]);
+        $this->assertEquals('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0") , ("1041", "70", "0");', $combined[3]);
     }
 }

@@ -1503,6 +1503,7 @@ class Site_Command extends Terminus_Command {
     yield $buffer;
   }
 
+
   function getQueries($linesource) {
     $next_command = '';
     foreach ($linesource as $line) {
@@ -1530,39 +1531,49 @@ class Site_Command extends Terminus_Command {
       // Issue each complete part as a query.
       foreach ($parts as $command) {
 
-        yield array(trim($command), false);
+        yield trim($command);
       }
     }
   }
 
   function getCombined($querysource) {
     foreach ($querysource as $command) {
-      if (strpos($command[0], '/*') !== false) {
+      // If the line is a comment
+      if (strpos($command, '/*') !== false) {
         yield $command;
         continue;
       }
-      else if (strpos($command[0], 'INSERT INTO') !== false && !isset($p_one) && $command[1] !== true) {
-        $p_one = substr($command[0], 0, strpos($command[0], ')') + 1);
-        $p_two = $command[1];
+      //If the line is an 'INSERT INTO' statement and the previous line isn't
+      else if (strpos($command, 'INSERT INTO') !== false && !isset($p_one)) {
+        $p_one = substr($command, 0, strpos($command, ')') + 1);
         continue;
       }
-      if (isset($p_two) && $p_two === false && $command[1] == true) {
-        $multiple = $command[0];
-        $command = array($p_one . ';', false);
-        yield $command; //single-command query
-        unset($p_one);
-        unset($p_two);
-        $command = array($multiple, true);
-        yield $command; //multiple-command query
-        continue;
-      }
-      else if (isset($p_one) && substr($command[0], 0, strpos($command[0], '(')) == substr($p_one, 0, strpos($p_one, '(')) && $command[1] == false && $p_two == false) {
-        $command[0] = substr($p_one, 0, strlen($p_one)) . ' , ' . substr($command[0], strpos($command[0], '('));
+      //If the previous line is an 'INSERT INTO' command and both lines INSERT to the same table
+      if (isset($p_one) && substr($command, 0, strpos($command, '(')) == substr($p_one, 0, strpos($p_one, '('))) {
+        // If the previous command doesn't match and has been yielded, $p_one being the current command.
+        if (!isset($done)) {
+          $command = substr($p_one, 0, strlen($p_one)) . ' , ' . substr($command, strpos($command, '('));
+        }
+        else {
+          $command = substr($p_one, 0, strrpos($p_one, ';')) . ' , ' . substr($command, strpos($command, '('));
+        }
         yield $command;
-        unset($p_one);
+        unset($p_one, $done);
       }
+      //If the previous line is an 'INSERT INTO' command but doesn't match the newest one
+      else if (isset($p_one)) {
+          //Yield the previous command and test the current command against the next one
+          if (!isset($done)) {
+            yield $p_one . ';';
+            $done = true;
+            $p_one = $command;
+            continue;
+          }
+          //If the previous command has been yielded, yield the current one
+          else {yield $command;}
+      }
+      //If the previous line isn't an 'INSERT INTO' command
       else {
-        unset($p_one, $p_two);
         yield $command;
       }
     }
@@ -1611,22 +1622,14 @@ class Site_Command extends Terminus_Command {
       $linesource = $this->getLines($filename);
       $querysource = $this->getQueries($linesource);
       foreach ($this->getCombined($querysource) as $command) {
-        if ($command[1] == false) {
-          foreach ((array)$db->query($command[0]) as $row) {
-            if (empty($row)) {
-              $db->exec($command[0]);
-              $ct += 1;
-              if ($ct % 100 == 0) {echo vsprintf('Status: %s statements sent.'."\n", $ct);}
-            }
-          }
-        } else {
-          $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, 0);
-          foreach ((array)$db->exec($command[0]) as $row) {
+        if(empty($command)) {continue;}
+        var_dump($command);
+        foreach ((array)$db->query($command) as $row) {
+          if (empty($row)) {
+            $db->exec($command);
             $ct += 1;
             if ($ct % 100 == 0) {echo vsprintf('Status: %s statements sent.'."\n", $ct);}
           }
-          $command[1] = false;
-          continue;
         }
       }
       echo 'Import complete!' . "\n";
