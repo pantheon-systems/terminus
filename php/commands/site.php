@@ -1537,6 +1537,7 @@ class Site_Command extends Terminus_Command {
   }
 
   function getCombined($querysource) {
+		$p_one = '';
     foreach ($querysource as $command) {
       // If the line is a comment
       if (strpos($command, '/*') !== false) {
@@ -1557,8 +1558,9 @@ class Site_Command extends Terminus_Command {
         else {
           $command = substr($p_one, 0, strrpos($p_one, ';')) . ' , ' . substr($command, strpos($command, '('));
         }
-        yield $command;
-        unset($p_one, $done);
+        unset($done);
+        $p_one = substr($command, 0, strrpos($command, ';'));
+        continue;
       }
       //If the previous line is an 'INSERT INTO' command but doesn't match the newest one
       else if (isset($p_one)) {
@@ -1577,6 +1579,7 @@ class Site_Command extends Terminus_Command {
         yield $command;
       }
     }
+    if (!empty($p_one)) {yield $p_one;}
   }
 
  /**

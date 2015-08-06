@@ -14,8 +14,6 @@ function newTestGen() {
     yield "INSERT INTO `testtable` VALUES (3,'C','GHI', 3000);";
     yield "INSERT INTO `testtable` VALUES (4,'D','JKL', 4000);";
     yield "INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);";
-    yield 'INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0");';
-    yield 'INSERT INTO `wp_term_relationships` VALUES("1041", "70", "0");';
 }
 
 class mysqlpdoTest extends PHPUnit_Framework_TestCase {
@@ -133,8 +131,6 @@ class mysqlpdoTest extends PHPUnit_Framework_TestCase {
         $comarr = Site_Command::getCombined(newTestGen());
         $combined = iterator_to_array($comarr);
         $this->assertEquals('INSERT INTO `wp_bp_user_blogs` VALUES("2", "2", "1") , ("3", "4", "1");', $combined[0]);
-        $this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000);", $combined[1]);
-        $this->assertEquals("INSERT INTO `testtable` VALUES (5,'E','MNO', 5000);", $combined[2]);
-        $this->assertEquals('INSERT INTO `wp_term_relationships` VALUES("1051", "75", "0") , ("1041", "70", "0");', $combined[3]);
+        $this->assertEquals("INSERT INTO `testtable` VALUES (3,'C','GHI', 3000) , (4,'D','JKL', 4000) , (5,'E','MNO', 5000);", $combined[1]);
     }
 }
