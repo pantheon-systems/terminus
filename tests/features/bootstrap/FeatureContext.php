@@ -211,7 +211,10 @@ class FeatureContext extends BehatContext {
     * @return [void]
     */
   public function iCloneTheEnvironment($from_env, $to_env, $site) {
-    $this->iRun("terminus site clone-env --site=$site --from-env=$from_env --to-env=$to_env --files --db --yes");
+    $this->iRun(
+      "terminus site clone-env 
+      --site=$site --from-env=$from_env --to-env=$to_env --yes --db --files"
+    );
   }
 
   /**
@@ -282,14 +285,19 @@ class FeatureContext extends BehatContext {
 
 
   /**
-    * @Given /^I deploy the "([^"]*)" environment of "([^"]*)"$/
+    * @Given /^I deploy the "([^"]*)" environment from "([^"]*)" of "([^"]*)" with the message "([^"]*)"$/
     *
-    * @param [string] $env  Name of environment to deploy
-    * @param [string] $site Name of site on which to deploy environment
+    * @param [string] $env     Name of environment to deploy
+    * @param [string] $from    Name of environment to deploy from
+    * @param [string] $site    Name of site on which to deploy environment
+    * @param [string] $message Commit message for the log
     * @return [void]
     */
-  public function iDeployTheEnvironmentOf($env, $site) {
-    $this->setTestStatus('pending');
+  public function iDeployTheEnvironmentOf($env, $from, $site, $message) {
+    $this->iRun(
+      "terminus site deploy 
+      --site=$site --env=$env --from=$from --note=$note"
+    );
   }
 
   /**
@@ -495,12 +503,13 @@ class FeatureContext extends BehatContext {
 
   /**
    * @Then /^I should get:$/
+   * @Then /^I should get "([^"]*)"$/
    * Swap in $this->_parameters elements by putting them in [[double brackets]]
    *
-   * @param [PyStringNode] $string Content which ought not be in the output
+   * @param [string] $string Content which ought not be in the output
    * @return [boolean] True if $string exists in output
    */
-  public function iShouldGet(PyStringNode $string) {
+  public function iShouldGet($string) {
     if(!$this->_checkResult((string)$string, $this->_output)) {
       throw new Exception("Actual output:\n" . $this->_output);
     }

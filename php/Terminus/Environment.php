@@ -26,7 +26,7 @@ class Environment {
   public function __construct(Site $site, $data = null) {
     $this->site = $site;
     if (property_exists($data, 'id')) {
-      $this->id = $data->id;
+      $this->name = $this->id = $data->id;
     }
     $this->attributes = $data;
 
@@ -349,13 +349,15 @@ class Environment {
    */
   public function deploy($args) {
     $default_params = array(
-      'annotation' => 'Terminus deploy'
+      'annotation'     => 'Terminus deploy',
+      'clone_database' => array('from_environment' => 'dev'),
+      'clone_files'    => array('from_environment' => 'dev'),
     );
     $params = array_merge($default_params, $args);
 
     $workflow = $this->site->workflows->create('deploy', array(
       'environment' => $this->id,
-      'params' => $params
+      'params'      => $params
     ));
     return $workflow;
   }
