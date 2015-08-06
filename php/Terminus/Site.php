@@ -292,27 +292,12 @@ class Site {
   }
 
   /**
-   * Changes payment instrument of given site
-   *
-   * @params [string] $uuid UUID of new payment instrument
-   * @return [Workflow] $workflow Workflow object for the request
-   */
-  public function changeInstrument($uuid = 0) {
-    if($uuid == 0) {
-      $workflow = $this->_removeInstrument();
-    } else {
-      $workflow = $this->_addInstrument($uuid);
-    }
-    return $workflow;
-  }
-
-  /**
    * Adds payment instrument of given site
    *
    * @params [string] $uuid UUID of new payment instrument
    * @return [Workflow] $workflow Workflow object for the request
    */
-  private function _addInstrument($uuid) {
+  public function addInstrument($uuid) {
     $args = array(
       'site'   => $this->id,
       'params' => array(
@@ -329,7 +314,7 @@ class Site {
    * @params [string] $uuid UUID of new payment instrument
    * @return [Workflow] $workflow Workflow object for the request
    */
-  private function _removeInstrument() {
+  public function removeInstrument() {
     $args = array(
       'site'   => $this->id,
     );

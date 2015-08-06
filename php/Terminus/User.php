@@ -12,7 +12,7 @@ class User {
   private $organizations;
   private $profile;
   private $aliases;
-  private $_instruments;
+  private $instruments;
 
   public function __construct($id = null) {
     if (null===$id) {
@@ -76,17 +76,20 @@ class User {
   }
 
   public function instruments() {
-    $instruments        = new Instruments($this);
-    $this->_instruments = $instruments->fetch();
-    return $this->_instruments;
+    $instruments       = new Instruments(array('user' => $this));
+    $this->instruments = $instruments->fetch();
+    return $this->instruments;
   }
 
-  public function getId() {
-    return $this->id;
+  public function get($attribute) {
+    if(isset($this->$attribute)) {
+      return $this->$attribute;
+    }
+    return null;
   }
 
   public static function id() {
     $user = self::instance();
-    return $user->getId();
+    return $user->get('id');
   }
 }

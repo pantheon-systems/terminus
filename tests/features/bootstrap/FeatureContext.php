@@ -173,7 +173,7 @@ class FeatureContext extends BehatContext {
    */
   public function iAttachTheInstrument($uuid, $site) {
     $this->iRun(
-      "terminus site instrument --site=$site --change-to=$uuid"
+      "terminus site instrument --site=$site --instrument=$uuid"
     );
   }
 

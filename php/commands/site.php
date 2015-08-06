@@ -987,7 +987,7 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to use
    *
-   * [--change-to=<UUID>]
+   * [--instrument=<UUID>]
    * : Change the instrument by setting the ID
    *
    * ## EXAMPLES
@@ -995,20 +995,20 @@ class Site_Command extends Terminus_Command {
    *  terminus site instrument --site=sitename
    */
   public function instrument($args, $assoc_args) {
-    $user        = new User();
+    $user = new User();
     $instruments = $user->instruments()->all();
-    $data = array('none');
     foreach($instruments as $instrument) {
-      $data[$instrument->getId()] = $instrument->get('label');
+      $data[$instrument->get('id')] = $instrument->get('label');
     }
 
     //If site is not set, show all user's payment instruments
     if(!isset($assoc_args['site'])) {
       $this->handleDisplay($data, array(), array('UUID', 'Label'));
     } else {
+      array_unshift($data, 'none');
       $site = SiteFactory::instance($assoc_args['site']);
-      //If change-to is not present, show the site's current instrument
-      if(!isset($assoc_args['change-to'])) {
+      //If instrument is not present, show the site's current instrument
+      if(!isset($assoc_args['instrument'])) {
         $instrument_uuid = $site->get('instrument');
         if($instrument_uuid == null) {
           \Terminus::line(
@@ -1022,15 +1022,15 @@ class Site_Command extends Terminus_Command {
         }
       } else {
         //Both are present. Ensure sure UUID is valid.
-        //This prevents users from selecting instruments which do not belong to them.
-        $new_instrument = $assoc_args['change-to'];
-        if(!isset($data[$new_instrument])) {
-          $location = array_search($new_instrument, $data);
+        //This attempts to prevent users from selecting instruments which do not belong to them.
+        $instrument_id = $assoc_args['instrument'];
+        if(!isset($data[$instrument_id])) {
+          $location = array_search($instrument_id, $data);
           if($location !== false) {
-            $new_instrument = $location;
+            $instrument_id = $location;
           } else {
             $uuids          = array_keys($data);
-            $new_instrument = Input::menu(
+            $instrument_id = Input::menu(
               $data,
               null,
               'Select a payment instrument'
@@ -1038,10 +1038,14 @@ class Site_Command extends Terminus_Command {
           }
         }
         //Change the instrument once we have a valid instrument.
-        $workflow = $site->changeInstrument($new_instrument);
+        if($instrument_id == 0) {
+          $workflow = $site->removeInstrument();
+        } else {
+          $workflow = $site->addInstrument($instrument_id);
+        }
         $workflow->wait();
          
-        \Terminus::line("Successfully updated payment instrument to $new_instrument.");
+        \Terminus::line("Successfully updated payment instrument to $instrument_id.");
       }
     }
   }
