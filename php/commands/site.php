@@ -84,9 +84,9 @@ class Site_Command extends Terminus_Command {
    */
   public function clear_caches($args, $assoc_args) {
       $site = SiteFactory::instance(Input::site($assoc_args));
-      $env = Input::env($assoc_args, 'env');
-      $response = $site->environment($env)->workflow("clear_cache");
-      $this->waitOnWorkFlow('sites', $site->getId(), $response->id);
+      $env_id = Input::env($assoc_args, 'env');
+      $workflow = $site->workflows->create('clear_cache', array('environment' => $env_id));
+      $workflow->wait();
       Terminus::success("Caches cleared");
   }
 
@@ -886,18 +886,14 @@ class Site_Command extends Terminus_Command {
     $env = Input::env($assoc_args, 'env');
     switch ($action) {
       case 'info':
-        $data = $locks = $site->environment($env)->lockinfo();
-        if (!Terminus::get_config('json')) {
-          $data = array($data);
-        }
-        $this->handleDisplay($data);
-        break;
+        $info = $site->environment($env)->lockinfo();
+        return $this->handleDisplay($info);
       case 'add':
         Terminus::line("Creating new lock on %s -> %s", array($site->getName(), $env));
         if (!isset($assoc_args['username'])) {
-          $email = Terminus::prompt("Username for the lock");
+          $username = Terminus::prompt("Username for the lock");
         } else {
-          $email = $assoc_args['username'];
+          $username = $assoc_args['username'];
         }
         if (!isset($assoc_args['password'] ) ) {
           exec("stty -echo");
@@ -907,19 +903,18 @@ class Site_Command extends Terminus_Command {
         } else {
           $password = $assoc_args['password'];
         }
-        $data = $site->environment($env)->lock($email, $password);
-        if ( $data AND property_exists($data,'id') ) {
-          $this->waitOnWorkflow('sites',$data->site_id, $data->id);
-        }
-        Terminus::success('Success');
-        break;
+
+        $workflow = $site->environment($env)->lock(array(
+          'username' => $username,
+          'password' => $password
+        ));
+        $workflow->wait();
+        return Terminus::success('Success');
       case 'remove':
         Terminus::line("Removing lock from %s -> %s", array($site->getName(), $env));
-        $data = $site->environment($env)->unlock();
-        if ( property_exists($data,'id') ) {
-          $this->waitOnWorkflow('sites',$data->site_id, $data->id);
-        }
-        Terminus::success('Success');
+        $workflow = $site->environment($env)->unlock();
+        $workflow->wait();
+        return Terminus::success('Success');
     }
   }
 
