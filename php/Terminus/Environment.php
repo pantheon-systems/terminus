@@ -210,32 +210,38 @@ class Environment {
   }
 
   /**
-   * Lock environment
+   * Enable HTTP Basic Access authentication on the web environment
    */
-  public function lock($username, $password) {
-    $data = json_encode(array('username' => $username, 'password' => $password));
-    $options = array(
-      'body' => $data,
-      'headers' => array('Content-type'=>'application/json')
-    );
-    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/lock', "PUT", $options);
-    return $response['data'];
+  public function lock($options = array()) {
+    $username = $options['username'];
+    $password = $options['password'];
+
+    $workflow = $this->site->workflows->create('lock_environment', array(
+      'environment' => $this->id,
+      'params' => array(
+        'username' => $username,
+        'password' => $password
+      )
+    ));
+    return $workflow;
   }
 
   /**
-   * Delete an environment lock.
+   * Disable HTTP Basic Access authentication on the web environment
    */
   public function unlock() {
-    $response = \Terminus_Command::request("sites", $this->site->getId(),  'environments/' . $this->name . '/lock', "DELETE");
-    return $response['data'];
+    $workflow = $this->site->workflows->create('unlock_environment', array(
+      'environment' => $this->id,
+    ));
+    return $workflow;
   }
 
   /**
    * Get Info on an environment lock
    */
   public function lockinfo() {
-    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/'.$this->name.'/lock', "GET");
-    return $response['data'];
+    $info = $this->attributes->lock;
+    return $info;
   }
 
   /**
