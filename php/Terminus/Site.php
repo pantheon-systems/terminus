@@ -32,15 +32,15 @@ class Site {
   */
   static function create($options = array()) {
     $data = array(
-      'label' => $options['label'],
+      'label'     => $options['label'],
       'site_name' => $options['name']
     );
 
-    if (isset($options['organization_id'])) {
+    if(isset($options['organization_id'])) {
       $data['organization_id'] = $options['organization_id'];
     }
 
-    if (isset($options['product_id'])) {
+    if(isset($options['product_id'])) {
       $data['deploy_product'] = array(
         'product_id' => $options['product_id']
       );
@@ -103,7 +103,7 @@ class Site {
   public function attributes() {
     $path = "attributes";
     $method = "GET";
-    $atts = \Terminus_Command::request('sites',$this->getId(),$path,$method);
+    $atts = \Terminus_Command::request('sites', $this->getId(), $path, $method);
     return $atts['data'];
   }
 
@@ -183,9 +183,15 @@ class Site {
 
   /**
    * Return site id
+   *
+   * @param [string] $attribute Name of the attribute to retrieve
+   * @return [mixed] $this->$attribute or null if DNE
    */
-   public function getId() {
-     return $this->id;
+   public function get($attribute) {
+     if(isset($this->$attribute)) {
+       return $this->$attribute;
+     }
+     return null;
    }
 
   /**
@@ -416,8 +422,8 @@ class Site {
   *
   * @return Workflow object
   **/
-  public function removeMembership($type,$uuid) {
-    $type = sprintf('remove_site_%s_membership',$type);
+  public function removeMembership($type, $uuid) {
+    $type = sprintf('remove_site_%s_membership', $type);
     $workflow = $this->workflows->create($type, array(
       'params'=> array(
         'organization_id'=>$uuid
@@ -429,7 +435,7 @@ class Site {
   /**
    * Get memberships for a site
   */
-  function memberships($type='organizations') {
+  function memberships($type = 'organizations') {
     $path = sprintf('memberships/%s', $type);
     $method = 'GET';
     $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
@@ -445,5 +451,36 @@ class Site {
   **/
   private function hasFramework($framework_name) {
     return isset($this->information->framework) && ($framework_name == $this->information->framework);
+  }
+
+  /**
+   * Takes all getAttributeName() calls and returns $this->attribute_name
+   *
+   * @param [string] $name      Name of non-existant function being called
+   * @param [array]  $arguments Arguments sent to non-existant function
+   * @return [mixed] $this->attribute_name
+   */
+  public function __call($name, $arguments) {
+    if(strpos($name, 'get') === 0) {
+      $item = $this->get($this->convertCamelCase(substr($name, 3)));
+      return $item;
+    }
+    throw new BadFunctionCallException("Function $name does not exist in " . __CLASS__);
+  }
+
+  /**
+   * Converts from camelCase to camel_case
+   *
+   * @param [string] $input camelCased string
+   * @return [string] $output camel_cased string
+   */
+  private function convertCamelCase($input) {
+    preg_match_all('~([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)~', $input, $matches);
+    $return = $matches[0];
+    foreach($return as $key => $match) {
+      $return[$key] = strtolower($match);
+    }
+    $output = implode('_', $return);
+    return $output;
   }
 }
