@@ -91,7 +91,8 @@ class Organizations_Command extends Terminus_Command {
     foreach ($sites as $site) {
       $data[] = array(
         'name' => $site->site->name,
-        'service level' => isset($site->site->service_level) ? $site->site->service_level : '',
+        'id' => $site->site->id,
+        'service_level' => isset($site->site->service_level) ? $site->site->service_level : '',
         'framework' => isset($site->site->framework) ? $site->site->framework : '',
         'created' => date('Y-m-d H:i:s', $site->site->created),
       );
