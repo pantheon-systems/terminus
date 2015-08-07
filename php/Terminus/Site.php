@@ -269,7 +269,6 @@ class Site {
    * Import Archive
    */
   public function import($url, $element) {
-    $path = 'environments/dev/import';
     $data = array(
       'url' => $url,
       'code' => 0,
@@ -279,16 +278,18 @@ class Site {
     );
 
     if($element == 'all') {
-      $data = array_merge($data, array('code' => 1, 'database' => 1, 'files' => 1, 'update_db' => 1));
+      $data = array_merge($data, array('code' => 1, 'database' => 1, 'files' => 1, 'updatedb' => 1));
     } elseif($element == 'database') {
-      $data = array_merge($data, array('database' => 1, 'update_db' => 1));
+      $data = array_merge($data, array('database' => 1, 'updatedb' => 1));
     } else {
       $data[$element] = 1;
     }
 
-    $options = array('body' => json_encode($data), 'headers'=>array('Content-type' => 'application/json'));
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, 'POST', $options);
-    return $response['data'];
+    $workflow = $this->workflows->create('do_import', array(
+      'environment' => 'dev',
+      'params' => $data
+    ));
+    return $workflow;
   }
 
   /**
