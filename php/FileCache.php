@@ -156,11 +156,17 @@ class FileCache {
     }
   }
 
-  public function get_data( $key, $ttl = null ) {
-    $contents = $this->read( $key, $ttl );
+  public function get_data($key, $options = array()) {
+    $defaults = array(
+      'decode_array' => false,
+      'ttl' => null
+    );
+    $options = array_merge($defaults, $options);
 
-    if ( $contents ) {
-      return json_decode( $contents );
+    $contents = $this->read($key, $options['ttl']);
+
+    if ($contents) {
+      return json_decode($contents, $options['decode_array']);
     }
     else {
       return false;

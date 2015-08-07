@@ -71,7 +71,7 @@ class Organizations_Command extends Terminus_Command {
     $org = new Organization($selected_org);
 
     if (isset($assoc_args['add'])) {
-        $add = SiteFactory::instance(Input::site($assoc_args,'add'));
+        $add = SiteFactory::instance(Input::sitename($assoc_args,'add'));
         Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
         $org->addSite($add);
         Terminus::success("Added site!");
@@ -79,7 +79,7 @@ class Organizations_Command extends Terminus_Command {
     }
 
     if (isset($assoc_args['remove'])) {
-      $remove = SiteFactory::instance(Input::site($assoc_args,'remove'));
+      $remove = SiteFactory::instance(Input::sitename($assoc_args,'remove'));
       Terminus::confirm("Are you sure you want to remove %s to %s ?", $assoc_args, array($remove->getName(), $org->name));
       $org->removeSite($remove);
       Terminus::success("Removed site!");

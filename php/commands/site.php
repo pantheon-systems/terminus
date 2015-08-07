@@ -18,9 +18,12 @@ use Terminus\SitesCache;
 
 
 class Site_Command extends Terminus_Command {
+  public $sitesCache;
 
   public function __construct() {
     parent::__construct();
+
+    $this->sitesCache = new SitesCache();
   }
 
   protected $_headers = false;
@@ -40,7 +43,7 @@ class Site_Command extends Terminus_Command {
   *
   **/
   public function attributes($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $data = $site->attributes();
     $this->handleDisplay($data, array(), array('Attribute','Value'));
   }
@@ -63,7 +66,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand branch-create
   **/
   public function branch_create($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $branch = preg_replace('#[_\s]+#',"",@$assoc_args['branch']);
     $branch = $site->createBranch($branch);
   }
@@ -85,7 +88,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand clear-caches
    */
   public function clear_caches($args, $assoc_args) {
-      $site = SiteFactory::instance(Input::site($assoc_args));
+      $site = SiteFactory::instance(Input::sitename($assoc_args));
       $env_id = Input::env($assoc_args, 'env');
       $workflow = $site->workflows->create('clear_cache', array('environment' => $env_id));
       $workflow->wait();
@@ -114,7 +117,7 @@ class Site_Command extends Terminus_Command {
    */
   public function code($args, $assoc_args) {
       $subcommand = array_shift($args);
-      $site = SiteFactory::instance(Input::site($assoc_args));
+      $site = SiteFactory::instance(Input::sitename($assoc_args));
       $data = $headers = array();
       switch($subcommand) {
         case 'log':
@@ -203,7 +206,7 @@ class Site_Command extends Terminus_Command {
   * @subcommand connection-mode
   */
   public function connection_mode($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $action = 'show';
     $mode = @$assoc_args['set'] ?: false;
     if (@$assoc_args['set']) {
@@ -262,7 +265,7 @@ class Site_Command extends Terminus_Command {
       case "Windows NT":
         $cmd = "start"; break;
     }
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $env = Input::optional( 'env', $assoc_args );
     $env = $env ? sprintf( "#%s", $env ) : null;
     $url = sprintf("https://dashboard.pantheon.io/sites/%s%s", $site->getId(), $env);
@@ -291,8 +294,8 @@ class Site_Command extends Terminus_Command {
    *
    */
   public function info($args, $assoc_args) {
-    $sitename = Input::site($assoc_args);
-    $site_id = SitesCache::find($sitename);
+    $sitename = Input::sitename($assoc_args);
+    $site_id = $this->sitesCache->findID($sitename);
     $site = new Site($site_id);
 
     $site->fetch();
@@ -328,7 +331,7 @@ class Site_Command extends Terminus_Command {
    */
   public function organizations($args, $assoc_args) {
     $action = array_shift($args);
-    $site = SiteFactory::instance( Input::site($assoc_args) );
+    $site = SiteFactory::instance( Input::sitename($assoc_args) );
     $data = array();
     switch ($action) {
         case 'add':
@@ -399,7 +402,7 @@ class Site_Command extends Terminus_Command {
   */
    public function backup($args, $assoc_args) {
      $action = array_shift($args);
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
+     $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
      $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'get':
@@ -566,7 +569,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand init-env
    */
    public function init_env($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::site($assoc_args));
+     $site = SiteFactory::instance(Input::sitename($assoc_args));
      $environments = array('dev', 'test', 'live');
      $env = $site->environment(Input::env(
        $assoc_args,
@@ -607,7 +610,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand clone-env
    */
    public function clone_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
+     $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
      $site_id = $site->getId();
      $from_env = Input::env($assoc_args, 'from-env', "Choose environment you want to clone from");
      $to_env = Input::env($assoc_args, 'to-env', "Choose environment you want to clone to");
@@ -673,7 +676,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand create-env
    */
    public function create_env($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::site($assoc_args));
+     $site = SiteFactory::instance(Input::sitename($assoc_args));
 
      if (isset($assoc_args['env'])) {
        $env = $assoc_args['env'];
@@ -703,7 +706,7 @@ class Site_Command extends Terminus_Command {
     * @subcommand merge-to-dev
     */
     public function merge_to_dev($args, $assoc_args) {
-      $site = SiteFactory::instance(Input::site($assoc_args));
+      $site = SiteFactory::instance(Input::sitename($assoc_args));
       $site->environmentsCollection->fetch();
 
       $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
@@ -730,7 +733,7 @@ class Site_Command extends Terminus_Command {
      * @subcommand merge-from-dev
      */
      public function merge_from_dev($args, $assoc_args) {
-       $site = SiteFactory::instance(Input::site($assoc_args));
+       $site = SiteFactory::instance(Input::sitename($assoc_args));
        $site->environmentsCollection->fetch();
 
        $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
@@ -757,7 +760,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand delete-env
    */
    public function delete_env($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::site($assoc_args));
+     $site = SiteFactory::instance(Input::sitename($assoc_args));
      $site->environmentsCollection->fetch();
      $multidev_envs = array_diff($site->environmentsCollection->ids(), array('dev', 'test', 'live'));
      $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
@@ -794,7 +797,7 @@ class Site_Command extends Terminus_Command {
     *
     */
   public function deploy($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $env  = $site->environment(Input::env(
       $assoc_args,
       'env',
@@ -843,7 +846,7 @@ class Site_Command extends Terminus_Command {
    *
    */
   function environments($args, $assoc_args) {
-    $site = SiteFactory::instance( Input::site( $assoc_args ) );
+    $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
     $site->environmentsCollection->fetch();
     $environments = $site->environmentsCollection->all();
 
@@ -887,7 +890,7 @@ class Site_Command extends Terminus_Command {
    */
    public function hostnames($args, $assoc_args) {
      $action = array_shift($args);
-     $site = SiteFactory::instance( Input::site( $assoc_args ) );
+     $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
      $env = Input::env($assoc_args, 'env');
      switch ($action) {
        case 'list':
@@ -945,7 +948,7 @@ class Site_Command extends Terminus_Command {
   **/
   function lock($args, $assoc_args) {
     $action = array_shift($args);
-    $site = SiteFactory::instance( Input::site( $assoc_args ) );
+    $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
     $env = Input::env($assoc_args, 'env');
     switch ($action) {
       case 'info':
@@ -999,7 +1002,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand import
    */
   public function import($args, $assoc_args) {
-    $site = SiteFactory::instance( Input::site( $assoc_args ) );
+    $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
     $url = Input::string($assoc_args, 'url', "URL of archive to import");
     if (!$url) {
       Terminus::error("Please enter a URL.");
@@ -1084,7 +1087,7 @@ class Site_Command extends Terminus_Command {
           $workflow = $site->addInstrument($instrument_id);
         }
         $workflow->wait();
-         
+
         \Terminus::line("Successfully updated payment instrument to $instrument_id.");
       }
     }
@@ -1099,7 +1102,7 @@ class Site_Command extends Terminus_Command {
    * : Site to deploy from
   **/
   public function jobs($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $jobs = $site->jobs();
     $data = array();
     foreach ($jobs as $job) {
@@ -1137,7 +1140,7 @@ class Site_Command extends Terminus_Command {
 
     $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
 
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $env = Input::env($assoc_args, 'env');
 
     // Darwin check ... not sure what this is really ... borrowed from terminus 1
@@ -1171,7 +1174,7 @@ class Site_Command extends Terminus_Command {
   * @subcommand new-relic
   */
   public function new_relic($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $data = $site->newRelic();
     if($data) {
       $this->handleDisplay($data->account,$assoc_args,array('Key','Value'));
@@ -1190,7 +1193,7 @@ class Site_Command extends Terminus_Command {
   *
   */
   public function notifications($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $notifications = $site->notifications();
     $data = array();
     foreach ($notifications as $note) {
@@ -1220,7 +1223,7 @@ class Site_Command extends Terminus_Command {
   * @subcommand owner
   */
   public function owner($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $data = $site->owner();
     $this->handleOutput($data);
   }
@@ -1246,7 +1249,7 @@ class Site_Command extends Terminus_Command {
    */
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $env = @$assoc_args['env'];
     switch ($action) {
       case 'clear':
@@ -1288,7 +1291,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand service-level
    */
   public function service_level($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $info = $site->info('service_level');
     if (isset($assoc_args['set'])) {
       $set = $assoc_args['set'];
@@ -1317,7 +1320,7 @@ class Site_Command extends Terminus_Command {
   */
   public function team($args, $assoc_args) {
     $action = array_shift($args) ?: 'list';
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $data = array();
     switch($action) {
       case 'add-member':
@@ -1358,7 +1361,7 @@ class Site_Command extends Terminus_Command {
    * @subcommand upstream-info
    */
   public function upstream_info($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $upstream = $site->getUpstream();
     $this->handleDisplay($upstream,$args);
   }
@@ -1377,7 +1380,7 @@ class Site_Command extends Terminus_Command {
    * @alias upstream-updates
   **/
    public function upstream_updates($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::site($assoc_args));
+     $site = SiteFactory::instance(Input::sitename($assoc_args));
      $upstream = $site->getUpstreamUpdates();
 
      // data munging as usual
@@ -1436,7 +1439,7 @@ class Site_Command extends Terminus_Command {
    *  terminus site wake --site='testsite' --env=dev
   */
   public function wake($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::site($assoc_args));
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $env = Input::env($assoc_args, 'env');
     $data = $site->environment($env)->wake();
     if (!$data['success']) {
@@ -1467,7 +1470,7 @@ class Site_Command extends Terminus_Command {
    public function wipe($args, $assoc_args) {
      try {
        $env = @$assoc_args['env'] ?: 'dev';
-       $site = SiteFactory::instance(Input::site($assoc_args));
+       $site = SiteFactory::instance(Input::sitename($assoc_args));
        $site_id = $site->getId();
        $env = Input::env($assoc_args, 'env');
        Terminus::line("Wiping %s %s", array($site_id, $env));
