@@ -14,7 +14,7 @@ Feature: Daily Terminus QA Report
     @activate-site
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I am prompted to "Activate the site in your browser" on "[[test_site_name]]" at "http://dev-[[test_site_name]].onebox.pantheon.io"
+    When I activate the Drupal site "[[test_site_name]]"
     Then I "skipped" the test
 
   Scenario: Connection mode SFTP
