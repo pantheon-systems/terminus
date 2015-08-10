@@ -312,3 +312,30 @@
             ETag: 'W/"wmYzEwAL4wXxd7hfcxbuUQ=="'
             Vary: Accept-Encoding
         body: '{"environment_id": "test", "keep_forever": true, "params": {"clone_files": {"from_environment": "dev"}, "annotation": "Create the test environment", "clone_database": {"from_environment": "dev"}, "target_commit": "f90ace276abbd540836e1e12c8f166320e9b8ee3", "target_ref": "refs/tags/pantheon_test_2"}, "role": "owner", "site_id": "7f856d06-2242-4a72-aa63-5849d596eb70", "started_at": 1438707660.708482, "task_ids": ["61ed840e-3aca-11e5-9a9d-bc764e115846", "61ee8c00-3aca-11e5-9a9d-bc764e115846", "61f9fdc4-3aca-11e5-9a9d-bc764e115846", "61fc3d32-3aca-11e5-9a9d-bc764e115846", "61fdb676-3aca-11e5-9a9d-bc764e115846", "61fea9a0-3aca-11e5-9a9d-bc764e115846", "61fffabc-3aca-11e5-9a9d-bc764e115846"], "trace_id": "61e4d660-3aca-11e5-b6a3-7fb233bbf6b7", "type": "deploy", "user_id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0", "waiting_for_task_id": "61f9fdc4-3aca-11e5-9a9d-bc764e115846", "id": "61e922a6-3aca-11e5-9a9d-bc764e115846", "key": "7f856d06-2242-4a72-aa63-5849d596eb70", "phase": "started", "queued_time": null, "run_time": null, "created_at": 1438707660.514167, "reason": "", "environment": "test", "final_task_id": null, "result": "succeeded", "total_time": null, "active_description": "Deploying code to \"test\", and cloning files from \"dev\", and cloning database from \"dev\"", "description": "Deploy code to \"test\"", "step": 3, "number_of_tasks": 7, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=61e4d660-3aca-11e5-b6a3-7fb233bbf6b7&from_iso_date=2015-08-04T16:56:00.514167Z&to_iso_date=now", "user": {"created_at": 1437160970, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "74d3797f-5ff0-432a-8fb8-388fcdb170e0"}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"allow_concurrent": true, "build": {"url": "job/converge_hostname/2626/", "number": 2626, "phase": "STARTED", "estimated_duration": 1296, "duration": 0, "full_url": "https://23.253.39.239:8090/jenkins/job/converge_hostname/2626/"}, "environment": "test", "fn_name": "queue_jenkins_task", "params": {"host": "localhost", "task_type": "converge_hostname", "job_id": "61f9fdc4-3aca-11e5-9a9d-bc764e115846", "hostname_id": "test-behat-test.onebox.pantheon.io"}, "queued_at": 1438707660.846778, "responses": [{"code": 302, "body": "Successfully queued converge_hostname"}], "site_id": "7f856d06-2242-4a72-aa63-5849d596eb70", "started_at": 1438707661.838566, "trace_id": "61e4d660-3aca-11e5-b6a3-7fb233bbf6b7", "workflow_id": "61e922a6-3aca-11e5-9a9d-bc764e115846", "id": "61f9fdc4-3aca-11e5-9a9d-bc764e115846", "key": "1438707600", "created_at": 1438707660.624634, "queued_time": 0.9917881488800049, "run_time": null, "phase": "started", "result": null, "total_time": null, "internal_reason": "", "build_url": "https://23.253.39.239:8090/jenkins/job/converge_hostname/2626/", "messages": {"2015-08-04T17:01:02.131980": {"message": "Successfully queued converge_hostname", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=61e4d660-3aca-11e5-b6a3-7fb233bbf6b7&from_iso_date=2015-08-04T16:56:00.624634Z&to_iso_date=now", "type": "converge_hostname"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/58d8a562-7d3a-4ec8-abef-7944bc80ba9d?site_state=true'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/1.0.0 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:251a6df8-3aca-11e5-a56e-bc764e115846:8HZxoB7nnc6bjtSkrratm'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Mon, 10 Aug 2015 20:54:41 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 05c2c310-3fa2-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"39-37024390"'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
