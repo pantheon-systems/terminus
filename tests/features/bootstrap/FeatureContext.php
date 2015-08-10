@@ -35,26 +35,26 @@ class FeatureContext extends BehatContext {
     );
   }
 
-    /**
-     * Ensures the user has access to the given payment instrument
-     * @Given /^a payment insturment with uuid "([^"]*)"$/
-     *
-     * @param [string] $instrument_uuid UUID of a payment instrument
-     * @return [void]
-     */
-    public function aPaymentInsturmentWithUuid($instrument_uuid) {
-      $instruments = $this->iRun('terminus site instrument');
-      try {
-        $uuid = new PyStringNode(
-          $this->_replacePlaceholders($instrument_uuid)
-        ); 
-        $this->iShouldGet($uuid); 
-      } catch(Exception $e) {
-        throw new Exception(
-          "Your user does not have access to instrument $instrument_uuid."
-        );
-      }
+  /**
+    * Ensures the user has access to the given payment instrument
+    * @Given /^a payment insturment with uuid "([^"]*)"$/
+    *
+    * @param [string] $instrument_uuid UUID of a payment instrument
+    * @return [void]
+    */
+  public function aPaymentInstrumentWithUuid($instrument_uuid) {
+    $instruments = $this->iRun('terminus site instrument');
+    try {
+      $uuid = new PyStringNode(
+        $this->_replacePlaceholders($instrument_uuid)
+      ); 
+      $this->iShouldGet($uuid); 
+    } catch(Exception $e) {
+      throw new Exception(
+        "Your user does not have access to instrument $instrument_uuid."
+      );
     }
+  }
 
   /**
    * Ensures a site of the given name exists
@@ -158,7 +158,6 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function iAmAuthenticated() {
-    $this->iRun("terminus cli cache-clear");
     $this->iLogIn();
   }
 
@@ -513,10 +512,9 @@ class FeatureContext extends BehatContext {
   public function iRun($command) {
     $command      = $this->_replacePlaceholders($command);
     $regex        = '/(?<!\.)terminus/';
-    $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
+    $terminus_cmd = $this->cliroot . '/bin/terminus';
     if($this->_cassette_name) {
-      $command = 'VCR_CASSETTE=' . $this->_cassette_name
-        . ' ' . preg_replace($regex, $terminus_cmd, $command);
+      $command = 'VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
       if(isset($this->_parameters['vcr_mode'])) {
         $command = 'VCR_MODE=' . $this->_parameters['vcr_mode']
           . ' ' . $command;
@@ -526,6 +524,7 @@ class FeatureContext extends BehatContext {
       $command = 'TERMINUS_HOST=' . $this->_connection_info['host']
         . ' ' . $command;
     }
+    $command = preg_replace($regex, $terminus_cmd, $command);
     ob_start();
     passthru($command);
     $this->_output = ob_get_clean();
