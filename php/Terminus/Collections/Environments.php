@@ -30,7 +30,6 @@ class Environments {
    * List Environment IDs, with Dev/Test/Live first
    *
    */
-
   public function ids() {
     $ids = array_keys($this->models);
 
@@ -42,11 +41,24 @@ class Environments {
     return $ids;
   }
 
+  /**
+   * Returns a list of all Multidev Environments
+   *
+   */
+  public function multidev() {
+    $environments = array_filter($this->all(), function($environment) {
+      return $environment->isMultidev();
+    });
+    return $environments;
+  }
+
   public function get($id) {
-    return array_key_exists($id, $this->models) ? $this->models[$id] : null;
+    $environment = array_key_exists($id, $this->models) ? $this->models[$id] : null;
+    return $environment;
   }
 
   public function all() {
-    return array_values($this->models);
+    $environments = array_values($this->models);
+    return $environments;
   }
 }
