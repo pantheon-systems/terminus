@@ -3,6 +3,7 @@ namespace Terminus\Helpers;
 
 use \Terminus\User;
 use \Terminus\SiteFactory;
+use \Terminus\SitesCache;
 use \Terminus\Products;
 
 /**
@@ -195,22 +196,19 @@ class Input {
    * @param [string] $label Prompt for STDOUT
    * @return [string] Site name
   */
-  public static function site(
-      $args = array(),
-      $key = 'site',
-      $label = 'Choose site'
-  ) {
-    // early return if a valid site has been offered
+  public static function sitename($args = array(), $key = 'site', $label = 'Choose site') {
+    // return early if sitename is provided in args
     if(isset($args[$key])) {
-      if($site = SiteFactory::instance($args[$key])) {
-        $site_name = $site->getName();
-        return $site_name;
-      }
+      return $args[$key];
     }
-    $sites   = SiteFactory::instance();
+    $sitesCache = new SitesCache();
+    $sitenames = array_map(function($site_cache) {
+      return $site_cache['name'];
+    }, $sitesCache->all());
+
     $choices = array();
-    foreach($sites as $site) {
-      $choices[$site->information->name] = $site->information->name;
+    foreach($sitenames as $sitename) {
+      $choices[$sitename] = $sitename;
     }
     $menu = self::menu($choices, $default = null, $label);
     return $menu;

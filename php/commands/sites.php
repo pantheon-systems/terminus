@@ -4,6 +4,7 @@
  *
  */
 use Terminus\Utils;
+use Terminus\Organization;
 use Terminus\Products;
 use Terminus\Session;
 use Terminus\SitesCache;
@@ -17,6 +18,8 @@ use Terminus\Loggers\Regular as Logger;
 use Terminus\Workflow;
 
 class Sites_Command extends Terminus_Command {
+  public $sitesCache;
+
   /**
    * Show a list of your sites on Pantheon
    * @package Terminus
@@ -25,86 +28,42 @@ class Sites_Command extends Terminus_Command {
   public function __construct() {
     parent::__construct();
     Auth::loggedIn();
+
+    $this->sitesCache = new SitesCache();
   }
 
   /**
-   * List Sites in Cache
-   *
-   * ## OPTIONS
-   *
-   * [--rebuild]
-   * @subcommand cache
-   */
-  public function cache($args, $assoc_args) {
-    $sites_cache = new Terminus\SitesCache();
-
-    if (isset($assoc_args['rebuild'])) {
-      $sites_cache->rebuild();
-    }
-
-    $sites = $sites_cache->all();
-
-    $data = array();
-    foreach ($sites as $name => $id) {
-      $data[] = array(
-        'name' => $name,
-        'id' => $id
-      );
-    }
-
-    $this->handleDisplay($data, $args);
-  }
-
-  /**
-   * Show sites
-   *
-   * ## OPTIONS
+   * Show all sites user has access to
+   * Note: because of the size of this call, it is cached
+   *   and also is the basis for loading individual sites by name
    *
    * @subcommand list
    * @alias show
    */
-  public function show($args, $assoc_args) {
-    $sites = SiteFactory::instance();
+  public function index($args, $assoc_args) {
+    // Always fetch a fresh list of sites
+    $this->sitesCache->rebuild();
+    $cached_sites = $this->sitesCache->all();
 
-    if (count($sites) == 0) {
+    if (count($cached_sites) == 0) {
       Terminus::log("You have no sites.");
       exit(0);
     }
 
-    $data = array();
-    foreach ($sites as $site) {
-      $report = array(
-        'name' => $site->getName(),
+    $rows = array_map(function($cached_site) {
+      return array(
+        'name' => $cached_site['name'],
+        'id' => $cached_site['id'],
+        'service_level' => $cached_site['service_level'],
+        'framework' => $cached_site['framework'],
+        'memberships' => array_map(function($membership) {
+          return $membership['name'];
+        }, $cached_site['memberships'])
       );
+    }, $cached_sites);
 
-      $fields = Input::optional('fields', $assoc_args, 'name,framework,service_level,id');
-      $filter = Input::optional('filter', $assoc_args, false);
-      if ($filter) {
-        if (!strpos($filter,":")) Terminus::error("Improperly formatted filter");
-        $filter = explode(':',$filter);
-        list($filter_field, $filter_value) = $filter;
-        if (!preg_match("#".preg_quote($filter_value)."#", $site->info($filter_field))) {
-          // skip rows not matching our filter
-          continue;
-        }
-      }
-      if ($fields) {
-        $fields = explode(',',$fields);
-        foreach ($fields as $field) {
-          $report[$field] = $site->info($field);
-        }
-      } else {
-        $info = $site->info();
-        foreach ($info as $key=>$value) {
-          $report[$key] = $value;
-        }
-      }
-
-      $data[] = $report;
-    }
-
-    $this->handleDisplay($data);
-    return $data;
+    $this->handleDisplay($rows);
+    return $rows;
   }
 
 
@@ -158,10 +117,35 @@ class Sites_Command extends Terminus_Command {
     $workflow->wait();
     Terminus::success("Pow! You created a new site!");
 
-    // Add Name->ID mapping to SitesCache
+    // Add Site to SitesCache
     $site_id = $workflow->attributes->final_task->site_id;
+    $site = new Site($site_id);
+    $site->fetch();
+
+    $cache_membership = array(
+      'id' => $site_id,
+      'name' => $options['name'],
+      'service_level' => $site->attributes->service_level,
+      'framework' => $site->attributes->framework,
+    );
+
+    if ($org_id) {
+      $org = new Organization($org_id);
+      $cache_membership['membership'] = array(
+        'id' => $org_id,
+        'name' => $org->profile->name,
+        'type' => 'organization'
+      );
+    } else {
+      $user_id = Session::getValue('user_uuid');
+      $cache_membership['membership'] = array(
+        'id' => $user_id,
+        'name' => 'Team',
+        'type' => 'team'
+      );
+    }
     $sites_cache = new Terminus\SitesCache();
-    $sites_cache->add(array($options['name'] => $site_id));
+    $sites_cache->add($cache_membership);
 
     if (isset($assoc_args['import'])) {
       sleep(10); //To stop erroenous site-DNE errors
@@ -217,37 +201,27 @@ class Sites_Command extends Terminus_Command {
    * Delete a site from pantheon
    *
    * ## OPTIONS
-   * --site=<site>
-   * : Id of the site you want to delete
-   *
-   * [--all]
-   * : Just kidding ... we won't let you do that.
+   * [--site=<site>]
+   * : ID of the site you want to delete
    *
    * [--force]
    * : to skip the confirmations
-   *
    */
   function delete($args, $assoc_args) {
-      $site_to_delete = SiteFactory::instance(@$assoc_args['site']);
-      if (!$site_to_delete) {
-        foreach( SiteFactory::instance() as $id => $site ) {
-          $site->id = $id;
-          $sites[] = $site;
-          $menu[] = $site->information->name;
-        }
-        $index = Terminus::menu( $menu, null, "Select a site to delete" );
-        $site_to_delete = $sites[$index];
-      }
+    $sitename = Input::sitename($assoc_args);
+    $site_id = $this->sitesCache->findID($sitename);
+    $site_to_delete = new Site($site_id);
 
-      if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
-        // if the force option isn't used we'll ask you some annoying questions
-        Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
-        Terminus::confirm( "Are you really sure?" );
-      }
-      Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
-      $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
+    if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
+      // if the force option isn't used we'll ask you some annoying questions
+      Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
+      Terminus::confirm( "Are you really sure?" );
+    }
+    Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
+    $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
 
-      Terminus::success("Deleted %s!", $site_to_delete->information->name);
+    $this->sitesCache->remove($sitename);
+    Terminus::success("Deleted %s!", $sitename);
   }
 
   /**
@@ -307,7 +281,8 @@ class Sites_Command extends Terminus_Command {
  * @subcommand mass-update
  */
   public function mass_update($args, $assoc_args) {
-    $sites = SiteFactory::instance();
+    $sites_cache = $this->sitesCache->all();
+
     $env = 'dev';
     $upstream = Input::optional('upstream', $assoc_args, false);
     $data = array();
@@ -317,8 +292,8 @@ class Sites_Command extends Terminus_Command {
     // Start status messages.
     if($upstream) Terminus::line('Looking for sites using '.$upstream.'.');
 
-    foreach( $sites as $site ) {
-
+    foreach($sites_cache as $site_cache ) {
+      $site = new Site($site_cache['id']);
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.

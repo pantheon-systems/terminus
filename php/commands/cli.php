@@ -11,6 +11,10 @@ use Terminus\User;
  *
  */
 class CLI_Command extends Terminus_Command {
+  public function __construct() {
+    parent::__construct();
+    $this->sitesCache = new SitesCache();
+  }
 
   private function command_to_array( $command ) {
     $dump = array(
@@ -155,7 +159,7 @@ class CLI_Command extends Terminus_Command {
     $user = new User;
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
-      $site_id = SitesCache::find($sitename);
+      $site_id = $this->sitesCache->findID($sitename);
       $site = new Site($site_id);
     }
 
