@@ -17,16 +17,16 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:19 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:39 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 6040e2e0-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6bc382d0-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq","expires_at":1441833379,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
+        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp","expires_at":1441833399,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
 -
     request:
         method: GET
@@ -35,7 +35,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -43,11 +43,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:24 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:43 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 62cbd380-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6e488000-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -62,7 +62,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -70,11 +70,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:24 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:43 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 6329d200-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6e9407f0-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -89,7 +89,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -97,11 +97,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:25 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:44 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 63731000-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6ee18bb0-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -116,7 +116,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -124,11 +124,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:25 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:44 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 63bfa960-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6f243a00-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -143,7 +143,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -151,11 +151,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:26 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:45 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '2546'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 641c4850-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6f6bf160-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -170,7 +170,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -178,11 +178,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:26 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:45 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 64618eb0-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 6fb75240-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -197,7 +197,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -205,11 +205,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:30 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:47 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '1139'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 667bbc20-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 70935a60-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -224,7 +224,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -232,11 +232,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:31 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:47 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 67047420-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 70f7c180-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -252,9 +252,9 @@
             Expect: null
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
             Content-type: application/json
-        body: '{"type":"add_site_user_membership","params":{"user_email":"sara@getpantheon.com","role":"admin"}}'
+        body: '{"type":"update_site_user_membership","params":{"user_id":"c40ae83c-daa2-4969-a716-857a8293824f","role":"admin"}}'
     response:
         status:
             http_version: '1.1'
@@ -262,16 +262,16 @@
             message: Accepted
         headers:
             Server: nginx
-            Date: 'Wed, 12 Aug 2015 21:16:32 GMT'
+            Date: 'Wed, 12 Aug 2015 21:16:48 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 6791c000-4137-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 7143e5b0-4137-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"final_task_id": "6795925c-4137-11e5-9114-bc764e117665", "finished_at": 1439414192.205946, "params": {"role": "admin", "user_email": "sara@getpantheon.com"}, "reason": "Membership already exists. Try updating it instead.", "result": "aborted", "role": "owner", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439414192.171608, "task_ids": ["6795925c-4137-11e5-9114-bc764e117665"], "trace_id": "6791c000-4137-11e5-a139-c95d7f8f209a", "type": "add_site_user_membership", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "67951ebc-4137-11e5-9114-bc764e117665", "key": "1439413200", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.03433799743652344, "created_at": 1439414192.150086, "environment": null, "total_time": 0.055860042572021484, "active_description": "Added \"sara@getpantheon.com\" to site team", "description": "Add user to site team", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=6791c000-4137-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-12T21:11:32.150086Z&to_iso_date=2015-08-12T21:21:32.205946Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": null, "finished_at": 1439414192.192085, "fn_name": "trigger_task", "has_error": true, "params": {"site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "task_type": "add_site_user_membership", "role": "admin", "user_email": "sara@getpantheon.com"}, "queued_at": 1439414192.171707, "responses": [{"code": 400, "body": "Membership already exists. Try updating it instead."}], "result": "aborted", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439414192.171709, "trace_id": "6791c000-4137-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "67951ebc-4137-11e5-9114-bc764e117665", "id": "6795925c-4137-11e5-9114-bc764e117665", "key": "1439413200", "created_at": 1439414192.153046, "queued_time": 2.1457672119140625e-06, "run_time": 0.020375967025756836, "phase": "finished", "allow_concurrent": false, "total_time": 0.03903913497924805, "internal_reason": "Membership already exists. Try updating it instead.", "build_url": null, "messages": {"2015-08-12T21:16:32.218334": {"message": "Membership already exists. Try updating it instead.", "level": "ERROR"}}, "reason": "Membership already exists. Try updating it instead.", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=6791c000-4137-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-12T21:11:32.153046Z&to_iso_date=2015-08-12T21:21:32.192085Z", "type": "add_site_user_membership"}}'
+        body: '{"final_task_id": "7147e25a-4137-11e5-b495-bc764e117665", "finished_at": 1439414208.464031, "params": {"role": "admin", "user_id": "c40ae83c-daa2-4969-a716-857a8293824f"}, "reason": "", "result": "succeeded", "role": "owner", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439414208.442046, "task_ids": ["7147e25a-4137-11e5-b495-bc764e117665"], "trace_id": "7143e5b0-4137-11e5-a139-c95d7f8f209a", "type": "update_site_user_membership", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "7147603c-4137-11e5-b495-bc764e117665", "key": "1439413200", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.02198505401611328, "created_at": 1439414208.417798, "environment": null, "total_time": 0.04623293876647949, "active_description": "Changed a user role", "description": "Change a user role on the site team", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=7143e5b0-4137-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-12T21:11:48.417798Z&to_iso_date=2015-08-12T21:21:48.464031Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": null, "finished_at": 1439414208.451765, "fn_name": "trigger_task", "params": {"role": "admin", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "task_type": "update_site_user_membership", "user_id": "c40ae83c-daa2-4969-a716-857a8293824f"}, "queued_at": 1439414208.442151, "responses": [{"code": 200, "body": {"archived": false, "invited_by_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "role": "team_member", "id": "c40ae83c-daa2-4969-a716-857a8293824f", "key": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "user_id": "c40ae83c-daa2-4969-a716-857a8293824f", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435"}}], "result": "succeeded", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439414208.442153, "trace_id": "7143e5b0-4137-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "7147603c-4137-11e5-b495-bc764e117665", "id": "7147e25a-4137-11e5-b495-bc764e117665", "key": "1439413200", "created_at": 1439414208.421129, "queued_time": 1.9073486328125e-06, "run_time": 0.009612083435058594, "phase": "finished", "allow_concurrent": false, "total_time": 0.030636072158813477, "internal_reason": "", "build_url": null, "messages": {"2015-08-12T21:16:48.477307": {"message": {"archived": false, "invited_by_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "role": "team_member", "id": "c40ae83c-daa2-4969-a716-857a8293824f", "key": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "user_id": "c40ae83c-daa2-4969-a716-857a8293824f", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435"}, "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=7143e5b0-4137-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-12T21:11:48.421129Z&to_iso_date=2015-08-12T21:21:48.451765Z", "type": "update_site_user_membership"}}'
 -
     request:
         method: GET
@@ -280,7 +280,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -288,11 +288,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Thu, 13 Aug 2015 18:59:48 GMT'
+            Date: 'Thu, 13 Aug 2015 18:59:54 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 77fa86f0-41ed-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 7bc91b20-41ed-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -307,7 +307,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:6bc83e9c-4137-11e5-9129-bc764e117665:APUp8yVywanF3iNuZFuyp'
     response:
         status:
             http_version: '1.1'
@@ -315,43 +315,14 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Thu, 13 Aug 2015 18:59:48 GMT'
+            Date: 'Thu, 13 Aug 2015 18:59:55 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 78468410-41ed-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 7c1eb530-41ed-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             ETag: 'W/"12-88836330"'
             Vary: Accept-Encoding
         body: '{"multidev": true}'
--
-    request:
-        method: POST
-        url: 'https://onebox/api/sites/3c60179f-ef9d-4245-bb4d-5c4a8f95c435/workflows'
-        headers:
-            Host: onebox
-            Expect: null
-            Accept: null
-            User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:604574f4-4137-11e5-9129-bc764e117665:2CimDjvA2fitwv552e0Yq'
-            Content-type: application/json
-        body: '{"type":"add_site_user_membership","params":{"user_email":"sara@getpantheon.com","role":"team_member"}}'
-    response:
-        status:
-            http_version: '1.1'
-            code: '202'
-            message: Accepted
-        headers:
-            Server: nginx
-            Date: 'Thu, 13 Aug 2015 18:59:49 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 789d2f90-41ed-11e5-a139-c95d7f8f209a
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            Vary: Accept-Encoding
-        body: '{"final_task_id": "78a2e9ee-41ed-11e5-a354-bc764e117665", "finished_at": 1439492389.213378, "params": {"role": "team_member", "user_email": "sara@getpantheon.com"}, "reason": "Membership already exists. Try updating it instead.", "result": "aborted", "role": "owner", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439492389.185536, "task_ids": ["78a2e9ee-41ed-11e5-a354-bc764e117665"], "trace_id": "789d2f90-41ed-11e5-a139-c95d7f8f209a", "type": "add_site_user_membership", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "78a1723a-41ed-11e5-a354-bc764e117665", "key": "1439488800", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.027842044830322266, "created_at": 1439492389.156921, "environment": null, "total_time": 0.0564570426940918, "active_description": "Added \"sara@getpantheon.com\" to site team", "description": "Add user to site team", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=789d2f90-41ed-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-13T18:54:49.156921Z&to_iso_date=2015-08-13T19:04:49.213378Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": null, "finished_at": 1439492389.199063, "fn_name": "trigger_task", "has_error": true, "params": {"site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "task_type": "add_site_user_membership", "role": "team_member", "user_email": "sara@getpantheon.com"}, "queued_at": 1439492389.185636, "responses": [{"code": 400, "body": "Membership already exists. Try updating it instead."}], "result": "aborted", "site_id": "3c60179f-ef9d-4245-bb4d-5c4a8f95c435", "started_at": 1439492389.185638, "trace_id": "789d2f90-41ed-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "78a1723a-41ed-11e5-a354-bc764e117665", "id": "78a2e9ee-41ed-11e5-a354-bc764e117665", "key": "1439488800", "created_at": 1439492389.166539, "queued_time": 1.9073486328125e-06, "run_time": 0.013425111770629883, "phase": "finished", "allow_concurrent": false, "total_time": 0.03252410888671875, "internal_reason": "Membership already exists. Try updating it instead.", "build_url": null, "messages": {"2015-08-13T18:59:49.226393": {"message": "Membership already exists. Try updating it instead.", "level": "ERROR"}}, "reason": "Membership already exists. Try updating it instead.", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=789d2f90-41ed-11e5-a139-c95d7f8f209a&from_iso_date=2015-08-13T18:54:49.166539Z&to_iso_date=2015-08-13T19:04:49.199063Z", "type": "add_site_user_membership"}}'

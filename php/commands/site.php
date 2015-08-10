@@ -1322,7 +1322,7 @@ class Site_Command extends Terminus_Command {
   *
   * ## OPTIONS
   *
-  * <list|add-member|remove-member>
+  * <list|add-member|remove-member|change-role>
   * : i.e. add or remove
   *
   * [--site=<site>]
@@ -1331,36 +1331,59 @@ class Site_Command extends Terminus_Command {
   * [--member=<email>]
   * : Email of the member to add. Member will receive an invite
   *
+  * [--role=<role>]
+  * : Role for the new member to act as
+  *
   * @subcommand team
   */
   public function team($args, $assoc_args) {
     $action = array_shift($args) ?: 'list';
-    $site = SiteFactory::instance(Input::sitename($assoc_args));
-    $data = array();
+    $site   = SiteFactory::instance(Input::sitename($assoc_args));
+    $data   = array();
+    $team   = $site->getSiteUserMemberships();
     switch($action) {
       case 'add-member':
-        $team = $site->teamAddMember($assoc_args['member']);
-        Logger::coloredOutput("%2<K>Team member added!</K>");
+        if((boolean)$site->getFeature('change_management')) {
+          $role = Input::role($assoc_args);
+        } else {
+          $role = 'team_member';
+        }
+        $workflow = $team->add($assoc_args['member'], $role);
+        $this->workflowOutput($workflow);
         break;
       case 'remove-member':
-        $team = $site->teamRemoveMember($assoc_args['member']);
-        Logger::coloredOutput("%2<K>Team member removed!</K>");
+        $user     = $team->findByEmail($assoc_args['member']);
+        $workflow = $user->remove($assoc_args['member']);
+        $this->workflowOutput($workflow);
+        break;
+      case 'change-role':
+        if((boolean)$site->getFeature('change_management')) {
+          $role = Input::role($assoc_args);
+          $user = $team->findByEmail($assoc_args['member']);
+          $workflow = $user->setRole($role);
+          $this->workflowOutput($workflow);
+        } else {
+          Logger::redline(
+            'This site does not have the authority to conduct this operation.'
+          );
+        }
         break;
       case 'list':
       default:
-        $team = $site->team();
-        foreach ($team as $uuid => $user) {
+        $user_memberships = $team->all();
+        foreach($user_memberships as $uuid => $user_membership) {
+          $user = $user_membership->getUser();
           $data[] = array(
-            'First' => $user->user->profile->firstname,
-            'Last'  => $user->user->profile->lastname,
-            'Email' => $user->user->email,
-            'UUID'  => $user->user->id,
+            'First' => $user->profile->firstname,
+            'Last'  => $user->profile->lastname,
+            'Email' => $user->email,
+            'UUID'  => $user->id,
           );
         }
         ksort($data);
         break;
     }
-    if (!empty($data)) {
+    if(!empty($data)) {
       $this->handleDisplay($data);
     }
   }

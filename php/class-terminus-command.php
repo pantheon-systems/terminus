@@ -322,4 +322,18 @@ abstract class Terminus_Command {
     return $result;
   }
 
+
+  /**
+   * Outputs basic workflow success/failure messages
+   *
+   * @param [Workflow] $workflow Workflow to output message about
+   * @return [void]
+   */
+  protected function workflowOutput($workflow) {
+    if($workflow->attributes->result == 'succeeded') {
+      Logger::coloredOutput('%2<K>' . $workflow->attributes->active_description . '</K>');
+    } else {
+      Logger::redline($workflow->attributes->final_task->reason);
+    }
+  }
 }
