@@ -35,6 +35,27 @@ class FeatureContext extends BehatContext {
     );
   }
 
+    /**
+     * Ensures the user has access to the given payment instrument
+     * @Given /^a payment insturment with uuid "([^"]*)"$/
+     *
+     * @param [string] $instrument_uuid UUID of a payment instrument
+     * @return [void]
+     */
+    public function aPaymentInsturmentWithUuid($instrument_uuid) {
+      $instruments = $this->iRun('terminus site instrument');
+      try {
+        $uuid = new PyStringNode(
+          $this->_replacePlaceholders($instrument_uuid)
+        ); 
+        $this->iShouldGet($uuid); 
+      } catch(Exception $e) {
+        throw new Exception(
+          "Your user does not have access to instrument $instrument_uuid."
+        );
+      }
+    }
+
   /**
    * Ensures a site of the given name exists
    * @Given /^a site named "([^"]*)"$/
@@ -143,17 +164,16 @@ class FeatureContext extends BehatContext {
 
   /**
    * Attaches a given organization as payee of given site
-   * @When /^I attach the instrument of "([^"]*)" to site "([^"]*)"$/
+   * @When /^I attach the instrument "([^"]*)" to site "([^"]*)"$/
    *
-   * @param [string] $org  UUID of organization to attach as payee
+   * @param [string] $uuid UUID of organization to attach as payee
    * @param [string] $site Name of site on which to attach
    * @return [void]
    */
-  public function iAttachTheInstrument($org, $site) {
+  public function iAttachTheInstrument($uuid, $site) {
     $this->iRun(
-      "terminus site instrument --site=$site --change-to-org=$org"
+      "terminus site instrument --site=$site --instrument=$uuid"
     );
-    $this->setTestStatus('pending');
   }
 
   /**
@@ -359,6 +379,17 @@ class FeatureContext extends BehatContext {
   public function iListTheHostnamesOn($env, $site) {
     $this->iRun("terminus site hostnames list --site=$site --env=$env");
   }
+
+    /**
+     * Checks the 
+     * @Given /^I check the payment instrument of "([^"]*)"$/
+     *
+     * @param [string] $site Name of site to check payment instrument of
+     * @return [void]
+     */
+    public function iCheckThePaymentInstrumentOfSite($site) {
+      $this->iRun("terminus site instrument --site=$site");
+    }
 
   /**
    * Lists all sites user is on the team of

@@ -183,8 +183,13 @@ Feature: Daily Terminus QA Report
     @attach-instrument
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    Then I am prompted to "Add a credit card to the site" on "[[test_site_name]]" at "http://[[dashboard_admin_host]]/sites/[[id]]"
-    And I attach the instrument of "0" to site "[[test_site_name]]"
+    And a payment insturment with uuid "[[payment_instrument_uuid]]"
+    When I attach the instrument "[[payment_instrument_uuid]]" to site "[[test_site_name]]"
+    Then I should get:
+    """
+    [[payment_instrument_uuid]]
+    """
+
 
   Scenario: Change service level
     @change-service-level

@@ -3,6 +3,7 @@ namespace Terminus;
 
 use \Terminus\Organization;
 use \Terminus\Collections\Workflows;
+use \Terminus\Collections\Instruments;
 
 class User {
   static $instance;
@@ -11,6 +12,7 @@ class User {
   private $organizations;
   private $profile;
   private $aliases;
+  private $instruments;
 
   public function __construct($id = null) {
     if (null===$id) {
@@ -73,12 +75,21 @@ class User {
     return $response['data'];
   }
 
-  public function getId() {
-    return $this->id;
+  public function instruments() {
+    $instruments       = new Instruments(array('user' => $this));
+    $this->instruments = $instruments->fetch();
+    return $this->instruments;
+  }
+
+  public function get($attribute) {
+    if(isset($this->$attribute)) {
+      return $this->$attribute;
+    }
+    return null;
   }
 
   public static function id() {
     $user = self::instance();
-    return $user->getId();
+    return $user->get('id');
   }
 }

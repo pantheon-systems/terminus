@@ -4,12 +4,13 @@ default:
     bootstrap: ../features/bootstrap
   context:
     parameters:
-      username:        devuser@pantheon.io
-      password:        password1
-      host:            onebox
-      vcr_mode:        new_episodes
-      test_site_name:  behat-test
-      php_site_domain: onebox.pantheon.io
+      username:                devuser@pantheon.io
+      password:                password1
+      host:                    onebox
+      vcr_mode:                new_episodes
+      test_site_name:          behat-test
+      php_site_domain:         onebox.pantheon.io
+      payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
 
 ci:
   paths:
@@ -29,16 +30,17 @@ qa:
     bootstrap: ../features/bootstrap
   context:
     parameters:
-      username:             devuser@pantheon.io
-      password:             password1
-      host:                 onebox
-      vcr_mode:             null
-      test_site_name:       saras-qa-test
-      hostname:             hostname.com
-      other_user:           sara@getpantheon.com
-      dashboard_host:       localhost:4000
-      dashboard_admin_host: localhost:4001
-      php_site_domain:      onebox.pantheon.io
+      username:                devuser@pantheon.io
+      password:                password1
+      host:                    onebox
+      vcr_mode:                null
+      test_site_name:          saras-qa-test
+      hostname:                hostname.com
+      other_user:              sara@getpantheon.com
+      dashboard_host:          localhost:4000
+      dashboard_admin_host:    localhost:4001
+      php_site_domain:         onebox.pantheon.io
+      payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
   formatter:
     name: Behat\Behat\Formatter\TerminusHtmlFormatter
     parameters:
