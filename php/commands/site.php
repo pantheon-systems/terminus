@@ -958,17 +958,11 @@ class Site_Command extends Terminus_Command {
     } else {
       $element = $assoc_args['element'];
     }
-    $import = $site->import($url, $element);
 
-    if($import) {
-      Terminus::line('Import started, you can now safely kill this script without interfering.');
-      $result = $this->waitOnWorkflow('sites', $site->getId(), $import->id);
-      if($result->result !== 'succeeded') {
-        Terminus::error($result->reason);
-      } else {
-        Terminus::success("Import complete");
-      }
-    }
+    $workflow = $site->import($url, $element);
+    Terminus::line('Import started, you can now safely kill this script without interfering.');
+    $workflow->wait();
+    Terminus::success("Import complete");
   }
 
   /**
