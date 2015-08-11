@@ -3,7 +3,7 @@
 #php php/boot-fs.php auth logout || echo "ERROR LINE" $LINENO
 #php php/boot-fs.php auth login wink@getpantheon.com --password=chicago77 || echo "ERROR LINE" $LINENO
 #if  [[ $( php php/boot-fs.php sites show | grep 'behat-test' ) ]]; then
-	#php php/boot-fs.php sites delete --site=behat-test --force
+	#php php/boot-fs.php site delete --site=behat-test --force
 #fi
 php php/boot-fs.php products all || echo "ERROR LINE" $LINENO
 php php/boot-fs.php sites create --name=behat-test --label=behattest --product='wordpress' --org='d59379eb-0c23-429c-a7bc-ff51e0a960c2' || echo "ERROR LINE" $LINENO
@@ -27,4 +27,4 @@ php php/boot-fs.php site lock add --site=behat-test --env=dev --username=test --
 php php/boot-fs.php site lock remove --site=behat-test --env=dev --username=test --password=test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site upstream-info --site=behat-test || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site wipe --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
-php php/boot-fs.php sites delete --site=behat-test --force || echo "ERROR LINE" $LINENO
+php php/boot-fs.php site delete --site=behat-test --force || echo "ERROR LINE" $LINENO

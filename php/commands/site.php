@@ -1488,6 +1488,32 @@ class Site_Command extends Terminus_Command {
     }
    }
 
+   /**
+    * Delete a site from pantheon
+    *
+    * ## OPTIONS
+    * [--site=<site>]
+    * : ID of the site you want to delete
+    *
+    * [--force]
+    * : to skip the confirmations
+    */
+   function delete($args, $assoc_args) {
+     $sitename = Input::sitename($assoc_args);
+     $site_id = $this->sitesCache->findID($sitename);
+     $site_to_delete = new Site($site_id);
+
+     if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
+       // if the force option isn't used we'll ask you some annoying questions
+       Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
+       Terminus::confirm( "Are you really sure?" );
+     }
+     Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
+     $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
+
+     $this->sitesCache->remove($sitename);
+     Terminus::success("Deleted %s!", $sitename);
+   }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );
