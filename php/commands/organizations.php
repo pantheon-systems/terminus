@@ -45,6 +45,9 @@ class Organizations_Command extends Terminus_Command {
    * [--org=<org>]
    * : Organization name or Id
    *
+   * [--tag=<tag>]
+   * : Tag name to filter sites list by
+   *
    * [--add=<site>]
    * : Site to add to organization
    *
@@ -89,12 +92,16 @@ class Organizations_Command extends Terminus_Command {
     $sites = $org->getSites();
     $data = array();
     foreach ($sites as $site) {
+      if (isset($assoc_args['tag']) && !(in_array($assoc_args['tag'], $site->tags))) {
+        continue;
+      }
       $data[] = array(
         'name' => $site->site->name,
         'id' => $site->site->id,
         'service_level' => isset($site->site->service_level) ? $site->site->service_level : '',
         'framework' => isset($site->site->framework) ? $site->site->framework : '',
         'created' => date('Y-m-d H:i:s', $site->site->created),
+        'tags' => $site->tags
       );
     }
     $this->handleDisplay($data);
