@@ -222,16 +222,21 @@ class Site {
 
   /**
    * Apply upstream updates
-   * @param $env string required -- environment name
+   * @param $environment_id string required -- environment name
    * @param $updatedb boolean (optional) -- whether to run update.php
-   * @param $optionx boolean (optional) -- auto resolve merge conflicts
-   * @todo This currently doesn't work and is block upstream
+   * @param $xoption boolean (optional) -- auto resolve merge conflicts
    */
-  public function applyUpstreamUpdates($env, $updatedb = true, $xoption = 'theirs') {
-    $data = array('updatedb' => $updatedb, 'xoption' => $xoption );
-    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream-updates', 'POST', $options);
-    return $response['data'];
+  public function applyUpstreamUpdates($environment_id, $updatedb = true, $xoption = false) {
+    $params = array(
+      'updatedb' => $updatedb,
+      'xoption'  => $xoption
+    );
+
+    $workflow = $this->workflows->create('apply_upstream_updates', array(
+      'environment' => $environment_id,
+      'params' => $params
+    ));
+    return $workflow;
   }
 
   /**
