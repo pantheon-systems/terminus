@@ -781,10 +781,13 @@ class Site_Command extends Terminus_Command {
     * : Site to deploy from
     *
     * [--env=<env>]
-    * : Environment to deploy to
+    * : Environment to be deployed (Test or Live)
+    *
+    * [--clone-live-content]
+    * : If deploying test, copy content from Live
     *
     * [--from=<env>]
-    * : Environment to deploy from
+    * : [deprecated] Environment to deploy from (non-functional)
     *
     * [--cc]
     * : Clear cache after deploy?
@@ -803,11 +806,9 @@ class Site_Command extends Terminus_Command {
       'env',
       'Choose environment to deploy'
     ));
-    $from = Input::env(
-      $assoc_args,
-      'from',
-      'Choose environment you want to deploy from'
-    );
+
+    $clone_live_content = ($env->id == 'test' && isset($assoc_args['clone-live-content']));
+
     if(!isset($assoc_args['note'])) {
       $annotation = Terminus::prompt(
         'Custom note for the deploy log',
@@ -824,9 +825,12 @@ class Site_Command extends Terminus_Command {
       'updatedb'       => $updatedb,
       'clear_cache'    => $cc,
       'annotation'     => $annotation,
-      'clone_database' => array('from_environment' => $from),
-      'clone_files'    => array('from_environment' => $from),
     );
+
+    if ($clone_live_content) {
+      $params['clone_database'] = array('from_environment' => 'live');
+      $params['clone_files'] = array('from_environment' => 'live');
+    }
 
     $workflow = $env->deploy($params);
     $workflow->wait();

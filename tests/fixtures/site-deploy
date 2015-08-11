@@ -227,7 +227,7 @@
             User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
             Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:50d069c4-3ae4-11e5-97ba-bc764e117665:XdwFVyCuTDtq4km6jNjnT'
             Content-type: application/json
-        body: '{"type":"deploy","params":{"annotation":"Deploy test","clone_database":{"from_environment":"dev"},"clone_files":{"from_environment":"dev"},"updatedb":0,"clear_cache":0}}'
+        body: '{"type":"deploy","params":{"updatedb":0,"clear_cache":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
     response:
         status:
             http_version: '1.1'

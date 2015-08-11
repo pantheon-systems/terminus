@@ -388,21 +388,13 @@ class Environment {
   }
 
   /**
-   * Deploys the given environment
+   * Deploys the Test or Live environment)
    *
-   * @param [array] $args Arguments for deployment
-   *        [string] $args['from'] Environment from which to deploy
-   *        [string] $args['annotation'] Commit message
-   * @return [array] Data from the request
+   * @param [array] $params Parameters for the deploy workflow
+   *
+   * @return [workflow] workflow response
    */
-  public function deploy($args) {
-    $default_params = array(
-      'annotation'     => 'Terminus deploy',
-      'clone_database' => array('from_environment' => 'dev'),
-      'clone_files'    => array('from_environment' => 'dev'),
-    );
-    $params = array_merge($default_params, $args);
-
+  public function deploy($params) {
     $workflow = $this->site->workflows->create('deploy', array(
       'environment' => $this->id,
       'params'      => $params
