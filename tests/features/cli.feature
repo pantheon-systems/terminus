@@ -1,5 +1,5 @@
 Feature: cli
-  
+
   #Scenario: Clearing Cache
     #@vcr cli-clear-cache
     #When I run "touch ~/.terminus/cache/testfile"
@@ -26,7 +26,7 @@ Feature: cli
     When I run "terminus cli info"
     Then I should get:
     """
-    1.0.0
+    Terminus version
     """
 
   Scenario: Dumping Parameters
@@ -70,5 +70,5 @@ Feature: cli
     When I run "terminus cli version"
     Then I should get:
     """
-    1.0.0
+    Terminus version
     """
