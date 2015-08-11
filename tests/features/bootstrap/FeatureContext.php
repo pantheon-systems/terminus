@@ -47,8 +47,8 @@ class FeatureContext extends BehatContext {
     try {
       $uuid = new PyStringNode(
         $this->_replacePlaceholders($instrument_uuid)
-      ); 
-      $this->iShouldGet($uuid); 
+      );
+      $this->iShouldGet($uuid);
     } catch(Exception $e) {
       throw new Exception(
         "Your user does not have access to instrument $instrument_uuid."
@@ -243,7 +243,7 @@ class FeatureContext extends BehatContext {
     */
   public function iCloneTheEnvironment($from_env, $to_env, $site) {
     $this->iRun(
-      "terminus site clone-env 
+      "terminus site clone-env
       --site=$site --from-env=$from_env --to-env=$to_env --yes --db --files"
     );
   }
@@ -311,7 +311,7 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function iDeleteTheSiteNamed($site) {
-    $this->iRun("terminus sites delete --site=$site --yes");
+    $this->iRun("terminus site delete --site=$site --yes");
   }
 
 
@@ -326,7 +326,7 @@ class FeatureContext extends BehatContext {
     */
   public function iDeployTheEnvironmentOf($env, $from, $site, $message) {
     $this->iRun(
-      "terminus site deploy 
+      "terminus site deploy
       --site=$site --env=$env --from=$from --note=$note"
     );
   }
@@ -392,7 +392,7 @@ class FeatureContext extends BehatContext {
   }
 
     /**
-     * Checks the 
+     * Checks the
      * @Given /^I check the payment instrument of "([^"]*)"$/
      *
      * @param [string] $site Name of site to check payment instrument of
