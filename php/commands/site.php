@@ -349,8 +349,9 @@ class Site_Command extends Terminus_Command {
           Terminus::success("Organization successfully removed");
           $orgs = $site->memberships();
           break;
-        case 'default':
         case 'list':
+        default:
+
           $orgs = $site->memberships();
           break;
     }
@@ -526,12 +527,18 @@ class Site_Command extends Terminus_Command {
         }
         break;
       case 'list':
-      case 'default':
+      default:
         $backups = $site->environment($env)->backups();
-        $element = @$assoc_args['element'];
+        $element_name = isset($assoc_args['element']) && $assoc_args['element'] != 'all' ? $assoc_args['element'] : false;
+        if ($element_name == 'db') {
+          $element_name = 'database';
+        }
+
         $data = array();
         foreach ($backups as $id => $backup) {
           if (!isset($backup->filename)) continue;
+          if ($element_name && !preg_match(sprintf('/backup_%s/', $element_name), $id)) continue;
+
           $date = 'Pending';
           if (isset($backup->finish_time)) {
             $date = date("Y-m-d H:i:s", $backup->finish_time);
