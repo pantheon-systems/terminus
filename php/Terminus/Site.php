@@ -324,11 +324,6 @@ class Site {
   }
 
   /**
-   * Returns the environment's name
-   *
-  }
-
-  /**
    * Create a multidev environment
    */
   public function createEnvironment($env, $src = 'dev') {
