@@ -419,8 +419,18 @@ class Site_Command extends Terminus_Command {
          if (!in_array($element,array('code','files','db'))) {
            Terminus::error("Invalid backup element specified.");
          }
-         $latest = Input::optional('latest',$assoc_args,false);
-         $backups = $site->environment($env)->backups($element, $latest);
+         $latest = Input::optional('latest', $assoc_args, false);
+         $backups = $site->environment($env)->backups($element);
+
+         // Ensure that that backups being presented for getting have finished
+         $backups = array_filter($backups, function($backup) {
+           return (isset($backup->finish_time) && $backup->finish_time);
+         });
+
+         if ($latest) {
+           $backups = array(array_pop($backups));
+         }
+
          if (empty($backups)) {
            \Terminus::error('No backups available.');
          }
