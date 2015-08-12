@@ -130,7 +130,9 @@ class Input {
    * @param [string] $default Returned if arg and stdin fail in interactive
    * @return [string] ID of selected organization
   */
-  public static function orgid($args, $key, $default = null) {
+  public static function orgid($args, $key, $default = null, $options = array()) {
+    $allow_none = isset($options['allow_none']) ? $options['allow_none'] : true;
+
     $orglist = Input::orglist();
     $flip    = array_flip($orglist);
     if(isset($args[$key]) && array_key_exists($args[$key], $flip)) {
@@ -146,8 +148,19 @@ class Input {
       return $default;
     }
 
-    $orglist = Input::orglist();
-    $org     = \Terminus::menu($orglist, false, "Choose organization");
+    $orglist = Input::orglist(array('allow_none' => $allow_none));
+
+    // include the Org ID in the output menu
+    $orglist_with_id = array();
+    foreach ($orglist as $id => $name) {
+      if ($name == 'None') {
+        $orglist_with_id[$id] = $name;
+        continue;
+      }
+      $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
+    }
+
+    $org = \Terminus::menu($orglist_with_id, false, "Choose organization");
     if($org == '-') {
       return $default;
     }
@@ -159,8 +172,14 @@ class Input {
    *
    * @return [array] List of organizations
   */
-  public static function orglist() {
-    $orgs = array('-' => 'None');
+  public static function orglist($options = array()) {
+    $orgs = array();
+
+    $allow_none = isset($options['allow_none']) ? $options['allow_none'] : true;
+    if ($allow_none) {
+      $orgs = array('-' => 'None');
+    }
+
     $user = new User;
     foreach($user->organizations() as $id => $org) {
       $orgs[$id] = $org->name;

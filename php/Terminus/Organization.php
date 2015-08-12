@@ -4,10 +4,12 @@ namespace Terminus;
 use Terminus\User;
 use Terminus\Site;
 use \Terminus\Collections\Workflows;
+use \Terminus\Collections\OrganizationSiteMemberships;
 
 class Organization {
   public $id;
   public $user;
+  public $siteMemberships;
   public $workflows;
 
   public function __construct( $org ) {
@@ -28,6 +30,7 @@ class Organization {
       }
     }
 
+    $this->siteMemberships = new OrganizationSiteMemberships(array('organization' => $this));
     $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'organization'));
 
     return $this;

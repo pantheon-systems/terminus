@@ -322,7 +322,7 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site's name
    *
-   * [--org=<org_name|org_id>]
+   * [--org=<name|id>]
    * : When adding: by name; when removing: by id
    *
    * [--role=<role>]

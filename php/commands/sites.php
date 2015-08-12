@@ -87,7 +87,7 @@ class Sites_Command extends Terminus_Command {
    * [--import=<url>]
    * : A url to import a valid archive
    *
-   * [--org=<org_id>]
+   * [--org=<id>]
    * : UUID of organization into which to add this site
    *
    */
@@ -181,7 +181,7 @@ class Sites_Command extends Terminus_Command {
   * [--label=<label>]
   * : Label for the site
   *
-  * [--org=<org_id>]
+  * [--org=<id>]
   * : UUID of organization into which to add this site
   *
   * @subcommand create-from-import
