@@ -322,8 +322,8 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site's name
    *
-   * [--org=<org>]
-   * : Organization name
+   * [--org=<org_name|org_id>]
+   * : When adding: by name; when removing: by id
    *
    * [--role=<role>]
    * : Max role for organization on this site ... default "team_member"
