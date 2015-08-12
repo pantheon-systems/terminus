@@ -220,7 +220,8 @@ class Sites_Command extends Terminus_Command {
    * : print aliases to screen
    *
    * [--location=<location>]
-   * : specify the location of the alias file, default it ~/.drush/pantheon.drushrc.php
+   * : Specify the the full path, including the filename, to the alias file you wish to create.
+   *   Without this option a default of '~/.drush/pantheon.drushrc.php' will be used.
    *
    */
   public function aliases($args, $assoc_args) {
@@ -228,15 +229,28 @@ class Sites_Command extends Terminus_Command {
     $print = Input::optional('print', $assoc_args, false);
     $json = \Terminus::get_config('json');
     $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
-    $message = "Pantheon aliases updated.";
-    if (!file_exists($location)) {
-      $message = "Pantheon aliases created.";
+
+    // Cannot provide just a directory
+    if (is_dir($location)) {
+      \Terminus::error("Please provide a full path with filename, e.g. %s/pantheon.aliases.drushrc.php", $location);
+      exit(1);
     }
+
+    $file_exists = file_exists($location);
+
+    // Create the directory if it doesn't yet exist
+    $dirname = dirname($location);
+    if (!is_dir($dirname)) {
+      mkdir($dirname, 0755, true);
+    }
+
     $content = $user->getAliases();
     $h = fopen($location, 'w+');
     fwrite($h, $content);
     fclose($h);
-    chmod($location, 0777);
+    chmod($location, 0755);
+
+    $message = $file_exists ? 'Pantheon aliases updated' : 'Pantheon aliases created';
     Logger::coloredOutput("%2%K$message%n");
 
     if ($json) {
