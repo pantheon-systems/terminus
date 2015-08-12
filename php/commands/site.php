@@ -1469,24 +1469,17 @@ class Site_Command extends Terminus_Command {
    * : Site to use
    *
    * [--env=<env>]
-   * : Specify environment, default = dev
+   * : Environment to be wiped
    */
-   public function wipe($args, $assoc_args) {
-     try {
-       $env = @$assoc_args['env'] ?: 'dev';
-       $site = SiteFactory::instance(Input::sitename($assoc_args));
-       $site_id = $site->getId();
-       $env = Input::env($assoc_args, 'env');
-       Terminus::line("Wiping %s %s", array($site_id, $env));
-       $resp = $site->environment($env)->wipe();
-       if ($resp) {
-         $this->waitOnWorkflow('sites', $site_id, $resp['data']->id);
-         Terminus::success("Successfully wiped %s -- %s", array($site->getName(),$env));
-       }
-    } catch(Exception $e) {
-      Terminus::error("%s",array($e->getMessage()));
-    }
-   }
+  public function wipe($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $environment_id = Input::env($assoc_args, 'env');
+    Terminus::confirm(sprintf("Are you sure you want to wipe %s - %s?", $site->getName(), $environment_id));
+
+    $workflow = $site->environment($environment_id)->wipe();
+    $workflow->wait();
+    Terminus::success(sprintf("Successfully wiped %s - %s", $site->getName(), $environment_id));
+  }
 
    /**
     * Delete a site from pantheon
