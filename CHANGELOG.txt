@@ -1,6 +1,17 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##[0.6.1] - 2015-08-11
+### Fixed
+- `site deploy` will not overwrite the Live environment's content
+
+### Changed
+- `site deploy` has a `--clone-live-environment` flag for copying Live content into Test
+
+### Deprecated
+
+`site deploy` `--from` flag has been deprecated and is non-functional
+
 ##[0.6.0] - 2015-08-10
 ### Added
 -`terminus cli console` (Instantiates a console within Terminus)
