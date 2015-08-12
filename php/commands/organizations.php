@@ -38,12 +38,12 @@ class Organizations_Command extends Terminus_Command {
   }
 
   /**
-   * List an organizations sites
+   * List an organization's sites
    *
    * ## OPTIONS
    *
-   * [--org=<org>]
-   * : Organization name or Id
+   * [--org=<org_id>]
+   * : Organization id
    *
    * [--tag=<tag>]
    * : Tag name to filter sites list by
@@ -58,20 +58,8 @@ class Organizations_Command extends Terminus_Command {
    *
    */
   public function sites($args, $assoc_args) {
-    $orgs = array();
-    $user = new User();
-
-    foreach ($user->organizations() as $id => $org) {
-      $orgs[$id] = $org->name;
-    }
-
-    if (!isset($assoc_args['org']) OR empty($assoc_args['org'])) {
-      $selected_org = Terminus::menu($orgs,false,"Choose an organization");
-    } else {
-      $selected_org = $assoc_args['org'];
-    }
-
-    $org = new Organization($selected_org);
+    $org_id = Input::orgid($assoc_args, 'org');
+    $org = new Organization($org_id);
 
     if (isset($assoc_args['add'])) {
         $add = SiteFactory::instance(Input::sitename($assoc_args,'add'));
