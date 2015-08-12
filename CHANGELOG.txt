@@ -1,0 +1,31 @@
+#Change Log
+All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
+
+##[0.6.0] - 2015-08-10
+### Added
+-`terminus cli console` (Instantiates a console within Terminus)
+-`terminus site init-env` (Initializes new test or live environments on Pantheon)
+-`terminus site merge-from-dev` (Merges master/dev environment into a multidev environment)
+-`terminus site merge-to-dev` (Merges a multidev environment into master/dev)
+-`terminus sites cache` (Lists sites in cache)
+-`terminus sites mass-update` (Runs upstream updates on all dev sites)
+-Element flag to `terminus site import` (Select specific element[s] to import)
+-Behavior tests
+-QA report tests
+-Linter tools
+-CHANGELOG.txt
+
+### Fixed
+-`terminus site import`
+-`terminus site team list`
+-Password display on login failure
+-100x loop on workflow failure
+
+### Changed
+-Dashboard URL given by `terminus site dashboard` from https://dashboard.getpantheon.com/… to https://dashboard.pantheon.io/…
+-`terminus sites create` to make org parameter optional
+-Dependencies
+-README
+
+### Deprecated
+-Flag --nocache
