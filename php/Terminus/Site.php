@@ -4,55 +4,25 @@ namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
 use \Terminus_Command;
-use Terminus\Collections\Environments;
 use \Terminus\Environment;
+use \Terminus\SiteUserMembership;
+use Terminus\Collections\Environments;
+use Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\Workflows;
 
 class Site {
   public $id;
   public $attributes;
-  public $information;
-  public $metadata;
+  public $bindings;
   public $environments = array();
   public $environmentsCollection;
-  public $workflows;
+  public $information;
   public $jobs;
-  public $bindings;
+  public $metadata;
+  public $workflows;
 
-  /**
-  * Create a new Site
-  * @param $options (array)
-  *   @param $options label(string)
-  *   @param $options name(string)
-  *   @option $options organization_id(string)
-  *   @option product_id(string)
-  *
-  * @return Workflow
-  *
-  */
-  static function create($options = array()) {
-    $data = array(
-      'label' => $options['label'],
-      'site_name' => $options['name']
-    );
-
-    if (isset($options['organization_id'])) {
-      $data['organization_id'] = $options['organization_id'];
-    }
-
-    if (isset($options['product_id'])) {
-      $data['deploy_product'] = array(
-        'product_id' => $options['product_id']
-      );
-    }
-
-    $user = User::instance();
-    $workflow = $user->workflows->create('create_site', array(
-      'params' => $data
-    ));
-
-    return $workflow;
-  }
+  private $features;
+  private $user_memberships;
 
   /**
    * Needs site object from the api to instantiate
@@ -82,10 +52,46 @@ class Site {
     $this->metadata = @$this->attributes->metadata ?: new \stdClass();
     # /deprecated properties
 
+    $this->user_memberships = new SiteUserMemberships(array('site' => $this));
     $this->environmentsCollection = new Environments(array('site' => $this));
     $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'site'));
 
     return $this;
+  }
+
+  /**
+  * Create a new Site
+  * @param $options (array)
+  *   @param $options label(string)
+  *   @param $options name(string)
+  *   @option $options organization_id(string)
+  *   @option product_id(string)
+  *
+  * @return Workflow
+  *
+  */
+  static function create($options = array()) {
+    $data = array(
+      'label' => $options['label'],
+      'site_name' => $options['name']
+    );
+
+    if(isset($options['organization_id'])) {
+      $data['organization_id'] = $options['organization_id'];
+    }
+
+    if(isset($options['product_id'])) {
+      $data['deploy_product'] = array(
+        'product_id' => $options['product_id']
+      );
+    }
+
+    $user = User::instance();
+    $workflow = $user->workflows->create('create_site', array(
+      'params' => $data
+    ));
+
+    return $workflow;
   }
 
   public function fetch() {
@@ -382,28 +388,6 @@ class Site {
     return $response['data'];
   }
 
-  public function team() {
-    $options = array();
-    $response = \Terminus_Command::paged_request('sites/' . $this->getId() . '/memberships/users', $options);
-    return $response['data'];
-  }
-
-  public function teamAddMember($email) {
-    $method = 'POST';
-    $path = sprintf('team/%s', urlencode($email));
-    $data = array('invited_by' => Session::getValue('user_uuid'));
-    $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json'));
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
-    return $response['data'];
-  }
-
-  public function teamRemoveMember($uuid) {
-    $method = 'DELETE';
-    $path = sprintf('team/%s', $uuid);
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
-    return $response['data'];
-  }
-
   /**
   * Code branches
   */
@@ -453,7 +437,7 @@ class Site {
   /**
    * Get memberships for a site
   */
-  function memberships($type='organizations') {
+  public function memberships($type='organizations') {
     $path = sprintf('memberships/%s', $type);
     $method = 'GET';
     $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
@@ -471,7 +455,40 @@ class Site {
     return isset($this->information->framework) && ($framework_name == $this->information->framework);
   }
 
-  public function get($attribute = 'id') {
+  /**
+   * Lists user memberships for this site
+   *
+   * @return [SiteUserMemberships] Collection of user memberships for this site
+   */
+  public function getSiteUserMemberships() {
+    $this->user_memberships = $this->user_memberships->fetch();
+    return $this->user_memberships;
+  }
+
+  /**
+   * Returns a specific site feature value
+   *
+   * @param [string] $feature Feature to check
+   * @return [mixed] $this->features[$feature]
+   */
+  public function getFeature($feature) {
+    if(!isset($this->features)) {
+      $response = Terminus_Command::request('sites', $this->id, 'features', 'GET');
+      $this->features = (array)$response['data'];
+    }
+    if(isset($this->features[$feature])) {
+      return $this->features[$feature];
+    }
+    return null;
+  }
+
+  /**
+   * Returns given attribute, if present
+   *
+   * @param [string] $attribute Name of attribute requested
+   * @return [mixed] $this->attributes->$attributes;
+   */
+  public function get($attribute) {
     if(isset($this->attributes->$attribute)) {
       return $this->attributes->$attribute;
     }

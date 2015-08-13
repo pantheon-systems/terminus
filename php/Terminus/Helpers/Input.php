@@ -44,10 +44,7 @@ class Input {
    * @param [string] $message Prompt to STDOUT
    * @return [string] $env Name of environment to work on
    */
-  static public function environment($message) {
-    if(!$message) {
-      $message = "Specify a environment";
-    }
+  static public function environment($message = 'Specify an environment') {
     if(!$env || (array_search($env, $envs) === false)) {
       $env = \Terminus::menu($envs, null, $message);
       $env = $envs[$env];
@@ -205,6 +202,30 @@ class Input {
     }
     $org = \Terminus::menu($orglist, false, "Choose organization");
     return $orglist[$org];
+  }
+
+  /**
+   * Helper function to get role
+   *
+   * @param [array]  $assoc_args Argument array passed from commands
+   * @param [string] $message Prompt to STDOUT
+   * @return [string] $role Name of role
+   */
+  static public function role($assoc_args, $message = 'Select a role for this member') {
+    $roles = array('developer', 'team_member', 'admin');
+    if(
+      !isset($assoc_args['role'])
+      || !in_array(strtolower($assoc_args['role']), $roles)
+    ) {
+      $role = strtolower($roles[Input::menu(
+        $roles,
+        null,
+        'Select a role for the new member'
+      )]);
+    } else {
+      $role = $assoc_args['role'];
+    }
+    return $role;
   }
 
   /**

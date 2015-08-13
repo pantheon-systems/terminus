@@ -9,6 +9,7 @@ default:
       host:                    onebox
       vcr_mode:                new_episodes
       test_site_name:          behat-test
+      other_user:              sara@getpantheon.com
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
 
@@ -23,6 +24,9 @@ ci:
       host: onebox
       vcr_mode: once
       test_site_name: behat-test
+      other_user:              sara@getpantheon.com
+      php_site_domain:         onebox.pantheon.io
+      payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
 
 qa:
   paths:
