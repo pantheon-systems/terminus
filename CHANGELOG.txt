@@ -3,19 +3,26 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ## MASTER
 
+### Added
+- `site delete` command will delete a site (moved from `sites delete`, which has been deprecated) (#370)
+
 ### Changed
-- `site wipe` now asks for confirmation
+- `site wipe` asks for confirmation (#382)
+- `backup get` will not offer in-progress/incomplete backups for download (#386)
+- `backup list` identifies 0-byte backups as "Incomplete" (#386)
+
+### Deprecated
+- `sites delete` will be removed in v1.0.0 (#370)
 
 ##[0.6.1] - 2015-08-11
 ### Fixed
-- `site deploy` will not overwrite the Live environment's content
+- `site deploy` will not overwrite the Live environment's content (#373) 
 
 ### Changed
-- `site deploy` has a `--clone-live-environment` flag for copying Live content into Test
+- `site deploy` has a `--clone-live-environment` flag for copying Live content into Test (#373)
 
 ### Deprecated
-
-`site deploy` `--from` flag has been deprecated and is non-functional
+- `site deploy` `--from` flag has been deprecated and is non-functional
 
 ##[0.6.0] - 2015-08-10
 ### Added
@@ -25,23 +32,23 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 -`terminus site merge-to-dev` (Merges a multidev environment into master/dev)
 -`terminus sites cache` (Lists sites in cache)
 -`terminus sites mass-update` (Runs upstream updates on all dev sites)
--Element flag to `terminus site import` (Select specific element[s] to import)
--Behavior tests
--QA report tests
--Linter tools
--CHANGELOG.txt
+- Element flag to `terminus site import` (Select specific element[s] to import)
+- Behavior tests
+- QA report tests
+- Linter tools
+- CHANGELOG.txt
 
 ### Fixed
--`terminus site import`
--`terminus site team list`
--Password display on login failure
--100x loop on workflow failure
+- `terminus site import`
+- `terminus site team list`
+- Password display on login failure
+- 100x loop on workflow failure
 
 ### Changed
--Dashboard URL given by `terminus site dashboard` from https://dashboard.getpantheon.com/… to https://dashboard.pantheon.io/…
--`terminus sites create` to make org parameter optional
--Dependencies
--README
+- Dashboard URL given by `terminus site dashboard` from https://dashboard.getpantheon.com/… to https://dashboard.pantheon.io/…
+- `terminus sites create` to make org parameter optional
+- Dependencies
+- README
 
 ### Deprecated
--Flag --nocache
+- Flag --nocache
