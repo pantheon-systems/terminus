@@ -143,28 +143,32 @@ class Site {
    */
   public function info($key = null) {
     $dev_environment = $this->environmentsCollection->get('dev');
-
+    
     $info = array(
       'id' => $this->id,
-      'name' => $this->information->name,
-      'label' => property_exists($this->information, 'label') ? $this->information->label : '',
-      'created' => $this->information->created,
-      'framework' => property_exists($this->information, 'framework') ? $this->information->framework : '',
-      'organization' => property_exists($this->information, 'organization') ? $this->information->organization : '',
-      'service_level' => $this->information->service_level,
-      'upstream' => property_exists($this->information, 'upstream') ? (array) $this->information->upstream : '',
-      'php_version' => property_exists($this->information, 'organization') ? $this->information->php_version : '',
+      'name' => null,
+      'label' => null,
+      'created' => null,
+      'framework' => null,
+      'organization' => null,
+      'service_level' => null,
+      'upstream' => null,
+      'php_version' => null,
       'sftp_url' => $dev_environment ? $dev_environment->sftp_url() : '',
       'git_url' => $dev_environment ? $dev_environment->git_url() : '',
-      'holder_type' =>  $this->information->holder_type,
-      'holder_id' => $this->information->holder_id,
-      'owner' => $this->information->owner,
+      'holder_type' => null,
+      'holder_id' => null,
+      'owner' => null,
     );
-
-    if ($key) {
-      return isset($info[$key]) ? $info[$key] : null;
+    foreach($info as $info_key => $datum) {
+      if(($datum == null) && property_exists($this->information, $info_key)) {
+        $info[$key] = $this->information->$info_key;
+      }
     }
-    else {
+
+    if($key) {
+      return isset($info[$key]) ? $info[$key] : null;
+    } else {
       return $info;
     }
   }
@@ -184,16 +188,21 @@ class Site {
   /**
    * Return site id
    */
-   public function getId() {
-     return $this->id;
-   }
+  public function getId() {
+    return $this->id;
+  }
 
   /**
    * Return site name
+   *
+   * @return [string] $this->information->name
    */
-   public function getName() {
-     return $this->information->name;
-   }
+  public function getName() {
+    if(property_exists($this->information, 'name')) {
+      return $this->information->name;
+    }
+    return null;
+  }
 
   /**
    * Get upstream info
