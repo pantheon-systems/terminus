@@ -268,6 +268,8 @@ class Sites_Command extends Terminus_Command {
  * @subcommand mass-update
  */
   public function mass_update($args, $assoc_args) {
+    // Ensure the sitesCache is up to date
+    $this->sitesCache->rebuild();
     $sites_cache = $this->sitesCache->all();
 
     $env = 'dev';
@@ -281,6 +283,7 @@ class Sites_Command extends Terminus_Command {
 
     foreach($sites_cache as $site_cache ) {
       $site = new Site($site_cache['id']);
+      $site->fetch();
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.
@@ -297,8 +300,7 @@ class Sites_Command extends Terminus_Command {
 
       if( $updates->behind > 0 ) {
         $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update");
-        $noupdatedb = Input::optional($assoc_args, 'updatedb', false);
-        $update = $noupdatedb ? false : true;
+        $updatedb = !Input::optional($assoc_args, 'updatedb', false);
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
           $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->getName(), var_export($update,1), var_export($xoption,1)));
@@ -312,7 +314,7 @@ class Sites_Command extends Terminus_Command {
             Terminus::success("Backup of ".$site->getName()." created.");
             Terminus::line('Updating '.$site->getName().'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
-            $response = $site->applyUpstreamUpdates($env, $update, $xoption);
+            $response = $site->applyUpstreamUpdates($env, $updatedb, $xoption);
             $data[$site->getName()]['status'] = 'Updated';
             Terminus::success($site->getName().' is updated.');
           } else {

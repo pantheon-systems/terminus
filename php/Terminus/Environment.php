@@ -393,7 +393,7 @@ class Environment {
   }
 
   /**
-   * Deploys the Test or Live environment)
+   * Deploys the Test or Live environment
    *
    * @param [array] $params Parameters for the deploy workflow
    *

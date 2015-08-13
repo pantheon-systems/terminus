@@ -804,7 +804,7 @@ class Site_Command extends Terminus_Command {
     * : Clear cache after deploy?
     *
     * [--updatedb]
-    * : (Drupal only) run update.php after deploy?
+    * : (Drupal only) run update.php after deploy
     *
     * [--note=<note>]
     * : deploy log message
@@ -1389,55 +1389,55 @@ class Site_Command extends Terminus_Command {
    * [--site=<site>]
    * : Site to check
    *
-   * [--update=<env>]
-   * : Do update on dev env
+   * [--update]
+   * : Apply upstream updates to the Dev Environment
+   *
+   * [--updatedb]
+   * : (Drupal only) run update.php after deploy
    *
    * @alias upstream-updates
   **/
-   public function upstream_updates($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::sitename($assoc_args));
-     $upstream = $site->getUpstreamUpdates();
+  public function upstream_updates($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $upstream = $site->getUpstreamUpdates();
 
-     // data munging as usual
-     $data = array();
+    $data = array();
+    if(isset($upstream->remote_url) && isset($upstream->behind)) {
+      // The $upstream object returns a value of [behind] -> 1 if there is an
+      // upstream update that has not been applied to Dev.
+      $data[$upstream->remote_url] = ($upstream->behind > 0 ? "Updates Available":"Up-to-date");
 
-     if(isset($upstream->remote_url) && isset($upstream->behind)) {
-       // The $upstream object returns a value of [behind] -> 1 if there is an
-       // upstream update that has not been applied to Dev.
-       $data[$upstream->remote_url] = ($upstream->behind > 0 ? "Updates Available":"Up-to-date");
+      $this->_constructTableForResponse($data, array('Upstream','Status') );
+      if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
+      $upstreams = (array) $upstream->update_log;
+      if (!empty($upstreams)) {
+        $data = array();
+        foreach ($upstreams as $commit) {
+          $data = array(
+            'hash' => $commit->hash,
+            'datetime'=> $commit->datetime,
+            'message' => $commit->message,
+            'author' => $commit->author,
+          );
+          $this->handleDisplay($data,$args);
+          echo PHP_EOL;
+        }
+      }
+    } else {
+      $this->handleDisplay('There was a problem checking your upstream status. Please try again.');
+      echo PHP_EOL;
+    }
 
-       $this->_constructTableForResponse($data, array('Upstream','Status') );
-       if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
-       $upstreams = (array) $upstream->update_log;
-       if (!empty($upstreams)) {
-         $data = array();
-         foreach ($upstreams as $commit) {
-           $data = array(
-             'hash' => $commit->hash,
-             'datetime'=> $commit->datetime,
-             'message' => $commit->message,
-             'author' => $commit->author,
-           );
-           $this->handleDisplay($data,$args);
-           echo PHP_EOL;
-         }
-       }
-     } else {
-       $this->handleDisplay('There was a problem checking your upstream status. Please try again.');
-       echo PHP_EOL;
-     }
-     if (isset($assoc_args['update']) AND !empty($upstream->update_log)) {
-       $env = 'dev';
-       Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
-       $response = $site->applyUpstreamUpdates($env);
-       if (@$response->id) {
-         $this->waitOnWorkflow('sites', $site->getId(), $response->id);
-       } else {
-         Terminus::success("Updates applied");
-       }
-     }
+    if (isset($assoc_args['update']) && !empty($upstream->update_log)) {
+      $env = 'dev';
+      $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
 
-   }
+      Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
+      $workflow = $site->applyUpstreamUpdates($env, $updatedb);
+      $workflow->wait();
+      Terminus::success("Updates applied");
+    }
+  }
 
   /**
    * Pings a site to ensure it responds
