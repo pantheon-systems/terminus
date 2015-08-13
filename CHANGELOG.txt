@@ -5,6 +5,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Added
 - `site delete` command will delete a site (moved from `sites delete`, which has been deprecated) (#370)
+- `organizations sites --tag=<name>` filters list of sites by tag
+
+### Fixed
+- `organizations sites` shows all the organization's sites, not just the first 100 (#371)
 
 ### Changed
 - `site wipe` asks for confirmation (#382)
