@@ -58,12 +58,11 @@ class Sites_Command extends Terminus_Command {
         'framework' => $cached_site['framework'],
         'memberships' => array_map(function($membership) {
           return $membership['name'];
-        }, $cached_site['memberships'])
+        }, array_values($cached_site['memberships']))
       );
-    }, $cached_sites);
+    }, array_values($cached_sites));
 
     $this->handleDisplay($rows);
-    return $rows;
   }
 
 
