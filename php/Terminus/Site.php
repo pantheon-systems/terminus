@@ -361,12 +361,32 @@ class Site {
   }
 
   /**
-   * Delete a multidev environment
+   * Delete a branch from site remove
+   *
+   * @param [string] $branch Name of branch to remove
+   * @return [void]
    */
-  public function deleteEnvironment($env) {
+  public function deleteBranch($branch) {
+    $workflow = $this->workflows->create('delete_environment_branch', array(
+      'params' => array(
+        'environment_id' => $branch,
+      )
+    ));
+    return $workflow;
+  }
+
+  /**
+   * Delete a multidev environment
+   *
+   * @param [string] $env            Name of environment to remove
+   * @param [boolean] $delete_branch True to delete branch
+   * @return [void]
+   */
+  public function deleteEnvironment($env, $delete_branch) {
     $workflow = $this->workflows->create('delete_cloud_development_environment', array(
       'params' => array(
-        'environment_id' => $env
+        'environment_id' => $env,
+        'delete_branch'  => $delete_branch,
       )
     ));
     return $workflow;

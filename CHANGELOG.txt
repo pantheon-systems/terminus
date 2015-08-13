@@ -6,8 +6,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - `site delete` command will delete a site (moved from `sites delete`, which has been deprecated) (#370)
 - `organizations sites --tag=<name>` filters list of sites by tag
-- `terminus site team change-role` Changes an existing member's role (For sites with the proper access level) (#388)
-- `terminus site team add-member` now has a required --role flag (For sites with the proper access level) (#388)
+- `site team change-role` Changes an existing member's role (For sites with the proper access level) (#388)
+- `site team add-member` now has a required --role flag (For sites with the proper access level) (#388)
+- `site delete-branch` will delete a multidev environment's branch (For sites with multidev access) (#395)
+- `site delete-env` now has an optional --remove-branch flag (#395)
 
 ### Fixed
 - `organizations sites` shows all the organization's sites, not just the first 100 (#371)
@@ -32,27 +34,27 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ##[0.6.0] - 2015-08-10
 ### Added
--`terminus cli console` (Instantiates a console within Terminus)
--`terminus site init-env` (Initializes new test or live environments on Pantheon)
--`terminus site merge-from-dev` (Merges master/dev environment into a multidev environment)
--`terminus site merge-to-dev` (Merges a multidev environment into master/dev)
--`terminus sites cache` (Lists sites in cache)
--`terminus sites mass-update` (Runs upstream updates on all dev sites)
-- Element flag to `terminus site import` (Select specific element[s] to import)
+- `cli console` (Instantiates a console within Terminus)
+- `site init-env` (Initializes new test or live environments on Pantheon)
+- `site merge-from-dev` (Merges master/dev environment into a multidev environment)
+- `site merge-to-dev` (Merges a multidev environment into master/dev)
+- `sites cache` (Lists sites in cache)
+- `sites mass-update` (Runs upstream updates on all dev sites)
+- Element flag to `site import` (Select specific element[s] to import)
 - Behavior tests
 - QA report tests
 - Linter tools
 - CHANGELOG.txt
 
 ### Fixed
-- `terminus site import`
-- `terminus site team list`
+- `site import`
+- `site team list`
 - Password display on login failure
 - 100x loop on workflow failure
 
 ### Changed
-- Dashboard URL given by `terminus site dashboard` from https://dashboard.getpantheon.com/… to https://dashboard.pantheon.io/…
-- `terminus sites create` to make org parameter optional
+- Dashboard URL given by `site dashboard` from https://dashboard.getpantheon.com/… to https://dashboard.pantheon.io/…
+- `sites create` to make org parameter optional
 - Dependencies
 - README
 
