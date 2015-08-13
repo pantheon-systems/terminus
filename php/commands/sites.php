@@ -268,6 +268,8 @@ class Sites_Command extends Terminus_Command {
  * @subcommand mass-update
  */
   public function mass_update($args, $assoc_args) {
+    // Ensure the sitesCache is up to date
+    $this->sitesCache->rebuild();
     $sites_cache = $this->sitesCache->all();
 
     $env = 'dev';
@@ -281,6 +283,7 @@ class Sites_Command extends Terminus_Command {
 
     foreach($sites_cache as $site_cache ) {
       $site = new Site($site_cache['id']);
+      $site->fetch();
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.
