@@ -1,6 +1,11 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+
+### Changed
+- `site wipe` now asks for confirmation
+
 ##[0.6.1] - 2015-08-11
 ### Fixed
 - `site deploy` will not overwrite the Live environment's content
