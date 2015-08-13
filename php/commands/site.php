@@ -77,8 +77,8 @@ class Site_Command extends Terminus_Command {
    *
    * ## OPTIONS
    *
-   * <log|branches|branch-create|diffstat|commit>
-   * : options are log, branches, branch-create, diffstat, commit
+   * <log|branches|diffstat|commit>
+   * : options are log, branches, diffstat, commit
    *
    * [--site=<site>]
    * : name of the site
@@ -743,7 +743,44 @@ class Site_Command extends Terminus_Command {
      }
 
    /**
-    * Delete a MultiDev environment
+    * Delete a git branch from site remote
+    *
+    * ## OPTIONS
+    *
+    * [--site=<site>]
+    * : Site to use
+    *
+    * [--branch=<branch>]
+    * : name of branch to delete
+    *
+    * @subcommand delete-branch
+    */
+  public function delete_branch($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $site->environmentsCollection->fetch();
+    $multidev_envs = array_diff(
+      $site->environmentsCollection->ids(),
+      array('dev', 'test', 'live')
+    );
+    $branch = Input::env(
+      $assoc_args,
+      'branch',
+      'Branch to delete',
+      $multidev_envs
+    );
+
+    Terminus::confirm(
+      'Are you sure you want to delete the "' . $branch
+      . '" branch from ' . $site->getName()
+    );
+
+    $workflow = $site->deleteBranch($branch);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
+  }
+
+   /**
+    * Delete a multidev environment
     *
     * ## OPTIONS
     *
@@ -761,14 +798,25 @@ class Site_Command extends Terminus_Command {
   public function delete_env($args, $assoc_args) {
     $site = SiteFactory::instance(Input::sitename($assoc_args));
     $site->environmentsCollection->fetch();
-    $multidev_envs = array_diff($site->environmentsCollection->ids(), array('dev', 'test', 'live'));
-    $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
+    $multidev_envs = array_diff(
+      $site->environmentsCollection->ids(),
+      array('dev', 'test', 'live')
+    );
+    $env = Input::env(
+      $assoc_args,
+      'env',
+      'Environment to delete',
+      $multidev_envs
+    );
     $delete_branch = false;
     if(isset($assoc_args['remove_branch'])) {
       $delete_branch = (boolean)$assoc_args['remove_branch'];
     }
 
-    Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
+    Terminus::confirm(
+      'Are you sure you want to delete the "' . $env
+      . '" environment from ' . $site->getName()
+    );
 
     $workflow = $site->deleteEnvironment($env, $delete_branch);
     $workflow->wait();

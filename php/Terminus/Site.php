@@ -361,6 +361,21 @@ class Site {
   }
 
   /**
+   * Delete a branch from site remove
+   *
+   * @param [string] $branch Name of branch to remove
+   * @return [void]
+   */
+  public function deleteBranch($branch) {
+    $workflow = $this->workflows->create('delete_environment_branch', array(
+      'params' => array(
+        'environment_id' => $branch,
+      )
+    ));
+    return $workflow;
+  }
+
+  /**
    * Delete a multidev environment
    *
    * @param [string] $env            Name of environment to remove
