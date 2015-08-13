@@ -161,11 +161,13 @@ class SitesCache {
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {
+      $site = $membership->site;
+
       $memberships_data[] = array(
-        'id' => $membership->id,
-        'name' => $membership->site->name,
-        'framework' => $membership->site->framework,
-        'service_level' => $membership->site->service_level,
+        'id' => $site->id,
+        'name' => $site->name,
+        'framework' => property_exists($site, 'framework') ? $site->framework : null,
+        'service_level' => property_exists($site, 'service_level') ? $site->service_level : null,
         'membership' => array(
           'id' => $user_id,
           'name' => 'Team',
