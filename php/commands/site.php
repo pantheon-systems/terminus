@@ -419,8 +419,18 @@ class Site_Command extends Terminus_Command {
          if (!in_array($element,array('code','files','db'))) {
            Terminus::error("Invalid backup element specified.");
          }
-         $latest = Input::optional('latest',$assoc_args,false);
-         $backups = $site->environment($env)->backups($element, $latest);
+         $latest = Input::optional('latest', $assoc_args, false);
+         $backups = $site->environment($env)->backups($element);
+
+         // Ensure that that backups being presented for getting have finished
+         $backups = array_filter($backups, function($backup) {
+           return (isset($backup->finish_time) && $backup->finish_time);
+         });
+
+         if ($latest) {
+           $backups = array(array_pop($backups));
+         }
+
          if (empty($backups)) {
            \Terminus::error('No backups available.');
          }
@@ -527,13 +537,14 @@ class Site_Command extends Terminus_Command {
             $date = date("Y-m-d H:i:s", $backup->finish_time);
           }
 
-          $size =  $backup->size / 1024 / 1024;
+          $size = $backup->size / 1024 / 1024;
           if ($size > 0.1) {
             $size = sprintf("%.1fMB", $size);
           } elseif ($size > 0) {
             $size = "0.1MB";
           } else {
-            $size = "0MB";
+            // 0-byte backups should not be recommended for restore
+            $size = "Incomplete";
           }
 
           $data[] = array(
