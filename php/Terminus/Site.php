@@ -162,7 +162,7 @@ class Site {
     );
     foreach($info as $info_key => $datum) {
       if(($datum == null) && property_exists($this->information, $info_key)) {
-        $info[$key] = $this->information->$info_key;
+        $info[$info_key] = $this->information->$info_key;
       }
     }
 
