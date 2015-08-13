@@ -88,6 +88,28 @@ Feature: Daily Terminus QA Report
     And I list the backups of the "dev" environment of "[[test_site_name]]"
     Then I should have a new backup
 
+  Scenario: Attach instrument to site
+    @attach-instrument
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    And a payment insturment with uuid "[[payment_instrument_uuid]]"
+    When I attach the instrument "[[payment_instrument_uuid]]" to site "[[test_site_name]]"
+    Then I should get:
+    """
+    [[payment_instrument_uuid]]
+    """
+
+  Scenario: Change service level
+    @change-service-level
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    When I set the service level of "[[test_site_name]]" to "business"
+    And I check the service level of "[[test_site_name]]"
+    Then I should get:
+    """
+    Service Level is 'business'
+    """
+
   Scenario: Create multidev environment
     @create-multidev-env
     Given I am authenticated
@@ -177,29 +199,6 @@ Feature: Daily Terminus QA Report
     Then I should not get:
     """
     [[other_user]]
-    """
-
-  Scenario: Attach instrument to site
-    @attach-instrument
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    And a payment insturment with uuid "[[payment_instrument_uuid]]"
-    When I attach the instrument "[[payment_instrument_uuid]]" to site "[[test_site_name]]"
-    Then I should get:
-    """
-    [[payment_instrument_uuid]]
-    """
-
-
-  Scenario: Change service level
-    @change-service-level
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I set the service level of "[[test_site_name]]" to "basic"
-    And I check the service level of "[[test_site_name]]"
-    Then I should get:
-    """
-    Service Level is 'basic'
     """
 
   Scenario: Add hostname

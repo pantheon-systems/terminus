@@ -693,22 +693,33 @@ class Site_Command extends Terminus_Command {
    *
    * @subcommand create-env
    */
-   public function create_env($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::sitename($assoc_args));
+  public function create_env($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
 
-     if (isset($assoc_args['env'])) {
-       $env = $assoc_args['env'];
-     } else {
-       $env = Terminus::prompt("Name of new MultiDev environment");
-     }
+    if((boolean)$site->getFeature('multidev')) {
+      if (isset($assoc_args['env'])) {
+        $env = $assoc_args['env'];
+      } else {
+        $env = Terminus::prompt("Name of new MultiDev environment");
+      }
 
-     $site->environmentsCollection->fetch();
-     $src = Input::env($assoc_args, 'from-env', "Environment to clone content from", $site->environmentsCollection->ids());
+      $site->environmentsCollection->fetch();
+      $src = Input::env(
+        $assoc_args,
+        'from-env',
+        'Environment to clone content from',
+        $site->environmentsCollection->ids()
+      );
 
-     $workflow = $site->createEnvironment($env, $src);
-     $workflow->wait();
-     Terminus::success("Created the $env environment");
-   }
+      $workflow = $site->createEnvironment($env, $src);
+      $workflow->wait();
+      Terminus::success("Created the $env environment");
+    } else {
+      Terminus::error(
+        'This site does not have the authority to conduct this operation.'
+      );
+    }
+  }
 
    /**
     * Merge a Multidev Environment into Dev Environment
@@ -1318,9 +1329,9 @@ class Site_Command extends Terminus_Command {
     if (isset($assoc_args['set'])) {
       $set = $assoc_args['set'];
       $data = $site->updateServiceLevel($set);
-      Logger::coloredOutput("%2<K>Service Level has been updated to '$set'%n");
+      Logger::coloredOutput("%2<K>Service level has been updated to '$set'%n");
     }
-    Logger::coloredOutput("%2<K>Service Level is '$info'%n");
+    Logger::coloredOutput("%2<K>Service level is '$info'%n");
     return true;
   }
 
