@@ -206,7 +206,7 @@ class Environment {
   }
 
   /**
-   * Get the code log
+   * Get the code log (commits)
    */
   public function log() {
     $path = sprintf("environments/%s/code-log",$this->name);
@@ -405,6 +405,19 @@ class Environment {
       'params'      => $params
     ));
     return $workflow;
+  }
+
+  /**
+   * Have the environment's bindings have been initialized?
+   *
+   * @return [boolean] whether the environment has been initialized or not
+   */
+  public function isInitialized() {
+    // One can determine whether an environment has been initialized
+    // by checking if it has code commits. Unitialized environments do not.
+    $commits = $this->log();
+    $has_commits = (count($commits) > 0);
+    return $has_commits;
   }
 
   /**
