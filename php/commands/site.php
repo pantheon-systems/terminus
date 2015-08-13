@@ -596,12 +596,14 @@ class Site_Command extends Terminus_Command {
        array('test', 'live')
      ));
 
+     if ($env->isInitialized()) {
+       Terminus::error(sprintf('The %s environment has already been initialized', $env->id));
+     }
+
      $workflow = $env->initializeBindings();
      $workflow->wait();
 
-     if($result) {
-       \Terminus::success("Initialization complete!");
-     }
+     Terminus::success("Environment initialization complete");
      return true;
    }
 

@@ -538,7 +538,7 @@ class FeatureContext extends BehatContext {
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
     ob_start();
-    passthru($command);
+    passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
     return $this->_output;
   }
