@@ -12,11 +12,11 @@ class Help_Command extends Terminus_Command {
    *
    * ## EXAMPLES
    *
-   *     # get help for `core` command
-   *     terminus help core
+   *     # get help for `sites` command
+   *     terminus help sites
    *
-   *     # get help for `core download` subcommand
-   *     terminus help core download
+   *     # get help for `sites list` subcommand
+   *     terminus help sites list
    *
    * @synopsis [<command>...]
    */
