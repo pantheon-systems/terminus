@@ -38,12 +38,12 @@ class Organizations_Command extends Terminus_Command {
   }
 
   /**
-   * List an organizations sites
+   * List an organization's sites
    *
    * ## OPTIONS
    *
-   * [--org=<org>]
-   * : Organization name or Id
+   * [--org=<id>]
+   * : Organization id
    *
    * [--tag=<tag>]
    * : Tag name to filter sites list by
@@ -58,20 +58,8 @@ class Organizations_Command extends Terminus_Command {
    *
    */
   public function sites($args, $assoc_args) {
-    $orgs = array();
-    $user = new User();
-
-    foreach ($user->organizations() as $id => $org) {
-      $orgs[$id] = $org->name;
-    }
-
-    if (!isset($assoc_args['org']) OR empty($assoc_args['org'])) {
-      $selected_org = Terminus::menu($orgs,false,"Choose an organization");
-    } else {
-      $selected_org = $assoc_args['org'];
-    }
-
-    $org = new Organization($selected_org);
+    $org_id = Input::orgid($assoc_args, 'org', null, array('allow_none' => false));
+    $org = new Organization($org_id);
 
     if (isset($assoc_args['add'])) {
         $add = SiteFactory::instance(Input::sitename($assoc_args,'add'));
@@ -89,19 +77,19 @@ class Organizations_Command extends Terminus_Command {
       return true;
     }
 
-    $sites = $org->getSites();
-    $data = array();
-    foreach ($sites as $site) {
-      if (isset($assoc_args['tag']) && !(in_array($assoc_args['tag'], $site->tags))) {
+    $org->siteMemberships->fetch();
+    $memberships = $org->siteMemberships->all();
+    foreach ($memberships as $membership) {
+      if (isset($assoc_args['tag']) && !(in_array($assoc_args['tag'], $membership->get('tags')))) {
         continue;
       }
       $data[] = array(
-        'name' => $site->site->name,
-        'id' => $site->site->id,
-        'service_level' => isset($site->site->service_level) ? $site->site->service_level : '',
-        'framework' => isset($site->site->framework) ? $site->site->framework : '',
-        'created' => date('Y-m-d H:i:s', $site->site->created),
-        'tags' => $site->tags
+        'name' => $membership->site->get('name'),
+        'id' => $membership->site->id,
+        'service_level' => $membership->site->get('service_level'),
+        'framework' => $membership->site->get('framework'),
+        'created' => date('Y-m-d H:i:s', $membership->site->get('created')),
+        'tags' => $membership->get('tags')
       );
     }
     $this->handleDisplay($data);
