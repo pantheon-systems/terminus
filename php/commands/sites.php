@@ -37,6 +37,12 @@ class Sites_Command extends Terminus_Command {
    * Note: because of the size of this call, it is cached
    *   and also is the basis for loading individual sites by name
    *
+   * [--team]
+   * : filter sites you are a team member of
+   *
+   * [--org=<id>]
+   * : filter sites you can access via the organization
+   *
    * @subcommand list
    * @alias show
    */
@@ -44,11 +50,6 @@ class Sites_Command extends Terminus_Command {
     // Always fetch a fresh list of sites
     $this->sitesCache->rebuild();
     $cached_sites = $this->sitesCache->all();
-
-    if (count($cached_sites) == 0) {
-      Terminus::log("You have no sites.");
-      exit(0);
-    }
 
     $rows = array_map(function($cached_site) {
       return array(
@@ -61,6 +62,26 @@ class Sites_Command extends Terminus_Command {
         }, $cached_site['memberships'])
       );
     }, $cached_sites);
+
+    if (isset($assoc_args['team'])) {
+      $rows = array_filter($rows, function($site) {
+        return in_array('Team', $site['memberships']);
+      });
+    }
+
+    if (isset($assoc_args['org'])) {
+      $org_id = $assoc_args['org'];
+
+      $rows = array_filter($rows, function($site) use ($org_id) {
+        $org_ids = array_keys($site['memberships']);
+        return in_array($org_id, $org_ids);
+      });
+    }
+
+    if (count($rows) == 0) {
+      Terminus::log("You have no sites.");
+      exit(0);
+    }
 
     $this->handleDisplay($rows);
     return $rows;
