@@ -49,29 +49,6 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-   * Create a branch for developing
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : site to create branch of
-   *
-   * --branch=<branch>
-   * : name of new branch
-   *
-   * ## EXAMPLES
-   *
-   * terminus branch-create --site=yoursite --branch=carebearsandunicorns
-   *
-   * @subcommand branch-create
-  **/
-  public function branch_create($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::sitename($assoc_args));
-    $branch = preg_replace('#[_\s]+#',"",@$assoc_args['branch']);
-    $branch = $site->createBranch($branch);
-  }
-
-  /**
    * Clear all site caches
    *
    * ## OPTIONS
@@ -137,16 +114,6 @@ class Site_Command extends Terminus_Command {
         case 'branches':
           $data = $site->tips();
           $headers = array('Branch','Commit');
-          break;
-        case 'branch-create':
-          if (!isset($assoc_args['branchname'])) {
-            $branch = Terminus::prompt("Name of new branch");
-          } else {
-            $branch = $assoc_args['branchname'];
-          }
-          $branch = preg_replace('#[_\s]+#',"",@$assoc_args['branchname']);
-          $branch = $site->createBranch($branch);
-          Terminus::success('Branch created');
           break;
         case 'commit':
           $env = Input::env($assoc_args, 'env');
@@ -776,30 +743,37 @@ class Site_Command extends Terminus_Command {
      }
 
    /**
-   * Delete a MultiDev environment
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : Site to use
-   *
-   * [--env=<env>]
-   * : name of environment to delete
-   *
-   * @subcommand delete-env
-   */
-   public function delete_env($args, $assoc_args) {
-     $site = SiteFactory::instance(Input::sitename($assoc_args));
-     $site->environmentsCollection->fetch();
-     $multidev_envs = array_diff($site->environmentsCollection->ids(), array('dev', 'test', 'live'));
-     $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
+    * Delete a MultiDev environment
+    *
+    * ## OPTIONS
+    *
+    * [--site=<site>]
+    * : Site to use
+    *
+    * [--env=<env>]
+    * : name of environment to delete
+    *
+    * [--remove-branch]
+    * : delete branch corresponding to env
+    *
+    * @subcommand delete-env
+    */
+  public function delete_env($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $site->environmentsCollection->fetch();
+    $multidev_envs = array_diff($site->environmentsCollection->ids(), array('dev', 'test', 'live'));
+    $env = Input::env($assoc_args, 'env', "Environment to delete", $multidev_envs);
+    $delete_branch = false;
+    if(isset($assoc_args['remove_branch'])) {
+      $delete_branch = (boolean)$assoc_args['remove_branch'];
+    }
 
-     Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
+    Terminus::confirm("Are you sure you want to delete the '$env' environment from {$site->getName()}");
 
-     $workflow = $site->deleteEnvironment($env);
-     $workflow->wait();
-     Terminus::success("Deleted the $env environment");
-   }
+    $workflow = $site->deleteEnvironment($env, $delete_branch);
+    $workflow->wait();
+    Terminus::success("Deleted the $env environment");
+  }
 
    /**
     * Deploy dev environment to test or live
