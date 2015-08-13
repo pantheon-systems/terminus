@@ -1431,7 +1431,10 @@ class Site_Command extends Terminus_Command {
    * : Site to check
    *
    * [--update]
-   * : Apply upstream updates to the Dev Environment
+   * : Apply upstream updates
+   *
+   * [--env=<name>]
+   * : Environment (dev or multidev) to apply updates to; Default: dev
    *
    * [--updatedb]
    * : (Drupal only) run update.php after deploy
@@ -1470,7 +1473,11 @@ class Site_Command extends Terminus_Command {
     }
 
     if (isset($assoc_args['update']) && !empty($upstream->update_log)) {
-      $env = 'dev';
+      $env = isset($assoc_args['env']) ? $assoc_args['env'] : 'dev';
+      if (in_array($env, array('test', 'live'))) {
+        Terminus::error(sprintf('Upstream updates cannot be applied to the %s environment', $env));
+      }
+
       $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
 
       Terminus::confirm(sprintf("Are you sure you want to apply the upstream updates to %s-dev", $site->getName(), $env));
