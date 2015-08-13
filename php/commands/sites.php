@@ -241,14 +241,14 @@ class Sites_Command extends Terminus_Command {
     // Create the directory if it doesn't yet exist
     $dirname = dirname($location);
     if (!is_dir($dirname)) {
-      mkdir($dirname, 0755, true);
+      mkdir($dirname, 0700, true);
     }
 
     $content = $user->getAliases();
     $h = fopen($location, 'w+');
     fwrite($h, $content);
     fclose($h);
-    chmod($location, 0755);
+    chmod($location, 0700);
 
     $message = $file_exists ? 'Pantheon aliases updated' : 'Pantheon aliases created';
     Logger::coloredOutput("%2%K$message%n");
