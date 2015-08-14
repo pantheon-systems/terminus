@@ -111,3 +111,30 @@
             ETag: 'W/"39-37024390"'
             Vary: Accept-Encoding
         body: '"Invalid or expired session header: X-Pantheon-Session\n"'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/74d3797f-5ff0-432a-8fb8-388fcdb170e0/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=74d3797f-5ff0-432a-8fb8-388fcdb170e0:f6daf324-411b-11e5-85d8-bc764e115846:EGphPTrUICDK9y1nNkLyn'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Sat, 15 Aug 2015 01:44:04 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 1c8826d0-42ef-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"39-37024390"'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
