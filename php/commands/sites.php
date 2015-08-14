@@ -57,6 +57,7 @@ class Sites_Command extends TerminusCommand {
         'id' => $cached_site['id'],
         'service_level' => $cached_site['service_level'],
         'framework' => $cached_site['framework'],
+        'created' => date('Y-m-d H:i:s', $cached_site['created']),
         'memberships' => array_map(function($membership) {
           return $membership['name'];
         }, array_values($cached_site['memberships']))
@@ -145,6 +146,7 @@ class Sites_Command extends TerminusCommand {
     $cache_membership = array(
       'id' => $site_id,
       'name' => $options['name'],
+      'created' => $site->attributes->created,
       'service_level' => $site->attributes->service_level,
       'framework' => $site->attributes->framework,
     );

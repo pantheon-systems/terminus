@@ -15,6 +15,7 @@ use Terminus\Session;
  *       "<site_name>" : {
  *         id: "<site_uuid>",
  *         name: "<site_name>",
+ *         created: "<timestamp>",
  *         framework: "<framework>",
  *         service_level: "<service_level>"
  *         memberships: {
@@ -84,6 +85,9 @@ class SitesCache {
    *     array(
    *       "id" => "<site_id>"
    *       "name" => "<site_name>"
+   *       "created" => "<timestamp>",
+   *       "framework" => "<framework>",
+   *       "service_level" => "<service_level>"
    *       "membership" => array(
    *         'id' => "<user_id|org_id>"
    *         'name' => "<Team|org_name>"
@@ -102,6 +106,7 @@ class SitesCache {
     foreach ($memberships_data as $membership_data) {
       $site_id = $membership_data['id'];
       $site_name = $membership_data['name'];
+      $site_created = $membership_data['created'];
       $site_framework = $membership_data['framework'];
       $site_service_level = $membership_data['service_level'];
       $membership = $membership_data['membership'];
@@ -112,6 +117,7 @@ class SitesCache {
         $cache[$site_name] = array(
           'id' => $site_id,
           'name' => $site_name,
+          'created' => $site_created,
           'framework' => $site_framework,
           'service_level' => $site_service_level,
           'memberships' => array()
@@ -166,6 +172,7 @@ class SitesCache {
       $memberships_data[] = array(
         'id' => $site->id,
         'name' => $site->name,
+        'created' => property_exists($site, 'created') ? $site->created : null,
         'framework' => property_exists($site, 'framework') ? $site->framework : null,
         'service_level' => property_exists($site, 'service_level') ? $site->service_level : null,
         'membership' => array(
@@ -208,6 +215,7 @@ class SitesCache {
       $memberships_data[] = array(
         'id' => $membership->site->id,
         'name' => $membership->site->name,
+        'created' => $membership->site->created,
         'framework' => $membership->site->framework,
         'service_level' => $membership->site->service_level,
         'membership' => array(
