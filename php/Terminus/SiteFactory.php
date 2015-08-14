@@ -2,7 +2,7 @@
 namespace Terminus;
 use Terminus\Site;
 use Terminus\Session;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class SiteFactory {
   private static $instance = null;
@@ -14,7 +14,7 @@ class SiteFactory {
   }
 
   private function hydrate() {
-    $request = Terminus_Command::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
+    $request = TerminusCommand::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
     $sites = $request['data'];
     foreach ($sites as $site_id => $site_data) {
       // we need to skip sites that are in the build process still

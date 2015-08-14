@@ -4,7 +4,7 @@ namespace Terminus;
 use Symfony\Component\Finder\Finder;
 use Terminus;
 use Terminus\FileCache;
-use \Terminus_Command;
+use \TerminusCommand;
 use Terminus\Session;
 
 /**
@@ -157,7 +157,7 @@ class SitesCache {
 
   public function fetch_user_sites() {
     $user_id = Session::getValue('user_uuid');
-    $response = Terminus_Command::paged_request('users/' . $user_id . '/memberships/sites');
+    $response = TerminusCommand::paged_request('users/' . $user_id . '/memberships/sites');
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {
@@ -180,7 +180,7 @@ class SitesCache {
   }
 
   public function fetch_user_organizations() {
-    $response = Terminus_Command::paged_request('users/' . Session::getValue('user_uuid') . '/memberships/organizations');
+    $response = TerminusCommand::paged_request('users/' . Session::getValue('user_uuid') . '/memberships/organizations');
 
     $data = array();
     foreach ($response['data'] as $membership) {
@@ -201,7 +201,7 @@ class SitesCache {
   }
 
   public function fetch_organization_sites($org_data) {
-    $response = Terminus_Command::paged_request('organizations/' . $org_data['id'] . '/memberships/sites');
+    $response = TerminusCommand::paged_request('organizations/' . $org_data['id'] . '/memberships/sites');
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {

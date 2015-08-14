@@ -4,7 +4,7 @@ namespace Terminus\Collections;
 use Terminus\Request;
 use Terminus\User;
 use Terminus\Instrument;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class Instruments {
   private $user;
@@ -15,7 +15,7 @@ class Instruments {
   }
 
   public function fetch() {
-    $results = Terminus_Command::request(
+    $results = TerminusCommand::request(
       'users',
       $this->user->get('id'),
       'instruments',

@@ -1,7 +1,7 @@
 <?php
 namespace Terminus\Models;
 use \Terminus\Request;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class Workflow {
   public $id;
@@ -37,7 +37,7 @@ class Workflow {
   }
 
   public function fetch() {
-    $results = Terminus_Command::simple_request($this->url());
+    $results = TerminusCommand::simple_request($this->url());
     $this->attributes = $results['data'];
     return $this;
   }

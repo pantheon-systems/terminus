@@ -2,7 +2,7 @@
 
 namespace Terminus\Collections;
 use Terminus\Request;
-use \Terminus_Command;
+use \TerminusCommand;
 use \Terminus\Models\OrganizationSiteMembership;
 
 class OrganizationSiteMemberships {
@@ -16,7 +16,7 @@ class OrganizationSiteMemberships {
   }
 
   public function fetch() {
-    $response = Terminus_Command::paged_request(sprintf("organizations/%s/memberships/sites", $this->organization->id));
+    $response = TerminusCommand::paged_request(sprintf("organizations/%s/memberships/sites", $this->organization->id));
 
     foreach ($response['data'] as $membership_data) {
       $this->models[$membership_data->id] = new OrganizationSiteMembership($membership_data);

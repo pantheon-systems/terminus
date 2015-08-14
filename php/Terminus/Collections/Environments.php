@@ -3,7 +3,7 @@
 namespace Terminus\Collections;
 use Terminus\Request;
 use Terminus\Environment;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class Environments {
   private $site;
@@ -16,7 +16,7 @@ class Environments {
   }
 
   public function fetch() {
-    $results = Terminus_Command::request("sites", $this->site->getId(), "environments", "GET");
+    $results = TerminusCommand::request("sites", $this->site->getId(), "environments", "GET");
 
     foreach (get_object_vars($results['data']) as $id => $environment_data) {
       $environment_data->id = $id;

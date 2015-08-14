@@ -60,7 +60,7 @@ class Organization {
   public function getSites() {
     $path = 'memberships/sites';
     $method = 'GET';
-    $response = \Terminus_Command::request('organizations', $this->id, $path, $method);
+    $response = \TerminusCommand::request('organizations', $this->id, $path, $method);
     return $response['data'];
   }
 

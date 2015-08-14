@@ -17,7 +17,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Terminus\Loggers\Regular as Logger;
 use Terminus\Workflow;
 
-class Sites_Command extends Terminus_Command {
+class Sites_Command extends TerminusCommand {
   public $sitesCache;
 
   /**

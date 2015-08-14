@@ -12,7 +12,7 @@ use \Terminus\Loggers\Regular as Logger;
  * Show information for your Pantheon organizations
  *
  */
-class Organizations_Command extends Terminus_Command {
+class Organizations_Command extends TerminusCommand {
 
   public function __construct() {
     parent::__construct();

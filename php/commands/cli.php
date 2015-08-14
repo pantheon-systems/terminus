@@ -10,7 +10,7 @@ use Terminus\User;
  * Get information about Terminus itself.
  *
  */
-class CLI_Command extends Terminus_Command {
+class CLI_Command extends TerminusCommand {
   public function __construct() {
     parent::__construct();
     $this->sitesCache = new SitesCache();

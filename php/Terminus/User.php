@@ -38,7 +38,7 @@ class User {
     if (!$this->profile) {
       $path = 'profile';
       $method = 'GET';
-      $response = \Terminus_Command::request('users', $this->id, $path, $method);
+      $response = \TerminusCommand::request('users', $this->id, $path, $method);
       $this->profile = $response['data'];
     }
     return $this->profile;
@@ -48,7 +48,7 @@ class User {
     if (!$this->aliases) {
       $path = 'drush_aliases';
       $method = 'GET';
-      $response = \Terminus_Command::request('users', $this->id, $path, $method);
+      $response = \TerminusCommand::request('users', $this->id, $path, $method);
       $this->aliases = $response['data']->drush_aliases;
     }
     return $this->aliases;
@@ -58,7 +58,7 @@ class User {
     if (!$this->organizations) {
       $path = 'organizations';
       $method = "GET";
-      $response = \Terminus_Command::request('users', $this->id, $path, $method);
+      $response = \TerminusCommand::request('users', $this->id, $path, $method);
       $this->organizations = $response['data'];
     }
     return $this->organizations;
@@ -71,7 +71,7 @@ class User {
       $path = "sites";
     }
     $method = 'GET';
-    $response = \Terminus_Command::request('users', $this->id, $path, $method);
+    $response = \TerminusCommand::request('users', $this->id, $path, $method);
     return $response['data'];
   }
 
