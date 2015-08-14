@@ -5,7 +5,7 @@ use \Terminus\Products;
  * Show Pantheon product information
  *
  */
-class Products_Command extends Terminus_Command {
+class Products_Command extends TerminusCommand {
 
   /**
   * Search for Pantheon product info

@@ -29,7 +29,7 @@ class Products {
 
   private function loadProducts() {
     $key = join("-", array( $this->type, $this->category, $this->framework ) );
-    $response = \Terminus_Command::request("products", "public", false, "GET");
+    $response = \TerminusCommand::request("products", "public", false, "GET");
     $products = array();
     $keys_to_show = array('longname','framework','type','category');
     // we'll use this to sort the list later

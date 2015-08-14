@@ -58,7 +58,7 @@ class Environment {
 
   public function diffstat() {
     $path = sprintf('environments/%s/on-server-development/diffstat', $this->name);
-    $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+    $data = \TerminusCommand::request('sites', $this->site->getId(), $path, 'GET');
     return $data['data'];
   }
 
@@ -121,7 +121,7 @@ class Environment {
   public function backups($element = null) {
     if (null === $this->backups) {
       $path = sprintf("environments/%s/backups/catalog", $this->name);
-      $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+      $response = \TerminusCommand::request('sites', $this->site->getId(), $path, 'GET');
       $this->backups = $response['data'];
     }
     $backups = (array) $this->backups;
@@ -152,7 +152,7 @@ class Environment {
     $path = sprintf("environments/%s/backups/catalog/%s/%s/s3token", $this->name, $bucket, $element);
     $data = array('method'=>'GET');
     $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
+    $response = \TerminusCommand::request('sites', $this->site->getId(), $path, 'POST', $options);
     return $response['data'];
   }
 
@@ -167,7 +167,7 @@ class Environment {
       'environment' => $this->name,
     );
     $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
-    $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
+    $response = \TerminusCommand::request('sites', $this->site->getId(), $path, 'POST', $options);
 
     return $response['data'];
   }
@@ -185,17 +185,17 @@ class Environment {
       $path = sprintf("%s/commit", $path);
       $data = ($commit) ? array('message' => $commit, 'user' => Session::getValue('user_uuid')) : NULL;
       $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
-      $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'POST', $options);
+      $data = \TerminusCommand::request('sites', $this->site->getId(), $path, 'POST', $options);
     } else {
       if (null == $value) {
-        $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+        $data = \TerminusCommand::request('sites', $this->site->getId(), $path, 'GET');
       } else {
         $enabled = ($value == 'sftp') ? true : false;
         $data = array(
           'enabled' => $enabled,
         );
         $options = array('body'=>json_encode($data), 'headers'=> array('Content-type'=>'application/json'));
-        $data = \Terminus_Command::request('sites', $this->site->getId(), $path, 'PUT', $options);
+        $data = \TerminusCommand::request('sites', $this->site->getId(), $path, 'PUT', $options);
       }
     }
 
@@ -210,7 +210,7 @@ class Environment {
    */
   public function log() {
     $path = sprintf("environments/%s/code-log",$this->name);
-    $response = \Terminus_Command::request('sites', $this->site->getId(), $path, 'GET');
+    $response = \TerminusCommand::request('sites', $this->site->getId(), $path, 'GET');
     return $response['data'];
   }
 
@@ -253,7 +253,7 @@ class Environment {
    * list hotnames for environment
    */
   public function hostnames() {
-    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames', 'GET');
+    $response = \TerminusCommand::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames', 'GET');
     return $response['data'];
   }
 
@@ -261,7 +261,7 @@ class Environment {
    * Add hostname to environment
    */
   public function hostnameadd($hostname) {
-    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "PUT");
+    $response = \TerminusCommand::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "PUT");
     return $response['data'];
   }
 
@@ -269,7 +269,7 @@ class Environment {
    * Delete hostname from environment
    */
   public function hostnamedelete($hostname) {
-    $response = \Terminus_Command::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "DELETE");
+    $response = \TerminusCommand::request("sites", $this->site->getId(), 'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname), "DELETE");
     return $response['data'];
   }
 
@@ -290,7 +290,7 @@ class Environment {
     $OPTIONS = array(
       'headers'=> array('Content-type'=>'application/json')
     );
-    $response = \Terminus_Command::request('sites', $site_id, $path, 'POST', $OPTIONS);
+    $response = \TerminusCommand::request('sites', $site_id, $path, 'POST', $OPTIONS);
     return $response['data'];
   }
 

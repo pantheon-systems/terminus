@@ -3,7 +3,7 @@
 use \Terminus\Utils;
 use \Terminus\Dispatcher;
 
-class Help_Command extends Terminus_Command {
+class Help_Command extends TerminusCommand {
 
   /**
    * Get help on a certain command.

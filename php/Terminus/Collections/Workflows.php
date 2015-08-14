@@ -1,7 +1,7 @@
 <?php
 
 namespace Terminus\Collections;
-use \Terminus_Command;
+use \TerminusCommand;
 use \Terminus\Models\Workflow;
 
 class Workflows {
@@ -43,7 +43,7 @@ class Workflows {
       $options['params'] = array();
     }
 
-    $results = Terminus_Command::simple_request($url, array(
+    $results = TerminusCommand::simple_request($url, array(
       'method' => 'post',
       'data' => array(
         'type' => $type,
@@ -60,7 +60,7 @@ class Workflows {
   }
 
   public function fetch() {
-    $results = Terminus_Command::simple_request($this->url());
+    $results = TerminusCommand::simple_request($this->url());
 
     foreach ($results['data'] as $model_data) {
       $model = new Workflow($model_data, array(

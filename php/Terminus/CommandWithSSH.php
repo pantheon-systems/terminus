@@ -7,7 +7,7 @@ namespace Terminus;
  *
  * @package terminus
  */
-abstract class CommandWithSSH extends \Terminus_Command {
+abstract class CommandWithSSH extends \TerminusCommand {
 
   protected function send_command($server, $remote_exec, $args, $assoc_args) {
     # unset CLI args

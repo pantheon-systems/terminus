@@ -3,7 +3,7 @@
 namespace Terminus\Collections;
 use Terminus\Request;
 use Terminus\Models\Binding;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class Bindings {
   private $environment;
@@ -16,7 +16,7 @@ class Bindings {
   }
 
   public function fetch() {
-    $results = Terminus_Command::request("sites", $this->environment->site->getId(), "bindings", "GET");
+    $results = TerminusCommand::request("sites", $this->environment->site->getId(), "bindings", "GET");
 
     foreach (get_object_vars($results['data']) as $id => $binding_data) {
       # Only include bindings for this environment

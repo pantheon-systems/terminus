@@ -17,7 +17,7 @@ use \Terminus\Deploy;
 use Terminus\SitesCache;
 
 
-class Site_Command extends Terminus_Command {
+class Site_Command extends TerminusCommand {
   public $sitesCache;
 
   public function __construct() {
@@ -462,7 +462,7 @@ class Site_Command extends Terminus_Command {
            Terminus::line("Downloading ... please wait ...");
            $filename = \Terminus\Utils\get_filename_from_url($url->url);
            $target = sprintf("%s/%s", $assoc_args['to-directory'], $filename);
-           if (Terminus_Command::download($url->url, $target)) {
+           if (TerminusCommand::download($url->url, $target)) {
              Terminus::success("Downloaded %s", $target);
              return $target;
            } else {
@@ -898,7 +898,7 @@ class Site_Command extends Terminus_Command {
   }
 
    private function envExists($site_id, $env) {
-     $response = \Terminus_Command::request('sites', $site_id, 'environments', 'GET');
+     $response = \TerminusCommand::request('sites', $site_id, 'environments', 'GET');
      $envs = (array) $response['data'];
      return array_key_exists($env, $envs);
    }
@@ -1561,7 +1561,7 @@ class Site_Command extends Terminus_Command {
        Terminus::confirm( "Are you really sure?" );
      }
      Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
-     $response = \Terminus_Command::request( 'sites', $site_to_delete->id, '', 'DELETE' );
+     $response = \TerminusCommand::request( 'sites', $site_to_delete->id, '', 'DELETE' );
 
      $this->sitesCache->remove($sitename);
      Terminus::success("Deleted %s!", $sitename);

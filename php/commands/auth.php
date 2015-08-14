@@ -9,7 +9,7 @@
  use Guzzle\Parser\Cookie\CookieParser;
  use Terminus\Session;
 
-class Auth_Command extends Terminus_Command {
+class Auth_Command extends TerminusCommand {
   private $sessionid;
   private $session_cookie_name='X-Pantheon-Session';
   private $uuid;
@@ -138,7 +138,7 @@ class Auth_Command extends Terminus_Command {
         'headers' => array('Content-type'=>'application/json'),
     );
 
-    $response = Terminus_Command::request('login','','','POST',$options);
+    $response = TerminusCommand::request('login','','','POST',$options);
     if($response['status_code'] != '200') {
       \Terminus::error("[auth_error]: unsuccessful login");
     }
@@ -171,7 +171,7 @@ class Auth_Command extends Terminus_Command {
 
     # Temporarily disable the cache for this GET call
     Terminus::set_config('nocache',TRUE);
-    $response = Terminus_Command::request('user', '', '', 'GET', $options);
+    $response = TerminusCommand::request('user', '', '', 'GET', $options);
     Terminus::set_config('nocache',FALSE);
 
     if ( !$response OR '200' != @$response['info']['http_code'] ) {

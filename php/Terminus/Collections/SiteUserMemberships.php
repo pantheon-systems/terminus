@@ -4,7 +4,7 @@ namespace Terminus\Collections;
 use Terminus\Request;
 use Terminus\Session;
 use Terminus\SiteUserMembership;
-use \Terminus_Command;
+use \TerminusCommand;
 
 class SiteUserMemberships {
   private $site;
@@ -65,7 +65,7 @@ class SiteUserMemberships {
    * @return [SiteUserMemberships] $this
    */
   public function fetch() {
-    $results = Terminus_Command::paged_request('sites/' . $this->site->get('id') . '/memberships/users');
+    $results = TerminusCommand::paged_request('sites/' . $this->site->get('id') . '/memberships/users');
 
     foreach($results['data'] as $id => $user_membership_data) {
       $user_membership_data = (array)$user_membership_data;

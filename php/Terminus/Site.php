@@ -3,7 +3,7 @@
 namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
-use \Terminus_Command;
+use \TerminusCommand;
 use \Terminus\Environment;
 use \Terminus\SiteUserMembership;
 use Terminus\Collections\Environments;
@@ -95,7 +95,7 @@ class Site {
   }
 
   public function fetch() {
-    $response = Terminus_Command::simple_request(sprintf('sites/%s?site_state=true', $this->id));
+    $response = TerminusCommand::simple_request(sprintf('sites/%s?site_state=true', $this->id));
     $this->attributes = $response['data'];
     # backwards compatibility
     $this->information = $this->attributes;
@@ -109,7 +109,7 @@ class Site {
   public function attributes() {
     $path = "attributes";
     $method = "GET";
-    $atts = \Terminus_Command::request('sites',$this->getId(),$path,$method);
+    $atts = \TerminusCommand::request('sites',$this->getId(),$path,$method);
     return $atts['data'];
   }
 
@@ -119,7 +119,7 @@ class Site {
   public function bindings($type=null) {
     if (empty($this->bindings)) {
       $path = "bindings";
-      $response = \Terminus_Command::request('sites', $this->getId(), $path, "GET");
+      $response = \TerminusCommand::request('sites', $this->getId(), $path, "GET");
       foreach ($response['data'] as $id => $binding) {
         $binding->id = $id;
         $this->bindings[$binding->type][] = $binding;
@@ -187,7 +187,7 @@ class Site {
     $method = 'PUT';
     $data = $level;
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method, $options);
+    $response = \TerminusCommand::request('sites', $this->getId(), $path, $method, $options);
     return $response['data'];
   }
 
@@ -214,7 +214,7 @@ class Site {
    * Get upstream info
    */
    public function getUpstream() {
-     $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream', 'GET');
+     $response = \TerminusCommand::request('sites', $this->getId(), 'code-upstream', 'GET');
      return $response['data'];
    }
 
@@ -222,7 +222,7 @@ class Site {
    * Get upstream updates
    */
    public function getUpstreamUpdates() {
-     $response = \Terminus_Command::request('sites', $this->getId(), 'code-upstream-updates', 'GET');
+     $response = \TerminusCommand::request('sites', $this->getId(), 'code-upstream-updates', 'GET');
      return $response['data'];
    }
 
@@ -251,7 +251,7 @@ class Site {
   public function createBranch($branch) {
     $data = array('refspec' => sprintf('refs/heads/%s', $branch));
     $options = array( 'body' => json_encode($data) , 'headers'=>array('Content-type'=>'application/json') );
-    $response = \Terminus_Command::request('sites', $this->getId(), 'code-branch', 'POST', $options);
+    $response = \TerminusCommand::request('sites', $this->getId(), 'code-branch', 'POST', $options);
     return $response['data'];
   }
 
@@ -260,7 +260,7 @@ class Site {
   **/
   public function jobs() {
     if (!$this->jobs) {
-      $response = \Terminus_Command::request('sites', $this->getId(), 'jobs', 'GET');
+      $response = \TerminusCommand::request('sites', $this->getId(), 'jobs', 'GET');
       $this->jobs = $response['data'];
     }
     return $this->jobs;
@@ -271,7 +271,7 @@ class Site {
    */
   public function newRelic() {
     $path = 'new-relic';
-    $response = \Terminus_Command::request('sites', $this->getId(), 'new-relic', 'GET');
+    $response = \TerminusCommand::request('sites', $this->getId(), 'new-relic', 'GET');
     return $response['data'];
   }
 
@@ -280,7 +280,7 @@ class Site {
   **/
   public function notifications() {
     $path = 'notifications';
-    $data = \Terminus_Command::request('sites', $this->getId(), $path, 'GET');
+    $data = \TerminusCommand::request('sites', $this->getId(), $path, 'GET');
     return $data['data'];
   }
 
@@ -384,7 +384,7 @@ class Site {
       $options = array();
     }
     $path = 'site-owner';
-    $response = \Terminus_Command::request('sites', $site->getId(), $path, $method, $options);
+    $response = \TerminusCommand::request('sites', $site->getId(), $path, $method, $options);
     return $response['data'];
   }
 
@@ -393,7 +393,7 @@ class Site {
   */
   function tips() {
     $path = 'code-tips';
-    $data = \Terminus_Command::request('sites',$this->getId(), $path, 'GET');
+    $data = \TerminusCommand::request('sites',$this->getId(), $path, 'GET');
     return $data['data'];
   }
 
@@ -440,7 +440,7 @@ class Site {
   public function memberships($type='organizations') {
     $path = sprintf('memberships/%s', $type);
     $method = 'GET';
-    $response = \Terminus_Command::request('sites', $this->getId(), $path, $method);
+    $response = \TerminusCommand::request('sites', $this->getId(), $path, $method);
     return $response['data'];
   }
 
@@ -473,7 +473,7 @@ class Site {
    */
   public function getFeature($feature) {
     if(!isset($this->features)) {
-      $response = Terminus_Command::request('sites', $this->id, 'features', 'GET');
+      $response = TerminusCommand::request('sites', $this->id, 'features', 'GET');
       $this->features = (array)$response['data'];
     }
     if(isset($this->features[$feature])) {
