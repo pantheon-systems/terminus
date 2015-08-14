@@ -149,7 +149,7 @@ class Site {
    */
   public function info($key = null) {
     $dev_environment = $this->environmentsCollection->get('dev');
-    
+
     $info = array(
       'id' => $this->id,
       'name' => null,
@@ -160,8 +160,6 @@ class Site {
       'service_level' => null,
       'upstream' => null,
       'php_version' => null,
-      'sftp_url' => $dev_environment ? $dev_environment->sftp_url() : '',
-      'git_url' => $dev_environment ? $dev_environment->git_url() : '',
       'holder_type' => null,
       'holder_id' => null,
       'owner' => null,

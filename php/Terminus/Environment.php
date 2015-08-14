@@ -358,26 +358,107 @@ class Environment {
     return $workflow;
   }
 
+  public function connectionInfo() {
+    $this->bindings->fetch();
+    $info = array();
 
-  /**
-   * Return the SFTP connection URL for this environment
-   */
-  public function sftp_url() {
-    $username = sprintf("%s.%s", $this->id, $this->site->getId());
-    $host = sprintf("appserver.%s.%s.drush.in", $this->id, $this->site->getId());
-    $port = 2222;
+    // Can only SFTP into dev/multidev environments
+    if (!in_array($this->id, array('test', 'live'))) {
+      $sftp_username = sprintf("%s.%s", $this->id, $this->site->getId());
+      $sftp_password = "Use your account password";
+      $sftp_host = sprintf("appserver.%s.%s.drush.in", $this->id, $this->site->getId());
+      $sftp_port = 2222;
 
-    return sprintf("sftp://%s@%s:%s", $username, $host, $port);
-  }
+      $sftp_url = sprintf('sftp://%s@%s:%s', $sftp_username, $sftp_host, $sftp_port);
+      $sftp_command = sprintf('sftp -o Port=%s %s@%s', $sftp_port, $sftp_username, $sftp_host);
 
-  /**
-   * Return the GIT connection URL for this environment
-   */
-  public function git_url() {
-    $username = sprintf("codeserver.dev.%s", $this->site->getId());
-    $host = sprintf("codeserver.dev.%s.drush.in", $this->site->getId());
-    $port = 2222;
-    return sprintf("git://%s@%s:%s", $username, $host, $port);
+      $info = array_merge($info, array(
+        'sftp_username' => $sftp_username,
+        'sftp_host'     => $sftp_host,
+        'sftp_password' => $sftp_password,
+        'sftp_url'      => $sftp_url,
+        'sftp_command'  => $sftp_command
+      ));
+    }
+
+    $git_username = sprintf("codeserver.%s.%s", $this->id, $this->site->getId());
+    $git_host = sprintf("codeserver.%s.%s.drush.in", $this->id, $this->site->getId());
+    $git_port = 2222;
+
+    $git_url = sprintf("git://%s@%s:%s", $git_username, $git_host, $git_port);
+    $git_command = sprintf("git clone %s %s", $git_url, $this->site->getName());
+
+    $info = array_merge($info, array(
+      'git_username' => $git_username,
+      'git_host'     => $git_host,
+      'git_port'     => $git_port,
+      'git_url'      => $git_url,
+      'git_command'  => $git_command
+    ));
+
+    if (isset($this->bindings->getByType('dbserver')[0])) {
+      $db_binding = $this->bindings->getByType('dbserver')[0];
+
+      $mysql_username = 'pantheon';
+      $mysql_password = $db_binding->get('password');
+      $mysql_host = sprintf("dbserver.%s.%s.drush.in", $this->id, $this->site->getId());
+      $mysql_port = $db_binding->get('port');
+      $mysql_database = 'pantheon';
+
+      $mysql_url = sprintf('mysql://%s:%s@%s:%s/%s',
+        $mysql_username,
+        $mysql_password,
+        $mysql_host,
+        $mysql_port,
+        $mysql_database
+      );
+      $mysql_command = sprintf('mysql -u %s -p%s -h %s -P %s %s',
+        $mysql_username,
+        $mysql_password,
+        $mysql_host,
+        $mysql_port,
+        $mysql_database
+      );
+
+      $info = array_merge($info, array(
+        'mysql_host'     => $mysql_host,
+        'mysql_username' => $mysql_username,
+        'mysql_password' => $mysql_password,
+        'mysql_port'     => $mysql_port,
+        'mysql_database' => $mysql_database,
+        'mysql_url'      => $mysql_url,
+        'mysql_command'  => $mysql_command
+      ));
+    }
+
+    if (isset($this->bindings->getByType('cacheserver')[0])) {
+      $cache_binding = $this->bindings->getByType('cacheserver')[0];
+
+      $redis_password = $cache_binding->get('password');
+      $redis_host = $mysql_host = sprintf("cacheserver.%s.%s.drush.in", $this->id, $this->site->getId());
+      $redis_port = $cache_binding->get('port');
+
+      $redis_url = sprintf('redis://pantheon:%s@%s:%s',
+        $redis_password,
+        $redis_host,
+        $redis_port
+      );
+      $redis_command = sprintf('redis-cli -h %s -p %s -a %s',
+        $redis_host,
+        $redis_port,
+        $redis_password
+      );
+
+      $info = array_merge($info, array(
+        'redis_password' => $redis_password,
+        'redis_host'     => $redis_host,
+        'redis_port'     => $redis_port,
+        'redis_url'      => $redis_url,
+        'redis_command'  => $redis_command
+      ));
+    }
+
+    return $info;
   }
 
   /**

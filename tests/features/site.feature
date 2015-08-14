@@ -9,14 +9,6 @@ Feature: site
     """
     service_level
     """
-    And I should get:
-    """
-    sftp://
-    """
-    And I should get:
-    """
-    git://
-    """
 
   Scenario: Site Connection Mode
     @vcr site-connection-mode
