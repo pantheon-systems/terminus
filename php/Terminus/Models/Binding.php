@@ -16,4 +16,17 @@ class Binding {
 
     return $this;
   }
+
+  /**
+   * Returns given attribute, if present
+   *
+   * @param [string] $attribute Name of attribute requested
+   * @return [mixed] $this->attributes->$attributes;
+   */
+  public function get($attribute) {
+    if(isset($this->attributes->$attribute)) {
+      return $this->attributes->$attribute;
+    }
+    return null;
+  }
 }

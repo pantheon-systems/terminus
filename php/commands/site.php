@@ -157,7 +157,7 @@ class Site_Command extends Terminus_Command {
   }
 
   /**
-  * Connection related commands
+  * Change connection mode between SFTP and Git
   *
   * ## OPTIONS
   *
@@ -275,6 +275,43 @@ class Site_Command extends Terminus_Command {
       Terminus::line($site->info($field));
     } else {
       $this->handleDisplay($site->info(), $args);
+    }
+  }
+
+  /**
+   * Retrieve connection info for a specific environment
+   * e.g. git, sftp, mysql, redis
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of the site
+   *
+   * [--env=<env>]
+   * : environment for which to fetch connection info
+   *
+   * [--field=<field>]
+   * : specific field to return
+   *
+   * @subcommand connection-info
+   *
+   */
+  public function connection_info($args, $assoc_args) {
+    $sitename = Input::sitename($assoc_args);
+    $site_id = $this->sitesCache->findID($sitename);
+    $site = new Site($site_id);
+    $env_id = Input::env($assoc_args, 'env', 'Choose environment');
+
+    $site->environmentsCollection->fetch();
+    $environment = $site->environmentsCollection->get($env_id);
+
+    $info = $environment->connectionInfo();
+
+    if (isset($assoc_args['field'])) {
+      $field = $assoc_args['field'];
+      Terminus::line($info[$field]);
+    } else {
+      $this->handleDisplay($info, $args);
     }
   }
 

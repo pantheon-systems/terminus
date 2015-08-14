@@ -22,11 +22,31 @@ class Bindings {
       # Only include bindings for this environment
       if ($binding_data->environment == $this->environment->id) {
         $binding_data->id = $id;
-        $this->models[$id] = new Binding($binding_data, array('collection' => $this));
+        $this->models[$id] = new Binding($binding_data, array(
+          'environment' => $this->environment,
+          'collection' => $this
+        ));
       }
     }
 
     return $this;
+  }
+
+  /**
+   * Get bindings by type (e.g. "appserver", "dbserver", etc)
+   *
+   */
+  public function getByType($type) {
+    $models = array_filter($this->all(), function($binding) use ($type) {
+      return (
+        $binding->get('type') == $type
+        && !$binding->get('failover')
+        && !$binding->get('slave_of')
+      );
+    });
+
+    $models = array_values($models);
+    return $models;
   }
 
   public function get($id) {
