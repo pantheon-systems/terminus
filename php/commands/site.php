@@ -1451,7 +1451,7 @@ class Site_Command extends Terminus_Command {
       // upstream update that has not been applied to Dev.
       $data[$upstream->remote_url] = ($upstream->behind > 0 ? "Updates Available":"Up-to-date");
 
-      $this->_constructTableForResponse($data, array('Upstream','Status') );
+      $this->constructTableForResponse($data, array('Upstream','Status'));
       if (!isset($upstream) OR empty($upstream->update_log)) Terminus::success("No updates to show");
       $upstreams = (array) $upstream->update_log;
       if (!empty($upstreams)) {
