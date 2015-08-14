@@ -44,7 +44,6 @@
 </rule>
 <rule ref="MySource.PHP.GetRequestData"/>
 <rule ref="MySource.PHP.ReturnFunctionValue"/>
-<rule ref="PEAR.Commenting.ClassComment"/>
 <rule ref="PEAR.Commenting.FunctionComment"/>
 <rule ref="PEAR.Commenting.InlineComment"/>
 <rule ref="PEAR.Functions.FunctionCallSignature">
@@ -52,13 +51,11 @@
         <property name="indent" value="2"/>
     </properties>
 </rule>
-<rule ref="PEAR.Functions.FunctionDeclaration"/>
 <rule ref="PEAR.Functions.ValidDefaultValue"/>
 <rule ref="PEAR.NamingConventions.ValidClassName"/>
 <rule ref="PEAR.NamingConventions.ValidVariableName"/>
 <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
 <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"/>
-<rule ref="PSR1.Classes.ClassDeclaration"/>
 <rule ref="PSR1.Files.SideEffects"/>
 <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
 <rule ref="PSR2.ControlStructures.SwitchDeclaration">
@@ -69,4 +66,9 @@
 <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
 <rule ref="PSR2.Namespaces.UseDeclaration"/>
 <rule ref="Squiz.WhiteSpace.CastSpacing"/>
+<rule ref="Squiz.WhiteSpace.FunctionSpacing">
+  <properties>
+    <property name="spacing" value="1"/>
+  </properties>
+</rule>
 </ruleset>
