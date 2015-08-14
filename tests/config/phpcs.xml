@@ -59,11 +59,6 @@
 <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"/>
 <rule ref="PSR1.Files.SideEffects"/>
 <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
-<rule ref="PSR2.ControlStructures.SwitchDeclaration">
-    <properties>
-        <property name="indent" value="2"/>
-    </properties>
-</rule>
 <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
 <rule ref="PSR2.Namespaces.UseDeclaration"/>
 <rule ref="Squiz.WhiteSpace.CastSpacing"/>
