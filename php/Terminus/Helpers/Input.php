@@ -4,7 +4,7 @@ namespace Terminus\Helpers;
 use \Terminus\User;
 use \Terminus\SiteFactory;
 use \Terminus\SitesCache;
-use \Terminus\Products;
+use \Terminus\Upstreams;
 
 /**
  * Helper class to handle inputs
@@ -77,31 +77,6 @@ class Input {
       return $choices[$index];
     }
     return $index;
-  }
-
-  /**
-   * Helper function to select valid product
-   *
-   * @param [array]   $args Args to parse value from
-   * @param [string]  $key  Index to search for in args
-   * @param [boolean] $exit If true, throw error when no value is found
-   *
-   * @return [array] $product
-   */
-  public static function product($args, $key, $exit = true) {
-    if(isset($args[$key])) {
-      $product = Products::getByIdOrName($args[$key]);
-      if(!$product) {
-        \Terminus::error("Couldn't find product: %s", array($args['product']));
-      }
-    } else {
-      $product = \Terminus::menu(Products::selectList());
-      $product = Products::getByIndex($product);
-    }
-    if(!$product AND $exit) {
-      \Terminus::error("Product is required.");
-    }
-    return $product;
   }
 
   /**
@@ -278,6 +253,31 @@ class Input {
       return $default;
     }
     return $string;
+  }
+
+  /**
+   * Helper function to select valid upstream
+   *
+   * @param [array]   $args Args to parse value from
+   * @param [string]  $key  Index to search for in args
+   * @param [boolean] $exit If true, throw error when no value is found
+   *
+   * @return [array] $upstream
+   */
+  public static function upstream($args, $key, $exit = true) {
+    if(isset($args[$key])) {
+      $upstream = Upstreams::getByIdOrName($args[$key]);
+      if(!$upstream) {
+        \Terminus::error("Couldn't find upstream: %s", array($args['upstream']));
+      }
+    } else {
+      $upstream = \Terminus::menu(Upstreams::selectList());
+      $upstream = Upstreams::getByIndex($upstream);
+    }
+    if(!$upstream AND $exit) {
+      \Terminus::error("Upstream is required.");
+    }
+    return $upstream;
   }
 
   /**

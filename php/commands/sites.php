@@ -5,7 +5,7 @@
  */
 use Terminus\Utils;
 use Terminus\Organization;
-use Terminus\Products;
+use Terminus\Upstreams;
 use Terminus\Session;
 use Terminus\SitesCache;
 use Terminus\Site;
@@ -102,8 +102,8 @@ class Sites_Command extends TerminusCommand {
    * [--label=<label>]
    * : Label for the site
    *
-   * [--product=<productid>]
-   * : Specify the upstream product to use
+   * [--upstream=<upstreamid>]
+   * : Specify the upstream upstream to use
    *
    * [--import=<url>]
    * : A url to import a valid archive
@@ -129,9 +129,9 @@ class Sites_Command extends TerminusCommand {
       $options['organization_id'] = $org_id;
     }
     if (!isset($assoc_args['import'])) {
-      $product = Input::product($assoc_args, 'product');
-      $options['product_id'] = $product['id'];
-      Terminus::line(sprintf("Creating new %s installation ... ", $product['longname']));
+      $upstream = Input::upstream($assoc_args, 'upstream');
+      $options['upstream_id'] = $upstream['id'];
+      Terminus::line(sprintf("Creating new %s installation ... ", $upstream['longname']));
     }
 
     $workflow = Site::create($options);

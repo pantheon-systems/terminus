@@ -65,7 +65,7 @@ class Site {
   *   @param $options label(string)
   *   @param $options name(string)
   *   @option $options organization_id(string)
-  *   @option product_id(string)
+  *   @option upstream_id(string)
   *
   * @return Workflow
   *
@@ -80,9 +80,9 @@ class Site {
       $data['organization_id'] = $options['organization_id'];
     }
 
-    if(isset($options['product_id'])) {
+    if(isset($options['upstream_id'])) {
       $data['deploy_product'] = array(
-        'product_id' => $options['product_id']
+        'product_id' => $options['upstream_id']
       );
     }
 
