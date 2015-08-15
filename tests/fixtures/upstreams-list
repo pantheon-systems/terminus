@@ -6,8 +6,8 @@
         headers:
             Host: onebox
             Accept: null
-            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5a9d2a98-2994-11e5-ab54-bc764e117665:i7kxngxfSJXp8uB4IwHk5'
+            User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:ef91768a-42ea-11e5-9114-bc764e117665:eaPg1LebyV6elLvXuE4ip'
     response:
         status:
             http_version: '1.1'
@@ -15,11 +15,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Mon, 13 Jul 2015 19:55:45 GMT'
+            Date: 'Sat, 15 Aug 2015 01:18:54 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 2669a120-2999-11e5-a1e1-0d64ef38b19d
+            X-Pantheon-Trace-Id: 98358420-42eb-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'

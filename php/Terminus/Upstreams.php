@@ -1,15 +1,15 @@
 <?php
+
 namespace Terminus;
 
-class Products {
-  public $products;
+class Upstreams {
+  public $upstreams;
   public $cache;
   public $type;
   public $category;
   public $framework;
 
   private function __construct() {
-
   }
 
   private function hydrate($args) {
@@ -23,14 +23,14 @@ class Products {
   public function query($args=null) {
     if ($args)
       $this->hydrate($args);
-    $this->loadProducts();
-    return $this->products;
+    $this->loadUpstreams();
+    return $this->upstreams;
   }
 
-  private function loadProducts() {
+  private function loadUpstreams() {
     $key = join("-", array( $this->type, $this->category, $this->framework ) );
     $response = \TerminusCommand::request("products", "public", false, "GET");
-    $products = array();
+    $upstreams = array();
     $keys_to_show = array('longname','framework','type','category');
     // we'll use this to sort the list later
     $sort = array();
@@ -51,72 +51,72 @@ class Products {
       foreach( $keys_to_show as $key ) {
         $row[$key] = @$details->attributes->$key;
       }
-      array_push($products, $row);
+      array_push($upstreams, $row);
     }
-    array_multisort( $sort, SORT_ASC, SORT_REGULAR, $products);
-    $this->products = $products;
-    return $products;
+    array_multisort( $sort, SORT_ASC, SORT_REGULAR, $upstreams);
+    $this->upstreams = $upstreams;
+    return $upstreams;
   }
 
   public static function get( $force_array = false ) {
 
-    $products = self::instance();
-    $products->query();
+    $upstreams = self::instance();
+    $upstreams->query();
     if( $force_array ) {
       $array = array();
-      foreach( $products->products as $product ) {
-        $array[] = (array) $product;
+      foreach( $upstreams->upstreams as $upstream) {
+        $array[] = (array)$upstream;
       }
       return $array;
     }
 
-    return $products->products;
+    return $upstreams->upstreams;
   }
 
   public static function selectList() {
-    $products = self::get(TRUE);
+    $upstreams = self::get(TRUE);
     $select = array();
-    foreach( $products as $product ) {
-      $select[] = $product['longname'];
+    foreach( $upstreams as $upstream ) {
+      $select[] = $upstream['longname'];
     }
     return $select;
   }
 
   public static function getByIndex( $index ) {
-    $products = self::get(TRUE);
-    return $products[$index];
+    $upstream = self::get(TRUE);
+    return $upstream[$index];
   }
 
   /**
-   * Search available products by $id
+   * Search available upstreams by $id
    * @param $id string - expects valid uuid-format. i.e. e8fe8550-1ab9-4964-8838-2b9abdccf4bf
    *
-   * @return product array
+   * @return upstream array
    */
   public static function getById($id) {
-    $products = self::get(TRUE);
-    foreach ($products as $product) {
-      if ($product['id'] == $id) {
-        return $product;
+    $upstreams = self::get(TRUE);
+    foreach ($upstreams as $upstream) {
+      if ($upstream['id'] == $id) {
+        return $upstream;
       }
     }
     return false;
   }
 
   /**
-   * Search available products by $id
+   * Search available upstreams by $id
    * @param $id_or_name string - can be $id or name
    *
-   * @return product array
+   * @return upstream array
    */
   public static function getByIdOrName($id_or_name) {
-    $products = self::get(TRUE);
-    foreach ($products as $product) {
-      if ($product['id'] == $id_or_name) {
-        return $product;
+    $upstreams = self::get(TRUE);
+    foreach ($upstreams as $upstream) {
+      if ($upstream['id'] == $id_or_name) {
+        return $upstream;
       }
-      if (strtolower($product['longname']) == strtolower($id_or_name)) {
-        return $product;
+      if (strtolower($upstream['longname']) == strtolower($id_or_name)) {
+        return $upstream;
       }
     }
     return false;

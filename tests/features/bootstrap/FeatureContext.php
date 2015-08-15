@@ -278,13 +278,13 @@ class FeatureContext extends BehatContext {
    * Creates a site for the given name
    * @When /^I create a "([^"]*)" site named "([^"]*)"$/
    *
-   * @param [string] $product Which product to install to the new site
-   * @param [string] $name    Name of site to create
+   * @param [string] $upstream Which upstream to use as new site's source
+   * @param [string] $name     Name of site to create
    * @return [void]
    */
-  public function iCreateASiteNamed($product, $name) {
+  public function iCreateASiteNamed($upstream, $name) {
     $this->iRun(
-      "terminus sites create --site=$name --label=$name --product=\"$product\""
+      "terminus sites create --site=$name --label=$name --upstream=\"$upstream\""
     );
   }
 

@@ -19,6 +19,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `backup get` will not offer in-progress/incomplete backups for download (#386)
 - `backup list` identifies 0-byte backups as "Incomplete" (#386)
 - `site clone-env` is now `site clone-content`. Flags have changed from inclusive --db and --files to exclusive --db-only and --files-only and defaults to cloning both. (#403)
+- `products` is now `upstreams` (#404)
+- The `--product` flag on `sites create` is now `--upstream` (#404)
 
 ### Deprecated
 - `sites delete` will be removed in v1.0.0 (#370)

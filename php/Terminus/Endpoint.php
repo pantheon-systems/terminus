@@ -22,7 +22,7 @@ class Endpoint {
   );
 
   private $public_realms = array(
-    'products',
+    'upstreams',
   );
 
   private $target = 'deprecated';
