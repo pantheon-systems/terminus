@@ -243,8 +243,8 @@ class FeatureContext extends BehatContext {
     */
   public function iCloneTheEnvironment($from_env, $to_env, $site) {
     $this->iRun(
-      "terminus site clone-env
-      --site=$site --from-env=$from_env --to-env=$to_env --yes --db --files"
+      "terminus site clone-content --site=$site
+      --from-env=$from_env --to-env=$to_env --yes"
     );
   }
 

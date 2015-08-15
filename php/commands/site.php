@@ -612,7 +612,8 @@ class Site_Command extends TerminusCommand {
    }
 
   /**
-   * Clone dev to test or test to live
+   * Overwrites the content (database and/or files) of one environment with
+   * content from another environment
    *
    * ## OPTIONS
    *
@@ -625,63 +626,68 @@ class Site_Command extends TerminusCommand {
    * [--to-env]
    * : Environment you want to clone to
    *
-   * [--db]
-   * : Clone the database? (bool) default no
+   * [--db-only]
+   * : Clone only the the database
    *
-   * [--files]
-   * : Clone the files? (bool) default no
+   * [--files-only]
+   * : Clone only the files
    *
-   * @subcommand clone-env
+   * @subcommand clone-content
    */
-   public function clone_env($args, $assoc_args) {
-     $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
-     $site_id = $site->getId();
-     $from_env = Input::env($assoc_args, 'from-env', "Choose environment you want to clone from");
-     $to_env = Input::env($assoc_args, 'to-env', "Choose environment you want to clone to");
+  public function clone_content($args, $assoc_args) {
+    $site     = SiteFactory::instance(Input::sitename($assoc_args));
+    $site_id  = $site->getId();
+    $from_env = $site->environment(Input::env(
+      $assoc_args,
+      'from-env',
+      'Choose environment you want to clone from'
+    ));
+    $to_env   = Input::env(
+      $assoc_args,
+      'to-env',
+      'Choose environment you want to clone to'
+    );
 
-     $db = $files = false;
-     $db = isset($assoc_args['db']) ?: false;
-     $append = array();
-     if ($db) {
-       $append[] = "DATABASE";
-     }
-     $files = isset($assoc_args['files']) ?: false;
-     if ($files) {
-       $append[] = 'FILES';
-     }
-     $append = join(' and ', $append);
+    $db     = isset($assoc_args['db-only']);
+    $files  = isset($assoc_args['files-only']);
+    if (!$files && !$db) {
+      $files = $db = true;
+    }
 
-     if (!$files AND !$db) {
-       \Terminus::error('You must specify something to clone using the the --db and --files flags');
-     }
+    $append = array();
+    if ($db) {
+      $append[] = "DATABASE";
+    }
+    if ($files) {
+      $append[] = 'FILES';
+    }
+    $append  = implode(' and ', $append);
+    $confirm = sprintf(
+      "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
+      strtoupper($from_env->getName()),
+      strtoupper($to_env),
+      $append
+    );
+    \Terminus::confirm($confirm);
 
-     $confirm = sprintf("Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n", strtoupper($from_env), strtoupper($to_env), $append);
-     \Terminus::confirm($confirm);
+    if (!$this->envExists($site_id, $to_env) ) {
+      \Terminus::error('The %s environment was not found.', $to_env);
+    }
 
-      if ( !$this->envExists($site_id, $to_env) ) {
-        \Terminus::error("The %s environment was not found.", $to_env);
-      }
-
-     if ($db) {
-       print "Cloning database ... ";
-       $workflow = $site->workflows->create("clone_database", array(
-         'environment' => $to_env,
-         'params' => array('from_environment' => $from_env)
-       ));
-       $workflow->wait();
-     }
-
-     if ($files) {
-      print "Cloning files ... ";
-      $workflow = $site->workflows->create("clone_files", array(
-        'environment' => $to_env,
-        'params' => array('from_environment' => $from_env)
-      ));
+    if ($db) {
+      \Terminus::line('Cloning database ... ');
+      $workflow = $from_env->cloneDatabase($to_env);
       $workflow->wait();
-     }
-     \Terminus::success("Clone complete!");
-     return true;
-   }
+    }
+
+    if ($files) {
+      \Terminus::line('Cloning files ... ');
+      $workflow = $from_env->cloneFiles($to_env);
+      $workflow->wait();
+    }
+    \Terminus::success('Clone complete!');
+    return true;
+  }
 
   /**
    * Create a MultiDev environment
