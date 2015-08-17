@@ -6,7 +6,7 @@ use \Terminus\Dispatcher;
 use \Terminus\Iterators\Transform;
 use \ArrayIterator;
 
-if(!defined('JSON_PRETTY_PRINT')) {
+if (!defined('JSON_PRETTY_PRINT')) {
   define('JSON_PRETTY_PRINT', 128);
 }
 
@@ -31,7 +31,7 @@ function assoc_args_to_str($assoc_args) {
   $return = '';
 
   foreach ($assoc_args as $key => $value) {
-    if($value === true) {
+    if ($value === true) {
       $return .= " --$key";
     } else {
       $return .= " --$key=" . escapeshellarg($value);
@@ -49,12 +49,12 @@ function assoc_args_to_str($assoc_args) {
  */
 function bash_out($array) {
   $output = '';
-  foreach($array as $index => $row) {
-    if(is_array($row) OR is_object($row)) {
+  foreach ($array as $index => $row) {
+    if (is_array($row) OR is_object($row)) {
       $row = (array)$row;
       $row = join(' ', $row);
     }
-    if(!is_numeric($index)) {
+    if (!is_numeric($index)) {
       $output .= "$index ";
     }
     $output .= $row . PHP_EOL;
@@ -75,10 +75,10 @@ function destination_is_valid($destination, $make = true) {
   }
 
   if (!is_dir($destination)) {
-    if(!$make) {
+    if (!$make) {
       $make = \Terminus::confirm("Directory does not exists. Create it now?");
     }
-    if($make) {
+    if ($make) {
       mkdir($destination, 0755);
     }
   }
@@ -94,7 +94,7 @@ function destination_is_valid($destination, $make = true) {
  * @return [string] $final_cmd Parameter-escaped command
  */
 function esc_cmd($cmd) {
-  if(func_num_args() < 2) {
+  if (func_num_args() < 2) {
     trigger_error('esc_cmd() requires at least two arguments.', E_USER_WARNING);
   }
   $args      = func_get_args();
@@ -116,24 +116,24 @@ function esc_cmd($cmd) {
  */
 function find_file_upward($files, $dir = null, $stop_check = null) {
   $files = (array)$files;
-  if(is_null($dir)) {
+  if (is_null($dir)) {
     $dir = getcwd();
   }
-  while(is_readable($dir)) {
+  while (is_readable($dir)) {
     //Stop walking when the supplied callable returns true being passed the $dir
-    if(is_callable($stop_check) && call_user_func($stop_check, $dir)) {
+    if (is_callable($stop_check) && call_user_func($stop_check, $dir)) {
       return null;
     }
 
     foreach ($files as $file) {
       $path = $dir . DIRECTORY_SEPARATOR . $file;
-      if(file_exists($path)) {
+      if (file_exists($path)) {
         return $path;
       }
     }
 
     $parent_dir = dirname($dir);
-    if(empty($parent_dir) || ($parent_dir === $dir)) {
+    if (empty($parent_dir) || ($parent_dir === $dir)) {
       break;
     }
     $dir = $parent_dir;
@@ -193,8 +193,8 @@ function get_vendor_paths() {
  */
 function handle_exception($exception) {
   $trace = $exception->getTrace();
-  if(!empty($trace) AND \Terminus::get_config('verbose')) {
-    foreach($exception->getTrace() as $line) {
+  if (!empty($trace) AND \Terminus::get_config('verbose')) {
+    foreach ($exception->getTrace() as $line) {
       $out_line = sprintf(
         "%s%s%s [%s:%s]",
         $line['class'],
@@ -283,15 +283,15 @@ function is_windows() {
  * @return [object] $iterator An iterator that applies the given callback(s)
  */
 function iterator_map($iterator, $function) {
-  if(is_array($iterator)) {
+  if (is_array($iterator)) {
     $iterator = new \ArrayIterator($iterator);
   }
 
-  if(!method_exists($iterator, 'add_transform')) {
+  if (!method_exists($iterator, 'add_transform')) {
     $iterator = new Transform($iterator);
   }
 
-  foreach(array_slice(func_get_args(), 1) as $function) {
+  foreach (array_slice(func_get_args(), 1) as $function) {
     $iterator->add_transform($function);
   }
 
@@ -323,8 +323,8 @@ function load_all_commands() {
 
   $iterator = new \DirectoryIterator($cmd_dir);
 
-  foreach($iterator as $filename) {
-    if(substr($filename, -4) != '.php') {
+  foreach ($iterator as $filename) {
+    if (substr($filename, -4) != '.php') {
       continue;
     }
 
@@ -341,7 +341,7 @@ function load_all_commands() {
 function load_command($name) {
   $path = TERMINUS_ROOT . "/php/commands/$name.php";
 
-  if(is_readable($path)) {
+  if (is_readable($path)) {
     include_once $path;
   }
 }
@@ -352,15 +352,15 @@ function load_command($name) {
  * @return [void]
  */
 function load_dependencies() {
-  if(strpos(TERMINUS_ROOT, 'phar:') === 0) {
+  if (strpos(TERMINUS_ROOT, 'phar:') === 0) {
     require TERMINUS_ROOT . '/vendor/autoload.php';
     return;
   }
 
   $has_autoload = false;
 
-  foreach(get_vendor_paths() as $vendor_path) {
-    if(file_exists($vendor_path . '/autoload.php') ) {
+  foreach (get_vendor_paths() as $vendor_path) {
+    if (file_exists($vendor_path . '/autoload.php') ) {
       require $vendor_path . '/autoload.php';
       $has_autoload = true;
       break;
@@ -393,7 +393,7 @@ function load_file($path) {
  */
 function launch_editor_for_input($input, $title = 'Terminus') {
   $tmpfile = wp_tempnam($title);
-  if(!$tmpfile) {
+  if (!$tmpfile) {
     \Terminus::error('Error creating temporary file.');
   }
 
@@ -401,8 +401,8 @@ function launch_editor_for_input($input, $title = 'Terminus') {
   file_put_contents($tmpfile, $input);
 
   $editor = getenv('EDITOR');
-  if(!$editor) {
-    if(isset($_SERVER['OS']) && (strpos($_SERVER['OS'], 'indows') !== false)) {
+  if (!$editor) {
+    if (isset($_SERVER['OS']) && (strpos($_SERVER['OS'], 'indows') !== false)) {
       $editor = 'notepad';
     } else {
       $editor = 'vi';
@@ -428,7 +428,7 @@ function launch_editor_for_input($input, $title = 'Terminus') {
  * @return [\cli\progress\Bar] $progress_bar Object which handles display of bar
  */
 function make_progress_bar($message, $count) {
-  if(\cli\Shell::isPiped()) {
+  if (\cli\Shell::isPiped()) {
     return new \Terminus\NoOp;
   }
 
@@ -478,7 +478,7 @@ function mysql_host_to_cli_args($raw_host) {
     if (is_numeric($extra)) {
       $assoc_args['port']     = intval($extra);
       $assoc_args['protocol'] = 'tcp';
-    } elseif($extra !== '') {
+    } elseif ($extra !== '') {
       $assoc_args['socket'] = $extra;
     }
   } else {
@@ -498,7 +498,7 @@ function mysql_host_to_cli_args($raw_host) {
 function parse_url($url) {
   $url_parts = \parse_url($url);
 
-  if(!isset($url_parts['scheme'])) {
+  if (!isset($url_parts['scheme'])) {
     $url_parts = parse_url('http://' . $url);
   }
 
@@ -550,7 +550,7 @@ function replace_path_consts($source, $path) {
  */
 function result_get_response_fields($result) {
   $iter = new ArrayIterator($result);
-  if(!$iter) {
+  if (!$iter) {
     return false;
   }
   $keys = array_keys((array)$iter->current());
@@ -567,7 +567,7 @@ function result_get_response_fields($result) {
  */
 function result_is_multiobj($array) {
   $iter = new ArrayIterator($array);
-  if(is_object($iter->current()) || is_array($iter->current())) {
+  if (is_object($iter->current()) || is_array($iter->current())) {
     return true;
   }
   unset($iter);
@@ -583,11 +583,11 @@ function result_is_multiobj($array) {
  * @return [void]
  */
 function run_mysql_command($cmd, $assoc_args, $descriptors = null ) {
-  if(!$descriptors) {
+  if (!$descriptors) {
     $descriptors = array(STDIN, STDOUT, STDERR);
   }
 
-  if(isset($assoc_args['host'])) {
+  if (isset($assoc_args['host'])) {
     $assoc_args = array_merge(
       $assoc_args,
       mysql_host_to_cli_args($assoc_args['host'])
@@ -595,7 +595,7 @@ function run_mysql_command($cmd, $assoc_args, $descriptors = null ) {
   }
 
   $env = (array)$_ENV;
-  if(isset($assoc_args['pass'])) {
+  if (isset($assoc_args['pass'])) {
     $env['MYSQL_PWD'] = $assoc_args['pass'];
     unset($assoc_args['pass']);
   }
@@ -603,13 +603,13 @@ function run_mysql_command($cmd, $assoc_args, $descriptors = null ) {
   $final_cmd = $cmd . assoc_args_to_str($assoc_args);
 
   $proc = proc_open($final_cmd, $descriptors, $pipes, null, $env);
-  if(!$proc) {
+  if (!$proc) {
     exit(1);
   }
 
   $status = proc_close($proc);
 
-  if($status) {
+  if ($status) {
     exit($status);
   }
 }
@@ -651,12 +651,12 @@ function sql_from_zip($filename) {
  * @return [void]
  */
 function write_csv($file_descriptor, $rows, $headers = array()) {
-  if(!empty($headers)) {
+  if (!empty($headers)) {
     fputcsv($file_descriptor, $headers);
   }
 
-  foreach($rows as $row) {
-    if(!empty($headers)) {
+  foreach ($rows as $row) {
+    if (!empty($headers)) {
       $row = pick_fields($row, $headers);
     }
 
