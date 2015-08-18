@@ -246,6 +246,33 @@ class Site_Command extends TerminusCommand {
     }
   }
 
+   /**
+    * Delete a site from pantheon
+    *
+    * ## OPTIONS
+    * [--site=<site>]
+    * : ID of the site you want to delete
+    *
+    * [--force]
+    * : to skip the confirmations
+    */
+   public function delete($args, $assoc_args) {
+     $sitename = Input::sitename($assoc_args);
+     $site_id = $this->sitesCache->findID($sitename);
+     $site_to_delete = new Site($site_id);
+
+     if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
+       // if the force option isn't used we'll ask you some annoying questions
+       Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
+       Terminus::confirm( "Are you really sure?" );
+     }
+     Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
+     $response = \TerminusCommand::request( 'sites', $site_to_delete->id, '', 'DELETE' );
+
+     $this->sitesCache->remove($sitename);
+     Terminus::success("Deleted %s!", $sitename);
+   }
+
   /**
    * Retrieve information about the site
    *
@@ -1194,30 +1221,6 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
-   * List a site's job history
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : Site to deploy from
-  **/
-  public function jobs($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::sitename($assoc_args));
-    $jobs = $site->jobs();
-    $data = array();
-    foreach ($jobs as $job) {
-      $data[] = array(
-        'slot' => $job->slot,
-        'name' => $job->human_name,
-        'env'  => @$job->environment,
-        'status'  => $job->status,
-        'updated' => $job->changed
-      );
-    }
-    $this->handleDisplay($data,$args);
-  }
-
-  /**
    * Mount a site with sshfs
    *
    * ## OPTIONS
@@ -1281,32 +1284,6 @@ class Site_Command extends TerminusCommand {
     } else {
       Logger::coloredOutput("%YNew Relic is not enabled.%n");
     }
-  }
-
-  /**
-  * Open the Pantheon site dashboard a browser
-  *
-  * ## OPTIONS
-  *
-  * [--site=<site>]
-  * : site for which to retreive notifications
-  *
-  */
-  public function notifications($args, $assoc_args) {
-    $site = SiteFactory::instance(Input::sitename($assoc_args));
-    $notifications = $site->notifications();
-    $data = array();
-    foreach ($notifications as $note) {
-      $data[] = array(
-        'time'  => $note->start,
-        'name'  => $note->name,
-        'id'    => $note->build->number."@".$note->build->environment->HOSTNAME,
-        'status'=> $note->build->status,
-        'phase' => $note->build->phase,
-        'duration' => $note->build->estimated_duration,
-      );
-    }
-    $this->handleDisplay($data);
   }
 
   /**
@@ -1683,32 +1660,42 @@ class Site_Command extends TerminusCommand {
     Terminus::success(sprintf("Successfully wiped %s - %s", $site->getName(), $environment_id));
   }
 
-   /**
-    * Delete a site from pantheon
-    *
-    * ## OPTIONS
-    * [--site=<site>]
-    * : ID of the site you want to delete
-    *
-    * [--force]
-    * : to skip the confirmations
-    */
-   function delete($args, $assoc_args) {
-     $sitename = Input::sitename($assoc_args);
-     $site_id = $this->sitesCache->findID($sitename);
-     $site_to_delete = new Site($site_id);
-
-     if (!isset($assoc_args['force']) AND !Terminus::get_config('yes')) {
-       // if the force option isn't used we'll ask you some annoying questions
-       Terminus::confirm( sprintf( "Are you sure you want to delete %s?", $site_to_delete->information->name ));
-       Terminus::confirm( "Are you really sure?" );
-     }
-     Terminus::line( sprintf( "Deleting %s ...", $site_to_delete->information->name ) );
-     $response = \TerminusCommand::request( 'sites', $site_to_delete->id, '', 'DELETE' );
-
-     $this->sitesCache->remove($sitename);
-     Terminus::success("Deleted %s!", $sitename);
-   }
+  /**
+   * List a site's workflows
+   *
+   * ## OPTIONS
+   * [--site=<site>]
+   * : Site to check
+   *
+   * @subcommand workflows
+   */
+  public function workflows($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $workflows = $site->getWorkflows();
+    $data = array();
+    foreach($workflows as $workflow) {
+      $user = 'Pantheon';
+      if (isset($workflow->get('user')->email)) {
+        $user = $workflow->get('user')->email;
+      }
+      $data[] = array(
+        'workflow'       => $workflow->get('description'),
+        'user'           => $user,
+        'status'         => $workflow->get('phase'),
+        'last_update'    => date(
+          'Y-m-dTH:i:s',
+          ($workflow->get('created_at') + $workflow->get('total_time'))
+        ),
+        'tasks/complete' => 
+          $workflow->get('step') . '/' . $workflow->get('number_of_tasks'),
+      );
+    }
+    if (count($data) > 0) {
+      $this->constructTableForResponse($data);
+    } else {
+      Terminus::error('No workflows have been run on ' . $site->getName());
+    }
+  }
 }
 
 \Terminus::add_command( 'site', 'Site_Command' );

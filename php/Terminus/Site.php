@@ -19,7 +19,6 @@ class Site {
   public $environments = array();
   public $environmentsCollection;
   public $information;
-  public $jobs;
   public $metadata;
   public $workflows;
 
@@ -259,17 +258,6 @@ class Site {
   }
 
   /**
-   * fetch jobs
-  **/
-  public function jobs() {
-    if (!$this->jobs) {
-      $response = \TerminusCommand::request('sites', $this->getId(), 'jobs', 'GET');
-      $this->jobs = $response['data'];
-    }
-    return $this->jobs;
-  }
-
-  /**
    * Retrieve New Relic Info
    */
   public function newRelic() {
@@ -277,16 +265,6 @@ class Site {
     $response = \TerminusCommand::request('sites', $this->getId(), 'new-relic', 'GET');
     return $response['data'];
   }
-
-  /**
-   * fetch notifications
-  **/
-  public function notifications() {
-    $path = 'notifications';
-    $data = \TerminusCommand::request('sites', $this->getId(), $path, 'GET');
-    return $data['data'];
-  }
-
 
   /**
    * Import Archive
@@ -548,6 +526,7 @@ class Site {
   }
 
   /**
+<<<<<<< HEAD
    * Returns tags from the site/org join
    *
    * @return [array] $tags Tags in string format
@@ -583,5 +562,15 @@ class Site {
   public function getOrganizations() {
     $orgs = $this->org_memberships->fetch()->all();
     return $orgs;
+  }
+
+  /**
+   * Retrieves a list of workflows run and running on this site
+   *
+   * @return [array] $workflows An array of Workflow objects
+   */
+  public function getWorkflows() {
+    $workflows = $this->workflows->fetchPaged()->all();
+    return $workflows;
   }
 }

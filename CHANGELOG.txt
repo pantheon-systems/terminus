@@ -12,6 +12,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site delete-env` now has an optional --remove-branch flag (#395)
 - Environment variables for --site (TERMINUS_SITE), --org (TERMINUS_ORG), --env (TERMINUS_ENV), and user (TERMINUS_USER). User may import these themselves, or add them to the .env file in the user's current directory. (#407)
 - `site tags <add|remove> --site=<site> --org=<org> --tag=<tag>` command will add tags to an organization site (#417)
+- `site workflows` commmand will show all workflows run on the site and their statuses (replaces `site jobs` and `site notifications`) (#412)
 
 ### Fixed
 - `organizations sites` shows all the organization's sites, not just the first 100 (#371)
@@ -28,6 +29,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Deprecated
 - `sites delete` will be removed in v1.0.0 (#370)
+- `site jobs` will be removed in v0.7.0 (#412)
+- `site notifications` will be removed in v0.7.0 (#412)
 
 ##[0.6.1] - 2015-08-11
 ### Fixed
