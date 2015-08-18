@@ -21,8 +21,8 @@ include TERMINUS_ROOT . '/php/class-terminus-command.php';
 \Terminus\Utils\load_dependencies();
 
 //Load environment variables from __DIR__/.env
-if (file_exists(__DIR__ . '/.env')) {
-  $env = new Dotenv\Dotenv(__DIR__);
+if (file_exists(getcwd() . '/.env')) {
+  $env = new Dotenv\Dotenv(getcwd());
   $env->load();
 }
 
