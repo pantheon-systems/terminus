@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site team add-member` now has a required --role flag (For sites with the proper access level) (#388)
 - `site delete-branch` will delete a multidev environment's branch (For sites with multidev access) (#395)
 - `site delete-env` now has an optional --remove-branch flag (#395)
+- Environment variables for --site (TERMINUS_SITE), --org (TERMINUS_ORG), --env (TERMINUS_ENV), and user (TERMINUS_USER). User may import these themselves, or add them to the .env file in the user's current directory. (#407)
 
 ### Fixed
 - `organizations sites` shows all the organization's sites, not just the first 100 (#371)
