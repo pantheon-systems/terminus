@@ -5,7 +5,7 @@ define('Terminus', true);
 define('TERMINUS_VERSION', '0.6.1');
 
 $source = 'unknown';
-if((PHP_SAPI == 'cli') && isset($argv)) {
+if ((PHP_SAPI == 'cli') && isset($argv)) {
   $source = explode('/', $argv[0]);
   $source = end($source);
 }
@@ -20,10 +20,16 @@ include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
 \Terminus\Utils\load_dependencies();
 
+//Load environment variables from __DIR__/.env
+if (file_exists(__DIR__ . '/.env')) {
+  $env = new Dotenv\Dotenv(__DIR__);
+  $env->load();
+}
+
 //Set a custom exception handler
 set_exception_handler('\Terminus\Utils\handle_exception');
 
-if(isset($_SERVER['TERMINUS_HOST']) && $_SERVER['TERMINUS_HOST'] != '')  {
+if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
   define('TERMINUS_HOST', $_SERVER['TERMINUS_HOST']);
 } else {
   define('TERMINUS_HOST', 'dashboard.getpantheon.com');
@@ -31,7 +37,7 @@ if(isset($_SERVER['TERMINUS_HOST']) && $_SERVER['TERMINUS_HOST'] != '')  {
 
 define('TERMINUS_PORT', '443');
 
-if(isset($_SERVER['VCR_CASSETTE'])) {
+if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
   \VCR\VCR::configure()->setMode($_SERVER['VCR_MODE']);
   \VCR\VCR::turnOn();
@@ -40,7 +46,7 @@ if(isset($_SERVER['VCR_CASSETTE'])) {
 
 Terminus::get_runner()->run();
 
-if(isset($_SERVER['VCR_CASSETTE'])) {
+if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::eject();
   \VCR\VCR::turnOff();
 }

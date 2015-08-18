@@ -527,10 +527,10 @@ class FeatureContext extends BehatContext {
     $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
     if($this->_cassette_name) {
       $command = 'VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
-      if(isset($this->_parameters['vcr_mode'])) {
-        $command = 'VCR_MODE=' . $this->_parameters['vcr_mode']
-          . ' ' . $command;
-      }
+    }
+    if(isset($this->_parameters['vcr_mode'])) {
+      $command = 'VCR_MODE=' . $this->_parameters['vcr_mode']
+        . ' ' . $command;
     }
     if(isset($this->_connection_info['host'])) {
       $command = 'TERMINUS_HOST=' . $this->_connection_info['host']
