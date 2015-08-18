@@ -27,33 +27,20 @@ class Input {
       $label = 'Choose environment',
       $choices = null
   ) {
-    if(!$choices) {
+    if (!$choices) {
       $choices = array('dev', 'test', 'live');
     }
     if (isset($args[$key])) {
       return $args[$key];
     }
+    if (in_array($key, array('env', 'from-env'))) {
+      if(isset($_SERVER['TERMINUS_ENV'])) {
+        return $_SERVER['TERMINUS_ENV'];
+      }
+    }
 
     $menu = self::menu($choices, $default = 'dev', $label, true);
     return $menu;
-  }
-
-  /**
-   * Helper function to get environment name
-   *
-   * @param [string] $message Prompt to STDOUT
-   * @return [string] $env Name of environment to work on
-   */
-  static public function environment($message = 'Specify an environment') {
-    if(!$env || (array_search($env, $envs) === false)) {
-      $env = \Terminus::menu($envs, null, $message);
-      $env = $envs[$env];
-    }
-    if(!$env) {
-      \Terminus::error("Environment '%s' unavailable", array($env));
-    }
-
-    return $env;
   }
 
   /**
@@ -102,20 +89,35 @@ class Input {
    * @param [string] $default Returned if arg and stdin fail in interactive
    * @return [string] ID of selected organization
   */
-  public static function orgid($args, $key, $default = null, $options = array()) {
-    $allow_none = isset($options['allow_none']) ? $options['allow_none'] : true;
+  public static function orgid(
+    $args,
+    $key,
+    $default = null,
+    $options = array()
+  ) {
+    $allow_none = true;
+    if (isset($options['allow_none'])) {
+      $allow_none = $options['allow_none'];
+    }
+    $arguments = $args;
+    if(!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
+      $arguments[$key] = $_SERVER['TERMINUS_ORG'];
+    }
 
     $orglist = Input::orglist();
     $flip    = array_flip($orglist);
-    if(isset($args[$key]) && array_key_exists($args[$key], $flip)) {
-      // if we have a valid name provided and we need the id
-      return $flip[$args[$key]];
-    } elseif(isset($args[$key]) && array_key_exists($args[$key], $orglist)) {
-      return $args[$key];
-    } elseif(
-      isset($args[$key])
-      && in_array($args[$key], self::$NULL_INPUTS)
-      || !empty($args)
+    if (isset($arguments[$key]) && array_key_exists($arguments[$key], $flip)) {
+      //If we have a valid name provided, we need the UUID
+      return $flip[$arguments[$key]];
+    } elseif (
+      isset($arguments[$key])
+      && array_key_exists($arguments[$key], $orglist)
+    ) {
+      return $arguments[$key];
+    } elseif (
+      isset($arguments[$key])
+      && in_array($arguments[$key], self::$NULL_INPUTS)
+      || !empty($arguments)
     ) {
       return $default;
     }
@@ -215,6 +217,9 @@ class Input {
     // return early if sitename is provided in args
     if(isset($args[$key])) {
       return $args[$key];
+    }
+    if(isset($_SERVER['TERMINUS_SITE'])) {
+      return $_SERVER['TERMINUS_SITE'];
     }
     $sitesCache = new SitesCache();
     $sitenames = array_map(function($site_cache) {

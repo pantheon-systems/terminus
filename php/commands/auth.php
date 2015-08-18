@@ -50,7 +50,11 @@ class Auth_Command extends TerminusCommand {
 
     # Otherwise do a normal email/password-based login
     if ( empty( $args ) ) {
-      $email = Terminus::prompt( "Your email address?", NULL );
+      if (isset($_SERVER['TERMINUS_USER'])) {
+        $email = $_SERVER['TERMINUS_USER'];
+      } else {
+        $email = Terminus::prompt( "Your email address?", NULL );
+      }
     }
     else {
       $email = $args[0];

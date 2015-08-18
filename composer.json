@@ -9,17 +9,18 @@
   ],
   "require": {
     "php": ">=5.3.2",
+    "guzzle/guzzle": "3.9.*@stable",
     "jlogsdon/cli": "~0.9.4",
     "mustache/mustache": "~2.4",
+    "nb/oxymel": "0.1.0",
+    "psy/psysh": "@stable",
     "ramsey/array_column": "~1.1",
     "rmccue/requests": "~1.6",
     "symfony/finder": "~2.7",
     "symfony/process": "2.7.*@dev",
     "symfony/dom-crawler": "2.7",
     "symfony/css-selector": "2.7",
-    "guzzle/guzzle": "3.9.*@stable",
-    "nb/oxymel": "0.1.0",
-    "psy/psysh": "@stable"
+    "vlucas/phpdotenv": "2.0.*@stable"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },

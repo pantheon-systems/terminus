@@ -114,7 +114,7 @@ class Sites_Command extends TerminusCommand {
    */
   public function create($args, $assoc_args) {
     $options = array();
-    $options['label'] = Input::string($assoc_args, 'label', "Human readable label for the site");
+    $options['label'] = Input::string($assoc_args, 'label', "Human-readable label for the site");
     $suggested_name = Utils\sanitize_name( $options['label'] );
 
     if (array_key_exists('name', $assoc_args)) {
@@ -122,6 +122,8 @@ class Sites_Command extends TerminusCommand {
       $options['name'] = $assoc_args['name'];
     } elseif (array_key_exists('site', $assoc_args)) {
       $options['name'] = $assoc_args['site'];
+    } elseif (isset($_SERVER['TERMINUS_SITE'])) {
+      $options['name'] = $_SERVER['TERMINUS_SITE'];
     } else {
       $options['name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)", $suggested_name);
     }
