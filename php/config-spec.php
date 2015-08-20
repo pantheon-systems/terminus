@@ -31,12 +31,6 @@ return array(
     'default' => false,
     'desc' => 'Force json output',
   ),
-  'nocache' => array(
-    'runtime' => '',
-    'file'  => '<bool>',
-    'default' => false,
-    'desc'  => '[DEPRECATED] Bypass cache',
-  ),
   'debug' => array(
     'runtime' => '',
     'file'  => '<bool>',

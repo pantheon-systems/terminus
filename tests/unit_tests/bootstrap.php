@@ -10,7 +10,6 @@ putenv('CLI_TEST_MODE=1');
 
 require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
-Terminus::set_config('nocache', true);
 Terminus::set_config('debug', false);
 use Terminus\Session;
 
