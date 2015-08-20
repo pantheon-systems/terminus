@@ -22,7 +22,7 @@ use \Symfony\Component\Process\Process;
      $this->assertInstanceOf('\Terminus\Site',$site);
      $this->assertObjectHasAttribute("id",$site);
      $this->assertObjectHasAttribute("information",$site);
-     $this->assertObjectHasAttribute("jobs",$site);
+     $this->assertObjectHasAttribute("workflows",$site);
      $this->assertObjectHasAttribute("environments",$site);
      $this->assertObjectHasAttribute("id",$site);
    }

@@ -59,6 +59,20 @@ class Workflows {
     return $model;
   }
 
+  public function fetchPaged() {
+    $results = TerminusCommand::paged_request($this->url());
+
+    foreach ($results['data'] as $model_data) {
+      $model = new Workflow($model_data, array(
+        'owner' => $this->owner,
+        'owner_type' => $this->owner_type,
+      ));
+      $this->add($model);
+    }
+
+    return $this;
+  }
+
   public function fetch() {
     $results = TerminusCommand::simple_request($this->url());
 

@@ -73,4 +73,12 @@ class Workflow {
        \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
      }
    }
+
+  public function get($attribute) {
+    if(isset($this->attributes->$attribute)) {
+      return $this->attributes->$attribute;
+    }
+    return null;
+  }
+
 }

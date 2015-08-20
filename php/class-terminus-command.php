@@ -351,7 +351,7 @@ abstract class TerminusCommand {
           }
         } else {
           Terminus::error(
-            PHP_EOL . "Couldn't complete jobs: '$type'" . PHP_EOL
+            PHP_EOL . "Couldn't complete workflows: '$type'" . PHP_EOL
           );
         }
       }
