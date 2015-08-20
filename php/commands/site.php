@@ -1403,6 +1403,82 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
+   * Manage site organization tags
+   *
+   * ## OPTIONS
+   *
+   * <add|remove>
+   * : subfunction to run
+   *
+   * [--site=<site>]
+   * : Site's name
+   *
+   * [--org=<name|id>]
+   * : Organization to apply tag with
+   *
+   * [--tag=<tag>]
+   * : Tag to add or remove
+   *
+   * @subcommand tags
+   */
+  public function tags($args, $assoc_args) {
+    $action  = array_shift($args);
+    $site    = SiteFactory::instance(Input::sitename($assoc_args));
+    $org     = Input::orgid($assoc_args, 'org');
+    if ($site->organizationIsMember($org)) {
+      $data = array();
+      switch ($action) {
+        case 'add':
+          $verb     = 'added to';
+          $tag      = Input::string($assoc_args, 'tag', 'Enter a tag to add');
+          $response = $site->addTag($tag, $org);
+          break;
+        case 'remove':
+          $verb    = 'removed from';
+          $tags   = $site->getTags($org);
+          if (count($tags) === 0) {
+            Terminus::error(
+              'This organization does not have any tags'
+              . ' associated with this site.'
+            );
+          } elseif (
+            !isset($assoc_args['tag'])
+            || !in_array($assoc_args['tag'], $tags)
+          ) {
+            $tag = $tags[Input::menu($tags, null, 'Select a tag to delete')];
+          } else {
+            $tag = $assoc_args['tag'];
+          }
+          $response = $site->removeTag($tag, $org);
+          break;
+      }
+      $message  = 'Tag %s %s %s %s';
+      $messages = array(
+        'success' => sprintf(
+          $message,
+          '"' . $tag . '"',
+          'has been',
+          $verb,
+          $site->getName()
+        ),
+        'failure' => sprintf(
+          $message,
+          '"' . $tag . '"',
+          'could not be',
+          $verb,
+          $site->getName()
+        )
+      );
+      $this->responseOutput($response, $messages);
+    } else {
+      Terminus::error(
+        $site->getName() . ' is not a member of an organization, '
+        . 'which is necessary to associate a tag with a site.'
+      );
+    }
+  }
+
+  /**
   * Get or set team members
   *
   * ## OPTIONS

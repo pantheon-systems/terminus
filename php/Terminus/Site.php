@@ -8,6 +8,8 @@ use \Terminus\Environment;
 use \Terminus\SiteUserMembership;
 use Terminus\Collections\Environments;
 use Terminus\Collections\SiteUserMemberships;
+use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\Workflows;
 
 class Site {
@@ -22,6 +24,8 @@ class Site {
   public $workflows;
 
   private $features;
+  private $org_memberships;
+  private $tags;
   private $user_memberships;
 
   /**
@@ -36,7 +40,7 @@ class Site {
       $this->id = $attributes->id;
     }
 
-    if (property_exists($attributes, 'information')) {
+    if (is_object($attributes) && property_exists($attributes, 'information')) {
       # If the attributes has `information` property
       # unwrap it and massage the data into proper format
       $this->attributes = $attributes->information;
@@ -52,6 +56,7 @@ class Site {
     $this->metadata = @$this->attributes->metadata ?: new \stdClass();
     # /deprecated properties
 
+    $this->org_memberships = new SiteOrganizationMemberships(array('site' => $this));
     $this->user_memberships = new SiteUserMemberships(array('site' => $this));
     $this->environmentsCollection = new Environments(array('site' => $this));
     $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'site'));
@@ -501,6 +506,35 @@ class Site {
   }
 
   /**
+   * Adds a tag to the site
+   *
+   * @param [string] $tag Tag to apply
+   * @return [array] $response
+   */
+  public function addTag($tag, $org) {
+    $params   = array($tag => array('sites' => array($this->id)));
+    $response = TerminusCommand::simple_request(
+      sprintf('organizations/%s/tags', $org),
+      array('method' => 'put', 'data' => $params)
+    );
+    return $response;
+  }
+
+  /**
+   * Removes a tag to the site
+   *
+   * @param [string] $tag Tag to remove
+   * @return [array] $response
+   */
+  public function removeTag($tag, $org) {
+    $response = TerminusCommand::simple_request(
+      sprintf('organizations/%s/tags/%s/sites?entity=%s', $org, $tag, $this->id),
+      array('method' => 'delete')
+    );
+    return $response;
+  }
+
+  /**
    * Returns given attribute, if present
    *
    * @param [string] $attribute Name of attribute requested
@@ -511,5 +545,43 @@ class Site {
       return $this->attributes->$attribute;
     }
     return null;
+  }
+
+  /**
+   * Returns tags from the site/org join
+   *
+   * @return [array] $tags Tags in string format
+   */
+  public function getTags($org) {
+    if (isset($this->tags)) {
+      return $this->tags;
+    }
+    $org_site_member = new OrganizationSiteMemberships(
+      array('organization' => new Organization($org))
+    );
+    $tags            = $org_site_member->fetch()->get($this->id)->get('tags');
+    return $tags;
+  }
+
+  /**
+   * Returns all organization members of this site
+   *
+   * @param [string] $uuid UUID of organization to check for
+   * @return [boolean] True if organization is a member of this site
+   */
+  public function organizationIsMember($uuid) {
+    $org_ids       = $this->org_memberships->fetch()->ids();
+    $org_is_member = in_array($uuid, $org_ids);
+    return $org_is_member;
+  }
+
+  /**
+   * Returns all organization members of this site
+   *
+   * @return [array] Array of SiteOrganizationMemberships
+   */
+  public function getOrganizations() {
+    $orgs = $this->org_memberships->fetch()->all();
+    return $orgs;
   }
 }
