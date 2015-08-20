@@ -402,10 +402,10 @@ class Site_Command extends TerminusCommand {
   * [--keep-for]
   * : Number of days to keep this backup
   *
-  * @subcommand backup
+  * @subcommand backups
   *
   */
-   public function backup($args, $assoc_args) {
+   public function backups($args, $assoc_args) {
      $action = array_shift($args);
      $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
      $env = Input::env($assoc_args, 'env');

@@ -432,7 +432,7 @@ class FeatureContext extends BehatContext {
    * @return [string] Output to the CL
    */
   public function iListTheBackupsOf($env, $site) {
-    $return = $this->iRun("terminus site backup list --site=$site --env=$env");
+    $return = $this->iRun("terminus site backups list --site=$site --env=$env");
     return $return;
   }
 
@@ -473,7 +473,7 @@ class FeatureContext extends BehatContext {
    */
   public function iMakeABackupElementsOfTheEnvironment($elements, $env, $site) {
     $this->iRun(
-      "terminus site backup create --site=$site --env=$env --element=$elements"
+      "terminus site backups create --site=$site --env=$env --element=$elements"
     );
   }
 
