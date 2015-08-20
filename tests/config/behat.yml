@@ -12,6 +12,7 @@ default:
       other_user:              sara@getpantheon.com
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
+      enterprise_org_uuid:     bf200cbe-8995-4891-b5d4-1a8bdc292905
 
 ci:
   paths:
@@ -27,6 +28,7 @@ ci:
       other_user:              sara@getpantheon.com
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
+      enterprise_org_uuid:     bf200cbe-8995-4891-b5d4-1a8bdc292905
 
 qa:
   paths:
@@ -45,6 +47,7 @@ qa:
       dashboard_admin_host:    localhost:4001
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
+      enterprise_org_uuid:     bf200cbe-8995-4891-b5d4-1a8bdc292905
   formatter:
     name: Behat\Behat\Formatter\TerminusHtmlFormatter
     parameters:

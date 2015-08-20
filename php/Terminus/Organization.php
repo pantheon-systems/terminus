@@ -16,7 +16,7 @@ class Organization {
     // if the org id is passed in then we need to fetch it from the user object
 
     if (is_string($org)) {
-      $this->user = User::instance();
+      $this->user = new User();
       $orgs = $this->user->organizations();
       $org = $orgs->$org;
     }

@@ -74,6 +74,24 @@ class FeatureContext extends BehatContext {
   }
 
   /**
+   * Ensures a site of the given name exists and belongs to given org
+   * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
+   *
+   * @param [string] $site Name of site to ensure exists
+   * @param [string] $site Name or UUID of site to ensure ownership
+   * @return [boolean] Always true, else errs
+   */
+  public function aSiteNamedBelongingTo($site, $org) {
+    $output = $this->iGetInfoForTheSite($site);
+    if(!$this->_checkResult($org, $output)) {
+      $this->iCreateASiteNamed('Drupal 7', $site, $org);
+      $recurse = $this->aSiteNamedBelongingTo($site, $org);
+      return $recurse;
+    }
+    return true;
+  }
+
+  /**
   * @BeforeScenario
   * Runs before each scenario
   *
@@ -282,9 +300,13 @@ class FeatureContext extends BehatContext {
    * @param [string] $name     Name of site to create
    * @return [void]
    */
-  public function iCreateASiteNamed($upstream, $name) {
+  public function iCreateASiteNamed($upstream, $name, $org = false) {
+    $append_org = '';
+    if ($org !== false) {
+      $append_org = '--org=' . $org;
+    }
     $this->iRun(
-      "terminus sites create --site=$name --label=$name --upstream=\"$upstream\""
+      "terminus sites create --site=$name --label=$name --upstream=\"$upstream\" $append_org"
     );
   }
 

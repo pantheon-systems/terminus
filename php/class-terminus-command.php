@@ -393,4 +393,25 @@ abstract class TerminusCommand {
     }
   }
 
+  /**
+   * Outputs basic response success/failure messages
+   *
+   * @param [array] $response Array from response
+   * @param [array] $messages Array of response strings
+   *        [string] success  Displayed on success
+   *        [string] failure  Displayed on error
+   */
+  protected function responseOutput($response, $messages = array()) {
+    $default_messages = array(
+      'success' => 'The operation has succeeded.',
+      'failure' => 'The operation was unsuccessful.',
+    );
+    $messages = array_merge($default_messages, $messages);
+    if ($response['status_code'] == 200) {
+      Terminus::success($messages['success']);
+    } else {
+      Terminus::error($messages['failure']);
+    }
+  }
+
 }
