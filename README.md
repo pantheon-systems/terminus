@@ -21,7 +21,7 @@ For more advanced installation instructions, please see [the installation page o
 
 Installing Terminus is simple. Ensure that your system has and can run the required software above and run this in your favorite terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.6.1/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.7.0/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 
 To get started with Terminus, you must first authenticate:
