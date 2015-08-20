@@ -174,9 +174,7 @@ class Auth_Command extends TerminusCommand {
     );
 
     # Temporarily disable the cache for this GET call
-    Terminus::set_config('nocache',TRUE);
     $response = TerminusCommand::request('user', '', '', 'GET', $options);
-    Terminus::set_config('nocache',FALSE);
 
     if ( !$response OR '200' != @$response['info']['http_code'] ) {
       \Terminus::error("[auth_error]: session token not valid");

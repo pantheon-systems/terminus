@@ -94,7 +94,7 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function connectionMode($site, $mode = false) {
-    $command = "terminus site connection-mode --env=dev --site=$site --nocache";
+    $command = "terminus site connection-mode --env=dev --site=$site";
     if($mode !== false) {
       $command .= " --set=$mode";
     }
