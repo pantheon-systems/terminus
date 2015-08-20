@@ -22,6 +22,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site clone-env` is now `site clone-content`. Flags have changed from inclusive --db and --files to exclusive --db-only and --files-only and defaults to cloning both. (#403)
 - `products` is now `upstreams` (#404)
 - The `--product` flag on `sites create` is now `--upstream` (#404)
+- `site backup` is now `site backups` (#416)
 
 ### Deprecated
 - `sites delete` will be removed in v1.0.0 (#370)
