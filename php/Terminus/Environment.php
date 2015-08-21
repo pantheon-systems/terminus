@@ -225,8 +225,9 @@ class Environment {
 
     $info = array_merge($info, $git_params);
 
-    if (isset($this->bindings->getByType('dbserver')[0])) {
-      $db_binding = $this->bindings->getByType('dbserver')[0];
+    $dbserver_binding = $this->bindings->getByType('dbserver');
+    if (isset($dbserver_binding[0])) {
+      $db_binding = $dbserver_binding[0];
 
       $mysql_username = 'pantheon';
       $mysql_password = $db_binding->get('password');
@@ -266,8 +267,9 @@ class Environment {
       $info = array_merge($info, $mysql_params);
     }
 
-    if (isset($this->bindings->getByType('cacheserver')[0])) {
-      $cache_binding = $this->bindings->getByType('cacheserver')[0];
+    $cacheserver_binding = $this->bindings->getByType('cacheserver');
+    if (isset($cacheserver_binding[0])) {
+      $cache_binding = $cacheserver_binding[0];
 
       $redis_password = $cache_binding->get('password');
       $redis_host     = $mysql_host = sprintf(

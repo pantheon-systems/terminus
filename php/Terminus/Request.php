@@ -23,16 +23,23 @@ class Request {
     // create a new Guzzle\Http\Client
     $browser = new Browser;
     $browser->setUserAgent(self::userAgent());
-    $options = array();
-    $options['allow_redirects'] = @$data['allow_redirects'] ?: false;
-    $options['json'] = @$data['json'] ?: false;
-    if( @$data['body'] ) {
+    $options = array(
+      'allow_redirects' => false,
+      'verify'          => false,
+      'json'            => false
+    );
+    if (isset($data['allow_redirects'])) {
+      $options['allow_redirects'] = $data['allow_redirects'];
+    }
+    if (isset($data['json'])) {
+      $options['json'] = $data['json'];
+    }
+    if (isset($data['body']) && $data['body']) {
       $options['body'] = $data['body'];
-      if (\Terminus::get_config("debug")) {
+      if (\Terminus::get_config('debug')) {
         \Terminus\Loggers\Regular::debug($data['body']);
       }
     }
-    $options['verify'] = false;
 
     $request = $browser->createRequest($method, $url, null, null, $options );
 

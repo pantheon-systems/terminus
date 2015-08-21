@@ -50,33 +50,32 @@ class Endpoint {
    *    );
    *
    */
-   private function lookup( $args )
-  {
+   private function lookup($args) {
     // adjust the target if it's a public request
-    if ( isset($args['uuid']) AND 'public' === $args['uuid'] ) {
+    if (isset($args['uuid']) && ($args['uuid'] == 'public')) {
       $this->target = 'public';
     }
 
-    if ('login' == $args['realm']) {
+    if (isset($args['realm']) && ($args['realm'] == 'login')) {
       $this->target = 'login';
     }
 
-    $args['host'] = @$args['host'] ?: TERMINUS_HOST;
-
-    // a substiution array to pass to the vsprintf
-    $substitutions = array( $args['host'], $args['realm'] );
-    if( isset($args['uuid']) AND $args['uuid'] !== 'public' ) {
-      array_push( $substitutions, $args['uuid'] );
+    if (!isset($args['host']) || ($args['host'] == '')) {
+      $args['host'] = TERMINUS_HOST;
     }
 
-    $url = vsprintf( $this->patterns[$this->target], $substitutions );
-
-    // now we have our base url add the path
-    $params = '';
-    if (@$args['path']) {
-      $params .=  '/' . @$args['path'];
+    //A substiution array to pass to the vsprintf
+    $substitutions = array($args['host'], $args['realm']);
+    if (isset($args['uuid']) && $args['uuid'] != 'public') {
+      array_push($substitutions, $args['uuid']);
     }
-    $url .= $params;
+
+    $url = vsprintf($this->patterns[$this->target], $substitutions);
+
+    //Now that we have our base url, we add the path
+    if (isset($args['path']) && $args['path']) {
+      $url .= '/' . $args['path'];
+    }
 
     return $url;
   }
