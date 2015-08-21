@@ -40,9 +40,10 @@ class SitesCache {
   private function find($name, $options = array()) {
     $defaults = array('rebuild' => true);
     $options = array_merge($defaults, $options);
+    $all = $this->all();
 
-    if (isset($this->all()[$name])) {
-      $site_data = $this->all()[$name];
+    if (isset($all[$name])) {
+      $site_data = $all[$name];
       return $site_data;
     } else {
       if ($options['rebuild']) {

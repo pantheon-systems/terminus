@@ -51,9 +51,10 @@ class Site {
     # deprecated properties
     # this->information is deprecated, use $this->attributes
     $this->information = $this->attributes;
-    // cosmetic reasons for this
-    $this->metadata = @$this->attributes->metadata ?: new \stdClass();
-    # /deprecated properties
+    $this->metadata = new \stdClass();
+    if (isset($this->attributes->metadata)) {
+      $this->metadata = $this->attributes->metadata;
+    }
 
     $this->org_memberships = new SiteOrganizationMemberships(array('site' => $this));
     $this->user_memberships = new SiteUserMemberships(array('site' => $this));
@@ -526,7 +527,6 @@ class Site {
   }
 
   /**
-<<<<<<< HEAD
    * Returns tags from the site/org join
    *
    * @return [array] $tags Tags in string format
