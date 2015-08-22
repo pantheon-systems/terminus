@@ -3,7 +3,7 @@ namespace Terminus;
 
 use \Terminus\Organization;
 use \Terminus\Collections\Workflows;
-use \Terminus\Collections\Instruments;
+use \Terminus\Models\Collections\Instruments;
 
 class User {
   static $instance;
@@ -76,8 +76,7 @@ class User {
   }
 
   public function instruments() {
-    $instruments       = new Instruments(array('user' => $this));
-    $this->instruments = $instruments->fetch();
+    $this->instruments = new Instruments(array('user' => $this));
     return $this->instruments;
   }
 
