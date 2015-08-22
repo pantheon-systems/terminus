@@ -627,7 +627,10 @@ class Site_Command extends TerminusCommand {
      ));
 
      if ($env->isInitialized()) {
-       Terminus::error(sprintf('The %s environment has already been initialized', $env->id));
+       Terminus::error(sprintf(
+         'The %s environment has already been initialized',
+         $env->get('id')
+       ));
      }
 
      $workflow = $env->initializeBindings();
@@ -741,7 +744,6 @@ class Site_Command extends TerminusCommand {
         $env = Terminus::prompt("Name of new MultiDev environment");
       }
 
-      $site->environmentsCollection->fetch();
       $src = Input::env(
         $assoc_args,
         'from-env',
@@ -783,7 +785,7 @@ class Site_Command extends TerminusCommand {
       $workflow = $environment->mergeToDev();
       $workflow->wait();
 
-      Terminus::success(sprintf('Merged the %s environment into Dev', $environment->id));
+      Terminus::success(sprintf('Merged the %s environment into dev', $environment->get('id')));
     }
 
     /**
@@ -810,7 +812,7 @@ class Site_Command extends TerminusCommand {
        $workflow = $environment->mergeFromDev();
        $workflow->wait();
 
-       Terminus::success(sprintf('Merged the Dev environment into the %s environment ', $environment->id));
+       Terminus::success(sprintf('Merged the dev environment into the %s environment ', $environment->get('id')));
      }
 
    /**
@@ -971,19 +973,27 @@ class Site_Command extends TerminusCommand {
    * : Name of site to check
    *
    */
-  function environments($args, $assoc_args) {
-    $site = SiteFactory::instance( Input::sitename( $assoc_args ) );
-    $site->environmentsCollection->fetch();
+  public function environments($args, $assoc_args) {
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     $environments = $site->environmentsCollection->all();
 
     $data = array();
-    foreach ($environments as $env) {
+    foreach ($environments as $name => $env) {
+      $osd  = $locked = 'false';
+      $lock = $env->get('lock');
+      if ((boolean)$lock->locked) {
+        $locked = 'true';
+      }
+      if ((boolean)$env->get('on_server_development')) {
+        $osd = 'true';
+      }
+
       $data[] = array(
-        'Name' => $env->id,
-        'Created' => $env->environment_created,
-        'Domain' => $env->domain(),
-        'OnServer Dev?' => $env->on_server_development ? 'true' : 'false',
-        'Locked?' => $env->lock->locked ? 'true' : 'false',
+        'Name'          => $env->get('id'),
+        'Created'       => date('Y-m-dTH:i:s', $env->get('environment_created')),
+        'Domain'        => $env->domain(),
+        'OnServer Dev?' => $osd,
+        'Locked?'       => $locked,
       );
     }
     $this->handleDisplay($data, $args);

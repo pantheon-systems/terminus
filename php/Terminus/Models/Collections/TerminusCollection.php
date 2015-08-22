@@ -5,7 +5,7 @@ namespace Terminus\Models\Collections;
 use \TerminusCommand;
 
 abstract class TerminusCollection {
-  protected $models     = array();
+  protected $models = array();
 
   /**
    * Instantiates the collection, sets param members as properties
@@ -25,10 +25,7 @@ abstract class TerminusCollection {
    * @return [array] $models
    */
   public function all() {
-    if (empty($this->models)) {
-      $this->fetch();
-    }
-    $models = array_values($this->models);
+    $models = array_values($this->getMembers());
     return $models;
   }
 
@@ -60,7 +57,7 @@ abstract class TerminusCollection {
    * @return [TerminusModel] $this->models[$id]
    */
   public function get($id) {
-    $models = $this->all();
+    $models = $this->getMembers();
     if (isset($models[$id])) {
       return $models[$id];
     }
@@ -73,7 +70,7 @@ abstract class TerminusCollection {
    * @return [array] $ids Array of all model IDs
    */
   public function ids() {
-    $models = $this->all();
+    $models = $this->getMembers();
     $ids    = array_keys($models);
     return $ids;
   }
@@ -86,8 +83,8 @@ abstract class TerminusCollection {
    */
   protected function add($model_data) {
     $model   = $this->getMemberName();
-    $options = array();
     $owner   = $this->getOwnerName();
+    $options = array('id' => $model_data->id);
 
     if ($owner) {
       $options[$owner] = $this->$owner;
@@ -144,6 +141,18 @@ abstract class TerminusCollection {
       . '\\' . $name_array[1]
       . '\\' . substr(array_pop($name_array), 0, -1);
     return $model_name;
+  }
+
+  /**
+   * Retrieves all members of this collection
+   *
+   * @return [array] $this->models
+   */
+  protected function getMembers() {
+    if (empty($this->models)) {
+      $this->fetch();
+    }
+    return $this->models;
   }
 
 }

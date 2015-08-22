@@ -568,6 +568,7 @@ class FeatureContext extends BehatContext {
   /**
    * @Then /^I should get:$/
    * @Then /^I should get "([^"]*)"$/
+   * @Then /^I should get: "([^"]*)"$/
    * Swap in $this->_parameters elements by putting them in [[double brackets]]
    *
    * @param [string] $string Content which ought not be in the output

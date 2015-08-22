@@ -4,9 +4,9 @@ namespace Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
 use \TerminusCommand;
-use \Terminus\Environment;
+use \Terminus\Models\Environment;
 use \Terminus\SiteUserMembership;
-use Terminus\Collections\Environments;
+use Terminus\Models\Collections\Environments;
 use Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\OrganizationSiteMemberships;
 use Terminus\Collections\SiteOrganizationMemberships;
@@ -145,7 +145,6 @@ class Site {
    * @param $environment string required
    */
   public function environment($env_id) {
-    $this->environmentsCollection->fetch();
     return $this->environmentsCollection->get($env_id);
   }
 
@@ -153,8 +152,6 @@ class Site {
    * Load site info
    */
   public function info($key = null) {
-    $dev_environment = $this->environmentsCollection->get('dev');
-
     $info = array(
       'id' => $this->id,
       'name' => null,
