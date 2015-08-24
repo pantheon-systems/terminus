@@ -963,7 +963,7 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
-   * List enviroments for a site
+   * List environments for a site
    *
    * ## OPTIONS
    *
