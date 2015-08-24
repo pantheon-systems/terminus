@@ -54,7 +54,6 @@
 </rule>
 <rule ref="PEAR.Functions.ValidDefaultValue"/>
 <rule ref="PEAR.NamingConventions.ValidClassName"/>
-<rule ref="PEAR.NamingConventions.ValidVariableName"/>
 <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
 <rule ref="PEAR.WhiteSpace.ScopeClosingBrace"/>
 <rule ref="PSR1.Files.SideEffects"/>

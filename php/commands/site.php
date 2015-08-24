@@ -1,15 +1,11 @@
 <?php
-/**
- * actions on an individual site
- *
- */
 
 use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\SiteFactory;
 use Terminus\Site;
 use Terminus\User;
-use Terminus\Collections\Instruments;
+use Terminus\Models\Collections\Instruments;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
@@ -17,6 +13,9 @@ use \Terminus\Deploy;
 use Terminus\SitesCache;
 
 
+/**
+ * Actions to be taken on an individual site
+ */
 class Site_Command extends TerminusCommand {
   public $sitesCache;
 
