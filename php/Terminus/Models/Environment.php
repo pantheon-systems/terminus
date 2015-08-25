@@ -1,58 +1,25 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Models;
 
-use \ReflectionClass;
 use \Terminus\Request;
 use \Terminus\Collections\Bindings;
+use Terminus\Models\TerminusModel;
 
-/**
- * OOP representation of a site environment
- */
-class Environment {
-  public $attributes;
-  public $backups;
-  public $bindings;
-  public $diffstat;
-  public $dns_zone;
-  public $environment_created;
-  public $id;
-  public $lock;
-  public $on_server_development;
-  public $name = 'dev';
-  public $randseed;
-  public $site = false;
-  public $styx_cluster;
-  public $target_commit;
-  public $target_ref;
-  public $watchers;
+class Environment extends TerminusModel {
+  private $backups;
+  private $bindings;
 
   /**
-   * Instantiates Environment
+   * Object constructor
    *
-   * @param [Site]     $site To be saved as $this->site
-   * @param [stdClass] $data To be saved as $this->vars
-   * @return [Environment] $this
+   * @param [stdClass] $attributes Attributes of this model
+   * @param [array]    $options    Options to set as $this->key
+   * @return [TerminusModel] $this
    */
-  public function __construct(Site $site, $data = null) {
-    $this->site = $site;
-    if (property_exists($data, 'id')) {
-      $this->name = $this->id = $data->id;
-    }
-    $this->attributes = $data;
-
+  public function __construct($attributes, $options = array()) {
+    parent::__construct($attributes, $options);
     $this->bindings = new Bindings(array('environment' => $this));
-
-    if (is_object($data)) {
-      //If we receive an environment object from the API, hydrate the vars
-      $environment_properties = get_object_vars($data);
-      //Iterate our local properties setting them in the imported object
-      foreach (get_object_vars($this) as $key => $value) {
-        if (array_key_exists($key, $environment_properties)) {
-          $this->$key = $environment_properties[$key];
-        }
-      }
-    }
   }
 
   /**
@@ -62,14 +29,15 @@ class Environment {
    * @return [array] $backups
    */
   public function backups($element = null) {
-    if (null === $this->backups) {
-      $path          = sprintf("environments/%s/backups/catalog", $this->name);
-      $response      = \TerminusCommand::request(
+    if ($this->backups == null) {
+      $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
+      $response = \TerminusCommand::request(
         'sites',
         $this->site->getId(),
         $path,
         'GET'
       );
+
       $this->backups = $response['data'];
     }
     $backups = (array)$this->backups;
@@ -102,7 +70,7 @@ class Environment {
     $element  = $this->elementAsDatabase($element);
     $path     = sprintf(
       'environments/%s/backups/catalog/%s/%s/s3token',
-      $this->name,
+      $this->get('id'),
       $bucket,
       $element
     );
@@ -161,12 +129,12 @@ class Environment {
     $info = array();
 
     // Can only SFTP into dev/multidev environments
-    if (!in_array($this->id, array('test', 'live'))) {
-      $sftp_username = sprintf('%s.%s', $this->id, $this->site->getId());
+    if (!in_array($this->get('id'), array('test', 'live'))) {
+      $sftp_username = sprintf('%s.%s', $this->get('id'), $this->site->getId());
       $sftp_password = 'Use your account password';
       $sftp_host     = sprintf(
         'appserver.%s.%s.drush.in',
-        $this->id,
+        $this->get('id'),
         $this->site->getId()
       );
       $sftp_port     = 2222;
@@ -195,12 +163,12 @@ class Environment {
 
     $git_username = sprintf(
       'codeserver.%s.%s',
-      $this->id,
+      $this->get('id'),
       $this->site->getId()
     );
     $git_host     = sprintf(
       'codeserver.%s.%s.drush.in',
-      $this->id,
+      $this->get('id'),
       $this->site->getId()
     );
     $git_port     = 2222;
@@ -233,7 +201,7 @@ class Environment {
       $mysql_password = $db_binding->get('password');
       $mysql_host     = sprintf(
         'dbserver.%s.%s.drush.in',
-        $this->id,
+        $this->get('id'),
         $this->site->getId()
       );
       $mysql_port     = $db_binding->get('port');
@@ -274,7 +242,7 @@ class Environment {
       $redis_password = $cache_binding->get('password');
       $redis_host     = $mysql_host = sprintf(
         'cacheserver.%s.%s.drush.in',
-        $this->id,
+        $this->get('id'),
         $this->site->getId()
       );
       $redis_port     = $cache_binding->get('port');
@@ -370,7 +338,7 @@ class Environment {
       'ttl'        => $ttl
     );
 
-    $options  = array('environment' => $this->id, 'params' => $params);
+    $options  = array('environment' => $this->get('id'), 'params' => $params);
     $workflow = $this->site->workflows->create('do_export', $options);
     $workflow->wait();
 
@@ -384,7 +352,7 @@ class Environment {
    * @return [Workflow] workflow response
    */
   public function deploy($params) {
-    $params   = array('environment' => $this->id, 'params' => $params);
+    $params   = array('environment' => $this->get('id'), 'params' => $params);
     $workflow = $this->site->workflows->create('deploy', $params);
     return $workflow;
   }
@@ -397,7 +365,7 @@ class Environment {
   public function diffstat() {
     $path = sprintf(
       'environments/%s/on-server-development/diffstat',
-      $this->name
+      $this->get('id')
     );
     $data = \TerminusCommand::request(
       'sites',
@@ -416,9 +384,9 @@ class Environment {
   public function domain() {
     $host = sprintf(
       '%s-%s.%s',
-      $this->name,
+      $this->get('id'),
       $this->site->getName(),
-      $this->dns_zone
+      $this->get('dns_zone')
     );
     return $host;
   }
@@ -426,10 +394,11 @@ class Environment {
   /**
    * Returns the environment's name
    *
-   * @return [string] $this->name
+   * @return [string] $name
    */
   public function getName() {
-    return $this->name;
+    $name = $this->get('id');
+    return $name;
   }
 
   /**
@@ -442,7 +411,11 @@ class Environment {
     $response = \TerminusCommand::request(
       'sites',
       $this->site->getId(),
-      'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname),
+      sprintf(
+        'environments/%s/hostnames/%s',
+        $this->get('id'),
+        rawurlencode($hostname)
+      ),
       'PUT'
     );
     return $response['data'];
@@ -458,7 +431,11 @@ class Environment {
     $response = \TerminusCommand::request(
       'sites',
       $this->site->getId(),
-      'environments/' . $this->name . '/hostnames/' . rawurlencode($hostname),
+      sprintf(
+        'environments/%s/hostnames/%s',
+        $this->get('id'),
+        rawurlencode($hostname)
+      ),
       'DELETE'
     );
     return $response['data'];
@@ -473,7 +450,7 @@ class Environment {
     $response = \TerminusCommand::request(
       'sites',
       $this->site->getId(),
-      'environments/' . $this->name . '/hostnames',
+      'environments/' . $this->get('id') . '/hostnames',
       'GET'
     );
     return $response['data'];
@@ -487,16 +464,19 @@ class Environment {
    * @return [Workflow] $workflow In-progress workflow
    */
   public function initializeBindings() {
-    if ($this->id == 'test') {
+    if ($this->get('id') == 'test') {
       $from_env_id = 'dev';
-    } elseif ($this->id == 'live') {
+    } elseif ($this->get('id') == 'live') {
       $from_env_id = 'test';
     }
 
     $params   = array(
-      'environment' => $this->id,
+      'environment' => $this->get('id'),
       'params'      => array(
-        'annotation'     => sprintf('Create the %s environment', $this->id),
+        'annotation'     => sprintf(
+          'Create the %s environment',
+          $this->get('id')
+        ),
         'clone_database' => array('from_environment' => $from_env_id),
         'clone_files'    => array('from_environment' => $from_env_id)
       )
@@ -524,7 +504,7 @@ class Environment {
    * @return [boolean] True if ths environment is a multidev environment
    */
   public function isMultidev() {
-    $is_multidev = !in_array($this->id, array('dev', 'test', 'live'));
+    $is_multidev = !in_array($this->get('id'), array('dev', 'test', 'live'));
     return $is_multidev;
   }
 
@@ -539,7 +519,7 @@ class Environment {
     $password = $options['password'];
 
     $params   = array(
-      'environment' => $this->id,
+      'environment' => $this->get('id'),
       'params' => array(
         'username' => $username,
         'password' => $password
@@ -552,10 +532,11 @@ class Environment {
   /**
    * Get Info on an environment lock
    *
-   * @return [string] $this->attributes->lock
+   * @return [string] $lock
    */
   public function lockinfo() {
-    return $this->attributes->lock;
+    $lock = $this->get('lock');
+    return $lock;
   }
 
   /**
@@ -564,7 +545,7 @@ class Environment {
    * @return [array] $response['data']
    */
   public function log() {
-    $path     = sprintf('environments/%s/code-log', $this->name);
+    $path     = sprintf('environments/%s/code-log', $this->get('id'));
     $response = \TerminusCommand::request(
       'sites',
       $this->site->getId(),
@@ -583,14 +564,17 @@ class Environment {
   public function mergeFromDev($options = array()) {
     if (!$this->isMultidev()) {
       throw new Exception(
-        sprintf('The %s environment is not a multidev environment', $this->id)
+        sprintf(
+          'The %s environment is not a multidev environment',
+          $this->get('id')
+        )
       );
     }
-
     $default_params = array('updatedb' => false);
-    $params         = array_merge($default_params, $options);
-    $settings       = array('environment' => $this->id, 'params' => $params);
-    $workflow       = $this->site->workflows->create(
+
+    $params   = array_merge($default_params, $options);
+    $settings = array('environment' => $this->get('id'), 'params' => $params);
+    $workflow = $this->site->workflows->create(
       'merge_dev_into_cloud_development_environment',
       $settings
     );
@@ -607,7 +591,10 @@ class Environment {
   public function mergeToDev($options = array()) {
     if (!$this->isMultidev()) {
       throw new Exception(
-        sprintf('The %s environment is not a multidev environment', $this->id)
+        sprintf(
+          'The %s environment is not a multidev environment',
+          $this->get('id')
+        )
       );
     }
 
@@ -618,7 +605,7 @@ class Environment {
 
     // This function is a little odd because we invoke it on a
     // multidev environment, but it applies a workflow to the 'dev' environment
-    $params['from_environment'] = $this->id;
+    $params['from_environment'] = $this->get('id');
     $settings = array('environment' => 'dev', 'params' => $params);
     $workflow = $this->site->workflows->create(
       'merge_cloud_development_environment_into_dev',
@@ -637,7 +624,7 @@ class Environment {
   * @return [array] $data['data']
   */
   public function onServerDev($value = null, $commit = null) {
-    $path = sprintf('environments/%s/on-server-development', $this->name);
+    $path = sprintf('environments/%s/on-server-development', $this->get('id'));
     if ($commit) {
       $path    = sprintf('%s/commit', $path);
       $data    = array(
@@ -694,7 +681,7 @@ class Environment {
    * @return [Workflow] $workflow
    */
   public function unlock() {
-    $params   = array('environment' => $this->id);
+    $params   = array('environment' => $this->get('id'));
     $workflow = $this->site->workflows->create('unlock_environment', $params);
     return $workflow;
   }
@@ -724,7 +711,7 @@ class Environment {
    * @return [Workflow] $workflow
    */
   public function wipe() {
-    $params   = array('environment' => $this->id);
+    $params   = array('environment' => $this->get('id'));
     $workflow = $this->site->workflows->create('wipe', $params);
     return $workflow;
   }
@@ -736,10 +723,10 @@ class Environment {
    * @return [array] $response['data']
    */
   public function workflow($workflow) {
-    $path     = sprintf("environments/%s/workflows", $this->name);
+    $path     = sprintf("environments/%s/workflows", $this->get('id'));
     $data     = array(
       'type'        => $workflow,
-      'environment' => $this->name,
+      'environment' => $this->get('id'),
     );
     $options  = array(
       'body'    => json_encode($data),

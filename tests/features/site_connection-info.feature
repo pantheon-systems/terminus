@@ -7,7 +7,7 @@ Feature: Site Connection Info
     When I run "terminus site connection-info --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    mysql_password
+    sftp_password
     """
 
   Scenario: Show specific connection value
