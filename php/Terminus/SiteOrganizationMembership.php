@@ -3,7 +3,7 @@
 namespace Terminus;
 use \ReflectionClass;
 use \Terminus\Request;
-use \Terminus\Collections\Bindings;
+use \Terminus\Models\Collections\Bindings;
 
 class SiteOrganizationMembership {
   private $id;
