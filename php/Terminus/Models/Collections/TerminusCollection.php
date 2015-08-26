@@ -3,6 +3,7 @@
 namespace Terminus\Models\Collections;
 
 use \TerminusCommand;
+use \stdClass;
 
 abstract class TerminusCollection {
   protected $models = array();
@@ -36,9 +37,12 @@ abstract class TerminusCollection {
    */
   public function fetch() {
     $results = $this->getCollectionData();
+    $data    = $this->objectify($results['data']);
 
-    foreach (get_object_vars($results['data']) as $id => $model_data) {
-      $model_data->id = $id;
+    foreach (get_object_vars($data) as $id => $model_data) {
+      if (!isset($model_data->id)) {
+        $model_data->id = $id;
+      }
       $this->add($model_data);
     }
   }
@@ -164,6 +168,23 @@ abstract class TerminusCollection {
       $this->fetch();
     }
     return $this->models;
+  }
+
+  /**
+   * Turns an associative array into a stdClass object
+   *
+   * @param [array] $array Array to turn into object
+   * @return [stdClass] $object
+   */
+  private function objectify($array = array()) {
+    if (is_array($array)) {
+      $object = new stdClass();
+      foreach ($array as $key => $value) {
+        $object->$key = $value;
+      }
+      return $object;
+    }
+    return $array;
   }
 
 }

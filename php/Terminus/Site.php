@@ -8,7 +8,7 @@ use \Terminus\Models\Environment;
 use \Terminus\SiteUserMembership;
 use Terminus\Models\Collections\Environments;
 use Terminus\Collections\SiteUserMemberships;
-use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\Workflows;
 
@@ -91,7 +91,7 @@ class Site {
       );
     }
 
-    $user = User::instance();
+    $user = new User();
     $workflow = $user->workflows->create('create_site', array(
       'params' => $data
     ));
@@ -526,6 +526,7 @@ class Site {
   /**
    * Returns tags from the site/org join
    *
+   * @param [string] $org  UUID of organization site belongs to
    * @return [array] $tags Tags in string format
    */
   public function getTags($org) {
@@ -535,7 +536,9 @@ class Site {
     $org_site_member = new OrganizationSiteMemberships(
       array('organization' => new Organization($org))
     );
-    $tags            = $org_site_member->fetch()->get($this->id)->get('tags');
+    $org_site_member->fetch();
+    $org = $org_site_member->get($this->id);
+    $tags = $org->get('tags');
     return $tags;
   }
 

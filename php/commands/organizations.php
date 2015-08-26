@@ -79,16 +79,18 @@ class Organizations_Command extends TerminusCommand {
 
     $org->siteMemberships->fetch();
     $memberships = $org->siteMemberships->all();
+
     foreach ($memberships as $membership) {
       if (isset($assoc_args['tag']) && !(in_array($assoc_args['tag'], $membership->get('tags')))) {
         continue;
       }
+      $site = $membership->get('site');
       $data[] = array(
-        'name' => $membership->site->get('name'),
-        'id' => $membership->site->id,
-        'service_level' => $membership->site->get('service_level'),
-        'framework' => $membership->site->get('framework'),
-        'created' => date('Y-m-d H:i:s', $membership->site->get('created')),
+        'name' => $site->name,
+        'id' => $site->id,
+        'service_level' => $site->service_level,
+        'framework' => $site->framework,
+        'created' => date('Y-m-d H:i:s', $site->created),
         'tags' => $membership->get('tags')
       );
     }

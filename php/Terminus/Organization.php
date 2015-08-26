@@ -4,7 +4,7 @@ namespace Terminus;
 use Terminus\User;
 use Terminus\Site;
 use \Terminus\Collections\Workflows;
-use \Terminus\Collections\OrganizationSiteMemberships;
+use \Terminus\Models\Collections\OrganizationSiteMemberships;
 
 class Organization {
   public $id;

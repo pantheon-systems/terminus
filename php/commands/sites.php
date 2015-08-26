@@ -127,8 +127,8 @@ class Sites_Command extends TerminusCommand {
     } else {
       $options['name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)", $suggested_name);
     }
-    if ($org_id = Input::orgid($assoc_args, 'org', false)) {
-      $options['organization_id'] = $org_id;
+    if (isset($assoc_args['org'])) {
+      $options['organization_id'] = Input::orgid($assoc_args, 'org', false);
     }
     if (!isset($assoc_args['import'])) {
       $upstream = Input::upstream($assoc_args, 'upstream');
