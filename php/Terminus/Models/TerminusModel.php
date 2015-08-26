@@ -2,6 +2,8 @@
 
 namespace Terminus\Models;
 
+use \TerminusCommand;
+
 abstract class TerminusModel {
   private $id;
   private $attributes;
@@ -26,6 +28,12 @@ abstract class TerminusModel {
    * @return [TerminusModel] $this
    */
   public function fetch() {
+    $results = TerminusCommand::simple_request(
+      $this->getFetchUrl(),
+      $this->getFetchArgs()
+    );
+
+    $this->attributes = $results['data'];
     return $this;
   }
 
@@ -40,6 +48,24 @@ abstract class TerminusModel {
       return $this->attributes->$attribute;
     }
     return null;
+  }
+
+  /**
+   * Give necessary args for collection data fetching
+   *
+   * @return [array]
+   */
+  protected function getFetchArgs() {
+    return array();
+  }
+
+  /**
+   * Give the URL for collection data fetching
+   *
+   * @return [string] $url URL to use in fetch query
+   */
+  protected function getFetchUrl() {
+    return '';
   }
 
 }

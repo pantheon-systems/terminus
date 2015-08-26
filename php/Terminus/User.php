@@ -2,7 +2,7 @@
 namespace Terminus;
 
 use \Terminus\Organization;
-use \Terminus\Collections\Workflows;
+use \Terminus\Models\Collections\Workflows;
 use \Terminus\Models\Collections\Instruments;
 
 class User {
