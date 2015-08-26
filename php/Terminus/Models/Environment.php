@@ -3,7 +3,7 @@
 namespace Terminus\Models;
 
 use \Terminus\Request;
-use \Terminus\Collections\Bindings;
+use \Terminus\Models\Collections\Bindings;
 use Terminus\Models\TerminusModel;
 
 class Environment extends TerminusModel {

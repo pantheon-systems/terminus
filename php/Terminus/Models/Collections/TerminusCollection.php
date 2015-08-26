@@ -30,19 +30,12 @@ abstract class TerminusCollection {
   }
 
   /**
-   * Fetches model data from API and instantiates their model instances
+   * Fetches model data from API and instantiates its model instances
    *
    * @return [void]
    */
   public function fetch() {
-    $options = array_merge(
-      array('options' => array('method' => 'get')),
-      $this->getFetchArgs()
-    );
-    $results = TerminusCommand::simple_request(
-      $this->getFetchUrl(),
-      $options
-    );
+    $results = $this->getCollectionData();
 
     foreach (get_object_vars($results['data']) as $id => $model_data) {
       $model_data->id = $id;
@@ -78,13 +71,14 @@ abstract class TerminusCollection {
   /**
    * Adds a model to this collection
    *
-   * @param [stdClass] $model_data
+   * @param [stdClass] $model_data Data to feed into attributes of new model
+   * @param [array]    $options    Data to make properties of the new model
    * @return [TerminusModel] $model
    */
-  protected function add($model_data) {
+  protected function add($model_data, $options = array()) {
     $model   = $this->getMemberName();
     $owner   = $this->getOwnerName();
-    $options = array('id' => $model_data->id);
+    $options = array_merge(array('id' => $model_data->id), $options);
 
     if ($owner) {
       $options[$owner] = $this->$owner;
@@ -105,6 +99,23 @@ abstract class TerminusCollection {
     return $class_name;
   }
   
+  /**
+   * Retrieves collection data from the API
+   *
+   * @return [array] $results
+   */
+  protected function getCollectionData() {
+    $options = array_merge(
+      array('options' => array('method' => 'get')),
+      $this->getFetchArgs()
+    );
+    $results = TerminusCommand::simple_request(
+      $this->getFetchUrl(),
+      $options
+    );
+    return $results;
+  }
+
   /**
    * Give necessary args for collection data fetching
    *
