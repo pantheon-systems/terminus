@@ -1,5 +1,7 @@
 <?php
+
 namespace Terminus\Models;
+
 use \Terminus\Request;
 use \TerminusCommand;
 

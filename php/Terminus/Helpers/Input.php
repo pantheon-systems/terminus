@@ -100,26 +100,23 @@ class Input {
       $allow_none = $options['allow_none'];
     }
     $arguments = $args;
-    if(!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
+    if (!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
       $arguments[$key] = $_SERVER['TERMINUS_ORG'];
     }
 
     $orglist = Input::orglist();
     $flip    = array_flip($orglist);
-    if (isset($arguments[$key]) && array_key_exists($arguments[$key], $flip)) {
-      //If we have a valid name provided, we need the UUID
-      return $flip[$arguments[$key]];
-    } elseif (
-      isset($arguments[$key])
-      && array_key_exists($arguments[$key], $orglist)
-    ) {
-      return $arguments[$key];
-    } elseif (
-      isset($arguments[$key])
-      && in_array($arguments[$key], self::$NULL_INPUTS)
-      || !empty($arguments)
-    ) {
-      return $default;
+    if (isset($arguments[$key])) {
+      if (isset($flip[$arguments[$key]])) {
+        return $flip[$arguments[$key]];
+      } elseif (isset($orglist[$arguments[$key]])) {
+        return $arguments[$key];
+      } elseif (
+        in_array($arguments[$key], self::$NULL_INPUTS)
+        || !empty($arguments)
+      ) {
+        return $default;
+      }
     }
 
     $orglist = Input::orglist(array('allow_none' => $allow_none));
