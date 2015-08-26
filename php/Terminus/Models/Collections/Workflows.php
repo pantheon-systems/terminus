@@ -1,0 +1,106 @@
+<?php
+
+namespace Terminus\Models\Collections;
+
+use \TerminusCommand;
+use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Workflow;
+
+class Workflows extends TerminusCollection {
+  protected $environment;
+  protected $owner;
+
+  /**
+   * Creates a new workflow and adds its data to the collection
+   *
+   * @param [string] $type    Type of workflow to create
+   * @param [array]  $options Additional information for the request
+   *        [string] environment UUID of environment running workflow
+   *        [array]  params      Parameters for the request
+   * @return [TerminusModel] $model
+   */
+  public function create($type, $options = array()) {
+    $options = array_merge(array('params' => array()), $options);
+    if (isset($options['environment'])) {
+      $this->environment = $options['environment'];
+    }
+    $params = array_merge($this->getFetchArgs(), $options['params']);
+
+    $results = TerminusCommand::simple_request(
+      $this->getFetchUrl(),
+      array(
+        'method'   => 'post',
+        'data'     => array(
+          'type'   => $type,
+          'params' => (object)$params
+        )
+      )
+    );
+
+    $model = new Workflow(
+      $results['data'],
+      array(
+        'owner' => $this->owner,
+      )
+    );
+    $this->add($model);
+    return $model;
+  }
+
+  /**
+   * Give the URL for collection data fetching
+   *
+   * @return [string] $url URL to use in fetch query
+   */
+  protected function getFetchUrl() {
+    $url = '';
+    switch ($this->getOwnerName()) {
+      case 'user':
+        $url = sprintf(
+          'users/%s/workflows',
+          $this->owner->get('id')
+        );
+          break;
+      case 'site':
+        $replacement = $this->owner->get('id');
+        if (isset($this->environment)) {
+          $replacement = sprintf(
+            '%s/environments/%s',
+            $this->owner->get('id'),
+            $this->environment
+          );
+        }
+        $url = sprintf(
+          'sites/%s/workflows',
+          $replacement
+        );
+          break;
+      case 'organization':
+        $user = $this->get('user');
+        $url  = sprintf(
+          'users/%s/organizations/%s/workflows',
+          $user->id,
+          $this->owner->get('id')
+        );
+          break;
+    }
+    return $url;
+  }
+
+  /**
+   * Names the model-owner of this collection
+   *
+   * @return [string] $owner_name
+   */
+  protected function getOwnerName() {
+    $owner_name = strtolower(
+      str_replace(
+        array('Terminus\\', 'Models\\', 'Collections\\'),
+        '',
+        get_class($this->owner)
+      )
+    );
+    return $owner_name;
+  }
+
+}

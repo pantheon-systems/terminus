@@ -384,12 +384,12 @@ abstract class TerminusCommand {
    * @return [void]
    */
   protected function workflowOutput($workflow) {
-    if ($workflow->attributes->result == 'succeeded') {
+    if ($workflow->get('result') == 'succeeded') {
       Logger::coloredOutput(
-        '%2<K>' . $workflow->attributes->active_description . '</K>'
+        '%2<K>' . $workflow->get('active_description') . '</K>'
       );
     } else {
-      Logger::redline($workflow->attributes->final_task->reason);
+      Logger::redline($workflow->get('final_task->reason'));
     }
   }
 

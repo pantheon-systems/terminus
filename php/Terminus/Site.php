@@ -10,7 +10,7 @@ use Terminus\Models\Collections\Environments;
 use Terminus\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Collections\Workflows;
+use Terminus\Models\Collections\Workflows;
 
 class Site {
   public $id;
@@ -570,7 +570,7 @@ class Site {
    * @return [array] $workflows An array of Workflow objects
    */
   public function getWorkflows() {
-    $workflows = $this->workflows->fetchPaged()->all();
+    $workflows = $this->workflows->fetch($paged = true)->all();
     return $workflows;
   }
 }
