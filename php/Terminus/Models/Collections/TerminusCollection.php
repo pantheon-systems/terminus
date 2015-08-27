@@ -2,10 +2,11 @@
 
 namespace Terminus\Models\Collections;
 
-use \TerminusCommand;
 use \stdClass;
+use \TerminusCommand;
+use Terminus\Models\TerminusModel;
 
-abstract class TerminusCollection {
+abstract class TerminusCollection extends TerminusModel {
   protected $models = array();
 
   /**
@@ -33,10 +34,11 @@ abstract class TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @return [void]
+   * @param [boolean] $paged True to use paginated API requests
+   * @return [TerminusModel] $this
    */
-  public function fetch() {
-    $results = $this->getCollectionData();
+  public function fetch($paged = false) {
+    $results = $this->getCollectionData($paged);
     $data    = $this->objectify($results['data']);
 
     foreach (get_object_vars($data) as $id => $model_data) {
@@ -45,6 +47,8 @@ abstract class TerminusCollection {
       }
       $this->add($model_data);
     }
+
+    return $this;
   }
 
   /**
@@ -82,7 +86,13 @@ abstract class TerminusCollection {
   protected function add($model_data, $options = array()) {
     $model   = $this->getMemberName();
     $owner   = $this->getOwnerName();
-    $options = array_merge(array('id' => $model_data->id), $options);
+    $options = array_merge(
+      array(
+        'id'         => $model_data->id,
+        'collection' => $this,
+      ),
+      $options
+    );
 
     if ($owner) {
       $options[$owner] = $this->$owner;
@@ -102,39 +112,29 @@ abstract class TerminusCollection {
     $class_name = get_class($this);
     return $class_name;
   }
-  
+
   /**
    * Retrieves collection data from the API
    *
+   * @param [boolean] $paged True to use paginated API requests
    * @return [array] $results
    */
-  protected function getCollectionData() {
+  protected function getCollectionData($paged = false) {
+    $function_name = 'simple_request';
+    if ($paged) {
+      $function_name = 'paged_request';
+    }
+
     $options = array_merge(
       array('options' => array('method' => 'get')),
       $this->getFetchArgs()
     );
-    $results = TerminusCommand::simple_request(
+    $results = TerminusCommand::$function_name(
       $this->getFetchUrl(),
       $options
     );
     return $results;
   }
-
-  /**
-   * Give necessary args for collection data fetching
-   *
-   * @return [array]
-   */
-  protected function getFetchArgs() {
-    return array();
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return [string] $url URL to use in fetch query
-   */
-  abstract protected function getFetchUrl();
 
   /**
    * Names the model-owner of this collection, false if DNE

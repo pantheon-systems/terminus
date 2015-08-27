@@ -2,48 +2,83 @@
 
 namespace Terminus\Models;
 
-use \Terminus\Request;
 use \TerminusCommand;
+use Terminus\Models\TerminusModel;
 
-class Workflow {
-  public $id;
-  public $attributes;
-  public $collection;
+class Workflow extends TerminusModel {
 
-  public $owner;
-  public $owner_type;
-
-  public function __construct($attributes, $options = array()) {
-    $this->id = $attributes->id;
-    $this->attributes = $attributes;
-
-    if (isset($options['collection'])) {
-      $this->collection = $options['collection'];
-    }
-
-    $this->owner = $options['owner'];
-    $this->owner_type = $options['owner_type'];
-
-    return $this;
-  }
-
-  public function url() {
-    switch ($this->owner_type) {
+  /**
+   * Give the URL for collection data fetching
+   *
+   * @return [string] $url URL to use in fetch query
+   */
+  protected function getFetchUrl() {
+    $url = '';
+    switch ($this->getOwnerName()) {
       case 'user':
-        return sprintf("users/%s/workflows/%s", $this->owner->id, $this->id);
+        $url = sprintf(
+          'users/%s/workflows/%s',
+          $this->owner->get('id'),
+          $this->get('id')
+        );
+          break;
       case 'site':
-        return sprintf("sites/%s/workflows/%s", $this->owner->id, $this->id);
+        $url = sprintf(
+          'sites/%s/workflows/%s',
+          $this->owner->get('id'),
+          $this->get('id')
+        );
+          break;
       case 'organization':
-        return sprintf("users/%s/organizations/%s/workflows/%s", $this->owner->user->id, $this->owner->id, $this->id);
+        $user = $this->get('user');
+        $url  = sprintf(
+          'users/%s/organizations/%s/workflows/%s',
+          $user->id,
+          $this->owner->get('id'),
+          $this->get('id')
+        );
+          break;
+    }
+    return $url;
+  }
+
+  /**
+   * Detects if the workflow has finished
+   *
+   * @return [boolean] $is_finished True if worklow has finished
+   */
+  public function isFinished() {
+    $is_finished = (boolean)$this->get('result');
+    return $is_finished;
+  }
+
+  /**
+   * Detects if the workflow was successfsul
+   *
+   * @return [boolean] $is_successful True if workflow succeeded
+   */
+  public function isSuccessful() {
+    $is_successful = ($this->get('result') == 'succeeded');
+    return $is_successful;
+  }
+
+  /**
+   * Detects if the workflow was successfsul
+   *
+   * @return [void]
+   */
+  public function logMessages() {
+    $final_task = $this->get('final_task');
+    foreach ($final_task->messages as $data => $message) {
+      \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
     }
   }
 
-  public function fetch() {
-    $results = TerminusCommand::simple_request($this->url());
-    $this->attributes = $results['data'];
-    return $this;
-  }
-
+  /**
+   * Waits on this workflow to finish
+   *
+   * @return [Workflow] $this
+   */
   public function wait() {
     while (!$this->isFinished()) {
       $this->fetch();
@@ -53,34 +88,32 @@ class Workflow {
     if ($this->isSuccessful()) {
       return $this;
     } else {
-      if (isset($this->attributes->final_task) and !empty($this->attributes->final_task->messages)) {
-        foreach($this->attributes->final_task->messages as $data => $message) {
-          \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
+      $final_task = $this->get('final_task');
+      if (($final_task != null) && !empty($final_task->messages)) {
+        foreach ($final_task->messages as $data => $message) {
+          \Terminus::error(
+            sprintf('[%s] %s', $message->level, $message->message)
+          );
           exit;
         }
       }
     }
   }
 
-   public function isFinished() {
-     return (boolean)$this->attributes->result;
-   }
-
-   public function isSuccessful() {
-     return $this->attributes->result == 'succeeded';
-   }
-
-   public function logMessages() {
-     foreach($this->attributes->final_task->messages as $data => $message) {
-       \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
-     }
-   }
-
-  public function get($attribute) {
-    if(isset($this->attributes->$attribute)) {
-      return $this->attributes->$attribute;
-    }
-    return null;
+  /**
+   * Names the model-owner of this collection
+   *
+   * @return [string] $owner_name
+   */
+  protected function getOwnerName() {
+    $owner_name = strtolower(
+      str_replace(
+        array('Terminus\\', 'Models\\'),
+        '',
+        get_class($this->owner)
+      )
+    );
+    return $owner_name;
   }
 
 }
