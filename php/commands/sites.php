@@ -141,8 +141,8 @@ class Sites_Command extends TerminusCommand {
     Terminus::success("Pow! You created a new site!");
 
     // Add Site to SitesCache
-    $site_id = $workflow->attributes->final_task->site_id;
-    $site = new Site($site_id);
+    $final_task = $workflow->get('final_task');
+    $site = new Site($final_task->site_id);
     $site->fetch();
 
     $cache_membership = array(
