@@ -97,36 +97,31 @@ class SitesCache {
    *     )
    */
   public function add($memberships_data = array()) {
-    $cache = (array) $this->cache->get_data($this->cachekey, array('decode_array' => true));
+    $cache = (array)$this->cache->get_data(
+      $this->cachekey,
+      array('decode_array' => true)
+    );
 
-    // if a single site item is passed in, wrap it in an array
+    //If a single site item is passed in, wrap it in an array
     if (isset($memberships_data['id'])) {
       $memberships_data = array($memberships_data);
     }
 
     foreach ($memberships_data as $membership_data) {
-      $site_id = $membership_data['id'];
       $site_name = $membership_data['name'];
-      $site_created = $membership_data['created'];
-      $site_framework = $membership_data['framework'];
-      $site_service_level = $membership_data['service_level'];
       $membership = $membership_data['membership'];
       $membership_id = $membership_data['membership']['id'];
 
-      if (!isset($cache[$site_name]) || !isset($cache[$site_name]['memberships'])) {
-        // if site is not in cache, add a new entry
-        $cache[$site_name] = array(
-          'id' => $site_id,
-          'name' => $site_name,
-          'created' => $site_created,
-          'framework' => $site_framework,
-          'service_level' => $site_service_level,
-          'memberships' => array()
-        );
+      //If site is not in the cache, add it as a new entry
+      if (!isset($cache[$site_name])) {
+        $cache[$site_name] = $this->getSiteData($membership_data);
       }
 
-      // then add the membership
-      $cache[$site_name]['memberships'][$membership_id] = $membership;
+      //Then add the membership
+      $cache[$site_name] = array_merge(
+        $cache[$site_name],
+        array('memberships' => array($membership_id => $membership))
+      );
     }
 
     # and save the cache
@@ -168,20 +163,9 @@ class SitesCache {
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {
-      $site = $membership->site;
-
-      $memberships_data[] = array(
-        'id' => $site->id,
-        'name' => $site->name,
-        'created' => property_exists($site, 'created') ? $site->created : null,
-        'framework' => property_exists($site, 'framework') ? $site->framework : null,
-        'service_level' => property_exists($site, 'service_level') ? $site->service_level : null,
-        'membership' => array(
-          'id' => $user_id,
-          'name' => 'Team',
-          'type' => 'team',
-        )
-      );
+      $site = (array)$membership->site;
+      $member_data = array('id' => $user_id, 'name' => 'Team', 'type' => 'team');
+      $memberships_data[] = $this->getSiteData($site, $member_data);
     }
 
     return $memberships_data;
@@ -213,20 +197,40 @@ class SitesCache {
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {
-      $memberships_data[] = array(
-        'id' => $membership->site->id,
-        'name' => $membership->site->name,
-        'created' => $membership->site->created,
-        'framework' => $membership->site->framework,
-        'service_level' => $membership->site->service_level,
-        'membership' => array(
-          'id' => $org_data['id'],
-          'name' => $org_data['name'],
-          'type' => 'organization',
-        )
-      );
+      $site_data = (array)$membership->site;
+      $org_data['type'] = 'organization';
+      $memberships_data[] = $this->getSiteData($site_data, $org_data);
     }
 
     return $memberships_data;
   }
+
+  /**
+   * Formats site data from response for use
+   *
+   * @param [array] $response_data    Data about the site from API
+   * @param [array] $memebership_data Data about membership to this site
+   * @return [array] $membership_array
+   */
+  private function getSiteData($response_data, $membership_data = array()) {
+    $site_data = array(
+      'id'            => null,
+      'name'          => null,
+      'created'       => null,
+      'framework'     => null,
+      'service_level' => null,
+      'membership'    => array(),
+    );
+    foreach ($site_data as $index => $value) {
+      if (($value == null) && isset($response_data[$index])) {
+        $site_data[$index] = $response_data[$index];
+      }
+    }
+
+    if (!empty($membership_data)) {
+      $site_data['membership'] = $membership_data;
+    }
+    return $site_data;
+  }
+
 }

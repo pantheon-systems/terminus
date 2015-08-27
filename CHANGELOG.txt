@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##MASTER
+###Fixed
+- Undefined property "framework" error when running SitesCache functions (#433)
+
 ##[0.7.1] - 2015-08-21
 ###Fixed
 - PHP 5.3 incompatibility
