@@ -5,7 +5,7 @@ namespace Terminus\Models;
 use \TerminusCommand;
 
 abstract class TerminusModel {
-  private $id;
+  protected $id;
   private $attributes;
 
   /**

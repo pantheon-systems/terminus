@@ -389,7 +389,8 @@ abstract class TerminusCommand {
         '%2<K>' . $workflow->get('active_description') . '</K>'
       );
     } else {
-      Logger::redline($workflow->get('final_task->reason'));
+      $final_task = $workflow->get('final_task');
+      Logger::redline($final_task->reason);
     }
   }
 

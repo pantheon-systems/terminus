@@ -778,7 +778,7 @@ class Site_Command extends TerminusCommand {
       $site = SiteFactory::instance(Input::sitename($assoc_args));
       $site->environmentsCollection->fetch();
 
-      $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
+      $multidev_ids = array_map(function($env) { return $env->get('id'); }, $site->environmentsCollection->multidev());
       $multidev_id = Input::env($assoc_args, 'env', "Multidev environment to merge into Dev Environment", $multidev_ids);
       $environment = $site->environmentsCollection->get($multidev_id);
 
@@ -805,7 +805,7 @@ class Site_Command extends TerminusCommand {
        $site = SiteFactory::instance(Input::sitename($assoc_args));
        $site->environmentsCollection->fetch();
 
-       $multidev_ids = array_map(function($env) { return $env->id; }, $site->environmentsCollection->multidev());
+       $multidev_ids = array_map(function($env) { return $env->get('id'); }, $site->environmentsCollection->multidev());
        $multidev_id = Input::env($assoc_args, 'env', "Multidev environment that the Dev Environment will be merged into", $multidev_ids);
        $environment = $site->environmentsCollection->get($multidev_id);
 
@@ -931,7 +931,7 @@ class Site_Command extends TerminusCommand {
       'Choose environment to deploy'
     ));
 
-    $clone_live_content = ($env->id == 'test' && isset($assoc_args['clone-live-content']));
+    $clone_live_content = ($env->get('id') == 'test' && isset($assoc_args['clone-live-content']));
 
     if(!isset($assoc_args['note'])) {
       $annotation = Terminus::prompt(
@@ -1495,20 +1495,32 @@ class Site_Command extends TerminusCommand {
         } else {
           $role = 'team_member';
         }
-        $workflow = $team->add($assoc_args['member'], $role);
+        $workflow = $team->addMember($assoc_args['member'], $role);
         $this->workflowOutput($workflow);
         break;
       case 'remove-member':
         $user     = $team->findByEmail($assoc_args['member']);
-        $workflow = $user->remove($assoc_args['member']);
-        $this->workflowOutput($workflow);
-        break;
+        if ($user != null) {
+          $workflow = $user->removeMember($assoc_args['member']);
+          $this->workflowOutput($workflow);
+        } else {
+          Terminus::error(
+            '"' . $assoc_args['member'] . '" is not a valid member.'
+          );
+        }
+          break;
       case 'change-role':
         if((boolean)$site->getFeature('change_management')) {
           $role = Input::role($assoc_args);
           $user = $team->findByEmail($assoc_args['member']);
-          $workflow = $user->setRole($role);
-          $this->workflowOutput($workflow);
+          if ($user != null) {
+            $workflow = $user->setRole($role);
+            $this->workflowOutput($workflow);
+          } else {
+            Terminus::error(
+              '"' . $assoc_args['member'] . '" is not a valid member.'
+            );
+          }
         } else {
           Logger::redline(
             'This site does not have the authority to conduct this operation.'
@@ -1519,7 +1531,7 @@ class Site_Command extends TerminusCommand {
       default:
         $user_memberships = $team->all();
         foreach($user_memberships as $uuid => $user_membership) {
-          $user = $user_membership->getUser();
+          $user = $user_membership->get('user');
           $data[] = array(
             'First' => $user->profile->firstname,
             'Last'  => $user->profile->lastname,
