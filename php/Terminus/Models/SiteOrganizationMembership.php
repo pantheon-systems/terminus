@@ -1,13 +1,10 @@
 <?php
 
-namespace Terminus;
-use \ReflectionClass;
-use \Terminus\Request;
-use \Terminus\Models\Collections\Bindings;
+namespace Terminus\Models;
 
-class SiteOrganizationMembership {
-  private $id;
-  private $attributes;
+use Terminus\Models\TerminusModel;
+
+class SiteOrganizationMembership extends TerminusModel {
   private $site;
   private $organization;
 
@@ -29,19 +26,6 @@ class SiteOrganizationMembership {
   }
 
   /**
-   * Returns attribute of given name
-   *
-   * @param [string] $attribute Name of attribute to retrieve
-   * @return [mixed] $this->attributes->$attribute or null
-   */
-  public function get($attribute) {
-    if(isset($this->attributes->$attribute)) {
-      return $this->attributes->$attribute;
-    }
-    return null;
-  }
-
-  /**
    * Returns organization object within SiteOrganizationMembership object
    *
    * @return [Organization] $this->organization Org associated with this SiteOrganizationMembership
@@ -57,7 +41,7 @@ class SiteOrganizationMembership {
    *
    * @return [Workflow] $workflow
    **/
-  public function remove() {
+  public function removeMember() {
     $workflow = $this->site->workflows->create(
       'remove_site_organization_membership',
       array('params' => array('organization_id' => $this->id))
@@ -77,4 +61,5 @@ class SiteOrganizationMembership {
       array('params' => array('organization_id' => $this->id, 'role' => $role)));
     return $workflow;
   }
+
 }
