@@ -4,7 +4,7 @@ use \Terminus\Dispatcher;
 use \Terminus\Utils;
 use \Terminus\SitesCache;
 use Terminus\Site;
-use Terminus\User;
+use Terminus\Models\User;
 
 /**
  * Get information about Terminus itself.
@@ -156,7 +156,7 @@ class CLI_Command extends TerminusCommand {
   * @subcommand console
   */
   public function console($args, $assoc_args) {
-    $user = new User;
+    $user = new User(new stdClass(), array());
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
       $site_id = $this->sitesCache->findID($sitename);

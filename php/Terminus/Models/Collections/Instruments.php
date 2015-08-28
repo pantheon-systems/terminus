@@ -10,7 +10,7 @@ class Instruments extends TerminusCollection {
    * @return [string] $url URL to use in fetch query
    */
   protected function getFetchUrl() {
-    $url = 'users/' . $this->user->get('id') . '/instruments';
+    $url = 'users/' . $this->user->id . '/instruments';
     return $url;
   }
 

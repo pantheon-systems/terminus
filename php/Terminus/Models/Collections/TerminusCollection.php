@@ -95,7 +95,11 @@ abstract class TerminusCollection extends TerminusModel {
     );
 
     if ($owner) {
-      $options[$owner] = $this->$owner;
+      if (isset($this->$owner)) {
+        $options[$owner] = $this->$owner;
+      } else {
+        $options[$owner] = $this->owner;
+      }
     }
     $this->models[$model_data->id] = new $model(
       $model_data,
