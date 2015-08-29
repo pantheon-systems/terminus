@@ -81,7 +81,7 @@ abstract class TerminusCollection extends TerminusModel {
    *
    * @param [stdClass] $model_data Data to feed into attributes of new model
    * @param [array]    $options    Data to make properties of the new model
-   * @return [TerminusModel] $model
+   * @return [void]
    */
   protected function add($model_data, $options = array()) {
     $model   = $this->getMemberName();
@@ -141,12 +141,69 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
+   * Returns an array of data where the keys are the attribute $key and the
+   *   values are the attribute $value, filtered by the given array
+   *
+   * @param [array]  $filters     Attributes to match during filtration
+   *   e.g. array('category' => 'other')
+   * @param [string] $key         Name of attribute to make array keys
+   * @param [string|array] $value Name(s) of attribute to make array values
+   * @return [array] $member_list Array rendered as requested
+   *         [mixed] $this->attribute->$key = $this->attribute->$value
+   */
+  public function getFilteredMemberList(
+    $filters,
+    $key   = 'id',
+    $value = 'name'
+  ) {
+    $members = $this->getMembers();
+    $member_list = array();
+
+    $values = $value;
+    if (!is_array($values)) {
+      $values = array($value);
+    }
+    foreach ($members as $member) {
+      $member_list[$member->get($key)] = array();
+      foreach ($values as $item) {
+        $member_list[$member->get($key)][$item] = $member->get($item);
+      }
+      if (count($member_list[$member->get($key)]) < 2) {
+        $member_list[$member->get($key)] = 
+          array_pop($member_list[$member->get($key)]);
+      }
+      foreach ($filters as $attribute => $match_value) {
+        if ($member->get($attribute) != $match_value) {
+          unset($member_list[$member->get($key)]);
+          break;
+        }
+      }
+
+    }
+    return $member_list;
+  }
+
+  /**
    * Names the model-owner of this collection, false if DNE
    *
    * @return [string|boolean] $owner_name
    */
   protected function getOwnerName() {
     return false;
+  }
+
+  /**
+   * Returns an array of data where the keys are the attribute $key and the
+   *   values are the attribute $value
+   *
+   * @param [string] $key   Name of attribute to make array keys
+   * @param [string] $value Name of attribute to make array values
+   * @return [array] $member_list Array rendered as requested
+   *         [mixed] $this->attribute->$key = $this->attribute->$value
+   */
+  public function getMemberList($key = 'id', $value = 'name') {
+    $member_list = $this->getFilteredMemberList(array(), $key, $value);
+    return $member_list;
   }
 
   /**
