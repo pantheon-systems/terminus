@@ -1,10 +1,12 @@
 <?php
+
 namespace Terminus;
 
-use Terminus\User;
+use Terminus\Models\User;
 use Terminus\Site;
 use \Terminus\Models\Collections\Workflows;
 use \Terminus\Models\Collections\OrganizationSiteMemberships;
+use \stdClass;
 
 class Organization {
   public $id;
@@ -16,8 +18,8 @@ class Organization {
     // if the org id is passed in then we need to fetch it from the user object
 
     if (is_string($org)) {
-      $this->user = new User();
-      $orgs = $this->user->organizations();
+      $this->user = new User(new stdClass(), array());
+      $orgs = $this->user->getOrganizations();
       $org = $orgs->$org;
     }
 

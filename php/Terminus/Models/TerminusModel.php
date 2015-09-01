@@ -5,8 +5,9 @@ namespace Terminus\Models;
 use \TerminusCommand;
 
 abstract class TerminusModel {
-  protected $id;
   private $attributes;
+
+  protected $id;
 
   /**
    * Object constructor
@@ -20,6 +21,30 @@ abstract class TerminusModel {
       $this->$var_name = $value;
     }
     $this->attributes = $attributes;
+  }
+
+  /**
+   * Handles requests for inaccessable properties
+   *
+   * @param [string] $property Name of property being requested
+   * @return [mixed] $this->$property
+   */
+  public function __get($property) {
+    if (property_exists($this, $property)) {
+      return $this->$property;
+    }
+
+    $trace = debug_backtrace();
+    trigger_error(
+      sprintf(
+        'Undefined property $var->$%s in %s on line %s',
+        $property,
+        $trace[0]['file'],
+        $trace[0]['line']
+      ),
+      E_USER_NOTICE
+    );
+    return null;
   }
 
   /**

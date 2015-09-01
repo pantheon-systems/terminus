@@ -1,10 +1,12 @@
 <?php
+
 namespace Terminus\Helpers;
 
-use \Terminus\User;
+use \Terminus\Models\User;
 use \Terminus\SiteFactory;
 use \Terminus\SitesCache;
 use \Terminus\Upstreams;
+use \stdClass;
 
 /**
  * Helper class to handle inputs
@@ -151,8 +153,8 @@ class Input {
       $orgs = array('-' => 'None');
     }
 
-    $user = new User;
-    foreach($user->organizations() as $id => $org) {
+    $user = new User(new stdClass(), array());
+    foreach($user->getOrganizations() as $id => $org) {
       $orgs[$id] = $org->name;
     }
     return $orgs;

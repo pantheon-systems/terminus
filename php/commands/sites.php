@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Actions on multiple sites
  *
@@ -12,7 +13,7 @@ use Terminus\Site;
 use Terminus\SiteFactory;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
-use Terminus\User;
+use Terminus\Models\User;
 use Symfony\Component\Finder\SplFileInfo;
 use Terminus\Loggers\Regular as Logger;
 use Terminus\Workflow;
@@ -146,7 +147,7 @@ class Sites_Command extends TerminusCommand {
     $site->fetch();
 
     $cache_membership = array(
-      'id' => $site_id,
+      'id' => $final_task->site_id,
       'name' => $options['name'],
       'created' => $site->attributes->created,
       'service_level' => $site->attributes->service_level,
@@ -249,7 +250,7 @@ class Sites_Command extends TerminusCommand {
    *
    */
   public function aliases($args, $assoc_args) {
-    $user = new User();
+    $user = new User(new stdClass(), array());
     $print = Input::optional('print', $assoc_args, false);
     $json = \Terminus::get_config('json');
     $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');

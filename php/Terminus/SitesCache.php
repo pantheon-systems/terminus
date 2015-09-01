@@ -108,6 +108,7 @@ class SitesCache {
     }
 
     foreach ($memberships_data as $membership_data) {
+      if (!isset($membership_data['name'])) echo print_r($membership_data,true) . PHP_EOL;
       $site_name = $membership_data['name'];
       $membership = $membership_data['membership'];
       $membership_id = $membership_data['membership']['id'];

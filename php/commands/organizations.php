@@ -1,5 +1,6 @@
 <?php
-use \Terminus\User;
+
+use \Terminus\Models\User;
 use \Terminus\Utils;
 use \Terminus\Auth;
 use \Terminus\SiteFactory;
@@ -25,7 +26,7 @@ class Organizations_Command extends TerminusCommand {
    *
    */
   public function all($args, $assoc_args) {
-     $user = new User();
+     $user = new User(new stdClass(), array());
      $data = array();
      foreach ( $user->organizations() as $org_id => $org) {
        $data[] = array(

@@ -4,7 +4,7 @@ use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\SiteFactory;
 use Terminus\Site;
-use Terminus\User;
+use Terminus\Models\User;
 use Terminus\Models\Collections\Instruments;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
@@ -1174,8 +1174,8 @@ class Site_Command extends TerminusCommand {
    *  terminus site instrument --site=sitename
    */
   public function instrument($args, $assoc_args) {
-    $user = new User();
-    $instruments = $user->instruments()->all();
+    $user = new User(new stdClass(), array());
+    $instruments = $user->instruments->all();
     foreach($instruments as $instrument) {
       $data[$instrument->get('id')] = $instrument->get('label');
     }

@@ -1,16 +1,19 @@
 <?php
 
 namespace Terminus;
+
 use Terminus\Request;
 use Terminus\Deploy;
 use \TerminusCommand;
 use \Terminus\Models\Environment;
 use \Terminus\Models\SiteUserMembership;
+use Terminus\Models\User;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\Workflows;
+use \stdClass;
 
 class Site {
   public $id;
@@ -59,7 +62,7 @@ class Site {
     $this->org_memberships = new SiteOrganizationMemberships(array('site' => $this));
     $this->user_memberships = new SiteUserMemberships(array('site' => $this));
     $this->environmentsCollection = new Environments(array('site' => $this));
-    $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'site'));
+    $this->workflows = new Workflows(array('owner' => $this));
 
     return $this;
   }
@@ -91,7 +94,7 @@ class Site {
       );
     }
 
-    $user = new User();
+    $user = new User(new stdClass(), array());
     $workflow = $user->workflows->create('create_site', array(
       'params' => $data
     ));
