@@ -1,6 +1,6 @@
 <?php
 
-use \Terminus\Upstreams;
+use Terminus\Models\Collections\Upstreams;
 
 /**
  * Show Pantheon upstream information
@@ -25,14 +25,17 @@ class Upstreams_Command extends TerminusCommand {
   * @alias all
   **/
   public function all($args = array(), $assoc_args = array()) {
-    $defaults   = array(
-      'type'      => '',
-      'category'  => '',
-      'framework' => '',
+    $upstreams  = new Upstreams();
+    $upstreams_list = $upstreams->getFilteredMemberList(
+      $assoc_args,
+      'id',
+      array('id', 'longname', 'category', 'type', 'framework')
     );
-    $assoc_args = array_merge($defaults, $assoc_args);
-    $upstreams  = Upstreams::instance();
-    $this->handleDisplay($upstreams->query($assoc_args), $assoc_args);
+    $this->handleDisplay(
+      $upstreams_list,
+      array(),
+      array('ID', 'Name', 'Category', 'Type', 'Framework')
+    );
     return $upstreams;
   }
 

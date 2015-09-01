@@ -133,8 +133,8 @@ class Sites_Command extends TerminusCommand {
     }
     if (!isset($assoc_args['import'])) {
       $upstream = Input::upstream($assoc_args, 'upstream');
-      $options['upstream_id'] = $upstream['id'];
-      Terminus::line(sprintf("Creating new %s installation ... ", $upstream['longname']));
+      $options['upstream_id'] = $upstream->get('id');
+      Terminus::line(sprintf("Creating new %s installation ... ", $upstream->get('longname')));
     }
 
     $workflow = Site::create($options);

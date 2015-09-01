@@ -5,7 +5,7 @@ namespace Terminus\Helpers;
 use \Terminus\Models\User;
 use \Terminus\SiteFactory;
 use \Terminus\SitesCache;
-use \Terminus\Upstreams;
+use \Terminus\Models\Collections\Upstreams;
 use \stdClass;
 
 /**
@@ -266,20 +266,22 @@ class Input {
    * @param [string]  $key  Index to search for in args
    * @param [boolean] $exit If true, throw error when no value is found
    *
-   * @return [array] $upstream
+   * @return [Upstream] $upstream
    */
   public static function upstream($args, $key, $exit = true) {
-    if(isset($args[$key])) {
-      $upstream = Upstreams::getByIdOrName($args[$key]);
-      if(!$upstream) {
+    $upstreams = new Upstreams();
+    if (isset($args[$key])) {
+      $upstream  = $upstreams->getByIdOrName($args[$key]);
+      if ($upstream == null) {
         \Terminus::error("Couldn't find upstream: %s", array($args['upstream']));
       }
     } else {
-      $upstream = \Terminus::menu(Upstreams::selectList());
-      $upstream = Upstreams::getByIndex($upstream);
+      $upstream = $upstreams->get(
+        \Terminus::menu($upstreams->getMemberList('id', 'longname'))
+      );
     }
-    if(!$upstream AND $exit) {
-      \Terminus::error("Upstream is required.");
+    if (!$upstream && $exit) {
+      \Terminus::error('Upstream is required.');
     }
     return $upstream;
   }
