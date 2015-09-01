@@ -9,7 +9,7 @@ use \Terminus\Models\SiteUserMembership;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
-use Terminus\Collections\SiteOrganizationMemberships;
+use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\Workflows;
 
 class Site {
