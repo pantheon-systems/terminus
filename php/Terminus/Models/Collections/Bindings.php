@@ -11,7 +11,7 @@ class Bindings extends TerminusCollection {
    *
    * @return [void]
    */
-  public function fetch() {
+  public function fetch($paged = false) {
     $results = $this->getCollectionData();
 
     foreach (get_object_vars($results['data']) as $id => $model_data) {
