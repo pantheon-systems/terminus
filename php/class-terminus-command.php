@@ -5,6 +5,7 @@ use \Terminus\Endpoint;
 use \Terminus\Request;
 use \Terminus\Session;
 use \Terminus\Loggers\Regular as Logger;
+use Terminus\Models\Collections\Sites;
 
 /**
  * The base class for Terminus commands

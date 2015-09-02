@@ -5,11 +5,11 @@ Feature: Environment Initializiaton
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site init-env --site=[[test_site_name]] --env=test"
+    Then I should get "."
     Then I should get:
     """
-    Environment initialization complete
+    Deploying code to "test", and cloning files from "dev", and cloning database from "dev"
     """
-    #Then I check the URL "http://test-[[test_site_name]].[[php_site_domain]]" for validity
 
   Scenario: Should not allow re-initializing an environment
     @vcr site-init-env-already-initialized

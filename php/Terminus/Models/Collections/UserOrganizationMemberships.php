@@ -12,8 +12,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Object constructor
    *
-   * @param [stdClass] $attributes Attributes of this model
-   * @param [array]    $options    Options to set as $this->key
+   * @param [array] $options Options to set as $this->key
    * @return [TerminusModel] $this
    */
   public function __construct($options = array()) {

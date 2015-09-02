@@ -8,7 +8,7 @@ Feature: Payment Instruments
     When I run "terminus site instrument --site=[[test_site_name]] --instrument=[[payment_instrument_uuid]]"
     Then I should get:
     """
-    [[payment_instrument_uuid]]
+    Associated a payment method to the site
     """
 
   Scenario: Removing instruments

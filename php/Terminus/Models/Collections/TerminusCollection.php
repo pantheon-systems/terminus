@@ -2,8 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-use \stdClass;
-use \TerminusCommand;
+use TerminusCommand;
 use Terminus\Models\TerminusModel;
 
 abstract class TerminusCollection extends TerminusModel {
@@ -35,7 +34,7 @@ abstract class TerminusCollection extends TerminusModel {
    * Fetches model data from API and instantiates its model instances
    *
    * @param [boolean] $paged True to use paginated API requests
-   * @return [TerminusModel] $this
+   * @return [TerminusCollection] $this
    */
   public function fetch($paged = false) {
     $results = $this->getCollectionData($paged);
@@ -144,10 +143,10 @@ abstract class TerminusCollection extends TerminusModel {
    * Returns an array of data where the keys are the attribute $key and the
    *   values are the attribute $value, filtered by the given array
    *
-   * @param [array]  $filters     Attributes to match during filtration
+   * @param [array]  $filters Attributes to match during filtration
    *   e.g. array('category' => 'other')
-   * @param [string] $key         Name of attribute to make array keys
-   * @param [string|array] $value Name(s) of attribute to make array values
+   * @param [string] $key     Name of attribute to make array keys
+   * @param [mixed]  $value   Name(s) of attribute to make array values
    * @return [array] $member_list Array rendered as requested
    *         [mixed] $this->attribute->$key = $this->attribute->$value
    */
@@ -156,7 +155,7 @@ abstract class TerminusCollection extends TerminusModel {
     $key   = 'id',
     $value = 'name'
   ) {
-    $members = $this->getMembers();
+    $members     = $this->getMembers();
     $member_list = array();
 
     $values = $value;
@@ -169,7 +168,7 @@ abstract class TerminusCollection extends TerminusModel {
         $member_list[$member->get($key)][$item] = $member->get($item);
       }
       if (count($member_list[$member->get($key)]) < 2) {
-        $member_list[$member->get($key)] = 
+        $member_list[$member->get($key)] =
           array_pop($member_list[$member->get($key)]);
       }
       foreach ($filters as $attribute => $match_value) {
@@ -237,9 +236,9 @@ abstract class TerminusCollection extends TerminusModel {
    * @param [array] $array Array to turn into object
    * @return [stdClass] $object
    */
-  private function objectify($array = array()) {
+  protected function objectify($array = array()) {
     if (is_array($array)) {
-      $object = new stdClass();
+      $object = new \stdClass();
       foreach ($array as $key => $value) {
         $object->$key = $value;
       }

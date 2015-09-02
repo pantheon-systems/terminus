@@ -9,11 +9,11 @@ class Upstreams extends TerminusCollection {
   /**
    * Search available upstreams by UUID or name
    *
-   * @param $id_or_name [string] UUID or name
+   * @param [string] $id_or_name UUID or name
    * @return [Upstream] $member
    */
   public function getByIdOrName($id_or_name) {
-    $members  = $this->getMemberList('id', 'longname');
+    $members   = $this->getMemberList('id', 'longname');
     $member_id = null;
     if (isset($members[$id_or_name])) {
       $member_id = $id_or_name;

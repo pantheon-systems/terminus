@@ -3,10 +3,8 @@
 namespace Terminus\Helpers;
 
 use \Terminus\Models\User;
-use \Terminus\SiteFactory;
-use \Terminus\SitesCache;
+use Terminus\Models\Collections\Sites;
 use \Terminus\Models\Collections\Upstreams;
-use \stdClass;
 
 /**
  * Helper class to handle inputs
@@ -152,7 +150,7 @@ class Input {
       $orgs = array('-' => 'None');
     }
 
-    $user = new User(new stdClass(), array());
+    $user = new User();
     foreach($user->getOrganizations() as $id => $org) {
       $orgs[$org->get('id')] = $org->get('name');
     }
@@ -219,10 +217,11 @@ class Input {
     if(isset($_SERVER['TERMINUS_SITE'])) {
       return $_SERVER['TERMINUS_SITE'];
     }
-    $sitesCache = new SitesCache();
-    $sitenames = array_map(function($site_cache) {
-      return $site_cache['name'];
-    }, $sitesCache->all());
+    $sites = new Sites();
+    $sites = $sites->all();
+    $sitenames = array_map(function($site) {
+      return $site->get('name');
+    }, $sites);
 
     $choices = array();
     foreach($sitenames as $sitename) {

@@ -23,7 +23,7 @@ class Organization extends TerminusModel {
    * @param [array]    $options    Options to set as $this->key
    * @return [Organization] $this
    */
-  public function __construct($attributes, $options = array()) {
+  public function __construct($attributes = null, $options = array()) {
     parent::__construct($attributes, $options);
     if (!isset($this->user)) {
       $this->user = new User(new stdClass(), array());
@@ -35,7 +35,7 @@ class Organization extends TerminusModel {
     );
     $this->site_memberships = new OrganizationSiteMemberships($params);
     //$this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows        = new Workflows($params);
+    $this->workflows = new Workflows($params);
   }
 
   /**

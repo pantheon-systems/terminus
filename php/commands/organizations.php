@@ -3,7 +3,6 @@
 use \Terminus\Models\User;
 use \Terminus\Utils;
 use \Terminus\Auth;
-use \Terminus\SiteFactory;
 use \Terminus\Models\Organization;
 use \Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\UserOrganizationMemberships;
@@ -67,7 +66,7 @@ class Organizations_Command extends TerminusCommand {
     $memberships = $org->site_memberships;
 
     if (isset($assoc_args['add'])) {
-      $site = SiteFactory::instance(Input::sitename($assoc_args, 'add'));
+      $site = $this->sites->get(Input::sitename($assoc_args, 'add'));
       Terminus::confirm(
         'Are you sure you want to add %s to %s ?',
         $assoc_args,

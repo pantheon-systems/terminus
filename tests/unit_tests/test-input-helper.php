@@ -3,8 +3,7 @@
  * Testing class for \Terminus\Utils
  *
  */
-use \Terminus\Helpers\Input,
-      \Terminus\SiteFactory;
+use Terminus\Helpers\Input;
 
  class InputHelperTest extends PHPUnit_Framework_TestCase {
 
@@ -12,7 +11,6 @@ use \Terminus\Helpers\Input,
     * @vcr input_helper_org_helpers
     */
    function testOrgHelpers() {
-      $site = SiteFactory::instance("phpunittest");
       $orglist = Input::orglist();
       $this->assertInternalType('array',$orglist);
       $this->assertArrayHasKey('-', $orglist);

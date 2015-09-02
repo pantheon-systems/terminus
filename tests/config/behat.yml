@@ -8,7 +8,7 @@ default:
       password:                password1
       host:                    onebox
       vcr_mode:                new_episodes
-      test_site_name:          behat-test
+      test_site_name:          behat-tests
       other_user:              sara@getpantheon.com
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
@@ -20,11 +20,11 @@ ci:
     bootstrap: ../features/bootstrap
   context:
     parameters:
-      username: devuser@pantheon.io
-      password: password1
-      host: onebox
-      vcr_mode: once
-      test_site_name: behat-test
+      username:                devuser@pantheon.io
+      password:                password1
+      host:                    onebox
+      vcr_mode:                once
+      test_site_name:          behat-tests
       other_user:              sara@getpantheon.com
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430

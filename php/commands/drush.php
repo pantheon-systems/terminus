@@ -1,10 +1,10 @@
 <?php
 
-use \Terminus\Dispatcher,
-  \Terminus\Utils,
-  \Terminus\CommandWithSSH,
-  \Terminus\SiteFactory,
-  \Terminus\Helpers\Input;
+use Terminus\Dispatcher;
+use Terminus\Utils;
+use Terminus\CommandWithSSH;
+use Terminus\Models\Collections\Sites;
+use Terminus\Helpers\Input;
 
 
 class Drush_Command extends CommandWithSSH {
@@ -26,26 +26,22 @@ class Drush_Command extends CommandWithSSH {
    *
    */
   function __invoke( $args, $assoc_args ) {
-    if (isset($assoc_args['env'])) {
-      $environment = $assoc_args['env'];
-    }
-    else {
-      $environment = 'dev';
-    }
-    $site = SiteFactory::instance(Input::sitename($assoc_args));
+    $environment = Input::env($assoc_args);
+    $sites = new Sites();
+    $site = $sites->get(Input::sitename($assoc_args));
     if (!$site) {
       Terminus::error("Command could not be completed. Unknown site specified.");
       exit;
     }
 
     $server = Array(
-      'user' => "$environment.{$site->getId()}",
-      'host' => "appserver.$environment.{$site->getId()}.drush.in",
+      'user' => "$environment.{$site->get('id')}",
+      'host' => "appserver.$environment.{$site->get('id')}.drush.in",
       'port' => '2222'
     );
 
     if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      $server['user'] = "appserver.$environment.{$site->getId()}";
+      $server['user'] = "appserver.$environment.{$site->get('id')}";
       $server['host'] = TERMINUS_HOST;
     }
 
@@ -67,7 +63,7 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    Terminus::line( "Running drush %s %s on %s-%s", array($command, $flags, $site->getName(), $environment));
+    Terminus::line( "Running drush %s %s on %s-%s", array($command, $flags, $site->get('name'), $environment));
     $this->send_command($server, 'drush', $args, $assoc_args );
   }
 

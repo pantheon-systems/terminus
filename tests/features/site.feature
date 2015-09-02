@@ -15,10 +15,7 @@ Feature: site
     Given I am authenticated
     Given a site named "[[test_site_name]]"
     When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev"
-    Then I should get:
-    """
-    Git
-    """
+    Then I should get one of the following: "git, sftp"
 
   Scenario: Site Workflows
     @vcr site-workflows
