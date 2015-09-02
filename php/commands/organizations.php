@@ -4,7 +4,9 @@ use \Terminus\Models\User;
 use \Terminus\Utils;
 use \Terminus\Auth;
 use \Terminus\SiteFactory;
-use \Terminus\Organization;
+use \Terminus\Models\Organization;
+use \Terminus\Models\Collections\OrganizationSiteMemberships;
+use Terminus\Models\Collections\UserOrganizationMemberships;
 use \Terminus\Helpers\Input;
 use \Guzzle\Http\Client;
 use \Terminus\Loggers\Regular as Logger;
@@ -28,10 +30,10 @@ class Organizations_Command extends TerminusCommand {
   public function all($args, $assoc_args) {
      $user = new User(new stdClass(), array());
      $data = array();
-     foreach ( $user->organizations() as $org_id => $org) {
+     foreach ($user->getOrganizations() as $id => $org) {
        $data[] = array(
-         'name' => $org->name,
-         'id' => $org_id,
+         'name' => $org->get('name'),
+         'id' => $org->get('id'),
        );
      }
 
@@ -43,8 +45,8 @@ class Organizations_Command extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * [--org=<id>]
-   * : Organization id
+   * [--org=<id|name>]
+   * : Organization UUID or name
    *
    * [--tag=<tag>]
    * : Tag name to filter sites list by
@@ -60,40 +62,57 @@ class Organizations_Command extends TerminusCommand {
    */
   public function sites($args, $assoc_args) {
     $org_id = Input::orgid($assoc_args, 'org', null, array('allow_none' => false));
-    $org = new Organization($org_id);
+    $orgs   = new UserOrganizationMemberships();
+    $org    = $orgs->get($org_id);
+    $memberships = $org->site_memberships;
 
     if (isset($assoc_args['add'])) {
-        $add = SiteFactory::instance(Input::sitename($assoc_args,'add'));
-        Terminus::confirm("Are you sure you want to add %s to %s ?", $assoc_args, array($add->getName(), $org->name));
-        $org->addSite($add);
-        Terminus::success("Added site!");
-        return true;
-    }
-
-    if (isset($assoc_args['remove'])) {
-      $remove = SiteFactory::instance(Input::sitename($assoc_args,'remove'));
-      Terminus::confirm("Are you sure you want to remove %s to %s ?", $assoc_args, array($remove->getName(), $org->name));
-      $org->removeSite($remove);
-      Terminus::success("Removed site!");
+      $site = SiteFactory::instance(Input::sitename($assoc_args, 'add'));
+      Terminus::confirm(
+        'Are you sure you want to add %s to %s ?',
+        $assoc_args,
+        array($site->get('name'), $org->get('name'))
+      );
+      $memberships->addMember($site);
+      Terminus::success('Added site!');
       return true;
     }
 
-    $org->siteMemberships->fetch();
-    $memberships = $org->siteMemberships->all();
+    if (isset($assoc_args['remove'])) {
+      $site_id = $assoc_args['remove'];
+      $member = $memberships->get($assoc_args['remove']);
+      $site = $member->get('site');
+      Terminus::confirm(
+        'Are you sure you want to remove %s from %s ?',
+        $assoc_args,
+        array($site->name, $org->get('name'))
+      );
+      $member->removeMember();
+      Terminus::success('Removed site!');
+      return true;
+    }
 
+    $memberships = $org->getSites();
     foreach ($memberships as $membership) {
       if (isset($assoc_args['tag']) && !(in_array($assoc_args['tag'], $membership->get('tags')))) {
         continue;
       }
       $site = $membership->get('site');
-      $data[] = array(
-        'name' => $site->name,
-        'id' => $site->id,
-        'service_level' => $site->service_level,
-        'framework' => $site->framework,
-        'created' => date('Y-m-d H:i:s', $site->created),
-        'tags' => $membership->get('tags')
+      $data_array = array(
+        'name'          => null,
+        'id'            => null,
+        'service_level' => null,
+        'framework'     => null,
+        'created'       => null,
+        'tags'          => $membership->get('tags')
       );
+      foreach ($data_array as $key => $value) {
+        if (($value == null) && isset($site->$key)) {
+          $data_array[$key] = $site->$key;
+        }
+      }
+      $data_array['created'] = date('Y-m-dTH:i:s', $data_array['created']);
+      $data[] = $data_array;
     }
     $this->handleDisplay($data);
   }

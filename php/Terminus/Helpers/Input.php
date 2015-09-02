@@ -122,7 +122,6 @@ class Input {
     }
 
     $orglist = Input::orglist(array('allow_none' => $allow_none));
-
     // include the Org ID in the output menu
     $orglist_with_id = array();
     foreach ($orglist as $id => $name) {
@@ -155,7 +154,7 @@ class Input {
 
     $user = new User(new stdClass(), array());
     foreach($user->getOrganizations() as $id => $org) {
-      $orgs[$id] = $org->name;
+      $orgs[$org->get('id')] = $org->get('name');
     }
     return $orgs;
   }

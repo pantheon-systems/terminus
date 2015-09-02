@@ -4,9 +4,10 @@
  * Actions on multiple sites
  *
  */
+
 use Terminus\Utils;
-use Terminus\Organization;
-use Terminus\Upstreams;
+use Terminus\Models\Organization;
+use Terminus\Models\Upstreams;
 use Terminus\Session;
 use Terminus\SitesCache;
 use Terminus\Site;
@@ -16,7 +17,7 @@ use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Symfony\Component\Finder\SplFileInfo;
 use Terminus\Loggers\Regular as Logger;
-use Terminus\Workflow;
+use Terminus\Models\Workflow;
 
 class Sites_Command extends TerminusCommand {
   public $sitesCache;
@@ -155,7 +156,7 @@ class Sites_Command extends TerminusCommand {
     );
 
     if ($org_id) {
-      $org = new Organization($org_id);
+      $org = new Organization(new stdClass(), array('id' => $org_id));
       $cache_membership['membership'] = array(
         'id' => $org_id,
         'name' => $org->profile->name,

@@ -2,11 +2,11 @@
 
 namespace Terminus\Models;
 
-use \Terminus\Session;
-use \Terminus\Organization;
-use \Terminus\Models\Collections\Workflows;
-use \Terminus\Models\Collections\Instruments;
+use Terminus\Models\Collections\UserOrganizationMemberships;
 use Terminus\Models\TerminusModel;
+use \Terminus\Models\Collections\Instruments;
+use \Terminus\Models\Collections\Workflows;
+use \Terminus\Session;
 
 class User extends TerminusModel {
   private $aliases;
@@ -32,7 +32,8 @@ class User extends TerminusModel {
     $this->workflows   = new Workflows(
       array('owner' => $this)
     );
-    $this->instruments = new Instruments(array('user' => $this));
+    $this->instruments   = new Instruments(array('user' => $this));
+    $this->organizations = new UserOrganizationMemberships(array('user' => $this));
     $this->setProfile();
   }
 
@@ -63,13 +64,11 @@ class User extends TerminusModel {
   /**
    * Retrieves organization data for this user
    *
-   * @return [stdClass] $this->organizations
+   * @return [stdClass] $organizations
    */
   public function getOrganizations() {
-    if (!$this->organizations) {
-      $this->setOrganizations();
-    }
-    return $this->organizations;
+    $organizations = $this->organizations->all();
+    return $organizations;
   }
 
   /**
@@ -80,9 +79,9 @@ class User extends TerminusModel {
    */
   public function getSites($organization = null) {
     if ($organization) {
-      $path = sprintf("organizations/%s/memberships/sites", $organization);
+      $path = sprintf('organizations/%s/memberships/sites', $organization);
     } else {
-      $path = "sites";
+      $path = 'sites';
     }
     $method   = 'GET';
     $response = \TerminusCommand::request('users', $this->id, $path, $method);
@@ -100,19 +99,6 @@ class User extends TerminusModel {
     $response = \TerminusCommand::request('users', $this->id, $path, $method);
 
     $this->aliases = $response['data']->drush_aliases;
-  }
-
-  /**
-   * Requests API data and populates $this->organizations
-   *
-   * @return [void]
-   */
-  private function setOrganizations() {
-    $path     = 'organizations';
-    $method   = "GET";
-    $response = \TerminusCommand::request('users', $this->id, $path, $method);
-
-    $this->organizations = $response['data'];
   }
 
   /**

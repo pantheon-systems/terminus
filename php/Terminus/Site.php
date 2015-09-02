@@ -2,18 +2,19 @@
 
 namespace Terminus;
 
+use stdClass;
 use Terminus\Request;
 use Terminus\Deploy;
 use \TerminusCommand;
 use \Terminus\Models\Environment;
 use \Terminus\Models\SiteUserMembership;
+use Terminus\Models\Organization;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\Workflows;
-use \stdClass;
 
 class Site {
   public $id;
@@ -537,7 +538,7 @@ class Site {
       return $this->tags;
     }
     $org_site_member = new OrganizationSiteMemberships(
-      array('organization' => new Organization($org))
+      array('organization' => new Organization(new stdClass(), array('id' => $org)))
     );
     $org_site_member->fetch();
     $org = $org_site_member->get($this->id);
