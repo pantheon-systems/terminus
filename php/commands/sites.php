@@ -65,6 +65,10 @@ class Sites_Command extends TerminusCommand {
       );
     }, array_values($cached_sites));
 
+    usort($rows, function($row_1, $row_2) {
+      return strcasecmp($row_1['name'], $row_2['name']);
+    });
+
     if (isset($assoc_args['team'])) {
       $rows = array_filter($rows, function($site) {
         return in_array('Team', $site['memberships']);
