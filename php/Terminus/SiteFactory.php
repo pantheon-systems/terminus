@@ -7,20 +7,21 @@ use \TerminusCommand;
 class SiteFactory {
   private static $instance = null;
   private $sites = array();
+  public $sitesCache;
 
   public function __construct() {
+    $this->sitesCache = new SitesCache();
     $this->hydrate();
     return $this;
   }
 
   private function hydrate() {
-    $request = TerminusCommand::request( 'users', Session::getValue('user_uuid'), 'sites', 'GET', Array('hydrated' => true) );
-    $sites = $request['data'];
-    foreach ($sites as $site_id => $site_data) {
+    $sites = $this->sitesCache->rebuild();
+    foreach ($sites as $site_name => $site_data) {
       // we need to skip sites that are in the build process still
-      if (!isset($site_data->information)) continue;
-      $site_data->id = $site_id;
-      $this->sites[$site_data->information->name] = new Site($site_data);
+      // Not sure about this with the new SiteCache API
+      // if (!isset($site_data->information)) continue;
+      $this->sites[$site_name] = new Site((object)$site_data);
     }
 
     return $this;
