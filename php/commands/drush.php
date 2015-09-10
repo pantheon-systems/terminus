@@ -3,7 +3,8 @@
 use \Terminus\Dispatcher,
   \Terminus\Utils,
   \Terminus\CommandWithSSH,
-  \Terminus\SiteFactory;
+  \Terminus\SiteFactory,
+  \Terminus\Helpers\Input;
 
 
 class Drush_Command extends CommandWithSSH {
@@ -17,7 +18,7 @@ class Drush_Command extends CommandWithSSH {
    * [--<flag>=<value>]
    * : Additional Drush flag(s) to pass in to the command.
    *
-   * --site=<site>
+   * [--site=<site>]
    * : The name (DNS shortname) of your site on Pantheon.
    *
    * [--env=<environment>]
@@ -25,16 +26,15 @@ class Drush_Command extends CommandWithSSH {
    *
    */
   function __invoke( $args, $assoc_args ) {
-    $site_name = $assoc_args['site'];
     if (isset($assoc_args['env'])) {
       $environment = $assoc_args['env'];
     }
     else {
       $environment = 'dev';
     }
-    $site = SiteFactory::instance($site_name);
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
     if (!$site) {
-      Terminus::error("Command could not be completed.");
+      Terminus::error("Command could not be completed. Unknown site specified.");
       exit;
     }
 

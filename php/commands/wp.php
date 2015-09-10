@@ -17,7 +17,7 @@ class WPCLI_Command extends CommandWithSSH {
    * [--<flag>=<value>]
    * : Additional WP-CLI flag(s) to pass in to the command.
    *
-   * --site=<site>
+   * [--site=<site>]
    * : The name (DNS shortname) of your site on Pantheon.
    *
    * [--env=<environment>]
@@ -25,7 +25,6 @@ class WPCLI_Command extends CommandWithSSH {
    *
    */
   function __invoke( $args, $assoc_args ) {
-    $site_name = $assoc_args['site'];
     if (isset($assoc_args['env'])) {
       $environment = $assoc_args['env'];
     }
@@ -33,10 +32,10 @@ class WPCLI_Command extends CommandWithSSH {
       $environment = 'dev';
     }
 
-    $site = SiteFactory::instance($site_name);
+    $site = SiteFactory::instance(Input::sitename($assoc_args));
 
     if (!$site) {
-      Terminus::error("Command could not be completed.");
+      Terminus::error("Command could not be completed. Unknown site specified.");
       exit;
     }
 
