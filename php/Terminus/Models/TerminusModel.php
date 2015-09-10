@@ -5,9 +5,8 @@ namespace Terminus\Models;
 use \TerminusCommand;
 
 abstract class TerminusModel {
-  private $attributes;
-
   protected $id;
+  private $attributes;
 
   /**
    * Object constructor
@@ -50,10 +49,16 @@ abstract class TerminusModel {
   /**
    * Fetches this object from Pantheon
    *
+   * @param [boolean] $paged True to use paginated API requests
    * @return [TerminusModel] $this
    */
-  public function fetch() {
-    $results = TerminusCommand::simple_request(
+  public function fetch($paged = false) {
+    $function_name = 'simple_request';
+    if ($paged) {
+      $function_name = 'paged_request';
+    }
+
+    $results = TerminusCommand::$function_name(
       $this->getFetchUrl(),
       $this->getFetchArgs()
     );

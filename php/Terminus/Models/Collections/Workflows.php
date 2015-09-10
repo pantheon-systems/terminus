@@ -76,11 +76,10 @@ class Workflows extends TerminusCollection {
         );
           break;
       case 'organization':
-        $user = $this->get('user');
         $url  = sprintf(
           'users/%s/organizations/%s/workflows',
-          $user->id,
-          $this->owner->get('id')
+          $this->owner->user->id,
+          $this->owner->organization->id
         );
           break;
     }
@@ -90,9 +89,12 @@ class Workflows extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return [string] $this->owner_type or $owner_name
    */
   protected function getOwnerName() {
+    if (isset($this->owner_type)) {
+      return $this->owner_type;
+    }
     $owner_name = strtolower(
       str_replace(
         array('Terminus\\', 'Models\\', 'Collections\\'),
