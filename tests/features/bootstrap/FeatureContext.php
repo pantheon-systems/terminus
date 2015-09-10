@@ -83,7 +83,7 @@ class FeatureContext extends BehatContext {
    */
   public function aSiteNamedBelongingTo($site, $org) {
     $output = $this->iGetInfoForTheSite($site);
-    if(!$this->_checkResult($org, $output)) {
+    if(!$this->_checkResult($site, $output)) {
       $this->iCreateASiteNamed('Drupal 7', $site, $org);
       $recurse = $this->aSiteNamedBelongingTo($site, $org);
       return $recurse;
@@ -104,6 +104,7 @@ class FeatureContext extends BehatContext {
 
   /**
    * Changes or displays mode, given or not, of given site
+   * @Given /^the connection mode of "([^"]*)" is "([^"]*)"$/
    * @When /^I set the connection mode on "([^"]*)" to "([^"]*)"$/
    * @When /^I check the connection mode on "([^"]*)"$/
    *
@@ -187,8 +188,8 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function iAmAuthenticated() {
-    $this->iRun("terminus cli cache-clear");
     $this->iLogIn();
+    $this->iRun("terminus sites list");
   }
 
   /**
@@ -569,16 +570,33 @@ class FeatureContext extends BehatContext {
    * @Then /^I should get:$/
    * @Then /^I should get "([^"]*)"$/
    * @Then /^I should get: "([^"]*)"$/
-   * Swap in $this->_parameters elements by putting them in [[double brackets]]
+   * Checks the output for the given string
    *
    * @param [string] $string Content which ought not be in the output
-   * @return [boolean] True if $string exists in output
+   * @return [boolean] $i_have_this True if $string exists in output
    */
   public function iShouldGet($string) {
-    if(!$this->_checkResult((string)$string, $this->_output)) {
-      throw new Exception("Actual output:\n" . $this->_output);
+    $i_have_this = $this->iShouldGetOneOfTheFollowing($string);
+    return $i_have_this;
+  }
+
+  /**
+   * @Then /^I should get one of the following:$/
+   * @Then /^I should get one of the following "([^"]*)"$/
+   * @Then /^I should get one of the following: "([^"]*)"$/
+   * Checks the output for the given substrings, comma-separated
+   *
+   * @param [array] $list_string Content which ought not be in the output
+   * @return [boolean] True if a $string exists in output
+    */
+  public function iShouldGetOneOfTheFollowing($list_string) {
+    $strings  = explode(',', $list_string);
+    foreach ($strings as $string) {
+      if($this->_checkResult(trim((string)$string), $this->_output)) {
+        return true;
+      }
     }
-    return true;
+    throw new Exception("Actual output:\n" . $this->_output);
   }
 
   /**

@@ -23,16 +23,6 @@ class SiteUserMemberships extends TerminusCollection {
   }
 
   /**
-   * Lists all team emembers
-   *
-   * @return [array] SiteUserMembership objects for each team member
-   */
-  public function all() {
-    $user_memberships = array_values($this->models);
-    return $user_memberships;
-  }
-
-  /**
    * Fetches model data from API and instantiates its model instances
    *
    * @param [boolean] $paged True to use paginated API requests
@@ -44,21 +34,31 @@ class SiteUserMemberships extends TerminusCollection {
   }
 
   /**
-   * Returns UUID of user with given email address
+   * Retrieves the membership of the given UUID or email
    *
-   * @param [string] $email An email address to search for
-   * @return [SiteUserMembership] $users[$email]
+   * @param [string] $id UUID or email of desired user
+   * @return [SiteUserMembership] $membership
    */
-  public function findByEmail($email) {
-    $users  = array();
-    $models = $this->all();
-    foreach ($models as $user_member) {
-      $user = $user_member->get('user');
-      if ($user->email == $email) {
-        return $user_member;
+  public function get($id) {
+    $models     = $this->getMembers();
+    $membership = null;
+    if (isset($models[$id])) {
+      $membership = $models[$id];
+    } else {
+      foreach ($models as $model) {
+        $userdata = $model->get('user');
+        if ($userdata->email == $id) {
+          $membership = $model;
+          continue;
+        }
       }
     }
-    return null;
+    if ($membership == null) {
+      throw new \Exception(
+        sprintf('Cannot find site user with the name "%s"', $id)
+      );
+    }
+    return $membership;
   }
 
   /**

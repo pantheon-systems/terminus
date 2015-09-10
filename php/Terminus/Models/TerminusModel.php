@@ -15,7 +15,10 @@ abstract class TerminusModel {
    * @param [array]    $options    Options to set as $this->key
    * @return [TerminusModel] $this
    */
-  public function __construct($attributes, $options = array()) {
+  public function __construct($attributes = null, $options = array()) {
+    if ($attributes == null) {
+      $attributes = new \stdClass();
+    }
     foreach ($options as $var_name => $value) {
       $this->$var_name = $value;
     }

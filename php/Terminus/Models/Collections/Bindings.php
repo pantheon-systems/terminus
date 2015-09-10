@@ -50,7 +50,7 @@ class Bindings extends TerminusCollection {
    * @return [string] $url URL to use in fetch query
    */
   protected function getFetchUrl() {
-    $url = sprintf('sites/%s/bindings', $this->environment->site->getId());
+    $url = sprintf('sites/%s/bindings', $this->environment->site->get('id'));
     return $url;
   }
 
@@ -60,7 +60,7 @@ class Bindings extends TerminusCollection {
    * @return [string] $owner_name
    */
   protected function getOwnerName() {
-    $owner_name = 'environments';
+    $owner_name = 'environment';
     return $owner_name;
   }
 

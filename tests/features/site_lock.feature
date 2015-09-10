@@ -7,21 +7,23 @@ Feature: site lock
     When I run "terminus site lock add --site=[[test_site_name]] --env=dev --username=pantheon --password=password"
     Then I should get:
     """
-    Creating new lock
+    Creating new lock on behat-tests -> dev
     """
+    Then I should get: "."
     Then I should get:
     """
-    Success
+    Locking "dev"
     """
 
     When I run "terminus site lock remove --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    Removing lock
+    Removing lock from behat-tests -> dev
     """
+    Then I should get: "."
     Then I should get:
     """
-    Success
+    Unlocking "dev"
     """
 
 Scenario: Get lock info for an environment

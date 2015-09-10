@@ -19,7 +19,9 @@ class OrganizationSiteMemberships extends TerminusCollection {
   public function __construct($options = array()) {
     parent::__construct($options);
     $this->user      = new User(new stdClass(), array());
-    $this->workflows = new Workflows(array('owner' => $this, 'owner_type' => 'organization'));
+    $this->workflows = new Workflows(
+      array('owner' => $this, 'owner_type' => 'organization')
+    );
   }
 
   /**
@@ -50,7 +52,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
    */
   public function get($id) {
     $models = $this->getMembers();
-    $model = null;
+    $model  = null;
     if (isset($models[$id])) {
       $model = $models[$id];
     } else {

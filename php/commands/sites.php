@@ -8,10 +8,9 @@
 use Terminus\Utils;
 use Terminus\Models\Organization;
 use Terminus\Models\Upstreams;
+use Terminus\Models\Collections\Sites;
 use Terminus\Session;
-use Terminus\SitesCache;
-use Terminus\Site;
-use Terminus\SiteFactory;
+use Terminus\Models\Site;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
 use Terminus\Models\User;
@@ -20,7 +19,7 @@ use Terminus\Loggers\Regular as Logger;
 use Terminus\Models\Workflow;
 
 class Sites_Command extends TerminusCommand {
-  public $sitesCache;
+  public $sites;
 
   /**
    * Show a list of your sites on Pantheon
@@ -30,8 +29,7 @@ class Sites_Command extends TerminusCommand {
   public function __construct() {
     parent::__construct();
     Auth::loggedIn();
-
-    $this->sitesCache = new SitesCache();
+    $this->sites = new Sites();
   }
 
   /**
@@ -50,21 +48,24 @@ class Sites_Command extends TerminusCommand {
    */
   public function index($args, $assoc_args) {
     // Always fetch a fresh list of sites
-    $this->sitesCache->rebuild();
-    $cached_sites = $this->sitesCache->all();
+    $this->sites->rebuildCache();
+    $sites = $this->sites->all();
 
-    $rows = array_map(function($cached_site) {
-      return array(
-        'name' => $cached_site['name'],
-        'id' => $cached_site['id'],
-        'service_level' => $cached_site['service_level'],
-        'framework' => $cached_site['framework'],
-        'created' => date('Y-m-d H:i:s', $cached_site['created']),
-        'memberships' => array_map(function($membership) {
-          return $membership['name'];
-        }, array_values($cached_site['memberships']))
+    $rows = array();
+    foreach ($sites as $site) {
+      $memberships = array();
+      foreach ($site->get('memberships') as $membership) {
+        $memberships[$membership['id']] = $membership['name'];
+      }
+      $rows[$site->get('id')] = array(
+        'name' => $site->get('name'),
+        'id' => $site->get('id'),
+        'service_level' => $site->get('service_level'),
+        'framework' => $site->get('framework'),
+        'created' => date('Y-m-d H:i:s', $site->get('created')),
+        'memberships' => $memberships,
       );
-    }, array_values($cached_sites));
+    } 
 
     usort($rows, function($row_1, $row_2) {
       return strcasecmp($row_1['name'], $row_2['name']);
@@ -80,19 +81,17 @@ class Sites_Command extends TerminusCommand {
       $org_id = $assoc_args['org'];
 
       $rows = array_filter($rows, function($site) use ($org_id) {
-        $org_ids = array_keys($site['memberships']);
-        return in_array($org_id, $org_ids);
+        return (isset($org_ids[$org_id]) || in_array($org_id, $site['memberships']));
       });
     }
 
     if (count($rows) == 0) {
-      Terminus::log("You have no sites.");
+      Terminus::log('You have no sites.');
       exit(0);
     }
 
     $this->handleDisplay($rows);
   }
-
 
   /**
    * Create a new site
@@ -142,46 +141,19 @@ class Sites_Command extends TerminusCommand {
       Terminus::line(sprintf("Creating new %s installation ... ", $upstream->get('longname')));
     }
 
-    $workflow = Site::create($options);
+    $workflow = $this->sites->addSite($options);
     $workflow->wait();
-    Terminus::success("Pow! You created a new site!");
+    $this->workflowOutput($workflow);
 
     // Add Site to SitesCache
     $final_task = $workflow->get('final_task');
-    $site = new Site($final_task->site_id);
-    $site->fetch();
-
-    $cache_membership = array(
-      'id' => $final_task->site_id,
-      'name' => $options['name'],
-      'created' => $site->attributes->created,
-      'service_level' => $site->attributes->service_level,
-      'framework' => $site->attributes->framework,
-    );
-
-    if ($org_id) {
-      $org = new Organization(new stdClass(), array('id' => $org_id));
-      $cache_membership['membership'] = array(
-        'id' => $org_id,
-        'name' => $org->profile->name,
-        'type' => 'organization'
-      );
-    } else {
-      $user_id = Session::getValue('user_uuid');
-      $cache_membership['membership'] = array(
-        'id' => $user_id,
-        'name' => 'Team',
-        'type' => 'team'
-      );
-    }
-    $sites_cache = new Terminus\SitesCache();
-    $sites_cache->add($cache_membership);
+    $this->sites->addSiteToCache($final_task->site_id);
 
     if (isset($assoc_args['import'])) {
       sleep(10); //To stop erroenous site-DNE errors
       Terminus::launch_self('site', array('import'), array(
-        'url' => $assoc_args['import'],
-        'site' => $options['name'],
+        'url'     => $assoc_args['import'],
+        'site'    => $options['name'],
         'element' => 'all'
       ));
     } else {
@@ -225,20 +197,6 @@ class Sites_Command extends TerminusCommand {
     unset($assoc_args['url']);
 
     Terminus::launch_self('sites', array('create'), $assoc_args);
-  }
-
-  /**
-   * [Deprecated] Delete a site from pantheon; use `site delete` instead
-   *
-   * ## OPTIONS
-   * [--site=<site>]
-   * : ID of the site you want to delete
-   *
-   * [--force]
-   * : to skip the confirmations
-   */
-  function delete($args, $assoc_args) {
-    Terminus::launch_self('site', array('delete'), $assoc_args);
   }
 
   /**
@@ -313,8 +271,8 @@ class Sites_Command extends TerminusCommand {
  */
   public function mass_update($args, $assoc_args) {
     // Ensure the sitesCache is up to date
-    $this->sitesCache->rebuild();
-    $sites_cache = $this->sitesCache->all();
+    $this->sites->rebuildCache();
+    $sites = $this->sites->all();
 
     $env = 'dev';
     $upstream = Input::optional('upstream', $assoc_args, false);
@@ -325,8 +283,7 @@ class Sites_Command extends TerminusCommand {
     // Start status messages.
     if($upstream) Terminus::line('Looking for sites using '.$upstream.'.');
 
-    foreach($sites_cache as $site_cache ) {
-      $site = new Site($site_cache['id']);
+    foreach($sites as $site) {
       $site->fetch();
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
@@ -343,32 +300,32 @@ class Sites_Command extends TerminusCommand {
       }
 
       if( $updates->behind > 0 ) {
-        $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Needs update");
+        $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Needs update");
         $updatedb = !Input::optional($assoc_args, 'updatedb', false);
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
-          $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->getName(), var_export($update,1), var_export($xoption,1)));
+          $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->get('name'), var_export($update,1), var_export($xoption,1)));
           if(!$confirmed) continue; // User says No, go back to start.
 
           // Backup the DB so the client can restore if something goes wrong.
-          Terminus::line('Backing up '.$site->getName().'.');
-          $backup = $site->environment('dev')->createBackup(array('element'=>'all'));
+          Terminus::line('Backing up '.$site->get('name').'.');
+          $backup = $site->environments->get('dev')->createBackup(array('element'=>'all'));
           // Only continue if the backup was successful.
           if($backup) {
-            Terminus::success("Backup of ".$site->getName()." created.");
-            Terminus::line('Updating '.$site->getName().'.');
+            Terminus::success("Backup of ".$site->get('name')." created.");
+            Terminus::line('Updating '.$site->get('name').'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
             $response = $site->applyUpstreamUpdates($env, $updatedb, $xoption);
-            $data[$site->getName()]['status'] = 'Updated';
-            Terminus::success($site->getName().' is updated.');
+            $data[$site->get('name')]['status'] = 'Updated';
+            Terminus::success($site->get('name').' is updated.');
           } else {
-            $data[$site->getName()]['status'] = 'Backup failed';
-            Terminus::error('There was a problem backing up '.$site->getName().'. Update aborted.');
+            $data[$site->get('name')]['status'] = 'Backup failed';
+            Terminus::error('There was a problem backing up '.$site->get('name').'. Update aborted.');
           }
         }
       } else {
         if (isset($assoc_args['report'])) {
-          $data[$site->getName()] = array('site'=> $site->getName(), 'status' => "Up to date");
+          $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Up to date");
         }
       }
     }

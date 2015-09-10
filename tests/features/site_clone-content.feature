@@ -9,11 +9,13 @@ Feature: site
     """
     Cloning database
     """
+    Then I should get "."
     Then I should get:
     """
     Cloning files
     """
+    Then I should get "."
     Then I should get:
     """
-    Clone complete!
+    Cloning files from "test" to "dev"
     """

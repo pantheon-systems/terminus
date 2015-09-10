@@ -23,17 +23,19 @@ class User extends TerminusModel {
    * @param [array]    $options    Options to set as $this->key
    * @return [User] $this
    */
-  public function __construct($attributes, $options = array()) {
+  public function __construct($attributes = null, $options = array()) {
     if (!isset($options['id'])) {
       $options['id'] = Session::getValue('user_uuid');
     }
     parent::__construct($attributes, $options);
 
-    $this->workflows   = new Workflows(
+    $this->workflows     = new Workflows(
       array('owner' => $this)
     );
     $this->instruments   = new Instruments(array('user' => $this));
-    $this->organizations = new UserOrganizationMemberships(array('user' => $this));
+    $this->organizations = new UserOrganizationMemberships(
+      array('user' => $this)
+    );
     $this->setProfile();
   }
 

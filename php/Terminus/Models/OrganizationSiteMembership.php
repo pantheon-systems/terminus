@@ -12,7 +12,7 @@ class OrganizationSiteMembership extends Organization {
    * @return [Workflow] $workflow
    */
   public function removeMember() {
-    $site = $this->get('site');
+    $site     = $this->get('site');
     $workflow = $this->workflows->create(
       'remove_organization_site_membership',
       array(

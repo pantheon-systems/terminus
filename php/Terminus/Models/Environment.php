@@ -23,6 +23,26 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Add hostname to environment
+   *
+   * @param [string] $hostname Hostname to add to environment
+   * @return [array] $response['data']
+   */
+  public function addHostname($hostname) {
+    $response = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      sprintf(
+        'environments/%s/hostnames/%s',
+        $this->get('id'),
+        rawurlencode($hostname)
+      ),
+      'PUT'
+    );
+    return $response['data'];
+  }
+
+  /**
    * Lists all backups
    *
    * @param [string] $element e.g. code, file, db
@@ -33,7 +53,7 @@ class Environment extends TerminusModel {
       $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
       $response = \TerminusCommand::request(
         'sites',
-        $this->site->getId(),
+        $this->site->get('id'),
         $path,
         'GET'
       );
@@ -81,7 +101,7 @@ class Environment extends TerminusModel {
     );
     $response = \TerminusCommand::request(
       'sites',
-      $this->site->getId(),
+      $this->site->get('id'),
       $path,
       'POST',
       $options
@@ -130,12 +150,16 @@ class Environment extends TerminusModel {
 
     // Can only SFTP into dev/multidev environments
     if (!in_array($this->get('id'), array('test', 'live'))) {
-      $sftp_username = sprintf('%s.%s', $this->get('id'), $this->site->getId());
+      $sftp_username = sprintf(
+        '%s.%s',
+        $this->get('id'),
+        $this->site->get('id')
+      );
       $sftp_password = 'Use your account password';
       $sftp_host     = sprintf(
         'appserver.%s.%s.drush.in',
         $this->get('id'),
-        $this->site->getId()
+        $this->site->get('id')
       );
       $sftp_port     = 2222;
       $sftp_url      = sprintf(
@@ -164,12 +188,12 @@ class Environment extends TerminusModel {
     $git_username = sprintf(
       'codeserver.%s.%s',
       $this->get('id'),
-      $this->site->getId()
+      $this->site->get('id')
     );
     $git_host     = sprintf(
       'codeserver.%s.%s.drush.in',
       $this->get('id'),
-      $this->site->getId()
+      $this->site->get('id')
     );
     $git_port     = 2222;
     $git_url      = sprintf(
@@ -181,7 +205,7 @@ class Environment extends TerminusModel {
     $git_command  = sprintf(
       'git clone %s %s',
       $git_url,
-      $this->site->getName()
+      $this->site->get('name')
     );
     $git_params   = array(
       'git_username' => $git_username,
@@ -202,7 +226,7 @@ class Environment extends TerminusModel {
       $mysql_host     = sprintf(
         'dbserver.%s.%s.drush.in',
         $this->get('id'),
-        $this->site->getId()
+        $this->site->get('id')
       );
       $mysql_port     = $db_binding->get('port');
       $mysql_database = 'pantheon';
@@ -243,7 +267,7 @@ class Environment extends TerminusModel {
       $redis_host     = $mysql_host = sprintf(
         'cacheserver.%s.%s.drush.in',
         $this->get('id'),
-        $this->site->getId()
+        $this->site->get('id')
       );
       $redis_port     = $cache_binding->get('port');
       $redis_url      = sprintf(
@@ -337,6 +361,26 @@ class Environment extends TerminusModel {
       'files'      => isset($args['files']),
       'ttl'        => $ttl
     );
+  }
+
+  /**
+   * Delete hostname from environment
+   *
+   * @param [string] $hostname Hostname to remove from environment
+   * @return [array] $response['data']
+   */
+  public function deleteHostname($hostname) {
+    $response = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      sprintf(
+        'environments/%s/hostnames/%s',
+        $this->get('id'),
+        rawurlencode($hostname)
+      ),
+      'delete'
+    );
+    return $response['data'];
 
     $options  = array('environment' => $this->get('id'), 'params' => $params);
     $workflow = $this->site->workflows->create('do_export', $options);
@@ -369,7 +413,7 @@ class Environment extends TerminusModel {
     );
     $data = \TerminusCommand::request(
       'sites',
-      $this->site->getId(),
+      $this->site->get('id'),
       $path,
       'GET'
     );
@@ -385,10 +429,25 @@ class Environment extends TerminusModel {
     $host = sprintf(
       '%s-%s.%s',
       $this->get('id'),
-      $this->site->getName(),
+      $this->site->get('name'),
       $this->get('dns_zone')
     );
     return $host;
+  }
+
+  /**
+   * List hotnames for environment
+   *
+   * @return [array] $response['data']
+   */
+  public function getHostnames() {
+    $response = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      'environments/' . $this->get('id') . '/hostnames',
+      'GET'
+    );
+    return $response['data'];
   }
 
   /**
@@ -399,61 +458,6 @@ class Environment extends TerminusModel {
   public function getName() {
     $name = $this->get('id');
     return $name;
-  }
-
-  /**
-   * Add hostname to environment
-   *
-   * @param [string] $hostname Hostname to add to environment
-   * @return [array] $response['data']
-   */
-  public function hostnameadd($hostname) {
-    $response = \TerminusCommand::request(
-      'sites',
-      $this->site->getId(),
-      sprintf(
-        'environments/%s/hostnames/%s',
-        $this->get('id'),
-        rawurlencode($hostname)
-      ),
-      'PUT'
-    );
-    return $response['data'];
-  }
-
-  /**
-   * Delete hostname from environment
-   *
-   * @param [string] $hostname Hostname to remove from environment
-   * @return [array] $response['data']
-   */
-  public function hostnamedelete($hostname) {
-    $response = \TerminusCommand::request(
-      'sites',
-      $this->site->getId(),
-      sprintf(
-        'environments/%s/hostnames/%s',
-        $this->get('id'),
-        rawurlencode($hostname)
-      ),
-      'DELETE'
-    );
-    return $response['data'];
-  }
-
-  /**
-   * List hotnames for environment
-   *
-   * @return [array] $response['data']
-   */
-  public function hostnames() {
-    $response = \TerminusCommand::request(
-      'sites',
-      $this->site->getId(),
-      'environments/' . $this->get('id') . '/hostnames',
-      'GET'
-    );
-    return $response['data'];
   }
 
   /**
@@ -548,7 +552,7 @@ class Environment extends TerminusModel {
     $path     = sprintf('environments/%s/code-log', $this->get('id'));
     $response = \TerminusCommand::request(
       'sites',
-      $this->site->getId(),
+      $this->site->get('id'),
       $path,
       'GET'
     );
@@ -637,7 +641,7 @@ class Environment extends TerminusModel {
       );
       $data    = \TerminusCommand::request(
         'sites',
-        $this->site->getId(),
+        $this->site->get('id'),
         $path,
         'POST',
         $options
@@ -646,7 +650,7 @@ class Environment extends TerminusModel {
       if ($value == null) {
         $data = \TerminusCommand::request(
           'sites',
-          $this->site->getId(),
+          $this->site->get('id'),
           $path,
           'GET'
         );
@@ -661,7 +665,7 @@ class Environment extends TerminusModel {
         );
         $data    = \TerminusCommand::request(
           'sites',
-          $this->site->getId(),
+          $this->site->get('id'),
           $path,
           'PUT',
           $options
@@ -692,7 +696,7 @@ class Environment extends TerminusModel {
    * @return [array] $return_data
    */
   public function wake() {
-    $hostnames   = $this->hostnames();
+    $hostnames   = $this->getHostnames();
     $target      = key($hostnames);
     $response    = Request::send("http://$target/pantheon_healthcheck", 'GET');
     $return_data = array(
@@ -734,7 +738,7 @@ class Environment extends TerminusModel {
     );
     $response = \TerminusCommand::request(
       'sites',
-      $this->site->getId(),
+      $this->site->get('id'),
       $path,
       'POST',
       $options

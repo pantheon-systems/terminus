@@ -3,7 +3,7 @@
 use \Terminus\Dispatcher;
 use \Terminus\Utils;
 use \Terminus\SitesCache;
-use Terminus\Site;
+use Terminus\Models\Site;
 use Terminus\Models\User;
 
 /**

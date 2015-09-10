@@ -5,7 +5,8 @@ Feature: site clear-caches
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site clear-caches --site=[[test_site_name]] --env=dev"
+    Then I should get "."
     Then I should get:
     """
-    Caches cleared
+    Cleared caches for "dev"
     """
