@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "74bb6998cf1233236067c1f1c1a9c29e",
+    "hash": "ec3c619d28b9cd4325ec4563d06afa98",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -267,6 +267,56 @@
             "time": "2014-02-01 23:11:00"
         },
         {
+            "name": "katzgrau/klogger",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/katzgrau/KLogger.git",
+                "reference": "cbd026ded7ae21243badae7979bdfbfb6d2ce877"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/katzgrau/KLogger/zipball/cbd026ded7ae21243badae7979bdfbfb6d2ce877",
+                "reference": "cbd026ded7ae21243badae7979bdfbfb6d2ce877",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "psr/log": "1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Katzgrau\\KLogger\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kenny Katzgrau",
+                    "email": "katzgrau@gmail.com"
+                },
+                {
+                    "name": "Dan Horrigan",
+                    "email": "dan@dhorrigan.com"
+                }
+            ],
+            "description": "A Simple Logging Class",
+            "keywords": [
+                "logging"
+            ],
+            "time": "2015-09-01 23:58:56"
+        },
+        {
             "name": "mustache/mustache",
             "version": "v2.8.0",
             "source": {
@@ -397,6 +447,44 @@
                 "php"
             ],
             "time": "2015-07-14 17:31:05"
+        },
+        {
+            "name": "psr/log",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Psr\\Log\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2012-12-21 11:40:51"
         },
         {
             "name": "psy/psysh",
@@ -844,7 +932,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/48aeb0e48600321c272955132d7606ab0a49adb3",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
                 "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
                 "shasum": ""
             },
@@ -2620,6 +2708,7 @@
         "psy/psysh": 0,
         "symfony/process": 20,
         "vlucas/phpdotenv": 0,
+        "katzgrau/klogger": 20,
         "behat/behat": 0
     },
     "prefer-stable": false,
