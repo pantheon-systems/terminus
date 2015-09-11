@@ -9,8 +9,10 @@ use \Terminus\FileCache;
  */
 class Terminus {
   private static $configurator;
+  private static $hooks = array();
+  private static $hooks_passed = array();
   private static $logger;
-  private static $hooks = array(), $hooks_passed = array();
+  private static $outputter;
 
   /**
    * Set the logger instance.
@@ -46,8 +48,8 @@ class Terminus {
     try {
       static $runner;
 
-      if(!$runner) {
-        $runner = new Terminus\Runner;
+      if(!isset($runner) || !$runner) {
+        $runner = new Terminus\Runner();
       }
 
       return $runner;
@@ -123,6 +125,7 @@ class Terminus {
 
   /**
    * Prompt the user for input
+   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
    *
    * @param string $message
    */
@@ -139,6 +142,7 @@ class Terminus {
 
   /**
    * Display a message in the CLI and end with a newline
+   * TODO: Create and use outputter for this
    *
    * @param string $message
    */
@@ -151,6 +155,7 @@ class Terminus {
 
   /**
    * Log an informational message.
+   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
    *
    * @param string $message
    */
@@ -163,6 +168,7 @@ class Terminus {
 
   /**
    * Display a success in the CLI and end with a newline
+   * TODO: Create and use outputter for this
    *
    * @param string $message
    */
@@ -170,11 +176,12 @@ class Terminus {
     if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    self::$logger->success($message);
+    self::$outputter->success($message);
   }
 
   /**
    * Display a warning in the CLI and end with a newline
+   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
    *
    * @param string $message
    */
@@ -187,6 +194,24 @@ class Terminus {
 
   /**
    * Display an error in the CLI and end with a newline
+   * TODO: Create and use outputter for this
+   *
+   * @param string $message
+   */
+  static function failure($message, $params = array()) {
+    if(!empty($params)) {
+      $message = vsprintf($message, $params);
+    }
+    if(! isset(self::get_runner()->assoc_args[ 'completions' ])) {
+      self::$outputter->error(self::error_to_string($message));
+    }
+
+    exit(1);
+  }
+
+  /**
+   * Display an error in the CLI and end with a newline
+   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
    *
    * @param string $message
    */
@@ -203,6 +228,7 @@ class Terminus {
 
   /**
    * Ask for confirmation before running a destructive operation.
+   * TODO: Create and use outputter for this
    */
   static function confirm($question, $assoc_args = array(), $params = array()) {
       if(\Terminus::get_config('yes')) return true;
@@ -260,6 +286,7 @@ class Terminus {
 
   /**
    * Display a value, in various formats
+   * TODO: Create and use outputter for this
    *
    * @param mixed $value
    * @param array $assoc_args
@@ -414,4 +441,33 @@ class Terminus {
     $is_test = (boolean)getenv("CLI_TEST_MODE");
     return $is_test;
   }
+
+  /**
+   * Set the outputter instance.
+   *
+   * @param [object] $outputter
+   * @return [void]
+   */
+  static function set_outputter($outputter) {
+    self::$outputter = $outputter;
+  }
+
+  /**
+   * Retrieves the instantiated logger
+   *
+   * @return [KLogger] $logger
+   */
+  public function get_logger() {
+    return self::$logger;
+  }
+
+  /**
+   * Retrieves the instantiated outputter
+   *
+   * @return [Logger] $outputter
+   */
+  public function get_outputter() {
+    return self::$outputter;
+  }
+
 }

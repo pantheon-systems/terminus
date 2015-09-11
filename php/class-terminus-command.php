@@ -5,6 +5,7 @@ use \Terminus\Endpoint;
 use \Terminus\Request;
 use \Terminus\Session;
 use \Terminus\Loggers\Regular as Logger;
+use Terminus\KLogger;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -17,6 +18,8 @@ abstract class TerminusCommand {
 
   protected static $blacklist = array('password');
   protected $func;
+  protected $logger;
+  protected $outputter;
 
   /**
    * Instantiates object, sets cache and session
@@ -25,8 +28,10 @@ abstract class TerminusCommand {
    */
   public function __construct() {
     //Load commonly used data from cache
-    $this->cache   = Terminus::get_cache();
-    $this->session = Session::instance();
+    $this->cache     = Terminus::get_cache();
+    $this->logger    = Terminus::get_logger();
+    $this->outputter = Terminus::get_outputter();
+    $this->session   = Session::instance();
   }
 
   /**
