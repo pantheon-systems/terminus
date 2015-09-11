@@ -2,7 +2,7 @@
 
 namespace Terminus;
 
-use Terminus\JLogger as Logger;
+use Katzgrau\KLogger\Logger;
 use Psr\Log\LogLevel;
 
 //TODO: Change this classname to Logger once the old logger is fully replaced

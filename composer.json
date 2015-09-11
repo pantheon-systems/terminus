@@ -20,7 +20,8 @@
     "symfony/process": "2.7.*@dev",
     "symfony/dom-crawler": "2.7",
     "symfony/css-selector": "2.7",
-    "vlucas/phpdotenv": "2.0.*@stable"
+    "vlucas/phpdotenv": "2.0.*@stable",
+    "katzgrau/klogger": "dev-master"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },
