@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ec3c619d28b9cd4325ec4563d06afa98",
+    "hash": "ab736eb9d4b6c840f3bfc854a20aaa57",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -278,6 +278,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/katzgrau/klogger/zipball/46cdd92a9b4a8443120cc955bf831450cb274813",
                 "reference": "46cdd92a9b4a8443120cc955bf831450cb274813",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
@@ -315,7 +316,7 @@
             "keywords": [
                 "logging"
             ],
-            "time": "2015-09-01 23:58:56"
+            "time": "2014-03-20 02:36:36"
         },
         {
             "name": "mustache/mustache",
@@ -934,7 +935,7 @@
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/Process/zipball/f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
-                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
+                "reference": "f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
                 "shasum": ""
             },
             "require": {
@@ -2713,7 +2714,6 @@
         "psy/psysh": 0,
         "symfony/process": 20,
         "vlucas/phpdotenv": 0,
-        "katzgrau/klogger": 20,
         "behat/behat": 0
     },
     "prefer-stable": false,
