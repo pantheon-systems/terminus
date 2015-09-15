@@ -92,7 +92,6 @@ class Sites_Command extends TerminusCommand {
 
     $labels = ['name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships'];
     $this->outputter->outputRecordList($rows, $labels);
-//    $this->handleDisplay($rows);
   }
 
   /**
@@ -334,7 +333,7 @@ class Sites_Command extends TerminusCommand {
 
     if (!empty($data)) {
       sort($data);
-      $this->handleDisplay($data);
+      $this->outputter->outputRecordList($data);
     } else {
       Terminus::line('No sites in need up updating.');
     }
