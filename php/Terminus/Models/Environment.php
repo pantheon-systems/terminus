@@ -485,7 +485,7 @@ class Environment extends TerminusModel {
         'clone_files'    => array('from_environment' => $from_env_id)
       )
     );
-    $workflow = $this->site->workflows->create('deploy', $params);
+    $workflow = $this->site->workflows->create('create_environment', $params);
     return $workflow;
   }
 
