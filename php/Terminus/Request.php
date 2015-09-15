@@ -79,20 +79,22 @@ class Request {
     return $agent;
   }
 
-  public static function download($url,$target) {
-    // @todo use Guzzle in the future, but for now this will do
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_ENCODING, 'gzip');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $content = curl_exec($ch);
-    if (curl_error($ch)) {
-      return false;
-    }
-    curl_close($ch);
+  public static function download($url, $target) {
     if (file_exists($target)) {
       throw new \Exception(sprintf("Target file (%s) already exists.", $target));
     }
-    file_put_contents($target, $content, LOCK_EX);
+
+    $handle = fopen($target, 'w');
+    $client = new Browser('', array(
+      Browser::CURL_OPTIONS => array(
+        'CURLOPT_RETURNTRANSFER' => true,
+        'CURLOPT_FILE' => $handle,
+        'CURLOPT_ENCODING' => 'gzip',
+      )
+    ));
+    $client->get($url)->send();
+    fclose($handle);
+
     return true;
   }
 
