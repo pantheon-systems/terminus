@@ -28,9 +28,9 @@ class Outputter implements OutputterInterface {
 
   /**
    * @param \Terminus\Outputters\OutputWriterInterface $writer
-   * @param \Terminus\Outputters\OutputterInterface $formatter
+   * @param \Terminus\Outputters\OutputFormatterInterface $formatter
    */
-  public function __construct(OutputWriterInterface $writer, OutputterInterface $formatter) {
+  public function __construct(OutputWriterInterface $writer, OutputFormatterInterface $formatter) {
     $this->setFormatter($formatter);
     $this->setWriter($writer);
   }
@@ -106,14 +106,14 @@ class Outputter implements OutputterInterface {
   /**
    * @param OutputFormatterInterface $formatter
    */
-  public function setFormatter($formatter) {
+  public function setFormatter(OutputFormatterInterface $formatter) {
     $this->formatter = $formatter;
   }
 
   /**
    * @param OutputWriterInterface $writer
    */
-  public function setWriter($writer) {
+  public function setWriter(OutputWriterInterface $writer) {
     $this->writer = $writer;
   }
 }
