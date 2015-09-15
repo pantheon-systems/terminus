@@ -26,12 +26,6 @@ class KLogger extends Logger {
     $config = $options['config'];
     unset($options['config']);
 
-    if (isset($_SERVER['TERMINUS_LOG_DIR'])) {
-      $logDirectory = $_SERVER['TERMINUS_LOG_DIR'];
-    } elseif ($config['silent']) {
-      $logDirectory = ini_get('error_log');
-    }
-
     if ($config['debug']) {
       $logLevelThreshold = LogLevel::DEBUG;
     }
@@ -42,6 +36,18 @@ class KLogger extends Logger {
       }
       if ($config['bash'] != null) {
         $options['logFormat'] = 'bash';
+      }
+    }
+
+    if (isset($_SERVER['TERMINUS_LOG_DIR'])) {
+      $logDirectory = $_SERVER['TERMINUS_LOG_DIR'];
+    } elseif ($config['silent']) {
+      $logDirectory = ini_get('error_log');
+      if ($logDirectory == '') {
+        die(
+          'You must either set error_log in your php.ini, or define '
+          . ' TERMINUS_LOG_DIR to use silent mode.' . PHP_EOL
+        );
       }
     }
 
