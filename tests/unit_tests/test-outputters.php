@@ -25,17 +25,17 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     ];
 
     $this->records = [
-      [
+      (object)[
         'foo' => 'abc',
         'bar' => 123,
         'baz' => 'extra'
       ],
-      [
+      (object)[
         'foo' => 'def',
         'bar' => 456,
         'unlabled' => 'abc',
       ],
-      [
+      (object)[
         'foo' => 'ghi',
         'bar' => 678,
         'biz' => 'another extra'
@@ -77,11 +77,11 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
 
     $formatted = $formatter->formatValueList($this->values, array_keys($this->values));
     $this->assertEquals(json_encode($this->values), $formatted);
-    $this->assertEquals($this->values, json_decode($formatted));
+    $this->assertEquals($this->values, json_decode($formatted, TRUE));
     $this->assertEquals(JSON_ERROR_NONE, json_last_error());
 
 
-    $formatted = $formatter->formatRecordList($this->records, $this->$recordLabels);
+    $formatted = $formatter->formatRecordList($this->records, $this->recordLabels);
     $this->assertEquals(json_encode($this->records), $formatted);
     $this->assertEquals($this->records, json_decode($formatted));
     $this->assertEquals(JSON_ERROR_NONE, json_last_error());
@@ -90,11 +90,10 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
   /**
    * @covers: \Terminus\Outputters\JSONFormatter
    */
-
-  pubic function testStreamWriter() {
-    $writer = new StreamWriter('php://memory');
-
-    $writer->write('Hello, World');
-    $this->assertEquals('Hello, World', file_get_contents('php://memory'));
+  public function testStreamWriter() {
+    // TODO: Use vfstream (https://github.com/mikey179/vfsStream) or similar to test writing to a stream.
+//    $this->expectOutputString('Hello, World!');
+//    $writer = new StreamWriter('php://stdout');
+//    $writer->write('Hello, World!');
   }
 }
