@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "hash": "ec3c619d28b9cd4325ec4563d06afa98",
+=======
+    "hash": "46032f1a07f1f7bb2ffafb20728d9948",
+>>>>>>> 0bb0756... Switched Terminus logger for katzgrau/KLogger
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -933,7 +937,11 @@
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/Process/zipball/f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
+<<<<<<< HEAD
                 "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
+=======
+                "reference": "f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
+>>>>>>> 0bb0756... Switched Terminus logger for katzgrau/KLogger
                 "shasum": ""
             },
             "require": {
