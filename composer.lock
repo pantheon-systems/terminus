@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
+    "hash": "ec3c619d28b9cd4325ec4563d06afa98",
+=======
     "hash": "46032f1a07f1f7bb2ffafb20728d9948",
+>>>>>>> 0bb0756... Switched Terminus logger for katzgrau/KLogger
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -265,6 +269,56 @@
                 "console"
             ],
             "time": "2014-02-01 23:11:00"
+        },
+        {
+            "name": "katzgrau/klogger",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/katzgrau/KLogger.git",
+                "reference": "cbd026ded7ae21243badae7979bdfbfb6d2ce877"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/katzgrau/KLogger/zipball/cbd026ded7ae21243badae7979bdfbfb6d2ce877",
+                "reference": "cbd026ded7ae21243badae7979bdfbfb6d2ce877",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "psr/log": "1.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Katzgrau\\KLogger\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kenny Katzgrau",
+                    "email": "katzgrau@gmail.com"
+                },
+                {
+                    "name": "Dan Horrigan",
+                    "email": "dan@dhorrigan.com"
+                }
+            ],
+            "description": "A Simple Logging Class",
+            "keywords": [
+                "logging"
+            ],
+            "time": "2015-09-01 23:58:56"
         },
         {
             "name": "mustache/mustache",
@@ -883,7 +937,11 @@
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/Process/zipball/f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
+<<<<<<< HEAD
+                "reference": "48aeb0e48600321c272955132d7606ab0a49adb3",
+=======
                 "reference": "f7b3f73f70a7f8f49a1c838dc3debbf054732d8e",
+>>>>>>> 0bb0756... Switched Terminus logger for katzgrau/KLogger
                 "shasum": ""
             },
             "require": {
@@ -2712,6 +2770,7 @@
         "psy/psysh": 0,
         "symfony/process": 20,
         "vlucas/phpdotenv": 0,
+        "katzgrau/klogger": 20,
         "behat/behat": 0
     },
     "prefer-stable": false,
