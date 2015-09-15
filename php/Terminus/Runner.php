@@ -99,11 +99,18 @@ class Runner {
   }
 
   private function init_outputter() {
+    if ($this->config)
     if ($this->config['silent']) {
       $outputter = new \Terminus\Loggers\Quiet;
     } else {
       $outputter = new \Terminus\Loggers\Regular($this->in_color());
     }
+    // @TODO: Implement other output formatters
+    $outputter = new Terminus\Outputters\Outputter(
+      new Terminus\Outputters\StreamWriter('php://stdout'),
+      new Terminus\Outputters\JSONFormatter()
+    );
+
     Terminus::set_outputter($outputter);
   }
 

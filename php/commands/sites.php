@@ -90,7 +90,9 @@ class Sites_Command extends TerminusCommand {
       exit(0);
     }
 
-    $this->handleDisplay($rows);
+    $labels = ['name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships'];
+    $this->outputter->outputRecordList($rows, $labels);
+//    $this->handleDisplay($rows);
   }
 
   /**
