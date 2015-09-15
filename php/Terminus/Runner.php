@@ -99,16 +99,20 @@ class Runner {
   }
 
   private function init_outputter() {
-    if ($this->config)
-    if ($this->config['silent']) {
-      $outputter = new \Terminus\Loggers\Quiet;
-    } else {
-      $outputter = new \Terminus\Loggers\Regular($this->in_color());
+
+    // Pick an output formatter
+    if ($this->config['json']) {
+      $formatter = new Terminus\Outputters\JSONFormatter();
     }
-    // @TODO: Implement other output formatters
+    else {
+      $formatter = new Terminus\Outputters\PrettyFormatter();
+    }
+    // @TODO: Implement BASH output formatter
+
+    // Create an output service.
     $outputter = new Terminus\Outputters\Outputter(
       new Terminus\Outputters\StreamWriter('php://stdout'),
-      new Terminus\Outputters\JSONFormatter()
+      $formatter
     );
 
     Terminus::set_outputter($outputter);
