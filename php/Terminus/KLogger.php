@@ -23,8 +23,6 @@ class KLogger extends Logger {
     $logDirectory = 'php://stderr',
     $logLevelThreshold = LogLevel::INFO
   ) {
-    //This flag enables us to use the logger to output error messages for constructor errors.
-    $internal_error = false;
     $config = $options['config'];
     unset($options['config']);
 
