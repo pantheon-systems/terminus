@@ -3,7 +3,9 @@
  * @file
  */
 
+use Terminus\Outputters\BashFormatter;
 use Terminus\Outputters\JSONFormatter;
+use Terminus\Outputters\PrettyFormatter;
 use Terminus\Outputters\StreamWriter;
 
 /**
@@ -66,7 +68,7 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     }
 
     foreach ($this->records as $label => $value) {
-      $formatted = $formatter->formatRecord($value, $label);
+      $formatted = $formatter->formatRecord($value, $this->recordLabels);
       $this->assertEquals(json_encode($value), $formatted);
       $this->assertEquals($value, json_decode($formatted));
       $this->assertEquals(JSON_ERROR_NONE, json_last_error());
@@ -86,6 +88,81 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     $this->assertEquals($this->records, json_decode($formatted));
     $this->assertEquals(JSON_ERROR_NONE, json_last_error());
   }
+
+  /**
+   * @covers: \Terminus\Outputters\JSONFormatter
+   */
+  public function testPrettyFormatter() {
+    $formatter = new PrettyFormatter();
+
+    foreach ($this->values as $label => $value) {
+      $formatted = $formatter->formatValue($value, $label);
+      // Make sure the human label is there.
+      $this->assertContains($label, $formatted);
+      if ($value) {
+        foreach ((array)$value as $val) {
+          $this->assertContains((string)$val, $formatted);
+        }
+      }
+    }
+
+    // @TODO: This cannot be tested because we're using an output buffer to generate the tables.
+    foreach ($this->records as $value) {
+      $formatted = $formatter->formatRecord($value, $this->recordLabels);
+//      foreach ((array)$value as $val)
+//      {
+//        $this->assertContains((string)$val, $formatted);
+//      }
+//      foreach ($this->recordLabels as $label) {
+//        // Make sure the human label is there.
+//        $this->assertContains($label, $formatted);
+//      }
+    }
+  }
+
+  /**
+   * @covers: \Terminus\Outputters\JSONFormatter
+   */
+  public function testBashFormatter() {
+    $formatter = new BashFormatter();
+
+    foreach ($this->values as $label => $value) {
+      $formatted = $formatter->formatValue($value, $label);
+      if ($value) {
+        foreach ((array)$value as $val) {
+          $this->assertContains((string)$val, $formatted);
+        }
+      }
+      // Make sure the human label is ignored.
+      $this->assertNotContains($label, $formatted);
+    }
+
+    // @TODO: This cannot be tested because we're using an output buffer to generate the tables.
+    foreach ($this->records as $value) {
+      $formatted = $formatter->formatRecord($value, $this->recordLabels);
+      foreach ((array)$value as $field => $val)
+      {
+        $this->assertContains((string)$val, $formatted);
+        $this->assertContains($field, $formatted);
+      }
+      foreach ($this->recordLabels as $label) {
+        // Make sure the human label is there.
+        $this->assertNotContains($label, $formatted);
+      }
+    }
+
+    $formatted = $formatter->formatRecordList($this->records, $this->recordLabels);
+    foreach ($this->records as $value) {
+      foreach ((array)$value as $field => $val) {
+        $this->assertContains((string)$val, $formatted);
+      }
+    }
+    foreach ($this->recordLabels as $label) {
+      // Make sure the human label is there.
+      $this->assertNotContains($label, $formatted);
+    }
+  }
+
 
   /**
    * @covers: \Terminus\Outputters\JSONFormatter
