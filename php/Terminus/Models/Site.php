@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+use \Terminus;
 use Terminus\Request;
 use Terminus\Deploy;
 use \TerminusCommand;
@@ -492,6 +493,9 @@ class Site extends TerminusModel {
       );
       return $workflow;
     }
+    Terminus::error(
+      'The owner cannot be changed on this site.'
+    );
   }
 
   /**
