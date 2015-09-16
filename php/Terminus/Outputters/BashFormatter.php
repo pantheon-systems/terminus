@@ -15,6 +15,7 @@ namespace Terminus\Outputters;
 class BashFormatter implements OutputFormatterInterface {
   const FIELD_SEPARATOR = ' ';
   const ROW_SEPARATOR = "\n";
+  const VALUE_SEPARATOR = ',';
 
   /**
    * Formats a single scalar value with an optional human label.
@@ -26,6 +27,7 @@ class BashFormatter implements OutputFormatterInterface {
    * @return string
    */
   public function formatValue($value, $human_label = '') {
+    $value = BashFormatter::flattenValue($value);
     return $value . BashFormatter::ROW_SEPARATOR;
   }
 
@@ -41,9 +43,7 @@ class BashFormatter implements OutputFormatterInterface {
   public function formatRecord($record, $human_labels = array()) {
     $out = '';
     foreach ((array)$record as $key => $value) {
-      if (is_array($value) || is_object($value)) {
-        $value = implode(",", (array)$value);
-      }
+      $value = BashFormatter::flattenValue($value);
       $out .= $key . BashFormatter::FIELD_SEPARATOR . $value . BashFormatter::ROW_SEPARATOR;
     }
     return $out;
@@ -80,10 +80,7 @@ class BashFormatter implements OutputFormatterInterface {
     $out = '';
     foreach ($records as $record) {
       foreach ((array)$record as $value) {
-        if (is_array($value) || is_object($value)) {
-          $value = implode(",", (array)$value);
-        }
-        $out .= $value;
+        $out .= BashFormatter::flattenValue($value);
         $out .= BashFormatter::FIELD_SEPARATOR;
       }
       // Remove the trailing separator.
@@ -101,5 +98,16 @@ class BashFormatter implements OutputFormatterInterface {
    */
   public function formatDump($object) {
     return print_r($object, true);
+  }
+
+  /**
+   * Flatten a value for display
+   * @param $value
+   */
+  private static function flattenValue($value) {
+    if (is_array($value) || is_object($value)) {
+      $value = join(BashFormatter::VALUE_SEPARATOR, (array)$value);
+    }
+    return $value;
   }
 }

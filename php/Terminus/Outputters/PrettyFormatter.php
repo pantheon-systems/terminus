@@ -20,6 +20,7 @@ class PrettyFormatter implements OutputFormatterInterface {
    * @return string
    */
   public function formatValue($value, $human_label = '') {
+    $value = PrettyFormatter::flattenValue($value);
     return $human_label ? "$human_label: $value\n" : $value;
   }
 
@@ -48,7 +49,6 @@ class PrettyFormatter implements OutputFormatterInterface {
       $rows[] = [$label, $value];
     }
 
-    // TODO: Normalize headers
     return $this->formatTable($rows, ['Key', 'Value']);
   }
 
@@ -98,7 +98,7 @@ class PrettyFormatter implements OutputFormatterInterface {
       $new = array();
       $record = (array)$record;
       foreach ($keys as $key) {
-        $new[$key] = isset($record[$key]) ? $record[$key] : '';
+        $new[$key] = isset($record[$key]) ? PrettyFormatter::flattenValue($record[$key]) : '';
       }
       $records[$i] = $new;
     }
@@ -123,27 +123,18 @@ class PrettyFormatter implements OutputFormatterInterface {
     foreach ($data as $row_data) {
       $row = array();
       foreach ((array)$row_data as $key => $value) {
-        if (is_array($value) || is_object($value)) {
-          $value = join(', ', (array)$value);
-        }
+        $value = PrettyFormatter::flattenValue($value);
         $row[] = $value;
       }
       $table->addRow($row);
     }
 
+    // @TODO: This does not test well. PHPUnit uses output buffering.
     ob_start();
     $table->display();
     $out = ob_get_contents();
     ob_end_clean();
     return $out;
-  }
-
-  /**
-   * @param $key
-   * @param $human_labels
-   */
-  private static function getHumanLabel($key, $human_labels) {
-    return isset($human_labels[$key]) ? $human_labels[$key] : ucwords(strtr($key, '_', ' '));
   }
 
   /**
@@ -155,4 +146,24 @@ class PrettyFormatter implements OutputFormatterInterface {
   public function formatDump($object) {
     return print_r($object, true);
   }
+
+  /**
+   * @param $key
+   * @param $human_labels
+   */
+  private static function getHumanLabel($key, $human_labels) {
+    return isset($human_labels[$key]) ? $human_labels[$key] : ucwords(strtr($key, '_', ' '));
+  }
+
+  /**
+   * Flatten a value for display
+   * @param $value
+   */
+  private static function flattenValue($value) {
+    if (is_array($value) || is_object($value)) {
+      $value = join(', ', (array)$value);
+    }
+    return $value;
+  }
+
 }
