@@ -72,8 +72,6 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
       $this->assertEquals(json_encode($value), $formatted);
       $this->assertEquals($value, json_decode($formatted));
       $this->assertEquals(JSON_ERROR_NONE, json_last_error());
-      // Make sure the human label is ignored.
-      $this->assertNotContains($label, $formatted);
     }
 
 
