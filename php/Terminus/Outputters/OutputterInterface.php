@@ -15,14 +15,14 @@ interface OutputterInterface {
   /**
    * Set the writer which sends the output to it's final destination.
    *
-   * @param \Terminus\Outputters\OutputWriterInterface $writer
+   * @param OutputWriterInterface $writer
    */
   public function setWriter(OutputWriterInterface $writer);
 
   /**
    * Set the formatter which converts the output to a useful string.
    *
-   * @param \Terminus\Outputters\OutputFormatterInterface $formatter
+   * @param OutputFormatterInterface $formatter
    */
   public function setFormatter(OutputFormatterInterface $formatter);
 
@@ -54,7 +54,7 @@ interface OutputterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param array $human_labels
+   * @param string $human_label
    *  A human name for the entire list. If each value needs a separate label then
    *  formatRecord should be used.
    * @return string

@@ -27,8 +27,8 @@ class Outputter implements OutputterInterface {
   protected $writer;
 
   /**
-   * @param \Terminus\Outputters\OutputWriterInterface $writer
-   * @param \Terminus\Outputters\OutputFormatterInterface $formatter
+   * @param OutputWriterInterface $writer
+   * @param OutputFormatterInterface $formatter
    */
   public function __construct(OutputWriterInterface $writer, OutputFormatterInterface $formatter) {
     $this->setFormatter($formatter);
@@ -67,7 +67,7 @@ class Outputter implements OutputterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param array $human_labels
+   * @param string $human_label
    *  A human name for the entire list. If each value needs a separate label then
    *  formatRecord should be used.
    * @return string
@@ -98,6 +98,7 @@ class Outputter implements OutputterInterface {
   public function outputDump($object) {
     $this->getWriter()->write($this->getFormatter()->formatDump($object));
   }
+
   /**
    * @return OutputWriterInterface
    */

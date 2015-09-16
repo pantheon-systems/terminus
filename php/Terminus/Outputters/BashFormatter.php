@@ -54,12 +54,12 @@ class BashFormatter implements OutputFormatterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param array $human_labels
+   * @param string $human_label
    *  A human name for the entire list. If each value needs a separate label then
    *  formatRecord should be used.
    * @return string
    */
-  public function formatValueList($values, $human_labels = '') {
+  public function formatValueList($values, $human_label = '') {
     $out = '';
     foreach ($values as $value) {
       $out .= $this->formatValue($value);

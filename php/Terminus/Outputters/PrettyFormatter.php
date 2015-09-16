@@ -57,7 +57,7 @@ class PrettyFormatter implements OutputFormatterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param array $human_labels
+   * @param string $human_label
    *  A human name for the entire list. If each value needs a separate label then
    *  formatRecord should be used.
    * @return string
@@ -148,8 +148,11 @@ class PrettyFormatter implements OutputFormatterInterface {
   }
 
   /**
-   * @param $key
-   * @param $human_labels
+   * Get the human name for a key if available.
+   *
+   * @param string $key
+   * @param array $human_labels
+   * @return string
    */
   private static function getHumanLabel($key, $human_labels) {
     return isset($human_labels[$key]) ? $human_labels[$key] : ucwords(strtr($key, '_', ' '));
@@ -157,7 +160,9 @@ class PrettyFormatter implements OutputFormatterInterface {
 
   /**
    * Flatten a value for display
-   * @param $value
+   *
+   * @param mixed $value
+   * @return string
    */
   private static function flattenValue($value) {
     if (is_array($value) || is_object($value)) {
