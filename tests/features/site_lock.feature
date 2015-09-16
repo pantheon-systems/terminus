@@ -33,5 +33,5 @@ Scenario: Get lock info for an environment
   When I run "terminus site lock info --site=[[test_site_name]] --env=dev"
   Then I should get:
   """
-  locked
+  Locked
   """
