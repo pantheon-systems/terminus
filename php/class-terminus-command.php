@@ -307,65 +307,6 @@ abstract class TerminusCommand {
   }
 
   /**
-   * Waits and returns response from workflow
-   *
-   * @param [string] $object_name Sites/users/organizations/etc
-   * @param [string] $object_id   UUID of $object_name
-   * @param [string] $workflow_id Workflow UUID to wait on
-   * @return [array] $workflow['data'] Result of the request
-   *
-   * @deprecated Use new WorkFlow() object instead
-   */
-  protected function waitOnWorkflow($object_name, $object_id, $workflow_id) {
-    print "Working .";
-    $workflow = self::request(
-      $object_name,
-      $object_id,
-      "workflows/$workflow_id",
-      'GET'
-    );
-    $result   = $workflow['data']->result;
-    $desc     = $workflow['data']->active_description;
-    $type     = $workflow['data']->type;
-    $tries    = 0;
-    while (!isset($result)) {
-      if (in_array($result, array('failed', 'aborted'))) {
-        if (
-          isset($workflow['data']->final_task)
-          && !empty($workflow['data']->final_task->messages)
-        ) {
-          foreach ($workflow['data']->final_task->messages as $message) {
-            sprintf('[%s] %s', $message->level, $message->message);
-          }
-        } else {
-          Terminus::error(
-            PHP_EOL . "Couldn't complete workflows: '$type'" . PHP_EOL
-          );
-        }
-      }
-      $workflow = self::request(
-        $object_name,
-        $object_id,
-        "workflows/$workflow_id",
-        'GET'
-      );
-      $result   = $workflow['data']->result;
-      if (Terminus::get_config('debug')) {
-        print_r($workflow);
-      }
-      sleep(3);
-      print ".";
-      $tries++;
-    }
-    print PHP_EOL;
-    if (in_array($workflow['data']->result, array("succeeded", "aborted"))) {
-      return $workflow['data'];
-    }
-
-    return false;
-  }
-
-  /**
    * Outputs basic workflow success/failure messages
    *
    * @param [Workflow] $workflow Workflow to output message about
