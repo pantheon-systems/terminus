@@ -104,6 +104,9 @@ class Runner {
     if ($this->config['json']) {
       $formatter = new Terminus\Outputters\JSONFormatter();
     }
+    else if ($this->config['bash']) {
+      $formatter = new Terminus\Outputters\BashFormatter();
+    }
     else {
       $formatter = new Terminus\Outputters\PrettyFormatter();
     }
