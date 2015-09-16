@@ -29,10 +29,16 @@ abstract class CommandWithSSH extends \TerminusCommand {
     }
 
     $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " " . escapeshellarg($remote_cmd);
+    if (\Terminus::get_config('silent')) {
+      ob_start();
+    }
+    passthru($cmd, $exit_code);
+    if (\Terminus::get_config('silent')) {
+      $this->logger->info(ob_get_clean());
+    }
 
-    passthru( $cmd, $exit_code );
     if ($exit_code == 255) {
-      \Terminus::error("Failed to connect. Check your credentials, and that you are specifying a valid environment.");
+      $this->logger->error("Failed to connect. Check your credentials, and that you are specifying a valid environment.");
     }
     return( $exit_code );
   }
