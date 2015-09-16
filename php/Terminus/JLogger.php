@@ -27,6 +27,7 @@ use Psr\Log\LogLevel;
 /**
  * Class documentation
  */
+
 //Todo: Replace this with Katzgrau/KLogger after stderr PR is merged. This class is a stopgap.
 class JLogger extends AbstractLogger
 {
