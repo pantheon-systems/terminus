@@ -249,7 +249,7 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function iClearTheCaches($env, $site) {
-    $this->iRun("terminus site clear-caches --site=$site --env=$env");
+    $this->iRun("terminus site clear-cache --site=$site --env=$env");
   }
 
   /**
