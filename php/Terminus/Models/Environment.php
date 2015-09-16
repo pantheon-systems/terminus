@@ -361,6 +361,10 @@ class Environment extends TerminusModel {
       'files'      => isset($args['files']),
       'ttl'        => $ttl
     );
+
+    $options  = array('environment' => $this->get('id'), 'params' => $params);
+    $workflow = $this->site->workflows->create('do_export', $options);
+    return $workflow;
   }
 
   /**
