@@ -38,7 +38,8 @@ class CLI_Command extends TerminusCommand {
    * Print Terminus version.
    */
   function version() {
-    Terminus::line('Terminus version: ' . TERMINUS_VERSION . "\nTerminus script: ".TERMINUS_SCRIPT);
+    $labels = ['version' => 'Terminus version', 'script' => 'Terminus script'];
+    $this->outputter->outputRecord(['version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT], $labels);
   }
 
   /**
@@ -54,25 +55,26 @@ class CLI_Command extends TerminusCommand {
 
     $runner = Terminus::get_runner();
 
-    if ( isset( $assoc_args['format'] ) && 'json' === $assoc_args['format'] ) {
-      $info = array(
-        'php_binary_path' => $php_bin,
-        'global_config_path' => $runner->global_config_path,
-        'project_config_path' => $runner->project_config_path,
-        'wp_cli_dir_path' => TERMINUS_ROOT,
-        'wp_cli_version' => TERMINUS_VERSION,
-      );
+    $info = array(
+      'php_binary_path' => $php_bin,
+      'php_version' => PHP_VERSION,
+      'php_ini' => get_cfg_var( 'cfg_file_path' ),
+      'global_config_path' => $runner->global_config_path,
+      'project_config_path' => $runner->project_config_path,
+      'wp_cli_dir_path' => TERMINUS_ROOT,
+      'wp_cli_version' => TERMINUS_VERSION,
+    );
+    $labels = [
+      'php_binary_path' => 'PHP binary',
+      'php_version' => 'PHP version',
+      'php_ini' => 'php.ini used',
+      'global_config_path' => 'Terminus global config',
+      'project_config_path' => 'Terminus project config',
+      'wp_cli_dir_path' => 'Terminus root dir',
+      'wp_cli_version' => 'Terminus version',
+    ];
+    $this->outputter->outputRecord($info, $labels);
 
-      Terminus::line( json_encode( $info ) );
-    } else {
-      Terminus::line( "PHP binary:\t" . $php_bin );
-      Terminus::line( "PHP version:\t" . PHP_VERSION );
-      Terminus::line( "php.ini used:\t" . get_cfg_var( 'cfg_file_path' ) );
-      Terminus::line( "Terminus root dir:\t" . TERMINUS_ROOT );
-      Terminus::line( "Terminus global config:\t" . $runner->global_config_path );
-      Terminus::line( "Terminus project config:\t" . $runner->project_config_path );
-      Terminus::line( "Terminus version:\t" . TERMINUS_VERSION );
-    }
   }
 
   /**
@@ -81,7 +83,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    echo \Terminus\Utils\json_dump( \Terminus::get_configurator()->get_spec() );
+    $this->outputter->outputDump(\Terminus::get_configurator()->get_spec());
   }
 
   /**
@@ -90,7 +92,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    echo \Terminus\Utils\json_dump( self::command_to_array( Terminus::get_root_command() ) );
+    $this->outputter->outputDump(self::command_to_array( Terminus::get_root_command() ));
   }
 
   /**
@@ -123,8 +125,8 @@ class CLI_Command extends TerminusCommand {
   * @subcommand session-dump
   */
   public function session_dump() {
-   $session = $this->cache->get_data("session");
-   echo \Terminus\Utils\json_dump( $session );
+    $session = $this->cache->get_data("session");
+    $this->outputter->outputDump($session);
   }
 
   /**

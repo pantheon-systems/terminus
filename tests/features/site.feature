@@ -7,7 +7,7 @@ Feature: site
     When I run "terminus site info --site=[[test_site_name]]"
     Then I should get:
     """
-    service_level
+    Service Level
     """
 
   Scenario: Site Connection Mode

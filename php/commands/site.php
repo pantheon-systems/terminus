@@ -38,7 +38,7 @@ class Site_Command extends TerminusCommand {
   **/
   public function attributes($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $this->handleDisplay($site->attributes, array(), array('Attribute', 'Value'));
+    $this->outputter->outputRecord($site->attributes);
   }
 
   /**
@@ -150,7 +150,7 @@ class Site_Command extends TerminusCommand {
       }
 
       if(!empty($data)) {
-        $this->handleDisplay($data, array(), $headers);
+        $this->outputter->outputRecord($data, $headers);
       }
       return $data;
   }
@@ -247,7 +247,7 @@ class Site_Command extends TerminusCommand {
       $env
     );
     if (isset($assoc_args['print'])) {
-      Logger::coloredOutput('%GDashboard URL:%n ' . $url);
+      $this->outputter->outputValue($url, 'Dashboard URL');
     }
     else {
       Terminus::confirm(
@@ -306,9 +306,9 @@ class Site_Command extends TerminusCommand {
 
     if (isset($assoc_args['field'])) {
       $field = $assoc_args['field'];
-      Terminus::line($site->info($field));
+      $this->outputter->outputValue($site->info($field), $field);
     } else {
-      $this->handleDisplay($site->info(), $args);
+      $this->outputter->outputRecord($site->info());
     }
   }
 
@@ -340,7 +340,7 @@ class Site_Command extends TerminusCommand {
       $field = $assoc_args['field'];
       Terminus::line($info[$field]);
     } else {
-      $this->handleDisplay($info, $args);
+      $this->outputter->outputRecord($info);
     }
   }
 
@@ -398,7 +398,7 @@ class Site_Command extends TerminusCommand {
             'id'    => $org->get('organization_id'),
           );
         }
-        $this->handleDisplay($data);
+        $this->outputter->outputRecordList($data);
         break;
     }
     if (isset($workflow)) {
@@ -618,9 +618,9 @@ class Site_Command extends TerminusCommand {
           }
 
           $data[] = array(
-            $backup->filename,
-            $size,
-            $date,
+            'file' => $backup->filename,
+            'size' => $size,
+            'date' => $date,
           );
         }
 
@@ -628,7 +628,7 @@ class Site_Command extends TerminusCommand {
           \Terminus::error('No backups found.');
           return false;
         } else {
-          $this->handleDisplay($data, $args, array('File', 'Size', 'Date'));
+          $this->outputter->outputRecordList($data, array('file' => 'File', 'size' => 'Size', 'date' => 'Date'));
           return $data;
         }
       break;
@@ -1032,14 +1032,14 @@ class Site_Command extends TerminusCommand {
       }
 
       $data[] = array(
-        'Name'          => $env->get('id'),
-        'Created'       => date('Y-m-dTH:i:s', $env->get('environment_created')),
-        'Domain'        => $env->domain(),
-        'OnServer Dev?' => $osd,
-        'Locked?'       => $locked,
+        'name'          => $env->get('id'),
+        'created'       => date('Y-m-dTH:i:s', $env->get('environment_created')),
+        'domain'        => $env->domain(),
+        'onserverdev'   => $osd,
+        'locked'        => $locked,
       );
     }
-    $this->handleDisplay($data, $args);
+    $this->outputter->outputRecordList($data, ['name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?']);
     return $data;
   }
 
@@ -1079,7 +1079,7 @@ class Site_Command extends TerminusCommand {
             );
           }
         }
-        $this->handleDisplay($data);
+         $this->outputter->outputRecordList($data);
         break;
        case 'add':
           if (!isset($assoc_args['hostname'])) {
@@ -1136,7 +1136,7 @@ class Site_Command extends TerminusCommand {
     switch ($action) {
       case 'info':
         $info = $env->lockinfo();
-        $this->handleDisplay($info);
+        $this->outputter->outputRecord($info);
         break;
       case 'add':
         Terminus::line(
@@ -1248,7 +1248,8 @@ class Site_Command extends TerminusCommand {
 
     //If site is not set, show all user's payment instruments
     if(!isset($assoc_args['site'])) {
-      $this->handleDisplay($data, array(), array('UUID', 'Label'));
+      // TODO: Fix this so it is a proper record list.
+      $this->outputter->outputRecord($data, array('UUID', 'Label'));
     } else {
       array_unshift($data, 'none');
       $site = $this->sites->get(Input::sitename($assoc_args));
@@ -1374,7 +1375,7 @@ class Site_Command extends TerminusCommand {
     $site = $this->sites->get(Input::sitename($assoc_args));
     $data = $site->newRelic();
     if ($data) {
-      $this->handleDisplay($data->account, $assoc_args, array('Key', 'Value'));
+      $this->outputter->outputRecord($data->account, array('Key', 'Value'));
     } else {
       Logger::coloredOutput('%YNew Relic is not enabled.%n');
     }
@@ -1644,7 +1645,7 @@ class Site_Command extends TerminusCommand {
         break;
     }
     if(!empty($data)) {
-      $this->handleDisplay($data);
+      $this->outputter->outputRecordList($data);
     }
   }
 
@@ -1661,7 +1662,7 @@ class Site_Command extends TerminusCommand {
   public function upstream_info($args, $assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));
     $upstream = $site->get('upstream');
-    $this->handleDisplay($upstream, $args);
+    $this->outputter->outputRecord($upstream);
   }
 
   /**
@@ -1702,14 +1703,14 @@ class Site_Command extends TerminusCommand {
       if (!empty($upstreams)) {
         $data = array();
         foreach ($upstreams as $commit) {
-          $data = array(
+          $data[] = array(
             'hash'     => $commit->hash,
             'datetime' => $commit->datetime,
             'message'  => $commit->message,
             'author'   => $commit->author,
           );
-          $this->handleDisplay($data, $args);
         }
+        $this->outputter->outputRecordList($data);
       }
     } else {
       Terminus::line(

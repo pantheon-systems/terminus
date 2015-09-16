@@ -36,7 +36,7 @@ class Organizations_Command extends TerminusCommand {
        );
      }
 
-     $this->handleDisplay($data);
+    $this->outputter->outputRecordList($data);
   }
 
   /**
@@ -113,7 +113,7 @@ class Organizations_Command extends TerminusCommand {
       $data_array['created'] = date('Y-m-dTH:i:s', $data_array['created']);
       $data[] = $data_array;
     }
-    $this->handleDisplay($data);
+    $this->outputter->outputRecordList($data);
   }
 
 }

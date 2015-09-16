@@ -176,7 +176,7 @@ class Terminus {
     if(!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    self::$outputter->success($message);
+    self::$logger->info($message);
   }
 
   /**
@@ -203,7 +203,7 @@ class Terminus {
       $message = vsprintf($message, $params);
     }
     if(! isset(self::get_runner()->assoc_args[ 'completions' ])) {
-      self::$outputter->error(self::error_to_string($message));
+      self::$logger->error(self::error_to_string($message));
     }
 
     exit(1);
@@ -457,7 +457,7 @@ class Terminus {
    *
    * @return [KLogger] $logger
    */
-  public function get_logger() {
+  public static function get_logger() {
     return self::$logger;
   }
 
@@ -466,7 +466,7 @@ class Terminus {
    *
    * @return [Logger] $outputter
    */
-  public function get_outputter() {
+  public static function get_outputter() {
     return self::$outputter;
   }
 

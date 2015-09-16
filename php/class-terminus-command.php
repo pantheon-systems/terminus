@@ -282,24 +282,6 @@ abstract class TerminusCommand {
   }
 
   /**
-   * Decides and handles how to display data going to STDOUT
-   *
-   * @param [string] $data    Data for display
-   * @param [array]  $args    Instructions on how to display data
-   * @param [array]  $headers Table headers
-   * @return [void]
-   */
-  protected function handleDisplay($data, $args = array(), $headers = null) {
-    if (array_key_exists('json', $args) || Terminus::get_config('json')) {
-      echo \Terminus\Utils\json_dump($data);
-    } elseif (array_key_exists('bash', $args) || Terminus::get_config('bash')) {
-      echo \Terminus\Utils\bash_out((array)$data);
-    } else {
-      $this->constructTableForResponse((array)$data, $headers);
-    }
-  }
-
-  /**
    * Strips sensitive data out of the JSON printed in a request string
    *
    * @param [string] $request   The string with a JSON with sensitive data

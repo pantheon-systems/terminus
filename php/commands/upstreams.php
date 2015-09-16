@@ -31,10 +31,9 @@ class Upstreams_Command extends TerminusCommand {
       'id',
       array('id', 'longname', 'category', 'type', 'framework')
     );
-    $this->handleDisplay(
+    $this->outputter->outputRecordList(
       $upstreams_list,
-      array(),
-      array('ID', 'Name', 'Category', 'Type', 'Framework')
+      array('id' => 'ID', 'longname' => 'Name', 'category' => 'Category', 'type' => 'Type', 'framework' => 'Framework')
     );
     return $upstreams;
   }

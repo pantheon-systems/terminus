@@ -50,7 +50,7 @@ Feature: cli
   Scenario: Dumping Empty Session
     @vcr cli-session-dump-empty
     When I run "terminus auth logout"
-    And I run "terminus cli session-dump"
+    And I run "terminus cli session-dump --json"
     Then I should get:
     """
     false
@@ -62,7 +62,7 @@ Feature: cli
     And I run "terminus cli session-dump"
     Then I should get:
     """
-    "email":"[[username]]"
+    [email] => devuser@pantheon.io
     """
 
   Scenario: Print Version
