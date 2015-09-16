@@ -90,6 +90,15 @@ class Outputter implements OutputterInterface {
   }
 
   /**
+   * Output any variable type as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function outputDump($object) {
+    $this->getWriter()->write($this->getFormatter()->formatDump($object));
+  }
+  /**
    * @return OutputWriterInterface
    */
   public function getWriter() {

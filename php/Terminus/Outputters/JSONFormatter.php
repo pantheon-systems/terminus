@@ -80,4 +80,14 @@ class JSONFormatter implements OutputFormatterInterface {
   public function formatRecordList($records, $human_labels = array()) {
     return json_encode((array)$records, $this->json_options);
   }
+
+  /**
+   * Format any kind of value as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function formatDump($object) {
+    return json_encode($object, $this->json_options);
+  }
 }

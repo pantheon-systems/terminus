@@ -92,4 +92,14 @@ class BashFormatter implements OutputFormatterInterface {
     }
     return $out;
   }
+
+  /**
+   * Format any kind of value as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function formatDump($object) {
+    return print_r($object, true);
+  }
 }

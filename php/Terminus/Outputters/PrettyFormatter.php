@@ -145,4 +145,14 @@ class PrettyFormatter implements OutputFormatterInterface {
   private static function getHumanLabel($key, $human_labels) {
     return isset($human_labels[$key]) ? $human_labels[$key] : ucwords(strtr($key, '_', ' '));
   }
+
+  /**
+   * Format any kind of value as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function formatDump($object) {
+    return print_r($object, true);
+  }
 }

@@ -57,4 +57,12 @@ interface OutputFormatterInterface {
    * @return string
    */
   public function formatRecordList($records, $human_labels = array());
+
+  /**
+   * Format any kind of value as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function formatDump($object);
 }

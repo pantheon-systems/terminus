@@ -38,8 +38,8 @@ class CLI_Command extends TerminusCommand {
    * Print Terminus version.
    */
   function version() {
-    // TODO: Should this be output structurally (ie: as a record in JSON, table in pretty, tabbed in BASH)
-    $this->outputter->outputValue('Terminus version: ' . TERMINUS_VERSION . "\nTerminus script: ".TERMINUS_SCRIPT);
+    $labels = ['version' => 'Terminus version', 'script' => 'Terminus script'];
+    $this->outputter->outputRecord(['version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT], $labels);
   }
 
   /**
@@ -83,12 +83,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    // TODO: this should be replaced with outputter formatting but:
-    // a) That changes the default behavior from JSON formatting to pretty and
-    // b) The pretty formatter does not deal with 3D arrays well.
-    //     $this->outputter->outputRecord(\Terminus::get_configurator()->get_spec());
-
-    echo \Terminus\Utils\json_dump( \Terminus::get_configurator()->get_spec() );
+    $this->outputter->outputDump(\Terminus::get_configurator()->get_spec());
   }
 
   /**
@@ -97,8 +92,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    // TODO: Same issues as param_dump
-    echo \Terminus\Utils\json_dump( self::command_to_array( Terminus::get_root_command() ) );
+    $this->outputter->outputDump(self::command_to_array( Terminus::get_root_command() ));
   }
 
   /**
@@ -131,9 +125,8 @@ class CLI_Command extends TerminusCommand {
   * @subcommand session-dump
   */
   public function session_dump() {
-    // TODO: See param_dump
     $session = $this->cache->get_data("session");
-   echo \Terminus\Utils\json_dump( $session );
+    $this->outputter->outputDump($session);
   }
 
   /**
