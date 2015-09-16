@@ -216,9 +216,16 @@ class SitesCache {
     $site_data = array(
       'id'            => null,
       'name'          => null,
+      'label'         => null,
       'created'       => null,
       'framework'     => null,
+      'organization'  => null,
       'service_level' => null,
+      'upstream'      => null,
+      'php_version'   => null,
+      'holder_type'   => null,
+      'holder_id'     => null,
+      'owner'         => null,
       'membership'    => array(),
     );
     foreach ($site_data as $index => $value) {
