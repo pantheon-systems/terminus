@@ -1,5 +1,14 @@
 Feature: sites
 
+  Scenario: JSON List Sites
+    @vcr sites-list-empty
+    Given I am authenticated
+    When I run "terminus sites list --json"
+    Then I should get:
+    """
+    []
+    """
+
   Scenario: List Sites
     @vcr sites-list-empty
     Given I am authenticated

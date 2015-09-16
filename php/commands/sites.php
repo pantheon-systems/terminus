@@ -87,7 +87,6 @@ class Sites_Command extends TerminusCommand {
 
     if (count($rows) == 0) {
       Terminus::log('You have no sites.');
-      exit(0);
     }
 
     $labels = ['name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships'];
