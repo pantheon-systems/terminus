@@ -483,7 +483,7 @@ class Site extends TerminusModel {
     $new_owner = $this->user_memberships->get($owner);
     if ($new_owner == null) {
       Terminus::error(
-        'The new owner must first be a user. Try adding with `site team`'
+        'The new owner must first be a member of the team. Try adding with `site team`'
       );
     }
     $workflow = $this->workflows->create(
