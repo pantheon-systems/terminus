@@ -50,6 +50,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site jobs` will be removed in v0.7.0 (#412)
 - `site notifications` will be removed in v0.7.0 (#412)
 
+###Removed
+- Removed --branch-create flag from `sites code`
+
 ##[0.6.1] - 2015-08-11
 ### Fixed
 - `site deploy` will not overwrite the Live environment's content (#373) 
