@@ -480,22 +480,17 @@ class Site extends TerminusModel {
    * @return [stdClass] $data['data']
    */
   public function setOwner($owner = null) {
-    if ((boolean)$this->getFeature('change_management')) {
-      $new_owner = $this->user_memberships->get($owner);
-      if ($new_owner == null) {
-        Terminus::error(
-          'The new owner must first be a user. Try adding with `site team`'
-        );
-      }
-      $workflow = $this->workflows->create(
-        'promote_site_user_to_owner',
-        array('user_id' => $new_owner->get('id'))
+    $new_owner = $this->user_memberships->get($owner);
+    if ($new_owner == null) {
+      Terminus::error(
+        'The new owner must first be a user. Try adding with `site team`'
       );
-      return $workflow;
     }
-    Terminus::error(
-      'The owner cannot be changed on this site.'
+    $workflow = $this->workflows->create(
+      'promote_site_user_to_owner',
+      array('params' => array('user_id' => $new_owner->get('id')))
     );
+    return $workflow;
   }
 
   /**
