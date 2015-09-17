@@ -526,7 +526,7 @@ class Site_Command extends TerminusCommand {
         return $url->url;
         break;
     case 'load':
-      $assoc_args['to-directory'] = '/tmp';
+      $assoc_args['to'] = '/tmp';
       $assoc_args['element'] = 'database';
       if (isset($assoc_args['database'])) {
         $database = $assoc_args['database'];
