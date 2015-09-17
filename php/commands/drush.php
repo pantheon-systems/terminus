@@ -63,7 +63,7 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    $this->logger->info( "Running drush %s %s on %s-%s", array($command, $flags, $site->get('name'), $environment));
+    $this->logger->info(vsprintf("Running drush %s %s on %s-%s", array($command, $flags, $site->get('name'), $environment)));
     $this->send_command($server, 'drush', $args, $assoc_args );
   }
 
