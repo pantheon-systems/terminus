@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## [Unreleased][unreleased]
 ### Changed
 - `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
+- `site backup get` flag `--to-directory` is now `--to` and accepts either a directory or a file name (#493)
 - `site clear-caches` is now `site clear-cache` (#353)
 
 ###Added
