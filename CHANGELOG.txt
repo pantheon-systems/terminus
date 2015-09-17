@@ -3,7 +3,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ##MASTER
 ### Changed
-- `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
+- `site owner` now just returns the owner ID. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
 - `site backup get` flag `--to-directory` is now `--to` and accepts either a directory or a file name (#493)
 - `site clear-caches` is now `site clear-cache` (#353)
 - `site upstream-updates` is now `site upstream-updates <list|apply>`. The --update flag was removed. The --accept-upstream flag was added (#473)
@@ -12,9 +12,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site service-level` is now `site set-service-level` and uses the --level flag instead of --set to indicate new level. Service level checks now done by using `site info --field=service_level` (#507)
 - Makes API calls to host 'dashboard.pantheon.io' instead of 'dashboard.getpantheon.com' (#508)
 - `site deploy` limited to test or live environment. --from removed. --clone-live-content changed to --sync-content (#463)
+- Changed parameter `--env` on `site create-env` to `--to-env` (#514)
 
 ###Added
-- `site set owner --site=<site> --set=<owner>` sets the site owner to the given user id.
+- `site set owner --site=<site> --set=<owner>` sets the site owner to the given user ID. (#499)
 
 ##[0.8.0] - 2015-09-15
 ###Added

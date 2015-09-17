@@ -43,7 +43,7 @@ class FeatureContext extends BehatContext {
     * @return [void]
     */
   public function aPaymentInstrumentWithUuid($instrument_uuid) {
-    $instruments = $this->iRun('terminus site instrument');
+    $instruments = $this->iRun('terminus instruments list');
     try {
       $uuid = new PyStringNode(
         $this->_replacePlaceholders($instrument_uuid)
@@ -202,7 +202,7 @@ class FeatureContext extends BehatContext {
    */
   public function iAttachTheInstrument($uuid, $site) {
     $this->iRun(
-      "terminus site instrument --site=$site --instrument=$uuid"
+      "terminus site set-instrument --site=$site --instrument=$uuid"
     );
   }
 
@@ -422,7 +422,7 @@ class FeatureContext extends BehatContext {
      * @return [void]
      */
     public function iCheckThePaymentInstrumentOfSite($site) {
-      $this->iRun("terminus site instrument --site=$site");
+      $this->iRun("terminus site set-instrument --site=$site");
     }
 
   /**
@@ -657,7 +657,7 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function serviceLevel($site, $service_level = false) {
-    $command = "terminus site service-level --site=$site";
+    $command = "terminus site set-service-level --site=$site";
     if($service_level !== false) {
       $command .= " --set=$service_level";
     }
