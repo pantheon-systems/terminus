@@ -1,9 +1,6 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-#Change Log
-All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
-
 ## [Unreleased][unreleased]
 ### Changed
 - `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
