@@ -423,8 +423,8 @@ class Site_Command extends TerminusCommand {
     * [--element=<code|files|db|all>]
     * : Element to download or create. *all* only used for 'create'
     *
-    * [--to-directory=<directory>]
-    * : Absolute path of directory to download the file
+    * [--to=<directory|file>]
+    * : Absolute path of a directory or filename to save the downloaded backup to
     *
     * [--latest]
     * : If set the latest backup will be selected automatically
@@ -508,10 +508,13 @@ class Site_Command extends TerminusCommand {
 
         $url = $site->environments->get($env)->backupUrl($bucket, $element);
 
-        if (isset($assoc_args['to-directory'])) {
+        if (isset($assoc_args['to'])) {
+          $target = $assoc_args['to'];
+          if (is_dir($target)) {
+            $filename = \Terminus\Utils\get_filename_from_url($url->url);
+            $target = sprintf('%s/%s', $target, $filename);
+          }
           Terminus::line('Downloading ... please wait ...');
-          $filename = \Terminus\Utils\get_filename_from_url($url->url);
-          $target = sprintf('%s/%s', $assoc_args['to-directory'], $filename);
           if (TerminusCommand::download($url->url, $target)) {
             Terminus::success('Downloaded %s', $target);
             return $target;
@@ -519,11 +522,11 @@ class Site_Command extends TerminusCommand {
             Terminus::error('Could not download file');
           }
         }
-        Terminus::success($url->url);
+        $this->outputter->outputValue($url->url, 'Backup URL');
         return $url->url;
         break;
     case 'load':
-      $assoc_args['to-directory'] = '/tmp';
+      $assoc_args['to'] = '/tmp';
       $assoc_args['element'] = 'database';
       if (isset($assoc_args['database'])) {
         $database = $assoc_args['database'];
