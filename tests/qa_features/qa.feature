@@ -164,7 +164,7 @@ Feature: Daily Terminus QA Report
     """
 
   Scenario: Clear caches on live
-    @clear-caches
+    @clear-cache
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I clear the caches on the "live" environment of "[[test_site_name]]"
