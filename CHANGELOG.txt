@@ -1,6 +1,13 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## [Unreleased][unreleased]
+### Changed
+- `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
+
+###Added
+- `site set owner --site=<site> --set=<owner>` sets the site owner to the given user id.
+
 ##[0.8.0] - 2015-09-15
 ###Added
 - Environment variable TERMINUS_LOG_DIR will save all logs to file in the given directory. (#487)

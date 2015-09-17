@@ -1379,27 +1379,38 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
-  * Get or set owner
+  * Get the site owner
   *
   * ## OPTIONS
   *
   * [--site=<site>]
   * : Site to check
   *
-  * [--set=<value>]
-  * : new owner to set
-  *
   * @subcommand owner
   */
   public function owner($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    if (!isset($assoc_args['set'])) {
-      Terminus::line($site->get('owner'));
-    } else {
-      $workflow = $site->setOwner($assoc_args['set']); 
-      $workflow->wait();
-      $this->workflowOutput($workflow);
-    }
+    $this->outputter->outputValue($site->get('owner'), 'Site Owner');
+  }
+
+  /**
+   * Set the site owner
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Site to check
+   *
+   * [--set=<value>]
+   * : new owner to set
+   *
+   * @subcommand set-owner
+   */
+  public function set_owner($args, $assoc_args) {
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    $workflow = $site->setOwner($assoc_args['set']);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
   }
 
   /**
