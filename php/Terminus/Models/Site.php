@@ -488,7 +488,11 @@ class Site extends TerminusModel {
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      array('params' => array('user_id' => $new_owner->get('id')))
+      array(
+        'params' => array(
+          'user_id' => $new_owner->get('id')
+        )
+      )
     );
     return $workflow;
   }
