@@ -84,9 +84,6 @@ class Site_Command extends TerminusCommand {
    *
    * [--message=<message>]
    * : message to use when committing on server changes
-   *
-   * [--branchname=<branchname>]
-   * : When using branch-create specify the branchname
    */
   public function code($args, $assoc_args) {
     $subcommand = array_shift($args);
