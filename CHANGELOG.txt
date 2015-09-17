@@ -54,7 +54,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site notifications` will be removed in v0.7.0 (#412)
 
 ###Removed
-- Removed --branch-create flag from `sites code`
+- Removed --branch-create flag from `sites code` (#505)
 
 ##[0.6.1] - 2015-08-11
 ### Fixed
