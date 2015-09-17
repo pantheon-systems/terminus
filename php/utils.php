@@ -215,7 +215,7 @@ function handle_exception($exception) {
  * @return [boolean] $is_hermes True if Terminus is operating on Hermes
  */
 function is_hermes() {
-  $is_hermes = (TERMINUS_HOST == 'dashboard.getpantheon.com');
+  $is_hermes = (TERMINUS_HOST == 'dashboard.pantheon.io');
   return $is_hermes;
 }
 

@@ -7,7 +7,7 @@ use \Terminus\Endpoint;
  class EndpointTest extends PHPUnit_Framework_TestCase {
 
    function testEndpoints() {
-				$host = getenv("TERMINUS_HOST") ?: 'dashboard.getpantheon.com';
+				$host = getenv("TERMINUS_HOST") ?: 'dashboard.pantheon.io';
 				// expected => test
 				$tests = array(
 				 'https://'.$host.'/api/users/UUID/sites' => array(

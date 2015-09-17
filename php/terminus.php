@@ -32,7 +32,7 @@ set_exception_handler('\Terminus\Utils\handle_exception');
 if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
   define('TERMINUS_HOST', $_SERVER['TERMINUS_HOST']);
 } else {
-  define('TERMINUS_HOST', 'dashboard.getpantheon.com');
+  define('TERMINUS_HOST', 'dashboard.pantheon.io');
 }
 
 define('TERMINUS_PORT', '443');
