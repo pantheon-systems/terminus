@@ -1678,7 +1678,7 @@ class Site_Command extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * [<show|apply>]
+   * [<list|apply>]
    * : Are we inspecting or applying upstreams?
    *
    * [--site=<site>]
@@ -1696,12 +1696,12 @@ class Site_Command extends TerminusCommand {
    * @subcommand upstream-updates
    */
   public function upstream_updates($args, $assoc_args) {
-    $action   = array_shift($args) ?: 'show';
+    $action   = array_shift($args) ?: 'list';
     $site     = $this->sites->get(Input::sitename($assoc_args));
     $upstream = $site->getUpstreamUpdates();
 
     switch($action) {
-      case 'show':
+      case 'list':
         $data = array();
         if(isset($upstream->remote_url) && isset($upstream->behind)) {
           $data[$upstream->remote_url] = 'Up-to-date';

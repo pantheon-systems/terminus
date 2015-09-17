@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## [Unreleased][unreleased]
 ### Changed
 - `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
+- `site upstream-updates` is now `site upstream-updates <list|apply>`. The --update flag was removed. The --accept-upstream flag was added (#473)
 
 ###Added
 - `site set owner --site=<site> --set=<owner>` sets the site owner to the given user id.
