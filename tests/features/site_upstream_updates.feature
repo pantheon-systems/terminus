@@ -5,7 +5,7 @@ Feature: site upstream-updates
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the connection mode of "[[test_site_name]]" is "git"
-    When I run "terminus site upstream-updates --site=[[test_site_name]]"
+    When I run "terminus site upstream-updates show --site=[[test_site_name]]"
     Then I should get:
     """
     Updates Available
@@ -16,5 +16,5 @@ Feature: site upstream-updates
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the connection mode of "[[test_site_name]]" is "git"
-    When I run "terminus site upstream-updates --site=[[test_site_name]] --update --yes"
+    When I run "terminus site upstream-updates apply --site=[[test_site_name]] --yes"
     Then I should get one of the following: "Updates applied, Apply upstream updates"
