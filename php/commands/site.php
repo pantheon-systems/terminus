@@ -1681,80 +1681,96 @@ class Site_Command extends TerminusCommand {
    *
    * ## OPTIONS
    *
+   * [<list|apply>]
+   * : Are we inspecting or applying upstreams?
+   *
    * [--site=<site>]
    * : Site to check
-   *
-   * [--update]
-   * : Apply upstream updates
    *
    * [--env=<name>]
    * : Environment (dev or multidev) to apply updates to; Default: dev
    *
-   * [--updatedb]
-   * : (Drupal only) run update.php after deploy
+   * [--accept-upstream]
+   * : Attempt to automatically resolve conflicts in favor of the upstream repository.
    *
-   * @alias upstream-updates
-  **/
+   * [--updatedb]
+   * : (Drupal only) run update.php after updating,
+   *
+   * @subcommand upstream-updates
+   */
   public function upstream_updates($args, $assoc_args) {
+    $action   = array_shift($args) ?: 'list';
     $site     = $this->sites->get(Input::sitename($assoc_args));
     $upstream = $site->getUpstreamUpdates();
 
-    $data = array();
-    if(isset($upstream->remote_url) && isset($upstream->behind)) {
-      $data[$upstream->remote_url] = 'Up-to-date';
-      if ($upstream->behind > 0) {
-        $data[$upstream->remote_url] = 'Updates Available';
-      }
-
-      $this->constructTableForResponse($data, array('Upstream', 'Status'));
-      if (!isset($upstream) || empty($upstream->update_log)) {
-        Terminus::success('No updates to show');
-      }
-      $upstreams = (array)$upstream->update_log;
-      if (!empty($upstreams)) {
+    switch($action) {
+      case 'list':
         $data = array();
-        foreach ($upstreams as $commit) {
-          $data[] = array(
-            'hash'     => $commit->hash,
-            'datetime' => $commit->datetime,
-            'message'  => $commit->message,
-            'author'   => $commit->author,
+        if(isset($upstream->remote_url) && isset($upstream->behind)) {
+          $data[$upstream->remote_url] = 'Up-to-date';
+          if ($upstream->behind > 0) {
+            $data[$upstream->remote_url] = 'Updates Available';
+          }
+
+          $this->constructTableForResponse($data, array('Upstream', 'Status'));
+          if (!isset($upstream) || empty($upstream->update_log)) {
+            Terminus::success('No updates to show');
+          }
+          $upstreams = (array)$upstream->update_log;
+          if (!empty($upstreams)) {
+            $data = array();
+            foreach ($upstreams as $commit) {
+              $data[] = array(
+                'hash'     => $commit->hash,
+                'datetime' => $commit->datetime,
+                'message'  => $commit->message,
+                'author'   => $commit->author,
+              );
+            }
+          }
+        } else {
+          Terminus::warning(
+            'There was a problem checking your upstream status. Please try again.'
           );
         }
         $this->outputter->outputRecordList($data);
-      }
-    } else {
-      Terminus::line(
-        'There was a problem checking your upstream status. Please try again.'
-      );
+        break;
+      case 'apply':
+        if (!empty($upstream->update_log)) {
+          $env = 'dev';
+          if (isset($assoc_args['env'])) {
+            $env = $assoc_args['env'];
+          }
+          if (in_array($env, array('test', 'live'))) {
+            Terminus::error(
+              sprintf(
+                'Upstream updates cannot be applied to the %s environment',
+                $env
+              )
+            );
+          }
+
+          $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
+          $acceptupstream = (isset($assoc_args['accept-upstream']) && $assoc_args['accept-upstream']);
+          Terminus::confirm(
+            sprintf(
+              'Are you sure you want to apply the upstream updates to %s-dev',
+              $site->get('name'),
+              $env
+            )
+          );
+          $workflow = $site->applyUpstreamUpdates($env, $updatedb, $acceptupstream);
+          $workflow->wait();
+          $this->workflowOutput($workflow);
+        }
+        else {
+          Terminus::warning(
+            'There are no upstream updates to apply.'
+          );
+        }
+        break;
     }
 
-    if (isset($assoc_args['update']) && !empty($upstream->update_log)) {
-      $env = 'dev';
-      if (isset($assoc_args['env'])) {
-        $env = $assoc_args['env'];
-      }
-      if (in_array($env, array('test', 'live'))) {
-        Terminus::error(
-          sprintf(
-            'Upstream updates cannot be applied to the %s environment',
-            $env
-          )
-        );
-      }
-
-      $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
-      Terminus::confirm(
-        sprintf(
-          'Are you sure you want to apply the upstream updates to %s-dev',
-          $site->get('name'),
-          $env
-        )
-      );
-      $workflow = $site->applyUpstreamUpdates($env, $updatedb);
-      $workflow->wait();
-      $this->workflowOutput($workflow);
-    }
   }
 
   /**
