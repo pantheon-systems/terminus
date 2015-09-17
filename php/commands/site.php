@@ -1484,21 +1484,17 @@ class Site_Command extends TerminusCommand {
    * [--site=<site>]
    * : Site to check
    *
-   * [--set=<value>]
+   * [--level=<value>]
    * : new service level to set
    *
-   * @subcommand service-level
+   * @subcommand set-service-level
    */
-  public function service_level($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $info = $site->get('service_level');
-    if (isset($assoc_args['set'])) {
-      $set = $assoc_args['set'];
-      $data = $site->updateServiceLevel($set);
-      Logger::coloredOutput("%2<K>Service level has been updated to '$set'%n");
-    } else {
-      Logger::coloredOutput("%2<K>Service level is '$info'%n");
-    }
+  public function set_service_level($args, $assoc_args) {
+    $site  = $this->sites->get(Input::sitename($assoc_args));
+    $info  = $site->get('service_level');
+    $level = $assoc_args['level'];
+    $data  = $site->updateServiceLevel($level);
+    $this->logger->info("Service level has been updated to '$level'");
   }
 
   /**
