@@ -4,6 +4,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## [Unreleased][unreleased]
 ### Changed
 - `site owner` now just returns the owner id. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
+- `sites create-from-import` is now `sites import` (#465)
+- `sites create` no longer accepts the --import flag. Use `sites import` instead (#465)
 
 ###Added
 - `site set owner --site=<site> --set=<owner>` sets the site owner to the given user id.
