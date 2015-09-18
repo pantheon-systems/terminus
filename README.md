@@ -110,7 +110,7 @@ Here are steps to follow if you would like to contribute to Terminus:
 And run your tests via:
   ```bash
   cd $HOME/pantheon-cli
-  ./scripts/tests.sh
+  ./scripts/test.sh
   ```
 
 3. Open a pull request on GitHub so that we may evaluate and merge your changes.
