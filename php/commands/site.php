@@ -946,14 +946,11 @@ class Site_Command extends TerminusCommand {
     * [--site=<site>]
     * : Site to deploy from
     *
-    * [--env=<env>]
-    * : Environment to be deployed (Test or Live)
+    * [--env=<test|live>]
+    * : Environment to deploy to (Test or Live)
     *
-    * [--clone-live-content]
-    * : If deploying test, copy content from Live
-    *
-    * [--from=<env>]
-    * : [deprecated] Environment to deploy from (non-functional)
+    * [--sync-content]
+    * : If deploying test, copy database and files from Live
     *
     * [--cc]
     * : Clear cache after deploy?
@@ -970,10 +967,15 @@ class Site_Command extends TerminusCommand {
     $env  = $site->environments->get(Input::env(
       $assoc_args,
       'env',
-      'Choose environment to deploy'
+      'Choose environment to deploy to',
+      array('test', 'live')
     ));
 
-    $clone_live_content = ($env->get('id') == 'test' && isset($assoc_args['clone-live-content']));
+    if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
+      Terminus::failure('You can only deploy to the test or live environment.');
+    }
+
+    $sync_content = ($env->get('id') == 'test' && isset($assoc_args['sync-content']));
 
     if(!isset($assoc_args['note'])) {
       $annotation = Terminus::prompt(
@@ -994,7 +996,7 @@ class Site_Command extends TerminusCommand {
       'annotation'     => $annotation,
     );
 
-    if ($clone_live_content) {
+    if ($sync_content) {
       $params['clone_database'] = array('from_environment' => 'live');
       $params['clone_files']    = array('from_environment' => 'live');
     }

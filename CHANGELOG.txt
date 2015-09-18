@@ -11,6 +11,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `sites create` no longer accepts the --import flag. Use `sites import` instead (#465)
 - `site service-level` is now `site set-service-level` and uses the --level flag instead of --set to indicate new level. Service level checks now done by using `site info --field=service_level` (#507)
 - Makes API calls to host 'dashboard.pantheon.io' instead of 'dashboard.getpantheon.com' (#508)
+- `site deploy` limited to test or live environment. --from removed. --clone-live-content changed to --sync-content (#463)
 
 ###Added
 - `site set owner --site=<site> --set=<owner>` sets the site owner to the given user id.
