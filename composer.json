@@ -1,7 +1,7 @@
 {
-  "name": "terminus/terminus",
+  "name": "pantheon-systems/cli",
   "description": "A command line interface for Pantheon",
-  "keywords": [ "cli", "pantheon" ],
+  "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "http://getpantheon.com",
   "license": "MIT",
   "bin": [
