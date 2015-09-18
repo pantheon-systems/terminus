@@ -32,6 +32,9 @@ abstract class TerminusCommand {
     $this->logger    = Terminus::get_logger();
     $this->outputter = Terminus::get_outputter();
     $this->session   = Session::instance();
+    if (!Terminus::is_test()) {
+      $this->checkForUpdate();
+    }
   }
 
   /**
@@ -342,6 +345,41 @@ abstract class TerminusCommand {
     } else {
       Terminus::error($messages['failure']);
     }
+  }
+
+  private function checkForUpdate() {
+    $cache_data = $this->cache->get_data('latest_release', array('decode_array' => true));
+    if (
+      !$cache_data
+      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
+    ) {
+      $current_version = $this->checkCurrentVersion();
+    } else {
+      $current_version = $cache_data['version'];
+    }
+    if (version_compare($cache_data['version'], TERMINUS_VERSION, '>')) {
+      $this->logger->info(
+        sprintf(
+          'An update to Terminus is available. Please update to version %s.',
+          $cache_data['version']
+        )
+      );
+    }
+  }
+
+  /**
+   * Retrieves current version number from repository and saves it to the cache
+   *
+   * @return [string] $response->name The version number
+   */
+  private function checkCurrentVersion() {
+    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
+    $response = Request::send($url, 'GET');   
+    $json     = $response->getBody(true);
+    $data     = json_decode($json);
+    $release  = array_shift($data);
+    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
+    return $release->name;
   }
 
 }

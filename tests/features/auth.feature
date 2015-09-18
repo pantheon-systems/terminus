@@ -18,6 +18,7 @@ Feature: auth
 
   Scenario: Check Which User I Am
     @vcr auth-whoami
+    Given I am authenticated
     When I run "terminus auth whoami"
     Then I should get:
     """
@@ -26,6 +27,7 @@ Feature: auth
 
   Scenario: Logout
     @vcr auth-logout
+    Given I am authenticated
     When I run "terminus auth logout"
     Then I should get:
     """
