@@ -210,16 +210,6 @@ function handle_exception($exception) {
 }
 
 /**
- * Checks to see whether TERMINUS_HOST is pointed at Hermes
- *
- * @return [boolean] $is_hermes True if Terminus is operating on Hermes
- */
-function is_hermes() {
-  $is_hermes = (TERMINUS_HOST == 'dashboard.getpantheon.com');
-  return $is_hermes;
-}
-
-/**
  * Checks given path for whether it is absolute
  *
  * @param [string] $path Path to check
