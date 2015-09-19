@@ -1234,71 +1234,41 @@ class Site_Command extends TerminusCommand {
    * [--instrument=<UUID>]
    * : Change the instrument by setting the ID
    *
+   * @subcommand set-instrument
+   *
    * ## EXAMPLES
    *
-   *  terminus site instrument --site=sitename
+   *  terminus site set-instrument --site=sitename
    */
-  public function instrument($args, $assoc_args) {
+  public function set_instrument($args, $assoc_args) {
     $user        = new User();
-    $instruments = $user->instruments->all();
-    foreach($instruments as $instrument) {
-      $data[$instrument->get('id')] = $instrument->get('label');
+    $instruments = $user->instruments->getMemberList('id', 'label');
+    if (!isset($assoc_args['instrument'])) {
+      $instrument_id = Input::menu(
+        $instruments,
+        null,
+        'Select a payment instrument'
+      );
+    } else {
+      $instrument_id = $assoc_args['instrument'];
     }
 
-    //If site is not set, show all user's payment instruments
-    if(!isset($assoc_args['site'])) {
-      // TODO: Fix this so it is a proper record list.
-      $this->outputter->outputRecord($data, array('UUID', 'Label'));
-    } else {
-      array_unshift($data, 'none');
-      $site = $this->sites->get(Input::sitename($assoc_args));
-      //If instrument is not present, show the site's current instrument
-      if(!isset($assoc_args['instrument'])) {
-        $instrument_uuid = $site->get('instrument');
-        if($instrument_uuid == null) {
-          \Terminus::line(
-            $site->get('name') . ' does not have an attached payment instrument.'
-          );
-        } else {
-          \Terminus::line(
-            sprintf(
-              '%s is being charged to %s, UUID: %s',
-              $site->get('name'),
-              $data[$instrument_uuid],
-              $instrument_uuid
-            )
-          );
-        }
-      } else {
-        /**
-         * Both are present. Ensure sure UUID is valid.
-         * This attempts to prevent users from selecting instruments
-         * which do not belong to them.
-         */
-        $instrument_id = $assoc_args['instrument'];
-        if(!isset($data[$instrument_id])) {
-          $location = array_search($instrument_id, $data);
-          if($location !== false) {
-            $instrument_id = $location;
-          } else {
-            $uuids          = array_keys($data);
-            $instrument_id = Input::menu(
-              $data,
-              null,
-              'Select a payment instrument'
-            );
-          }
-        }
-        //Change the instrument once we have a valid instrument.
-        if($instrument_id == 0) {
-          $workflow = $site->removeInstrument();
-        } else {
-          $workflow = $site->addInstrument($instrument_id);
-        }
-        $workflow->wait();
-        $this->workflowOutput($workflow);
-      }
+    if (
+      !isset($instruments[$instrument_id])
+      && !in_array($instrument_id, Input::$NULL_INPUTS)
+    ) {
+      $this->logger->error("You do not have permission to attach instrument $instrument_id");
+      die(-1);
     }
+
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    if ($instrument_id == 0) {
+      $workflow = $site->removeInstrument();
+    } else {
+      $workflow = $site->addInstrument($instrument_id);
+    }
+    $workflow->wait();
+    $this->workflowOutput($workflow);
   }
 
   /**
