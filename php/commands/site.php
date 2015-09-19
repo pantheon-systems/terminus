@@ -1471,7 +1471,7 @@ class Site_Command extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <add|remove>
+   * <add|remove|list>
    * : subfunction to run
    *
    * [--site=<site>]
@@ -1515,25 +1515,32 @@ class Site_Command extends TerminusCommand {
           }
           $response = $site->removeTag($tag, $org);
           break;
+        case 'list':
+        default:
+          $tags = $site->getTags($org);
+          $this->outputter->outputRecord(array('tags' => $tags));
+          break;
       }
-      $message  = 'Tag %s %s %s %s';
-      $messages = array(
-        'success' => sprintf(
-          $message,
-          '"' . $tag . '"',
-          'has been',
-          $verb,
-          $site->get('name')
-        ),
-        'failure' => sprintf(
-          $message,
-          '"' . $tag . '"',
-          'could not be',
-          $verb,
-          $site->get('name')
-        )
-      );
-      $this->responseOutput($response, $messages);
+      if (in_array($action, array('add', 'remove'))) {
+        $message  = 'Tag %s %s %s %s';
+        $messages = array(
+          'success' => sprintf(
+            $message,
+            '"' . $tag . '"',
+            'has been',
+            $verb,
+            $site->get('name')
+          ),
+          'failure' => sprintf(
+            $message,
+            '"' . $tag . '"',
+            'could not be',
+            $verb,
+            $site->get('name')
+          )
+        );
+        $this->responseOutput($response, $messages);
+      }
     } else {
       Terminus::error(
         $site->get('name') . ' is not a member of an organization, '

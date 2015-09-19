@@ -16,6 +16,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ###Added
 - `site set owner --site=<site> --set=<owner>` sets the site owner to the given user ID. (#499)
+- `site tags list --site=<site> --org=<org>` will list tags associated between that organizaiton and site (#517)
 
 ##[0.8.0] - 2015-09-15
 ###Added
