@@ -9,12 +9,13 @@ use \Terminus\Models\Collections\Workflows;
 use \Terminus\Session;
 
 class User extends TerminusModel {
-  private $aliases;
-  private $organizations;
-  private $profile;
+  public $organizations;
 
   protected $instruments;
   protected $workflows;
+
+  private $aliases;
+  private $profile;
 
   /**
    * Object constructor

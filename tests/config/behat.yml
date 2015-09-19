@@ -13,6 +13,7 @@ default:
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
       enterprise_org_uuid:     bf200cbe-8995-4891-b5d4-1a8bdc292905
+      enterprise_org_name:     EnterpriseOrg
 
 ci:
   paths:
@@ -29,6 +30,7 @@ ci:
       php_site_domain:         onebox.pantheon.io
       payment_instrument_uuid: 8558e04f-3674-481e-b448-bccff73cb430
       enterprise_org_uuid:     bf200cbe-8995-4891-b5d4-1a8bdc292905
+      enterprise_org_name:     EnterpriseOrg
 
 qa:
   paths:
