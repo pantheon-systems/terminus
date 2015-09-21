@@ -32,5 +32,10 @@
     "sebastian/phpcpd": "*",
     "squizlabs/php_codesniffer": "2.*",
     "satooshi/php-coveralls": "~1.0"
+  },
+  "extra": {
+    "branch-alias": {
+        "dev-master": "0.0.x-dev"
+    }
   }
 }
