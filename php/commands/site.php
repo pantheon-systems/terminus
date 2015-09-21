@@ -767,7 +767,7 @@ class Site_Command extends TerminusCommand {
    * [--site=<site>]
    * : Site to use
    *
-   * [--env=<env>]
+   * [--to-env=<env>]
    * : Name of environment to create
    *
    * [--from-env=<env>]
@@ -779,8 +779,8 @@ class Site_Command extends TerminusCommand {
     $site = $this->sites->get(Input::sitename($assoc_args));
 
     if ((boolean)$site->getFeature('multidev')) {
-      if (isset($assoc_args['env'])) {
-        $env_id = $assoc_args['env'];
+      if (isset($assoc_args['to-env'])) {
+        $env_id = $assoc_args['to-env'];
       } else {
         $env_id = Terminus::prompt('Name of new multidev environment');
       }

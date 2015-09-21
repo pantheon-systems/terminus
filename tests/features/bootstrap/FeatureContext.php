@@ -651,6 +651,7 @@ class FeatureContext extends BehatContext {
    * Gets or sets service level
    * @When /^I set the service level of "([^"]*)" to "([^"]*)"$/
    * @Given /^I check the service level of "([^"]*)"$/
+   * @Given /^the service level of "([^"]*)" is "([^"]*)"$/
    *
    * @param [string] $site          Name of site to work on
    * @param [string] $service_level If not false, will set service level to this
