@@ -361,17 +361,29 @@ class Site_Command extends TerminusCommand {
    */
   public function organizations($args, $assoc_args) {
     $action = array_shift($args);
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $data = array();
+    $site   = $this->sites->get(Input::sitename($assoc_args));
+    $data   = array();
     switch ($action) {
       case 'add':
-        $role     = Input::optional('role', $assoc_args, 'team_member');
-        $org      = Input::orgname($assoc_args, 'org');
+        $role = Input::optional('role', $assoc_args, 'team_member');
+        $org  = Input::orgname($assoc_args, 'org');
+        if (!$this->isOrgAccessible($org)) {
+          $this->logger->error(
+            "Organization is either invalid or you are not a member."
+          );
+          exit(0);
+        }
         $workflow = $site->org_memberships->addMember($org, $role);
         $workflow->wait();
         break;
       case 'remove':
-        $org      = Input::orgid($assoc_args, 'org');
+        $org = Input::orgid($assoc_args, 'org');
+        if (!$this->isOrgAccessible($org)) {
+          $this->logger->error(
+            "Organization is either invalid or you are not a member."
+          );
+          exit(0);
+        }
         $member   = $site->org_memberships->get($org);
         if ($member == null) {
           Terminus::error($org . ' is not a member of ' . $site->get('name'));
@@ -1838,6 +1850,20 @@ class Site_Command extends TerminusCommand {
       Terminus::error('No workflows have been run on ' . $site->getName());
     }
   }
+
+  /**
+   * Checks to ensure user can access the given organization
+   *
+   * @param [string] $org_id Organization name or UUID
+   * @return [boolean] $is_ok True if this organization is accessible
+   */
+  private function isOrgAccessible($org_id) {
+    $user  = new User();
+    $org   = $user->organizations->get($org_id);
+    $is_ok = is_object($org);
+    return $is_ok;
+  }
+
 }
 
 \Terminus::add_command('site', 'Site_Command');
