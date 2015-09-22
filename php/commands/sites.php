@@ -220,7 +220,7 @@ class Sites_Command extends TerminusCommand {
    *
    * [--location=<location>]
    * : Specify the the full path, including the filename, to the alias file you wish to create.
-   *   Without this option a default of '~/.drush/pantheon.drushrc.php' will be used.
+   *   Without this option a default of '~/.drush/pantheon.aliases.drushrc.php' will be used.
    *
    */
   public function aliases($args, $assoc_args) {
