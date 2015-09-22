@@ -3,6 +3,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ##MASTER
 ### Changed
+- Packagist now indexes this project as `[pantheon-systems/cli](https://packagist.org/packages/pantheon-systems/cli)` (was `terminus/terminus`)
 - `site owner` now just returns the owner ID. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
 - `site backup get` flag `--to-directory` is now `--to` and accepts either a directory or a file name (#493)
 - `site clear-caches` is now `site clear-cache` (#353)
