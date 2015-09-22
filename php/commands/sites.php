@@ -162,37 +162,45 @@ class Sites_Command extends TerminusCommand {
   public function import($args, $assoc_args) {
     $options = Sites_Command::getSiteCreateOptions($assoc_args);
 
-    $url = Input::string($assoc_args, 'url', "URL of archive to import");
+    $url = Input::string($assoc_args, 'url', 'URL of archive to import');
     if (!$url) {
-      throw new TerminusException("Please enter a URL.");
+      $this->logger->error('Please enter a URL.');
     }
 
-    $workflow = $this->sites->addSite($options);
+    try {
+      //If the site does not yet exist, it will throw an error.
+      $site = $this->sites->get($options['name']);
+      $this->logger->error(
+        sprintf('A site named %s already exists.', $options['name'])
+      );
+      exit;
+    } catch (\Exception $e) {
+      //Creating a new site
+      $workflow = $this->sites->addSite($options);
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+
+      //Add site to SitesCache
+      $final_task = $workflow->get('final_task');
+      $site = $this->sites->addSiteToCache($final_task->site_id);
+      sleep(10); //Avoid false site-DNE errors
+    }
+
+    $workflow = $site->import($url);
     $workflow->wait();
     $this->workflowOutput($workflow);
-
-    // Add Site to SitesCache
-    $final_task = $workflow->get('final_task');
-    $this->sites->addSiteToCache($final_task->site_id);
-
-    sleep(10); //To stop erroneous site-DNE errors
-    Terminus::launch_self('site', array('import'), array(
-      'url'     => $assoc_args['url'],
-      'site'    => $options['name'],
-      'element' => 'all'
-    ));
   }
 
   /**
    * A helper function for getting/prompting for the site create options.
    *
-   * @param array $assoc_args
-   * @return array
+   * @param [array] $assoc_args Arguments from command
+   * @return [array]
    */
-  static private function getSiteCreateOptions($assoc_args) {
+  static function getSiteCreateOptions($assoc_args) {
     $options = array();
-    $options['label'] = Input::string($assoc_args, 'label', "Human-readable label for the site");
-    $suggested_name = Utils\sanitize_name( $options['label'] );
+    $options['label'] = Input::string($assoc_args, 'label', 'Human-readable label for the site');
+    $suggested_name = Utils\sanitize_name($options['label']);
 
     if (array_key_exists('name', $assoc_args)) {
       // Deprecated but kept for backwards compatibility
@@ -202,7 +210,12 @@ class Sites_Command extends TerminusCommand {
     } elseif (isset($_SERVER['TERMINUS_SITE'])) {
       $options['name'] = $_SERVER['TERMINUS_SITE'];
     } else {
-      $options['name'] = Input::string($assoc_args, 'site', "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)", $suggested_name);
+      $options['name'] = Input::string(
+        $assoc_args,
+        'site',
+        "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)",
+        $suggested_name
+      );
     }
     if (isset($assoc_args['org'])) {
       $options['organization_id'] = Input::orgid($assoc_args, 'org', false);

@@ -342,37 +342,59 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Imports an archive
+   * Imports a full-site archive
    *
-   * @param [string] $url     URL to import data from
-   * @param [string] $element Which element to import from URL
+   * @param [string] $url URL to import data from
    * @return [Workflow] $workflow
    */
-  public function import($url, $element) {
-    $data = array(
+  public function import($url) {
+    $params   = array(
       'url'      => $url,
-      'code'     => 0,
-      'database' => 0,
-      'files'    => 0,
-      'updatedb' => 0
+      'code'     => 1,
+      'database' => 1,
+      'files'    => 1,
+      'updatedb' => 1,
     );
-
-    if ($element == 'all') {
-      $data = array_merge(
-        $data,
-        array('code' => 1, 'database' => 1, 'files' => 1, 'updatedb' => 1)
-      );
-    } elseif ($element == 'database') {
-      $data = array_merge($data, array('database' => 1, 'updatedb' => 1));
-    } else {
-      $data[$element] = 1;
-    }
 
     $workflow = $this->workflows->create(
       'do_import',
       array(
         'environment' => 'dev',
-        'params' => $data
+        'params'      => $params,
+      )
+    );
+    return $workflow;
+  }
+
+  /**
+   * Imports a database archive
+   *
+   * @param [string] $url URL to import data from
+   * @return [Workflow] $workflow
+   */
+  public function importDatabase($url) {
+    $workflow = $this->workflows->create(
+      'import_database',
+      array(
+        'environment' => 'dev',
+        'params'      => array('url' => $url),
+      )
+    );
+    return $workflow;
+  }
+
+  /**
+   * Imports a file archive
+   *
+   * @param [string] $url URL to import data from
+   * @return [Workflow] $workflow
+   */
+  public function importFiles($url) {
+    $workflow = $this->workflows->create(
+      'import_files',
+      array(
+        'environment' => 'dev',
+        'params'      => array('url' => $url),
       )
     );
     return $workflow;

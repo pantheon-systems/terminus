@@ -15,6 +15,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `--bash`, `--json`, and `--silent` have been replaced with `--format=<bash|json|silent` (#577)
 - `site connection-mode` no longer checks the connection mode. Connection-mode checks are now done using `site environment-info --field=connection_mode` (#583)
 - `site connection-mode` is now `site set-connection-mode` and uses the `--mode` flag instead of `--set`. (#583)
+- `site import` is now `site import-content` and the --element parameter only accepts "files" and "database" (#516)
 
 ### Removed
 - Removed `site attributes`. Use `site info` for the same effect. (#584)
