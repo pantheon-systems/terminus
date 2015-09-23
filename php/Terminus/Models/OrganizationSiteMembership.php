@@ -21,7 +21,6 @@ class OrganizationSiteMembership extends Organization {
         )
       )
     );
-    $workflow->wait();
     return $workflow;
   }
 
