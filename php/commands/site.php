@@ -89,7 +89,7 @@ class Site_Command extends TerminusCommand {
     $subcommand = array_shift($args);
     $site = $this->sites->get(Input::sitename($assoc_args));
     $data = $headers = array();
-    $env = $site->getEnvironment(Input::env($assoc_args, 'env'));
+    $env = $site->environments->get(Input::env($assoc_args, 'env'));
     switch ($subcommand) {
       case 'log':
         $logs = $env->log();
@@ -115,14 +115,17 @@ class Site_Command extends TerminusCommand {
         $headers = array('Branch', 'Commit');
         break;
       case 'commit':
-        $diff = $env->diffstat();
-        $count = count($diff);
-        if (!Terminus::get_config('yes')) {
-          Terminus::confirm('Commit %s changes?', $assoc_args, array($count));
+        $diff    = $env->diffstat();
+        $count   = count((array)$diff);
+        $message = "Commit changes to $count files?";
+        if ($count === 0) {
+          $message = 'There are no changed files. Commit anyway?';
         }
+        Terminus::confirm($message, $assoc_args);
         $message = @$assoc_args['message'] ?: 'Terminus commit.';
-        $data = $site->environment($env)->onServerDev(null, $message);
-        Terminus::success('Successfully committed.');
+        $workflow = $env->commitChanges($message);
+        $workflow->wait();
+        $this->workflowOutput($workflow);
         return true;
         break;
       case 'diffstat':
@@ -186,20 +189,21 @@ class Site_Command extends TerminusCommand {
     $data = $headers = array();
     switch($action) {
       case 'set':
-        if (!isset($mode)) {
-          Terminus::error('You must specify the mode with --set=<sftp|git>');
+        if (!in_array($mode, array('sftp', 'git'))) {
+          Terminus::error('You must specify the mode as either sftp or git.');
         }
-        $data = $site->environments->get($env)->onServerDev($mode);
-        Terminus::success("Successfully changed connection mode to $mode");
+        $workflow = $site->environments->get($env)->changeConnectionMode($mode);
+        if (is_string($workflow)) {
+          $this->logger->info($workflow);
+        } else {
+          $workflow->wait();
+          $this->workflowOutput($workflow);
+        }
         break;
       case 'show':
       default:
-        $data = $site->environments->get($env)->onServerDev();
-        $mode = 'git';
-        if (isset($data->enabled) && (int)$data->enabled == 1) {
-          $mode = 'sftp';
-        }
-        Logger::coloredOutput("%YConnection mode:%n $mode");
+        $mode = $site->environments->get($env)->getConnectionMode();
+        $this->outputter->outputRecord(array('connection_mode' => $mode));
         break;
     }
     return $data;
