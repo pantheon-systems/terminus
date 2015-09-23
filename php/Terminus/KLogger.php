@@ -65,7 +65,10 @@ class KLogger extends Logger {
     */
   public function log($level, $message, array $context = array()) {
     $parent = $this->parent;
-    if ($parent->logLevels[$parent->logLevelThreshold] < $parent->logLevels[$level]) {
+    if (
+      isset($parent->logLevelThreshold)
+      && ($parent->logLevels[$parent->logLevelThreshold] < $parent->logLevels[$level])
+    ) {
       return;
     }
     if ($parent->options['logFormat'] == 'json') {

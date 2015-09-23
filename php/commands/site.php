@@ -1333,7 +1333,6 @@ class Site_Command extends TerminusCommand {
     );
     exec($cmd, $stdout, $exit);
     if ($exit != 0) {
-      print_r($stdout);
       Terminus::error("Couldn't mount $destination");
     }
     Terminus::success(
