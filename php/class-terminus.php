@@ -457,7 +457,7 @@ class Terminus {
    *
    * @return [KLogger] $logger
    */
-  public static function get_logger() {
+  static function get_logger() {
     return self::$logger;
   }
 
@@ -466,7 +466,7 @@ class Terminus {
    *
    * @return [Logger] $outputter
    */
-  public static function get_outputter() {
+  static function get_outputter() {
     return self::$outputter;
   }
 
