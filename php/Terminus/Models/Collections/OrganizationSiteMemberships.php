@@ -35,12 +35,11 @@ class OrganizationSiteMemberships extends TerminusCollection {
       'add_organization_site_membership',
       array(
         'params'    => array(
-          'site_id' => $site->id,
+          'site_id' => $site->get('id'),
           'role'    => 'team_member'
         )
       )
     );
-    $workflow->wait();
     return $workflow;
   }
 

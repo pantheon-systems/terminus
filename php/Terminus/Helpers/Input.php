@@ -95,16 +95,12 @@ class Input {
     $default = null,
     $options = array()
   ) {
-    $allow_none = true;
-    if (isset($options['allow_none'])) {
-      $allow_none = $options['allow_none'];
-    }
     $arguments = $args;
     if (!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
       $arguments[$key] = $_SERVER['TERMINUS_ORG'];
     }
 
-    $orglist = Input::orglist();
+    $orglist = Input::orglist($options);
     $flip    = array_flip($orglist);
     if (isset($arguments[$key])) {
       if (isset($flip[$arguments[$key]])) {
@@ -119,7 +115,6 @@ class Input {
       }
     }
 
-    $orglist = Input::orglist(array('allow_none' => $allow_none));
     // include the Org ID in the output menu
     $orglist_with_id = array();
     foreach ($orglist as $id => $name) {
@@ -145,14 +140,14 @@ class Input {
   public static function orglist($options = array()) {
     $orgs = array();
 
-    $allow_none = isset($options['allow_none']) ? $options['allow_none'] : true;
-    if ($allow_none) {
+    if (!isset($options['allow_none']) || (boolean)$options['allow_none']) {
       $orgs = array('-' => 'None');
     }
 
     $user = new User();
-    foreach($user->getOrganizations() as $id => $org) {
-      $orgs[$org->get('id')] = $org->get('name');
+    foreach($user->organizations->all() as $id => $org) {
+      $org_data = $org->get('organization');
+      $orgs[$org->get('id')] = $org_data->profile->name;
     }
     return $orgs;
   }
