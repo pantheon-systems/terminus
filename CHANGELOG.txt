@@ -23,6 +23,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ###Fixed
 - `site organizations add|remove` no longer crashes when given an invalid organization. (#515)
 - Filename for aliases as shown in `sites aliases` help text (#522)
+- Element selection on `sites backups` (#532)
 
 ##[0.8.0] - 2015-09-15
 ###Added
