@@ -71,9 +71,9 @@ class KLogger extends Logger {
     ) {
       return;
     }
-    if ($parent->options['logFormat'] == 'json') {
+    if (isset($parent->options) && $parent->options['logFormat'] == 'json') {
       $message = $this->formatJsonMessages($level, $message, $context);
-    } elseif ($parent->options['logFormat'] == 'bash') {
+    } elseif (isset($parent->options) && $parent->options['logFormat'] == 'bash') {
       $message = $this->formatBashMessages($level, $message, $context);
     } else {
       $message = $this->formatMessages($level, $message, $context);
@@ -149,7 +149,7 @@ class KLogger extends Logger {
     */
   private function formatMessages($level, $message, $context) {
     $parent = $this->parent;
-    if ($parent->options['logFormat']) {
+    if (isset($parent->options) && $parent->options['logFormat']) {
       $parts   = $this->getMessageParts($level, $message, $context);
       $message = $parent->options['logFormat'];
       foreach ($parts as $part => $value) {
@@ -158,7 +158,11 @@ class KLogger extends Logger {
     } else {
       $message = "[{$this->getTimestamp()}] [{$level}] {$message}";
     }
-    if ($parent->options['appendContext'] && ! empty($context)) {
+    if (
+      isset($parent->options)
+      && $parent->options['appendContext']
+      && ! empty($context)
+    ) {
       $message .= PHP_EOL . $this->indent($this->contextToString($context));
     }
 

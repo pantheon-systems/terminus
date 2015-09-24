@@ -110,6 +110,32 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Changes connection mode
+   *
+   * @param [string] $value Connection mode, "git" or "sftp"
+   * @return [Workflow] $workflow
+   */
+  public function changeConnectionMode($value) {
+    $current_mode = $this->getConnectionMode();
+    if ($value == $current_mode) {
+      $reply = "The connection mode is already set to $value.";
+      return $reply;
+    }
+    switch ($value) {
+      case 'git':
+        $workflow_name = 'enable_git_mode';
+        break;
+      case 'sftp':
+        $workflow_name = 'enable_on_server_development';
+        break;
+    }
+
+    $params   = array('environment' => $this->get('id'));
+    $workflow = $this->site->workflows->create($workflow_name, $params);
+    return $workflow;
+  }
+
+  /**
    * Clones files from this environment to another
    *
    * @param [string] $to_env Environment to clone into
@@ -136,6 +162,36 @@ class Environment extends TerminusModel {
       'params'      => array('from_environment' => $this->getName())
     );
     $workflow = $this->site->workflows->create('clone_files', $params);
+    return $workflow;
+  }
+
+  /**
+   * Commits changes to code
+   *
+   * @param [string] $commit Should be the commit message to use if committing
+   *   on server changes
+   * @return [array] $data['data']
+   */
+  public function commitChanges($commit = null) {
+    ob_start();
+    passthru('git config user.email');
+    $git_email = ob_get_clean();
+    ob_start();
+    passthru('git config user.name');
+    $git_user = ob_get_clean();
+
+    $params = array(
+      'environment' => $this->get('id'),
+      'params'      => array(
+        'message'         => $commit,
+        'committer_name'  => $git_user,
+        'committer_email' => $git_email,
+      ),
+    );
+    $workflow = $this->site->workflows->create(
+      'commit_and_push_on_server_changes',
+      $params
+    );
     return $workflow;
   }
 
@@ -440,6 +496,26 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Returns the connection mode of this environment
+   *
+   * @return [string] $connection_mode
+   */
+  public function getConnectionMode() {
+    $path = sprintf('environments/%s/on-server-development', $this->get('id'));
+    $result = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      $path,
+      'GET'
+    );
+    $mode = 'git';
+    if ($result['data']->enabled) {
+      $mode = 'sftp';
+    }
+    return $mode;
+  }
+
+  /**
    * List hotnames for environment
    *
    * @return [array] $response['data']
@@ -621,66 +697,6 @@ class Environment extends TerminusModel {
     );
 
     return $workflow;
-  }
-
-  /**
-  * On-server dev handler
-  *
-  * @param [string] $value  Connection mode, "git" or "sftp"
-  * @param [string] $commit Should be the commit message to use if committing
-  *   on server changes
-  * @return [array] $data['data']
-  */
-  public function onServerDev($value = null, $commit = null) {
-    $path = sprintf('environments/%s/on-server-development', $this->get('id'));
-    if ($commit) {
-      $path    = sprintf('%s/commit', $path);
-      $data    = array(
-        'message' => $commit,
-        'user'    => Session::getValue('user_uuid')
-      );
-      $options = array(
-        'body'    => json_encode($data),
-        'headers' => array('Content-type' => 'application/json')
-      );
-      $data    = \TerminusCommand::request(
-        'sites',
-        $this->site->get('id'),
-        $path,
-        'POST',
-        $options
-      );
-    } else {
-      if ($value == null) {
-        $data = \TerminusCommand::request(
-          'sites',
-          $this->site->get('id'),
-          $path,
-          'GET'
-        );
-      } else {
-        $enabled = ($value == 'sftp');
-        $data    = array(
-          'enabled' => $enabled,
-        );
-        $options = array(
-          'body'    => json_encode($data),
-          'headers' => array('Content-type' => 'application/json'),
-        );
-        $data    = \TerminusCommand::request(
-          'sites',
-          $this->site->get('id'),
-          $path,
-          'PUT',
-          $options
-        );
-      }
-    }
-
-    if (empty($data)) {
-      return false;
-    }
-    return $data['data'];
   }
 
   /**

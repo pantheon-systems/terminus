@@ -17,16 +17,16 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:44 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:30 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 597d1430-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2d045800-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp","expires_at":1445395184,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
+        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz","expires_at":1445395110,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
 -
     request:
         method: GET
@@ -35,7 +35,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -43,11 +43,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:46 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:31 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '855'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5a471af0-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2dced3f0-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -62,7 +62,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -70,11 +70,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:46 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:32 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5a7ef3d0-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2e06acd0-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -89,7 +89,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -97,11 +97,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:47 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:32 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5acf0fa0-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2e560550-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -116,7 +116,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -124,11 +124,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:47 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:32 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5b0736a0-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2e935c70-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -143,7 +143,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -151,11 +151,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:47 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:33 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5b4d1940-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2ed8a2d0-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -170,7 +170,7 @@
             Host: onebox
             Accept: null
             User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:2d08e280-619c-11e5-beec-bc764e117665:DFb1Zq8BzIHlpqeTKGeGz'
     response:
         status:
             http_version: '1.1'
@@ -178,41 +178,14 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:49 GMT'
+            Date: 'Wed, 23 Sep 2015 02:38:34 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 5c05e1f0-619c-11e5-a139-c95d7f8f209a
+            X-Pantheon-Trace-Id: 2f8a3f90-619c-11e5-a139-c95d7f8f209a
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             ETag: 'W/"14EKKhHR8nKlHoq8KSiIzw=="'
             Vary: Accept-Encoding
         body: '{"multidev": {"environment_created": 1442615334, "dns_zone": "onebox.pantheon.io", "randseed": "VC6SVFIT2T46UBELN17PDH759XEVINBJ", "target_ref": "refs/heads/multidev", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "3997e445ae7b091280639fb74c628f9fa940631d", "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}, "live": {"environment_created": 1441906215, "dns_zone": "onebox.pantheon.io", "randseed": "GGJ0MN4E5CLP0YTB6SOE4BPI7A0EIW3M", "lock": {"username": null, "password": null, "locked": false}, "pingdom": 0, "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}, "test": {"environment_created": 1441906214, "dns_zone": "onebox.pantheon.io", "randseed": "I3WGOACM63DOKAAG7JL87VPE66Q3V7SH", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": true, "environment_created": 1441906214, "dns_zone": "onebox.pantheon.io", "randseed": "14UEBA04873MPZ4Y2XSMAYAMLP9N3DCU", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "93333f35587ed9b0b2c8562b5d47ba5e0d7debee", "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}}'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/c0d03e37-068d-471a-9051-90a992ca35e6/environments/dev/on-server-development'
-        headers:
-            Host: onebox
-            Accept: null
-            User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
-            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:5981a04a-619c-11e5-9114-bc764e117665:IBY1eAqE5IJvg24qCgPsp'
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Wed, 23 Sep 2015 02:39:50 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Content-Length: '17'
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 5cc0a670-619c-11e5-a139-c95d7f8f209a
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"11-dcbe32e5"'
-            Vary: Accept-Encoding
-        body: '{"enabled": true}'
