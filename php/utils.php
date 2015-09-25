@@ -2,9 +2,8 @@
 
 namespace Terminus\Utils;
 
-use \Terminus\Dispatcher;
-use \Terminus\Iterators\Transform;
-use \ArrayIterator;
+use Terminus\Iterators\Transform;
+use ArrayIterator;
 
 if (!defined('JSON_PRETTY_PRINT')) {
   define('JSON_PRETTY_PRINT', 128);
@@ -232,7 +231,7 @@ function is_windows() {
  */
 function iterator_map($iterator, $function) {
   if (is_array($iterator)) {
-    $iterator = new \ArrayIterator($iterator);
+    $iterator = new ArrayIterator($iterator);
   }
 
   if (!method_exists($iterator, 'add_transform')) {

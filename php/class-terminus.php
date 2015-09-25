@@ -1,11 +1,10 @@
 <?php
 
-use Psr\Log\LoggerInterface;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Outputters\OutputterInterface;
-use \Terminus\Utils;
-use \Terminus\Dispatcher;
-use \Terminus\FileCache;
+use Terminus\Configurator;
+use Terminus\Dispatcher;
+use Terminus\FileCache;
+use Terminus\Runner;
+use Terminus\Utils;
 
 /**
  * Various utilities for Terminus commands.
@@ -21,7 +20,7 @@ class Terminus {
     static $configurator;
 
     if(!$configurator) {
-      $configurator = new Terminus\Configurator(TERMINUS_ROOT . '/php/config-spec.php');
+      $configurator = new Configurator(TERMINUS_ROOT . '/php/config-spec.php');
     }
 
     return $configurator;
@@ -43,7 +42,7 @@ class Terminus {
       static $runner;
 
       if(!isset($runner) || !$runner) {
-        $runner = new Terminus\Runner();
+        $runner = new Runner();
       }
 
       return $runner;
@@ -98,7 +97,7 @@ class Terminus {
       // create an empty container
       if(!$subcommand) {
         $subcommand = new Dispatcher\CompositeCommand($command, $subcommand_name,
-          new \Terminus\DocParser(''));
+          new DocParser(''));
         $command->add_subcommand($subcommand_name, $subcommand);
       }
 
