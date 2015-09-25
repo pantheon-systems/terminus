@@ -586,7 +586,8 @@ class Site_Command extends TerminusCommand {
         break;
       case 'create':
         if (!array_key_exists('element',$assoc_args)) {
-          $assoc_args['element'] = Input::menu(array('code', 'db', 'files', 'all'), 'all', 'Select element');
+          $options = array('code', 'db', 'files', 'all');
+          $assoc_args['element'] = $options[Input::menu($options, 'all', 'Select element')];
         }
         $workflow = $site->environments->get($env)->createBackup($assoc_args);
         $workflow->wait();
