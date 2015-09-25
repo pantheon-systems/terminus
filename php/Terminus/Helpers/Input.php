@@ -2,6 +2,7 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Exceptions\TerminusException;
 use \Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 use \Terminus\Models\Collections\Upstreams;
@@ -266,15 +267,12 @@ class Input {
     if (isset($args[$key])) {
       $upstream  = $upstreams->getByIdOrName($args[$key]);
       if ($upstream == null) {
-        \Terminus::error("Couldn't find upstream: %s", array($args['upstream']));
+        throw new TerminusException("Couldn't find upstream: {upstream}", array('upstream' => $args['upstream']));
       }
     } else {
       $upstream = $upstreams->get(
         \Terminus::menu($upstreams->getMemberList('id', 'longname'))
       );
-    }
-    if (!$upstream && $exit) {
-      \Terminus::error('Upstream is required.');
     }
     return $upstream;
   }

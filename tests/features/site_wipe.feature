@@ -7,5 +7,5 @@ Feature: Wipe content in a Site's Environment
     When I run "terminus site wipe --site=[[test_site_name]] --env=dev --yes"
     Then I should get:
     """
-    Successfully wiped [[test_site_name]] - dev
+    Successfully wiped [[test_site_name]]-dev
     """

@@ -1,5 +1,8 @@
 <?php
 
+use Psr\Log\LoggerInterface;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Outputters\OutputterInterface;
 use \Terminus\Utils;
 use \Terminus\Dispatcher;
 use \Terminus\FileCache;
@@ -13,15 +16,6 @@ class Terminus {
   private static $hooks_passed = array();
   private static $logger;
   private static $outputter;
-
-  /**
-   * Set the logger instance.
-   *
-   * @param [object] $logger
-   */
-  static function set_logger($logger) {
-    self::$logger = $logger;
-  }
 
   static function get_configurator() {
     static $configurator;
@@ -54,7 +48,8 @@ class Terminus {
 
       return $runner;
     } catch(\Exception $e) {
-      Terminus::error($e->getMessage());
+      Terminus::get_logger()->error($e->getMessage());
+      exit(1);
     }
   }
 
@@ -78,10 +73,6 @@ class Terminus {
     $cache->clean();
 
     return $cache;
-  }
-
-  static function colorize($string) {
-    return \cli\Colors::colorize($string, self::get_runner()->in_color());
   }
 
   /**
@@ -123,9 +114,40 @@ class Terminus {
     $command->add_subcommand($leaf_name, $leaf_command);
   }
 
+
+  /**
+   * Output a colorized string to STDOUT
+   * TODO: Clean this up. There should be no direct access to STDOUT/STDERR
+   *
+   * @param $string
+   * @return string
+   */
+  static function colorize($string) {
+    return \cli\Colors::colorize($string, self::get_runner()->in_color());
+  }
+
+  /**
+   * Display a message in the CLI and end with a newline
+   * TODO: Clean this up. There should be no direct access to STDOUT/STDERR
+   *
+   * @param string $message
+   */
+  static function line($message = '') {
+    fwrite(STDERR, $message . PHP_EOL);
+  }
+
+  /**
+   * Display a message in the CLI and end with no newline
+   * TODO: Clean this up. There should be no direct access to STDOUT/STDERR
+   *
+   * @param string $message
+   */
+  static function out($message = '') {
+    fwrite(STDERR, $message);
+  }
+
   /**
    * Prompt the user for input
-   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
    *
    * @param string $message
    */
@@ -141,94 +163,19 @@ class Terminus {
   }
 
   /**
-   * Display a message in the CLI and end with a newline
-   * TODO: Create and use outputter for this
-   *
-   * @param string $message
+   * @deprecated
    */
-  static function line($message = '', $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
+  static function menu($data, $default = null, $text = "Select one", $return_value=false) {
+    echo PHP_EOL;
+    $index = \cli\Streams::menu($data,$default,$text);
+    if($return_value) {
+      return $data[$index];
     }
-    echo \cli\line($message);
-  }
-
-  /**
-   * Log an informational message.
-   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
-   *
-   * @param string $message
-   */
-  static function log($message, $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
-    self::$logger->info($message);
-  }
-
-  /**
-   * Display a success in the CLI and end with a newline
-   * TODO: Create and use outputter for this
-   *
-   * @param string $message
-   */
-  static function success($message, $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
-    self::$logger->info($message);
-  }
-
-  /**
-   * Display a warning in the CLI and end with a newline
-   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
-   *
-   * @param string $message
-   */
-  static function warning($message, $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
-    self::$logger->warning(self::error_to_string($message));
-  }
-
-  /**
-   * Display an error in the CLI and end with a newline
-   * TODO: Create and use outputter for this
-   *
-   * @param string $message
-   */
-  static function failure($message, $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
-    if(! isset(self::get_runner()->assoc_args[ 'completions' ])) {
-      self::$logger->error(self::error_to_string($message));
-    }
-
-    exit(1);
-  }
-
-  /**
-   * Display an error in the CLI and end with a newline
-   * TODO: Remove this when all old logger calls have been replaced with calls directly to logger class
-   *
-   * @param string $message
-   */
-  static function error($message, $params = array()) {
-    if(!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
-    if(! isset(self::get_runner()->assoc_args[ 'completions' ])) {
-      self::$logger->error(self::error_to_string($message));
-    }
-
-    exit(1);
+    return $index;
   }
 
   /**
    * Ask for confirmation before running a destructive operation.
-   * TODO: Create and use outputter for this
    */
   static function confirm($question, $assoc_args = array(), $params = array()) {
       if(\Terminus::get_config('yes')) return true;
@@ -240,86 +187,6 @@ class Terminus {
       if('y' != $answer)
         exit;
       return true;
-  }
-
-  /**
-   * Read value from a positional argument or from STDIN.
-   *
-   * @param array $args The list of positional arguments.
-   * @param int $index At which position to check for the value.
-   *
-   * @return string
-   */
-  public static function get_value_from_arg_or_stdin($args, $index) {
-    if(isset($args[ $index ])) {
-      $raw_value = $args[ $index ];
-    } else {
-      // We don't use file_get_contents() here because it doesn't handle
-      // Ctrl-D properly, when typing in the value interactively.
-      $raw_value = '';
-      while (($line = fgets(STDIN)) !== false) {
-        $raw_value .= $line;
-      }
-    }
-
-    return $raw_value;
-  }
-
-  /**
-   * Read a value, from various formats.
-   *
-   * @param mixed $value
-   * @param array $assoc_args
-   */
-  static function read_value($raw_value, $assoc_args = array()) {
-    if(isset($assoc_args['format']) && 'json' == $assoc_args['format']) {
-      $value = json_decode($raw_value, true);
-      if(null === $value) {
-        Terminus::error(sprintf('Invalid JSON: %s', $raw_value));
-      }
-    } else {
-      $value = $raw_value;
-    }
-
-    return $value;
-  }
-
-  /**
-   * Display a value, in various formats
-   * TODO: Create and use outputter for this
-   *
-   * @param mixed $value
-   * @param array $assoc_args
-   */
-  static function print_value($value, $assoc_args = array()) {
-    if(isset($assoc_args['format']) && 'json' == $assoc_args['format']) {
-      $value = json_encode($value);
-    } elseif(is_array($value) || is_object($value)) {
-      $value = var_export($value);
-    }
-
-    echo $value . "\n";
-  }
-
-  /**
-   * Convert a error into a string
-   *
-   * @param mixed $errors
-   * @return string
-   */
-  static function error_to_string($errors) {
-    if(is_string($errors)) {
-      return $errors;
-    }
-
-    if(is_object($errors) && is_a($errors, 'WP_Error')) {
-      foreach($errors->get_error_messages() as $message) {
-        if($errors->get_error_data())
-          return $message . ' ' . $errors->get_error_data();
-        else
-          return $message;
-      }
-    }
   }
 
   /**
@@ -397,7 +264,7 @@ class Terminus {
     }
 
     if(!isset(self::get_runner()->config[ $key ])) {
-      self::warning("Unknown config option '$key'.");
+      self::get_logger()->warning("Unknown config option '{key}'.", array('key' => $key));
       return null;
     }
 
@@ -409,17 +276,6 @@ class Terminus {
     return self::get_runner()->config;
   }
 
-  /**
-   * @deprecated
-   */
-  static function menu($data, $default = null, $text = "Select one", $return_value=false) {
-    echo PHP_EOL;
-    $index = \cli\Streams::menu($data,$default,$text);
-    if($return_value) {
-      return $data[$index];
-    }
-    return $index;
-  }
 
   /**
    * Run a given command.
@@ -442,29 +298,38 @@ class Terminus {
     return $is_test;
   }
 
+
   /**
-   * Set the outputter instance.
+   * Set the logger instance.
    *
-   * @param [object] $outputter
-   * @return [void]
+   * @param LoggerInterface $logger
    */
-  static function set_outputter($outputter) {
-    self::$outputter = $outputter;
+  static function set_logger($logger) {
+    self::$logger = $logger;
   }
 
   /**
    * Retrieves the instantiated logger
    *
-   * @return [KLogger] $logger
+   * @return LoggerInterface $logger
    */
   static function get_logger() {
     return self::$logger;
   }
 
   /**
+   * Set the outputter instance.
+   *
+   * @param OutputterInterface $outputter
+   */
+  static function set_outputter($outputter) {
+    self::$outputter = $outputter;
+  }
+
+  /**
    * Retrieves the instantiated outputter
    *
-   * @return [Logger] $outputter
+   * @return OutputterInterface $outputter
    */
   static function get_outputter() {
     return self::$outputter;

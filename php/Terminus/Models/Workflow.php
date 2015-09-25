@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+use Terminus\Exceptions\TerminusException;
 use \TerminusCommand;
 use Terminus\Models\TerminusModel;
 
@@ -62,17 +63,6 @@ class Workflow extends TerminusModel {
     return $is_successful;
   }
 
-  /**
-   * Detects if the workflow was successfsul
-   *
-   * @return [void]
-   */
-  public function logMessages() {
-    $final_task = $this->get('final_task');
-    foreach ($final_task->messages as $data => $message) {
-      \Terminus::error(sprintf('[%s] %s', $message->level, $message->message));
-    }
-  }
 
   /**
    * Waits on this workflow to finish
@@ -83,18 +73,19 @@ class Workflow extends TerminusModel {
     while (!$this->isFinished()) {
       $this->fetch();
       sleep(3);
-      print ".";
+      // TODO: output this to stdout so that it doesn't get mixed with any actual output.
+      // We can't use the logger here because that might be redirected to a log-file and each line is timestamped.
+      \Terminus::out(".");
     }
+    // TODO: output this to stdout so that it doesn't get mixed with any actual output.
+    \Terminus::line();
     if ($this->isSuccessful()) {
       return $this;
     } else {
       $final_task = $this->get('final_task');
       if (($final_task != null) && !empty($final_task->messages)) {
         foreach ($final_task->messages as $data => $message) {
-          \Terminus::error(
-            sprintf('[%s] %s', $message->level, $message->message)
-          );
-          exit;
+          throw new TerminusException($message->message);
         }
       }
     }

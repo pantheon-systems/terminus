@@ -56,7 +56,7 @@ class Session {
 
   public static function setData( $data ) {
     $cache = Terminus::get_cache();
-    Terminus::line('Saving session data');
+    Terminus::get_logger()->info('Saving session data');
     $cache->put_data('session', $data);
     $session = self::instance();
     $session->set('data',$data);

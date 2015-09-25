@@ -1,12 +1,12 @@
 <?php
 
+use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
 use Terminus\Auth;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Instruments;
 use \Guzzle\Http\Client;
-use \Terminus\Loggers\Regular as Logger;
 use \Terminus\Helpers\Input;
 use \Terminus\Deploy;
 use Terminus\Models\Collections\Sites;
@@ -38,7 +38,7 @@ class Site_Command extends TerminusCommand {
   **/
   public function attributes($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $this->outputter->outputRecord($site->attributes);
+    $this->output()->outputRecord($site->attributes);
   }
 
   /**
@@ -131,7 +131,7 @@ class Site_Command extends TerminusCommand {
       case 'diffstat':
         $diff = (array)$env->diffstat();
         if (empty($diff)) {
-          Terminus::success('No changes on server.');
+          $this->log()->info('No changes on server.');
           return true;
         }
         $data = array();
@@ -150,7 +150,7 @@ class Site_Command extends TerminusCommand {
       }
 
       if(!empty($data)) {
-        $this->outputter->outputRecord($data, $headers);
+        $this->output()->outputRecord($data, $headers);
       }
       return $data;
   }
@@ -184,17 +184,17 @@ class Site_Command extends TerminusCommand {
 
     $env = Input::env($assoc_args, 'env', 'Choose environment', $environments);
     if (($env == 'test' || $env == 'live') && $action == 'set') {
-      Terminus::error('Connection mode cannot be set in Test or Live environments');
+      throw new TerminusException('Connection mode cannot be set in Test or Live environments');
     }
     $data = $headers = array();
     switch($action) {
       case 'set':
         if (!in_array($mode, array('sftp', 'git'))) {
-          Terminus::error('You must specify the mode as either sftp or git.');
+          throw new TerminusException('You must specify the mode as either sftp or git.');
         }
         $workflow = $site->environments->get($env)->changeConnectionMode($mode);
         if (is_string($workflow)) {
-          $this->logger->info($workflow);
+          $this->log()->info($workflow);
         } else {
           $workflow->wait();
           $this->workflowOutput($workflow);
@@ -203,7 +203,7 @@ class Site_Command extends TerminusCommand {
       case 'show':
       default:
         $mode = $site->environments->get($env)->getConnectionMode();
-        $this->outputter->outputRecord(array('connection_mode' => $mode));
+        $this->output()->outputRecord(array('connection_mode' => $mode));
         break;
     }
     return $data;
@@ -248,7 +248,7 @@ class Site_Command extends TerminusCommand {
       $env
     );
     if (isset($assoc_args['print'])) {
-      $this->outputter->outputValue($url, 'Dashboard URL');
+      $this->output()->outputValue($url, 'Dashboard URL');
     }
     else {
       Terminus::confirm(
@@ -278,11 +278,11 @@ class Site_Command extends TerminusCommand {
        Terminus::confirm(sprintf('Are you sure you want to delete %s?', $site->get('name')));
        Terminus::confirm('Are you really sure?');
      }
-     Terminus::line(sprintf('Deleting %s ...', $site->get('name')));
+     $this->log()->info('Deleting {site} ...', array('site' => $site->get('name')));
      $response = $site->delete();
      $site->deleteFromCache();
 
-     Terminus::success('Deleted %s!', $site->get('name'));
+     $this->log()->info('Deleted {site}!', array('site' => $site->get('name')));
    }
 
   /**
@@ -307,9 +307,9 @@ class Site_Command extends TerminusCommand {
 
     if (isset($assoc_args['field'])) {
       $field = $assoc_args['field'];
-      $this->outputter->outputValue($site->info($field), $field);
+      $this->output()->outputValue($site->info($field), $field);
     } else {
-      $this->outputter->outputRecord($site->info());
+      $this->output()->outputRecord($site->info());
     }
   }
 
@@ -339,9 +339,9 @@ class Site_Command extends TerminusCommand {
 
     if (isset($assoc_args['field'])) {
       $field = $assoc_args['field'];
-      Terminus::line($info[$field]);
+      $this->output()->outputValue($info[$field]);
     } else {
-      $this->outputter->outputRecord($info);
+      $this->output()->outputRecord($info);
     }
   }
 
@@ -372,10 +372,9 @@ class Site_Command extends TerminusCommand {
         $role = Input::optional('role', $assoc_args, 'team_member');
         $org  = Input::orgname($assoc_args, 'org');
         if (!$this->isOrgAccessible($org)) {
-          $this->logger->error(
+          throw new TerminusException(
             "Organization is either invalid or you are not a member."
           );
-          exit(0);
         }
         $workflow = $site->org_memberships->addMember($org, $role);
         $workflow->wait();
@@ -383,14 +382,13 @@ class Site_Command extends TerminusCommand {
       case 'remove':
         $org = Input::orgid($assoc_args, 'org');
         if (!$this->isOrgAccessible($org)) {
-          $this->logger->error(
+          throw new TerminusException(
             "Organization is either invalid or you are not a member."
           );
-          exit(0);
         }
         $member   = $site->org_memberships->get($org);
         if ($member == null) {
-          Terminus::error($org . ' is not a member of ' . $site->get('name'));
+          throw new TerminusException('{org} is not a member of {site}', array('org' => $org, 'site' => $site->get('name')));
         }
         $workflow = $member->removeMember('organization', $org);
         $workflow->wait();
@@ -399,7 +397,7 @@ class Site_Command extends TerminusCommand {
       default:
         $orgs = $site->org_memberships->all();
         if (empty($orgs)) {
-          Terminus::error('No organizations');
+          $this->log()->warning('No organizations');
         }
 
         foreach ($orgs as $org) {
@@ -411,7 +409,7 @@ class Site_Command extends TerminusCommand {
             'id'    => $org->get('organization_id'),
           );
         }
-        $this->outputter->outputRecordList($data);
+        $this->output()->outputRecordList($data);
         break;
     }
     if (isset($workflow)) {
@@ -474,7 +472,7 @@ class Site_Command extends TerminusCommand {
         }
 
         if (!in_array($element,array('code', 'files', 'db'))) {
-          Terminus::error('Invalid backup element specified.');
+          throw new TerminusException('Invalid backup element specified.');
         }
         $latest  = Input::optional('latest', $assoc_args, false);
         $backups = $site->environments->get($env)->backups($element);
@@ -488,9 +486,6 @@ class Site_Command extends TerminusCommand {
           $backups = array(array_pop($backups));
         }
 
-        if (empty($backups)) {
-          \Terminus::error('No backups available.');
-        }
         $menu = $folders = array();
 
         foreach($backups as $folder => $backup) {
@@ -505,10 +500,9 @@ class Site_Command extends TerminusCommand {
         }
 
         if (empty($menu)) {
-          Terminus::error(
-            'No backups available. Create one with '
-            . '`terminus site backup create --site=%s --env=%s`',
-            array($site->get('name'), $env)
+          throw new TerminusException(
+            'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
+            array('site' => $site->get('name'), 'env' => $env)
           );
         }
 
@@ -527,15 +521,15 @@ class Site_Command extends TerminusCommand {
             $filename = \Terminus\Utils\get_filename_from_url($url->url);
             $target = sprintf('%s/%s', $target, $filename);
           }
-          Terminus::line('Downloading ... please wait ...');
-          if (TerminusCommand::download($url->url, $target)) {
-            Terminus::success('Downloaded %s', $target);
+          $this->log()->info('Downloading ... please wait ...');
+          if ($this->download($url->url, $target)) {
+            $this->log()->info('Downloaded {target}', array('target' => $target));
             return $target;
           } else {
-            Terminus::error('Could not download file');
+            throw new TerminusException('Could not download file');
           }
         }
-        $this->outputter->outputValue($url->url, 'Backup URL');
+        $this->output()->outputValue($url->url, 'Backup URL');
         return $url->url;
         break;
     case 'load':
@@ -559,7 +553,7 @@ class Site_Command extends TerminusCommand {
 
         exec('mysql -e "show databases"', $stdout, $exit);
         if ($exit != 0) {
-          Terminus::error('MySQL does not appear to be installed on your server.');
+          throw new TerminusException('MySQL does not appear to be installed on your server.');
         }
 
         $assoc_args['env'] = $env;
@@ -567,10 +561,10 @@ class Site_Command extends TerminusCommand {
         $target = '/tmp/' . \Terminus\Utils\get_filename_from_url($target);
 
         if (!file_exists($target)) {
-          Terminus::error('Cannot read database file %s', array($target));
+          throw new TerminusException('Cannot read database file {target}', array('target' => $target));
         }
 
-        Terminus::line('Unziping database');
+        $this->log()->info('Unziping database');
         exec("gunzip $target", $stdout, $exit);
 
         // trim the gz of the target
@@ -578,10 +572,10 @@ class Site_Command extends TerminusCommand {
         $target = escapeshellarg($target);
         exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
         if ($exit != 0) {
-          Terminus::error('Could not import database');
+          throw new TerminusException('Could not import database');
         }
 
-        Terminus::success('%s successfuly imported to %s', array($target, $database));
+        $this->log()->info('{target} successfully imported to {db}', array('target' => $target, 'db' => $database));
         return true;
         break;
       case 'create':
@@ -638,13 +632,12 @@ class Site_Command extends TerminusCommand {
           );
         }
 
-        if (empty($backups)) {
-          \Terminus::error('No backups found.');
-          return false;
-        } else {
-          $this->outputter->outputRecordList($data, array('file' => 'File', 'size' => 'Size', 'date' => 'Date'));
-          return $data;
+        if (empty($data)) {
+          $this->log()->warning('No backups found.');
         }
+
+        $this->output()->outputRecordList($data, array('file' => 'File', 'size' => 'Size', 'date' => 'Date'));
+        return $data;
       break;
     }
    }
@@ -673,10 +666,11 @@ class Site_Command extends TerminusCommand {
      ));
 
      if ($env->isInitialized()) {
-       Terminus::error(sprintf(
-         'The %s environment has already been initialized',
-         $env->get('id')
-       ));
+       $this->log()->warning(
+         'The {env} environment has already been initialized',
+         array('env' => $env->get('id'))
+       );
+       return;
      }
 
      $workflow = $env->initializeBindings();
@@ -744,17 +738,17 @@ class Site_Command extends TerminusCommand {
     \Terminus::confirm($confirm);
 
     if ($site->environments->get($to_env) == null) {
-      \Terminus::error('The %s environment was not found.', $to_env);
+      throw new TerminusException('The {env} environment was not found.', array('env' => $to_env));
     }
 
     if ($db) {
-      \Terminus::line('Cloning database ... ');
+      $this->log()->info('Cloning database ... ');
       $workflow = $from_env->cloneDatabase($to_env);
       $workflow->wait();
     }
 
     if ($files) {
-      \Terminus::line('Cloning files ... ');
+      $this->log()->info('Cloning files ... ');
       $workflow = $from_env->cloneFiles($to_env);
       $workflow->wait();
     }
@@ -803,7 +797,7 @@ class Site_Command extends TerminusCommand {
       $workflow->wait();
       $this->workflowOutput($workflow);
     } else {
-      Terminus::error(
+      throw new TerminusException(
         'This site does not have the authority to conduct this operation.'
       );
     }
@@ -834,7 +828,7 @@ class Site_Command extends TerminusCommand {
       $workflow = $environment->mergeToDev();
       $workflow->wait();
 
-      Terminus::success(sprintf('Merged the %s environment into dev', $environment->get('id')));
+      $this->log()->info('Merged the {env} environment into dev', array('env' => $environment->get('id')));
     }
 
   /**
@@ -989,7 +983,7 @@ class Site_Command extends TerminusCommand {
     ));
 
     if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
-      Terminus::failure('You can only deploy to the test or live environment.');
+      throw new TerminusException('You can only deploy to the test or live environment.');
     }
 
     $sync_content = ($env->get('id') == 'test' && isset($assoc_args['sync-content']));
@@ -1055,7 +1049,7 @@ class Site_Command extends TerminusCommand {
         'locked'        => $locked,
       );
     }
-    $this->outputter->outputRecordList($data, ['name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?']);
+    $this->output()->outputRecordList($data, ['name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?']);
     return $data;
   }
 
@@ -1095,29 +1089,29 @@ class Site_Command extends TerminusCommand {
             );
           }
         }
-         $this->outputter->outputRecordList($data);
+         $this->output()->outputRecordList($data);
         break;
        case 'add':
           if (!isset($assoc_args['hostname'])) {
-            Terminus::error('Must specify hostname with --hostname');
+            throw new TerminusException('Must specify hostname with --hostname');
           }
           $data = $env->addHostname($assoc_args['hostname']);
           if (Terminus::get_config('verbose')) {
             \Terminus\Utils\json_dump($data);
           }
-          Terminus::success(
-            'Added %s to %s-%s',
-            array($assoc_args['hostname'], $site->get('name'), $env->get('id'))
+          $this->log()->info(
+            'Added {hostname} to {site}-{env}',
+            array('hostname' => $assoc_args['hostname'], 'site' => $site->get('name'), 'env' => $env->get('id'))
           );
           break;
        case 'remove':
           if (!isset($assoc_args['hostname'])) {
-            Terminus::error('Must specify hostname with --hostname');
+            throw new TerminusException('Must specify hostname with --hostname');
           }
           $data = $env->deleteHostname($assoc_args['hostname']);
-          Terminus::success(
-            'Deleted %s from %s-%s',
-            array( $assoc_args['hostname'], $site->get('name'), $env->get('id'))
+          $this->log()->info(
+            'Deleted {hostname} from {site}-{env}',
+            array('hostname' => $assoc_args['hostname'], 'site' => $site->get('name'), 'env' => $env->get('id'))
           );
           break;
      }
@@ -1152,12 +1146,12 @@ class Site_Command extends TerminusCommand {
     switch ($action) {
       case 'info':
         $info = $env->lockinfo();
-        $this->outputter->outputRecord($info);
+        $this->output()->outputRecord($info);
         break;
       case 'add':
-        Terminus::line(
-          'Creating new lock on %s -> %s',
-          array($site->get('name'), $env->get('id'))
+        $this->log()->info(
+          'Creating new lock on {site}-{env}',
+          array('site' => $site->get('name'), 'env' => $env->get('id'))
         );
         if (!isset($assoc_args['username'])) {
           $username = Terminus::prompt('Username for the lock');
@@ -1165,10 +1159,7 @@ class Site_Command extends TerminusCommand {
           $username = $assoc_args['username'];
         }
         if (!isset($assoc_args['password'])) {
-          exec('stty -echo');
-          $password = Terminus::prompt('Password for the lock');
-          exec('stty echo');
-          Terminus::line();
+          $password = Terminus::promptSecret('Password for the lock');
         } else {
           $password = $assoc_args['password'];
         }
@@ -1182,9 +1173,9 @@ class Site_Command extends TerminusCommand {
         $workflow->wait();
         break;
       case 'remove':
-        Terminus::line(
-          'Removing lock from %s -> %s',
-          array($site->get('name'), $env->get('id'))
+        $this->log()->info(
+          'Removing lock from {site}-{env}',
+          array('site' => $site->get('name'), 'env' => $env->get('id'))
         );
         $workflow = $env->unlock();
         $workflow->wait();
@@ -1216,7 +1207,7 @@ class Site_Command extends TerminusCommand {
     $site = $this->sites->get(Input::sitename($assoc_args));
     $url   = Input::string($assoc_args, 'url', 'URL of archive to import');
     if (!$url) {
-      Terminus::error('Please enter a URL.');
+      throw new TerminusException('Please enter a URL.');
     }
 
     if(!isset($assoc_args['element'])) {
@@ -1232,7 +1223,7 @@ class Site_Command extends TerminusCommand {
     }
 
     $workflow = $site->import($url, $element);
-    Terminus::line(
+    $this->log()->info(
       'Import started, '
       . 'you can now safely kill this script without interfering.'
     );
@@ -1274,8 +1265,7 @@ class Site_Command extends TerminusCommand {
       !isset($instruments[$instrument_id])
       && !in_array($instrument_id, Input::$NULL_INPUTS)
     ) {
-      $this->logger->error("You do not have permission to attach instrument $instrument_id");
-      die(-1);
+      throw new TerminusException("You do not have permission to attach instrument $instrument_id");
     }
 
     $site = $this->sites->get(Input::sitename($assoc_args));
@@ -1306,7 +1296,7 @@ class Site_Command extends TerminusCommand {
   public function mount($args, $assoc_args) {
     exec('which sshfs', $stdout, $exit);
     if ($exit !== 0) {
-      Terminus::error('Must install sshfs first');
+      throw new TerminusException('Must install sshfs first');
     }
 
     $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
@@ -1338,11 +1328,11 @@ class Site_Command extends TerminusCommand {
     );
     exec($cmd, $stdout, $exit);
     if ($exit != 0) {
-      Terminus::error("Couldn't mount $destination");
+      throw new TerminusException("Couldn't mount $destination");
     }
-    Terminus::success(
-      'Site mounted to %s. To unmount, run: umount %s (or fusermount -u %s).',
-      array($destination, $destination, $destination)
+    $this->log()->info(
+      'Site mounted to {destination}. To unmount, run: umount {destination} (or fusermount -u {destination}).',
+      array('destination' => $destination)
     );
   }
 
@@ -1359,10 +1349,11 @@ class Site_Command extends TerminusCommand {
   public function new_relic($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
     $data = $site->newRelic();
-    if ($data) {
-      $this->outputter->outputRecord($data->account, array('Key', 'Value'));
-    } else {
-      Logger::coloredOutput('%YNew Relic is not enabled.%n');
+    if (!empty($data->account)) {
+      $this->output()->outputRecord($data->account);
+    }
+    else {
+      $this->log()->warning('New Relic is not enabled.');
     }
   }
 
@@ -1378,7 +1369,7 @@ class Site_Command extends TerminusCommand {
   */
   public function owner($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $this->outputter->outputValue($site->get('owner'), 'Site Owner');
+    $this->output()->outputValue($site->get('owner'), 'Site Owner');
   }
 
   /**
@@ -1430,7 +1421,7 @@ class Site_Command extends TerminusCommand {
       case 'clear':
         $bindings = $site->bindings('cacheserver');
         if (empty($bindings)) {
-          \Terminus::error('Redis cache not enabled');
+          throw new TerminusException('Redis cache not enabled');
         }
         $commands = array();
         foreach ($bindings as $binding) {
@@ -1453,9 +1444,9 @@ class Site_Command extends TerminusCommand {
           );
         }
         foreach ($commands as $env => $command) {
-          Terminus::line('Clearing redis on %s r ', array($env));
+          $this->log()->info('Clearing redis on {env}', array('env' => $env));
           exec($command, $stdout, $return);
-          Terminus::success($stdout[0]);
+          $this->log()->info($stdout[0]);
         }
         break;
     }
@@ -1479,7 +1470,7 @@ class Site_Command extends TerminusCommand {
     $info  = $site->get('service_level');
     $level = $assoc_args['level'];
     $data  = $site->updateServiceLevel($level);
-    $this->logger->info("Service level has been updated to '$level'");
+    $this->log()->info("Service level has been updated to '$level'");
   }
 
   /**
@@ -1505,21 +1496,28 @@ class Site_Command extends TerminusCommand {
     $action  = array_shift($args);
     $site    = $this->sites->get(Input::sitename($assoc_args));
     $org     = Input::orgid($assoc_args, 'org');
+
     if ($site->organizationIsMember($org)) {
-      $data = array();
       switch ($action) {
         case 'add':
-          $verb     = 'added to';
           $tag      = Input::string($assoc_args, 'tag', 'Enter a tag to add');
           $response = $site->addTag($tag, $org);
+
+          $context = array(
+            'tag' => $tag,
+            'site' => $site->get('name')
+          );
+          if ($response['status_code'] == 200) {
+            $this->log()->info('Tag "{tag}" has been added to {site}', $context);
+          } else {
+            throw new TerminusException('Tag "{tag}" could not be added to {site}', $context);
+          }
           break;
         case 'remove':
-          $verb    = 'removed from';
           $tags   = $site->getTags($org);
           if (count($tags) === 0) {
-            Terminus::error(
-              'This organization does not have any tags'
-              . ' associated with this site.'
+            throw new TerminusException(
+              'This organization does not have any tags associated with this site.'
             );
           } elseif (
             !isset($assoc_args['tag'])
@@ -1530,37 +1528,28 @@ class Site_Command extends TerminusCommand {
             $tag = $assoc_args['tag'];
           }
           $response = $site->removeTag($tag, $org);
+
+          $context = array(
+            'tag' => $tag,
+            'site' => $site->get('name')
+          );
+          if ($response['status_code'] == 200) {
+            $this->log()->info('Tag "{tag}" has been removed from {site}', $context);
+          } else {
+            throw new TerminusException('Tag "{tag}" could not be removed from {site}', $context);
+          }
+
           break;
         case 'list':
         default:
           $tags = $site->getTags($org);
-          $this->outputter->outputRecord(array('tags' => $tags));
+          $this->output()->outputRecord(array('tags' => $tags));
           break;
       }
-      if (in_array($action, array('add', 'remove'))) {
-        $message  = 'Tag %s %s %s %s';
-        $messages = array(
-          'success' => sprintf(
-            $message,
-            '"' . $tag . '"',
-            'has been',
-            $verb,
-            $site->get('name')
-          ),
-          'failure' => sprintf(
-            $message,
-            '"' . $tag . '"',
-            'could not be',
-            $verb,
-            $site->get('name')
-          )
-        );
-        $this->responseOutput($response, $messages);
-      }
     } else {
-      Terminus::error(
-        $site->get('name') . ' is not a member of an organization, '
-        . 'which is necessary to associate a tag with a site.'
+      throw new TerminusException(
+        '{site} is not a member of an organization, which is necessary to associate a tag with a site.',
+        array('site' => $site->get('name'))
       );
     }
   }
@@ -1605,8 +1594,9 @@ class Site_Command extends TerminusCommand {
           $workflow = $user->removeMember($assoc_args['member']);
           $this->workflowOutput($workflow);
         } else {
-          Terminus::error(
-            '"' . $assoc_args['member'] . '" is not a valid member.'
+          throw new TerminusException(
+            '"{member}" is not a valid member.',
+            array('member' => $assoc_args['member'])
           );
         }
           break;
@@ -1618,12 +1608,13 @@ class Site_Command extends TerminusCommand {
             $workflow = $user->setRole($role);
             $this->workflowOutput($workflow);
           } else {
-            Terminus::error(
-              '"' . $assoc_args['member'] . '" is not a valid member.'
+            throw new TerminusException(
+              '"{member}" is not a valid member.',
+              array('member' => $assoc_args['member'])
             );
           }
         } else {
-          Logger::redline(
+          throw new TerminusException(
             'This site does not have the authority to conduct this operation.'
           );
         }
@@ -1644,7 +1635,7 @@ class Site_Command extends TerminusCommand {
         break;
     }
     if(!empty($data)) {
-      $this->outputter->outputRecordList($data);
+      $this->output()->outputRecordList($data);
     }
   }
 
@@ -1661,7 +1652,7 @@ class Site_Command extends TerminusCommand {
   public function upstream_info($args, $assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));
     $upstream = $site->get('upstream');
-    $this->outputter->outputRecord($upstream);
+    $this->output()->outputRecord($upstream);
   }
 
   /**
@@ -1702,7 +1693,7 @@ class Site_Command extends TerminusCommand {
 
           $this->constructTableForResponse($data, array('Upstream', 'Status'));
           if (!isset($upstream) || empty($upstream->update_log)) {
-            Terminus::success('No updates to show');
+            $this->log()->success('No updates to show');
           }
           $upstreams = (array)$upstream->update_log;
           if (!empty($upstreams)) {
@@ -1717,11 +1708,11 @@ class Site_Command extends TerminusCommand {
             }
           }
         } else {
-          Terminus::warning(
+          $this->log()->warning(
             'There was a problem checking your upstream status. Please try again.'
           );
         }
-        $this->outputter->outputRecordList($data);
+        $this->output()->outputRecordList($data);
         break;
       case 'apply':
         if (!empty($upstream->update_log)) {
@@ -1730,11 +1721,9 @@ class Site_Command extends TerminusCommand {
             $env = $assoc_args['env'];
           }
           if (in_array($env, array('test', 'live'))) {
-            Terminus::error(
-              sprintf(
-                'Upstream updates cannot be applied to the %s environment',
-                $env
-              )
+            throw new TerminusException(
+              'Upstream updates cannot be applied to the {env} environment',
+              array('env' => $env)
             );
           }
 
@@ -1752,7 +1741,7 @@ class Site_Command extends TerminusCommand {
           $this->workflowOutput($workflow);
         }
         else {
-          Terminus::warning(
+          $this->log()->warning(
             'There are no upstream updates to apply.'
           );
         }
@@ -1780,15 +1769,14 @@ class Site_Command extends TerminusCommand {
     $env  = Input::env($assoc_args, 'env');
     $data = $site->environments->get($env)->wake();
     if (!$data['success']) {
-      Logger::redLine(sprintf('Could not reach %s', $data['target']));
-      return;
+      throw new TerminusException('Could not reach {target}', array('target' => $data['target']));
     }
     if (!$data['styx']) {
-      Terminus::error('Pantheon headers missing, which is not quite right.');
+      throw new TerminusException('Pantheon headers missing, which is not quite right.');
     }
 
-    Terminus::success(
-      sprintf('OK >> %s responded in %s', $data['target'], $data['time'])
+    $this->log()->info(
+      'OK >> {target} responded in {time}', array('target' => $data['target'], 'time' => $data['time'])
     );
   }
 
@@ -1807,20 +1795,20 @@ class Site_Command extends TerminusCommand {
     $site = $this->sites->get(Input::sitename($assoc_args));
     $env  = $site->environments->get(Input::env($assoc_args, 'env'));
     Terminus::confirm(
-      sprintf(
-        'Are you sure you want to wipe %s - %s?',
-        $site->get('name'),
-        $env->get('id')
+      'Are you sure you want to wipe {site}-{env}?',
+      array(
+        'site' => $site->get('name'),
+        'env' => $env->get('id')
       )
     );
 
     $workflow = $env->wipe();
     $workflow->wait();
-    Terminus::success(
-      sprintf(
-        'Successfully wiped %s - %s',
-        $site->get('name'),
-        $env->get('id')
+    $this->log()->info(
+      'Successfully wiped {site}-{env}',
+      array(
+        'site' => $site->get('name'),
+        'env' => $env->get('id')
       )
     );
   }
@@ -1847,19 +1835,20 @@ class Site_Command extends TerminusCommand {
         'workflow'       => $workflow->get('description'),
         'user'           => $user,
         'status'         => $workflow->get('phase'),
-        'last_update'    => date(
+        'update'         => date(
           'Y-m-dTH:i:s',
           ($workflow->get('created_at') + $workflow->get('total_time'))
         ),
-        'tasks/complete' => 
-          $workflow->get('step') . '/' . $workflow->get('number_of_tasks'),
+        'tasks' =>
+          $workflow->get('number_of_tasks'),
+        'complete' =>
+          $workflow->get('step'),
       );
     }
-    if (count($data) > 0) {
-      $this->constructTableForResponse($data);
-    } else {
-      Terminus::error('No workflows have been run on ' . $site->getName());
+    if (count($data) == 0) {
+      $this->log()->warning('No workflows have been run on {site}', array('site' => $site->getName()));
     }
+    $this->output()->outputRecordList($data, array('update' => 'Last update'));
   }
 
   /**

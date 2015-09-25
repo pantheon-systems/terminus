@@ -1,8 +1,8 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Loggers;
 
-use Terminus\JLogger as Logger;
+use Terminus\Loggers\JLogger as Logger;
 use Psr\Log\LogLevel;
 
 //TODO: Change this classname to Logger once the old logger is fully replaced
@@ -71,6 +71,12 @@ class KLogger extends Logger {
     ) {
       return;
     }
+
+    // Replace the context variables into the message per PSR spec:
+    // https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#12-message
+    $message = $this->interpolate($message, $context);
+
+
     if (isset($parent->options) && $parent->options['logFormat'] == 'json') {
       $message = $this->formatJsonMessages($level, $message, $context);
     } elseif (isset($parent->options) && $parent->options['logFormat'] == 'bash') {
@@ -200,6 +206,24 @@ class KLogger extends Logger {
     }
     $date = date($date_format);
     return $date;
+  }
+
+  /**
+   * Interpolates context variables per the PSR spec.
+   *
+   * @param string $message The message containing replacements in the form {key}
+   * @param array $context The array containing the values to be substituted.
+   * @return string
+   */
+  private function interpolate($message, $context) {
+    // build a replacement array with braces around the context keys
+    $replace = array();
+    foreach ($context as $key => $val) {
+      $replace['{' . $key . '}'] = $val;
+    }
+
+    // interpolate replacement values into the message and return
+    return strtr($message, $replace);
   }
 
 }

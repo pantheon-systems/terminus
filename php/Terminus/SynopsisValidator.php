@@ -2,8 +2,6 @@
 
 namespace Terminus;
 
-use Terminus\Loggers\Regular as Logger;
-
 /**
  * Checks if the list of parameters matches the specification defined in the synopsis.
  */
@@ -44,9 +42,7 @@ class SynopsisValidator {
         return false;
       }
       $regex = "#^($token)$#s";
-      if (\Terminus::get_config('debug')) {
-        Logger::coloredOutput("<Y>Positional match $regex</Y>");
-      }
+      \Terminus::get_logger()->debug("Positional match $regex");
 
       if (!preg_match($regex, $args[$i])) {
         return $args[$i];

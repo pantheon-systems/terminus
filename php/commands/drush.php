@@ -1,6 +1,7 @@
 <?php
 
 use Terminus\Dispatcher;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
 use Terminus\CommandWithSSH;
 use Terminus\Models\Collections\Sites;
@@ -30,8 +31,7 @@ class Drush_Command extends CommandWithSSH {
     $sites = new Sites();
     $site = $sites->get(Input::sitename($assoc_args));
     if (!$site) {
-      Terminus::error("Command could not be completed. Unknown site specified.");
-      exit;
+      throw new TerminusException("Command could not be completed. Unknown site specified.");
     }
 
     $server = Array(
@@ -63,7 +63,15 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    $this->logger->info(vsprintf("Running drush %s %s on %s-%s", array($command, $flags, $site->get('name'), $environment)));
+    $this->log()->info(
+      "Running drush {cmd} {flags} on {site}-{env}",
+      array(
+        'cmd' => $command,
+        'flags' => $flags,
+        'site' => $site->get('name'),
+        'env' => $environment
+      )
+    );
     $this->send_command($server, 'drush', $args, $assoc_args );
   }
 

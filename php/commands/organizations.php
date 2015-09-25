@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Exceptions\TerminusException;
 use \Terminus\Models\User;
 use \Terminus\Utils;
 use \Terminus\Auth;
@@ -9,7 +10,6 @@ use \Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;
 use \Terminus\Helpers\Input;
 use \Guzzle\Http\Client;
-use \Terminus\Loggers\Regular as Logger;
 
 /**
  * Show information for your Pantheon organizations
@@ -38,7 +38,7 @@ class Organizations_Command extends TerminusCommand {
        );
      }
 
-    $this->outputter->outputRecordList($data);
+    $this->output()->outputRecordList($data);
   }
 
   /**
@@ -74,14 +74,13 @@ class Organizations_Command extends TerminusCommand {
       case 'add':
         if (isset($assoc_args['site'])) {
           if ($this->siteIsMember($memberships, $assoc_args['site'])) {
-            $this->logger->error(
-              sprintf(
-                '%s is already a member of %s',
-                $assoc_args['site'],
-                $org_info->profile->name
+            throw new TerminusException(
+              '{site} is already a member of {org}',
+              array(
+                'site' => $assoc_args['site'],
+                'org' => $org_info->profile->name
               )
             );
-            exit;
           } else {
             $site = $this->sites->get($assoc_args['site']);
           }
@@ -106,14 +105,13 @@ class Organizations_Command extends TerminusCommand {
       case 'remove':
         if (isset($assoc_args['site'])) {
           if (!$this->siteIsMember($memberships, $assoc_args['site'])) {
-            $this->logger->error(
-              sprintf(
-                '%s is not a member of %s',
-                $assoc_args['site'],
-                $org_info->profile->name
+            throw new TerminusException(
+              '{site} is not a member of {org}',
+              array(
+                'site' => $assoc_args['site'],
+                'org' => $org_info->profile->name
               )
             );
-            exit;
           } else {
             $site = $this->sites->get($assoc_args['site']);
           }
@@ -162,7 +160,7 @@ class Organizations_Command extends TerminusCommand {
           $data_array['created'] = date('Y-m-dTH:i:s', $data_array['created']);
           $data[] = $data_array;
         }
-        $this->outputter->outputRecordList($data);
+        $this->output()->outputRecordList($data);
         break;
     }
   }
@@ -204,7 +202,7 @@ class Organizations_Command extends TerminusCommand {
   private function siteIsMember($memberships, $site_id) {
     $list      = $this->getMemberSiteList($memberships);
     $is_member = (
-      isset($list[$site])
+      isset($list[$site_id])
       || (array_search($site_id, $list) !== false)
     );
     return $is_member;

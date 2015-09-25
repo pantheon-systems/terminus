@@ -22,7 +22,7 @@ Feature: auth
     When I run "terminus auth whoami"
     Then I should get:
     """
-    You are authenticated as [[username]]
+    You are authenticated as: [[username]]
     """
 
   Scenario: Logout
@@ -40,5 +40,5 @@ Feature: auth
     And I run "terminus auth whoami"
     Then I should not get:
     """
-    You are authenticated as [[username]]
+    You are authenticated as: [[username]]
     """

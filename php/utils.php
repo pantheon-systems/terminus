@@ -71,7 +71,7 @@ function bash_out($array) {
  */
 function destination_is_valid($destination, $make = true) {
   if (file_exists($destination) AND !is_dir($destination)) {
-    \Terminus::error("Destination given is a file. It must be a directory.");
+    throw new TerminusException("Destination given is a file. It must be a directory.");
   }
 
   if (!is_dir($destination)) {
@@ -142,24 +142,6 @@ function find_file_upward($files, $dir = null, $stop_check = null) {
 }
 
 /**
- * Output items in a table, JSON, CSV, IDs, or the total count
- *
- * @param [string] $format Format to use: 'table', 'json', 'csv', 'ids', 'count'
- * @param [array]  $items  Data to output
- * @param [array]  $fields Named fields for each datum,
- *                           array or comma-separated string
- * @return [void]
- */
-function format_items($format, $items, $fields) {
-  $assoc_args = array(
-    'format' => $format,
-    'fields' => $fields
-  );
-  $formatter  = new \Terminus\Formatter($assoc_args);
-  $formatter->display_items($items);
-}
-
-/**
  * Get file name from a URL
  *
  * @param [string] $url A valid URL
@@ -183,30 +165,6 @@ function get_vendor_paths() {
     TERMINUS_ROOT . '/vendor'
   );
   return $vendor_paths;
-}
-
-/**
- * Processes exception message and throws it
- *
- * @param [Exception] $exception Exception object thrown
- * @return [void]
- */
-function handle_exception($exception) {
-  $trace = $exception->getTrace();
-  if (!empty($trace) AND \Terminus::get_config('verbose')) {
-    foreach ($exception->getTrace() as $line) {
-      $out_line = sprintf(
-        "%s%s%s [%s:%s]",
-        $line['class'],
-        $line['type'],
-        $line['function'],
-        $line['file'],
-        $line['line']
-      );
-      \Terminus\Loggers\Regular::redLine(">> $out_line");
-    }
-  }
-  \Terminus::error("Exception thrown - %s", array($exception->getMessage()));
 }
 
 /**
@@ -376,6 +334,7 @@ function load_file($path) {
 
 /**
  * Launch system's $EDITOR to edit text
+ * TODO: This is unused
  *
  * @param [string] $input Text to be put into the temp file for changing
  * @param [string] $title Name for the temporary file
@@ -384,7 +343,7 @@ function load_file($path) {
 function launch_editor_for_input($input, $title = 'Terminus') {
   $tmpfile = wp_tempnam($title);
   if (!$tmpfile) {
-    \Terminus::error('Error creating temporary file.');
+    throw new TerminusException('Error creating temporary file.');
   }
 
   $output = '';

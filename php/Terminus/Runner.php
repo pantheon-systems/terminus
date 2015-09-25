@@ -3,9 +3,10 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
 use Terminus\Dispatcher;
-use Terminus\KLogger;
+use Terminus\Loggers\KLogger;
 
 class Runner {
   public $config;
@@ -42,9 +43,9 @@ class Runner {
       $subcommand = $command->find_subcommand($args);
 
       if (!$subcommand) {
-        return sprintf(
-          "'%s' is not a registered command. See 'terminus help'.",
-          $full_name
+        throw new TerminusException(
+          "'{cmd}' is not a registered command. See 'terminus help'.",
+          array('cmd' => $full_name)
        );
       }
 
@@ -55,25 +56,28 @@ class Runner {
   }
 
   public function run_command($args, $assoc_args = array()) {
-    $r = $this->find_command_to_run($args);
-    if (is_string($r)) {
-      Terminus::error($r);
-    }
-
-    list($command, $final_args, $cmd_path) = $r;
-
-    $name = implode(' ', $cmd_path);
-
-    if (isset($this->extra_config[ $name ])) {
-      $extra_args = $this->extra_config[ $name ];
-    } else {
-      $extra_args = array();
-    }
 
     try {
+      list($command, $final_args, $cmd_path) = $this->find_command_to_run($args);
+      $name = implode(' ', $cmd_path);
+
+      if (isset($this->extra_config[$name])) {
+        $extra_args = $this->extra_config[$name];
+      }
+      else {
+        $extra_args = array();
+      }
+
       $command->invoke($final_args, $assoc_args, $extra_args);
-    } catch (Terminus\Iterators\Exception $e) {
-      Terminus::error($e->getMessage());
+
+    } catch (\Exception $e) {
+      if (method_exists($e, 'getReplacements')) {
+        Terminus::get_logger()->error($e->getMessage(), $e->getReplacements());
+      }
+      else {
+        Terminus::get_logger()->error($e->getMessage());
+      }
+      exit(1);
     }
   }
 
@@ -156,15 +160,19 @@ class Runner {
       }
     }
 
-    // Show synopsis if it's a composite command.
-    $r = $this->find_command_to_run($this->arguments);
-    if (is_array($r)) {
-      list($command) = $r;
+    try {
+      // Show synopsis if it's a composite command.
+      $r = $this->find_command_to_run($this->arguments);
+      if (is_array($r)) {
+        list($command) = $r;
 
-      if ($command->can_have_subcommands()) {
-        $command->show_usage();
-        exit;
+        if ($command->can_have_subcommands()) {
+          $command->show_usage();
+          exit;
+        }
       }
+    } catch (TerminusException $e) {
+      // Do nothing. Actual error handling will be done by _run_command
     }
 
     // First try at showing man page
