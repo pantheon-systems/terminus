@@ -2,7 +2,7 @@
 
 //Can be used by plugins/themes to check if Terminus is running or not
 define('Terminus', true);
-define('TERMINUS_VERSION', '0.8.0');
+define('TERMINUS_VERSION', '0.8.1');
 
 $source = 'unknown';
 if ((PHP_SAPI == 'cli') && isset($argv)) {

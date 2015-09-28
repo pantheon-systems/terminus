@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -lt 1 ]; then
-  echo "usage: $(basename $0) v0.8.0..master [-l]"
+  echo "usage: $(basename $0) v0.8.1..master [-l]"
   exit 1
 fi
 
