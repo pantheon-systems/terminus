@@ -6,7 +6,7 @@ use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
 use Terminus\Dispatcher;
-use Terminus\Loggers\KLogger;
+use Terminus\KLogger;
 
 class Runner {
   public $config;

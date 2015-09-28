@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus\Loggers;
+namespace Terminus;
 
 use DateTime;
 use RuntimeException;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Terminus\Loggers;
+namespace Terminus;
 
-use Terminus\Loggers\JLogger as Logger;
+use Terminus\JLogger as Logger;
 use Psr\Log\LogLevel;
 
 //TODO: Change this classname to Logger once the old logger is fully replaced
