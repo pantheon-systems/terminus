@@ -37,7 +37,7 @@ class Request {
     if (isset($data['body']) && $data['body']) {
       $options['body'] = $data['body'];
       if (\Terminus::get_config('debug')) {
-        \Terminus::get_logger()->debug($data['body']);
+        \Terminus::log('debug', $data['body']);
       }
     }
 
@@ -64,9 +64,9 @@ class Request {
     if (\Terminus::get_config("debug")) {
       $debug = "#### REQUEST ####".PHP_EOL;
       $debug .= $request->getRawHeaders();
-      \Terminus::get_logger()->debug($debug);
+      \Terminus::log('debug', $debug);
       if (isset($data['body']))
-        \Terminus::get_logger()->debug($data['body']);
+        \Terminus::log('debug', $data['body']);
     }
 
     $response = $request->send();

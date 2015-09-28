@@ -104,7 +104,7 @@ abstract class TerminusCommand {
         )
       );
       if (Terminus::get_config('debug')) {
-        Terminus::get_logger()->debug('Request URL: ' . $url);
+        Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);

@@ -42,7 +42,7 @@ class SynopsisValidator {
         return false;
       }
       $regex = "#^($token)$#s";
-      \Terminus::get_logger()->debug("Positional match $regex");
+      \Terminus::log('debug', "Positional match $regex");
 
       if (!preg_match($regex, $args[$i])) {
         return $args[$i];

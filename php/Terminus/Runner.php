@@ -2,8 +2,10 @@
 
 namespace Terminus;
 
+use Psr\Log\LoggerInterface;
 use Terminus;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Outputters\OutputterInterface;
 use Terminus\Utils;
 use Terminus\Dispatcher;
 use Terminus\KLogger;
@@ -17,6 +19,16 @@ class Runner {
   private $_early_invoke = array();
   private $global_config_path;
   private $project_config_path;
+
+  /**
+   * @var LoggerInterface
+   */
+  private $logger;
+
+  /**
+   * @var OutputterInterface
+   */
+  private $outputter;
 
   public function __construct() {
     $this->init_config();
@@ -72,10 +84,10 @@ class Runner {
 
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
-        Terminus::get_logger()->error($e->getMessage(), $e->getReplacements());
+        $this->logger->error($e->getMessage(), $e->getReplacements());
       }
       else {
-        Terminus::get_logger()->error($e->getMessage());
+        $this->logger->error('error', $e->getMessage());
       }
       exit(1);
     }
@@ -98,8 +110,8 @@ class Runner {
   }
 
   private function init_logger() {
-    $logger = new KLogger(array('config' => $this->config));
-    Terminus::set_logger($logger);
+    $this->logger = new KLogger(array('config' => $this->config));
+    Terminus::set_logger($this->logger);
   }
 
   private function init_outputter() {
@@ -117,12 +129,12 @@ class Runner {
     // @TODO: Implement BASH output formatter
 
     // Create an output service.
-    $outputter = new Terminus\Outputters\Outputter(
+    $this->outputter = new Terminus\Outputters\Outputter(
       new Terminus\Outputters\StreamWriter('php://stdout'),
       $formatter
     );
 
-    Terminus::set_outputter($outputter);
+    Terminus::set_outputter($this->outputter);
   }
 
   private function init_config() {

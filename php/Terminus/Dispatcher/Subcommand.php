@@ -167,7 +167,7 @@ class Subcommand extends CompositeCommand {
 
     $cmd_path = implode( ' ', get_path( $this ) );
     foreach ( $validator->get_unknown() as $token ) {
-      \Terminus::get_logger()->warning(
+      \Terminus::log('warning',
         "The `{cmd}` command has an invalid synopsis part: {token}",
         array('cmd' => $cmd_path, 'token' => $token)
       );
@@ -209,7 +209,7 @@ class Subcommand extends CompositeCommand {
     }
 
     foreach ($errors['warning'] as $warning) {
-      \Terminus::get_logger()->warning($warning);
+      \Terminus::log('warning', $warning);
     }
 
     return $to_unset;

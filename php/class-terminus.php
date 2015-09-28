@@ -48,7 +48,7 @@ class Terminus {
 
       return $runner;
     } catch(\Exception $e) {
-      Terminus::get_logger()->error($e->getMessage());
+      Terminus::log('error', $e->getMessage());
       exit(1);
     }
   }
@@ -298,6 +298,14 @@ class Terminus {
     return $is_test;
   }
 
+  /**
+   * @param $type
+   * @param $message
+   * @param array $context
+   */
+  static function log($type, $message, $context = array()) {
+    self::$logger->log($type, $message, $context);
+  }
 
   /**
    * Set the logger instance.
