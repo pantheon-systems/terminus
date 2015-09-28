@@ -46,10 +46,10 @@ class PrettyFormatter implements OutputFormatterInterface {
     $record = (array)$record;
     foreach ((array)$record as $key => $value) {
       $label = self::getHumanLabel($key, $human_labels);
-      $rows[] = [$label, $value];
+      $rows[] = array($label, $value);
     }
 
-    return $this->formatTable($rows, ['Key', 'Value']);
+    return $this->formatTable($rows, array('Key', 'Value'));
   }
 
   /**

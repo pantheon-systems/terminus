@@ -38,8 +38,8 @@ class CLI_Command extends TerminusCommand {
    * Print Terminus version.
    */
   function version() {
-    $labels = ['version' => 'Terminus version', 'script' => 'Terminus script'];
-    $this->outputter->outputRecord(['version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT], $labels);
+    $labels = array('version' => 'Terminus version', 'script' => 'Terminus script');
+    $this->outputter->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT), $labels);
   }
 
   /**
@@ -64,7 +64,7 @@ class CLI_Command extends TerminusCommand {
       'wp_cli_dir_path' => TERMINUS_ROOT,
       'wp_cli_version' => TERMINUS_VERSION,
     );
-    $labels = [
+    $labels = array(
       'php_binary_path' => 'PHP binary',
       'php_version' => 'PHP version',
       'php_ini' => 'php.ini used',
@@ -72,7 +72,7 @@ class CLI_Command extends TerminusCommand {
       'project_config_path' => 'Terminus project config',
       'wp_cli_dir_path' => 'Terminus root dir',
       'wp_cli_version' => 'Terminus version',
-    ];
+    );
     $this->outputter->outputRecord($info, $labels);
 
   }
