@@ -1049,7 +1049,7 @@ class Site_Command extends TerminusCommand {
         'locked'        => $locked,
       );
     }
-    $this->output()->outputRecordList($data, ['name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?']);
+    $this->output()->outputRecordList($data, array('name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?'));
     return $data;
   }
 

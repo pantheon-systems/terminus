@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##MASTER
+##[0.8.1] - 2015-09-28
 ### Changed
 - Packagist now indexes this project as `[pantheon-systems/cli](https://packagist.org/packages/pantheon-systems/cli)` (was `terminus/terminus`)
 - `site owner` now just returns the owner ID. The --set flag has been removed. Setting is now done by `site set-owner`. (#469)
@@ -24,6 +24,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site organizations add|remove` no longer crashes when given an invalid organization. (#515)
 - Filename for aliases as shown in `sites aliases` help text (#522)
 - Element selection on `sites backups` (#532)
+- Fixed regression on backups (#525)
+- Fixed PHP 5.3.x compatibility (#541)
 
 ##[0.8.0] - 2015-09-15
 ###Added

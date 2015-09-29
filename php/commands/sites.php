@@ -89,7 +89,7 @@ class Sites_Command extends TerminusCommand {
       $this->log()->warning('You have no sites.');
     }
 
-    $labels = ['name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships'];
+    $labels = array('name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships');
     $this->output()->outputRecordList($rows, $labels);
   }
 
