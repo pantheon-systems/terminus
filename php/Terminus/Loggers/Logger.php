@@ -3,9 +3,11 @@
 namespace Terminus\Loggers;
 
 use Katzgrau\KLogger\Logger as KLogger;
+use Terminus\Internationalizer as I18n;
 use Psr\Log\LogLevel;
 
 class Logger extends KLogger {
+  protected $i18n;
   protected $parent;
 
   /**
@@ -52,17 +54,18 @@ class Logger extends KLogger {
 
     parent::__construct($logDirectory, $logLevelThreshold, $options);
     $this->parent = $this->extractParent();
+    $this->setInternationalizer();
   }
 
   /**
     * Logs with an arbitrary level.
     *
-    * @param [mixed]  $level
-    * @param [string] $message
-    * @param [array]  $context
+    * @param [mixed]  $level   PSR log level
+    * @param [string] $key     Name of response to extract
+    * @param [array]  $context Replacements for keys in i18n string
     * @return [void]
     */
-  public function log($level, $message, array $context = array()) {
+  public function log($level, $key, array $context = array()) {
     $parent = $this->parent;
     if (
       isset($parent->logLevelThreshold)
@@ -71,17 +74,13 @@ class Logger extends KLogger {
       return;
     }
 
-    // Replace the context variables into the message per PSR spec:
-    // https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md#12-message
-    $message = $this->interpolate($message, $context);
-
-
+    $message = $this->i18n->get($key, $context);
     if (isset($parent->options) && $parent->options['logFormat'] == 'json') {
-      $message = $this->formatJsonMessages($level, $message, $context);
+      $message = $this->formatJsonMessages($level, $message, array());
     } elseif (isset($parent->options) && $parent->options['logFormat'] == 'bash') {
-      $message = $this->formatBashMessages($level, $message, $context);
+      $message = $this->formatBashMessages($level, $message, array());
     } else {
-      $message = $this->formatMessages($level, $message, $context);
+      $message = $this->formatMessages($level, $message, array());
     }
     $this->write($message);
   }
@@ -108,7 +107,9 @@ class Logger extends KLogger {
     foreach ($array as $key => $value) {
       //All these keys begin with a null. We need to cut them off so they can be used.
       $property_name = substr(str_replace('Katzgrau\KLogger\Logger', '', $key), 2);
-      $parent->$property_name = $value;
+      if (isset($parent->$property_name)) {
+        $parent->$property_name = $value;
+      }
     }
     return $parent;
   }
@@ -247,22 +248,13 @@ class Logger extends KLogger {
     return $indented_string;
   }
 
-  /**
-   * Interpolates context variables per the PSR spec.
+  /*
+   * Instantiates the internationalizer
    *
-   * @param string $message The message containing replacements in the form {key}
-   * @param array $context The array containing the values to be substituted.
-   * @return string
+   * @return [void]
    */
-  private function interpolate($message, $context) {
-    // build a replacement array with braces around the context keys
-    $replace = array();
-    foreach ($context as $key => $val) {
-      $replace['{' . $key . '}'] = $val;
-    }
-
-    // interpolate replacement values into the message and return
-    return strtr($message, $replace);
+  private function setInternationalizer() {
+    $this->i18n = new I18n();
   }
 
 }

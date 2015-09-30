@@ -37,16 +37,14 @@ class Outputter implements OutputterInterface {
 
 
   /**
-   * Formats a single scalar value with an optional human label.
+   * Formats a single scalar value.
    *
    * @param mixed $value
    *  The scalar value to format
-   * @param string $human_label
-   *  The human readable label for the value
    * @return string
    */
-  public function outputValue($value, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatValue($value, $human_label));
+  public function outputValue($value) {
+    $this->getWriter()->write($this->getFormatter()->formatValue($value));
   }
 
   /**
@@ -54,12 +52,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array|object $record
    *   A key/value array or object
-   * @param array $human_labels
-   *   A key/value array mapping the keys in the record to human labels
    * @return string
    */
-  public function outputRecord($record, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($record, $human_labels));
+  public function outputRecord($record) {
+    $this->getWriter()->write($this->getFormatter()->formatRecord($record));
   }
 
   /**
@@ -67,13 +63,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param string $human_label
-   *  A human name for the entire list. If each value needs a separate label then
-   *  formatRecord should be used.
    * @return string
    */
-  public function outputValueList($values, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($values, $human_label));
+  public function outputValueList($values) {
+    $this->getWriter()->write($this->getFormatter()->formatRecord($values));
   }
 
   /**
@@ -81,12 +74,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array $records
    *  A list of arrays or objects.
-   * @param array $human_labels
-   *  An array that maps the record keys to human names.
    * @return string
    */
-  public function outputRecordList($records, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecordList($records, $human_labels));
+  public function outputRecordList($records) {
+    $this->getWriter()->write($this->getFormatter()->formatRecordList($records));
   }
 
   /**

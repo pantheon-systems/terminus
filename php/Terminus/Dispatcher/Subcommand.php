@@ -9,7 +9,7 @@ use Terminus\Exceptions\TerminusException;
 class Subcommand extends CompositeCommand {
 
   private $alias;
-
+  private $logger;
   private $when_invoked;
 
   function __construct( $parent, $name, $docparser, $when_invoked ) {
@@ -59,7 +59,7 @@ class Subcommand extends CompositeCommand {
     try {
       $response = \cli\prompt( $question, $default );
     } catch( \Exception $e ) {
-      \Terminus::line();
+      $this->logger->info($question);
       return false;
     }
 

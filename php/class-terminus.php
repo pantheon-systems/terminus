@@ -14,6 +14,7 @@ class Terminus {
   private static $configurator;
   private static $hooks = array();
   private static $hooks_passed = array();
+  private static $inputter;
   private static $logger;
   private static $outputter;
 
@@ -313,21 +314,31 @@ class Terminus {
   }
 
   /**
-   * @param $type
-   * @param $message
-   * @param array $context
+   * Set the inputter instance.
+   *
+   * @param [object] $inputter
+   * @return [void]
    */
-  static function log($type, $message, $context = array()) {
-    self::$logger->log($type, $message, $context);
+  static function set_inputter($inputter) {
+    self::$inputter = $inputter;
   }
 
   /**
-   * Set the logger instance.
+   * Set the outputter instance.
    *
    * @param LoggerInterface $logger
    */
   static function set_logger($logger) {
     self::$logger = $logger;
+  }
+
+  /**
+   * Retrieves the instantiated inputter
+   *
+   * @return [Inputter] $inputter
+   */
+  static function get_inputter() {
+    return self::$inputter;
   }
 
   /**

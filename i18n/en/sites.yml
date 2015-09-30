@@ -1,0 +1,3 @@
+create:
+  success: 'Site :site has been created'
+  failure: 'Failed to create site :site'

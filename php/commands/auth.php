@@ -9,6 +9,7 @@ use Terminus\Request as Request;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
  use Terminus\Session;
+ use Terminus\Internationalizer;
 
 class Auth_Command extends TerminusCommand {
   private $sessionid;
@@ -34,17 +35,17 @@ class Auth_Command extends TerminusCommand {
   public function login( $args, $assoc_args ) {
     # First try to login using a session token if provided
     if (isset($assoc_args['session'])) {
-      $this->log()->info( "Validating session token" );
+      $this->logger->info('validating');
       $data = $this->doLoginFromSessionToken($assoc_args['session']);
       if ( $data != FALSE ) {
-        if (array_key_exists("debug", $assoc_args)){
+        if (array_key_exists('debug', $assoc_args)){
           $this->_debug(get_defined_vars());
         }
-        $this->log()->info( "Logged in as ". $data['email'] );
-        Terminus::launch_self("art", array("fist"));
+        $this->logger->info('success', array('user' => $email));
+        Terminus::launch_self('art', array('fist'));
       }
       else {
-        $this->log()->error( "Login Failed!" );
+        $this->logger->info('failure');
       }
       return;
     }
@@ -54,7 +55,7 @@ class Auth_Command extends TerminusCommand {
       if (isset($_SERVER['TERMINUS_USER'])) {
         $email = $_SERVER['TERMINUS_USER'];
       } else {
-        $email = Terminus::prompt( "Your email address?", NULL );
+        $email = $this->inputter->promptForInput('need_email');
       }
     }
     else {
@@ -63,26 +64,27 @@ class Auth_Command extends TerminusCommand {
 
     if ( \Terminus\Utils\is_valid_email( $email ) ) {
       if ( !isset( $assoc_args['password'] ) ) {
-        $password = Terminus::promptSecret( "Your dashboard password (input will not be shown)" );
+        $password = $this->inputter->promptForInput('need_password');
+        Terminus::line();
       }
       else {
         $password = $assoc_args['password'];
       }
-      $this->log()->info( "Logging in as $email" );
       $data = $this->doLogin($email, $password);
 
       if ( $data != FALSE ) {
-        if (array_key_exists("debug", $assoc_args)){
+        if (array_key_exists('debug', $assoc_args)){
           $this->_debug(get_defined_vars());
         }
-        Terminus::launch_self("art", array("fist"));
+        $this->logger->info('success', array('user' => $email));
+        Terminus::launch_self('art', array('fist'));
       }
       else {
-        throw new TerminusException( "Login Failed!" );
+        $this->logger->error('failure');
       }
     }
     else {
-      throw new TerminusException( "Error: invalid email address" );
+      $this->logger->error('invalid_email');
     }
   }
 
@@ -141,8 +143,8 @@ class Auth_Command extends TerminusCommand {
     );
 
     $response = TerminusCommand::request('login','','','POST',$options);
-    if($response['status_code'] != '200') {
-      throw new TerminusException("Unsuccessful login");
+    if(!isset($response['status_code']) || ($response['status_code'] != '200')) {
+      return false;
     }
 
     // Prepare credentials for storage.
@@ -153,6 +155,7 @@ class Auth_Command extends TerminusCommand {
       'email' => $email,
     );
     // creates a session instance
+    $this->logger->info('saving_session');
     Session::instance()->setData($data);
     return $data;
   }
