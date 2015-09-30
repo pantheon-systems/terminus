@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2d91f6bdfd8d298914043e663f95d520",
+    "hash": "a0dccfd164a1865314cd35e96f69cc9e",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -447,6 +447,80 @@
                 "php"
             ],
             "time": "2015-09-19 14:15:08"
+        },
+        {
+            "name": "philasearch/i18n",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/philasearch/php-i18n.git",
+                "reference": "2f837517bdd8d4e6ba4fed9012669f6c6d3677bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/philasearch/php-i18n/zipball/2f837517bdd8d4e6ba4fed9012669f6c6d3677bc",
+                "reference": "2f837517bdd8d4e6ba4fed9012669f6c6d3677bc",
+                "shasum": ""
+            },
+            "require": {
+                "philasearch/io": "1.0.0",
+                "symfony/yaml": "2.5.2"
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.1",
+                "phpunit/phpunit": "4.0.20"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Philasearch\\": "lib/Philasearch/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Thomas Muntaner",
+                    "email": "muntaner@philasearch.com"
+                }
+            ],
+            "description": "An i18n library for PHP",
+            "homepage": "https://github.com/philasearch/php-i18n",
+            "time": "2014-09-09 14:43:32"
+        },
+        {
+            "name": "philasearch/io",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/philasearch/php-io.git",
+                "reference": "c3605b449c53775019c6a84e79d329356106762f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/philasearch/php-io/zipball/c3605b449c53775019c6a84e79d329356106762f",
+                "reference": "c3605b449c53775019c6a84e79d329356106762f",
+                "shasum": ""
+            },
+            "require-dev": {
+                "mockery/mockery": "0.9.1",
+                "phpunit/phpunit": "4.0.20"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Philasearch\\": "lib/Philasearch/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Thomas Muntaner",
+                    "email": "muntaner@philasearch.com"
+                }
+            ],
+            "description": "An io library for PHP",
+            "homepage": "https://github.com/philasearch/php-io",
+            "time": "2014-09-09 14:25:02"
         },
         {
             "name": "psr/log",
@@ -1029,6 +1103,55 @@
                 "dump"
             ],
             "time": "2015-09-22 14:41:01"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v2.5.2",
+            "target-dir": "Symfony/Component/Yaml",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Yaml.git",
+                "reference": "f868ecdbcc0276b6158dfbf08b9e98ce07f014e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/f868ecdbcc0276b6158dfbf08b9e98ce07f014e1",
+                "reference": "f868ecdbcc0276b6158dfbf08b9e98ce07f014e1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Yaml\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Yaml Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-07-09 09:05:48"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -2614,55 +2737,6 @@
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
             "time": "2015-09-06 08:36:38"
-        },
-        {
-            "name": "symfony/yaml",
-            "version": "v2.7.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/yaml.git",
-                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
-                "reference": "31cb2ad0155c95b88ee55fe12bc7ff92232c1770",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Yaml\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony Yaml Component",
-            "homepage": "https://symfony.com",
-            "time": "2015-09-14 14:14:09"
         },
         {
             "name": "theseer/fdomdocument",

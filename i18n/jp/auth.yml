@@ -1,0 +1,8 @@
+login:
+  validating: 'セッショントークンを検証しています。'
+  success: ':user としてログインしています。'
+  failure: 'ログインに失敗しました。'
+  need_email: 'メールとは何ですか？'
+  need_password: 'パスワードは何ですか？（入力は表示されません。）'
+  invalid_email: '指定したメールが無効です。'
+  saving_session: 'セッションデータを保存しています。'

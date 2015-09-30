@@ -69,7 +69,11 @@ class Request {
         \Terminus::log('debug', $data['body']);
     }
 
-    $response = $request->send();
+    try {
+      $response = $request->send();
+    } catch(\Exception $e) {
+      return false;
+    }
 
     return $response;
   }

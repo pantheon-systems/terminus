@@ -1,0 +1,3 @@
+create:
+  success: 'サイト「:site」を作りました。'
+  failure: 'サイト「:site」を作る事が出来ませんでした。'

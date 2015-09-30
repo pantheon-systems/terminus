@@ -17,10 +17,7 @@ abstract class TerminusCommand {
 
   protected static $blacklist = array('password');
   protected $func;
-
-  /**
-   * @var LoggerInterface
-   */
+  protected $inputter;
   protected $logger;
 
   /**
@@ -38,6 +35,7 @@ abstract class TerminusCommand {
     $this->cache     = Terminus::get_cache();
     $this->logger    = Terminus::get_logger();
     $this->outputter = Terminus::get_outputter();
+    $this->inputter  = Terminus::get_inputter();
     $this->session   = Session::instance();
     if (!Terminus::is_test()) {
       $this->checkForUpdate();
@@ -89,6 +87,9 @@ abstract class TerminusCommand {
         Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
+      if (!is_object($resp)) {
+        return $resp;
+      }
       $json = $resp->getBody(true);
 
       $data = array(
@@ -306,10 +307,31 @@ abstract class TerminusCommand {
    */
   protected function workflowOutput($workflow) {
     if ($workflow->get('result') == 'succeeded') {
-      $this->log()->info($workflow->get('active_description'));
+      $this->logger->info('success');
     } else {
       $final_task = $workflow->get('final_task');
-      $this->log()->error($final_task->reason);
+      $this->logger->error('error', array('reason' => $final_task->reason));
+    }
+  }
+
+  /**
+   * Outputs basic response success/failure messages
+   *
+   * @param [array] $response Array from response
+   * @param [array] $messages Array of response strings
+   *        [string] success  Displayed on success
+   *        [string] failure  Displayed on error
+   */
+  protected function responseOutput($response, $messages = array()) {
+    $default_messages = array(
+      'success' => 'The operation has succeeded.',
+      'failure' => 'The operation was unsuccessful.',
+    );
+    $messages = array_merge($default_messages, $messages);
+    if ($response['status_code'] == 200) {
+      Terminus::success($messages['success']);
+    } else {
+      Terminus::error($messages['failure']);
     }
   }
 
