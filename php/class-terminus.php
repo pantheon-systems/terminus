@@ -163,6 +163,20 @@ class Terminus {
   }
 
   /**
+   * Prompt the user for input
+   *
+   * @param string $message
+   */
+  static function promptSecret($message = '', $params = array(), $default=null) {
+    exec("stty -echo");
+    $response = Terminus::prompt($message, $params);
+    exec("stty echo");
+    Terminus::line();
+    return $response;
+  }
+
+
+  /**
    * @deprecated
    */
   static function menu($data, $default = null, $text = "Select one", $return_value=false) {
