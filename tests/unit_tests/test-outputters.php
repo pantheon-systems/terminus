@@ -18,38 +18,38 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
   protected $recordLabels;
 
   public function setUp() {
-    $this->values = [
+    $this->values = array(
       'Integer' => 1234,
       'String' => 'abc',
       'Human String' => 'Hello, World!',
       'Nothing' => null,
-      'Array' => ['foo', 'bar', 'baz']
-    ];
+      'Array' => array('foo', 'bar', 'baz')
+    );
 
-    $this->records = [
-      (object)[
+    $this->records = array(
+      (object) array(
         'foo' => 'abc',
         'bar' => 123,
         'baz' => 'extra'
-      ],
-      (object)[
+      ),
+      (object) array(
         'foo' => 'def',
         'bar' => 456,
         'unlabled' => 'abc',
-      ],
-      (object)[
+      ),
+      (object) array(
         'foo' => 'ghi',
         'bar' => 678,
         'biz' => 'another extra'
-      ]
-    ];
+      )
+    );
 
-    $this->recordLabels = [
+    $this->recordLabels = array(
       'foo' => 'Foo',
       'bar' => 'Bar',
       'baz' => 'Extra 1',
       'biz' => 'Extra 2'
-    ];
+    );
   }
 
   /**

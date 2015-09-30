@@ -700,7 +700,7 @@ class FeatureContext extends BehatContext {
    */
   private function _getTags($event) {
     $unformatted_tags = $event->getScenario()->getTags();
-    $tags = [];
+    $tags = array();
 
     foreach($unformatted_tags as $tag) {
       $tag_elements = explode(' ', $tag);
