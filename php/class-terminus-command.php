@@ -80,7 +80,8 @@ abstract class TerminusCommand {
     $uuid,
     $path = false,
     $method = 'GET',
-    $options = null
+    $options = null,
+    $token = null
   ) {
     if (!in_array($realm, array('login', 'user', 'public'))) {
       Auth::loggedIn();
@@ -96,17 +97,36 @@ abstract class TerminusCommand {
         $options['verify']  = false;
       }
 
-      $url = Endpoint::get(
-        array(
-          'realm' => $realm,
-          'uuid'  => $uuid,
-          'path'  => $path,
-        )
-      );
+      // If a token is passed in, we have a referral,
+      // meaning the realm is the URL.
+      if (!is_null($token)) {
+        $url = $realm;
+        if (!isset($options['headers'])) {
+          $options['headers'] = array();
+        }
+        $options['headers']['Authorization'] = 'Bearer ' . $token;
+      }
+      else {
+        $url = Endpoint::get(
+          array(
+            'realm' => $realm,
+            'uuid'  => $uuid,
+            'path'  => $path,
+          )
+        );
+      }
       if (Terminus::get_config('debug')) {
         Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
+
+      // Handle microservice referrals.
+      if (350 == $resp->getStatusCode()) {
+        $token = $resp->getBody(true);
+        $url = $resp->getLocation();
+        return self::request($url, null, null, $method, $options, $token);
+      }
+
       $json = $resp->getBody(true);
 
       $data = array(
