@@ -33,9 +33,10 @@ class JSONFormatter implements OutputFormatterInterface {
    *
    * @param mixed $value
    *  The scalar value to format
+   * @param [string] $label Key for label to look up
    * @return string
    */
-  public function formatValue($value) {
+  public function formatValue($value, $label = '') {
     return json_encode($value, $this->json_options);
   }
 

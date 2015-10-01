@@ -49,10 +49,13 @@ class Outputter implements OutputterInterface {
    *
    * @param mixed $value
    *  The scalar value to format
+   * @param [string] $label Key for I18n label
    * @return string
    */
-  public function outputValue($value) {
-    $this->getWriter()->write($this->getFormatter()->formatValue($value));
+  public function outputValue($value, $label = '') {
+    $value = $this->i18n->get($value);
+    $label = $this->i18n->get($label);
+    $this->getWriter()->write($this->getFormatter()->formatValue($value, $label));
   }
 
   /**

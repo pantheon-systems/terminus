@@ -3,8 +3,8 @@
  * Authenticate to Pantheon and store a local secret token.
  *
  */
-use Terminus\Exceptions\TerminusException;
-use Terminus\Request as Request;
+ use Terminus\Request as Request;
+ use Terminus\Auth;
  use Terminus\Utils;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
@@ -32,7 +32,7 @@ class Auth_Command extends TerminusCommand {
    * [--debug]
    * : dump call information when logging in.
    */
-  public function login( $args, $assoc_args ) {
+  public function login($args, $assoc_args) {
     # First try to login using a session token if provided
     if (isset($assoc_args['session'])) {
       $this->logger->info('validating');
@@ -92,35 +92,22 @@ class Auth_Command extends TerminusCommand {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    $this->log()->info( "Logging out of Pantheon." );
-    $this->cache->remove('session');
+    if (Auth::isLoggedIn()) {
+      $this->logger->info('success');
+      $this->cache->remove('session');
+    } else {
+      $this->logger->error('invalid');
+    }
   }
 
   /**
    * Find out what user you are logged in as.
    */
   public function whoami() {
-    if (Session::getValue('email')) {
-      $this->output()->outputValue(Session::getValue('email'), "You are authenticated as");
-    }
-    else {
-      $this->log()->warning( "You are not logged in." );
-    }
-  }
-
-  private function _checkSession() {
-    if ((!property_exists($this, "session")) || (!property_exists($this->session, "user_uuid"))) {
-      return false;
-    }
-    $results = $this->terminus_request("user", $this->session->user_uuid, "profile", "GET");
-    if ($results['info']['http_code'] >= 400){
-      $this->log()->error("Expired Session, please re-authenticate.");
-      $this->cache->remove('session');
-      Terminus::launch_self("auth", array("login"));
-      $this->whoami();
-      return true;
+    if (Auth::isLoggedIn()) {
+      $this->outputter->outputValue(Auth::getUser(), 'user');
     } else {
-      return (($results['info']['http_code'] <= 199 )||($results['info']['http_code'] >= 300 ))? false : true;
+      $this->logger->error('invalid');
     }
   }
 
@@ -166,19 +153,17 @@ class Auth_Command extends TerminusCommand {
    * @param $session_token string (required)
    * @return array
    */
-  private function doLoginFromSessionToken($session_token)
-  {
-
+  private function doLoginFromSessionToken($session_token) {
     $options = array(
-        'headers' => array('Content-type'=>'application/json'),
-        'cookies' => array('X-Pantheon-Session' => $session_token),
+      'headers' => array('Content-type' => 'application/json'),
+      'cookies' => array('X-Pantheon-Session' => $session_token),
     );
 
     # Temporarily disable the cache for this GET call
     $response = TerminusCommand::request('user', '', '', 'GET', $options);
 
     if ( !$response OR '200' != @$response['info']['http_code'] ) {
-      throw new TerminusException("Session token not valid");
+      $this->logger->error('invalid_token');
     }
 
     // Prepare credentials for storage.
