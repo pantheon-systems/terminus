@@ -63,7 +63,7 @@ abstract class TerminusCommand {
     $options = null
   ) {
     if (!in_array($realm, array('login', 'user', 'public')) && !Auth::isLoggedIn()) {
-      $this->logger->error('Please log in using `terminus auth login`.');
+      \Terminus::get_logger()->error('not_logged_in');
     }
 
     try {
