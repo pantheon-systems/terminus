@@ -104,6 +104,7 @@ abstract class TerminusCommand {
         if (!isset($options['headers'])) {
           $options['headers'] = array();
         }
+        Terminus::log('info', 'Using authorization token: ' . $token);
         $options['headers']['Authorization'] = 'Bearer ' . $token;
       }
       else {
@@ -124,6 +125,7 @@ abstract class TerminusCommand {
       if (350 == $resp->getStatusCode()) {
         $token = $resp->getBody(true);
         $url = $resp->getLocation();
+        Terminus::log('info', 'Got microservice referral to URL: ' . $url);
         return self::request($url, null, null, $method, $options, $token);
       }
 
