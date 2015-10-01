@@ -1,12 +1,11 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Loggers;
 
-use Terminus\JLogger as Logger;
+use Katzgrau\KLogger\Logger as KLogger;
 use Psr\Log\LogLevel;
 
-//TODO: Change this classname to Logger once the old logger is fully replaced
-class KLogger extends Logger {
+class Logger extends KLogger {
   protected $parent;
 
   /**
@@ -16,7 +15,7 @@ class KLogger extends Logger {
    *        [array] config Configuration options from Runner
    * @param [string] $logDirectory      File path to the logging directory
    * @param [string] $logLevelThreshold The LogLevel Threshold
-   * @return [KLogger] $this
+   * @return [Logger] $this
    */
   public function __construct(
     array $options = array(),
@@ -115,6 +114,34 @@ class KLogger extends Logger {
   }
 
   /**
+   * Takes the given context and coverts it to a string.
+   *
+   * @param [array] $context The Context
+   * @return [string]
+   */
+  private function contextToString($context) {
+    $export = '';
+    foreach ($context as $key => $value) {
+      $export .= "{$key}: ";
+      $export .= preg_replace(
+        array(
+          '/=>\s+([a-zA-Z])/im',
+          '/array\(\s+\)/im',
+          '/^  |\G  /m'
+        ),
+        array(
+          '=> $1',
+          'array()',
+          '    '
+        ),
+        str_replace('array (', 'array(', var_export($value, true))
+      );
+      $export .= PHP_EOL;
+    }
+    return str_replace(array('\\\\', '\\\''), array('\\', '\''), rtrim($export));
+  }
+
+  /**
     * Formats the message for bash-type logging.
     *
     * @param  [string] $level   The Log Level of the message
@@ -206,6 +233,18 @@ class KLogger extends Logger {
     }
     $date = date($date_format);
     return $date;
+  }
+
+  /**
+   * Indents the given string with the given indent.
+   *
+   * @param [string] $string The string to indent
+   * @param [string] $indent What to use as the indent.
+   * @return [string] $indented_string
+   */
+  private function indent($string, $indent = '    ') {
+    $indented_string = $indent . str_replace("\n", "\n" . $indent, $string);
+    return $indented_string;
   }
 
   /**
