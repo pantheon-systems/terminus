@@ -148,7 +148,9 @@ abstract class TerminusCommand {
         (string)$request,
         TerminusCommand::$blacklist
       );
-      throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
+      $msg = $e->getMessage();
+      throw new TerminusException("API Request Error. $msg - Request: $sanitized_request");
+      //throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
     } catch (Exception $e) {
       throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
     }
@@ -324,6 +326,12 @@ abstract class TerminusCommand {
     //Locate the JSON in the string, turn to array
     $regex = '~\{(.*)\}~';
     preg_match($regex, $request, $matches);
+
+    // Skip cleanup if there's no JSON match.
+    if (0 == count($matches)) {
+      return $request;
+    }
+
     $request_array = json_decode($matches[0], true);
 
     //See if a blacklisted items are in the arrayed JSON, replace
