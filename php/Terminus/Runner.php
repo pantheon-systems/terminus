@@ -87,7 +87,7 @@ class Runner {
         $this->logger->error($e->getMessage(), $e->getReplacements());
       }
       else {
-        $this->logger->error('error', $e->getMessage());
+        $this->logger->error($e->getMessage());
       }
       exit(1);
     }
