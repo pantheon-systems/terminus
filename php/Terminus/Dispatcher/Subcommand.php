@@ -1,6 +1,7 @@
 <?php
 
 namespace Terminus\Dispatcher;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * A leaf node in the command tree.
@@ -42,7 +43,7 @@ class Subcommand extends CompositeCommand {
   }
 
   function show_usage( $prefix = 'usage: ' ) {
-    \Terminus::line( $this->get_usage( $prefix ) );
+    Terminus::line( $this->get_usage( $prefix ) );
   }
 
   function get_usage( $prefix ) {
@@ -166,10 +167,10 @@ class Subcommand extends CompositeCommand {
 
     $cmd_path = implode( ' ', get_path( $this ) );
     foreach ( $validator->get_unknown() as $token ) {
-      \Terminus::warning( sprintf(
-        "The `%s` command has an invalid synopsis part: %s",
-        $cmd_path, $token
-      ) );
+      \Terminus::log('warning',
+        "The `{cmd}` command has an invalid synopsis part: {token}",
+        array('cmd' => $cmd_path, 'token' => $token)
+      );
     }
 
     if ( !$validator->enough_positionals( $args ) ) {
@@ -180,14 +181,14 @@ class Subcommand extends CompositeCommand {
     if ( $this->name != 'help') {
       $invalid = $validator->invalid_positionals($args);
       if($invalid) {
-        \Terminus::error("Invalid positional value: $invalid");
+        throw new TerminusException("Invalid positional value: {invalid}", array('invalid' => $invalid));
       }
     }
 
     $unknown_positionals = $validator->unknown_positionals($args);
     if ( !empty( $unknown_positionals ) ) {
-      \Terminus::error( 'Too many positional arguments: ' .
-        implode( ' ', $unknown_positionals ) );
+      throw new TerminusException('Too many positional arguments: {args}',
+        array('args' => implode( ' ', $unknown_positionals )));
     }
 
     list( $errors, $to_unset ) = $validator->validate_assoc(
@@ -204,10 +205,12 @@ class Subcommand extends CompositeCommand {
         $out .= "\n " . $error;
       }
 
-      \Terminus::error( $out );
+      throw new TerminusException($out);
     }
 
-    array_map( '\\Terminus::warning', $errors['warning'] );
+    foreach ($errors['warning'] as $warning) {
+      \Terminus::log('warning', $warning);
+    }
 
     return $to_unset;
   }

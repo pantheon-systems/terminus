@@ -1,11 +1,12 @@
 <?php
 
+use Psr\Log\LoggerInterface;
 use \Terminus\Auth;
 use \Terminus\Endpoint;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Outputters\OutputterInterface;
 use \Terminus\Request;
 use \Terminus\Session;
-use \Terminus\Loggers\Regular as Logger;
-use Terminus\KLogger;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -18,7 +19,15 @@ abstract class TerminusCommand {
 
   protected static $blacklist = array('password');
   protected $func;
+
+  /**
+   * @var LoggerInterface
+   */
   protected $logger;
+
+  /**
+   * @var OutputterInterface
+   */
   protected $outputter;
 
   /**
@@ -44,12 +53,12 @@ abstract class TerminusCommand {
    * @param [string] $target Location to download file to
    * @return [void]
    */
-  public static function download($url, $target) {
+  public function download($url, $target) {
     try {
       $response = Request::download($url, $target);
       return $target;
     } catch (Exception $e) {
-      Terminus::error($e->getMessage());
+      $this->log()->error($e->getMessage());
     }
   }
 
@@ -95,7 +104,7 @@ abstract class TerminusCommand {
         )
       );
       if (Terminus::get_config('debug')) {
-        Logger::debug('Request URL: ' . $url);
+        Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
@@ -110,19 +119,16 @@ abstract class TerminusCommand {
       return $data;
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
       $response = $e->getResponse();
-      \Terminus::error("%s", $response->getBody(true));
+      throw new TerminusException($response->getBody(true));
     } catch (Guzzle\Http\Exception\HttpException $e) {
       $request = $e->getRequest();
       $sanitized_request = TerminusCommand::stripSensitiveData(
         (string)$request,
         TerminusCommand::$blacklist
       );
-      \Terminus::error(
-        'Request %s had failed: %s',
-        array($sanitized_request, $e->getMessage())
-      );
+      throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
     } catch (Exception $e) {
-      \Terminus::error('Unrecognised request failure: %s', $e->getMessage());
+      throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
     }
 
   }
@@ -216,8 +222,7 @@ abstract class TerminusCommand {
     try {
       $resp = Request::send($url, $method, $req_options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
-      \Terminus::error('Request Failure: %s', $e->getMessage());
-      return;
+      throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
     }
 
     $json = $resp->getBody(true);
@@ -230,6 +235,8 @@ abstract class TerminusCommand {
     );
     return $data;
   }
+
+
 
   /**
    * Constructs table for data going to STDOUT
@@ -317,33 +324,10 @@ abstract class TerminusCommand {
    */
   protected function workflowOutput($workflow) {
     if ($workflow->get('result') == 'succeeded') {
-      Logger::coloredOutput(
-        '%2<K>' . $workflow->get('active_description') . '</K>'
-      );
+      $this->log()->info($workflow->get('active_description'));
     } else {
       $final_task = $workflow->get('final_task');
-      Logger::redline($final_task->reason);
-    }
-  }
-
-  /**
-   * Outputs basic response success/failure messages
-   *
-   * @param [array] $response Array from response
-   * @param [array] $messages Array of response strings
-   *        [string] success  Displayed on success
-   *        [string] failure  Displayed on error
-   */
-  protected function responseOutput($response, $messages = array()) {
-    $default_messages = array(
-      'success' => 'The operation has succeeded.',
-      'failure' => 'The operation was unsuccessful.',
-    );
-    $messages = array_merge($default_messages, $messages);
-    if ($response['status_code'] == 200) {
-      Terminus::success($messages['success']);
-    } else {
-      Terminus::error($messages['failure']);
+      $this->log()->error($final_task->reason);
     }
   }
 
@@ -359,10 +343,8 @@ abstract class TerminusCommand {
     }
     if (version_compare($cache_data['version'], TERMINUS_VERSION, '>')) {
       $this->logger->info(
-        sprintf(
-          'An update to Terminus is available. Please update to version %s.',
-          $cache_data['version']
-        )
+        'An update to Terminus is available. Please update to version {version}.',
+        array('version' => $cache_data['version'])
       );
     }
   }
@@ -380,6 +362,35 @@ abstract class TerminusCommand {
     $release  = array_shift($data);
     $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
     return $release->name;
+  }
+
+
+  /**
+   * @return LoggerInterface
+   */
+  public function log() {
+    return $this->logger;
+  }
+
+  /**
+   * @param LoggerInterface $logger
+   */
+  public function setLogger($logger) {
+    $this->logger = $logger;
+  }
+
+  /**
+   * @return OutputterInterface
+   */
+  public function output() {
+    return $this->outputter;
+  }
+
+  /**
+   * @param OutputterInterface $outputter
+   */
+  public function setOutputter($outputter) {
+    $this->outputter = $outputter;
   }
 
 }

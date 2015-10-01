@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Exceptions\TerminusException;
 use \Terminus\Utils;
 use \Terminus\Dispatcher;
 
@@ -24,13 +25,13 @@ class Help_Command extends TerminusCommand {
     $command = self::find_subcommand($args);
 
     if ($command) {
-      self::show_help($command);
+      $this->show_help($command);
       exit;
     }
 
     // WordPress is already loaded, so there's no chance we'll find the command
     if (function_exists('add_filter')) {
-      \Terminus::error(sprintf("'%s' is not a registered command.", $args[0]));
+      throw new TerminusException("'{cmd}' is not a registered command.", array('cmd' => $args[0]));
     }
   }
 
@@ -44,7 +45,10 @@ class Help_Command extends TerminusCommand {
     return $command;
   }
 
-  private static function show_help($command) {
+  /**
+   * @param $command
+   */
+  private function show_help($command) {
 
     $out = self::get_initial_markdown($command);
     $longdesc = $command->get_longdesc();
@@ -70,10 +74,10 @@ class Help_Command extends TerminusCommand {
 
     $out = str_replace("\t", '  ', $out);
 
-    self::pass_through_pager($out);
+    $this->pass_through_pager($out);
   }
 
-  private static function rewrap_param_desc($matches) {
+    private static function rewrap_param_desc($matches) {
     $param = $matches[1];
     $desc = self::indent("\t\t", wordwrap($matches[2]));
     return "\t$param\n$desc\n\n";
@@ -87,7 +91,7 @@ class Help_Command extends TerminusCommand {
     return implode($lines, "\n");
   }
 
-  private static function pass_through_pager($out) {
+  private function pass_through_pager($out) {
 
     if (
       Utils\is_windows()
@@ -95,7 +99,7 @@ class Help_Command extends TerminusCommand {
       || ((boolean)Terminus::get_config('json'))
     ) {
       // No paging for Windows cmd.exe; sorry
-      Terminus::print_value($out);
+      $this->output()->outputValue($out);
       return 0;
     }
 

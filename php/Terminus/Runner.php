@@ -2,7 +2,10 @@
 
 namespace Terminus;
 
+use Psr\Log\LoggerInterface;
 use Terminus;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Outputters\OutputterInterface;
 use Terminus\Utils;
 use Terminus\Dispatcher;
 use Terminus\KLogger;
@@ -16,6 +19,16 @@ class Runner {
   private $_early_invoke = array();
   private $global_config_path;
   private $project_config_path;
+
+  /**
+   * @var LoggerInterface
+   */
+  private $logger;
+
+  /**
+   * @var OutputterInterface
+   */
+  private $outputter;
 
   public function __construct() {
     $this->init_config();
@@ -42,9 +55,9 @@ class Runner {
       $subcommand = $command->find_subcommand($args);
 
       if (!$subcommand) {
-        return sprintf(
-          "'%s' is not a registered command. See 'terminus help'.",
-          $full_name
+        throw new TerminusException(
+          "'{cmd}' is not a registered command. See 'terminus help'.",
+          array('cmd' => $full_name)
        );
       }
 
@@ -55,25 +68,28 @@ class Runner {
   }
 
   public function run_command($args, $assoc_args = array()) {
-    $r = $this->find_command_to_run($args);
-    if (is_string($r)) {
-      Terminus::error($r);
-    }
-
-    list($command, $final_args, $cmd_path) = $r;
-
-    $name = implode(' ', $cmd_path);
-
-    if (isset($this->extra_config[ $name ])) {
-      $extra_args = $this->extra_config[ $name ];
-    } else {
-      $extra_args = array();
-    }
 
     try {
+      list($command, $final_args, $cmd_path) = $this->find_command_to_run($args);
+      $name = implode(' ', $cmd_path);
+
+      if (isset($this->extra_config[$name])) {
+        $extra_args = $this->extra_config[$name];
+      }
+      else {
+        $extra_args = array();
+      }
+
       $command->invoke($final_args, $assoc_args, $extra_args);
-    } catch (Terminus\Iterators\Exception $e) {
-      Terminus::error($e->getMessage());
+
+    } catch (\Exception $e) {
+      if (method_exists($e, 'getReplacements')) {
+        $this->logger->error($e->getMessage(), $e->getReplacements());
+      }
+      else {
+        $this->logger->error($e->getMessage());
+      }
+      exit(1);
     }
   }
 
@@ -94,8 +110,8 @@ class Runner {
   }
 
   private function init_logger() {
-    $logger = new KLogger(array('config' => $this->config));
-    Terminus::set_logger($logger);
+    $this->logger = new KLogger(array('config' => $this->config));
+    Terminus::set_logger($this->logger);
   }
 
   private function init_outputter() {
@@ -113,12 +129,12 @@ class Runner {
     // @TODO: Implement BASH output formatter
 
     // Create an output service.
-    $outputter = new Terminus\Outputters\Outputter(
+    $this->outputter = new Terminus\Outputters\Outputter(
       new Terminus\Outputters\StreamWriter('php://stdout'),
       $formatter
     );
 
-    Terminus::set_outputter($outputter);
+    Terminus::set_outputter($this->outputter);
   }
 
   private function init_config() {
@@ -156,15 +172,19 @@ class Runner {
       }
     }
 
-    // Show synopsis if it's a composite command.
-    $r = $this->find_command_to_run($this->arguments);
-    if (is_array($r)) {
-      list($command) = $r;
+    try {
+      // Show synopsis if it's a composite command.
+      $r = $this->find_command_to_run($this->arguments);
+      if (is_array($r)) {
+        list($command) = $r;
 
-      if ($command->can_have_subcommands()) {
-        $command->show_usage();
-        exit;
+        if ($command->can_have_subcommands()) {
+          $command->show_usage();
+          exit;
+        }
       }
+    } catch (TerminusException $e) {
+      // Do nothing. Actual error handling will be done by _run_command
     }
 
     // First try at showing man page

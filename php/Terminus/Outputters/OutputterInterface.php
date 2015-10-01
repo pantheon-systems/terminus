@@ -71,4 +71,12 @@ interface OutputterInterface {
    * @return string
    */
   public function outputRecordList($records, $human_labels = array());
+
+  /**
+   * Output any variable type as a raw dump.
+   *
+   * @param $object
+   * @return string
+   */
+  public function outputDump($object);
 }

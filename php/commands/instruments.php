@@ -23,7 +23,7 @@ class Instruments_Command extends TerminusCommand {
        );
      }
 
-    $this->outputter->outputRecordList($data);
+    $this->output()->outputRecordList($data);
   }
 
 }

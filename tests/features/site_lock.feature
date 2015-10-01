@@ -7,7 +7,7 @@ Feature: site lock
     When I run "terminus site lock add --site=[[test_site_name]] --env=dev --username=pantheon --password=password"
     Then I should get:
     """
-    Creating new lock on behat-tests -> dev
+    Creating new lock on [[test_site_name]]-dev
     """
     Then I should get: "."
     Then I should get:
@@ -18,7 +18,7 @@ Feature: site lock
     When I run "terminus site lock remove --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    Removing lock from behat-tests -> dev
+    Removing lock from [[test_site_name]]-dev
     """
     Then I should get: "."
     Then I should get:

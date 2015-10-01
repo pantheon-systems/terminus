@@ -39,7 +39,7 @@ class CLI_Command extends TerminusCommand {
    */
   function version() {
     $labels = array('version' => 'Terminus version', 'script' => 'Terminus script');
-    $this->outputter->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT), $labels);
+    $this->output()->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT), $labels);
   }
 
   /**
@@ -73,7 +73,7 @@ class CLI_Command extends TerminusCommand {
       'wp_cli_dir_path' => 'Terminus root dir',
       'wp_cli_version' => 'Terminus version',
     );
-    $this->outputter->outputRecord($info, $labels);
+    $this->output()->outputRecord($info, $labels);
 
   }
 
@@ -83,7 +83,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    $this->outputter->outputDump(\Terminus::get_configurator()->get_spec());
+    $this->output()->outputDump(\Terminus::get_configurator()->get_spec());
   }
 
   /**
@@ -92,7 +92,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    $this->outputter->outputDump(self::command_to_array( Terminus::get_root_command() ));
+    $this->output()->outputDump(self::command_to_array( Terminus::get_root_command() ));
   }
 
   /**
@@ -126,7 +126,7 @@ class CLI_Command extends TerminusCommand {
   */
   public function session_dump() {
     $session = $this->cache->get_data("session");
-    $this->outputter->outputDump($session);
+    $this->output()->outputDump($session);
   }
 
   /**

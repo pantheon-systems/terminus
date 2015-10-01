@@ -3,7 +3,8 @@
  * Authenticate to Pantheon and store a local secret token.
  *
  */
- use Terminus\Request as Request;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Request as Request;
  use Terminus\Utils;
  use Symfony\Component\DomCrawler\Crawler;
  use Guzzle\Parser\Cookie\CookieParser;
@@ -33,17 +34,17 @@ class Auth_Command extends TerminusCommand {
   public function login( $args, $assoc_args ) {
     # First try to login using a session token if provided
     if (isset($assoc_args['session'])) {
-      Terminus::line( "Validating session token" );
+      $this->log()->info( "Validating session token" );
       $data = $this->doLoginFromSessionToken($assoc_args['session']);
       if ( $data != FALSE ) {
         if (array_key_exists("debug", $assoc_args)){
           $this->_debug(get_defined_vars());
         }
-        Terminus::line( "Logged in as ". $data['email'] );
+        $this->log()->info( "Logged in as ". $data['email'] );
         Terminus::launch_self("art", array("fist"));
       }
       else {
-        Terminus::error( "Login Failed!" );
+        $this->log()->error( "Login Failed!" );
       }
       return;
     }
@@ -62,15 +63,12 @@ class Auth_Command extends TerminusCommand {
 
     if ( \Terminus\Utils\is_valid_email( $email ) ) {
       if ( !isset( $assoc_args['password'] ) ) {
-        exec("stty -echo");
-        $password = Terminus::prompt( "Your dashboard password (input will not be shown)" );
-        exec("stty echo");
-        Terminus::line();
+        $password = Terminus::promptSecret( "Your dashboard password (input will not be shown)" );
       }
       else {
         $password = $assoc_args['password'];
       }
-      Terminus::line( "Logging in as $email" );
+      $this->log()->info( "Logging in as $email" );
       $data = $this->doLogin($email, $password);
 
       if ( $data != FALSE ) {
@@ -80,11 +78,11 @@ class Auth_Command extends TerminusCommand {
         Terminus::launch_self("art", array("fist"));
       }
       else {
-        Terminus::error( "Login Failed!" );
+        throw new TerminusException( "Login Failed!" );
       }
     }
     else {
-      Terminus::error( "Error: invalid email address" );
+      throw new TerminusException( "Error: invalid email address" );
     }
   }
 
@@ -92,7 +90,7 @@ class Auth_Command extends TerminusCommand {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    Terminus::line( "Logging out of Pantheon." );
+    $this->log()->info( "Logging out of Pantheon." );
     $this->cache->remove('session');
   }
 
@@ -101,10 +99,10 @@ class Auth_Command extends TerminusCommand {
    */
   public function whoami() {
     if (Session::getValue('email')) {
-      Terminus::line( "You are authenticated as ". Session::getValue('email') );
+      $this->output()->outputValue(Session::getValue('email'), "You are authenticated as");
     }
     else {
-      Terminus::line( "You are not logged in." );
+      $this->log()->warning( "You are not logged in." );
     }
   }
 
@@ -114,7 +112,7 @@ class Auth_Command extends TerminusCommand {
     }
     $results = $this->terminus_request("user", $this->session->user_uuid, "profile", "GET");
     if ($results['info']['http_code'] >= 400){
-      Terminus::line("Expired Session, please re-authenticate.");
+      $this->log()->error("Expired Session, please re-authenticate.");
       $this->cache->remove('session');
       Terminus::launch_self("auth", array("login"));
       $this->whoami();
@@ -144,7 +142,7 @@ class Auth_Command extends TerminusCommand {
 
     $response = TerminusCommand::request('login','','','POST',$options);
     if($response['status_code'] != '200') {
-      \Terminus::error("[auth_error]: unsuccessful login");
+      throw new TerminusException("Unsuccessful login");
     }
 
     // Prepare credentials for storage.
@@ -177,7 +175,7 @@ class Auth_Command extends TerminusCommand {
     $response = TerminusCommand::request('user', '', '', 'GET', $options);
 
     if ( !$response OR '200' != @$response['info']['http_code'] ) {
-      \Terminus::error("[auth_error]: session token not valid");
+      throw new TerminusException("Session token not valid");
     }
 
     // Prepare credentials for storage.

@@ -21,7 +21,7 @@ class PrettyFormatter implements OutputFormatterInterface {
    */
   public function formatValue($value, $human_label = '') {
     $value = PrettyFormatter::flattenValue($value);
-    return $human_label ? "$human_label: $value\n" : $value;
+    return $human_label ? "$human_label: $value" . PHP_EOL : $value;
   }
 
   /**

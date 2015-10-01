@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use \Terminus;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 use Terminus\Deploy;
 use \TerminusCommand;
@@ -482,7 +483,7 @@ class Site extends TerminusModel {
   public function setOwner($owner = null) {
     $new_owner = $this->user_memberships->get($owner);
     if ($new_owner == null) {
-      Terminus::error(
+      throw new TerminusException(
         'The new owner must first be a member of the team. Try adding with `site team`'
       );
     }
