@@ -17,11 +17,12 @@ class PrettyFormatter implements OutputFormatterInterface {
    *
    * @param [mixed] $value
    *  The scalar value to format
+   * @param [string] $label Key for label to look up
    * @return [string] $human_label
    */
-  public function formatValue($value) {
+  public function formatValue($value, $label = '') {
     $value = PrettyFormatter::flattenValue($value);
-    $label = self::getHumanLabel($value, $autolabel = false);
+    $label = self::getHumanLabel($label, $autolabel = false);
 
     $human_label = $value;
     if ($label) {

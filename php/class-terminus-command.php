@@ -80,8 +80,8 @@ abstract class TerminusCommand {
     $method = 'GET',
     $options = null
   ) {
-    if (!in_array($realm, array('login', 'user', 'public'))) {
-      Auth::loggedIn();
+    if (!in_array($realm, array('login', 'user', 'public')) && !Auth::isLoggedIn()) {
+      $this->logger->error('Please log in using `terminus auth login`.');
     }
 
     try {

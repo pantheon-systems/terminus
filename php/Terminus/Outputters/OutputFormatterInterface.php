@@ -17,9 +17,10 @@ interface OutputFormatterInterface {
    *
    * @param mixed $value
    *  The scalar value to format
+   * @param [string] $label Key for label to look up
    * @return string
    */
-  public function formatValue($value);
+  public function formatValue($value, $label);
 
   /**
    * Format a single record or object

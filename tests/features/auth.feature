@@ -22,7 +22,7 @@ Feature: auth
     When I run "terminus auth whoami"
     Then I should get:
     """
-    You are authenticated as: [[username]]
+    user: [[username]]
     """
 
   Scenario: Logout

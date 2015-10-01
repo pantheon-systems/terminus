@@ -33,6 +33,9 @@ class Internationalizer {
       $string_name,
       $replacements
     );
+    if ($output == '') {
+      return $key;
+    }
     return $output;
   }
 
