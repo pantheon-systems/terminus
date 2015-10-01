@@ -1,0 +1,17 @@
+info:
+  php_binary_path: 'PHPバイナリ'
+  php_version: 'PHPのバージョン'
+  php_ini: '使っているphp.ini'
+  global_config_path : 'ターミナスのグローバルコンフィギュレーション・パス'
+  project_config_path : 'ターミナスのプロジェックトコンフィギュレーション・パス'
+  wp_cli_dir_path: 'ターミナスのクライアントのディレクトリ・パス'
+  wp_cli_version: 'ターミナスのバージョン'
+console:
+  not_logged_in: '`terminus auth login`とログインして下さい。'
+cache_clear:
+  success: 'ターミナスのキャッシュはクリアされました。'
+session_clear:
+  success: 'ターミナスのセッションはクリアされました。'
+version:
+  version: 'ターミナッスバージョン'
+  script: 'ターミナッススクリップト'
