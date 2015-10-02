@@ -1,13 +1,11 @@
 <?php
 
-use Psr\Log\LoggerInterface;
-use \Terminus\Auth;
-use \Terminus\Endpoint;
+use Terminus\Auth;
+use Terminus\Endpoint;
+use Terminus\Request;
+use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Outputters\OutputterInterface;
-use \Terminus\Request;
-use \Terminus\Session;
-use Terminus\Models\Collections\Sites;
+use Terminus\Loggers\Regular as Logger;
 
 /**
  * The base class for Terminus commands
@@ -236,7 +234,7 @@ abstract class TerminusCommand {
       $data = (array)$data;
     }
 
-    if (\Terminus\Utils\result_is_multiobj($data)) {
+    if (Terminus\Utils\result_is_multiobj($data)) {
       if (!empty($headers)) {
         $table->setHeaders($headers);
       } elseif (
@@ -247,7 +245,7 @@ abstract class TerminusCommand {
           $table->setHeaders($this->_headers[$this->func]);
         }
       } else {
-        $table->setHeaders(\Terminus\Utils\result_get_response_fields($data));
+        $table->setHeaders(Terminus\Utils\result_get_response_fields($data));
       }
 
       foreach ($data as $row => $row_data) {
