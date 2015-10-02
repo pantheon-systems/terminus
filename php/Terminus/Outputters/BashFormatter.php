@@ -101,6 +101,23 @@ class BashFormatter implements OutputFormatterInterface {
   }
 
   /**
+   * Format a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   * @return string
+   */
+  public function formatMessage($level, $message, $context = array()) {
+    $object = array(
+      'level' => $level,
+      'message' => $message,
+      'context' => $context
+    );
+    return $this->formatRecord($object);
+  }
+
+  /**
    * Flatten a value for display
    * @param $value
    */
@@ -110,4 +127,6 @@ class BashFormatter implements OutputFormatterInterface {
     }
     return $value;
   }
+
+
 }
