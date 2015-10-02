@@ -2,7 +2,6 @@
 
 namespace Terminus\Models;
 
-use stdClass;
 use Terminus\Models\User;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
@@ -26,7 +25,7 @@ class Organization extends TerminusModel {
   public function __construct($attributes = null, $options = array()) {
     parent::__construct($attributes, $options);
     if (!isset($this->user)) {
-      $this->user = new User(new stdClass(), array());
+      $this->user = new User();
     }
     $params = array(
       'organization' => $this,

@@ -1,6 +1,8 @@
 <?php
 
 namespace Terminus\Dispatcher;
+
+use Terminus;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -59,7 +61,7 @@ class Subcommand extends CompositeCommand {
     try {
       $response = \cli\prompt( $question, $default );
     } catch( \Exception $e ) {
-      \Terminus::line();
+      Terminus::line();
       return false;
     }
 
@@ -73,7 +75,7 @@ class Subcommand extends CompositeCommand {
     if ( ! $synopsis )
       return array( $args, $assoc_args );
 
-    $spec = array_filter( \Terminus\SynopsisParser::parse( $synopsis ), function( $spec_arg ) {
+    $spec = array_filter(Terminus\SynopsisParser::parse( $synopsis ), function( $spec_arg ) {
       return in_array( $spec_arg['type'], array( 'generic', 'positional', 'assoc', 'flag' ) );
     });
 
@@ -163,11 +165,11 @@ class Subcommand extends CompositeCommand {
     if ( !$synopsis )
       return array();
 
-    $validator = new \Terminus\SynopsisValidator( $synopsis );
+    $validator = new Terminus\SynopsisValidator( $synopsis );
 
     $cmd_path = implode( ' ', get_path( $this ) );
     foreach ( $validator->get_unknown() as $token ) {
-      \Terminus::log('warning',
+      Terminus::log('warning',
         "The `{cmd}` command has an invalid synopsis part: {token}",
         array('cmd' => $cmd_path, 'token' => $token)
       );
@@ -192,7 +194,7 @@ class Subcommand extends CompositeCommand {
     }
 
     list( $errors, $to_unset ) = $validator->validate_assoc(
-      array_merge( \Terminus::get_config(), $extra_args, $assoc_args )
+      array_merge( Terminus::get_config(), $extra_args, $assoc_args )
     );
 
     foreach ( $validator->unknown_assoc( $assoc_args ) as $key ) {
@@ -209,14 +211,14 @@ class Subcommand extends CompositeCommand {
     }
 
     foreach ($errors['warning'] as $warning) {
-      \Terminus::log('warning', $warning);
+      Terminus::log('warning', $warning);
     }
 
     return $to_unset;
   }
 
   function invoke( $args, $assoc_args, $extra_args ) {
-    if ( \Terminus::get_config( 'interactive' ) )
+    if ( Terminus::get_config( 'interactive' ) )
       list( $args, $assoc_args ) = $this->prompt_args( $args, $assoc_args );
 
     $to_unset = $this->validate_args( $args, $assoc_args, $extra_args );

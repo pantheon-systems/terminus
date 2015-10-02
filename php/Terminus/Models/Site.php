@@ -2,21 +2,16 @@
 
 namespace Terminus\Models;
 
-use \Terminus;
+use Terminus;
+use TerminusCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Request;
-use Terminus\Deploy;
-use \TerminusCommand;
-use \Terminus\Models\Environment;
-use \Terminus\Models\SiteUserMembership;
 use Terminus\Models\Organization;
-use Terminus\Models\User;
+use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Environments;
-use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteOrganizationMemberships;
+use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\Workflows;
-use Terminus\Models\TerminusModel;
 
 class Site extends TerminusModel {
   public $bindings;
@@ -505,7 +500,7 @@ class Site extends TerminusModel {
    */
   public function tips() {
     $path = 'code-tips';
-    $data = \TerminusCommand::request('sites', $this->get('id'), $path, 'GET');
+    $data = TerminusCommand::request('sites', $this->get('id'), $path, 'GET');
     return $data['data'];
   }
 

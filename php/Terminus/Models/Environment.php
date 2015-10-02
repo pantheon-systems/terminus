@@ -2,9 +2,9 @@
 
 namespace Terminus\Models;
 
-use \Terminus\Request;
-use \Terminus\Models\Collections\Bindings;
+use Terminus\Request;
 use Terminus\Models\TerminusModel;
+use Terminus\Models\Collections\Bindings;
 
 class Environment extends TerminusModel {
   private $backups;

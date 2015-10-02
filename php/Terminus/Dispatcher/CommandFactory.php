@@ -2,6 +2,9 @@
 
 namespace Terminus\Dispatcher;
 
+use Terminus\DocParser;
+use Terminus\Dispatcher\CompositeCommand;
+
 /**
  * Creates CompositeCommand or Subcommand instances.
  */
@@ -21,7 +24,7 @@ class CommandFactory {
   }
 
   private static function create_subcommand( $parent, $name, $class_name, $method ) {
-    $docparser = new \Terminus\DocParser( $method->getDocComment() );
+    $docparser = new DocParser( $method->getDocComment() );
 
     if ( !$name )
       $name = $docparser->get_tag( 'subcommand' );
@@ -39,7 +42,7 @@ class CommandFactory {
   }
 
   private static function create_composite_command( $parent, $name, $reflection ) {
-    $docparser = new \Terminus\DocParser( $reflection->getDocComment() );
+    $docparser = new DocParser( $reflection->getDocComment() );
 
     $container = new CompositeCommand( $parent, $name, $docparser );
 

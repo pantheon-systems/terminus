@@ -2,10 +2,11 @@
 
 namespace Terminus\Helpers;
 
+use Terminus;
 use Terminus\Exceptions\TerminusException;
-use \Terminus\Models\User;
+use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
-use \Terminus\Models\Collections\Upstreams;
+use Terminus\Models\Collections\Upstreams;
 
 /**
  * Helper class to handle inputs
@@ -126,7 +127,7 @@ class Input {
       $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
-    $org = \Terminus::menu($orglist_with_id, false, "Choose organization");
+    $org = Terminus::menu($orglist_with_id, false, "Choose organization");
     if($org == '-') {
       return $default;
     }
@@ -169,7 +170,7 @@ class Input {
       }
       return $args[$key];
     }
-    $org = \Terminus::menu($orglist, false, "Choose organization");
+    $org = Terminus::menu($orglist, false, "Choose organization");
     return $orglist[$org];
   }
 
@@ -246,7 +247,7 @@ class Input {
     if(isset($args[$key])) {
       return $args[$key];
     }
-    $string = \Terminus::prompt($label);
+    $string = Terminus::prompt($label);
     if(($string == '') && isset($default)) {
       return $default;
     }
@@ -271,7 +272,7 @@ class Input {
       }
     } else {
       $upstream = $upstreams->get(
-        \Terminus::menu($upstreams->getMemberList('id', 'longname'))
+        Terminus::menu($upstreams->getMemberList('id', 'longname'))
       );
     }
     return $upstream;
@@ -286,7 +287,7 @@ class Input {
    * @return [boolean] $is_yes
    */
   public static function yesno($question, $params = array()) {
-    if(\Terminus::get_config('yes')) {
+    if(Terminus::get_config('yes')) {
       return true;
     }
     $question = vsprintf($question, $params);
