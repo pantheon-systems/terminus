@@ -32,8 +32,9 @@ class Organizations_Command extends TerminusCommand {
      $user = new User(new stdClass(), array());
      $data = array();
      foreach ($user->getOrganizations() as $id => $org) {
+       $org_data = $org->get('organization');
        $data[] = array(
-         'name' => $org->get('name'),
+         'name' => $org_data->profile->name,
          'id' => $org->get('id'),
        );
      }
