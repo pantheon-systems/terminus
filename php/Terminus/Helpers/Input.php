@@ -6,6 +6,8 @@ use Terminus\Exceptions\TerminusException;
 use \Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 use \Terminus\Models\Collections\Upstreams;
+//TODO: Bring the inputter in here, replace I18n
+use Terminus\Internationalizer as I18n;
 
 /**
  * Helper class to handle inputs
@@ -60,6 +62,8 @@ class Input {
       $return_value = false
   ) {
     echo PHP_EOL;
+    $i18n = new I18n();
+    $text = $i18n->get($text);
     $index = \cli\Streams::menu($choices, $default, $text);
     if ($return_value) {
       return $choices[$index];
@@ -126,7 +130,8 @@ class Input {
       $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
-    $org = \Terminus::menu($orglist_with_id, false, "Choose organization");
+    $i18n = new I18n();
+    $org = \Terminus::menu($orglist_with_id, false, $i18n->get('select_org'));
     if($org == '-') {
       return $default;
     }

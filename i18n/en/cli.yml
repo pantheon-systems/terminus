@@ -1,0 +1,17 @@
+info:
+  php_binary_path: 'PHP binary'
+  php_version: 'PHP version'
+  php_in: 'php.ini used'
+  global_config_path : 'Terminus global config'
+  project_config_path : 'Terminus project config'
+  wp_cli_dir_path: 'Terminus root dir'
+  wp_cli_version: 'Terminus version'
+console:
+  not_logged_in: 'Please log in using `terminus auth login`.'
+cache_clear:
+  success: 'Your Terminus cache has been cleared.'
+session_clear:
+  success: 'Your Terminus session has been cleared.'
+version:
+  version: 'Terminus version'
+  script: 'Terminus script'

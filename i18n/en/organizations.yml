@@ -1,0 +1,18 @@
+all:
+  name: 'Name'
+  id: 'ID'
+sites:
+  confirm_add: 'Are you sure you want to add :site to :org?'
+  invalid_add: ':site is already a member of :org.'
+  select_site: 'Please select a site.'
+  select_org: 'Please select an organization.'
+  invalid_remove: ':site is not a member of :org'
+  confirm_remove: 'Are you sure you want to remove :site from :org?'
+  name: 'Name'
+  id: 'ID'
+  service_level: 'Service Level'
+  framework: 'Framework'
+  created: 'Created At'
+  tags: 'Tags'
+  success: 'The operation has succeeded.'
+  failure: 'The operation has failed.'

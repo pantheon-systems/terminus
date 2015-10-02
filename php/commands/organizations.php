@@ -76,7 +76,7 @@ class Organizations_Command extends TerminusCommand {
         if (isset($assoc_args['site'])) {
           if ($this->siteIsMember($memberships, $assoc_args['site'])) {
             throw new TerminusException(
-              '{site} is already a member of {org}',
+              'invalid_add',
               array(
                 'site' => $assoc_args['site'],
                 'org' => $org_info->profile->name
@@ -90,14 +90,14 @@ class Organizations_Command extends TerminusCommand {
             Input::menu(
               $this->getNonmemberSiteList($memberships),
               null,
-              'Choose site'
+              'select_site'
             )
           );
         }
         Terminus::confirm(
-          'Are you sure you want to add %s to %s ?',
+          'confirm_add',
           $assoc_args,
-          array($site->get('name'), $org_info->profile->name)
+          array('site' => $site->get('name'), 'org' => $org_info->profile->name)
         );
         $workflow = $org->site_memberships->addMember($site);
         $workflow->wait();
@@ -107,7 +107,7 @@ class Organizations_Command extends TerminusCommand {
         if (isset($assoc_args['site'])) {
           if (!$this->siteIsMember($memberships, $assoc_args['site'])) {
             throw new TerminusException(
-              '{site} is not a member of {org}',
+              'invalid_remove',
               array(
                 'site' => $assoc_args['site'],
                 'org' => $org_info->profile->name
@@ -121,15 +121,15 @@ class Organizations_Command extends TerminusCommand {
             Input::menu(
               $this->getMemberSiteList($memberships),
               null,
-              'Choose site'
+              'select_site'
             )
           );
         }
         $member = $org->site_memberships->get($site->get('id'));
         Terminus::confirm(
-          'Are you sure you want to remove %s from %s ?',
+          'confirm_remove',
           $assoc_args,
-          array($site->get('name'), $org_info->profile->name)
+          array('site' => $site->get('name'), 'org' => $org_info->profile->name)
         );
         $workflow = $member->removeMember();
         $workflow->wait();

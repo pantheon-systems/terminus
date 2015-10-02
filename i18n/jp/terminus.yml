@@ -1,0 +1,6 @@
+responseOutput:
+  success: '操作は成功しました。'
+  failure: '操作は成功しませんでした。'
+workflowOutput:
+  success: ':reason'
+  error: ':reason'

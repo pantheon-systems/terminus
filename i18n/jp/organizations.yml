@@ -1,0 +1,18 @@
+all:
+  name: '名'
+  id: 'ID'
+sites:
+  confirm_add: '「:org」に「:site」を追加しますか？'
+  invalid_add: '「:site」はすでに「:org」のメンバーです。'
+  select_site: 'サイトを選択して下さい。'
+  select_org: '組織を選択して下さい。'
+  invalid_remove: '「:site」は、「:org」のメンバーではありません。'
+  confirm_remove: '「:org」から「:site」を削除してもよろしいですか？'
+  name: '名'
+  id: 'ID'
+  service_level: 'サービスレベル'
+  framework: 'フレームワーク'
+  created: '作成時間'
+  tags: 'タグ'
+  success: '操作が成功しました。'
+  failure: '操作が成功しませんでした。'

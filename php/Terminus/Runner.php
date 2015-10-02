@@ -35,6 +35,7 @@ class Runner {
     $this->init_colorization();
     $this->init_logger();
     $this->init_outputter();
+    $this->init_inputter(Terminus::get_outputter());
   }
 
   public function __get($key) {
@@ -115,7 +116,32 @@ class Runner {
   }
 
   private function init_outputter() {
+    $formatter = $this->pick_formatter();
 
+    // Create an output service.
+    $outputter = new Terminus\Outputters\Outputter(
+      new Terminus\Outputters\StreamWriter('php://stdout'),
+      $formatter
+    );
+
+    Terminus::set_outputter($outputter);
+  }
+
+  private function init_inputter($outputter) {
+    // Create an input service.
+    $inputter = new Terminus\Inputters\Inputter(
+      $outputter
+    );
+
+    Terminus::set_inputter($inputter);
+  }
+
+  /**
+   * Checks the config and picks out the appropriate formatter
+   *
+   * @return [Formatter] $formatter
+   */
+  private function pick_formatter() {
     // Pick an output formatter
     if ($this->config['json']) {
       $formatter = new Terminus\Outputters\JSONFormatter();
@@ -126,15 +152,7 @@ class Runner {
     else {
       $formatter = new Terminus\Outputters\PrettyFormatter();
     }
-    // @TODO: Implement BASH output formatter
-
-    // Create an output service.
-    $this->outputter = new Terminus\Outputters\Outputter(
-      new Terminus\Outputters\StreamWriter('php://stdout'),
-      $formatter
-    );
-
-    Terminus::set_outputter($this->outputter);
+    return $formatter;
   }
 
   private function init_config() {
