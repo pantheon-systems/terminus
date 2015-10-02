@@ -3,6 +3,7 @@
 use Terminus\Configurator;
 use Terminus\Dispatcher;
 use Terminus\FileCache;
+use Terminus\Internationalizer as I18n;
 use Terminus\Runner;
 use Terminus\Utils;
 
@@ -191,9 +192,11 @@ class Terminus {
   /**
    * Ask for confirmation before running a destructive operation.
    */
+  //TODO: Move this functionality to the inputter/input helper
   static function confirm($question, $assoc_args = array(), $params = array()) {
+      $i18n = new I18n();
       if(\Terminus::get_config('yes')) return true;
-      $question = vsprintf($question, $params);
+      $question = $i18n->get($question, $params);
       fwrite(STDOUT, $question . " [y/n] ");
 
       $answer = trim(fgets(STDIN));

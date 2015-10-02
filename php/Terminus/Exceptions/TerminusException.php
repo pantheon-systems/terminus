@@ -7,6 +7,7 @@
 
 namespace Terminus\Exceptions;
 
+use Terminus\Internationalizer as I18n;
 
 /**
  * Class TerminusException
@@ -18,16 +19,9 @@ class TerminusException extends \Exception {
    */
   private $replacements;
 
-  public function __construct($message = null, $replacements = array(), $code = 0)
-  {
-    $this->replacements = $replacements;
+  public function __construct($message = null, $replacements = array(), $code = 0) {
+    $i18n    = new I18n();
+    //$message = $i18n->get($message, $replacements);
     parent::__construct($message, $code);
-  }
-
-  /**
-   * @return array
-   */
-  public function getReplacements() {
-    return $this->replacements;
   }
 }
