@@ -7,6 +7,8 @@
 
 namespace Terminus\Outputters;
 
+use Terminus\Internationalizer as I18n;
+
 
 /**
  * A base class which takes output, formats it and writes it.
@@ -22,6 +24,11 @@ class Outputter implements OutputterInterface {
   protected $formatter;
 
   /**
+   * @var I18n
+   */
+  protected $i18n;
+
+  /**
    * @var OutputWriterInterface
    */
   protected $writer;
@@ -32,21 +39,23 @@ class Outputter implements OutputterInterface {
    */
   public function __construct(OutputWriterInterface $writer, OutputFormatterInterface $formatter) {
     $this->setFormatter($formatter);
+    $this->setInternationalizer();
     $this->setWriter($writer);
   }
 
 
   /**
-   * Formats a single scalar value with an optional human label.
+   * Formats a single scalar value.
    *
    * @param mixed $value
    *  The scalar value to format
-   * @param string $human_label
-   *  The human readable label for the value
+   * @param [string] $label Key for I18n label
    * @return string
    */
-  public function outputValue($value, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatValue($value, $human_label));
+  public function outputValue($value, $label = '') {
+    $value = $this->i18n->get($value);
+    $label = $this->i18n->get($label);
+    $this->getWriter()->write($this->getFormatter()->formatValue($value, $label));
   }
 
   /**
@@ -54,12 +63,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array|object $record
    *   A key/value array or object
-   * @param array $human_labels
-   *   A key/value array mapping the keys in the record to human labels
    * @return string
    */
-  public function outputRecord($record, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($record, $human_labels));
+  public function outputRecord($record) {
+    $this->getWriter()->write($this->getFormatter()->formatRecord($record));
   }
 
   /**
@@ -67,13 +74,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array $values
    *  The values to format
-   * @param string $human_label
-   *  A human name for the entire list. If each value needs a separate label then
-   *  formatRecord should be used.
    * @return string
    */
-  public function outputValueList($values, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($values, $human_label));
+  public function outputValueList($values) {
+    $this->getWriter()->write($this->getFormatter()->formatRecord($values));
   }
 
   /**
@@ -81,12 +85,10 @@ class Outputter implements OutputterInterface {
    *
    * @param array $records
    *  A list of arrays or objects.
-   * @param array $human_labels
-   *  An array that maps the record keys to human names.
    * @return string
    */
-  public function outputRecordList($records, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecordList($records, $human_labels));
+  public function outputRecordList($records) {
+    $this->getWriter()->write($this->getFormatter()->formatRecordList($records));
   }
 
   /**
@@ -100,9 +102,70 @@ class Outputter implements OutputterInterface {
   }
 
   /**
-   * @return OutputWriterInterface
+   * Outputs a prompt and collects the result
+   *
+   * @param [string] $key     I18n key for output
+   * @param [array]  $context Replacements for variables in i18n string
+   * @return $response
    */
-  public function getWriter() {
+  public function promptForInput($key, $context = array()) {
+    $this->getWriter()->write($this->i18n->get($key, $context));
+    if (strpos($key, 'password') === false) {
+      $response = $this->getInput();
+    } else {
+      $response = $this->getInputSilently();
+    } 
+    return $response;
+  }
+
+  /**
+   * Gets input from STDIN
+   *
+   * @return [string] $response
+   */
+  private function getInput() {
+    $line = readline();
+    $response = trim($line);
+    return $response;
+  }
+
+  /**
+   * Gets input from STDIN silently
+   * By: Troels Knak-Nielsen
+   * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
+   *
+   * @return $password
+   */
+  private function getInputSilently() {
+    if (preg_match('/^win/i', PHP_OS)) {
+      $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+      file_put_contents(
+        $vbscript, 'wscript.echo(InputBox("'
+        . addslashes($prompt)
+        . '", "", "password here"))');
+      $command = "cscript //nologo " . escapeshellarg($vbscript);
+      $password = rtrim(shell_exec($command));
+      unlink($vbscript);
+      return $password;
+    } else {
+      $command = "/usr/bin/env bash -c 'echo OK'";
+      if (rtrim(shell_exec($command)) !== 'OK') {
+        trigger_error("Can't invoke bash");
+        return;
+      }
+      $command = "/usr/bin/env bash -c 'read -s -p \""
+        . addslashes($prompt)
+        . "\" mypassword && echo \$mypassword'";
+      $password = rtrim(shell_exec($command));
+      echo "\n";
+      return $password;
+    }
+  }
+
+    /**
+    * @return OutputWriterInterface
+    */
+    public function getWriter() {
     return $this->writer;
   }
 
@@ -118,6 +181,13 @@ class Outputter implements OutputterInterface {
    */
   public function setFormatter(OutputFormatterInterface $formatter) {
     $this->formatter = $formatter;
+  }
+
+  /**
+   * @return [void]
+   */
+  public function setInternationalizer() {
+    $this->i18n = new I18n();
   }
 
   /**

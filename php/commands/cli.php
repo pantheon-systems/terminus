@@ -38,8 +38,7 @@ class CLI_Command extends TerminusCommand {
    * Print Terminus version.
    */
   function version() {
-    $labels = array('version' => 'Terminus version', 'script' => 'Terminus script');
-    $this->output()->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT), $labels);
+    $this->outputter->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT));
   }
 
   /**
@@ -64,17 +63,7 @@ class CLI_Command extends TerminusCommand {
       'wp_cli_dir_path' => TERMINUS_ROOT,
       'wp_cli_version' => TERMINUS_VERSION,
     );
-    $labels = array(
-      'php_binary_path' => 'PHP binary',
-      'php_version' => 'PHP version',
-      'php_ini' => 'php.ini used',
-      'global_config_path' => 'Terminus global config',
-      'project_config_path' => 'Terminus project config',
-      'wp_cli_dir_path' => 'Terminus root dir',
-      'wp_cli_version' => 'Terminus version',
-    );
-    $this->output()->outputRecord($info, $labels);
-
+    $this->outputter->outputRecord($info);
   }
 
   /**
@@ -118,6 +107,7 @@ class CLI_Command extends TerminusCommand {
   */
   function session_clear() {
     $this->cache->remove("session");
+    $this->logger->info('success');
   }
 
   /**
@@ -142,9 +132,11 @@ class CLI_Command extends TerminusCommand {
   public function cache_clear($args, $assoc_args) {
     if (isset($assoc_args['cache'])) {
       $this->cache->remove($assoc_args['cache']);
+      $args['cache'] = $assoc_args['cache'];
     } else {
       $this->cache->flush();
     }
+    $this->logger->info('success');
   }
 
   /**
@@ -158,7 +150,7 @@ class CLI_Command extends TerminusCommand {
   * @subcommand console
   */
   public function console($args, $assoc_args) {
-    $user = new User(new stdClass(), array());
+    $user = new User();
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
       $site_id = $this->sitesCache->findID($sitename);
