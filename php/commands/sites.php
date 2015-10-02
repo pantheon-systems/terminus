@@ -28,7 +28,6 @@ class Sites_Command extends TerminusCommand {
    */
   public function __construct() {
     parent::__construct();
-    Auth::loggedIn();
     $this->sites = new Sites();
   }
 

@@ -5,7 +5,7 @@ Feature: auth
     When I run "terminus auth login fake@email.com --password=BAD_PASSWORD"
     Then I should not get:
     """
-    Saving session data
+    Saving session your data.
     """
 
   Scenario: Login
@@ -13,7 +13,7 @@ Feature: auth
     When I run "terminus auth login [[username]] --password=[[password]]"
     Then I should get:
     """
-    Logging in as [[username]]
+    You are now logged in as [[username]]
     """
 
   Scenario: Check Which User I Am
@@ -22,7 +22,7 @@ Feature: auth
     When I run "terminus auth whoami"
     Then I should get:
     """
-    You are authenticated as: [[username]]
+    user: [[username]]
     """
 
   Scenario: Logout

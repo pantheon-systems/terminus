@@ -1,0 +1,6 @@
+responseOutput:
+  success: 'The operation has succeeded'
+  failure: 'The operation was unsuccessful'
+workflowOutput:
+  success: ':reason'
+  error: ':reason'

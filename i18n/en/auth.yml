@@ -1,0 +1,14 @@
+login:
+  validating: 'Validating session token'
+  success: 'You are now logged in as :user'
+  failure: 'Login failed'
+  need_email: 'What is your email address?'
+  need_password: 'What is your password? (Your input will not be displayed.)'
+  invalid_email: 'The provided email address is invalid.'
+  saving_session: 'Saving your session data.'
+  invalid_token: 'The session token is not valid.'
+logout: 
+  success: 'Logging out of Pantheon'
+  invalid: 'You are not logged in.'
+whoami:
+  invalid: 'You are not logged in.'
