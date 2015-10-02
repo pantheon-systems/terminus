@@ -8,7 +8,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Utils;
 use Terminus\Dispatcher;
-use Terminus\KLogger;
+use Terminus\Loggers\Logger;
 
 class Runner {
   public $config;
@@ -110,7 +110,7 @@ class Runner {
   }
 
   private function init_logger() {
-    $this->logger = new KLogger(array('config' => $this->config));
+    $this->logger = new Logger(array('config' => $this->config));
     Terminus::set_logger($this->logger);
   }
 
