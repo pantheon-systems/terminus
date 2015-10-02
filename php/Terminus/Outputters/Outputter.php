@@ -99,6 +99,18 @@ class Outputter implements OutputterInterface {
     $this->getWriter()->write($this->getFormatter()->formatDump($object));
   }
 
+
+  /**
+   * Output a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   */
+  public function outputMessage($level, $message, $context = array()) {
+    $this->getWriter()->write($this->getFormatter()->formatMessage($level, $message, $context));
+  }
+
   /**
    * @return OutputWriterInterface
    */

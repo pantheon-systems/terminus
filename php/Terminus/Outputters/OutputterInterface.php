@@ -79,4 +79,14 @@ interface OutputterInterface {
    * @return string
    */
   public function outputDump($object);
+
+  /**
+   * Output a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   * @return
+   */
+  public function outputMessage($level, $message, $context = array());
 }

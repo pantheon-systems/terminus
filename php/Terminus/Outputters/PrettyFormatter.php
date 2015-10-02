@@ -148,6 +148,18 @@ class PrettyFormatter implements OutputFormatterInterface {
   }
 
   /**
+   * Format a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   * @return string
+   */
+  public function formatMessage($level, $message, $context = array()) {
+    return '['. strtoupper($level) . '] ' . $this->interpolate($message, $context) . PHP_EOL;
+  }
+
+  /**
    * Get the human name for a key if available.
    *
    * @param string $key
@@ -178,6 +190,25 @@ class PrettyFormatter implements OutputFormatterInterface {
     }
     $value = join(', ', (array)$value);
     return $value;
+  }
+
+
+  /**
+   * Interpolates context variables per the PSR spec.
+   *
+   * @param string $message The message containing replacements in the form {key}
+   * @param array $context The array containing the values to be substituted.
+   * @return string
+   */
+  private function interpolate($message, $context) {
+    // build a replacement array with braces around the context keys
+    $replace = array();
+    foreach ($context as $key => $val) {
+      $replace['{' . $key . '}'] = $val;
+    }
+
+    // interpolate replacement values into the message and return
+    return strtr($message, $replace);
   }
 
 }

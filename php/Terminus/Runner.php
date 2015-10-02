@@ -3,12 +3,14 @@
 namespace Terminus;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Terminus;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Loggers\TeeLogger;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Utils;
 use Terminus\Dispatcher;
-use Terminus\Loggers\Logger;
+use Katzgrau\KLogger\Logger as KLogger;
 
 class Runner {
   public $config;
@@ -19,6 +21,7 @@ class Runner {
   private $_early_invoke = array();
   private $global_config_path;
   private $project_config_path;
+  private $formatter;
 
   /**
    * @var LoggerInterface
@@ -33,6 +36,7 @@ class Runner {
   public function __construct() {
     $this->init_config();
     $this->init_colorization();
+    $this->init_formatter();
     $this->init_logger();
     $this->init_outputter();
   }
@@ -109,29 +113,70 @@ class Runner {
     }
   }
 
+  private function init_formatter() {
+    // Pick an output formatter
+    if ($this->config['json']) {
+      $this->formatter = new Terminus\Outputters\JSONFormatter();
+    }
+    else if ($this->config['bash']) {
+      $this->formatter = new Terminus\Outputters\BashFormatter();
+    }
+    else {
+      $this->formatter = new Terminus\Outputters\PrettyFormatter();
+    }
+  }
+
+
   private function init_logger() {
-    $this->logger = new Logger(array('config' => $this->config));
+    $this->logger = new TeeLogger();
+
+    // Console output logger
+    // Determine the logging level
+    $level = LogLevel::INFO;
+    if (!empty($this->config['debug'])) {
+      $level = LogLevel::DEBUG;
+    }
+    else if (!empty($this->config['silent'])) {
+      $level = LogLevel::EMERGENCY;
+    }
+
+    // Create a new outputter to write to stderr.
+    $outputter = new Terminus\Outputters\Outputter(
+      new Terminus\Outputters\StreamWriter('php://stdout'),
+      $this->formatter
+    );
+
+    $this->logger->addLogger(
+      new Terminus\Loggers\OutputLogger($outputter),
+      $level
+    );
+
+    // Set up the file logger.
+    $logDirectory = ini_get('error_log');
+    if (isset($_SERVER['TERMINUS_LOG_DIR'])) {
+      $logDirectory = $_SERVER['TERMINUS_LOG_DIR'];
+    }
+    if (!empty($logDirectory)) {
+      // Determine the logging level
+      $level = LogLevel::INFO;
+      if (!empty($this->config['debug'])) {
+        $level = LogLevel::DEBUG;
+      }
+
+      $this->logger->addLogger(
+        new KLogger($logDirectory, $level),
+        $level
+      );
+    }
+
     Terminus::set_logger($this->logger);
   }
 
   private function init_outputter() {
-
-    // Pick an output formatter
-    if ($this->config['json']) {
-      $formatter = new Terminus\Outputters\JSONFormatter();
-    }
-    else if ($this->config['bash']) {
-      $formatter = new Terminus\Outputters\BashFormatter();
-    }
-    else {
-      $formatter = new Terminus\Outputters\PrettyFormatter();
-    }
-    // @TODO: Implement BASH output formatter
-
     // Create an output service.
     $this->outputter = new Terminus\Outputters\Outputter(
       new Terminus\Outputters\StreamWriter('php://stdout'),
-      $formatter
+      $this->formatter
     );
 
     Terminus::set_outputter($this->outputter);

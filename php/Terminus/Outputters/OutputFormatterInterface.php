@@ -65,4 +65,14 @@ interface OutputFormatterInterface {
    * @return string
    */
   public function formatDump($object);
+
+  /**
+   * Format a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   * @return
+   */
+  public function formatMessage($level, $message, $context = array());
 }

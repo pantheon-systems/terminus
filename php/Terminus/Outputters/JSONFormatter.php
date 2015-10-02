@@ -90,4 +90,21 @@ class JSONFormatter implements OutputFormatterInterface {
   public function formatDump($object) {
     return json_encode($object, $this->json_options);
   }
+
+  /**
+   * Format a message to the user.
+   *
+   * @param string $level
+   * @param string $message
+   * @param array $context
+   * @return string
+   */
+  public function formatMessage($level, $message, $context = array()) {
+    $object = array(
+      'level' => $level,
+      'message' => $message,
+      'context' => $context
+    );
+    return $this->formatRecord($object) . PHP_EOL;
+  }
 }
