@@ -158,7 +158,7 @@ class PrettyFormatter implements OutputFormatterInterface {
   private static function getHumanLabel($key, $autolabel = true) {
     $i18n  = new I18n();
     $label = $i18n->get($key);
-    if ($label == '') {
+    if ($label == $key) {
       if (!$autolabel) {
         return false;
       }
