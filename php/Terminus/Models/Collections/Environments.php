@@ -2,10 +2,6 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Request;
-use Terminus\Model\Environment;
-use \TerminusCommand;
-
 class Environments extends TerminusCollection {
 
   /**

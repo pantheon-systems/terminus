@@ -2,9 +2,9 @@
 
 namespace Terminus\Models\Collections;
 
-use \TerminusCommand;
-use Terminus\Models\Collections\TerminusCollection;
+use TerminusCommand;
 use Terminus\Models\Workflow;
+use Terminus\Models\Collections\TerminusCollection;
 
 class Workflows extends TerminusCollection {
   protected $environment;
