@@ -47,22 +47,6 @@ abstract class TerminusCommand {
   }
 
   /**
-   * Downloads the given URL to the given target
-   *
-   * @param [string] $url    Location of file to download
-   * @param [string] $target Location to download file to
-   * @return [void]
-   */
-  public function download($url, $target) {
-    try {
-      $response = Request::download($url, $target);
-      return $target;
-    } catch (Exception $e) {
-      $this->log()->error($e->getMessage());
-    }
-  }
-
-  /**
    * Make a request to the Pantheon API
    *
    * @param [string] $realm   Permissions realm for data request (e.g. user,
@@ -364,32 +348,47 @@ abstract class TerminusCommand {
     return $release->name;
   }
 
+  /**
+   * Downloads the given URL to the given target
+   *
+   * @param [string] $url    Location of file to download
+   * @param [string] $target Location to download file to
+   * @return [void]
+   */
+  protected function download($url, $target) {
+    try {
+      $response = Request::download($url, $target);
+      return $target;
+    } catch (Exception $e) {
+      $this->log()->error($e->getMessage());
+    }
+  }
 
   /**
    * @return LoggerInterface
    */
-  public function log() {
+  protected function log() {
     return $this->logger;
   }
 
   /**
    * @param LoggerInterface $logger
    */
-  public function setLogger($logger) {
+  protected function setLogger($logger) {
     $this->logger = $logger;
   }
 
   /**
    * @return OutputterInterface
    */
-  public function output() {
+  protected function output() {
     return $this->outputter;
   }
 
   /**
    * @param OutputterInterface $outputter
    */
-  public function setOutputter($outputter) {
+  protected function setOutputter($outputter) {
     $this->outputter = $outputter;
   }
 
