@@ -1,10 +1,9 @@
 <?php
+
 namespace Terminus;
 
-use Symfony\Component\Finder\Finder;
 use Terminus;
-use Terminus\FileCache;
-use \TerminusCommand;
+use TerminusCommand;
 use Terminus\Session;
 
 /**

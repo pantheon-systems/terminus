@@ -2,12 +2,15 @@
 
 namespace Terminus;
 
+use Terminus;
+use TerminusCommand;
+
 /**
  * Base class for Terminus commands that deal with sending SSH commands
  *
  * @package terminus
  */
-abstract class CommandWithSSH extends \TerminusCommand {
+abstract class CommandWithSSH extends TerminusCommand {
 
   protected function send_command($server, $remote_exec, $args, $assoc_args) {
     # unset CLI args
@@ -29,11 +32,11 @@ abstract class CommandWithSSH extends \TerminusCommand {
     }
 
     $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " " . escapeshellarg($remote_cmd);
-    if (\Terminus::get_config('silent')) {
+    if (Terminus::get_config('silent')) {
       ob_start();
     }
     passthru($cmd, $exit_code);
-    if (\Terminus::get_config('silent')) {
+    if (Terminus::get_config('silent')) {
       $this->logger->info(ob_get_clean());
     }
 

@@ -1,8 +1,7 @@
 <?php
+
 namespace Terminus;
 
-use Symfony\Component\Finder\Finder;
-use Terminus\FileCache;
 use Terminus;
 
 class Session {
