@@ -2,7 +2,8 @@
 
 namespace Terminus\Dispatcher;
 
-use \Terminus\Utils;
+use Terminus;
+use Terminus\Utils;
 
 /**
  * The root node in the command tree.
@@ -18,7 +19,7 @@ class RootCommand extends CompositeCommand {
   function get_longdesc() {
     $binding = array();
 
-    foreach (\Terminus::get_configurator()->get_spec() as $key => $details) {
+    foreach (Terminus::get_configurator()->get_spec() as $key => $details) {
       if (
         ($details['runtime'] === false)
         || isset($details['deprecated'])
@@ -37,7 +38,7 @@ class RootCommand extends CompositeCommand {
      );
     }
 
-    if ((boolean)\Terminus::get_config('json')) {
+    if ((boolean)Terminus::get_config('json')) {
       return $binding;
     }
     return Utils\mustache_render('man-params.mustache', $binding);
