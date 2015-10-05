@@ -1,14 +1,13 @@
 <?php
+
 /**
  * Authenticate to Pantheon and store a local secret token.
  *
  */
+
+use Terminus\Session;
+use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Request as Request;
- use Terminus\Utils;
- use Symfony\Component\DomCrawler\Crawler;
- use Guzzle\Parser\Cookie\CookieParser;
- use Terminus\Session;
 
 class Auth_Command extends TerminusCommand {
   private $sessionid;
@@ -61,7 +60,7 @@ class Auth_Command extends TerminusCommand {
       $email = $args[0];
     }
 
-    if ( \Terminus\Utils\is_valid_email( $email ) ) {
+    if ( Utils\is_valid_email( $email ) ) {
       if ( !isset( $assoc_args['password'] ) ) {
         $password = Terminus::promptSecret( "Your dashboard password (input will not be shown)" );
       }
