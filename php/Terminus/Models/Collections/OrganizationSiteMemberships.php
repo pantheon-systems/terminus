@@ -2,7 +2,6 @@
 
 namespace Terminus\Models\Collections;
 
-use stdClass;
 use Terminus\Models\User;
 use Terminus\Models\Collections\TerminusCollection;
 
@@ -18,7 +17,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
    */
   public function __construct($options = array()) {
     parent::__construct($options);
-    $this->user      = new User(new stdClass(), array());
+    $this->user      = new User();
     $this->workflows = new Workflows(
       array('owner' => $this, 'owner_type' => 'organization')
     );

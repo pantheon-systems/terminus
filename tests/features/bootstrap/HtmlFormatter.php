@@ -2,31 +2,13 @@
 
 namespace Behat\Behat\Formatter;
 
+use Behat\Behat\DataCollector\LoggerDataCollector;
+use Behat\Behat\Definition\DefinitionInterface;
 use Behat\Behat\Formatter\HtmlFormatter;
-
-use Behat\Behat\Definition\DefinitionInterface,
-    Behat\Behat\Definition\DefinitionSnippet,
-    Behat\Behat\DataCollector\LoggerDataCollector,
-    Behat\Behat\Event\SuiteEvent,
-    Behat\Behat\Event\FeatureEvent,
-    Behat\Behat\Event\ScenarioEvent,
-    Behat\Behat\Event\BackgroundEvent,
-    Behat\Behat\Event\OutlineEvent,
-    Behat\Behat\Event\OutlineExampleEvent,
-    Behat\Behat\Event\StepEvent,
-    Behat\Behat\Event\EventInterface,
-    Behat\Behat\Exception\UndefinedException;
-
-use Behat\Gherkin\Node\AbstractNode,
-    Behat\Gherkin\Node\FeatureNode,
-    Behat\Gherkin\Node\BackgroundNode,
-    Behat\Gherkin\Node\AbstractScenarioNode,
-    Behat\Gherkin\Node\OutlineNode,
-    Behat\Gherkin\Node\ScenarioNode,
-    Behat\Gherkin\Node\StepNode,
-    Behat\Gherkin\Node\ExampleStepNode,
-    Behat\Gherkin\Node\PyStringNode,
-    Behat\Gherkin\Node\TableNode;
+use Behat\Gherkin\Node\AbstractScenarioNode;
+use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioNode;
+use Behat\Gherkin\Node\StepNode;
 
 class TerminusHtmlFormatter extends HtmlFormatter {
 
