@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##Master
 ### Fixed
 - `site connection-info` Git, MySQL and Redis info now correct (#573)
+- Password no longer shows when logging in with some Windows terminal clients (#574)
 - No more errors when running Terminus in Windows from directories with spaces in the path. (#575)
 
 ##[0.8.1] - 2015-09-28

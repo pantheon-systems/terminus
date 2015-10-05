@@ -162,15 +162,37 @@ class Terminus {
   }
 
   /**
-   * Prompt the user for input
+   * Gets input from STDIN silently
+   * By: Troels Knak-Nielsen
+   * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
-   * @param string $message
+   * @param [string] $message Message to give at prompt
+   * @param [array]  $params  Params given to command
+   * @param [string] $default Default value
+   * @return [string] $message
    */
-  static function promptSecret($message = '', $params = array(), $default=null) {
-    exec("stty -echo");
-    $response = Terminus::prompt($message, $params);
-    exec("stty echo");
-    Terminus::line();
+  static function promptSecret($message = '', $params = array(), $default = null) {
+    if (Utils::is_windows()) {
+      $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+      file_put_contents(
+        $vbscript, 'wscript.echo(InputBox("'
+        . addslashes($message)
+        . '", "", "password here"))');
+      $command = "cscript //nologo " . escapeshellarg($vbscript);
+      $response = rtrim(shell_exec($command));
+      unlink($vbscript);
+    } else {
+      $command = "/usr/bin/env bash -c 'echo OK'";
+      if (rtrim(shell_exec($command)) !== 'OK') {
+        trigger_error("Can't invoke bash");
+        return;
+      }
+      $command = "/usr/bin/env bash -c 'read -s -p \""
+        . addslashes($message)
+        . "\" mypassword && echo \$mypassword'";
+      $response = rtrim(shell_exec($command));
+      echo "\n";
+    }
     return $response;
   }
 
