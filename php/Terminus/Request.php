@@ -1,6 +1,8 @@
 <?php
+
 namespace Terminus;
 
+use Terminus;
 use Guzzle\Http\Client as Browser;
 
 /**
@@ -36,8 +38,8 @@ class Request {
     }
     if (isset($data['body']) && $data['body']) {
       $options['body'] = $data['body'];
-      if (\Terminus::get_config('debug')) {
-        \Terminus::log('debug', $data['body']);
+      if (Terminus::get_config('debug')) {
+        Terminus::log('debug', $data['body']);
       }
     }
 
@@ -61,12 +63,12 @@ class Request {
       }
     }
 
-    if (\Terminus::get_config("debug")) {
+    if (Terminus::get_config("debug")) {
       $debug = "#### REQUEST ####".PHP_EOL;
       $debug .= $request->getRawHeaders();
-      \Terminus::log('debug', $debug);
+      Terminus::log('debug', $debug);
       if (isset($data['body']))
-        \Terminus::log('debug', $data['body']);
+        Terminus::log('debug', $data['body']);
     }
 
     $response = $request->send();

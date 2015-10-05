@@ -1,7 +1,7 @@
 <?php
+
 namespace Terminus;
 
-use \Terminus\Utils;
 /**
  * Class for getting/setting an api endpoint from provided arguments
  *

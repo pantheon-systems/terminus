@@ -1,10 +1,9 @@
 <?php
+
 namespace Terminus;
 
-use Terminus\Exceptions\TerminusException;
-use Terminus\FileCache;
-use Terminus;
 use Terminus\Session;
+use Terminus\Exceptions\TerminusException;
 
 class Auth {
 

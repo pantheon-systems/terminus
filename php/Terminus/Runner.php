@@ -2,13 +2,10 @@
 
 namespace Terminus;
 
-use Psr\Log\LoggerInterface;
 use Terminus;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Outputters\OutputterInterface;
 use Terminus\Utils;
-use Terminus\Dispatcher;
 use Terminus\Loggers\Logger;
+use Terminus\Exceptions\TerminusException;
 
 class Runner {
   public $config;
@@ -45,7 +42,7 @@ class Runner {
   }
 
   public function find_command_to_run($args) {
-    $command = \Terminus::get_root_command();
+    $command = Terminus::get_root_command();
 
     $cmd_path = array();
     while (!empty($args) && $command->can_have_subcommands()) {
@@ -138,7 +135,7 @@ class Runner {
   }
 
   private function init_config() {
-    $configurator = \Terminus::get_configurator();
+    $configurator = Terminus::get_configurator();
 
     // Runtime config and args
     {
