@@ -7,21 +7,6 @@ use Terminus\Models\Collections\TerminusCollection;
 class Bindings extends TerminusCollection {
 
   /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param [boolean] $paged True to use paginated API requests
-   * @return [void]
-   */
-  public function fetch($paged = false) {
-    $results = $this->getCollectionData();
-
-    foreach (get_object_vars($results['data']) as $id => $model_data) {
-      $model_data->id = $id;
-      $this->add($model_data, $options = array('collection' => $this));
-    }
-  }
-
-  /**
    * Get bindings by type
    *
    * @param [string] $type e.g. "appserver", "db server", etc

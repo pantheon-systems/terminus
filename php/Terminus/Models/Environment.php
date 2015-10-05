@@ -201,7 +201,6 @@ class Environment extends TerminusModel {
    * @return [array] $info
    */
   public function connectionInfo() {
-    $this->bindings->fetch();
     $info = array();
 
     // Can only SFTP into dev/multidev environments
@@ -253,7 +252,7 @@ class Environment extends TerminusModel {
     );
     $git_port     = 2222;
     $git_url      = sprintf(
-      'git://%s@%s:%s',
+      'ssh://%s@%s:%s/~/repository.git',
       $git_username,
       $git_host,
       $git_port
@@ -273,9 +272,11 @@ class Environment extends TerminusModel {
 
     $info = array_merge($info, $git_params);
 
-    $dbserver_binding = $this->bindings->getByType('dbserver');
-    if (isset($dbserver_binding[0])) {
-      $db_binding = $dbserver_binding[0];
+    $dbserver_binding = (array)$this->bindings->getByType('dbserver');
+    if (!empty($dbserver_binding)) {
+      do {
+        $db_binding = array_shift($dbserver_binding);
+      } while ($db_binding->get('environment') != $this->get('id'));
 
       $mysql_username = 'pantheon';
       $mysql_password = $db_binding->get('password');
@@ -315,16 +316,14 @@ class Environment extends TerminusModel {
       $info = array_merge($info, $mysql_params);
     }
 
-    $cacheserver_binding = $this->bindings->getByType('cacheserver');
-    if (isset($cacheserver_binding[0])) {
-      $cache_binding = $cacheserver_binding[0];
+    $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
+    if (!empty($cacheserver_binding)) {
+      do {
+        $cache_binding = array_shift($cacheserver_binding);
+      } while ($cache_binding->get('environment') != $this->get('id'));
 
       $redis_password = $cache_binding->get('password');
-      $redis_host     = $mysql_host = sprintf(
-        'cacheserver.%s.%s.drush.in',
-        $this->get('id'),
-        $this->site->get('id')
-      );
+      $redis_host     = $cache_binding->get('host');
       $redis_port     = $cache_binding->get('port');
       $redis_url      = sprintf(
         'redis://pantheon:%s@%s:%s',

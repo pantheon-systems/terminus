@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##Master
+### Fixed
+- `site connection-info` Git, MySQL and Redis info now correct (#573)
+
 ##[0.8.1] - 2015-09-28
 ### Changed
 - Packagist now indexes this project as `[pantheon-systems/cli](https://packagist.org/packages/pantheon-systems/cli)` (was `terminus/terminus`)

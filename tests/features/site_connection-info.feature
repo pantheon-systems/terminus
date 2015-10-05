@@ -17,7 +17,7 @@ Feature: Site Connection Info
     When I run "terminus site connection-info --site=[[test_site_name]] --env=dev --field=git_url"
     Then I should get:
     """
-    git://
+    ssh://
     """
     And I should not get:
     """
