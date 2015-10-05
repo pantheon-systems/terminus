@@ -131,6 +131,8 @@ abstract class TerminusCommand {
 
       $json = $resp->getBody(true);
 
+      Terminus::log('info', 'Response: ' . $json);
+
       $data = array(
         'info' => $resp->getInfo(),
         'headers' => $resp->getRawHeaders(),
