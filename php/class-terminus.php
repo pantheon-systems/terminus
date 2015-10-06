@@ -211,6 +211,9 @@ class Terminus {
    * @return int The command exit status
    */
   static function launch($command, $exit_on_error = true) {
+    if (Utils\is_windows()) {
+      $command = '"' . $command . '"';
+    }
     $r = proc_close(proc_open($command, array(STDIN, STDOUT, STDERR), $pipes));
 
     if($r && $exit_on_error)
@@ -242,18 +245,19 @@ class Terminus {
         $assoc_args[ $key ] = self::get_runner()->config[$key];
     }
 
-    $php_bin = self::get_php_binary();
+    $php_bin = '"' . self::get_php_binary() . '"' ;
 
     if(Terminus::is_test()) {
       $script_path = __DIR__.'/boot-fs.php';
     } else {
       $script_path = $GLOBALS['argv'][0];
     }
+    $script_path = '"' . $script_path . '"';
 
     $args = implode(' ', array_map('escapeshellarg', $args));
-    $assoc_args = \Terminus\Utils\assoc_args_to_str($assoc_args);
+    $assoc_args = Utils\assoc_args_to_str($assoc_args);
 
-    $full_command = "{$php_bin} {$script_path} {$command} {$args} {$assoc_args}";
+    $full_command = "$php_bin $script_path $command $args $assoc_args";
 
     return self::launch($full_command, $exit_on_error);
   }
