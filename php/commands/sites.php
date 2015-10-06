@@ -226,7 +226,7 @@ class Sites_Command extends TerminusCommand {
   public function aliases($args, $assoc_args) {
     $user = new User(new stdClass(), array());
     $print = Input::optional('print', $assoc_args, false);
-    $json = \Terminus::get_config('json');
+    $json = (\Terminus::get_config('format') == 'json');
     $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
 
     // Cannot provide just a directory

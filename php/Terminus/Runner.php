@@ -114,10 +114,10 @@ class Runner {
   private function init_outputter() {
 
     // Pick an output formatter
-    if ($this->config['json']) {
+    if ($this->config['format'] == 'json') {
       $formatter = new Terminus\Outputters\JSONFormatter();
     }
-    else if ($this->config['bash']) {
+    else if ($this->config['format'] == 'bash') {
       $formatter = new Terminus\Outputters\BashFormatter();
     }
     else {

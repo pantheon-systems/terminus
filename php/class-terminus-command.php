@@ -395,12 +395,7 @@ abstract class TerminusCommand {
     $message = 'Command failed',
     array $context = array()
   ) {
-<<<<<<< 682e413f7ea44d31de06bde2a84f04d8e34812ac
     throw new TerminusException($message, $context, -1);
-=======
-    $this->log()->error($message, $context);
-    exit(-1);
->>>>>>> Added exit code of -1 to erred commands
   }
 
   /**

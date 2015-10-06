@@ -358,7 +358,7 @@ class FeatureContext extends BehatContext {
    * @return [string] Output from command run
    */
   public function iGetInfoForTheSite($site, $return_hash = false) {
-    $return = $this->iRun("terminus site info --site=$site --bash");
+    $return = $this->iRun("terminus site info --site=$site --format=bash");
     if(!$return_hash) {
       return $return;
     }
