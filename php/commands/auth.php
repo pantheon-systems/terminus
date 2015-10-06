@@ -7,7 +7,6 @@
 
 use Terminus\Session;
 use Terminus\Utils;
-use Terminus\Exceptions\TerminusException;
 
 class Auth_Command extends TerminusCommand {
   private $sessionid;
@@ -43,7 +42,7 @@ class Auth_Command extends TerminusCommand {
         Terminus::launch_self("art", array("fist"));
       }
       else {
-        $this->log()->error( "Login Failed!" );
+        $this->failure('Login failed!');
       }
       return;
     }
@@ -77,11 +76,11 @@ class Auth_Command extends TerminusCommand {
         Terminus::launch_self("art", array("fist"));
       }
       else {
-        throw new TerminusException( "Login Failed!" );
+        $this->failure('Login Failed!');
       }
     }
     else {
-      throw new TerminusException( "Error: invalid email address" );
+      $this->failure('Invalid email address');
     }
   }
 
@@ -101,7 +100,7 @@ class Auth_Command extends TerminusCommand {
       $this->output()->outputValue(Session::getValue('email'), "You are authenticated as");
     }
     else {
-      $this->log()->warning( "You are not logged in." );
+      $this->failure('You are not logged in.');
     }
   }
 
@@ -111,7 +110,7 @@ class Auth_Command extends TerminusCommand {
     }
     $results = $this->terminus_request("user", $this->session->user_uuid, "profile", "GET");
     if ($results['info']['http_code'] >= 400){
-      $this->log()->error("Expired Session, please re-authenticate.");
+      $this->failure('Your session is expired. Please reauthenticate.');
       $this->cache->remove('session');
       Terminus::launch_self("auth", array("login"));
       $this->whoami();
@@ -141,7 +140,7 @@ class Auth_Command extends TerminusCommand {
 
     $response = TerminusCommand::request('login','','','POST',$options);
     if($response['status_code'] != '200') {
-      throw new TerminusException("Unsuccessful login");
+      $this->failure('Unsuccessful login');
     }
 
     // Prepare credentials for storage.
@@ -174,7 +173,7 @@ class Auth_Command extends TerminusCommand {
     $response = TerminusCommand::request('user', '', '', 'GET', $options);
 
     if ( !$response OR '200' != @$response['info']['http_code'] ) {
-      throw new TerminusException("Session token not valid");
+      $this->failure('Session token not valid');
     }
 
     // Prepare credentials for storage.
