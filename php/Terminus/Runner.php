@@ -142,7 +142,7 @@ class Runner {
 
     // Create a new outputter to write to stderr.
     $outputter = new Terminus\Outputters\Outputter(
-      new Terminus\Outputters\StreamWriter('php://stdout'),
+      new Terminus\Outputters\StreamWriter('php://stderr'),
       $this->formatter
     );
 
