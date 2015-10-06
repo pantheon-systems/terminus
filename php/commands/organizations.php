@@ -1,15 +1,10 @@
 <?php
 
 use Terminus\Exceptions\TerminusException;
-use \Terminus\Models\User;
-use \Terminus\Utils;
-use \Terminus\Auth;
-use \Terminus\Models\Organization;
-use \Terminus\Models\Collections\OrganizationSiteMemberships;
-use \Terminus\Models\Collections\Sites;
+use Terminus\Helpers\Input;
+use Terminus\Models\User;
+use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;
-use \Terminus\Helpers\Input;
-use \Guzzle\Http\Client;
 
 /**
  * Show information for your Pantheon organizations
@@ -29,7 +24,7 @@ class Organizations_Command extends TerminusCommand {
    *
    */
   public function all($args, $assoc_args) {
-     $user = new User(new stdClass(), array());
+     $user = new User();
      $data = array();
      foreach ($user->getOrganizations() as $id => $org) {
        $org_data = $org->get('organization');

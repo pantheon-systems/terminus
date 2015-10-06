@@ -1,14 +1,9 @@
 <?php
 
-use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
-use Terminus\Auth;
-use Terminus\Models\Site;
+use Terminus\Helpers\Input;
 use Terminus\Models\User;
-use Terminus\Models\Collections\Instruments;
-use \Guzzle\Http\Client;
-use \Terminus\Helpers\Input;
-use \Terminus\Deploy;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -518,7 +513,7 @@ class Site_Command extends TerminusCommand {
         if (isset($assoc_args['to'])) {
           $target = $assoc_args['to'];
           if (is_dir($target)) {
-            $filename = \Terminus\Utils\get_filename_from_url($url->url);
+            $filename = Utils\get_filename_from_url($url->url);
             $target = sprintf('%s/%s', $target, $filename);
           }
           $this->log()->info('Downloading ... please wait ...');
@@ -558,7 +553,7 @@ class Site_Command extends TerminusCommand {
 
         $assoc_args['env'] = $env;
         $target = $this->backup(array('get'), $assoc_args);
-        $target = '/tmp/' . \Terminus\Utils\get_filename_from_url($target);
+        $target = '/tmp/' . Utils\get_filename_from_url($target);
 
         if (!file_exists($target)) {
           throw new TerminusException('Cannot read database file {target}', array('target' => $target));
@@ -568,7 +563,7 @@ class Site_Command extends TerminusCommand {
         exec("gunzip $target", $stdout, $exit);
 
         // trim the gz of the target
-        $target = Terminus\Utils\sql_from_zip($target);
+        $target = Utils\sql_from_zip($target);
         $target = escapeshellarg($target);
         exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
         if ($exit != 0) {
@@ -1097,7 +1092,7 @@ class Site_Command extends TerminusCommand {
           }
           $data = $env->addHostname($assoc_args['hostname']);
           if (Terminus::get_config('verbose')) {
-            \Terminus\Utils\json_dump($data);
+            Utils\json_dump($data);
           }
           $this->log()->info(
             'Added {hostname} to {site}-{env}',
@@ -1299,7 +1294,7 @@ class Site_Command extends TerminusCommand {
       throw new TerminusException('Must install sshfs first');
     }
 
-    $destination = \Terminus\Utils\destination_is_valid($assoc_args['destination']);
+    $destination = Utils\destination_is_valid($assoc_args['destination']);
 
     $site = $this->sites->get(Input::sitename($assoc_args));
     $env  = Input::env($assoc_args, 'env');

@@ -1,8 +1,6 @@
 <?php
 
-use \Terminus\Dispatcher;
-use \Terminus\Utils;
-use \Terminus\SitesCache;
+use Terminus\SitesCache;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 
@@ -158,7 +156,7 @@ class CLI_Command extends TerminusCommand {
   * @subcommand console
   */
   public function console($args, $assoc_args) {
-    $user = new User(new stdClass(), array());
+    $user = new User();
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
       $site_id = $this->sitesCache->findID($sitename);

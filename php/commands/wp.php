@@ -1,11 +1,9 @@
 <?php
 
-use Terminus\Dispatcher;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Utils;
 use Terminus\CommandWithSSH;
-use Terminus\Models\Collections\Sites;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
+use Terminus\Models\Collections\Sites;
 
 class WPCLI_Command extends CommandWithSSH {
 

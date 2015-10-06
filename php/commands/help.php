@@ -1,8 +1,8 @@
 <?php
 
+use Terminus\Dispatcher;
+use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
-use \Terminus\Utils;
-use \Terminus\Dispatcher;
 
 class Help_Command extends TerminusCommand {
 
