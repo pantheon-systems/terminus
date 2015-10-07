@@ -63,7 +63,8 @@ abstract class TerminusCommand {
     $uuid,
     $path = false,
     $method = 'GET',
-    $options = null
+    $options = null,
+    $token = null
   ) {
     if (!in_array($realm, array('login', 'user', 'public'))) {
       Auth::loggedIn();
@@ -79,18 +80,41 @@ abstract class TerminusCommand {
         $options['verify']  = false;
       }
 
-      $url = Endpoint::get(
-        array(
-          'realm' => $realm,
-          'uuid'  => $uuid,
-          'path'  => $path,
-        )
-      );
+      // If a token is passed in, we have a referral,
+      // meaning the realm is the URL.
+      if (!is_null($token)) {
+        $url = $realm;
+        if (!isset($options['headers'])) {
+          $options['headers'] = array();
+        }
+        Terminus::log('info', 'Using authorization token: ' . $token);
+        $options['headers']['Authorization'] = 'Bearer ' . $token;
+      }
+      else {
+        $url = Endpoint::get(
+          array(
+            'realm' => $realm,
+            'uuid'  => $uuid,
+            'path'  => $path,
+          )
+        );
+      }
       if (Terminus::get_config('debug')) {
         Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
+
+      // Handle microservice referrals.
+      if (350 == $resp->getStatusCode()) {
+        $token = $resp->getBody(true);
+        $url = $resp->getLocation();
+        Terminus::log('info', 'Got microservice referral to URL: ' . $url);
+        return self::request($url, null, null, $method, $options, $token);
+      }
+
       $json = $resp->getBody(true);
+
+      Terminus::log('info', 'Response: ' . $json);
 
       $data = array(
         'info' => $resp->getInfo(),
@@ -109,7 +133,9 @@ abstract class TerminusCommand {
         (string)$request,
         TerminusCommand::$blacklist
       );
-      throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
+      $msg = $e->getMessage();
+      throw new TerminusException("API Request Error. $msg - Request: $sanitized_request");
+      //throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
     } catch (Exception $e) {
       throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
     }
@@ -285,6 +311,12 @@ abstract class TerminusCommand {
     //Locate the JSON in the string, turn to array
     $regex = '~\{(.*)\}~';
     preg_match($regex, $request, $matches);
+
+    // Skip cleanup if there's no JSON match.
+    if (0 == count($matches)) {
+      return $request;
+    }
+
     $request_array = json_decode($matches[0], true);
 
     //See if a blacklisted items are in the arrayed JSON, replace
