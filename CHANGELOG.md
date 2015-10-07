@@ -10,6 +10,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - Logged errors now exit with -1. (#576)
 
+### Removed
+- Removed `site attributes`. Use `site info` for the same effect. (#584)
+
 ##[0.8.1] - 2015-09-28
 ### Changed
 - Packagist now indexes this project as `[pantheon-systems/cli](https://packagist.org/packages/pantheon-systems/cli)` (was `terminus/terminus`)
