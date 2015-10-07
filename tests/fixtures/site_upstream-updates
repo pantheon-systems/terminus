@@ -358,3 +358,30 @@
             ETag: 'W/"KUfAPxoiJ1RXpRHYLTw7QQ=="'
             Vary: Accept-Encoding
         body: '{"environment_id": "dev", "params": {}, "role": "owner", "site_id": "c0d03e37-068d-471a-9051-90a992ca35e6", "task_ids": ["b9330e48-619c-11e5-9129-bc764e117665", "b941071e-619c-11e5-9129-bc764e117665", "b9432e86-619c-11e5-9129-bc764e117665", "b94377ce-619c-11e5-9129-bc764e117665", "b9438110-619c-11e5-9129-bc764e117665", "b9438ade-619c-11e5-9129-bc764e117665"], "trace_id": "b92d89f0-619c-11e5-a139-c95d7f8f209a", "type": "enable_git_mode", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "id": "b931c89e-619c-11e5-9129-bc764e117665", "key": "c0d03e37-068d-471a-9051-90a992ca35e6", "waiting_for_task_id": "b9330e48-619c-11e5-9129-bc764e117665", "keep_forever": false, "phase": "created", "queued_time": null, "run_time": null, "created_at": 1442976145.450819, "reason": "", "environment": "dev", "final_task_id": null, "result": "succeeded", "total_time": null, "active_description": "Enable git push mode for \"dev\"", "description": "Enable git push mode for \"dev\"", "step": 1, "number_of_tasks": 6, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=b92d89f0-619c-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T02:37:25.450819Z&to_iso_date=now", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"environment": "dev", "finished_at": 1442976145.620097, "fn_name": "trigger_task", "params": {"environment": "dev", "site_id": "c0d03e37-068d-471a-9051-90a992ca35e6", "task_type": "_set_on_server_dev_mode", "enabled": false}, "queued_at": 1442976145.61271, "responses": [{"code": 200, "body": "On server development mode in environment dev is now False"}], "result": "succeeded", "site_id": "c0d03e37-068d-471a-9051-90a992ca35e6", "started_at": 1442976145.612712, "trace_id": "b92d89f0-619c-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "b931c89e-619c-11e5-9129-bc764e117665", "id": "b9330e48-619c-11e5-9129-bc764e117665", "key": "1442973600", "created_at": 1442976145.459156, "queued_time": 1.9073486328125e-06, "run_time": 0.0073850154876708984, "phase": "finished", "allow_concurrent": false, "total_time": 0.16094088554382324, "internal_reason": "", "build_url": null, "messages": {"2015-09-23T02:42:27.145877": {"message": "On server development mode in environment dev is now False", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=b92d89f0-619c-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T02:37:25.459156Z&to_iso_date=2015-09-23T02:47:25.620097Z", "type": "_set_on_server_dev_mode"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/c0d03e37-068d-471a-9051-90a992ca35e6/environments/dev/on-server-development'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/0.8.1 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:795bf632-57eb-11e5-97ba-bc764e117665:40qCGPEoEcWd0fCkq5wsM'
+    response:
+        status:
+            http_version: '1.1'
+            code: '404'
+            message: 'Not Found'
+        headers:
+            Server: nginx
+            Date: 'Wed, 07 Oct 2015 18:58:44 GMT'
+            Content-Type: 'text/plain; charset=utf-8'
+            Content-Length: '11'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 6ed99940-6d25-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"b-c46f8466"'
+            Vary: Accept-Encoding
+        body: "Not found.\n"

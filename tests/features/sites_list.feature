@@ -3,7 +3,7 @@ Feature: sites
   Scenario: JSON List Sites
     @vcr sites-list-empty
     Given I am authenticated
-    When I run "terminus sites list --json"
+    When I run "terminus sites list --format=json"
     Then I should get:
     """
     []

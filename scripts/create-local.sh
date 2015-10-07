@@ -5,7 +5,7 @@ LOCAL_DIR="/srv/www/$1"; #should be an empty dir
 DB_NAME="pantheon_$( echo $1 | sed -r 's/-//g')"
 DBUSER="$( echo $1 | sed -r 's/-//g')"
 DBPASS="$( echo $1 | sed -r 's/-//g')"
-SITE_ID=$( $TERMINUS site info --site=$SITENAME --bash | grep ^id | awk '{print $2}' )
+SITE_ID=$( $TERMINUS site info --site=$SITENAME --format=bash | grep ^id | awk '{print $2}' )
 GIT_REMOTE="ssh://codeserver.dev.$SITE_ID@codeserver.dev.$SITE_ID.drush.in:2222/~/repository.git"
 echo "GIT_REMOTE=$GIT_REMOTE"
 

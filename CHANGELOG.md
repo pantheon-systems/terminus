@@ -9,6 +9,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Changed
 - Logged errors now exit with -1. (#576)
+- `--bash`, `--json`, and `--silent` have been replaced with `--format=<bash|json|silent` (#577)
 
 ### Removed
 - Removed `site attributes`. Use `site info` for the same effect. (#584)

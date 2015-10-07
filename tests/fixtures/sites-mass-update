@@ -543,3 +543,32 @@
             ETag: 'W/"2-d4cbb29"'
             Vary: Accept-Encoding
         body: '[]'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/88a4668f-3413-417d-b044-6f4aee2e127e/environments/dev/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.8.1 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:0bde1b84-57fb-11e5-97ba-bc764e117665:hmgNxymuJZOZR9t62VCNZ'
+            Content-type: application/json
+        body: '{"type":"do_export","params":{"entry_type":"backup","code":true,"database":true,"files":true,"ttl":31536000}}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '404'
+            message: 'Not Found'
+        headers:
+            Server: nginx
+            Date: 'Wed, 07 Oct 2015 18:59:23 GMT'
+            Content-Type: 'text/plain; charset=utf-8'
+            Content-Length: '11'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 85da4540-6d25-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: "Not found.\n"

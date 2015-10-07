@@ -30,17 +30,12 @@ class Logger extends KLogger {
     }
 
     if (!isset($options['logFormat'])) {
-      if ($config['json'] != null) {
-        $options['logFormat'] = 'json';
-      }
-      if ($config['bash'] != null) {
-        $options['logFormat'] = 'bash';
-      }
+      $options['logFormat'] = $config['format'];
     }
 
     if (isset($_SERVER['TERMINUS_LOG_DIR'])) {
       $logDirectory = $_SERVER['TERMINUS_LOG_DIR'];
-    } elseif ($config['silent']) {
+    } elseif ($config['format'] == 'silent') {
       $logDirectory = ini_get('error_log');
       if ($logDirectory == '') {
         die(
@@ -134,7 +129,10 @@ class Logger extends KLogger {
     * @return [string] $message
     */
   protected function formatMessage($level, $message, $context) {
-    if (isset($this->options) && $this->options['logFormat']) {
+    if (
+      isset($this->options)
+      && in_array($this->options['logFormat'], array('bash', 'json'))
+    ) {
       $parts   = $this->getMessageParts($level, $message, $context);
       $message = $this->options['logFormat'];
       foreach ($parts as $part => $value) {

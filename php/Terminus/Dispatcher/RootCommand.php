@@ -38,7 +38,7 @@ class RootCommand extends CompositeCommand {
      );
     }
 
-    if ((boolean)Terminus::get_config('json')) {
+    if (Terminus::get_config('format') == 'json') {
       return $binding;
     }
     return Utils\mustache_render('man-params.mustache', $binding);

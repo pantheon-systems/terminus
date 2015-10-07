@@ -1055,7 +1055,7 @@ class Site_Command extends TerminusCommand {
        case 'list':
         $hostnames = $env->getHostnames();
         $data      = $hostnames;
-        if (!Terminus::get_config('json')) {
+        if (Terminus::get_config('format') != 'json') {
           //If were not just dumping the JSON, then we should reformat the data.
           $data = array();
           foreach ($hostnames as $hostname => $details) {

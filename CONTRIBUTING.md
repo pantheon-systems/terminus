@@ -79,7 +79,7 @@ After a new major version is released, previous major versions will be actively 
 
 What qualifies as a backward incompatible change?
 
-Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --json or --bash formats we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, will not be consider incompatible. 
+Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --format=json or --format=bash formatting, we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, should not be assumed to be compatible. 
 
 ### Version branches 
 

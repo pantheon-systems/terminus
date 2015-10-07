@@ -50,7 +50,7 @@ Feature: cli
   Scenario: Dumping Empty Session
     @vcr cli-session-dump-empty
     When I run "terminus auth logout"
-    And I run "terminus cli session-dump --json"
+    And I run "terminus cli session-dump --format=json"
     Then I should get:
     """
     false

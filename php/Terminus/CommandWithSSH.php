@@ -31,12 +31,13 @@ abstract class CommandWithSSH extends TerminusCommand {
       }
     }
 
+    $is_silent = (Terminus::get_config('format') == 'silent');
     $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " " . escapeshellarg($remote_cmd);
-    if (Terminus::get_config('silent')) {
+    if ($is_silent) {
       ob_start();
     }
     passthru($cmd, $exit_code);
-    if (Terminus::get_config('silent')) {
+    if ($is_silent) {
       $this->logger->info(ob_get_clean());
     }
 
