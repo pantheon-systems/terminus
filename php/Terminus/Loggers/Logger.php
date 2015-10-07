@@ -6,7 +6,6 @@ use Katzgrau\KLogger\Logger as KLogger;
 use Psr\Log\LogLevel;
 
 class Logger extends KLogger {
-  protected $parent;
 
   /**
    * Class constructor. Feeds in output destination from env vars
@@ -24,6 +23,7 @@ class Logger extends KLogger {
   ) {
     $config = $options['config'];
     unset($options['config']);
+    $options['dateFormat'] = 'Y-m-d H:i:s';
 
     if ($config['debug']) {
       $logLevelThreshold = LogLevel::DEBUG;
@@ -51,7 +51,6 @@ class Logger extends KLogger {
     }
 
     parent::__construct($logDirectory, $logLevelThreshold, $options);
-    $this->parent = $this->extractParent();
   }
 
   /**
@@ -63,10 +62,9 @@ class Logger extends KLogger {
     * @return [void]
     */
   public function log($level, $message, array $context = array()) {
-    $parent = $this->parent;
     if (
-      isset($parent->logLevelThreshold)
-      && ($parent->logLevels[$parent->logLevelThreshold] < $parent->logLevels[$level])
+      isset($this->logLevelThreshold)
+      && ($this->logLevels[$this->logLevelThreshold] < $this->logLevels[$level])
     ) {
       return;
     }
@@ -76,12 +74,12 @@ class Logger extends KLogger {
     $message = $this->interpolate($message, $context);
 
 
-    if (isset($parent->options) && $parent->options['logFormat'] == 'json') {
+    if (isset($this->options) && $this->options['logFormat'] == 'json') {
       $message = $this->formatJsonMessages($level, $message, $context);
-    } elseif (isset($parent->options) && $parent->options['logFormat'] == 'bash') {
+    } elseif (isset($this->options) && $this->options['logFormat'] == 'bash') {
       $message = $this->formatBashMessages($level, $message, $context);
     } else {
-      $message = $this->formatMessages($level, $message, $context);
+      $message = $this->formatMessage($level, $message, $context);
     }
     $this->write($message);
   }
@@ -94,51 +92,6 @@ class Logger extends KLogger {
   public function setBufferHandle() {
     $handle_name = strtoupper(substr($this->getLogFilePath(), 6));
     $this->fileHandle = constant($handle_name);
-  }
-
-  /**
-   * Extracts private data from the parent class
-   *
-   * @return [stdClass] $parent
-   */
-  private function extractParent() {
-    $array  = (array)$this;
-    array_shift($array);
-    $parent = new \stdClass();
-    foreach ($array as $key => $value) {
-      //All these keys begin with a null. We need to cut them off so they can be used.
-      $property_name = substr(str_replace('Katzgrau\KLogger\Logger', '', $key), 2);
-      $parent->$property_name = $value;
-    }
-    return $parent;
-  }
-
-  /**
-   * Takes the given context and coverts it to a string.
-   *
-   * @param [array] $context The Context
-   * @return [string]
-   */
-  private function contextToString($context) {
-    $export = '';
-    foreach ($context as $key => $value) {
-      $export .= "{$key}: ";
-      $export .= preg_replace(
-        array(
-          '/=>\s+([a-zA-Z])/im',
-          '/array\(\s+\)/im',
-          '/^  |\G  /m'
-        ),
-        array(
-          '=> $1',
-          'array()',
-          '    '
-        ),
-        str_replace('array (', 'array(', var_export($value, true))
-      );
-      $export .= PHP_EOL;
-    }
-    return str_replace(array('\\\\', '\\\''), array('\\', '\''), rtrim($export));
   }
 
   /**
@@ -180,20 +133,19 @@ class Logger extends KLogger {
     * @param  [array]  $context The context
     * @return [string] $message
     */
-  private function formatMessages($level, $message, $context) {
-    $parent = $this->parent;
-    if (isset($parent->options) && $parent->options['logFormat']) {
+  protected function formatMessage($level, $message, $context) {
+    if (isset($this->options) && $this->options['logFormat']) {
       $parts   = $this->getMessageParts($level, $message, $context);
-      $message = $parent->options['logFormat'];
+      $message = $this->options['logFormat'];
       foreach ($parts as $part => $value) {
         $message = str_replace('{'.$part.'}', $value, $message);
       }
     } else {
-      $message = "[{$this->getTimestamp()}] [{$level}] {$message}";
+      $message = "[{$this->getTimestamp()}] [$level] $message";
     }
     if (
-      isset($parent->options)
-      && $parent->options['appendContext']
+      isset($this->options)
+      && $this->options['appendContext']
       && ! empty($context)
     ) {
       $message .= PHP_EOL . $this->indent($this->contextToString($context));
@@ -227,24 +179,8 @@ class Logger extends KLogger {
    * @return [string] $date
    */
   private function getTimestamp() {
-    $date_format = 'Y-m-d H:i:s';
-    if (isset($this->options['dateFormat'])) {
-      $date_format = $this->options['dateFormat'];
-    }
-    $date = date($date_format);
+    $date = date($this->options['dateFormat']);
     return $date;
-  }
-
-  /**
-   * Indents the given string with the given indent.
-   *
-   * @param [string] $string The string to indent
-   * @param [string] $indent What to use as the indent.
-   * @return [string] $indented_string
-   */
-  private function indent($string, $indent = '    ') {
-    $indented_string = $indent . str_replace("\n", "\n" . $indent, $string);
-    return $indented_string;
   }
 
   /**
