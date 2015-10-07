@@ -4,6 +4,7 @@ use Terminus\Auth;
 use Terminus\Endpoint;
 use Terminus\Request;
 use Terminus\Session;
+use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Regular as Logger;
 
@@ -234,7 +235,7 @@ abstract class TerminusCommand {
       $data = (array)$data;
     }
 
-    if (Terminus\Utils\result_is_multiobj($data)) {
+    if (Utils\result_is_multiobj($data)) {
       if (!empty($headers)) {
         $table->setHeaders($headers);
       } elseif (
@@ -245,7 +246,7 @@ abstract class TerminusCommand {
           $table->setHeaders($this->_headers[$this->func]);
         }
       } else {
-        $table->setHeaders(Terminus\Utils\result_get_response_fields($data));
+        $table->setHeaders(Utils\result_get_response_fields($data));
       }
 
       foreach ($data as $row => $row_data) {
@@ -381,6 +382,20 @@ abstract class TerminusCommand {
    */
   protected function output() {
     return $this->outputter;
+  }
+
+  /**
+   * Sends the given message to logger as an error and exits with -1
+   *
+   * @param [string] $message Message to log as error before exit
+   * @param [array]  $context Vars to interpolate in message
+   * @return [void]
+   */
+  protected function failure(
+    $message = 'Command failed',
+    array $context = array()
+  ) {
+    throw new TerminusException($message, $context, -1);
   }
 
   /**

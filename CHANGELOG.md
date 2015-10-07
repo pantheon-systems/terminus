@@ -7,6 +7,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Password no longer shows when logging in with some Windows terminal clients (#574)
 - No more errors when running Terminus in Windows from directories with spaces in the path. (#575)
 
+### Changed
+- Logged errors now exit with -1. (#576)
+
 ##[0.8.1] - 2015-09-28
 ### Changed
 - Packagist now indexes this project as `[pantheon-systems/cli](https://packagist.org/packages/pantheon-systems/cli)` (was `terminus/terminus`)
