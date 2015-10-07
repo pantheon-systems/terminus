@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus\Request;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Bindings;
 
@@ -777,6 +778,44 @@ class Environment extends TerminusModel {
       return 'database';
     }
     return $element;
+  }
+
+  /**
+   * Load site info
+   *
+   * @param [string] $key Set to retrieve a specific attribute as named
+   * @return [array] $info
+   */
+  public function info($key = null) {
+    $path = sprintf('environments/%s', $this->get('id'));
+    $result = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      $path,
+      'GET'
+    );
+    $connection_mode = null;
+    if (isset($result['data']->on_server_development)) {
+      $connection_mode = 'git';
+      if ((boolean)$result['data']->on_server_development) {
+        $connection_mode = 'sftp';
+      }
+    }
+    $info = array(
+      'id'              => $this->get('id'),
+      'connection_mode' => $connection_mode,
+      'php_version'     => $this->site->info('php_version'),
+    );
+
+    if ($key) {
+      if (isset($info[$key])) {
+        return $info[$key];
+      } else {
+        throw new TerminusException('There is no such field.', array(), -1);
+      }
+    } else {
+      return $info;
+    }
   }
 
 }

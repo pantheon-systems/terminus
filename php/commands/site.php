@@ -262,6 +262,41 @@ class Site_Command extends TerminusCommand {
    }
 
   /**
+   * Shows environment information for a site
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of the site to get info on
+   *
+   * [--env=<env>]
+   * : name of environment of <site> to get info on
+   *
+   * [--field=<field>]
+   * : field to return
+   *
+   * @subcommand environment-info
+   */
+  public function environment_info($args, $assoc_args) {
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    $env  = $site->environments->get(
+      Input::env(
+        $assoc_args,
+        'env',
+        'Choose environment',
+        $site->environments->ids()
+      )
+    );
+
+    if (isset($assoc_args['field'])) {
+      $field = $assoc_args['field'];
+      $this->output()->outputValue($env->info($field), $field);
+    } else {
+      $this->output()->outputRecord($env->info());
+    }
+  }
+
+  /**
    * Retrieve information about the site
    *
    * ## OPTIONS
