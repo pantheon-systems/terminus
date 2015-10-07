@@ -18,25 +18,6 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
-  * Get or set site attributes
-  *
-  * ## OPTIONS
-  *
-  * [--site=<site>]
-  * : site to check attributes on
-  *
-  * [--env=<env>]
-  * : environment
-  *
-  * ## EXAMPLES
-  *
-  **/
-  public function attributes($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $this->output()->outputRecord($site->attributes);
-  }
-
-  /**
    * Clear all site caches
    *
    * ## OPTIONS
@@ -304,7 +285,7 @@ class Site_Command extends TerminusCommand {
       $field = $assoc_args['field'];
       $this->output()->outputValue($site->info($field), $field);
     } else {
-      $this->output()->outputRecord($site->info());
+      $this->output()->outputRecord($site->attributes);
     }
   }
 
