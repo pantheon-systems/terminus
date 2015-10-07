@@ -2,6 +2,9 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ##Master
+### Added
+- `site environment-info --site=<site> --env=<env> [--field=<field>]` (#582)
+
 ### Fixed
 - `site connection-info` Git, MySQL and Redis info now correct (#573)
 - Password no longer shows when logging in with some Windows terminal clients (#574)
