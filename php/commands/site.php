@@ -96,9 +96,9 @@ class Site_Command extends TerminusCommand {
         $message = "Commit changes to $count files?";
         if ($count === 0) {
           $message = 'There are no changed files. Commit anyway?';
+          Terminus::confirm($message, $assoc_args);
         }
-        Terminus::confirm($message, $assoc_args);
-        $message = @$assoc_args['message'] ?: 'Terminus commit.';
+        $message = Input::string($assoc_args, 'message', 'Please enter a commit message.', 'Terminus commit.');
         $workflow = $env->commitChanges($message);
         $workflow->wait();
         $this->workflowOutput($workflow);

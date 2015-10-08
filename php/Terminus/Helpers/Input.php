@@ -247,8 +247,11 @@ class Input {
     if(isset($args[$key])) {
       return $args[$key];
     }
+    if (Terminus::get_config('format') != 'normal') {
+      return $default;
+    }
     $string = Terminus::prompt($label);
-    if(($string == '') && isset($default)) {
+    if ($string == '') {
       return $default;
     }
     return $string;
