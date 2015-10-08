@@ -1,17 +1,10 @@
-Feature: Site connection mode
+Feature: Site set connection mode
 
-  Scenario: Checking connection mode
-    @vcr site_connection-mode
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev"
-    Then I should get one of the following: "git, sftp"
-    
   Scenario: Setting connection mode to git
     @vcr site_connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev --set=git"
+    When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=git"
     Then I should get: "."
     And I should get:
     """
@@ -22,7 +15,7 @@ Feature: Site connection mode
     @vcr site_connection-mode_sftp
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev --set=sftp"
+    When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
     Then I should get: "."
     And I should get:
     """
@@ -30,10 +23,10 @@ Feature: Site connection mode
     """
 
   Scenario: Failing to set connection mode to invalid mode
-    @vcr site_connection-mode_invalid
+    @vcr site_connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev --set=invalid"
+    When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=invalid"
     Then I should get: "."
     And I should get:
     """
@@ -41,11 +34,11 @@ Feature: Site connection mode
     """
 
   Scenario: Failing to set the connection mode to the current mode
-    @vcr site_connection-mode_same
+    @vcr site_connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev --set=sftp"
+    When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
     Then I should get:
     """
-    The connection mode is already set to sftp.
+    The connection mode on [[test_site_name]] for dev is already set to sftp.
     """

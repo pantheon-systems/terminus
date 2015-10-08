@@ -10,13 +10,6 @@ Feature: site
     Service Level
     """
 
-  Scenario: Site Connection Mode
-    @vcr site-connection-mode
-    Given I am authenticated
-    Given a site named "[[test_site_name]]"
-    When I run "terminus site connection-mode --site=[[test_site_name]] --env=dev"
-    Then I should get one of the following: "git, sftp"
-
   Scenario: Site Workflows
     @vcr site-workflows
     Given I am authenticated
