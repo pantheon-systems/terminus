@@ -28,7 +28,7 @@ Whether you want to fix a bug or implement a new feature, the process is pretty 
 
 It doesn't matter if the code isn't perfect. The idea is to get it reviewed early and iterate on it.
 
-If you're adding a new feature, please add one or more functional tests for it in the `features/` directory. See below.
+If you're adding a new feature, please add one or more functional tests for it in the `tests/features/` directory. See below.
 
 Lastly, please follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).
 
@@ -42,7 +42,7 @@ There are two types of automated tests:
 
 ### Unit Tests
 
-The unit test files are in the `tests/` directory.
+The unit test files are in the `tests/unit-tests` directory.
 
 To run the unit tests, execute:
 
@@ -50,7 +50,7 @@ To run the unit tests, execute:
 
 ### Functional Tests
 
-The functional test files are in the `features/` directory.
+The functional test files are in the `test/features` directory.
 
 Before running the functional tests, you'll need a MySQL user called `wp_cli_test` with the
 password `password1` that has full privileges on the MySQL database `wp_cli_test`.
@@ -60,11 +60,11 @@ Running the following as root in MySQL should do the trick:
 
 To run the entire test suite:
 
-    php behat.phar --expand
+  `vendor/bin/behat -c=tests/config/behat.yml`
 
 Or to test a single feature:
 
-    php behat.phar features/core.feature
+    vendor/bin/behat -c=tests/config/behat.yml tests/features/core.feature
 
 More information can be found by running `php behat.phar --help`.
 
@@ -75,9 +75,9 @@ Versioning
 
 In keeping with the standards of semantic versioning, backward-incompatible fixes are targeted to "Major" versions. "Minor" versions are reserved for significant feature/bug releases needed between major versions. "Patch" releases are reserved only for critical security issues and other bugs critical to stabilizing the release. 
 
-After a new major version is released, previous major versions are actively supported for 1 year. 
+After a new major version is released, previous major versions are actively supported for one year. 
 
-#### What qualifies as a backward incompatible change?
+#### What qualifies as a backward-incompatible change?
 
 Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --format=json or --format=bash formatting, we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, should not be assumed to be compatible. 
 
@@ -93,7 +93,5 @@ We will maintain a separate branch for all minor point releases going forward, e
 
 0.5.0 will include only changes that are backward incompatible. After it's released, we will create a 0.5.x branch that will be used for any critical bugs or patches that need to be addressed. All other bugs/features/issues will be addressed in the next major point release 1.0.0. The master branch will effectively become the 1.0.x branch. There is currently no plan for a version 0.6.x. 
 
-----------
-
-Thanks! Hacking on Terminus should be fun. If you find any of this hard to figure
+Thanks! Writing for Terminus should be fun. If you find any of this hard to figure
 out, let us know so we can improve our process or documentation!
