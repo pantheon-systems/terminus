@@ -63,6 +63,9 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
+    if (in_array(\Terminus::get_config('format'), array('bash', 'json', 'silent'))) {
+      $assoc_args['pipe'] = 1;
+    }
     $this->log()->info(
       "Running drush {cmd} {flags} on {site}-{env}",
       array(
@@ -72,7 +75,10 @@ class Drush_Command extends CommandWithSSH {
         'env' => $environment
       )
     );
-    $this->send_command($server, 'drush', $args, $assoc_args );
+    $result = $this->send_command($server, 'drush', $args, $assoc_args);
+    if (Terminus::get_config('format') != 'normal') {
+      $this->output()->outputRecordList($result);
+    }
   }
 
 }
