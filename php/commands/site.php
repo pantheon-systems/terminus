@@ -132,57 +132,55 @@ class Site_Command extends TerminusCommand {
   }
 
   /**
-  * Change connection mode between SFTP and Git
-  *
-  * ## OPTIONS
-  *
-  * [--site=<site>]
-  * : name of the site
-  *
-  * [--env=<env>]
-  * : site environment
-  *
-  * [--set=<value>]
-  * : set connection to sftp or git
-  *
-  * @subcommand connection-mode
-  */
-  public function connection_mode($args, $assoc_args) {
-    $site   = $this->sites->get(Input::sitename($assoc_args));
-    $action = 'show';
-    if (isset($assoc_args['set']) && $assoc_args['set']) {
-      $action = 'set';
-      $mode   = $assoc_args['set'];
+   * Change connection mode between SFTP and Git
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of the site
+   *
+   * [--env=<env>]
+   * : site environment
+   *
+   * [--mode=<value>]
+   * : set connection to sftp or git
+   *
+   * @subcommand set-connection-mode
+   */
+  public function set_connection_mode($args, $assoc_args) {
+    if (!isset($assoc_args['mode']) || !in_array($assoc_args['mode'], array('sftp', 'git'))) {
+      throw new TerminusException('You must specify the mode as either sftp or git.');
     }
-
+    $mode = strtolower($assoc_args['mode']);
+    $site = $this->sites->get(Input::sitename($assoc_args));
     # Only present dev and multidev environments; Test/Live cannot be modified
     $environments = array_diff($site->environments->ids(), array('test', 'live'));
 
-    $env = Input::env($assoc_args, 'env', 'Choose environment', $environments);
-    if (($env == 'test' || $env == 'live') && $action == 'set') {
+    $env = $site->environments->get(
+      Input::env($assoc_args, 'env', 'Choose environment', $environments)
+    );
+    if (in_array($env->get('id'), array('test', 'live'))) {
       throw new TerminusException('Connection mode cannot be set in Test or Live environments');
     }
-    $data = $headers = array();
-    switch($action) {
-      case 'set':
-        if (!in_array($mode, array('sftp', 'git'))) {
-          throw new TerminusException('You must specify the mode as either sftp or git.');
-        }
-        $workflow = $site->environments->get($env)->changeConnectionMode($mode);
-        if (is_string($workflow)) {
-          $this->log()->info($workflow);
-        } else {
-          $workflow->wait();
-          $this->workflowOutput($workflow);
-        }
-        break;
-      case 'show':
-      default:
-        $mode = $site->environments->get($env)->getConnectionMode();
-        $this->output()->outputRecord(array('connection_mode' => $mode));
-        break;
+    if ($mode == $env->info('connection_mode')) {
+      throw new TerminusException(
+        'The connection mode on {site} for {env} is already set to {mode}.',
+        array(
+          'site' => $site->get('name'),
+          'env' => $env->get('id'),
+          'mode' => $mode
+        ),
+        -1
+      );
     }
-    return $data;
+    $workflow = $env->changeConnectionMode($mode);
+    if (is_string($workflow)) {
+      $this->log()->info($workflow);
+    } else {
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+    }
+    return true;
   }
 
   /**
