@@ -172,7 +172,7 @@ class Terminus {
    * @return [string] $message
    */
   static function promptSecret($message = '', $params = array(), $default = null) {
-    if (Utils::is_windows()) {
+    if (Utils\is_windows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
       file_put_contents(
         $vbscript, 'wscript.echo(InputBox("'
