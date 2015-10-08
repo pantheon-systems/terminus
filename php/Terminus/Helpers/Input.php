@@ -60,7 +60,10 @@ class Input {
       $text = "Select one",
       $return_value = false
   ) {
-    echo PHP_EOL;
+    if (count($choices) == 1) {
+      $only_choice = array_shift($choices);
+      return $only_choice;
+    }
     $index = \cli\Streams::menu($choices, $default, $text);
     if ($return_value) {
       return $choices[$index];
