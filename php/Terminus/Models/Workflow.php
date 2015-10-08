@@ -18,7 +18,7 @@ class Workflow extends TerminusModel {
       case 'user':
         $url = sprintf(
           'users/%s/workflows/%s',
-          $this->owner->get('id'),
+          $this->owner->id,
           $this->get('id')
         );
           break;
