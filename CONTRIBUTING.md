@@ -11,10 +11,8 @@ Setting Up
 
 1. Clone this Git repository on your local machine.
 2. Install [Composer](https://getcomposer.org/) if you don't already have it.
-2. Run `composer install` to fetch all the dependencies.
-3. Run `./bin/terminus --info` to test that everything was installed properly.
-4. Download PHPUnit: `curl -L https://phar.phpunit.de/phpunit.phar > phpunit.phar`
-5. Download Behat: `curl -L http://behat.org/downloads/behat.phar > behat.phar`
+3. Run `composer install` to fetch all the dependencies.
+4. Run `./bin/terminus help` to test that everything was installed properly.
 
 Submitting Patches
 ------------------
@@ -40,40 +38,36 @@ There are two types of automated tests:
 * unit tests, implemented using [PHPUnit](http://phpunit.de/)
 * functional tests, implemented using [Behat](http://behat.org)
 
+Both the unit and functional tests can be run together via:
+
+`./scripts/test.sh`
+
 ### Unit Tests
 
 The unit test files are in the `tests/unit-tests` directory.
 
-To run the unit tests, execute:
+To run the unit tests, simply execute:
 
-    php phpunit.phar
+  `vendor/bin/phpunit`
 
 ### Functional Tests
 
-The functional test files are in the `test/features` directory.
-
-Before running the functional tests, you'll need a MySQL user called `wp_cli_test` with the
-password `password1` that has full privileges on the MySQL database `wp_cli_test`.
-Running the following as root in MySQL should do the trick:
-
-    GRANT ALL PRIVILEGES ON wp_cli_test.* TO "wp_cli_test"@"localhost" IDENTIFIED BY "password1";
-
-To run the entire test suite:
+The functional test files are in the `test/features` directory. To run the entire test suite:
 
   `vendor/bin/behat -c=tests/config/behat.yml`
 
 Or to test a single feature:
 
-    vendor/bin/behat -c=tests/config/behat.yml tests/features/core.feature
+  `vendor/bin/behat -c=tests/config/behat.yml tests/features/core.feature`
 
-More information can be found by running `php behat.phar --help`.
+More information can be found by running `vendor/bin/behat --help`.
 
 Versioning 
---------------
+----------
 
 ### Versions 
 
-In keeping with the standards of semantic versioning, backward-incompatible fixes are targeted to "Major" versions. "Minor" versions are reserved for significant feature/bug releases needed between major versions. "Patch" releases are reserved only for critical security issues and other bugs critical to stabilizing the release. 
+In keeping with the standards of semantic versioning, backward-incompatible fixes are targeted to "major" versions. "Minor" versions are reserved for significant feature/bug releases needed between major versions. "Patch" releases are reserved only for critical security issues and other bugs critical to stabilizing the release. 
 
 After a new major version is released, previous major versions are actively supported for one year. 
 
@@ -81,17 +75,13 @@ After a new major version is released, previous major versions are actively supp
 
 Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --format=json or --format=bash formatting, we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, should not be assumed to be compatible. 
 
-### Version Branches 
+### Release Stability
 
-If you are using Terminus in a production environment, you should be deploying the executable for the latest release. ( github.com/pantheon-systems/cli/releases )
+If you are using Terminus in a production environment, you should be deploying the executable for [the latest release](https://github.com/pantheon-systems/cli/releases).
 
-Ongoing development on the next planned release will be on the master branch and should not be considered stable as changes will be taking place on a daily basis. 
+Ongoing development on the next planned release will be on the master branch and should not be considered stable, as changes will be taking place on a daily basis. 
 
-We will maintain a separate branch for all minor point releases going forward, e.g. 1.0.x, 0.5.x. Submit any critical patches to those branches. If the fix is applicable to master, make a a separate pull request.
+Feedback
+--------
 
-#### What does this mean for users?
-
-0.5.0 will include only changes that are backward incompatible. After it's released, we will create a 0.5.x branch that will be used for any critical bugs or patches that need to be addressed. All other bugs/features/issues will be addressed in the next major point release 1.0.0. The master branch will effectively become the 1.0.x branch. There is currently no plan for a version 0.6.x. 
-
-Thanks! Writing for Terminus should be fun. If you find any of this hard to figure
-out, let us know so we can improve our process or documentation!
+Writing for Terminus should be fun. If you find any of this hard to figure out, let us know so we can improve our process or documentation!
