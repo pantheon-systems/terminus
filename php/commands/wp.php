@@ -69,8 +69,10 @@ class WPCLI_Command extends CommandWithSSH {
         'env' => $environment
       )
     );
-    $this->send_command($server, 'wp', $args, $assoc_args );
-
+    $result = $this->send_command($server, 'wp', $args, $assoc_args);
+    if (Terminus::get_config('format') != 'normal') {
+      $this->output()->outputRecordList($result);
+    }
   }
 
 }
