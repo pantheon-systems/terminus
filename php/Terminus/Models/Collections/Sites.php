@@ -62,11 +62,12 @@ class Sites extends TerminusCollection {
    * Adds site with given site ID to cache
    *
    * @param [string] $site_id UUID of site to add to cache
-   * @return [void]
+   * @return [Site] $site The newly created site object
    */
   public function addSiteToCache($site_id) {
     if (count($this->models) == 0) {
       $this->rebuildCache();
+      $site = $this->get($site_id);
     } else {
       $site = new Site(
         $this->objectify(array('id' => $site_id)),
@@ -92,6 +93,7 @@ class Sites extends TerminusCollection {
       }
       $this->sites_cache->add($cache_membership);
     }
+    return $site;
   }
 
   /**

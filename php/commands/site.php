@@ -1208,22 +1208,22 @@ class Site_Command extends TerminusCommand {
    * : URL of archive to import
    *
    * [--element=<element>]
-   * : Site element to import (i.e. code, files, db, or all)
+   * : Site element to import (i.e. code or database)
    *
-   * @subcommand import
+   * @subcommand import-content
    */
   public function import($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $url   = Input::string($assoc_args, 'url', 'URL of archive to import');
+    $url  = Input::string($assoc_args, 'url', 'URL of archive to import');
     if (!$url) {
-      throw new TerminusException('Please enter a URL.');
+      $this->logger->error('Please enter a URL.');
     }
 
     if(!isset($assoc_args['element'])) {
-      $element_options = array('code', 'database', 'files', 'all');
+      $element_options = array('database', 'files');
       $element_key     = Input::menu(
         $element_options,
-        'all',
+        null,
         'Which element are you importing?'
       );
       $element         = $element_options[$element_key];
@@ -1231,11 +1231,14 @@ class Site_Command extends TerminusCommand {
       $element = $assoc_args['element'];
     }
 
-    $workflow = $site->import($url, $element);
-    $this->log()->info(
-      'Import started, '
-      . 'you can now safely kill this script without interfering.'
-    );
+    switch ($element) {
+      case 'database':
+        $workflow = $site->importDatabase($url);
+        break;
+      case 'files':
+        $workflow = $site->importFiles($url);
+        break;
+    }
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
