@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 
@@ -62,7 +63,6 @@ class Workflow extends TerminusModel {
     return $is_successful;
   }
 
-
   /**
    * Waits on this workflow to finish
    *
@@ -77,7 +77,7 @@ class Workflow extends TerminusModel {
       fwrite(STDERR, '.');
     }
     // TODO: output this to stdout so that it doesn't get mixed with any actual output.
-    \Terminus::line();
+    Terminus::line();
     if ($this->isSuccessful()) {
       return $this;
     } else {
