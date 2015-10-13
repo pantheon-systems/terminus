@@ -1662,8 +1662,13 @@ class Site_Command extends TerminusCommand {
    * @subcommand upstream-info
    */
   public function upstream_info($args, $assoc_args) {
-    $site     = $this->sites->get(Input::sitename($assoc_args));
-    $upstream = $site->get('upstream');
+    $site             = $this->sites->get(Input::sitename($assoc_args));
+    $upstream         = $site->get('upstream');
+    $upstream_updates = $site->getUpstreamUpdates();
+    $upstream['status'] = 'current';
+    if ($upstream_updates->behind > 0) {
+      $upstream['status'] = 'outdated';
+    }
     $this->output()->outputRecord($upstream);
   }
 
@@ -1695,17 +1700,14 @@ class Site_Command extends TerminusCommand {
     $upstream = $site->getUpstreamUpdates();
 
     switch($action) {
+      default:
       case 'list':
         $data = array();
         if(isset($upstream->remote_url) && isset($upstream->behind)) {
-          $data[$upstream->remote_url] = 'Up-to-date';
-          if ($upstream->behind > 0) {
-            $data[$upstream->remote_url] = 'Updates Available';
-          }
-
-          $this->constructTableForResponse($data, array('Upstream', 'Status'));
-          if (!isset($upstream) || empty($upstream->update_log)) {
-            $this->log()->success('No updates to show');
+          $update_log = (array)$upstream->update_log;
+          if (!isset($upstream) || empty($update_log)) {
+            $this->log()->info('No updates to show');
+            exit(0);
           }
           $upstreams = (array)$upstream->update_log;
           if (!empty($upstreams)) {
@@ -1719,12 +1721,12 @@ class Site_Command extends TerminusCommand {
               );
             }
           }
+          $this->output()->outputRecordList($data);
         } else {
           $this->log()->warning(
             'There was a problem checking your upstream status. Please try again.'
           );
         }
-        $this->output()->outputRecordList($data);
         break;
       case 'apply':
         if (!empty($upstream->update_log)) {
