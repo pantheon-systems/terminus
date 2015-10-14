@@ -164,7 +164,7 @@ class Configurator {
   }
 
   private static function absolutize(&$path, $base) {
-    if (!empty($path) && !\Terminus\Utils\is_path_absolute($path)) {
+    if (!empty($path) && !\Terminus\Utils\isPathAbsolute($path)) {
       $path = $base . DIRECTORY_SEPARATOR . $path;
     }
   }

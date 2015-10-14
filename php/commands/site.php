@@ -526,7 +526,7 @@ public function backups($args, $assoc_args) {
       if (isset($assoc_args['to'])) {
         $target = $assoc_args['to'];
         if (is_dir($target)) {
-          $filename = Utils\get_filename_from_url($url->url);
+          $filename = Utils\getFilenameFromUrl($url->url);
           $target = sprintf('%s/%s', $target, $filename);
         }
         $this->log()->info('Downloading ... please wait ...');
@@ -566,7 +566,7 @@ public function backups($args, $assoc_args) {
 
       $assoc_args['env'] = $env;
       $target = $this->backup(array('get'), $assoc_args);
-      $target = '/tmp/' . Utils\get_filename_from_url($target);
+      $target = '/tmp/' . Utils\getFilenameFromUrl($target);
 
       if (!file_exists($target)) {
         throw new TerminusException('Cannot read database file {target}', array('target' => $target));
@@ -576,7 +576,7 @@ public function backups($args, $assoc_args) {
       exec("gunzip $target", $stdout, $exit);
 
       // trim the gz of the target
-      $target = Utils\sql_from_zip($target);
+      $target = Utils\sqlFromZip($target);
       $target = escapeshellarg($target);
       exec("mysql $database -u $username -p'$password' < $target", $stdout, $exit);
       if ($exit != 0) {
@@ -1103,9 +1103,7 @@ public function environments($args, $assoc_args) {
           throw new TerminusException('Must specify hostname with --hostname');
         }
         $data = $env->addHostname($assoc_args['hostname']);
-        if (Terminus::getConfig('verbose')) {
-          Utils\json_dump($data);
-        }
+        $this->log()->debug(json_encode($data));
         $this->log()->info(
           'Added {hostname} to {site}-{env}',
           array('hostname' => $assoc_args['hostname'], 'site' => $site->get('name'), 'env' => $env->get('id'))
@@ -1309,7 +1307,7 @@ public function mount($args, $assoc_args) {
     throw new TerminusException('Must install sshfs first');
   }
 
-  $destination = Utils\destination_is_valid($assoc_args['destination']);
+  $destination = Utils\destinationIsValid($assoc_args['destination']);
 
   $site = $this->sites->get(Input::sitename($assoc_args));
   $env  = Input::env($assoc_args, 'env');

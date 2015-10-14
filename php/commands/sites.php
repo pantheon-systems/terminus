@@ -200,7 +200,7 @@ class Sites_Command extends TerminusCommand {
   static function getSiteCreateOptions($assoc_args) {
     $options = array();
     $options['label'] = Input::string($assoc_args, 'label', 'Human-readable label for the site');
-    $suggested_name = Utils\sanitize_name($options['label']);
+    $suggested_name = Utils\sanitizeName($options['label']);
 
     if (array_key_exists('name', $assoc_args)) {
       // Deprecated but kept for backwards compatibility
@@ -239,7 +239,6 @@ class Sites_Command extends TerminusCommand {
   public function aliases($args, $assoc_args) {
     $user = new User(new stdClass(), array());
     $print = Input::optional('print', $assoc_args, false);
-    $json = (\Terminus::getConfig('format') == 'json');
     $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
 
     // Cannot provide just a directory
@@ -265,11 +264,8 @@ class Sites_Command extends TerminusCommand {
     $message = $file_exists ? 'Pantheon aliases updated' : 'Pantheon aliases created';
     $this->log()->info($message);
 
-    if ($json) {
-      include $location;
-      print \Terminus\Utils\json_dump($aliases);
-    } elseif ($print) {
-      print $content;
+    if ($print) {
+      $this->output()->outputRecordList($aliases);
     }
   }
 

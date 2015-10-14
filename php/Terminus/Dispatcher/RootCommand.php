@@ -41,13 +41,13 @@ class RootCommand extends CompositeCommand {
     if (Terminus::getConfig('format') == 'json') {
       return $binding;
     }
-    return Utils\mustache_render('man-params.mustache', $binding);
+    return Utils\mustacheRender('man-params.mustache', $binding);
   }
 
   function find_subcommand(&$args) {
     $command = array_shift($args);
 
-    Utils\load_command($command);
+    Utils\loadCommand($command);
 
     if (!isset($this->subcommands[$command])) {
       return false;
@@ -57,7 +57,7 @@ class RootCommand extends CompositeCommand {
   }
 
   function get_subcommands() {
-    Utils\load_all_commands();
+    Utils\loadAllCommands();
 
     return parent::get_subcommands();
   }

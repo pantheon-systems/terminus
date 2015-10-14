@@ -94,7 +94,7 @@ class Help_Command extends TerminusCommand {
   private function pass_through_pager($out) {
 
     if (
-      Utils\is_windows()
+      Utils\isWindows()
       || in_array(Terminus::getConfig('format'), array('bash', 'json')) 
     ) {
       // No paging for Windows cmd.exe; sorry
@@ -133,7 +133,7 @@ class Help_Command extends TerminusCommand {
     if (Terminus::getConfig('format') == 'json') {
       $rendered_help = $binding;
     } else {
-      $rendered_help = Utils\mustache_render('man.mustache', $binding);  
+      $rendered_help = Utils\mustacheRender('man.mustache', $binding);  
     }
     return $rendered_help;
   }

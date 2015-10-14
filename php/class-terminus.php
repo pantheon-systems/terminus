@@ -250,7 +250,7 @@ class Terminus {
    * @return [integer] $status The command exit status
    */
   static function launch($command, $exit_on_error = true) {
-    if (Utils\is_windows()) {
+    if (Utils\isWindows()) {
       $command = '"' . $command . '"';
     }
     $r = proc_close(proc_open($command, array(STDIN, STDOUT, STDERR), $pipes));
@@ -300,7 +300,7 @@ class Terminus {
     $script_path  = '"' . $script_path . '"';
     $escaped_args = array_map('escapeshellarg', $args);
     $args         = implode(' ', $escaped_args);
-    $assoc_args   = Utils\assoc_args_to_str($assoc_args);
+    $assoc_args   = Utils\assocArgsToStr($assoc_args);
     $full_command = "$php_bin $script_path $command $args $assoc_args";
     $status       = self::launch($full_command, $exit_on_error);
     return $status;
@@ -369,7 +369,7 @@ class Terminus {
    * @return [string] $response
    */
   static function promptSecret($message = '', $default = null) {
-    if (Utils\is_windows()) {
+    if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
       file_put_contents(
         $vbscript, 'wscript.echo(InputBox("'

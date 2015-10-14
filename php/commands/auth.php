@@ -59,7 +59,7 @@ class Auth_Command extends TerminusCommand {
       $email = $args[0];
     }
 
-    if ( Utils\is_valid_email( $email ) ) {
+    if ( Utils\isValidEmail( $email ) ) {
       if ( !isset( $assoc_args['password'] ) ) {
         $password = Terminus::promptSecret('Your dashboard password (input will not be shown)');
       }

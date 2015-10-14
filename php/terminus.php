@@ -18,7 +18,7 @@ include TERMINUS_ROOT . '/php/dispatcher.php';
 include TERMINUS_ROOT . '/php/class-terminus.php';
 include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
-\Terminus\Utils\load_dependencies();
+\Terminus\Utils\loadDependencies();
 
 //Load environment variables from __DIR__/.env
 if (file_exists(getcwd() . '/.env')) {
