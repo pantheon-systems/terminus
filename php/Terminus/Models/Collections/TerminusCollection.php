@@ -123,9 +123,9 @@ abstract class TerminusCollection extends TerminusModel {
    * @return [array] $results
    */
   protected function getCollectionData($paged = false) {
-    $function_name = 'simple_request';
+    $function_name = 'simpleRequest';
     if ($paged) {
-      $function_name = 'paged_request';
+      $function_name = 'pagedRequest';
     }
 
     $options = array_merge(

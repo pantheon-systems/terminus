@@ -84,7 +84,7 @@ class Site extends TerminusModel {
    */
   public function addTag($tag, $org) {
     $params   = array($tag => array('sites' => array($this->get('id'))));
-    $response = TerminusCommand::simple_request(
+    $response = TerminusCommand::simpleRequest(
       sprintf('organizations/%s/tags', $org),
       array('method' => 'put', 'data' => $params)
     );
@@ -144,7 +144,7 @@ class Site extends TerminusModel {
    */
   public function bindings($type = null) {
     if (empty($this->bindings)) {
-      $response = TerminusCommand::simple_request(
+      $response = TerminusCommand::simpleRequest(
         'sites/' . $this->get('id') . '/' . $bindings
       );
       foreach ($response['data'] as $id => $binding) {
@@ -190,7 +190,7 @@ class Site extends TerminusModel {
    * @return [array] $response
    */
   public function delete() {
-    $response = TerminusCommand::simple_request(
+    $response = TerminusCommand::simpleRequest(
       'sites/' . $this->get('id'),
       array('method' => 'delete')
     );
@@ -251,7 +251,7 @@ class Site extends TerminusModel {
    * @return [Site] $this
    */
   public function fetch($paged = true) {
-    $response         = TerminusCommand::simple_request(
+    $response         = TerminusCommand::simpleRequest(
       sprintf('sites/%s?site_state=true', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -279,7 +279,7 @@ class Site extends TerminusModel {
    */
   public function getFeature($feature) {
     if (!isset($this->features)) {
-      $response       = TerminusCommand::simple_request(
+      $response       = TerminusCommand::simpleRequest(
         sprintf('sites/%s/features', $this->get('id'))
       );
       $this->features = (array)$response['data'];
@@ -335,7 +335,7 @@ class Site extends TerminusModel {
    * @return [stdClass] $response['data']
    */
   public function getUpstreamUpdates() {
-    $response = TerminusCommand::simple_request(
+    $response = TerminusCommand::simpleRequest(
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
@@ -441,7 +441,7 @@ class Site extends TerminusModel {
    */
   public function newRelic() {
     $path     = 'new-relic';
-    $response = TerminusCommand::simple_request(
+    $response = TerminusCommand::simpleRequest(
       'sites/' . $this->get('id') . '/new-relic'
     );
     return $response['data'];
@@ -479,7 +479,7 @@ class Site extends TerminusModel {
    * @return [array] $response
    */
   public function removeTag($tag, $org) {
-    $response = TerminusCommand::simple_request(
+    $response = TerminusCommand::simpleRequest(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
         $org,
