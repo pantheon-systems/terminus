@@ -169,8 +169,8 @@ class Subcommand extends CompositeCommand {
 
     $cmd_path = implode( ' ', get_path( $this ) );
     foreach ( $validator->get_unknown() as $token ) {
-      Terminus::log('warning',
-        "The `{cmd}` command has an invalid synopsis part: {token}",
+      Terminus::getLogger()->warning(
+        'The `{cmd}` command has an invalid synopsis part: {token}',
         array('cmd' => $cmd_path, 'token' => $token)
       );
     }
@@ -194,7 +194,7 @@ class Subcommand extends CompositeCommand {
     }
 
     list( $errors, $to_unset ) = $validator->validate_assoc(
-      array_merge( Terminus::get_config(), $extra_args, $assoc_args )
+      array_merge( Terminus::getConfig(), $extra_args, $assoc_args )
     );
 
     foreach ( $validator->unknown_assoc( $assoc_args ) as $key ) {
@@ -211,14 +211,14 @@ class Subcommand extends CompositeCommand {
     }
 
     foreach ($errors['warning'] as $warning) {
-      Terminus::log('warning', $warning);
+      Terminus::getLogger()->warning($warning);
     }
 
     return $to_unset;
   }
 
   function invoke( $args, $assoc_args, $extra_args ) {
-    if ( Terminus::get_config( 'interactive' ) )
+    if ( Terminus::getConfig( 'interactive' ) )
       list( $args, $assoc_args ) = $this->prompt_args( $args, $assoc_args );
 
     $to_unset = $this->validate_args( $args, $assoc_args, $extra_args );

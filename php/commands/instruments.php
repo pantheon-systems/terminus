@@ -28,4 +28,4 @@ class Instruments_Command extends TerminusCommand {
 
 }
 
-Terminus::add_command('instruments', 'Instruments_Command');
+Terminus::addCommand('instruments', 'Instruments_Command');

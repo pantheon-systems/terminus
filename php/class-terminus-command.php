@@ -36,11 +36,11 @@ abstract class TerminusCommand {
    */
   public function __construct() {
     //Load commonly used data from cache
-    $this->cache     = Terminus::get_cache();
-    $this->logger    = Terminus::get_logger();
-    $this->outputter = Terminus::get_outputter();
+    $this->cache     = Terminus::getCache();
+    $this->logger    = Terminus::getLogger();
+    $this->outputter = Terminus::getOutputter();
     $this->session   = Session::instance();
-    if (!Terminus::is_test()) {
+    if (!Terminus::isTest()) {
       $this->checkForUpdate();
     }
   }
@@ -123,7 +123,7 @@ abstract class TerminusCommand {
     }
 
     try {
-      $cache = Terminus::get_cache();
+      $cache = Terminus::getCache();
 
       if (!in_array($realm, array('login', 'user'))) {
         $options['cookies'] = array(
@@ -139,7 +139,7 @@ abstract class TerminusCommand {
           'path'  => $path,
         )
       );
-      if (Terminus::get_config('debug')) {
+      if (Terminus::getConfig('debug')) {
         Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);

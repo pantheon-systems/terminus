@@ -44,7 +44,7 @@ if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::insertCassette($_SERVER['VCR_CASSETTE']);
 }
 
-Terminus::get_runner()->run();
+Terminus::getRunner()->run();
 
 if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::eject();

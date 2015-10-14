@@ -36,7 +36,7 @@ class Help_Command extends TerminusCommand {
   }
 
   private static function find_subcommand($args) {
-    $command = \Terminus::get_root_command();
+    $command = \Terminus::getRootCommand();
 
     while (!empty($args) && $command && $command->can_have_subcommands()) {
       $command = $command->find_subcommand($args);
@@ -95,7 +95,7 @@ class Help_Command extends TerminusCommand {
 
     if (
       Utils\is_windows()
-      || in_array(Terminus::get_config('format'), array('bash', 'json')) 
+      || in_array(Terminus::getConfig('format'), array('bash', 'json')) 
     ) {
       // No paging for Windows cmd.exe; sorry
       $this->output()->outputValue($out);
@@ -130,7 +130,7 @@ class Help_Command extends TerminusCommand {
       $binding['has-subcommands']['subcommands'] = self::render_subcommands($command);
     }
 
-    if (Terminus::get_config('format') == 'json') {
+    if (Terminus::getConfig('format') == 'json') {
       $rendered_help = $binding;
     } else {
       $rendered_help = Utils\mustache_render('man.mustache', $binding);  
@@ -144,7 +144,7 @@ class Help_Command extends TerminusCommand {
       $subcommands[$subcommand->get_name()] = $subcommand->get_shortdesc();
     }
 
-    if (Terminus::get_config('format') == 'json') {
+    if (Terminus::getConfig('format') == 'json') {
       return $subcommands;
     }
 
@@ -170,4 +170,4 @@ class Help_Command extends TerminusCommand {
 
 }
 
-Terminus::add_command('help', 'Help_Command');
+Terminus::addCommand('help', 'Help_Command');

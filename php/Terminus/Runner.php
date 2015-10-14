@@ -42,7 +42,7 @@ class Runner {
   }
 
   public function find_command_to_run($args) {
-    $command = Terminus::get_root_command();
+    $command = Terminus::getRootCommand();
 
     $cmd_path = array();
     while (!empty($args) && $command->can_have_subcommands()) {
@@ -64,7 +64,7 @@ class Runner {
     return array($command, $args, $cmd_path);
   }
 
-  public function run_command($args, $assoc_args = array()) {
+  public function runCommand($args, $assoc_args = array()) {
 
     try {
       list($command, $final_args, $cmd_path) = $this->find_command_to_run($args);
@@ -90,8 +90,8 @@ class Runner {
     }
   }
 
-  private function _run_command() {
-    $this->run_command($this->arguments, $this->assoc_args);
+  private function _runCommand() {
+    $this->runCommand($this->arguments, $this->assoc_args);
   }
 
   public function in_color() {
@@ -108,7 +108,7 @@ class Runner {
 
   private function init_logger() {
     $this->logger = new Logger(array('config' => $this->config));
-    Terminus::set_logger($this->logger);
+    Terminus::setLogger($this->logger);
   }
 
   private function init_outputter() {
@@ -131,11 +131,11 @@ class Runner {
       $formatter
     );
 
-    Terminus::set_outputter($this->outputter);
+    Terminus::setOutputter($this->outputter);
   }
 
   private function init_config() {
-    $configurator = Terminus::get_configurator();
+    $configurator = Terminus::getConfigurator();
 
     // Runtime config and args
     {
@@ -153,7 +153,7 @@ class Runner {
   }
 
   public function run() {
-    if (Terminus::is_test())
+    if (Terminus::isTest())
       return true;
 
     if (empty($this->arguments))
@@ -181,16 +181,16 @@ class Runner {
         }
       }
     } catch (TerminusException $e) {
-      // Do nothing. Actual error handling will be done by _run_command
+      // Do nothing. Actual error handling will be done by _runCommand
     }
 
     // First try at showing man page
     if ('help' === $this->arguments[0] && (isset($this->arguments[1]))) {
-      $this->_run_command();
+      $this->_runCommand();
     }
 
     # Run the stinkin command!
-    $this->_run_command();
+    $this->_runCommand();
   }
 
 }

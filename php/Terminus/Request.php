@@ -38,9 +38,7 @@ class Request {
     }
     if (isset($data['body']) && $data['body']) {
       $options['body'] = $data['body'];
-      if (Terminus::get_config('debug')) {
-        Terminus::log('debug', $data['body']);
-      }
+      Terminus::getLogger()->debug($data['body']);
     }
 
     $request = $browser->createRequest($method, $url, null, null, $options );
@@ -63,12 +61,13 @@ class Request {
       }
     }
 
-    if (Terminus::get_config("debug")) {
+    if (Terminus::getConfig("debug")) {
       $debug = "#### REQUEST ####".PHP_EOL;
       $debug .= $request->getRawHeaders();
-      Terminus::log('debug', $debug);
-      if (isset($data['body']))
-        Terminus::log('debug', $data['body']);
+      Terminus::getLogger()->debug($debug);
+      if (isset($data['body'])) {
+        Terminus::getLogger()->debug($data['body']);
+      }
     }
 
     $response = $request->send();

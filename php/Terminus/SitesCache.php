@@ -33,7 +33,7 @@ class SitesCache {
   protected $cachekey = 'sites';
 
   public function __construct() {
-    $this->cache = Terminus::get_cache();
+    $this->cache = Terminus::getCache();
   }
 
   private function find($name, $options = array()) {

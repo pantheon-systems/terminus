@@ -96,7 +96,7 @@ public function code($args, $assoc_args) {
       $message = "Commit changes to $count files?";
       if ($count === 0) {
         $message = 'There are no changed files. Commit anyway?';
-        Terminus::confirm($message, $assoc_args);
+        Terminus::confirm($message);
       }
       $message = Input::string($assoc_args, 'message', 'Please enter a commit message.', 'Terminus commit.');
       $workflow = $env->commitChanges($message);
@@ -226,8 +226,7 @@ public function dashboard($args, $assoc_args) {
   }
   else {
     Terminus::confirm(
-      'Do you want to open your dashboard link in a web browser?',
-      Terminus::get_config()
+      'Do you want to open your dashboard link in a web browser?'
     );
     $command = sprintf('%s %s', $cmd, $url);
     exec($command);
@@ -247,7 +246,7 @@ public function dashboard($args, $assoc_args) {
   public function delete($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
 
-    if (!isset($assoc_args['force']) && (!Terminus::get_config('yes'))) {
+    if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
       //If the force option isn't used, we'll ask you some annoying questions
       Terminus::confirm(sprintf('Are you sure you want to delete %s?', $site->get('name')));
       Terminus::confirm('Are you really sure?');
@@ -744,7 +743,7 @@ public function clone_content($args, $assoc_args) {
     strtoupper($to_env),
     $append
   );
-  \Terminus::confirm($confirm);
+  Terminus::confirm($confirm);
 
   if ($site->environments->get($to_env) == null) {
     throw new TerminusException('The {env} environment was not found.', array('env' => $to_env));
@@ -1000,7 +999,6 @@ public function deploy($args, $assoc_args) {
   if(!isset($assoc_args['note'])) {
     $annotation = Terminus::prompt(
       'Custom note for the deploy log',
-      array(),
       'Deploy from Terminus 2.0'
     );
   } else {
@@ -1088,7 +1086,7 @@ public function environments($args, $assoc_args) {
       case 'list':
       $hostnames = $env->getHostnames();
       $data      = $hostnames;
-      if (Terminus::get_config('format') != 'json') {
+      if (Terminus::getConfig('format') != 'json') {
         //If were not just dumping the JSON, then we should reformat the data.
         $data = array();
         foreach ($hostnames as $hostname => $details) {
@@ -1105,7 +1103,7 @@ public function environments($args, $assoc_args) {
           throw new TerminusException('Must specify hostname with --hostname');
         }
         $data = $env->addHostname($assoc_args['hostname']);
-        if (Terminus::get_config('verbose')) {
+        if (Terminus::getConfig('verbose')) {
           Utils\json_dump($data);
         }
         $this->log()->info(
@@ -1880,4 +1878,4 @@ public function upstream_updates($args, $assoc_args) {
 
 }
 
-\Terminus::add_command('site', 'Site_Command');
+\Terminus::addCommand('site', 'Site_Command');

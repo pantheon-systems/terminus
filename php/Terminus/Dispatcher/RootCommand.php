@@ -19,7 +19,7 @@ class RootCommand extends CompositeCommand {
   function get_longdesc() {
     $binding = array();
 
-    foreach (Terminus::get_configurator()->get_spec() as $key => $details) {
+    foreach (Terminus::getConfigurator()->get_spec() as $key => $details) {
       if (
         ($details['runtime'] === false)
         || isset($details['deprecated'])
@@ -38,7 +38,7 @@ class RootCommand extends CompositeCommand {
      );
     }
 
-    if (Terminus::get_config('format') == 'json') {
+    if (Terminus::getConfig('format') == 'json') {
       return $binding;
     }
     return Utils\mustache_render('man-params.mustache', $binding);

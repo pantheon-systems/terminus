@@ -129,7 +129,7 @@ class Sites_Command extends TerminusCommand {
     $final_task = $workflow->get('final_task');
     $this->sites->addSiteToCache($final_task->site_id);
 
-    Terminus::launch_self('site', array('info'), array(
+    Terminus::launchSelf('site', array('info'), array(
       'site' => $options['name'],
     ));
 
@@ -239,7 +239,7 @@ class Sites_Command extends TerminusCommand {
   public function aliases($args, $assoc_args) {
     $user = new User(new stdClass(), array());
     $print = Input::optional('print', $assoc_args, false);
-    $json = (\Terminus::get_config('format') == 'json');
+    $json = (\Terminus::getConfig('format') == 'json');
     $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
 
     // Cannot provide just a directory
@@ -363,4 +363,4 @@ class Sites_Command extends TerminusCommand {
   }
 }
 
-Terminus::add_command( 'sites', 'Sites_Command' );
+Terminus::addCommand( 'sites', 'Sites_Command' );

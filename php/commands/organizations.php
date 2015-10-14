@@ -91,7 +91,6 @@ class Organizations_Command extends TerminusCommand {
         }
         Terminus::confirm(
           'Are you sure you want to add %s to %s ?',
-          $assoc_args,
           array($site->get('name'), $org_info->profile->name)
         );
         $workflow = $org->site_memberships->addMember($site);
@@ -123,7 +122,6 @@ class Organizations_Command extends TerminusCommand {
         $member = $org->site_memberships->get($site->get('id'));
         Terminus::confirm(
           'Are you sure you want to remove %s from %s ?',
-          $assoc_args,
           array($site->get('name'), $org_info->profile->name)
         );
         $workflow = $member->removeMember();
@@ -206,4 +204,4 @@ class Organizations_Command extends TerminusCommand {
 
 }
 
-Terminus::add_command('organizations', 'Organizations_Command');
+Terminus::addCommand('organizations', 'Organizations_Command');
