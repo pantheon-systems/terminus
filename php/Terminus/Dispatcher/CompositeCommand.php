@@ -59,7 +59,7 @@ class CompositeCommand {
   function get_usage( $prefix ) {
     return sprintf( "%s%s %s",
       $prefix,
-      implode( ' ', get_path( $this ) ),
+      implode( ' ', getPath( $this ) ),
       $this->get_synopsis()
     );
   }

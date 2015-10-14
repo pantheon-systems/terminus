@@ -117,7 +117,7 @@ class Help_Command extends TerminusCommand {
   }
 
   private static function get_initial_markdown($command) {
-    $name = implode(' ', Dispatcher\get_path($command));
+    $name = implode(' ', Dispatcher\getPath($command));
 
     $binding = array(
       'name' => $name,

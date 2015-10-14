@@ -51,7 +51,7 @@ class Subcommand extends CompositeCommand {
   function get_usage( $prefix ) {
     return sprintf( "%s%s %s",
       $prefix,
-      implode( ' ', get_path( $this ) ),
+      implode( ' ', getPath( $this ) ),
       $this->get_synopsis()
     );
   }
@@ -167,7 +167,7 @@ class Subcommand extends CompositeCommand {
 
     $validator = new Terminus\SynopsisValidator( $synopsis );
 
-    $cmd_path = implode( ' ', get_path( $this ) );
+    $cmd_path = implode( ' ', getPath( $this ) );
     foreach ( $validator->get_unknown() as $token ) {
       Terminus::getLogger()->warning(
         'The `{cmd}` command has an invalid synopsis part: {token}',
@@ -227,7 +227,7 @@ class Subcommand extends CompositeCommand {
       unset( $assoc_args[ $key ] );
     }
 
-    $path = get_path( $this->get_parent() );
+    $path = getPath( $this->get_parent() );
 
     call_user_func( $this->when_invoked, $args, array_merge( $extra_args, $assoc_args ) );
   }

@@ -55,7 +55,7 @@ class Terminus {
       throw new TerminusException(
         sprintf(
           "'%s' can't have subcommands.",
-          implode(' ', Dispatcher\get_path($command))
+          implode(' ', Dispatcher\getPath($command))
         )
       );
     }
