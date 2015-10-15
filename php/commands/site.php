@@ -787,12 +787,12 @@ public function create_env($args, $assoc_args) {
 
   if ((boolean)$site->getFeature('multidev')) {
     if (isset($assoc_args['to-env'])) {
-      $env_id = $assoc_args['to-env'];
+      $to_env_id = $assoc_args['to-env'];
     } else {
-      $env_id = Terminus::prompt('Name of new multidev environment');
+      $to_env_id = Terminus::prompt('Name of new multidev environment');
     }
 
-    $src = $site->environments->get(
+    $from_env = $site->environments->get(
       Input::env(
         $assoc_args,
         'from-env',
@@ -801,7 +801,7 @@ public function create_env($args, $assoc_args) {
       )
     );
 
-    $workflow = $site->environments->create($env_id);
+    $workflow = $site->environments->create($to_env_id, $from_env);
     $workflow->wait();
     $this->workflowOutput($workflow);
   } else {
