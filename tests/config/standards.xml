@@ -29,6 +29,7 @@
 <rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
 <rule ref="Generic.Metrics.CyclomaticComplexity"/>
 <rule ref="Generic.Metrics.NestingLevel"/>
+<rule ref="Generic.NamingConventions.CamelCapsFunctionName"/>
 <rule ref="Generic.PHP.DeprecatedFunctions"/>
 <rule ref="Generic.PHP.DisallowShortOpenTag"/>
 <rule ref="Generic.PHP.ForbiddenFunctions"/>
@@ -36,6 +37,7 @@
 <rule ref="Generic.PHP.NoSilencedErrors"/>
 <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
 <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+<rule ref="Squiz.PHP.DisallowInlineIf"/>
 <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
 <rule ref="Generic.WhiteSpace.ScopeIndent">
     <properties>
@@ -60,6 +62,7 @@
 <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
 <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
 <rule ref="PSR2.Namespaces.UseDeclaration"/>
+<rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
 <rule ref="Squiz.WhiteSpace.CastSpacing"/>
 <rule ref="Squiz.WhiteSpace.FunctionSpacing">
   <properties>

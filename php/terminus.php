@@ -18,7 +18,7 @@ include TERMINUS_ROOT . '/php/dispatcher.php';
 include TERMINUS_ROOT . '/php/class-terminus.php';
 include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
-\Terminus\Utils\load_dependencies();
+\Terminus\Utils\loadDependencies();
 
 //Load environment variables from __DIR__/.env
 if (file_exists(getcwd() . '/.env')) {
@@ -44,7 +44,7 @@ if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::insertCassette($_SERVER['VCR_CASSETTE']);
 }
 
-Terminus::get_runner()->run();
+Terminus::getRunner()->run();
 
 if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::eject();

@@ -8,7 +8,7 @@ namespace Terminus\Dispatcher;
  * @param [Command] $command Chained command object
  * @return [array] $path Represents names of all commands in param
  */
-function get_path($command) {
+function getPath($command) {
   $path = array();
 
   do {

@@ -74,7 +74,7 @@ class Workflow extends TerminusModel {
       sleep(3);
       // TODO: output this to stdout so that it doesn't get mixed with any actual output.
       // We can't use the logger here because that might be redirected to a log-file and each line is timestamped.
-      \Terminus::out(".");
+      fwrite(STDERR, '.');
     }
     // TODO: output this to stdout so that it doesn't get mixed with any actual output.
     \Terminus::line();

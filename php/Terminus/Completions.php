@@ -72,9 +72,9 @@ class Completions {
       }
     }
 
-    $r = Terminus::get_runner()->find_command_to_run( $positional_args );
+    $r = Terminus::getRunner()->find_command_to_run( $positional_args );
     if ( !is_array( $r ) && array_pop( $positional_args ) == $this->cur_word ) {
-      $r = Terminus::get_runner()->find_command_to_run( $positional_args );
+      $r = Terminus::getRunner()->find_command_to_run( $positional_args );
     }
 
     if ( !is_array( $r ) ) {

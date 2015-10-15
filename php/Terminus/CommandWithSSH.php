@@ -31,7 +31,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       }
     }
 
-    $is_normal = (Terminus::get_config('format') == 'normal');
+    $is_normal = (Terminus::getConfig('format') == 'normal');
     $cmd = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p ' . $server['port'] . ' -o "AddressFamily inet"' . " " . escapeshellarg($remote_cmd);
     if (!$is_normal) {
       ob_start();
@@ -40,7 +40,7 @@ abstract class CommandWithSSH extends TerminusCommand {
     if (!$is_normal) {
       $result = ob_get_clean();
     }
-    if (Terminus::get_config('format') == 'silent') {
+    if (Terminus::getConfig('format') == 'silent') {
       $this->logger->info($result);
     }
 

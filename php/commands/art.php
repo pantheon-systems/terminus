@@ -39,4 +39,4 @@ class Art_Command extends TerminusCommand {
 
 }
 
-Terminus::add_command( 'art', 'Art_Command' );
+Terminus::addCommand( 'art', 'Art_Command' );

@@ -51,7 +51,7 @@ class CLI_Command extends TerminusCommand {
   function info( $_, $assoc_args ) {
     $php_bin = defined( 'PHP_BINARY' ) ? PHP_BINARY : getenv( 'TERMINUS_PHP_USED' );
 
-    $runner = Terminus::get_runner();
+    $runner = Terminus::getRunner();
 
     $info = array(
       'php_binary_path' => $php_bin,
@@ -81,7 +81,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    $this->output()->outputDump(\Terminus::get_configurator()->get_spec());
+    $this->output()->outputDump(\Terminus::getConfigurator()->get_spec());
   }
 
   /**
@@ -90,7 +90,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand cmd-dump
    */
   function cmd_dump() {
-    $this->output()->outputDump(self::command_to_array( Terminus::get_root_command() ));
+    $this->output()->outputDump(self::command_to_array( Terminus::getRootCommand() ));
   }
 
   /**
@@ -167,4 +167,4 @@ class CLI_Command extends TerminusCommand {
   }
 }
 
-Terminus::add_command('cli', 'CLI_Command');
+Terminus::addCommand('cli', 'CLI_Command');

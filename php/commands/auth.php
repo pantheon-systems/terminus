@@ -39,7 +39,7 @@ class Auth_Command extends TerminusCommand {
           $this->_debug(get_defined_vars());
         }
         $this->log()->info( "Logged in as ". $data['email'] );
-        Terminus::launch_self("art", array("fist"));
+        Terminus::launchSelf("art", array("fist"));
       }
       else {
         $this->failure('Login failed!');
@@ -59,9 +59,9 @@ class Auth_Command extends TerminusCommand {
       $email = $args[0];
     }
 
-    if ( Utils\is_valid_email( $email ) ) {
+    if ( Utils\isValidEmail( $email ) ) {
       if ( !isset( $assoc_args['password'] ) ) {
-        $password = Terminus::promptSecret( "Your dashboard password (input will not be shown)" );
+        $password = Terminus::promptSecret('Your dashboard password (input will not be shown)');
       }
       else {
         $password = $assoc_args['password'];
@@ -73,7 +73,7 @@ class Auth_Command extends TerminusCommand {
         if (array_key_exists("debug", $assoc_args)){
           $this->_debug(get_defined_vars());
         }
-        Terminus::launch_self("art", array("fist"));
+        Terminus::launchSelf("art", array("fist"));
       }
       else {
         $this->failure('Login Failed!');
@@ -112,7 +112,7 @@ class Auth_Command extends TerminusCommand {
     if ($results['info']['http_code'] >= 400){
       $this->failure('Your session is expired. Please reauthenticate.');
       $this->cache->remove('session');
-      Terminus::launch_self("auth", array("login"));
+      Terminus::launchSelf("auth", array("login"));
       $this->whoami();
       return true;
     } else {
@@ -190,4 +190,4 @@ class Auth_Command extends TerminusCommand {
   }
 }
 
-Terminus::add_command( 'auth', 'Auth_Command' );
+Terminus::addCommand( 'auth', 'Auth_Command' );

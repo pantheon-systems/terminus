@@ -6,10 +6,7 @@ Feature: site upstream-updates
     And a site named "[[test_site_name]]"
     And the connection mode of "[[test_site_name]]" is "git"
     When I run "terminus site upstream-updates list --site=[[test_site_name]]"
-    Then I should get:
-    """
-    Updates Available
-    """
+    Then I should get one of the following: "No updates to show, Update to"
 
   Scenario: Apply upstream updates
     @vcr site_upstream-updates

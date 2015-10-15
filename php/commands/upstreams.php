@@ -40,4 +40,4 @@ class Upstreams_Command extends TerminusCommand {
 
 }
 
-Terminus::add_command('upstreams', 'Upstreams_Command');
+Terminus::addCommand('upstreams', 'Upstreams_Command');

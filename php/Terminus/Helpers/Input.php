@@ -250,7 +250,7 @@ class Input {
     if(isset($args[$key])) {
       return $args[$key];
     }
-    if (Terminus::get_config('format') != 'normal') {
+    if (Terminus::getConfig('format') != 'normal') {
       return $default;
     }
     $string = Terminus::prompt($label);
@@ -293,7 +293,7 @@ class Input {
    * @return [boolean] $is_yes
    */
   public static function yesno($question, $params = array()) {
-    if(Terminus::get_config('yes')) {
+    if(Terminus::getConfig('yes')) {
       return true;
     }
     $question = vsprintf($question, $params);

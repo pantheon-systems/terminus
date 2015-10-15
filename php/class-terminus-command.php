@@ -36,13 +36,66 @@ abstract class TerminusCommand {
    */
   public function __construct() {
     //Load commonly used data from cache
-    $this->cache     = Terminus::get_cache();
-    $this->logger    = Terminus::get_logger();
-    $this->outputter = Terminus::get_outputter();
+    $this->cache     = Terminus::getCache();
+    $this->logger    = Terminus::getLogger();
+    $this->outputter = Terminus::getOutputter();
     $this->session   = Session::instance();
-    if (!Terminus::is_test()) {
+    if (!Terminus::isTest()) {
       $this->checkForUpdate();
     }
+  }
+
+  /**
+   * Make a request to the Dashbord's internal API
+   *
+   * @param [string] $path    API path (URL)
+   * @param [array]  $options Options for the request
+   *   [string] method GET is default
+   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
+   *     simple object) to be sent along with the request. Will be encoded as
+   *     JSON for you.
+   * @return [array] $return
+   */
+  public static function pagedRequest($path, $options = array()) {
+    $limit = 100;
+    if (isset($options['limit'])) {
+      $limit = $options['limit'];
+    }
+
+    //$results is an associative array so we don't refetch
+    $results  = array();
+    $finished = false;
+    $start    = null;
+
+    while (!$finished) {
+      $paged_path = $path . '?limit=' . $limit;
+      if ($start) {
+        $paged_path .= '&start=' . $start;
+      }
+
+      $resp = self::simpleRequest($paged_path);
+
+      $data = $resp['data'];
+      if (count($data) > 0) {
+        $start = end($data)->id;
+
+        //If the last item of the results has previously been received,
+        //that means there are no more pages to fetch
+        if (isset($results[$start])) {
+          $finished = true;
+          continue;
+        }
+
+        foreach ($data as $item) {
+          $results[$item->id] = $item;
+        }
+      } else {
+        $finished = true;
+      }
+    }
+
+    $return = array('data' => array_values($results));
+    return $return;
   }
 
   /**
@@ -70,7 +123,7 @@ abstract class TerminusCommand {
     }
 
     try {
-      $cache = Terminus::get_cache();
+      $cache = Terminus::getCache();
 
       if (!in_array($realm, array('login', 'user'))) {
         $options['cookies'] = array(
@@ -86,7 +139,7 @@ abstract class TerminusCommand {
           'path'  => $path,
         )
       );
-      if (Terminus::get_config('debug')) {
+      if (Terminus::getConfig('debug')) {
         Terminus::log('debug', 'Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
@@ -109,64 +162,17 @@ abstract class TerminusCommand {
         (string)$request,
         TerminusCommand::$blacklist
       );
-      throw new TerminusException('API Request Error. {msg} - Request: {req}', array('req' => $sanitized_request, 'msg' => $e->getMessage()));
+      throw new TerminusException(
+        'API Request Error. {msg} - Request: {req}',
+        array('req' => $sanitized_request, 'msg' => $e->getMessage())
+      );
     } catch (Exception $e) {
-      throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
+      throw new TerminusException(
+        'API Request Error: {msg}',
+        array('msg' => $e->getMessage())
+      );
     }
 
-  }
-
-  /**
-   * Make a request to the Dashbord's internal API
-   *
-   * @param [string] $path    API path (URL)
-   * @param [array]  $options Options for the request
-   *   [string] method GET is default
-   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-   *     simple object) to be sent along with the request. Will be encoded as
-   *     JSON for you.
-   * @return [array] $return
-   */
-  public static function paged_request($path, $options = array()) {
-    $limit = 100;
-    if (isset($options['limit'])) {
-      $limit = $options['limit'];
-    }
-
-    //$results is an associative array so we don't refetch
-    $results  = array();
-    $finished = false;
-    $start    = null;
-
-    while (!$finished) {
-      $paged_path = $path . '?limit=' . $limit;
-      if ($start) {
-        $paged_path .= '&start=' . $start;
-      }
-
-      $resp = self::simple_request($paged_path);
-
-      $data = $resp['data'];
-      if (count($data) > 0) {
-        $start = end($data)->id;
-
-        //If the last item of the results has previously been received,
-        //that means there are no more pages to fetch
-        if (isset($results[$start])) {
-          $finished = true;
-          continue;
-        }
-
-        foreach ($data as $item) {
-          $results[$item->id] = $item;
-        }
-      } else {
-        $finished = true;
-      }
-    }
-
-    $return = array('data' => array_values($results));
-    return $return;
   }
 
   /**
@@ -180,7 +186,7 @@ abstract class TerminusCommand {
    *     JSON for you.
    * @return [array] $data
    */
-  public static function simple_request($path, $options = array()) {
+  public static function simpleRequest($path, $options = array()) {
     $req_options = array();
 
     $method = 'get';
@@ -197,7 +203,7 @@ abstract class TerminusCommand {
 
     if (Session::getValue('session')) {
       $req_options['cookies'] = array(
-        'X-Pantheon-Session' => Session::getValue('session')
+      'X-Pantheon-Session' => Session::getValue('session')
       );
       $req_options['verify']  = false;
     }
@@ -205,73 +211,113 @@ abstract class TerminusCommand {
     try {
       $resp = Request::send($url, $method, $req_options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
-      throw new TerminusException('API Request Error: {msg}', array('msg' => $e->getMessage()));
+      throw new TerminusException(
+        'API Request Error: {msg}',
+        array('msg' => $e->getMessage())
+      );
     }
 
     $json = $resp->getBody(true);
     $data = array(
-      'info' => $resp->getInfo(),
-      'headers' => $resp->getRawHeaders(),
-      'json' => $json,
-      'data' => json_decode($json),
-      'status_code' => $resp->getStatusCode()
+    'info'        => $resp->getInfo(),
+    'headers'     => $resp->getRawHeaders(),
+    'json'        => $json,
+    'data'        => json_decode($json),
+    'status_code' => $resp->getStatusCode()
     );
     return $data;
   }
 
-
+  /**
+   * Retrieves current version number from repository and saves it to the cache
+   *
+   * @return [string] $response->name The version number
+   */
+  private function checkCurrentVersion() {
+    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
+    $response = Request::send($url, 'GET');   
+    $json     = $response->getBody(true);
+    $data     = json_decode($json);
+    $release  = array_shift($data);
+    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
+    return $release->name;
+  }
 
   /**
-   * Constructs table for data going to STDOUT
-   * TODO: Complexity too high. Refactor.
+   * Checks for new versions of Terminus once per week and saves to cache
    *
-   * @param [mixed] $data    Object or hash of data for output
-   * @param [array] $headers Array of strings for table headers
    * @return [void]
    */
-  protected function constructTableForResponse($data, $headers = array()) {
-    $table = new \cli\Table();
-    if (is_object($data)) {
-      $data = (array)$data;
-    }
-
-    if (Utils\result_is_multiobj($data)) {
-      if (!empty($headers)) {
-        $table->setHeaders($headers);
-      } elseif (
-        property_exists($this, '_headers')
-        && !empty($this->_headers[$this->func])
-      ) {
-        if (is_array($this->_headers[$this->func])) {
-          $table->setHeaders($this->_headers[$this->func]);
-        }
-      } else {
-        $table->setHeaders(Utils\result_get_response_fields($data));
-      }
-
-      foreach ($data as $row => $row_data) {
-        $row = array();
-        foreach ($row_data as $key => $value) {
-          if (is_array($value) || is_object($value)) {
-            $value = join(', ', (array)$value);
-          }
-          $row[] = $value;
-        }
-        $table->addRow($row);
-      }
+  private function checkForUpdate() {
+    $cache_data = $this->cache->get_data(
+      'latest_release',
+      array('decode_array' => true)
+    );
+    if (!$cache_data
+      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
+    ) {
+      $current_version = $this->checkCurrentVersion();
     } else {
-      if (!empty($headers)) {
-        $table->setHeaders($headers);
-      }
-      foreach ($data as $key => $value) {
-        if (is_array($value) || is_object($value)) {
-          $value = implode(', ', (array)$value);
-        }
-        $table->addRow(array($key, $value));
-      }
+      $current_version = $cache_data['version'];
     }
+    if (version_compare($cache_data['version'], TERMINUS_VERSION, '>')) {
+      $this->logger->info(
+        'An update to Terminus is available. Please update to {version}.',
+        array('version' => $cache_data['version'])
+      );
+    }
+  }
 
-    $table->display();
+  /**
+   * Sends the given message to logger as an error and exits with -1
+   *
+   * @param [string] $message Message to log as error before exit
+   * @param [array]  $context Vars to interpolate in message
+   * @return [void]
+   */
+  protected function failure(
+    $message = 'Command failed',
+    array $context = array()
+  ) {
+    throw new TerminusException($message, $context, -1);
+  }
+
+  /**
+   * Retrieves the logger for use
+   *
+   * @return [LoggerInterface] $this->logger
+   */
+  protected function log() {
+    return $this->logger;
+  }
+
+  /**
+   * Retrieves the outputter for use
+   *
+   * @return [OutputterInterface] $this->outputter
+   */
+  protected function output() {
+    return $this->outputter;
+  }
+
+  /**
+   * Saves the logger object as a class property
+   *
+   * @param [LoggerInterface] $logger Logger object to save
+   * @return [void]
+   */
+  protected function setLogger($logger) {
+    $this->logger = $logger;
+  }
+
+  /**
+   * Saves the outputter object as a class property
+   *
+   * @param [OutputterInterface] $outputter Outputter object to save
+   * @return [void]
+   */
+  protected function setOutputter($outputter) {
+    $this->outputter = $outputter;
   }
 
   /**
@@ -312,97 +358,6 @@ abstract class TerminusCommand {
       $final_task = $workflow->get('final_task');
       $this->log()->error($final_task->reason);
     }
-  }
-
-  private function checkForUpdate() {
-    $cache_data = $this->cache->get_data('latest_release', array('decode_array' => true));
-    if (
-      !$cache_data
-      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
-    ) {
-      $current_version = $this->checkCurrentVersion();
-    } else {
-      $current_version = $cache_data['version'];
-    }
-    if (version_compare($cache_data['version'], TERMINUS_VERSION, '>')) {
-      $this->logger->info(
-        'An update to Terminus is available. Please update to version {version}.',
-        array('version' => $cache_data['version'])
-      );
-    }
-  }
-
-  /**
-   * Retrieves current version number from repository and saves it to the cache
-   *
-   * @return [string] $response->name The version number
-   */
-  private function checkCurrentVersion() {
-    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
-    $response = Request::send($url, 'GET');   
-    $json     = $response->getBody(true);
-    $data     = json_decode($json);
-    $release  = array_shift($data);
-    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
-    return $release->name;
-  }
-
-  /**
-   * Downloads the given URL to the given target
-   *
-   * @param [string] $url    Location of file to download
-   * @param [string] $target Location to download file to
-   * @return [void]
-   */
-  protected function download($url, $target) {
-    try {
-      $response = Request::download($url, $target);
-      return $target;
-    } catch (Exception $e) {
-      $this->log()->error($e->getMessage());
-    }
-  }
-
-  /**
-   * @return LoggerInterface
-   */
-  protected function log() {
-    return $this->logger;
-  }
-
-  /**
-   * @param LoggerInterface $logger
-   */
-  protected function setLogger($logger) {
-    $this->logger = $logger;
-  }
-
-  /**
-   * @return OutputterInterface
-   */
-  protected function output() {
-    return $this->outputter;
-  }
-
-  /**
-   * Sends the given message to logger as an error and exits with -1
-   *
-   * @param [string] $message Message to log as error before exit
-   * @param [array]  $context Vars to interpolate in message
-   * @return [void]
-   */
-  protected function failure(
-    $message = 'Command failed',
-    array $context = array()
-  ) {
-    throw new TerminusException($message, $context, -1);
-  }
-
-  /**
-   * @param OutputterInterface $outputter
-   */
-  protected function setOutputter($outputter) {
-    $this->outputter = $outputter;
   }
 
 }
