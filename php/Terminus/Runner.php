@@ -153,8 +153,9 @@ class Runner {
   }
 
   public function run() {
-    if (Terminus::isTest())
+    if (Terminus::isTest()) {
       return true;
+    }
 
     if (empty($this->arguments))
       $this->arguments[] = 'help';

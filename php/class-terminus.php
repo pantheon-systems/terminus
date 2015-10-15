@@ -238,7 +238,7 @@ class Terminus {
    * @return [boolean]
    */
   static function isTest() {
-    $is_test = (defined('CLI_TEST_MODE') && (boolean)getenv('CLI_TEST_MODE'));
+    $is_test = (boolean)getenv('CLI_TEST_MODE');
     return $is_test;
   }
 

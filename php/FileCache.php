@@ -284,7 +284,7 @@ class FileCache {
   protected function ensure_dir_exists($dir) {
     $dir_exists = (
       is_dir($dir)
-      || !(file_exists($dir) && mkdir($dir, 0777, true))
+      || (!file_exists($dir) && mkdir($dir, 0777, true))
     );
     return $dir_exists;
   }

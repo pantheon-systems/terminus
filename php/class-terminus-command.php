@@ -229,6 +229,21 @@ abstract class TerminusCommand {
   }
 
   /**
+   * Retrieves current version number from repository and saves it to the cache
+   *
+   * @return [string] $response->name The version number
+   */
+  private function checkCurrentVersion() {
+    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
+    $response = Request::send($url, 'GET');   
+    $json     = $response->getBody(true);
+    $data     = json_decode($json);
+    $release  = array_shift($data);
+    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
+    return $release->name;
+  }
+
+  /**
    * Checks for new versions of Terminus once per week and saves to cache
    *
    * @return [void]
