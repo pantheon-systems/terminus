@@ -598,6 +598,7 @@ public function backups($args, $assoc_args) {
     case 'list':
     default:
       $backups = $site->environments->get($env)->backups();
+      //die(print_r($backups, true));
       $element_name = false;
       if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
         $element_name =  $assoc_args['element'];
@@ -612,7 +613,7 @@ public function backups($args, $assoc_args) {
           !isset($backup->filename)
           || (
             $element_name 
-            && !preg_match(sprintf('/backup_%s/', $element_name), $id)
+            && !preg_match(sprintf('/_%s/', $element_name), $id)
           )
         ) {
           continue;
@@ -623,7 +624,10 @@ public function backups($args, $assoc_args) {
           $date = date('Y-m-d H:i:s', $backup->finish_time);
         }
 
-        $size = $backup->size / 1048576;
+        $size = 0;
+        if (isset($backup->size)) {
+          $size = $backup->size / 1048576;
+        }
         if ($size > 0.1) {
           $size = sprintf('%.1fMB', $size);
         } elseif ($size > 0) {
