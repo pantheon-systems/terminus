@@ -139,17 +139,17 @@ class Runner {
 
     // Runtime config and args
     {
-      list($args, $assoc_args, $runtime_config) = $configurator->parse_args(
+      list($args, $assoc_args, $runtime_config) = $configurator->parseArgs(
         array_slice($GLOBALS['argv'], 1));
 
 
       $this->arguments = $args;
       $this->assoc_args = $assoc_args;
 
-      $configurator->merge_array($runtime_config);
+      $configurator->mergeArray($runtime_config);
     }
 
-    list($this->config, $this->extra_config) = $configurator->to_array();
+    list($this->config, $this->extra_config) = $configurator->toArray();
   }
 
   public function run() {

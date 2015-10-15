@@ -19,7 +19,7 @@ class RootCommand extends CompositeCommand {
   function get_longdesc() {
     $binding = array();
 
-    foreach (Terminus::getConfigurator()->get_spec() as $key => $details) {
+    foreach (Terminus::getConfigurator()->getSpec() as $key => $details) {
       if (
         ($details['runtime'] === false)
         || isset($details['deprecated'])
