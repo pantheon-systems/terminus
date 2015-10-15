@@ -75,7 +75,7 @@ class Drush_Command extends CommandWithSSH {
         'env' => $environment
       )
     );
-    $result = $this->send_command($server, 'drush', $args, $assoc_args);
+    $result = $this->sendCommand($server, 'drush', $args, $assoc_args);
     if (Terminus::getConfig('format') != 'normal') {
       $this->output()->outputRecordList($result);
     }
