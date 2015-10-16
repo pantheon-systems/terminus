@@ -440,10 +440,13 @@ public function organizations($args, $assoc_args) {
   * : Environment to load
   *
   * [--element=<code|files|db|all>]
-  * : Element to download or create. *all* only used for 'create'
+  * : Element to download or create. `all` is only used for 'create'
   *
   * [--to=<directory|file>]
   * : Absolute path of a directory or filename to save the downloaded backup to
+  *
+  * [--file=<filename>]
+  * : Select one of the files from the list subcommand. Only used for 'get'
   *
   * [--latest]
   * : If set the latest backup will be selected automatically
@@ -468,7 +471,16 @@ public function backups($args, $assoc_args) {
 
   switch ($action) {
     case 'get':
-      if (isset($assoc_args['element'])) {
+      $file = Input::optional('file', $assoc_args, false);
+      if ($file) {
+        $regex = sprintf(
+          "/%s_%s_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_UTC_(.*).tar.gz/",
+          $site->get('name'),
+          $env
+        );
+        preg_match($regex, $file, $matches);
+        $element = $matches[1];
+      } elseif (isset($assoc_args['element'])) {
         $element = $assoc_args['element'];
       } else {
         $element = Terminus::menu(
@@ -477,13 +489,19 @@ public function backups($args, $assoc_args) {
           'Select backup element',
           true
         );
+        if (!in_array($element, array('code', 'files', 'db'))) {
+          throw new TerminusException('Invalid backup element specified.');
+        }
       }
+      $latest = (boolean)Input::optional('latest', $assoc_args, false);
 
-      if (!in_array($element,array('code', 'files', 'db'))) {
-        throw new TerminusException('Invalid backup element specified.');
-      }
-      $latest  = Input::optional('latest', $assoc_args, false);
       $backups = $site->environments->get($env)->backups($element);
+      if (empty($backups)) {
+        throw new TerminusException(
+          'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
+          array('site' => $site->get('name'), 'env' => $env)
+        );
+      }
 
       //Ensure that that backups being presented for retrieval have finished
       $backups = array_filter($backups, function($backup) {
@@ -491,40 +509,41 @@ public function backups($args, $assoc_args) {
       });
 
       if ($latest) {
-        $backups = array(array_pop($backups));
+        $backup = array_pop($backups);
+      } elseif ($file) {
+        do {
+          try {
+            $candidate = array_pop($backups);
+          } catch (\Exception $e) {
+            throw new TerminusException("$file is not a valid backup archive");
+          }
+          if ($candidate->filename == $file) {
+            $backup = $candidate;
+          }
+        } while (!isset($backup));
       }
 
-      $menu = $folders = array();
+      if (!isset($backup)) {
+        $menu = $folders = array();
 
-      foreach($backups as $folder => $backup) {
-        if (!isset($backup->filename)) {
-          continue;
-        }
-        if (!isset($backup->folder)) {
-          $backup->folder = $folder;
-        }
-        $buckets[] = $backup->folder;
+        foreach($backups as $folder => $backup) {
+          if (!isset($backup->filename)) {
+            continue;
+          }
+          if (!isset($backup->folder)) {
+            $backup->folder = $folder;
+          }
         $menu[]    = $backup->filename;
+        }
+        $index           = Terminus::menu($menu, null, 'Select backup');
+        $backup_elements = array_values($backups);
+        $backup          = $backup_elements[$index];
       }
 
-      if (empty($menu)) {
-        throw new TerminusException(
-          'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
-          array('site' => $site->get('name'), 'env' => $env)
-        );
-      }
-
-      $index = 0;
-      if (!$latest) {
-        $index = Terminus::menu($menu, null, 'Select backup');
-      }
-      $bucket   = $buckets[$index];
-      $filename = $menu[$index];
-
-      $url = $site->environments->get($env)->backupUrl($bucket, $element);
+      $url = $site->environments->get($env)->backupUrl($backup->folder, $element);
 
       if (isset($assoc_args['to'])) {
-        $target = $assoc_args['to'];
+        $target = str_replace('~', $_SERVER['HOME'], $assoc_args['to']);
         if (is_dir($target)) {
           $filename = Utils\getFilenameFromUrl($url->url);
           $target = sprintf('%s/%s', $target, $filename);

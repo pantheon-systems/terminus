@@ -269,6 +269,22 @@ abstract class TerminusCommand {
   }
 
   /**
+   * Downloads the given URL to the given target
+   *
+   * @param [string] $url    Location of file to download
+   * @param [string] $target Location to download file to
+   * @return [void]
+   */
+  protected function download($url, $target) {
+    try {
+      $response = Request::download($url, $target);
+      return $target;
+    } catch (Exception $e) {
+      $this->log()->error($e->getMessage());
+    }
+  }
+
+  /**
    * Sends the given message to logger as an error and exits with -1
    *
    * @param [string] $message Message to log as error before exit
