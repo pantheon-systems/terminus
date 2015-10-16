@@ -348,7 +348,7 @@ class Site extends TerminusModel {
    * @return [Workflow] $workflow
    */
   public function import($url) {
-    $params   = array(
+    $params = array(
       'url'      => $url,
       'code'     => 1,
       'database' => 1,
@@ -500,9 +500,8 @@ class Site extends TerminusModel {
   public function setOwner($owner = null) {
     $new_owner = $this->user_memberships->get($owner);
     if ($new_owner == null) {
-      throw new TerminusException(
-        'The new owner must first be a member of the team. Try adding with `site team`'
-      );
+      $message = 'The owner must be a team member. Add them with `site team`';
+      throw new TerminusException($message);
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',

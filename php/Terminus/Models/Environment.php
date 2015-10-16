@@ -125,10 +125,10 @@ class Environment extends TerminusModel {
     switch ($value) {
       case 'git':
         $workflow_name = 'enable_git_mode';
-        break;
+          break;
       case 'sftp':
         $workflow_name = 'enable_on_server_development';
-        break;
+          break;
     }
 
     $params   = array('environment' => $this->get('id'));
@@ -181,7 +181,7 @@ class Environment extends TerminusModel {
     passthru('git config user.name');
     $git_user = ob_get_clean();
 
-    $params = array(
+    $params   = array(
       'environment' => $this->get('id'),
       'params'      => array(
         'message'         => $commit,
@@ -501,14 +501,17 @@ class Environment extends TerminusModel {
    * @return [string] $connection_mode
    */
   public function getConnectionMode() {
-    $path = sprintf('environments/%s/on-server-development', $this->get('id'));
+    $path   = sprintf(
+      'environments/%s/on-server-development',
+      $this->get('id')
+    );
     $result = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),
       $path,
       'GET'
     );
-    $mode = 'git';
+    $mode   = 'git';
     if ($result['data']->enabled) {
       $mode = 'sftp';
     }
@@ -787,7 +790,7 @@ class Environment extends TerminusModel {
    * @return [array] $info
    */
   public function info($key = null) {
-    $path = sprintf('environments/%s', $this->get('id'));
+    $path   = sprintf('environments/%s', $this->get('id'));
     $result = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),

@@ -41,7 +41,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   public function get($id) {
     $orgs    = $this->getMembers();
     $orglist = \Terminus\Helpers\Input::orglist();
-    $model = null;
+    $model   = null;
     if (isset($orgs[$id])) {
       $model = $this->models[$id];
     } elseif (($location = array_search($id, $orglist)) !== false) {
