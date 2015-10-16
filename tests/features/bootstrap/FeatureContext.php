@@ -619,7 +619,8 @@ class FeatureContext extends BehatContext {
    * @return [void]
    */
   public function iShouldHaveRecords($number) {
-    $records = json_decode($this->_output);
+    preg_match("/.*(\[{.*}\]).*/", str_replace("\n", '', $this->_output), $matches);
+    $records = json_decode($matches[1]);
     if ((integer)$number != count($records)) {
       throw new Exception("Wanted $number records, got " . count($records) . '.');
     }
