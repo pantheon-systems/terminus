@@ -8,6 +8,14 @@ use Terminus\Helpers\Input;
 
 
 class Drush_Command extends CommandWithSSH {
+  /**
+   * A hash of commands which do not work in Terminus
+   * The key is the drush command
+   * The value is the Terminus equivalent, or null if DNE
+   */
+  protected $unavailable_commands = array(
+    'sql-connect' => 'site connection-info --field=mysql_connection'
+  );
 
   /**
    * Invoke `drush` commands on a Pantheon development site
@@ -25,34 +33,31 @@ class Drush_Command extends CommandWithSSH {
    * : Your Pantheon environment. Default: dev
    *
    */
-  function __invoke( $args, $assoc_args ) {
-    $environment = Input::env($assoc_args);
-    $sites = new Sites();
-    $site = $sites->get(Input::sitename($assoc_args));
+  public function __invoke($args, $assoc_args) {
+    $command = implode($args, ' ');
+    $this->checkCommand($command);
+
+    $sites              = new Sites();
+    $assoc_args['site'] = Input::sitename($assoc_args);
+    $site               = $sites->get($assoc_args['site']);
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
-
-    $server = Array(
-      'user' => "$environment.{$site->get('id')}",
-      'host' => "appserver.$environment.{$site->get('id')}.drush.in",
-      'port' => '2222'
+    $assoc_args['env'] = $environment = Input::env($assoc_args);
+    $server = $this->getAppserverInfo(
+      array('site' => $site->get('id'), 'environment' => $environment)
     );
-
-    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      $server['user'] = "appserver.$environment.{$site->get('id')}";
-      $server['host'] = TERMINUS_HOST;
-    }
 
     # Sanitize assoc args so we don't try to pass our own flags.
     # TODO: DRY this out?
-    unset($assoc_args['site']);
+    if (isset($assoc_args['site'])) {
+      unset($assoc_args['site']);
+    }
     if (isset($assoc_args['env'])) {
       unset($assoc_args['env']);
     }
 
     # Create user-friendly output
-    $command = implode( $args, ' ' );
     $flags = '';
     foreach ( $assoc_args as $k => $v ) {
       if (isset($v) && (string) $v != '') {
@@ -62,7 +67,7 @@ class Drush_Command extends CommandWithSSH {
         $flags .= "--$k ";
       }
     }
-    if (in_array(\Terminus::getConfig('format'), array('bash', 'json', 'silent'))) {
+    if (in_array(Terminus::getConfig('format'), array('bash', 'json', 'silent'))) {
       $assoc_args['pipe'] = 1;
     }
     $this->log()->info(
@@ -79,7 +84,6 @@ class Drush_Command extends CommandWithSSH {
       $this->output()->outputRecordList($result);
     }
   }
-
 }
 
 Terminus::addCommand( 'drush', 'Drush_Command' );

@@ -12,6 +12,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - No more errors when running Terminus in Windows from directories with spaces in the path. (#575)
 - `site create-env` no longer fails to clone from an environment. (#602)
 - `site backups list` filtering by element fixed. (#602)
+- `drush sql-connect` now returns MySQL connection string (#607)
 
 ### Changed
 - Logged errors now exit with -1. (#576)

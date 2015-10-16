@@ -9,6 +9,33 @@ use TerminusCommand;
  * Base class for Terminus commands that deal with sending SSH commands
  */
 abstract class CommandWithSSH extends TerminusCommand {
+  /**
+   * A hash of commands which do not work in Terminus
+   * The key is the drush command
+   * The value is the Terminus equivalent, or null if DNE
+   */
+  protected $unavailable_commands = array();
+
+  /**
+   * Checks to see if the command is not available in Terminus and, if not,
+   * it will refer you to an equivalent Terminus command, if such exists.
+   *
+   * @param [string] $command The command to check for availability
+   * @return [void]
+   */
+  protected function checkCommand($command) {
+    if (isset($this->unavailable_commands[$command])) {
+      $error_message = "$command is not available via Terminus. " 
+        . 'Please run it via Drush';
+      if ($this->unavailable_commands[$command] != null) {
+        $error_message .= ', or you can use `terminus '
+          . $this->unavailable_commands[$command]
+          . '` to complete the same task';
+      }
+      $error_message .= '.';
+      $this->failure($error_message);
+    }
+  }
 
   /**
    * Formats command output into an array
@@ -28,6 +55,29 @@ abstract class CommandWithSSH extends TerminusCommand {
       }
     }
     return $formatted_data;
+  }
+
+  /**
+   * Parses server information for connections
+   *
+   * @param [array]  $site_info  Elements as follows:
+   *        [string] site        Site UUID
+   *        [string] environment Environment name
+   * @return [array] $server Connection info
+   */
+  protected function getAppserverInfo(array $site_info = array()) {
+    $site_id = $site_info['site'];
+    $env_id  = $site_info['environment'];
+    $server  = array(
+      'user' => "$env_id.$site_id",
+      'host' => "appserver.$env_id.$site_id.drush.in",
+      'port' => '2222'
+    );
+    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
+      $server['user'] = "appserver.$env_id.$site_id";
+      $server['host'] = TERMINUS_HOST;
+    }
+    return $server;
   }
 
   /**
