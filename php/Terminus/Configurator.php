@@ -4,61 +4,41 @@ namespace Terminus;
 
 class Configurator {
   private static $special_flags = array('--no-cache-clear');
-  private $config = array();
+
+  private $config       = array();
   private $extra_config = array();
   private $spec;
 
-
-  function __construct($path) {
+  /**
+   * Constructs configurator, configures
+   *
+   * @param [string] $path Path to configuration specification file
+   * @return [Configurator] $this
+   */
+  public function __construct($path) {
     $this->spec = include $path;
 
     $defaults = array(
-      'runtime' => false,
-      'file' => false,
+      'runtime'  => false,
+      'file'     => false,
       'synopsis' => '',
-      'default' => null,
+      'default'  => null,
       'multiple' => false,
-   );
+    );
 
-    foreach ($this->spec as $key => &$details) {
-      $details = array_merge($defaults, $details);
-
+    foreach ($this->spec as $key => $details) {
+      $this->spec[$key]   = array_merge($defaults, $details);
       $this->config[$key] = $details['default'];
     }
-  }
-
-  function to_array() {
-    return array($this->config, $this->extra_config);
-  }
-
-  /**
-   * Get configuration specification, i.e. list of accepted keys.
-   *
-   * @return array
-   */
-  function get_spec() {
-    return $this->spec;
-  }
-
-  /**
-   * Splits a list of arguments into positional, associative and config.
-   *
-   * @param array(string)
-   * @return array(array)
-   */
-  public function parse_args($arguments) {
-    list($positional_args, $mixed_args) = self::extract_assoc($arguments);
-    list($assoc_args, $runtime_config) = $this->unmix_assoc_args($mixed_args);
-    return array($positional_args, $assoc_args, $runtime_config);
   }
 
   /**
    * Splits positional args from associative args.
    *
-   * @param array
-   * @return array(array)
+   * @param [array] $arguments Arguments to parse
+   * @return [array] $array
    */
-  public static function extract_assoc($arguments) {
+  public static function extractAssoc($arguments) {
     $positional_args = $assoc_args = array();
 
     foreach ($arguments as $arg) {
@@ -75,10 +55,83 @@ class Configurator {
       }
     }
 
-    return array($positional_args, $assoc_args);
+    $array = array($positional_args, $assoc_args);
+    return $array;
   }
 
-  private function unmix_assoc_args($mixed_args) {
+  /**
+   * Get configuration specification, i.e. list of accepted keys.
+   *
+   * @return [array] $this->spec
+   */
+  public function getSpec() {
+    return $this->spec;
+  }
+
+  /**
+   * Adds the given array to the config property array
+   *
+   * @param [array] $config Details to add to config
+   * @return [void]
+   */
+  public function mergeArray($config) {
+    foreach ($this->spec as $key => $details) {
+      if (($details['runtime'] !== false) && isset($config[$key])) {
+        $value = $config[$key];
+
+        if ($details['multiple']) {
+          $value = $this->arrayify($value);
+          $this->config[$key] = array_merge($this->config[$key], $value);
+        } else {
+          $this->config[$key] = $value;
+        }
+      }
+    }
+  }
+
+  /**
+   * Splits a list of arguments into positional, associative and config.
+   *
+   * @param [array] $arguments Arguments to parse
+   * @return [array] $array positional_args, assoc_args, runtime_config
+   */
+  public function parseArgs($arguments) {
+    list($positional_args, $mixed_args) = self::extractAssoc($arguments);
+    list($assoc_args, $runtime_config)  = $this->unmixAssocArgs($mixed_args);
+    $array = array($positional_args, $assoc_args, $runtime_config);
+    return $array;
+  }
+
+  /**
+   * Puts config and extra config into an array
+   *
+   * @return [array] [0] = $this->config, [1] = $this->extra_config
+   */
+  public function toArray() {
+    $array = array($this->config, $this->extra_config);
+    return $array;
+  }
+
+  /**
+   * Puts the given value into an array, if it is not already
+   *
+   * @param [mixed] $val Value to put in an array
+   * @return [array] $val
+   */
+  private function arrayify($val) {
+    if (!is_array($val)) {
+      $val = array($val);
+    }
+    return $val;
+  }
+
+  /**
+   * Separates assoc_args from runtime configuration
+   *
+   * @param [array] $mixed_args A mixture of runtime args and command args
+   * @return [array] $array [0] = assoc_args, [1] = runtime_config
+   */
+  private function unmixAssocArgs($mixed_args) {
     $assoc_args = $runtime_config = array();
 
     foreach ($mixed_args as $tmp) {
@@ -88,7 +141,11 @@ class Configurator {
         $details = $this->spec[$key];
 
         if (isset($details['deprecated'])) {
-          fwrite(STDERR, "Terminus: The --{$key} global parameter is deprecated. {$details['deprecated']}\n");
+          fwrite(
+            STDERR,
+            "Terminus: The --$key global parameter is deprecated. "
+            . $details['deprecated'] . "\n"
+          );
         }
 
         if ($details['multiple']) {
@@ -104,69 +161,4 @@ class Configurator {
     return array($assoc_args, $runtime_config);
   }
 
-  function merge_yml($path) {
-    foreach (self::load_yml($path) as $key => $value) {
-      if (!isset($this->spec[$key]) || false === $this->spec[$key]['file']) {
-        $this->extra_config[$key] = $value;
-      } elseif ($this->spec[$key]['multiple']) {
-        self::arrayify($value);
-        $this->config[$key] = array_merge($this->config[$key], $value);
-      } else {
-        $this->config[$key] = $value;
-      }
-    }
-  }
-
-  function merge_array($config) {
-    foreach ($this->spec as $key => $details) {
-      if (false !== $details['runtime'] && isset($config[$key])) {
-        $value = $config[$key];
-
-        if ($details['multiple']) {
-          self::arrayify($value);
-          $this->config[$key] = array_merge($this->config[$key], $value);
-        } else {
-          $this->config[$key] = $value;
-        }
-      }
-    }
-  }
-
-  /**
-   * Load values from a YAML file.
-   */
-  private static function load_yml($yml_file) {
-    if (!$yml_file)
-      return array();
-
-    $config = spyc_load_file($yml_file);
-
-    // Make sure config-file-relative paths are made absolute.
-    $yml_file_dir = dirname($yml_file);
-
-    if (isset($config['path']))
-      self::absolutize($config['path'], $yml_file_dir);
-
-    if (isset($config['require'])) {
-      self::arrayify($config['require']);
-      foreach ($config['require'] as &$path) {
-        self::absolutize($path, $yml_file_dir);
-      }
-    }
-
-    return $config;
-  }
-
-  private static function arrayify(&$val) {
-    if (!is_array($val)) {
-      $val = array($val);
-    }
-  }
-
-  private static function absolutize(&$path, $base) {
-    if (!empty($path) && !\Terminus\Utils\isPathAbsolute($path)) {
-      $path = $base . DIRECTORY_SEPARATOR . $path;
-    }
-  }
 }
-

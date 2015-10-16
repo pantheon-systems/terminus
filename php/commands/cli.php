@@ -81,7 +81,7 @@ class CLI_Command extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    $this->output()->outputDump(\Terminus::getConfigurator()->get_spec());
+    $this->output()->outputDump(\Terminus::getConfigurator()->getSpec());
   }
 
   /**

@@ -19,9 +19,9 @@ class Subcommand extends CompositeCommand {
 
     $this->when_invoked = $when_invoked;
 
-    $this->alias = $docparser->get_tag( 'alias' );
+    $this->alias = $docparser->getTag( 'alias' );
 
-    $this->synopsis = $docparser->get_synopsis();
+    $this->synopsis = $docparser->getSynopsis();
     if ( !$this->synopsis && $this->longdesc ) {
       $this->synopsis = self::extract_synopsis( $this->longdesc );
     }

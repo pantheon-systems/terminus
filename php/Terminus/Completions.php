@@ -9,86 +9,72 @@ class Completions {
   private $words;
   private $opts = array();
 
-  function __construct( $line ) {
+  /**
+   * Constructs object, parses command
+   *
+   * @param [string] $line Command to make completions for
+   * @return [Completions] $htis
+   */
+  function __construct($line) {
     // TODO: properly parse single and double quotes
-    $this->words = explode( ' ', $line );
+    $this->words = explode(' ', $line);
 
     // first word is always `wp`
-    array_shift( $this->words );
+    array_shift($this->words);
 
     // last word is either empty or an incomplete subcommand
-    $this->cur_word = end( $this->words );
+    $this->cur_word = end($this->words);
 
-    $r = $this->get_command( $this->words );
-    if ( !is_array( $r ) ) {
+    $r = $this->getCommand($this->words);
+    if (!is_array($r)) {
       return;
     }
 
-    list( $command, $args, $assoc_args ) = $r;
+    list($command, $args, $assoc_args) = $r;
 
-    $spec = SynopsisParser::parse( $command->get_synopsis() );
+    $spec = SynopsisParser::parse($command->get_synopsis());
 
-    foreach ( $spec as $arg ) {
-      if ( $arg['type'] == 'positional' && $arg['name'] == 'file' ) {
-        $this->add( '<file> ' );
+    foreach ($spec as $arg) {
+      if ($arg['type'] == 'positional' && $arg['name'] == 'file') {
+        $this->add('<file> ');
         return;
       }
     }
 
-    if ( $command->can_have_subcommands() ) {
-      foreach ( $command->get_subcommands() as $name => $_ ) {
-        $this->add( "$name " );
+    if ($command->can_have_subcommands()) {
+      foreach ($command->get_subcommands() as $name => $_) {
+        $this->add("$name ");
       }
     } else {
-      foreach ( $spec as $arg ) {
-        if ( in_array( $arg['type'], array( 'flag', 'assoc' ) ) ) {
-          if ( isset( $assoc_args[ $arg['name'] ] ) ) {
+      foreach ($spec as $arg) {
+        if (in_array($arg['type'], array('flag', 'assoc'))) {
+          if (isset($assoc_args[ $arg['name'] ])) {
             continue;
           }
 
           $opt = "--{$arg['name']}";
 
-          if ( $arg['type'] == 'flag' ) {
+          if ($arg['type'] == 'flag') {
             $opt .= ' ';
-          } elseif ( !$arg['value']['optional'] ) {
+          } elseif (!$arg['value']['optional']) {
             $opt .= '=';
           }
 
-          $this->add( $opt );
+          $this->add($opt);
         }
       }
     }
-
   }
 
-  private function get_command( $words ) {
-    $positional_args = $assoc_args = array();
-
-    foreach ( $words as $arg ) {
-      if ( preg_match( '|^--([^=]+)=?|', $arg, $matches ) ) {
-        $assoc_args[ $matches[1] ] = true;
-      } else {
-        $positional_args[] = $arg;
-      }
-    }
-
-    $r = Terminus::getRunner()->find_command_to_run( $positional_args );
-    if ( !is_array( $r ) && array_pop( $positional_args ) == $this->cur_word ) {
-      $r = Terminus::getRunner()->find_command_to_run( $positional_args );
-    }
-
-    if ( !is_array( $r ) ) {
-      return $r;
-    }
-
-    list( $command, $args ) = $r;
-
-    return array( $command, $args, $assoc_args );
-  }
-
-  private function add( $opt ) {
-    if ( $this->cur_word !== '' ) {
-      if ( strpos( $opt, $this->cur_word ) !== 0 ) {
+  /**
+   * Adds options to opts array
+   *
+   * @param [string] $opt Option to add
+   * @return [void]
+   */
+  private function add($opt) {
+    if ($this->cur_word !== '') {
+      if (strpos($opt, $this->cur_word) !== 0) {
         return;
       }
     }
@@ -96,10 +82,49 @@ class Completions {
     $this->opts[] = $opt;
   }
 
+  /**
+   * Gets command to run
+   *
+   * @param [array] $words Words of the command-line string to process
+   * @return [array] $command_array
+   *         [string] $command
+   *         [array]  $args
+   *         [array]  $assoc_args
+   */
+  private function getCommand($words) {
+    $positional_args = $assoc_args = array();
+
+    foreach ($words as $arg) {
+      if (preg_match('|^--([^=]+)=?|', $arg, $matches)) {
+        $assoc_args[$matches[1]] = true;
+      } else {
+        $positional_args[] = $arg;
+      }
+    }
+
+    $r = Terminus::getRunner()->find_command_to_run($positional_args);
+    if (!is_array($r) && array_pop($positional_args) == $this->cur_word) {
+      $r = Terminus::getRunner()->find_command_to_run($positional_args);
+    }
+
+    if (!is_array($r)) {
+      return $r;
+    }
+
+    list($command, $args) = $r;
+
+    return array($command, $args, $assoc_args);
+  }
+
+  /**
+   * Prints out all opt elements on their own lines
+   *
+   * @return [void]
+   */
   public function render() {
-    foreach ( $this->opts as $opt ) {
-      Terminus::line( $opt );
+    foreach ($this->opts as $opt) {
+      Terminus::line($opt);
     }
   }
-}
 
+}

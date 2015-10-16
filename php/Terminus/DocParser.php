@@ -6,56 +6,98 @@ class DocParser {
 
   protected $docComment;
 
-  function __construct( $docComment ) {
-    $this->docComment = self::remove_decorations( $docComment );
+  /**
+   * Object constructor
+   *
+   * @param [string] $docComment Will be undeorated and saved
+   * @return [DocParser] $this
+   */
+  function __construct($docComment) {
+    $this->docComment = $this->removeDecorations($docComment);
   }
 
-  private static function remove_decorations( $comment ) {
-    $comment = preg_replace( '|^/\*\*[\r\n]+|', '', $comment );
-    $comment = preg_replace( '|\n[\t ]*\*/$|', '', $comment );
-    $comment = preg_replace( '|^[\t ]*\* ?|m', '', $comment );
-
-    return $comment;
-  }
-
-  function get_shortdesc() {
-    if ( !preg_match( '|^([^@][^\n]+)\n*|', $this->docComment, $matches ) )
+  /**
+   * Gives short description plus more information
+   *
+   * @return [string] $longdesc
+   */
+  public function getLongdesc() {
+    $shortdesc = $this->getShortdesc();
+    if (!$shortdesc) {
       return '';
+    }
 
-    return $matches[1];
-  }
-
-  function get_longdesc() {
-    $shortdesc = $this->get_shortdesc();
-    if ( !$shortdesc )
-      return '';
-
-    $longdesc = substr( $this->docComment, strlen( $shortdesc ) );
+    $longdesc = substr($this->docComment, strlen($shortdesc));
 
     $lines = array();
-    foreach ( explode( "\n", $longdesc ) as $line ) {
-      if ( 0 === strpos( $line, '@' ) )
+    foreach (explode("\n", $longdesc) as $line) {
+      if (0 === strpos($line, '@')) {
         break;
+      }
 
       $lines[] = $line;
     }
-    $longdesc = trim( implode( $lines, "\n" ) );
+    $longdesc = trim(implode($lines, "\n"));
 
     return $longdesc;
   }
 
-  function get_tag( $name ) {
-    if ( preg_match( '|^@' . $name . '\s+([a-z-_]+)|m', $this->docComment, $matches ) )
+  /**
+   * Parses the doc comment to find short description
+   *
+   * @return [string] $matches[1]
+   */
+  public function getShortdesc() {
+    if (!preg_match('|^([^@][^\n]+)\n*|', $this->docComment, $matches)) {
+      return '';
+    }
+
+    return $matches[1];
+  }
+
+  /**
+   * Parses the synopsis out of the doc comment
+   *
+   * @return [string] $matches[1]
+   */
+  public function getSynopsis() {
+    if (!preg_match('|^@synopsis\s+(.+)|m', $this->docComment, $matches)) {
+      return '';
+    }
+
+    return $matches[1];
+  }
+
+  /**
+   * Parses tag of given name out of the doc comment
+   *
+   * @param [string] $name Name of the tag to retrieve
+   * @return [string] $matches[1]
+   */
+  public function getTag($name) {
+    if (preg_match(
+      '|^@' . $name . '\s+([a-z-_]+)|m',
+      $this->docComment,
+      $matches
+    )) {
       return $matches[1];
+    }
 
     return '';
   }
 
-  function get_synopsis() {
-    if ( !preg_match( '|^@synopsis\s+(.+)|m', $this->docComment, $matches ) )
-      return '';
+  /**
+   * Removes decorators from the given string
+   *
+   * @param [string] $comment Will be undecorated
+   * @return [string] $comment
+   */
+  private function removeDecorations($comment) {
+    $comment = preg_replace('|^/\*\*[\r\n]+|', '', $comment);
+    $comment = preg_replace('|\n[\t ]*\*/$|', '', $comment);
+    $comment = preg_replace('|^[\t ]*\* ?|m', '', $comment);
 
-    return $matches[1];
+    return $comment;
   }
-}
 
+}
