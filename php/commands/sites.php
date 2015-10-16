@@ -5,7 +5,6 @@
  *
  */
 
-use Terminus\Exceptions\TerminusException;
 use Terminus\Utils;
 use Terminus\Models\Organization;
 use Terminus\Models\Upstreams;

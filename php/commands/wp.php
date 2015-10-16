@@ -1,7 +1,6 @@
 <?php
 
 use Terminus\CommandWithSSH;
-use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
 use Terminus\Models\Collections\Sites;
 
@@ -28,7 +27,7 @@ class WPCLI_Command extends CommandWithSSH {
     $sites = new Sites();
     $site = $sites->get(Input::sitename($assoc_args));
     if (!$site) {
-      throw new TerminusException("Command could not be completed. Unknown site specified.");
+      $this->failure('Command could not be completed. Unknown site specified.');
     }
 
     # see https://github.com/pantheon-systems/titan-mt/blob/master/dashboardng/app/workshops/site/models/environment.coffee
