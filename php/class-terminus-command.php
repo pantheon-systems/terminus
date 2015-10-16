@@ -292,10 +292,11 @@ abstract class TerminusCommand {
    * @return [void]
    */
   protected function failure(
-    $message = 'Command failed',
-    array $context = array()
+    $message       = 'Command failed',
+    array $context = array(),
+    $exit_code     = 1
   ) {
-    throw new TerminusException($message, $context, -1);
+    throw new TerminusException($message, $context, $exit_code);
   }
 
   /**

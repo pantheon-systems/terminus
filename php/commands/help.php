@@ -2,7 +2,6 @@
 
 use Terminus\Dispatcher;
 use Terminus\Utils;
-use Terminus\Exceptions\TerminusException;
 
 class Help_Command extends TerminusCommand {
 
@@ -31,7 +30,7 @@ class Help_Command extends TerminusCommand {
 
     // WordPress is already loaded, so there's no chance we'll find the command
     if (function_exists('add_filter')) {
-      throw new TerminusException("'{cmd}' is not a registered command.", array('cmd' => $args[0]));
+      $this->failure("'{cmd}' is not a registered command.", array('cmd' => $args[0]));
     }
   }
 

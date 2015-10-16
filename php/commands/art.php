@@ -1,5 +1,4 @@
 <?php
-use Terminus\Exceptions\TerminusException;
 
 /**
  * Print the pantheon art
@@ -33,7 +32,7 @@ class Art_Command extends TerminusCommand {
     if (!empty($artwork) && array_key_exists($artwork, $this->works)){
       echo Terminus::colorize("%g".base64_decode($this->works[$artwork])."%n")."\n";
     } else {
-      throw new TerminusException("No formula for requested artwork");
+      $this->failure('No formula for requested artwork');
     }
   }
 

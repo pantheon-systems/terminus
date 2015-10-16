@@ -1,6 +1,5 @@
 <?php
 
-use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
@@ -70,7 +69,7 @@ class Organizations_Command extends TerminusCommand {
       case 'add':
         if (isset($assoc_args['site'])) {
           if ($this->siteIsMember($memberships, $assoc_args['site'])) {
-            throw new TerminusException(
+            $this->failure(
               '{site} is already a member of {org}',
               array(
                 'site' => $assoc_args['site'],
@@ -100,7 +99,7 @@ class Organizations_Command extends TerminusCommand {
       case 'remove':
         if (isset($assoc_args['site'])) {
           if (!$this->siteIsMember($memberships, $assoc_args['site'])) {
-            throw new TerminusException(
+            $this->failure(
               '{site} is not a member of {org}',
               array(
                 'site' => $assoc_args['site'],
