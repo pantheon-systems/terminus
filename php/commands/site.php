@@ -598,6 +598,7 @@ public function backups($args, $assoc_args) {
     case 'list':
     default:
       $backups = $site->environments->get($env)->backups();
+      //die(print_r($backups, true));
       $element_name = false;
       if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
         $element_name =  $assoc_args['element'];
@@ -612,7 +613,7 @@ public function backups($args, $assoc_args) {
           !isset($backup->filename)
           || (
             $element_name 
-            && !preg_match(sprintf('/backup_%s/', $element_name), $id)
+            && !preg_match(sprintf('/_%s/', $element_name), $id)
           )
         ) {
           continue;
@@ -623,7 +624,10 @@ public function backups($args, $assoc_args) {
           $date = date('Y-m-d H:i:s', $backup->finish_time);
         }
 
-        $size = $backup->size / 1048576;
+        $size = 0;
+        if (isset($backup->size)) {
+          $size = $backup->size / 1048576;
+        }
         if ($size > 0.1) {
           $size = sprintf('%.1fMB', $size);
         } elseif ($size > 0) {
@@ -787,12 +791,12 @@ public function create_env($args, $assoc_args) {
 
   if ((boolean)$site->getFeature('multidev')) {
     if (isset($assoc_args['to-env'])) {
-      $env_id = $assoc_args['to-env'];
+      $to_env_id = $assoc_args['to-env'];
     } else {
-      $env_id = Terminus::prompt('Name of new multidev environment');
+      $to_env_id = Terminus::prompt('Name of new multidev environment');
     }
 
-    $src = $site->environments->get(
+    $from_env = $site->environments->get(
       Input::env(
         $assoc_args,
         'from-env',
@@ -801,7 +805,7 @@ public function create_env($args, $assoc_args) {
       )
     );
 
-    $workflow = $site->environments->create($env_id);
+    $workflow = $site->environments->create($to_env_id, $from_env);
     $workflow->wait();
     $this->workflowOutput($workflow);
   } else {

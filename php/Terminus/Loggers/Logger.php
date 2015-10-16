@@ -177,7 +177,11 @@ class Logger extends KLogger {
    * @return [string] $date
    */
   private function getTimestamp() {
-    $date = date($this->options['dateFormat']);
+    $date_format = 'Y-m-dTH:i:s';
+    if (isset($this->options)) {
+      $date_format = $this->options['dateFormat'];
+    }
+    $date = date($date_format);
     return $date;
   }
 

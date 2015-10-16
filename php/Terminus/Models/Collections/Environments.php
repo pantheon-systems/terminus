@@ -7,21 +7,22 @@ class Environments extends TerminusCollection {
   /**
    * Creates a multidev environment
    *
-   * @param [string] $new_env Name of new the environment
+   * @param [string]      $to_env_id Name of new the environment
+   * @param [Environment] $from_env  Environment to clone from
    * @return [Workflow] $workflow
    */
-  public function create($new_env = 'dev') {
+  public function create($to_env_id, $from_env) {
     $workflow = $this->site->workflows->create(
       'create_cloud_development_environment',
       array(
         'params' => array(
-          'environment_id' => $new_env,
+          'environment_id' => $to_env_id,
           'deploy'         => array(
-            'clone_database' => array('from_environment' => $this->id),
-            'clone_files'    => array('from_environment' => $this->id),
+            'clone_database' => array('from_environment' => $from_env->id),
+            'clone_files'    => array('from_environment' => $from_env->id),
             'annotation'     => sprintf(
               'Create the "%s" environment.',
-              $new_env
+              $to_env_id
             )
           )
         )

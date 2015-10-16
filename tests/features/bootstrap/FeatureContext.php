@@ -612,13 +612,30 @@ class FeatureContext extends BehatContext {
   }
 
   /**
+   * Checks the number of records returned against a given quantity
+   * @Then /^I should have "([^"]*)" records$/
+   *
+   * @param [integer] $number Number of records to check for
+   * @return [void]
+   */
+  public function iShouldHaveRecords($number) {
+    preg_match("/.*(\[{.*}\]).*/", str_replace("\n", '', $this->_output), $matches);
+    $records = json_decode($matches[1]);
+    if ((integer)$number != count($records)) {
+      throw new Exception("Wanted $number records, got " . count($records) . '.');
+    }
+    return true;
+  }
+
+  /**
    * Ensures that you do not recieve param $string as result
    * @Then /^I should not get:$/
+   * @Then /^I should not get: "([^"]*)"$/
    *
-   * @param [PyStringNode] $string Content which ought not be in the output
+   * @param [string] $string Content which ought not be in the output
    * @return [boolean] True if $string does not exist in output
    */
-  public function iShouldNotGet(PyStringNode $string) {
+  public function iShouldNotGet($string) {
     if($this->_checkResult((string)$string, $this->_output)) {
       throw new Exception("Actual output:\n" . $this->_output);
     }
