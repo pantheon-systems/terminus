@@ -524,7 +524,7 @@ public function backups($args, $assoc_args) {
       $url = $site->environments->get($env)->backupUrl($bucket, $element);
 
       if (isset($assoc_args['to'])) {
-        $target = $assoc_args['to'];
+        $target = str_replace('~', $_SERVER['HOME'], $assoc_args['to']);
         if (is_dir($target)) {
           $filename = Utils\getFilenameFromUrl($url->url);
           $target = sprintf('%s/%s', $target, $filename);
