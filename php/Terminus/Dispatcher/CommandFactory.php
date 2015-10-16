@@ -27,7 +27,7 @@ class CommandFactory {
     $docparser = new DocParser( $method->getDocComment() );
 
     if ( !$name )
-      $name = $docparser->get_tag( 'subcommand' );
+      $name = $docparser->getTag( 'subcommand' );
 
     if ( !$name )
       $name = $method->name;

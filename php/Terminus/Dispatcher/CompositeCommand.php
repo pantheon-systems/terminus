@@ -18,8 +18,8 @@ class CompositeCommand {
 
     $this->name = $name;
 
-    $this->shortdesc = $docparser->get_shortdesc();
-    $this->longdesc = $docparser->get_longdesc();
+    $this->shortdesc = $docparser->getShortdesc();
+    $this->longdesc = $docparser->getLongdesc();
   }
 
   function get_parent() {
