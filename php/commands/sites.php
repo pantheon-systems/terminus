@@ -264,7 +264,8 @@ class Sites_Command extends TerminusCommand {
     $this->log()->info($message);
 
     if ($print) {
-      $this->output()->outputRecordList($aliases);
+      eval(str_replace(array('<?php', '?>'), '', $content));
+      $this->output()->outputDump($aliases);
     }
   }
 
