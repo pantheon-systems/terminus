@@ -9,12 +9,18 @@ use Terminus\Helpers\Input;
 
 class Drush_Command extends CommandWithSSH {
   /**
+   * Name of client that command will be run on server via
+   */
+  protected $client = 'Drush';
+
+  /**
    * A hash of commands which do not work in Terminus
    * The key is the drush command
-   * The value is the Terminus equivalent, or null if DNE
+   * The value is the Terminus equivalent, blank if DNE
    */
   protected $unavailable_commands = array(
-    'sql-connect' => 'site connection-info --field=mysql_connection'
+    'sql-connect' => 'site connection-info --field=mysql_connection',
+    'sql-sync'    => '',
   );
 
   /**

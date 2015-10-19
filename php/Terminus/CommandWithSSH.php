@@ -10,9 +10,14 @@ use TerminusCommand;
  */
 abstract class CommandWithSSH extends TerminusCommand {
   /**
+   * Name of client that command will be run on server via
+   */
+  protected $client = '';
+
+  /**
    * A hash of commands which do not work in Terminus
    * The key is the drush command
-   * The value is the Terminus equivalent, or null if DNE
+   * The value is the Terminus equivalent, blank if DNE
    */
   protected $unavailable_commands = array();
 
@@ -26,8 +31,8 @@ abstract class CommandWithSSH extends TerminusCommand {
   protected function checkCommand($command) {
     if (isset($this->unavailable_commands[$command])) {
       $error_message = "$command is not available via Terminus. " 
-        . 'Please run it via Drush';
-      if ($this->unavailable_commands[$command] != null) {
+        . 'Please run it via ' . $this->client;
+      if (!empty($this->unavailable_commands[$command])) {
         $error_message .= ', or you can use `terminus '
           . $this->unavailable_commands[$command]
           . '` to complete the same task';

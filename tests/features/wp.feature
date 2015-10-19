@@ -1,15 +1,11 @@
-Feature: wp
+Feature: Running WP-CLI commands
 
-  Scenario: Activate WordPress Installation
-    @vcr wp-core-install
-    #When I run "terminus wp core install --path=[binding]/code/ --url=dev-[site].pantheon.io --admin_user=[user] --admin_password=[pass] --admin_email=[email] --title=[title] --site=[site] --env=dev"
-    #Then I should get:
-    #"""
-    #"""
-
-  Scenario: Install WordPress Plugin
-    @vcr wp-plugin-install
-    #When I run "terminus wp plugin install [plugin name] --site=[site] --env=dev"
-    #Then I should get:
-    #"""
-    #"""
+  Scenario: Running a command that is not available via Terminus
+    @vcr wp_unavailable
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    When I run "terminus wp import --site=[[test_site_name]] --env=dev"
+    Then I should get:
+    """
+    import is not available via Terminus. Please run it via WP-CLI.
+    """
