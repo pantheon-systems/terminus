@@ -84,7 +84,7 @@ class Session {
    */
   public static function instance() {
     if (!self::$instance) {
-      self::$instance = new self($session);
+      self::$instance = new self();
     }
     return self::$instance;
   }

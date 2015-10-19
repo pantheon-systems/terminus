@@ -159,7 +159,7 @@ class CLI_Command extends TerminusCommand {
     $user = new User();
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
-      $site_id = $this->sitesCache->findID($sitename);
+      $site_id = $this->sitesCache->findId($sitename);
       $site = new Site($site_id);
     }
 
