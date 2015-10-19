@@ -71,7 +71,7 @@ class Terminus {
   static function colorize($string) {
     $colorized_string = \cli\Colors::colorize(
       $string,
-      self::getRunner()->in_color()
+      self::getRunner()->inColor()
     );
     return $colorized_string;
   }
