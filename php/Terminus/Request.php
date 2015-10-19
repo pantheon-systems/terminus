@@ -4,25 +4,48 @@ namespace Terminus;
 
 use Terminus;
 use Guzzle\Http\Client as Browser;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * Handles requests made by terminus
  *
  * This is simply a class to manage the interactions between Terminus and Guzzle
- * ( the HTTP library Terminus uses ). This class should eventually evolve to
+ * (the HTTP library Terminus uses). This class should eventually evolve to
  * manage all requests to external resources such. Eventually we could even log
  * requests in debug mode.
  */
 
 class Request {
-  public $request; // Guzzle\Http\Message\Request object
-  public $browser; // Guzzle\Http\Client object
-  public $response; // most recent Guzzle\Http\Message\Response
+  /**
+   * @var [Guzzle\Http\Client] $browser
+   */
+  public $browser;
+
+  /**
+   * @var [Guzzle\Http\Message\Request] $browser
+   */
+  public $request;
+
+  /**
+   * @var [Guzzle\Http\Message\Response] $response
+   */
+  public $response;
+
+  /**
+   * @var [array] $responses A collection of $response items
+   */
   public $responses = array();
 
+  /**
+   * Sends a request to the API
+   *
+   * @param [string] $url    URL for API request
+   * @param [string] $method Request method (i.e. PUT, POST, DELETE, or GET)
+   * @param [array]  $data   Options for request
+   * @return [Guzzle\Http\Message\Response] $response
+   */
   public static function send($url, $method, $data = array()) {
-
-    // create a new Guzzle\Http\Client
+    // Create a new Guzzle\Http\Client
     $browser = new Browser;
     $browser->setUserAgent(self::userAgent());
     $options = array(
@@ -41,28 +64,28 @@ class Request {
       Terminus::getLogger()->debug($data['body']);
     }
 
-    $request = $browser->createRequest($method, $url, null, null, $options );
+    $request = $browser->createRequest($method, $url, null, null, $options);
 
-    if( !empty($data['postdata']) ) {
-      foreach( $data['postdata'] as $k=>$v ) {
-        $request->setPostField($k,$v);
+    if (!empty($data['postdata'])) {
+      foreach ($data['postdata'] as $k=>$v) {
+        $request->setPostField($k, $v);
       }
     }
 
-    if( !empty($data['cookies']) ) {
-      foreach( $data['cookies'] as $k => $v ) {
-        $request->addCookie($k,$v);
+    if (!empty($data['cookies'])) {
+      foreach ($data['cookies'] as $k => $v) {
+        $request->addCookie($k, $v);
       }
     }
 
-    if( !empty($data['headers']) ) {
-      foreach( $data['headers'] as $k => $v ) {
-        $request->setHeader($k,$v);
+    if (!empty($data['headers'])) {
+      foreach ($data['headers'] as $k => $v) {
+        $request->setHeader($k, $v);
       }
     }
 
-    if (Terminus::getConfig("debug")) {
-      $debug = "#### REQUEST ####".PHP_EOL;
+    if (Terminus::getConfig('debug')) {
+      $debug  = '#### REQUEST ####' . PHP_EOL;
       $debug .= $request->getRawHeaders();
       Terminus::getLogger()->debug($debug);
       if (isset($data['body'])) {
@@ -75,28 +98,50 @@ class Request {
     return $response;
   }
 
-  static function userAgent() {
-    $agent = sprintf("Terminus/%s (php_version=%s&script=%s)", constant('TERMINUS_VERSION'), phpversion(), constant('TERMINUS_SCRIPT'));
-    return $agent;
-  }
-
-  public static function download($url, $target) {
+  /**
+   * Download file from target URL
+   *
+   * @param [string] $url    URL to download from
+   * @param [string] $target Target file's name
+   * @return [boolean] True if download succeeded
+   */
+  static function download($url, $target) {
     if (file_exists($target)) {
-      throw new \Exception(sprintf("Target file (%s) already exists.", $target));
+      throw new TerminusException(
+        sprintf('Target file (%s) already exists.', $target)
+      );
     }
 
     $handle = fopen($target, 'w');
-    $client = new Browser('', array(
-      Browser::CURL_OPTIONS => array(
-        'CURLOPT_RETURNTRANSFER' => true,
-        'CURLOPT_FILE' => $handle,
-        'CURLOPT_ENCODING' => 'gzip',
+    $client = new Browser(
+      '',
+      array(
+        Browser::CURL_OPTIONS => array(
+          'CURLOPT_RETURNTRANSFER' => true,
+          'CURLOPT_FILE'           => $handle,
+          'CURLOPT_ENCODING'       => 'gzip',
+        )
       )
-    ));
+    );
     $client->get($url)->send();
     fclose($handle);
 
     return true;
   }
 
- }
+  /**
+   * Gives the user-agent string
+   *
+   * @return [string] $agent
+   */
+  static function userAgent() {
+    $agent = sprintf(
+      'Terminus/%s (php_version=%s&script=%s)',
+      constant('TERMINUS_VERSION'),
+      phpversion(),
+      constant('TERMINUS_SCRIPT')
+    );
+    return $agent;
+  }
+
+}
