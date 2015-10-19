@@ -12,7 +12,6 @@ If you would like to contribute, pull requests are welcome!
 
 Installation
 ------------
-For more advanced installation instructions, please see [the installation page of our Wiki](https://github.com/pantheon-systems/cli/wiki/Installation).
 
 **Requirements:**
 - PHP version 5.3.2 or later
