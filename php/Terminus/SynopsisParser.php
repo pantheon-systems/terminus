@@ -5,62 +5,76 @@ namespace Terminus;
 class SynopsisParser {
 
   /**
-   * @param string A synopsis
-   * @return array List of parameters
+   * Parses a command from documentation and command input
+   *
+   * @param [string] $synopsis Command synopsis from the inline docs
+   * @return [array] $params List of parameters
    */
-  static function parse( $synopsis ) {
-    $tokens = array_filter( preg_split( '/[\s\t]+/', $synopsis ) );
+  static function parse($synopsis) {
+    $tokens = array_filter(preg_split('/[\s\t]+/', $synopsis));
 
     $params = array();
-    foreach ( $tokens as $token ) {
-      $param = self::classify_token( $token );
+    foreach ($tokens as $token) {
+      $param = self::classifyToken($token);
 
       // Some types of parameters shouldn't be mandatory
-      if ( isset( $param['optional'] ) && !$param['optional'] ) {
-        if ( 'flag' === $param['type'] || ( 'assoc' === $param['type'] && $param['value']['optional'] ) ) {
+      if (isset($param['optional']) && !$param['optional']) {
+        if (in_array($param['type'], array('flag', 'assoc'))
+          && $param['value']['optional']
+        ) {
           $param['type'] = 'unknown';
         }
       }
 
       $param['token'] = $token;
-      $params[] = $param;
+      $params[]       = $param;
     }
 
     return $params;
   }
 
-  private static function classify_token( $token ) {
+  /**
+   * Decides type of token and sanitizes it appropriately.
+   *
+   * @param [string] $token Token to check for brackets
+   * @return [array] $param Elements as follows:
+   *         [string]  type      Gives token type (e.g. generic, flag, etc)
+   *         [string]  name      Regex'd out name of token
+   *         [boolean] optional  True if param is optional
+   *         [boolean] repeating True if param is repeating
+   */
+  private static function classifyToken($token) {
     $param = array();
 
-    list( $param['optional'], $token ) = self::is_optional( $token );
-    list( $param['repeating'], $token ) = self::is_repeating( $token );
+    list($param['optional'], $token)  = self::isOptional($token);
+    list($param['repeating'], $token) = self::isRepeating($token);
 
-    $p_name = '([a-z-_]+)';
+    $p_name  = '([a-z-_]+)';
     $p_value = '([a-zA-Z-|]+)';
 
-    # TODO: make this more flexible so that it doesn't need to be <field>
-    if ( preg_match( "/^--<(\w+)>=<value>$/", $token, $matches ) ) {
+    // TODO: make this more flexible so that it doesn't need to be <field>
+    if (preg_match("/^--<(\w+)>=<value>$/", $token, $matches)) {
       $param['type'] = 'generic';
       $param['name'] = $matches[1];
-    } elseif ( preg_match( "/^<($p_value)>$/", $token, $matches ) ) {
+    } elseif (preg_match("/^<($p_value)>$/", $token, $matches)) {
       $param['type'] = 'positional';
       $param['name'] = $matches[1];
-    } elseif ( preg_match( "/^--(?:\\[no-\\])?$p_name/", $token, $matches ) ) {
+    } elseif (preg_match("/^--(?:\\[no-\\])?$p_name/", $token, $matches)) {
       $param['name'] = $matches[1];
 
-      $value = substr( $token, strlen( $matches[0] ) );
+      $value = substr($token, strlen($matches[0]));
 
-      if ( false === $value ) {
+      if (false === $value) {
         $param['type'] = 'flag';
       } else {
         $param['type'] = 'assoc';
 
-        list( $param['value']['optional'], $value ) = self::is_optional( $value );
+        list($param['value']['optional'], $value) = self::isOptional($value);
 
-        if ( preg_match( "/^=<$p_value>$/", $value, $matches ) ) {
+        if (preg_match("/^=<$p_value>$/", $value, $matches)) {
           $param['value']['name'] = $matches[1];
         } else {
-          $param = array( 'type' => 'unknown' );
+          $param = array('type' => 'unknown');
         }
       }
     } else {
@@ -72,24 +86,36 @@ class SynopsisParser {
 
   /**
    * An optional parameter is surrounded by square brackets.
+   *
+   * @param [string] $token Token to check for brackets
+   * @return [array] $array Elements as follows:
+   *         [boolean] True if optional, false if not
+   *         [string]  $token if optional, without brackets if not
    */
-  private static function is_optional( $token ) {
-    if ( '[' == substr( $token, 0, 1 ) && ']' == substr( $token, -1 ) ) {
-      return array( true, substr( $token, 1, -1 ) );
+  private static function isOptional($token) {
+    if ((substr($token, 0, 1) == '[') && (substr($token, -1) == ']')) {
+      $array = array(true, substr($token, 1, -1));
     } else {
-      return array( false, $token );
+      $array = array(false, $token);
     }
+    return $array;
   }
 
   /**
    * A repeating parameter is followed by an ellipsis.
+   *
+   * @param [string] $token Token to check for ellipses
+   * @return [array] $array Elements as follows:
+   *         [boolean] True if repeating, false if not
+   *         [string]  $token if not repeating, without ellipses if not
    */
-  private static function is_repeating( $token ) {
-    if ( '...' === substr( $token, -3 ) ) {
-      return array( true, substr( $token, 0, -3 ) );
+  private static function isRepeating($token) {
+    if (substr($token, -3) == '...') {
+      $array = array(true, substr($token, 0, -3));
     } else {
-      return array( false, $token );
+      $array = array(false, $token);
     }
+    return $array;
   }
-}
 
+}
