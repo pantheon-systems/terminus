@@ -57,5 +57,5 @@ Feature: Site organizations
     When I run "terminus site organizations remove --site=[[test_site_name]] --org=[[enterprise_org_name]]"
     Then I should get:
     """
-    [[enterprise_org_uuid]] is not a member of [[test_site_name]]
+    Could not find siteorganizationmembership "[[enterprise_org_uuid]]"
     """

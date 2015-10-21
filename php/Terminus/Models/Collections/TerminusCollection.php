@@ -3,6 +3,7 @@
 namespace Terminus\Models\Collections;
 
 use TerminusCommand;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 
 abstract class TerminusCollection extends TerminusModel {
@@ -61,7 +62,15 @@ abstract class TerminusCollection extends TerminusModel {
     if (isset($models[$id])) {
       return $models[$id];
     }
-    return null;
+    $model = explode('\\', $this->getMemberName());
+    throw new TerminusException(
+      'Could not find {model} "{id}"',
+      array(
+        'model' => strtolower(array_pop($model)),
+        'id'    => $id,
+      ),
+      1
+    );
   }
 
   /**
