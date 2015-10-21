@@ -2,6 +2,7 @@
 
 use Terminus\Utils;
 use Terminus\Helpers\Input;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 
@@ -161,15 +162,22 @@ public function set_connection_mode($args, $assoc_args) {
   if (in_array($env->get('id'), array('test', 'live'))) {
     $this->failure('Connection mode cannot be set in Test or Live environments');
   }
-  if ($mode == $env->info('connection_mode')) {
-    $this->failure(
-      'The connection mode on {site} for {env} is already set to {mode}.',
-      array(
-        'site' => $site->get('name'),
-        'env' => $env->get('id'),
-        'mode' => $mode
-      ),
-      -1
+  try {
+    $current_mode = $env->info('connection_mode');
+    if ($current_mode == $env->info('connection_mode')) {
+      $this->failure(
+        'The connection mode on {site} for {env} is already set to {mode}.',
+        array(
+          'site' => $site->get('name'),
+          'env' => $env->get('id'),
+          'mode' => $mode
+        ),
+        -1
+      );
+    }
+  } catch (TerminusException $e) {
+    $this->log()->info(
+      'Current connection info not available. Proceeding with mode change.'
     );
   }
   $workflow = $env->changeConnectionMode($mode);
