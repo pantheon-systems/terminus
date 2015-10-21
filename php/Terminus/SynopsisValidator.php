@@ -3,42 +3,76 @@
 namespace Terminus;
 
 /**
- * Checks if the list of parameters matches the specification defined in the synopsis.
+ * Checks if the list of parameters matches the specification defined in the
+ * synopsis.
  */
 class SynopsisValidator {
-
   private $spec = array();
 
-  public function __construct( $synopsis ) {
-    $this->spec = SynopsisParser::parse( $synopsis );
+  /**
+   * Object constructor. Puts synopsis parsing into spec property
+   *
+   * @param [string] $synopsis Synopsis from command's internal documentation
+   * @return [SynopsisValidator] $this
+   */
+  public function __construct($synopsis) {
+    $this->spec = SynopsisParser::parse($synopsis);
   }
 
-  public function get_unknown() {
-    return array_column( $this->query_spec( array(
-      'type' => 'unknown',
-    ) ), 'token' );
+  /**
+   * Determines unknown positionals
+   *
+   * @return [array] $array
+   */
+  public function getUnknown() {
+    $array = array_column(
+      $this->querySpec(array('type' => 'unknown')),
+      'token'
+    );
+    return $array;
   }
 
-  public function enough_positionals( $args ) {
-    $positional = $this->query_spec( array(
-      'type' => 'positional',
-      'optional' => false,
-    ) );
+  /**
+   * Determines whether the command has already had its fill of positional args
+   *
+   * @param [args] $args The arguments to count against max args
+   * @return [boolean] $enough_positionals
+   */
+  public function enoughPositionals($args) {
+    $positional = $this->querySpec(
+      array(
+        'type'     => 'positional',
+        'optional' => false,
+      )
+    );
 
-    return count( $args ) >= count( $positional );
+    $enough_positionals = count($args) >= count($positional);
+    return $enough_positionals;
   }
 
+  /**
+   * Returns invalid positionals, if any. False if not.
+   *
+   * @param [array] $args The arguments to evaluate for invalid positionals
+   * @return [string|boolean] Returns the first invalid positional or false
+   */
+  public function invalidPositionals($args) {
+    $positionals = $this->querySpec(array('type' => 'positional'));
+    $args_count  = count($args);
 
-  public function invalid_positionals($args) {
-    $positionals = $this->query_spec( array(
-      'type' => 'positional',
-    ));
-
-    for ($i=0;$i<count($args);$i++) {
-      if (!isset($positionals[$i]['token'])) continue;
-      $token =  preg_replace('#\[?\<([a-zA-Z].*)\>\]?.*#s', '$1', $positionals[$i]['token']);
-      if ("commands" == trim($token) || "email" == trim($token)){
-        // we exit here because the wp and drush commands need to not have validation running since their commands are dependent on their respective code bases.
+    for ($i = 0; $i < $args_count; $i++) {
+      if (!isset($positionals[$i]['token'])) {
+        continue;
+      }
+      $token = preg_replace(
+        '#\[?\<([a-zA-Z].*)\>\]?.*#s',
+        '$1',
+        $positionals[$i]['token']
+      );
+      if (in_array(trim($token), array('commands', 'email'))) {
+        //We exit here because the wp and drush commands need to not have
+        //validation running since their commands are dependent on their
+        //respective code bases.
         return false;
       }
       $regex = "#^($token)$#s";
@@ -51,46 +85,91 @@ class SynopsisValidator {
     return false;
   }
 
-  public function unknown_positionals( $args ) {
-    $positional_repeating = $this->query_spec( array(
-      'type' => 'positional',
-      'repeating' => true,
-    ) );
+  /**
+   * Returns unknown associated arguments (flags and params)
+   *
+   * @param [array] $assoc_args Params and flags to evaluate for unknowns
+   * @return [array] $unknowns
+   */
+  public function unknownAssoc($assoc_args) {
+    $generic = $this->querySpec(array('type' => 'generic'));
 
-    if ( !empty( $positional_repeating ) )
+    if (count($generic)) {
       return array();
+    }
 
-    $positional = $this->query_spec( array(
-      'type' => 'positional',
-      'repeating' => false,
-    ) );
+    $known_assoc = array();
 
-    return array_slice( $args, count( $positional ) );
+    foreach ($this->spec as $param) {
+      if (in_array($param['type'], array('assoc', 'flag'))) {
+        $known_assoc[] = $param['name'];
+      }
+    }
+
+    $unknowns = array_diff(array_keys($assoc_args), $known_assoc);
+    return $unknowns;
   }
 
-  // Checks that all required keys are present and that they have values.
-  public function validate_assoc( $assoc_args ) {
-    $assoc_spec = $this->query_spec( array(
-      'type' => 'assoc',
-    ) );
+  /**
+   * Returns unknown positional arguments
+   *
+   * @param [array] $args Positional args to evaluate for unknowns
+   * @return [array] $unknowns
+   */
+  public function unknownPositionals($args) {
+    $positional_repeating = $this->querySpec(
+      array(
+        'type' => 'positional',
+        'repeating' => true,
+      )
+    );
+
+    if (!empty($positional_repeating)) {
+      return array();
+    }
+
+    $positional = $this->querySpec(
+      array(
+        'type' => 'positional',
+        'repeating' => false,
+      )
+    );
+
+    $unknowns = array_slice($args, count($positional));
+    return $unknowns;
+  }
+
+  /**
+   * Checks that all required keys are present and that they have values.
+   *
+   * @param [array] $assoc_args Params and flags to evaluate for unknowns
+   * @return [array] $feedback Elements as follows:
+   *         [array] errors   Errors relating to any invalid associated args
+   *         [array] to_unset The invalid arguments
+   */
+  public function validateAssoc($assoc_args) {
+    $assoc_spec = $this->querySpec(array('type' => 'assoc'));
 
     $errors = array(
-      'fatal' => array(),
+      'fatal'   => array(),
       'warning' => array()
     );
 
     $to_unset = array();
 
-    foreach ( $assoc_spec as $param ) {
+    foreach ($assoc_spec as $param) {
       $key = $param['name'];
 
-      if ( !isset( $assoc_args[ $key ] ) ) {
-        if ( !$param['optional'] ) {
+      if (!isset($assoc_args[$key])) {
+        if (!$param['optional']) {
           $errors['fatal'][] = "missing --$key parameter";
         }
       } else {
-        if ( true === $assoc_args[ $key ] && !$param['value']['optional'] ) {
-          $error_type = ( !$param['optional'] ) ? 'fatal' : 'warning';
+        if (($assoc_args[$key] === true) && !$param['value']['optional']) {
+          $error_type = 'warning';
+          if (!$param['optional']) {
+            $error_type = 'fatal';
+          }
           $errors[ $error_type ][] = "--$key parameter needs a value";
 
           $to_unset[] = $key;
@@ -98,53 +177,43 @@ class SynopsisValidator {
       }
     }
 
-    return array( $errors, $to_unset );
-  }
-
-  public function unknown_assoc( $assoc_args ) {
-    $generic = $this->query_spec( array(
-      'type' => 'generic',
-    ) );
-
-    if ( count( $generic ) )
-      return array();
-
-    $known_assoc = array();
-
-    foreach ( $this->spec as $param ) {
-      if ( in_array( $param['type'], array( 'assoc', 'flag' ) ) )
-        $known_assoc[] = $param['name'];
-    }
-
-    return array_diff( array_keys( $assoc_args ), $known_assoc );
+    $feedback = array($errors, $to_unset);
+    return $feedback;
   }
 
   /**
-   * Filters a list of associative arrays, based on a set of key => value arguments.
+   * Filters a list of associative arrays, based on a set of key => value
+   * arguments.
    *
-   * @param array $args An array of key => value arguments to match against
-   * @param string $operator
-   * @return array
+   * @param [array]  $args     An array of key => value arguments to match
+   *                             against
+   * @param [string] $operator AND, OR, or NOT
+   * @return [array] $filtered List filtered by operator
    */
-  private function query_spec( $args, $operator = 'AND' ) {
-    $operator = strtoupper( $operator );
-    $count = count( $args );
+  private function querySpec($args, $operator = 'AND') {
+    $operator = strtoupper($operator);
+    $count    = count($args);
     $filtered = array();
 
-    foreach ( $this->spec as $key => $to_match ) {
+    foreach ($this->spec as $key => $to_match) {
       $matched = 0;
-      foreach ( $args as $m_key => $m_value ) {
-        if ( array_key_exists( $m_key, $to_match ) && $m_value == $to_match[ $m_key ] )
+      foreach ($args as $m_key => $m_value) {
+        if (array_key_exists($m_key, $to_match)
+          && ($m_value == $to_match[$m_key])
+        ) {
           $matched++;
+        }
       }
 
-      if (   ( 'AND' == $operator && $matched == $count )
-        || ( 'OR' == $operator && $matched > 0 )
-        || ( 'NOT' == $operator && 0 == $matched ) ) {
-          $filtered[$key] = $to_match;
-        }
+      if ((($operator == 'AND') && ($matched == $count))
+        || (($operator == 'OR') && ($matched > 0))
+        || (($operator == 'NOT') && ($matched == 0))
+      ) {
+        $filtered[$key] = $to_match;
+      }
     }
 
     return $filtered;
   }
+
 }

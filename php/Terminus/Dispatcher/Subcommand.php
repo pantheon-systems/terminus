@@ -168,36 +168,36 @@ class Subcommand extends CompositeCommand {
     $validator = new Terminus\SynopsisValidator( $synopsis );
 
     $cmd_path = implode( ' ', getPath( $this ) );
-    foreach ( $validator->get_unknown() as $token ) {
+    foreach ( $validator->getUnknown() as $token ) {
       Terminus::getLogger()->warning(
         'The `{cmd}` command has an invalid synopsis part: {token}',
         array('cmd' => $cmd_path, 'token' => $token)
       );
     }
 
-    if ( !$validator->enough_positionals( $args ) ) {
+    if ( !$validator->enoughPositionals( $args ) ) {
       $this->show_usage();
       exit(1);
     }
 
     if ( $this->name != 'help') {
-      $invalid = $validator->invalid_positionals($args);
+      $invalid = $validator->invalidPositionals($args);
       if($invalid) {
         throw new TerminusException("Invalid positional value: {invalid}", array('invalid' => $invalid));
       }
     }
 
-    $unknown_positionals = $validator->unknown_positionals($args);
-    if ( !empty( $unknown_positionals ) ) {
+    $unknownPositionals = $validator->unknownPositionals($args);
+    if ( !empty( $unknownPositionals ) ) {
       throw new TerminusException('Too many positional arguments: {args}',
-        array('args' => implode( ' ', $unknown_positionals )));
+        array('args' => implode( ' ', $unknownPositionals )));
     }
 
-    list( $errors, $to_unset ) = $validator->validate_assoc(
+    list( $errors, $to_unset ) = $validator->validateAssoc(
       array_merge( Terminus::getConfig(), $extra_args, $assoc_args )
     );
 
-    foreach ( $validator->unknown_assoc( $assoc_args ) as $key ) {
+    foreach ( $validator->unknownAssoc( $assoc_args ) as $key ) {
       $errors['fatal'][] = "unknown --$key parameter";
     }
 
