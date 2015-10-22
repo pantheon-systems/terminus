@@ -352,7 +352,11 @@ class Terminus {
     if (!empty($params)) {
       $message = vsprintf($message, $params);
     }
-    $response = \cli\prompt($message);
+    try {
+      $response = \cli\prompt($message);
+    } catch (\Exception $e) {
+      throw new TerminusException($e->getMessage, array(), -1);
+    }
     if (empty($response) && $default) {
       $response = $default;
     }

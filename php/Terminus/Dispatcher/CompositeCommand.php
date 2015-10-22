@@ -189,7 +189,7 @@ class CompositeCommand {
   private static function getAliases($subcommands) {
     $aliases = array();
     foreach ($subcommands as $name => $subcommand) {
-      $alias = $subcommand->get_alias();
+      $alias = $subcommand->getAlias();
       if ($alias) {
         $aliases[$alias] = $name;
       }
