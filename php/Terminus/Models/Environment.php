@@ -814,7 +814,7 @@ class Environment extends TerminusModel {
       if (isset($info[$key])) {
         return $info[$key];
       } else {
-        throw new TerminusException('There is no such field.', array(), -1);
+        throw new TerminusException('There is no such field.', array(), 1);
       }
     } else {
       return $info;

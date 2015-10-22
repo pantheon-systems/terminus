@@ -14,6 +14,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site create-env` no longer fails to clone from an environment. (#602)
 - `site backups list` filtering by element fixed. (#602)
 - Four SSH-based commands now return with unavailable errors: `wp import`, `wp db`, `drush sql-connect`, and `drush sql-sync`. (#607)
+- Failure of the API to return a connection mode no longer inhibits its setting. (#616)
 - When trying to access an invalid collection member, Terminus now exits instead of having a fatal error. (#615)
 
 ### Changed

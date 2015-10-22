@@ -1,7 +1,7 @@
 Feature: Site set connection mode
 
   Scenario: Setting connection mode to git
-    @vcr site_connection-mode_git
+    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=git"
@@ -12,7 +12,7 @@ Feature: Site set connection mode
     """
 
   Scenario: Setting connection mode to sftp
-    @vcr site_connection-mode_sftp
+    @vcr site_set-connection-mode_sftp
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
@@ -23,7 +23,7 @@ Feature: Site set connection mode
     """
 
   Scenario: Failing to set connection mode to invalid mode
-    @vcr site_connection-mode_git
+    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=invalid"
@@ -34,11 +34,11 @@ Feature: Site set connection mode
     """
 
   Scenario: Failing to set the connection mode to the current mode
-    @vcr site_connection-mode_git
+    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
     Then I should get:
     """
-    The connection mode on [[test_site_name]] for dev is already set to sftp.
+    The connection mode is already set to sftp.
     """
