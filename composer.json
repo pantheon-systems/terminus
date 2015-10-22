@@ -25,8 +25,7 @@
   },
   "autoload": {
     "psr-0": { "Terminus": "php" },
-    "files": [ "php/Spyc.php" ],
-    "classmap": [ "php/export" ]
+    "files": [ "php/Spyc.php" ]
   },
   "require-dev": {
     "behat/behat": "2.5.*@stable",
