@@ -32,55 +32,18 @@ class SitesCache {
   protected $cache;
   protected $cachekey = 'sites';
 
+  /**
+   * Object constructor, saves cache to cache property
+   *
+   * @return [SitesCache] $this
+   */
   public function __construct() {
     $this->cache = Terminus::getCache();
   }
 
-  private function find($name, $options = array()) {
-    $defaults = array('rebuild' => true);
-    $options = array_merge($defaults, $options);
-    $all = $this->all();
-
-    if (isset($all[$name])) {
-      $site_data = $all[$name];
-      return $site_data;
-    } else {
-      if ($options['rebuild']) {
-        $this->rebuild();
-        $recurse_without_rebuild = $this->find($name, array('rebuild' => false));
-        return $recurse_without_rebuild;
-      } else {
-        return null;
-      }
-    }
-  }
-
   /**
-   * Searches the SitesCache for an ID given a name
-   *
-   */
-  public function findID($name, $options = array()) {
-    $site_data = $this->find($name, $options);
-    if ($site_data) {
-      $site_id = $site_data['id'];
-      return $site_id;
-    } else {
-      return null;
-    }
-  }
-
-  public function all() {
-    $cache_data = $this->cache->get_data($this->cachekey, array('decode_array' => true));
-    if ($cache_data) {
-      return $cache_data;
-    } else {
-      return array();
-    }
-  }
-
-  /**
-   * Adds a record for a site to the cache. Records should either be a single assoc_aray
-   * or a list of arrays that look like this:
+   * Adds a record for a site to the cache. Records should either be a single
+   * assoc_array or a list of arrays that look like this:
    *
    *     array(
    *       "id" => "<site_id>"
@@ -94,6 +57,9 @@ class SitesCache {
    *         'type' => "<team|organization>"
    *       )
    *     )
+   *
+   * @param [array] $memberships_data Memberships of use to add to cache
+   * @return [array] $sites
    */
   public function add($memberships_data = array()) {
     $cache = (array)$this->cache->get_data(
@@ -107,8 +73,8 @@ class SitesCache {
     }
 
     foreach ($memberships_data as $membership_data) {
-      $site_name = $membership_data['name'];
-      $membership = $membership_data['membership'];
+      $site_name     = $membership_data['name'];
+      $membership    = $membership_data['membership'];
       $membership_id = $membership_data['membership']['id'];
 
       //If site is not in the cache, add it as a new entry
@@ -123,61 +89,189 @@ class SitesCache {
       );
     }
 
-    # and save the cache
+    // and save the cache
     $this->cache->put_data($this->cachekey, $cache);
 
-    return $this->all();
+    $sites = $this->all();
+    return $sites;
   }
 
+  /**
+   * Returns all cached site data
+   *
+   * @return [array] $cache_data
+   */
+  public function all() {
+    $cache_data = $this->cache->get_data(
+      $this->cachekey,
+      array('decode_array' => true)
+    );
+    if ($cache_data) {
+      return $cache_data;
+    } else {
+      return array();
+    }
+  }
+
+  /**
+   * Clears cache data
+   *
+   * @return [void]
+   */
+  public function clear() {
+    $this->cache->put_data($this->cachekey, array());
+  }
+
+  /**
+   * Finds the site of the given attributes within the cache
+   *
+   * @param [string] $name    Name of site to retrieve
+   * @param [array]  $options Options to run array with
+   *        [boolean] rebuild True to rebuild cache when run
+   * @return [array] Found site's data
+   */
+  private function find($name, $options = array()) {
+    $defaults = array('rebuild' => true);
+    $options  = array_merge($defaults, $options);
+    $all      = $this->all();
+
+    if (isset($all[$name])) {
+      $site_data = $all[$name];
+      return $site_data;
+    } else {
+      if ($options['rebuild']) {
+        $this->rebuild();
+        $recurse_without_rebuild = $this->find(
+          $name,
+          array('rebuild' => false)
+        );
+        return $recurse_without_rebuild;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  /**
+   * Searches the SitesCache for an ID, given a name
+   *
+   * @param [string] $name    Name of site to retrieve UUID of
+   * @param [array]  $options Options with which to find array, passed to find
+   * @return [string] $site_id UUID of site
+   */
+  public function findId($name, $options = array()) {
+    $site_data = $this->find($name, $options);
+    if ($site_data) {
+      $site_id = $site_data['id'];
+      return $site_id;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Rebuilds sites cache
+   *
+   * @return [array] $cached_sites
+   */
   public function rebuild() {
     // Clear out the cache
     $this->cache->put_data($this->cachekey, array());
 
     // Add user's own sites
-    $this->add($this->fetch_user_sites());
+    $this->add($this->fetchUserSites());
 
     // Add all sites for each of user's organizations
-    $orgs_data = $this->fetch_user_organizations();
+    $orgs_data = $this->fetchUserOrganizations();
 
     foreach ($orgs_data as $org_data) {
-      $this->add($this->fetch_organization_sites($org_data));
+      $this->add($this->fetchOrganizationSites($org_data));
     }
 
-    return $this->all();
+    $cached_sites = $this->all();
+    return $cached_sites;
   }
 
+  /**
+   * Removes a site from the sites cache
+   *
+   * @param [string] $sitename Name of site to remove from array
+   * @return [void'
+   */
   public function remove($sitename) {
-    $cache = (array) $this->cache->get_data($this->cachekey, array('decode_array' => true));
+    $cache = (array)$this->cache->get_data(
+      $this->cachekey,
+      array('decode_array' => true)
+    );
     unset($cache[$sitename]);
     $this->cache->put_data($this->cachekey, $cache);
   }
 
-  public function clear() {
-    $this->cache->put_data($this->cachekey, array());
-  }
-
-  public function fetch_user_sites() {
-    $user_id = Session::getValue('user_uuid');
-    $response = TerminusCommand::pagedRequest('users/' . $user_id . '/memberships/sites');
+  /**
+   * Fetches organizational sites from API
+   *
+   * @param [array] $org_data Properties below:
+   *        [string] id Organizaiton UUID
+   * @return [array] $memberships_data
+   */
+  private function fetchOrganizationSites($org_data) {
+    $response = TerminusCommand::pagedRequest(
+      'organizations/' . $org_data['id'] . '/memberships/sites'
+    );
 
     $memberships_data = array();
     foreach ($response['data'] as $membership) {
-      $site = (array)$membership->site;
-      $member_data = array('id' => $user_id, 'name' => 'Team', 'type' => 'team');
+      $site_data          = (array)$membership->site;
+      $org_data['type']   = 'organization';
+      $memberships_data[] = $this->getSiteData($site_data, $org_data);
+    }
+
+    return $memberships_data;
+  }
+
+  /**
+   * Fetches organizational team-membership sites for user from API
+   *
+   * @return [array] $memberships_data
+   */
+  private function fetchUserSites() {
+    $user_id  = Session::getValue('user_uuid');
+    $response = TerminusCommand::pagedRequest(
+      'users/' . $user_id . '/memberships/sites'
+    );
+
+    $memberships_data = array();
+    foreach ($response['data'] as $membership) {
+      $site        = (array)$membership->site;
+      $member_data = array(
+        'id' => $user_id,
+        'name' => 'Team',
+        'type' => 'team'
+      );
       $memberships_data[] = $this->getSiteData($site, $member_data);
     }
 
     return $memberships_data;
   }
 
-  public function fetch_user_organizations() {
-    $response = TerminusCommand::pagedRequest('users/' . Session::getValue('user_uuid') . '/memberships/organizations');
+  /**
+   * Fetches organizational memberships for user
+   *
+   * @return [array] $data Properties below:
+   *         [string] id   UUID of membership join
+   *         [string] name Name of organization
+   *         [string] type Always "organization"
+   */
+  private function fetchUserOrganizations() {
+    $response = TerminusCommand::pagedRequest(
+      'users/' . Session::getValue('user_uuid') . '/memberships/organizations'
+    );
 
     $data = array();
     foreach ($response['data'] as $membership) {
       if ($membership->role == 'unprivileged') {
-        // Users with unprivileged role in organizations can't see organization sites
-        // but must be added to the team
+        // Users with unprivileged role in organizations can't see organization
+        // sites, but must be added to the team
         continue;
       }
 
@@ -191,24 +285,11 @@ class SitesCache {
     return $data;
   }
 
-  public function fetch_organization_sites($org_data) {
-    $response = TerminusCommand::pagedRequest('organizations/' . $org_data['id'] . '/memberships/sites');
-
-    $memberships_data = array();
-    foreach ($response['data'] as $membership) {
-      $site_data = (array)$membership->site;
-      $org_data['type'] = 'organization';
-      $memberships_data[] = $this->getSiteData($site_data, $org_data);
-    }
-
-    return $memberships_data;
-  }
-
   /**
    * Formats site data from response for use
    *
-   * @param [array] $response_data    Data about the site from API
-   * @param [array] $memebership_data Data about membership to this site
+   * @param [array] $response_data   Data about the site from API
+   * @param [array] $membership_data Data about membership to this site
    * @return [array] $membership_array
    */
   private function getSiteData($response_data, $membership_data = array()) {

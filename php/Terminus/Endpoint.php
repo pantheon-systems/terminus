@@ -9,37 +9,39 @@ namespace Terminus;
 class Endpoint {
   public $patterns = array(
     'deprecated' => 'https://%s/terminus.php?%s=%s',
-    'private'  => 'https://%s/api/%s/%s',
-    'public'   => 'https://%s/api/%s',
-    'login'    => 'https://%s/api/authorize',
-  );
-
-  // some "realms" are different on hermes then terminus.php, this is a
-  // simple has index to migrate them
-  public $realm_map = array(
-    'user'    => 'users',
-    'site'    => 'sites'
+    'private'    => 'https://%s/api/%s/%s',
+    'public'     => 'https://%s/api/%s',
+    'login'      => 'https://%s/api/authorize',
   );
 
   private $public_realms = array(
     'upstreams',
   );
 
+  // Some "realms" are different on Hermes than on terminus.php.
+  public $realm_map = array(
+    'user'    => 'users',
+    'site'    => 'sites'
+  );
+
   private $target = 'deprecated';
 
-  public function __construct()
-  {
-      $this->target = 'private';
+  /**
+   * Object constructor. Sets target property to private.
+   *
+   * @return [Endpoint] $this
+   */
+  public function __construct() {
+    $this->target = 'private';
   }
 
   /**
-   * This is a convoluted (but unit tested) function to build the needed api
+   * This is a convoluted (but unit-tested) function to build the needed API
    * endpoint. Once we're fully committed to the 2.0 api we can clean it up a
    * bit.
    *
-   * @package CLI
-   * @version 1.5
-   * @param $args (array) - should contain at least a realm and uuid, can also have a path
+   * @param [array] $args Should contain a realm and uuid, can also have a path
+   * @return [string] $url
    *
    *    Example:
    *
@@ -50,7 +52,7 @@ class Endpoint {
    *    );
    *
    */
-   private function lookup($args) {
+  private function lookup($args) {
     // adjust the target if it's a public request
     if (isset($args['uuid']) && ($args['uuid'] == 'public')) {
       $this->target = 'public';
@@ -81,15 +83,16 @@ class Endpoint {
   }
 
   /**
-   * @param $args (array)
-   *    required args are
-   *      - realm ( i.e. user,site,organization )
-   *      - path ( specific method to call )
+   * Retrieves an endpoint
+   * @param [array] $args Elements as follow:
+   *        [string] realm user, site, organization
+   *        [string] path specific method to call
+   * @return [string] $endpoint_string
    */
-  static function get( $args )
-  {
-    $endpoint = new Endpoint( $args );
-    return $endpoint->lookup( $args );
+  static function get($args) {
+    $endpoint        = new Endpoint($args);
+    $endpoint_string = $endpoint->lookup($args);
+    return $endpoint_string;
   }
 
 }
