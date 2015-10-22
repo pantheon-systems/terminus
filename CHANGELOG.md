@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##Master
+##[0.9.0] - 2015-10-22
 ### Added
 - `site environment-info --site=<site> --env=<env> [--field=<field>]` (#582)
 - `site backups get` now has an optional `--file=<filename>` parameter for selection. (#604)
