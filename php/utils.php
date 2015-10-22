@@ -100,8 +100,8 @@ function isPathAbsolute($path) {
  * @return [boolean] $is_email True if $email is in email address format
  */
 function isValidEmail($email) {
-  $is_email = filter_var($email, FILTER_VALIDATE_EMAIL);
-  return (boolean)$is_email;
+  $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
+  return $is_email;
 }
 
 /**
