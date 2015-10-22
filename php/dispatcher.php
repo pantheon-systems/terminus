@@ -12,8 +12,8 @@ function getPath($command) {
   $path = array();
 
   do {
-    array_unshift($path, $command->get_name());
-  } while ($command = $command->get_parent());
+    array_unshift($path, $command->getName());
+  } while ($command = $command->getParent());
 
   return $path;
 }

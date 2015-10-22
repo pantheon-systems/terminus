@@ -8,115 +8,193 @@ use Terminus;
  * A non-leaf node in the command tree.
  */
 class CompositeCommand {
+  protected $name;
+  protected $parent;
+  protected $shortdesc;
+  protected $subcommands = array();
+  protected $synopsis;
 
-  protected $name, $shortdesc, $synopsis;
-
-  protected $parent, $subcommands = array();
-
-  public function __construct( $parent, $name, $docparser ) {
-    $this->parent = $parent;
-
-    $this->name = $name;
-
+  /**
+   * Object constructor. Sets object properties
+   *
+   * @param [RootCommand] $parent    Parent command dispatcher object
+   * @param [string]      $name      Name of command to run
+   * @param [DocParser]   $docparser DocParser object for analysis of docs
+   * @return [CompositeCommand] $this
+   */
+  public function __construct($parent, $name, $docparser) {
+    $this->name      = $name;
+    $this->parent    = $parent;
     $this->shortdesc = $docparser->getShortdesc();
-    $this->longdesc = $docparser->getLongdesc();
+    $this->longdesc  = $docparser->getLongdesc();
   }
 
-  function get_parent() {
-    return $this->parent;
+  /**
+   * Adds a subcommand to the subcommand array
+   *
+   * @param [string]     $name    Name of subcommand to add
+   * @param [Subcommand] $command Subcommand object to add
+   * @return [void]
+   */
+  public function addSubcommand($name, $command) {
+    $this->subcommands[$name] = $command;
   }
 
-  function add_subcommand( $name, $command ) {
-    $this->subcommands[ $name ] = $command;
-  }
-
-  function can_have_subcommands() {
+  /**
+   * Tells whether there can be subcommands of this object
+   *
+   * @return [boolean] Always true
+   */
+  public function canHaveSubcommands() {
     return true;
   }
 
-  function get_subcommands() {
-    ksort( $this->subcommands );
+  /**
+   * Finds and retrieves the subcommand from the first element of the param
+   *
+   * @param [array] $args An array of strings representing subcommand names
+   * @return [mixed] $subcommands[$name] or false if DNE
+   */
+  public function findSubcommand(&$args) {
+    $name        = array_shift($args);
+    $subcommands = $this->getSubcommands();
+
+    if (!isset($subcommands[$name])) {
+      $aliases = self::getAliases($subcommands);
+      if (isset($aliases[$name])) {
+        $name = $aliases[$name];
+      }
+    }
+
+    if (!isset($subcommands[$name])) {
+      return false;
+    }
+
+    return $subcommands[$name];
+  }
+
+  /**
+   * Gets the long description of the command this object represents
+   *
+   * @return [string] $this->longdesc
+   */
+  public function getLongdesc() {
+    return $this->longdesc;
+  }
+
+  /**
+   * Gets the name of the command this object represents
+   *
+   * @return [string] $this->name
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * Gets the parent command object
+   *
+   * @return [RootCommand] $this->parent
+   */
+  public function getParent() {
+    return $this->parent;
+  }
+
+  /**
+   * Gets the short description of the command this object represents
+   *
+   * @return [string] $this->shortdesc
+   */
+  public function getShortdesc() {
+    return $this->shortdesc;
+  }
+
+  /**
+   * Sorts and retrieves the subcommands
+   *
+   * @return [array] $this->subcommands Array of Subcommand objects
+   */
+  public function getSubcommands() {
+    ksort($this->subcommands);
 
     return $this->subcommands;
   }
 
-  function get_name() {
-    return $this->name;
-  }
-
-  function get_shortdesc() {
-    return $this->shortdesc;
-  }
-
-  function get_longdesc() {
-    return $this->longdesc;
-  }
-
-  function get_synopsis() {
+  /**
+   * Gets the synopsis of the command this object represents
+   *
+   * @return [string] Always "<command>"
+   */
+  public function getSynopsis() {
     return '<command>';
   }
 
-  function get_usage( $prefix ) {
-    return sprintf( "%s%s %s",
+  /**
+   * Gets the usage parameters of the command this object represents
+   *
+   * @param [string] $prefix Prefix to usage string
+   * @return [string] $usage
+   */
+  public function getUsage($prefix) {
+    $usage = sprintf(
+      '%s%s %s',
       $prefix,
-      implode( ' ', getPath( $this ) ),
-      $this->get_synopsis()
+      implode(' ', getPath($this)),
+      $this->getSynopsis()
+    );
+    return $usage;
+  }
+
+  /**
+   * Displays the usage parameters of the command this object represents
+   *
+   * @param [array] $args       Array of command line non-params and non-flags
+   * @param [array] $assoc_args Array of command line params and flags
+   * @param [array] $extra_args Any additional arguments dispatcher assembled
+   * @return [void]
+   */
+  public function invoke($args, $assoc_args, $extra_args) {
+    $this->showUsage();
+  }
+
+  /**
+   * Displays the usage parameters of the command this object represents
+   *
+   * @return [void]
+   */
+  public function showUsage() {
+    $methods = $this->getSubcommands();
+
+    if (!empty($methods)) {
+      $subcommand = array_shift($methods);
+      Terminus::line($subcommand->getUsage('usage: '));
+      foreach ($methods as $name => $subcommand) {
+        Terminus::line($subcommand->getUsage('   or: '));
+      }
+    }
+    Terminus::line();
+    Terminus::line(
+      'See "terminus help '
+      . $this->name
+      . '<command>" for more information on a specific command.'
     );
   }
 
-  function show_usage() {
-    $methods = $this->get_subcommands();
-
-    $i = 0;
-
-    foreach ( $methods as $name => $subcommand ) {
-      $prefix = ( 0 == $i++ ) ? 'usage: ' : '   or: ';
-
-      Terminus::line( $subcommand->get_usage( $prefix ) );
-    }
-
-    Terminus::line();
-    Terminus::line( "See 'terminus help $this->name <command>' for more information on a specific command." );
-  }
-
-  function invoke( $args, $assoc_args, $extra_args ) {
-    $this->show_usage();
-  }
-
-  function find_subcommand( &$args ) {
-    $name = array_shift( $args );
-
-    $subcommands = $this->get_subcommands();
-
-    if ( !isset( $subcommands[ $name ] ) ) {
-      $aliases = self::get_aliases( $subcommands );
-
-      if ( isset( $aliases[ $name ] ) ) {
-        $name = $aliases[ $name ];
+  /**
+   * Retrieves aliases of a subcommand
+   *
+   * @param [array] $subcommands An array of subcommandname strings
+   * @return [array] $aliases An array of alias strings
+   */
+  private static function getAliases($subcommands) {
+    $aliases = array();
+    foreach ($subcommands as $name => $subcommand) {
+      $alias = $subcommand->get_alias();
+      if ($alias) {
+        $aliases[$alias] = $name;
       }
     }
-
-    if ( !isset( $subcommands[ $name ] ) ){
-      return false;
-    }
-
-    return $subcommands[ $name ];
-  }
-
-  private static function get_aliases( $subcommands ) {
-    $aliases = array();
-
-    foreach ( $subcommands as $name => $subcommand ) {
-      $alias = $subcommand->get_alias();
-      if ( $alias )
-        $aliases[ $alias ] = $name;
-    }
-
     return $aliases;
   }
 
-  function get_alias() {
-    return false;
-  }
 }
-

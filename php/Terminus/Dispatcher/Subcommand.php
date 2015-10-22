@@ -32,11 +32,11 @@ class Subcommand extends CompositeCommand {
     return implode( ' ', $matches[1] );
   }
 
-  function can_have_subcommands() {
+  function canHaveSubcommands() {
     return false;
   }
 
-  function get_synopsis() {
+  function getSynopsis() {
     return $this->synopsis;
   }
 
@@ -44,15 +44,15 @@ class Subcommand extends CompositeCommand {
     return $this->alias;
   }
 
-  function show_usage( $prefix = 'usage: ' ) {
-    Terminus::line( $this->get_usage( $prefix ) );
+  function showUsage( $prefix = 'usage: ' ) {
+    Terminus::line( $this->getUsage( $prefix ) );
   }
 
-  function get_usage( $prefix ) {
+  function getUsage( $prefix ) {
     return sprintf( "%s%s %s",
       $prefix,
       implode( ' ', getPath( $this ) ),
-      $this->get_synopsis()
+      $this->getSynopsis()
     );
   }
 
@@ -70,7 +70,7 @@ class Subcommand extends CompositeCommand {
 
   private function prompt_args( $args, $assoc_args ) {
 
-    $synopsis = $this->get_synopsis();
+    $synopsis = $this->getSynopsis();
 
     if ( ! $synopsis )
       return array( $args, $assoc_args );
@@ -161,7 +161,7 @@ class Subcommand extends CompositeCommand {
    * @return array list of invalid $assoc_args keys to unset
    */
   private function validate_args( $args, $assoc_args, $extra_args ) {
-    $synopsis = $this->get_synopsis();
+    $synopsis = $this->getSynopsis();
     if ( !$synopsis )
       return array();
 
@@ -176,7 +176,7 @@ class Subcommand extends CompositeCommand {
     }
 
     if ( !$validator->enoughPositionals( $args ) ) {
-      $this->show_usage();
+      $this->showUsage();
       exit(1);
     }
 
@@ -227,7 +227,7 @@ class Subcommand extends CompositeCommand {
       unset( $assoc_args[ $key ] );
     }
 
-    $path = getPath( $this->get_parent() );
+    $path = getPath( $this->getParent() );
 
     call_user_func( $this->when_invoked, $args, array_merge( $extra_args, $assoc_args ) );
   }

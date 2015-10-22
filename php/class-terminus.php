@@ -32,7 +32,7 @@ class Terminus {
 
     while (!empty($path)) {
       $subcommand_name = $path[0];
-      $subcommand      = $command->find_subcommand($path);
+      $subcommand      = $command->findSubcommand($path);
       // Create an empty container
       if (!$subcommand) {
         $subcommand = new Dispatcher\CompositeCommand(
@@ -40,7 +40,7 @@ class Terminus {
           $subcommand_name,
           new DocParser('')
         );
-        $command->add_subcommand($subcommand_name, $subcommand);
+        $command->addSubcommand($subcommand_name, $subcommand);
       }
       $command = $subcommand;
     }
@@ -51,7 +51,7 @@ class Terminus {
       $command
     );
 
-    if (!$command->can_have_subcommands()) {
+    if (!$command->canHaveSubcommands()) {
       throw new TerminusException(
         sprintf(
           "'%s' can't have subcommands.",
@@ -59,7 +59,7 @@ class Terminus {
         )
       );
     }
-    $command->add_subcommand($leaf_name, $leaf_command);
+    $command->addSubcommand($leaf_name, $leaf_command);
   }
 
   /**

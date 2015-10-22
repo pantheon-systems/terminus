@@ -60,11 +60,11 @@ class Runner {
     $command = Terminus::getRootCommand();
 
     $cmd_path = array();
-    while (!empty($args) && $command->can_have_subcommands()) {
+    while (!empty($args) && $command->canHaveSubcommands()) {
       $cmd_path[] = $args[0];
       $full_name  = implode(' ', $cmd_path);
 
-      $subcommand = $command->find_subcommand($args);
+      $subcommand = $command->findSubcommand($args);
 
       if (!$subcommand) {
         throw new TerminusException(
@@ -119,8 +119,8 @@ class Runner {
       if (is_array($r)) {
         list($command) = $r;
 
-        if ($command->can_have_subcommands()) {
-          $command->show_usage();
+        if ($command->canHaveSubcommands()) {
+          $command->showUsage();
           exit;
         }
       }

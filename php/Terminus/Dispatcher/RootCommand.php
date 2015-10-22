@@ -16,7 +16,7 @@ class RootCommand extends CompositeCommand {
     $this->shortdesc = 'Manage Pantheon through the command-line.';
   }
 
-  function get_longdesc() {
+  function getLongdesc() {
     $binding = array();
 
     foreach (Terminus::getConfigurator()->getSpec() as $key => $details) {
@@ -44,7 +44,7 @@ class RootCommand extends CompositeCommand {
     return Utils\mustacheRender('man-params.mustache', $binding);
   }
 
-  function find_subcommand(&$args) {
+  function findSubcommand(&$args) {
     $command = array_shift($args);
 
     Utils\loadCommand($command);
@@ -56,10 +56,10 @@ class RootCommand extends CompositeCommand {
     return $this->subcommands[$command];
   }
 
-  function get_subcommands() {
+  function getSubcommands() {
     Utils\loadAllCommands();
 
-    return parent::get_subcommands();
+    return parent::getSubcommands();
   }
 }
 

@@ -32,7 +32,7 @@ class Completions {
 
     list($command, $args, $assoc_args) = $r;
 
-    $spec = SynopsisParser::parse($command->get_synopsis());
+    $spec = SynopsisParser::parse($command->getSynopsis());
 
     foreach ($spec as $arg) {
       if ($arg['type'] == 'positional' && $arg['name'] == 'file') {
@@ -41,8 +41,8 @@ class Completions {
       }
     }
 
-    if ($command->can_have_subcommands()) {
-      foreach ($command->get_subcommands() as $name => $_) {
+    if ($command->canHaveSubcommands()) {
+      foreach ($command->getSubcommands() as $name => $_) {
         $this->add("$name ");
       }
     } else {

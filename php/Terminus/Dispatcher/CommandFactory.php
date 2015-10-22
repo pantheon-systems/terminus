@@ -57,8 +57,8 @@ class CommandFactory {
         $reflection->name,
         $method
       );
-      $subcommand_name = $subcommand->get_name();
-      $container->add_subcommand($subcommand_name, $subcommand);
+      $subcommand_name = $subcommand->getName();
+      $container->addSubcommand($subcommand_name, $subcommand);
     }
 
     return $container;

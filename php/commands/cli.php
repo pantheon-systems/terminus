@@ -16,17 +16,17 @@ class CLI_Command extends TerminusCommand {
 
   private function command_to_array( $command ) {
     $dump = array(
-      'name' => $command->get_name(),
-      'description' => $command->get_shortdesc(),
-      'longdesc' => $command->get_longdesc(),
+      'name' => $command->getName(),
+      'description' => $command->getShortdesc(),
+      'longdesc' => $command->getLongdesc(),
     );
 
-    foreach ( $command->get_subcommands() as $subcommand ) {
+    foreach ( $command->getSubcommands() as $subcommand ) {
       $dump['subcommands'][] = self::command_to_array( $subcommand );
     }
 
     if ( empty( $dump['subcommands'] ) ) {
-      $dump['synopsis'] = (string) $command->get_synopsis();
+      $dump['synopsis'] = (string) $command->getSynopsis();
     }
 
     return $dump;
