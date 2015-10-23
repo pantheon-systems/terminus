@@ -26,11 +26,15 @@ class Auth {
    */
   public static function loggedIn() {
     if (Session::instance()->get('session', false) === false) {
-      throw new TerminusException(
-        'Please login first with `terminus auth login`',
-        array(),
-        1
-      );
+      $refresh = Session::instance()->get('refresh', false);
+      if (!$refresh) {
+        throw new TerminusException(
+          'Please log in first with `terminus auth login`',
+          array(),
+          1
+        );
+      }
+      Terminus::launchSelf('auth', array('login'), compact($refresh));
     }
     return true;
   }
