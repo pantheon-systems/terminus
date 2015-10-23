@@ -61,11 +61,15 @@ class Auth_Command extends TerminusCommand {
 
       $this->auth->logInViaUsernameAndPassword($email, $password);
     } else {
-      $token = '';
-      if (isset($assoc_args['session'])) {
-        $token = $assoc_args['session'];
-      }
-      $this->auth->logInViaSessionToken($token);
+      $url = sprintf(
+        'https://%s/?local=%s',
+        TERMINUS_HOST,
+        urlencode(gethostname())
+      );
+      $this->failure(
+        'Please go to {url} in order to generate a refresh token to log in.',
+        compact('url')
+      );
     }
     $this->log()->debug(get_defined_vars());
     Terminus::launchSelf('art', array('fist'));
