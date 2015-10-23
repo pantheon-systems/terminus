@@ -160,7 +160,6 @@ class Auth {
       unset($data['data']);
     }
     $full_session = array_merge($data, $session);
-    $this->logger->debug($full_session);
     Session::instance()->setData($full_session);
     return true;
   }
