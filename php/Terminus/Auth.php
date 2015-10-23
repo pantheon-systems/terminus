@@ -20,7 +20,8 @@ class Auth {
   }
 
   /**
-   * Determines if user is logged in
+   * Determines if user is logged in and logs the user in if they are not and
+   * a refresh token is present.
    *
    * @return [boolean] True if user is logged in
    */
@@ -29,12 +30,12 @@ class Auth {
       $refresh = Session::instance()->get('refresh', false);
       if (!$refresh) {
         throw new TerminusException(
-          'Please log in first with `terminus auth login`',
+          'Please log in first with `terminus auth login`.',
           array(),
           1
         );
       }
-      Terminus::launchSelf('auth', array('login'), compact($refresh));
+      Terminus::launchSelf('auth', array('login'), compact('refresh'));
     }
     return true;
   }
