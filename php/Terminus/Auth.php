@@ -20,17 +20,29 @@ class Auth {
   }
 
   /**
+   * Throws an exception instructing the user to generate a refresh token
+   *
+   * @return [void]
+   */
+  public static function instructToGenerateRefreshToken() {
+    throw new TerminusException(
+      'Please go to {url} in order to generate a refresh token to log in.',
+      array('url' => self::getRefreshTokenUrl()),
+      1
+    );
+  }
+
+  /**
    * Determines if user is logged in
    *
    * @return [boolean] True if user is logged in
    */
   public static function loggedIn() {
     if (Session::instance()->get('id_token', false) === false) {
-      throw new TerminusException(
-        'Please log in first with `terminus auth login`',
-        array(),
-        1
-      );
+      $refresh = Session::instance()->get('refresh', false);
+      if (!$refresh) {
+        self::instructToGenerateRefreshToken();
+      }
     }
     return true;
   }
@@ -46,8 +58,7 @@ class Auth {
       $token = Session::instance()->get('refresh', false);
     }
     if (!$token) {
-      //TODO: Replace this with token-getting URL in PR #628
-      $this->failure('No refresh token has been specified.');
+      self::instructToGenerateRefreshToken();
     }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
@@ -142,6 +153,20 @@ class Auth {
       )
     );
     return true;
+  }
+
+  /**
+   * Generates the refresh token-getting Dashboard URL
+   *
+   * @return [string] $url The URL at which to create a refresh token
+   */
+  private static function getRefreshTokenUrl() {
+    $url = sprintf(
+      'https://%s/?local=%s',
+      TERMINUS_HOST,
+      urlencode(gethostname())
+    );
+    return $url;
   }
 
   /**
