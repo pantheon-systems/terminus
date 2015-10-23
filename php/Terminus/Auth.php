@@ -47,15 +47,11 @@ class Auth {
     }
     if (!$token) {
       //TODO: Replace this with token-getting URL in PR #628
-      throw new TerminusException(
-        'No refresh token has been specified.',
-        array(),
-        1
-      );
+      $this->failure('No refresh token has been specified.');
     }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
-      'body'    => array('refesh_token' => $token),
+      'body'    => array('Authorization' => "Bearer $token"),
     );
     /* For once JWT is implemented:
     $options = array(
