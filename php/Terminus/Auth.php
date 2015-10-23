@@ -182,6 +182,25 @@ class Auth {
   }
 
   /**
+   * Logs the user out of Pantheon by destroying the session data. If the user
+   * has a refresh token, it will be preserved.
+   *
+   * @return [boolean] Always true
+   */
+  public function logOut() {
+    $data = (array)Session::instance()->getData();
+    if (isset($data['refresh'])) {
+      $refresh = array('refresh' => $data['refresh']);
+    }
+    $this->log()->info('Logging out of Pantheon.');
+    $this->cache->remove('session');
+    if (isset($refresh)) {
+      $this->setInstanceData($refresh);      
+    }
+    return true;
+  }
+
+  /**
    * Merges the session data with existing data and saves it.
    *
    * @param [array] $session Session data to save

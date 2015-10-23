@@ -96,14 +96,11 @@ class Request {
     try {
       $response = $request->send();
     } catch (\Exception $e) {
-      die(print_r($e,true));
       $refresh = Session::instance()->get('refresh', false);
       if (strpos($e->getMessage(), '[status code] 401') && $refresh) {
         Terminus::launchSelf('auth', array('login'), compact('refresh'));
-        $response = $request->send();
-      } else {
-        throw new TerminusException($e->getMessage(), array(), 1);
       }
+      $response = $request->send();
     }
 
     return $response;
