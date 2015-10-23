@@ -25,7 +25,7 @@ class Auth {
    * @return [boolean] True if user is logged in
    */
   public static function loggedIn() {
-    if (Session::instance()->getValue('session', false) === false) {
+    if (Session::instance()->get('session', false) === false) {
       throw new TerminusException(
         'Please login first with `terminus auth login`',
         array(),
@@ -36,12 +36,58 @@ class Auth {
   }
 
   /**
+   * Execute the login based on a new refresh token
+   *
+   * @param [string] $token Refresh token to initiate login with
+   * @return [boolean] True if login succeeded
+   */
+  public function logInViaRefreshToken($token) {
+    $options = array(
+      'headers' => array('Content-type' => 'application/json'),
+      'cookies' => array('Authorization: Bearer' => $token),
+    );
+    $logger_context = compact('token');
+
+    $this->logger->info(
+      'Logging in via refresh token {token}',
+      $logger_context
+    );
+    $response = TerminusCommand::request(
+      'auth/refresh',
+      '',
+      '',
+      'POST',
+      $options
+    );
+    if ($response['status_code'] != '200') {
+      throw new TerminusException(
+        'Login via refresh token {token} was unsuccessful.',
+        $logger_context,
+        1
+      );
+    }
+
+    $this->setInstanceData(
+      array(
+        'user_uuid'           => $response['data']->id,
+        'session'             => $response['data']->session,
+        'session_expire_time' => 0,
+        'email'               => $response['data']->email,
+        'refresh'             => $token,
+      )
+    );
+  }
+
+  /**
    * Execute the login based on an existing session token
    *
    * @param [string] $token Session token to initiate login with
-   * @return [boolean] True if login succeeded
+   * @return [boolean] True if login 
    */
-  public function logInViaSessionToken($token) {
+  public function logInViaSessionToken($token = '')  {
+    if ($token == '') {
+      $token = Session::instance()->get('session', false);
+    }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
       'cookies' => array('X-Pantheon-Session' => $token),
@@ -54,11 +100,14 @@ class Auth {
       || !isset($response['info']['http_code'])
       || $response['info']['http_code'] != '200'
     ) {
-      throw new TerminusException(
-        'The session token {token} is not valid.',
-        array('token' => $token),
-        1
+      $this->logger->info(
+        'Session token {token} is not valid.',
+        compact('token')
       );
+      $refresh_token = Session::instance()->get('refresh', false);
+      if ($refresh_token) {
+        $this->logInViaRefreshToken($refresh_token);
+      }
     }
     $this->logger->info(
       'Logged in as {email}.',
@@ -92,7 +141,7 @@ class Auth {
       );
     }
 
-    $logger_context = array('email' => $email);
+    $logger_context = compact('email');
     $options        = array(
       'body' => json_encode(
         array(
@@ -100,7 +149,7 @@ class Auth {
           'password' => $password,
         )
       ),
-      'headers' => array('Content-type'=>'application/json'),
+      'headers' => array('Content-type' => 'application/json'),
     );
 
     $this->logger->info(
@@ -128,13 +177,18 @@ class Auth {
   }
 
   /**
-   * Saves the session data to a cookie
+   * Merges the session data with existing data and saves it.
    *
    * @param [array] $session Session data to save
    * @return [boolean] Always true
    */
   private function setInstanceData($session) {
-    Session::instance()->setData($session);
+    $data = (array)Session::instance()->getData();
+    if (isset($data['data'])) {
+      unset($data['data']);
+    }
+    $full_session = array_merge($data, $session);
+    Session::instance()->setData($full_session);
     return true;
   }
 
