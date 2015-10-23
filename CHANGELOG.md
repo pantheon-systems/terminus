@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##Master
 ### Added
 - `auth login --refresh=<token>` implemented. If a refresh token is present, user will automatically be logged in henceforth. (#628)
+- When running a command when not logged in or running `auth login` and no refresh token is present, user will be directed to a Dashboard URL in order to generate such a token. (#635)
 
 ##[0.9.1] - 2015-10-27
 ### Fixed
