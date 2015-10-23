@@ -1,4 +1,4 @@
-<?php
+ii<?php
 
 namespace Terminus;
 
@@ -61,7 +61,6 @@ class Request {
     }
     if (isset($data['body']) && $data['body']) {
       $options['body'] = $data['body'];
-      Terminus::getLogger()->debug($data['body']);
     }
 
     $request = $browser->createRequest($method, $url, null, null, $options);
@@ -84,13 +83,21 @@ class Request {
       }
     }
 
-    if (Terminus::getConfig('debug')) {
-      $debug  = '#### REQUEST ####' . PHP_EOL;
-      $debug .= $request->getRawHeaders();
-      Terminus::getLogger()->debug($debug);
-      if (isset($data['body'])) {
-        Terminus::getLogger()->debug($data['body']);
-      }
+    if (!empty($data['body']) && method_exists($request, 'setBody')) {
+      $request->setBody(json_encode($data['body']));
+    }
+
+    $debug  = '#### REQUEST ####' . PHP_EOL;
+    $debug .= $request->getRawHeaders();
+    Terminus::getLogger()->debug(
+      'Headers: {headers}',
+      array('headers' => $debug)
+    );
+    if (isset($data['body'])) {
+      Terminus::getLogger()->debug(
+        'Body: {body}',
+        array('body' => $data['body'])
+      );
     }
 
     $response = $request->send();

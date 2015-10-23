@@ -120,16 +120,16 @@ abstract class TerminusCommand {
   ) {
     $logger = Terminus::getLogger();
 
-    if (!in_array($realm, array('login', 'user', 'public'))) {
+    if (!in_array($realm, array('auth/refresh', 'login', 'user', 'public'))) {
       Auth::loggedIn();
     }
 
     try {
       $cache = Terminus::getCache();
 
-      if (!in_array($realm, array('login', 'user'))) {
-        $options['cookies'] = array(
-          'X-Pantheon-Session' => Session::getValue('session')
+      if (!in_array($realm, array('auth/refresh', 'login', 'user'))) {
+        $options['body'] = array(
+          'refresh_token' => Session::getValue('id_token')
         );
         $options['verify']  = false;
       }
@@ -142,7 +142,6 @@ abstract class TerminusCommand {
         )
       );
       $logger->debug('Request URL: ' . $url);
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
 
@@ -208,9 +207,9 @@ abstract class TerminusCommand {
       $path
     );
 
-    if (Session::getValue('session')) {
-      $req_options['cookies'] = array(
-      'X-Pantheon-Session' => Session::getValue('session')
+    if (Session::getValue('id_token')) {
+      $req_options['body'] = array(
+        'refresh_token' => Session::getValue('id_token')
       );
       $req_options['verify']  = false;
     }

@@ -8,10 +8,11 @@ namespace Terminus;
  **/
 class Endpoint {
   public $patterns = array(
-    'deprecated' => '%s://%s:%s/terminus.php?%s=%s',
-    'private'    => '%s://%s:%s/api/%s/%s',
-    'public'     => '%s://%s:%s/api/%s',
-    'login'      => '%s://%s:%s/api/authorize',
+    'deprecated'   => '%s://%s:%s/terminus.php?%s=%s',
+    'private'      => '%s://%s:%s/api/%s/%s',
+    'public'       => '%s://%s:%s/api/%s',
+    'login'        => '%s://%s:%s/api/authorize',
+    'auth/refresh' => '%s://%s:%s/auth/refresh',
   );
 
   private $public_realms = array(
@@ -54,12 +55,17 @@ class Endpoint {
    */
   private function lookup($args) {
     // adjust the target if it's a public request
+    //TODO: Simplify. Too repetitive.
     if (isset($args['uuid']) && ($args['uuid'] == 'public')) {
       $this->target = 'public';
     }
 
     if (isset($args['realm']) && ($args['realm'] == 'login')) {
       $this->target = 'login';
+    }
+
+    if (isset($args['realm']) && ($args['realm'] == 'auth/refresh')) {
+      $this->target = 'auth/refresh';
     }
 
     if (!isset($args['protocol']) || ($args['protocol'] == '')) {
