@@ -37,24 +37,17 @@ class Auth_Command extends TerminusCommand {
    * [--session=<value>]
    * : Authenticate using an existing session token
    *
+   * [--refresh=<value>]
+   * : Authenticate using a refresh token
+   *
    * [--debug]
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    // Try to login using a session token, if provided.
-    if (isset($assoc_args['session'])) {
-      $this->auth->logInViaSessionToken($assoc_args['session']);
-    } else {
+    // Try to login using a refresh token, if provided.
+    if (count($args) === 1) {
       // Otherwise, do a normal email/password-based login.
-      if (empty($args)) {
-        if (isset($_SERVER['TERMINUS_USER'])) {
-          $email = $_SERVER['TERMINUS_USER'];
-        } else {
-          $email = Terminus::prompt('Your email address?', null);
-        }
-      } else {
-        $email = $args[0];
-      }
+      $email = $args[0];
 
       if (isset($assoc_args['password'])) {
         $password = $assoc_args['password'];
@@ -65,6 +58,12 @@ class Auth_Command extends TerminusCommand {
       }
 
       $this->auth->logInViaUsernameAndPassword($email, $password);
+    } else {
+      $token = '';
+      if (isset($assoc_args['refresh'])) {
+        $token = $assoc_args['refresh'];
+      }
+      $this->auth->logInViaRefreshToken($token);
     }
     $this->log()->debug(get_defined_vars());
     Terminus::launchSelf('art', array('fist'));
