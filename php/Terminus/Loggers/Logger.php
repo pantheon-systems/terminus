@@ -200,8 +200,8 @@ class Logger extends KLogger {
     }
 
     // interpolate replacement values into the message and return
-    if(!is_string($message)) {
-      $message = json_encode($message);
+    if (!is_string($message)) {
+      $message = print_r($message, true);
     }
     return strtr($message, $replace);
   }

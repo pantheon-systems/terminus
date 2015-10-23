@@ -118,9 +118,7 @@ abstract class TerminusCommand {
     $method = 'GET',
     $options = null
   ) {
-    $logger = Terminus::getLogger();
-
-    if (!in_array($realm, array('login', 'user', 'public'))) {
+    if (!in_array($realm, array('auth/refresh', 'login', 'user', 'public'))) {
       Auth::loggedIn();
     }
 
@@ -141,8 +139,7 @@ abstract class TerminusCommand {
           'path'  => $path,
         )
       );
-      $logger->debug('Request URL: ' . $url);
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
+      Terminus::getLogger()->debug('Request URL: {url}', compact('url'));
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
 

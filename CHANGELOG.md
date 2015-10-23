@@ -5,16 +5,6 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - `auth login --refresh=<token>` implemented. If a refresh token is present, user will automatically be logged in henceforth. (#628)
 
-##[0.9.2] - 2015-10-29
-### Fixed
-- `sites list` no longer capitalizes membership UUIDs. (#642)
-
-### Added
-- `sites list` now has an optional `--cached` flag which makes the command return the cached sites data rather than retrieving it anew. (#637)
-- `sites mass-update` now can be filtered by `--tag=<tag>`. (Note: `--org=<name|id>` is necessary to use the filter.) (#640)
-- `sites mass-update` now has an optional `--cached` tag to optionally prevent retrieving a new sites cache. (#640)
-- Environment variables `TERMINUS_PORT` and `TERMINUS_PROTOCOL` now enabled. (#643)
-
 ##[0.9.1] - 2015-10-27
 ### Fixed
 - `site backups get` will now find and retrieve backups properly. (#632)
