@@ -26,13 +26,6 @@ Once you have at least the requirements installed, you can install Terminus via 
 - [Composer](https://getcomposer.org/doc/00-intro.md)
 - [Git](https://help.github.com/articles/set-up-git/)
 
-####Installing with Composer
-
-Composer is the easiest way to install Terminus. Run this in your terminal client:
-```bash
-composer global require pantheon-systems/cli
-```
-
 ####Installing with cURL
 
 Run this in this in your terminal client:
