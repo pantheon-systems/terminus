@@ -42,12 +42,17 @@ class Sites_Command extends TerminusCommand {
    * [--org=<id>]
    * : filter sites you can access via the organization
    *
+   * [--cached]
+   * : causes the command to return cached sites list instead of retrieving anew
+   *
    * @subcommand list
    * @alias show
    */
   public function index($args, $assoc_args) {
     // Always fetch a fresh list of sites
-    $this->sites->rebuildCache();
+    if (!isset($assoc_args['cached'])) {
+      $this->sites->rebuildCache();
+    }
     $sites = $this->sites->all();
 
     $rows = array();
