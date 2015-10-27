@@ -294,11 +294,10 @@ class Sites_Command extends TerminusCommand {
     $this->sites->rebuildCache();
     $sites = $this->sites->all();
 
-    $env = 'dev';
     $upstream = Input::optional('upstream', $assoc_args, false);
-    $data = array();
-    $report = Input::optional('report', $assoc_args, false);
-    $confirm = Input::optional('confirm', $assoc_args, false);
+    $data     = array();
+    $report   = Input::optional('report', $assoc_args, false);
+    $confirm  = Input::optional('confirm', $assoc_args, false);
 
     // Start status messages.
     if($upstream) $this->log()->info('Looking for sites using '.$upstream.'.');
@@ -321,21 +320,30 @@ class Sites_Command extends TerminusCommand {
 
       if( $updates->behind > 0 ) {
         $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Needs update");
+        $env = $site->environments->get('dev');
+        if ($env->getConnectionMode() == 'sftp') {
+          $this->log()->warning(
+            '{site} has available updates, but is in SFTP mode. Switch to Git mode to apply updates.',
+            array('site' => $site->get('name'))
+          );
+          $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Needs update - switch to Git mode");
+          continue;
+        }
         $updatedb = !Input::optional($assoc_args, 'updatedb', false);
         $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
-          $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->get('name'), var_export($update,1), var_export($xoption,1)));
+          $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->get('name'), var_export($updatedb,1), var_export($xoption,1)));
           if(!$confirmed) continue; // User says No, go back to start.
 
           // Backup the DB so the client can restore if something goes wrong.
           $this->log()->info('Backing up '.$site->get('name').'.');
-          $backup = $site->environments->get('dev')->createBackup(array('element'=>'all'));
+          $backup = $env->createBackup(array('element'=>'all'));
           // Only continue if the backup was successful.
           if($backup) {
             $this->log()->info("Backup of ".$site->get('name')." created.");
             $this->log()->info('Updating '.$site->get('name').'.');
             // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
-            $response = $site->applyUpstreamUpdates($env, $updatedb, $xoption);
+            $response = $site->applyUpstreamUpdates($env->get('id'), $updatedb, $xoption);
             $data[$site->get('name')]['status'] = 'Updated';
             $this->log()->info($site->get('name').' is updated.');
           } else {
