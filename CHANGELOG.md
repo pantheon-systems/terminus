@@ -6,6 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `sites list` no longer capitalizes membership UUIDs. (#642)
 
 ### Added
+- `sites list` now has an optional `--cached` flag which makes the command return the cached sites data rather than retrieving it anew. (#637)
 - Environment variables `TERMINUS_PORT` and `TERMINUS_PROTOCOL` now enabled. (#643)
 
 ##[0.9.1] - 2015-10-27
