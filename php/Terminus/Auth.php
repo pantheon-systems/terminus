@@ -156,6 +156,22 @@ class Auth {
   }
 
   /**
+   * Logs the user out of Pantheon by destroying the session data. If the user
+   * has a refresh token, it will be preserved.
+   *
+   * @return [boolean] Always true
+   */
+  public function logOut() {
+    $refresh = (array)Session::instance()->get('refresh', false);
+    $this->logger->info('Logging out of Pantheon.');
+    Terminus::getCache()->remove('session');
+    if ($refresh) {
+      $this->setInstanceData(compact('refresh'));      
+    }
+    return true;
+  }
+
+  /**
    * Generates the refresh token-getting Dashboard URL
    *
    * @return [string] $url The URL at which to create a refresh token

@@ -73,8 +73,7 @@ class Auth_Command extends TerminusCommand {
    * Log yourself out and remove the secret session key.
    */
   public function logout() {
-    $this->log()->info('Logging out of Pantheon.');
-    $this->cache->remove('session');
+    $this->auth->logOut();
   }
 
   /**
