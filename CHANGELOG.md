@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##MASTER
 ### Fixed
 - `site backups get` will now find and retrieve backups properly. (#632)
+- `sites mass-update` now differentiates between an updated site and one in SFTP mode and warns user appropriately. (#633)
 
 ##[0.9.0] - 2015-10-22
 ### Added
