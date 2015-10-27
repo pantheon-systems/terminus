@@ -467,7 +467,7 @@ public function organizations($args, $assoc_args) {
 public function backups($args, $assoc_args) {
   $action = array_shift($args);
   $site   = $this->sites->get(Input::sitename($assoc_args));
-  $env    = Input::env($assoc_args, 'env');
+  $env    = $site->environments->get(Input::env($assoc_args, 'env'));
   //Backward compatability supports "database" as a valid element value.
   if(
     isset($assoc_args['element'])
@@ -480,92 +480,22 @@ public function backups($args, $assoc_args) {
     case 'get':
       $file = Input::optional('file', $assoc_args, false);
       if ($file) {
-        $regex = sprintf(
-          "/%s_%s_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_UTC_(.*).tar.gz/",
-          $site->get('name'),
-          $env
-        );
-        preg_match($regex, $file, $matches);
-        $element = $matches[1];
-      } elseif (isset($assoc_args['element'])) {
-        $element = $assoc_args['element'];
+        $backup = $env->getBackupByFile($file);
+        $element = $backup->element;
       } else {
-        $element = Terminus::menu(
-          array('code', 'files', 'db'),
-          null,
-          'Select backup element',
-          true
-        );
-        if (!in_array($element, array('code', 'files', 'db'))) {
-          $this->failure('Invalid backup element specified.');
+        $element = Input::backupElement(array('args' => $assoc_args));
+        $latest  = (boolean)Input::optional('latest', $assoc_args, false);
+        $backups = $env->getFinishedBackups($element);
+
+        if ($latest) {
+          $backup = array_pop($backups);
+        } else {
+          $context = array('site' => $site->get('name'), 'env' => $env->get('id'));
+          $backup = Input::backup(array('backups' => $backups, 'context' => $context));
         }
       }
-      $latest = (boolean)Input::optional('latest', $assoc_args, false);
 
-      if (!in_array($element,array('code', 'files', 'db'))) {
-        $this->failure('Invalid backup element specified.');
-      }
-      $latest  = Input::optional('latest', $assoc_args, false);
-      $backups = $site->environments->get($env)->backups($element);
-      if (empty($backups)) {
-        $this->failure(
-          'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
-          array('site' => $site->get('name'), 'env' => $env)
-        );
-      }
-
-      //Ensure that that backups being presented for retrieval have finished
-      $backups = array_filter($backups, function($backup) {
-        return (isset($backup->finish_time) && $backup->finish_time);
-      });
-
-      if ($latest) {
-        $backup = array_pop($backups);
-      } elseif ($file) {
-        do {
-          try {
-            $candidate = array_pop($backups);
-          } catch (\Exception $e) {
-            $this->failure("$file is not a valid backup archive");
-          }
-          if ($candidate->filename == $file) {
-            $backup = $candidate;
-          }
-        } while (!isset($backup));
-      }
-
-      if (!isset($backup)) {
-        $menu = $folders = array();
-
-        foreach($backups as $folder => $backup) {
-          if (!isset($backup->filename)) {
-            continue;
-          }
-          if (!isset($backup->folder)) {
-            $backup->folder = $folder;
-          }
-        $menu[]    = $backup->filename;
-        }
-        $index           = Terminus::menu($menu, null, 'Select backup');
-        $backup_elements = array_values($backups);
-        $backup          = $backup_elements[$index];
-      }
-
-      if (empty($menu)) {
-        $this->failure(
-          'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
-          array('site' => $site->get('name'), 'env' => $env)
-        );
-      }
-
-      $index = 0;
-      if (!$latest) {
-        $index = Terminus::menu($menu, null, 'Select backup');
-      }
-      $bucket   = $buckets[$index];
-      $filename = $menu[$index];
-
-      $url = $site->environments->get($env)->backupUrl($bucket, $element);
+      $url = $env->getBackupUrl($backup->folder, $element);
 
       if (isset($assoc_args['to'])) {
         $target = str_replace('~', $_SERVER['HOME'], $assoc_args['to']);
@@ -575,7 +505,7 @@ public function backups($args, $assoc_args) {
         }
         $this->log()->info('Downloading ... please wait ...');
         if ($this->download($url->url, $target)) {
-          $this->log()->info('Downloaded {target}', array('target' => $target));
+          $this->log()->info('Downloaded {target}', compact('target'));
           return $target;
         } else {
           $this->failure('Could not download file');
@@ -608,7 +538,7 @@ public function backups($args, $assoc_args) {
         $this->failure('MySQL does not appear to be installed on your server.');
       }
 
-      $assoc_args['env'] = $env;
+      $assoc_args['env'] = $env->get('id');
       $target = $this->backup(array('get'), $assoc_args);
       $target = '/tmp/' . Utils\getFilenameFromUrl($target);
 
@@ -635,14 +565,13 @@ public function backups($args, $assoc_args) {
         $options = array('code', 'db', 'files', 'all');
         $assoc_args['element'] = $options[Input::menu($options, 'all', 'Select element')];
       }
-      $workflow = $site->environments->get($env)->createBackup($assoc_args);
+      $workflow = $env->createBackup($assoc_args);
       $workflow->wait();
       $this->workflowOutput($workflow);
       break;
     case 'list':
     default:
-      $backups = $site->environments->get($env)->backups();
-      //die(print_r($backups, true));
+      $backups = $env->getBackups();
       $element_name = false;
       if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
         $element_name =  $assoc_args['element'];
