@@ -15,6 +15,90 @@ class Input {
   public static $NULL_INPUTS = array('', 'false', 'None', 'Null', '0');
 
   /**
+   * Produces a menu to select a backup
+   *
+   * @param [array] $arg_options Elements as follows:
+   *        [string] label         Prompt for STDOUT
+   *        [array]  backups       An array of stdClass objects representing backups
+   *        [array]  target_backup For STDERR, if necessary. As follows:
+   *          [string] site Name of the site we want a backup from
+   *          [string] env  Name of the environment we want a backup from
+   * @return [stdClass] $target_backup An object representing the backup desired
+   */
+  public static function backup(array $arg_options = array()) {
+    $default_options = array(
+      'label'   => 'Select a backup',
+      'backups' => array(),
+      'context' => array(),
+    );
+    $options = array_merge($default_options, $arg_options);
+    $backups = $options['backups'];
+    if (empty($options['backups'])) {
+      throw new TerminusException(
+        'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
+        $backups['context'],
+        1
+      );
+    }
+    
+    $choices = array();
+    foreach ($backups as $folder => $backup) {
+      if (!isset($backup->filename)) {
+        unset($backups[$folder]);
+        continue;
+      }
+      if (!isset($backup->folder)) {
+        $backup->folder = $folder;
+      }
+      $choices[] = $backup->filename;
+    }
+    $backups = array_values($backups);
+    $target_backup = $backups[self::menu($choices, null, $options['label'])];
+
+    return $target_backup;
+  }
+
+  /**
+   * Produces a menu to narrow down an element selection
+   *
+   * @param [array] $arg_options Elements as follows:
+   *        [array]  args    Arguments given via param
+   *        [string] key     Args key to search for
+   *        [string] label   Prompt for STDOUT
+   *        [array]  choices Menu options for the user
+   * @return [string] Either the selection, its index, or the default
+   */
+  public static function backupElement(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 'element',
+      'label'   => 'Select backup element',
+      'choices' => array('code', 'database', 'files'),
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    $args    = $options['args'];
+    $key     = $options['key'];
+    $choices = $options['choices'];
+    if (isset($args[$key])) {
+      if ($args[$key] == 'db') {
+        return 'database';
+      }
+      if (in_array($args[$key], $options['choices'])) {
+        return $args[$key];
+      }
+      throw new TerminusException(
+        '{element} is an invalid element. Please select one of the following: {choices}',
+        array('element' => $args[$key], 'choices' => implode(', ', $choices)),
+        1
+      );
+    }
+    
+    $element = self::menu($choices, null, $options['label'], true);
+    return $element;
+  }
+
+  /**
    * Produces a menu with the given attributes
    *
    * @param [array]  $args    Arguments given via param

@@ -44,73 +44,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Lists all backups
-   *
-   * @param [string] $element e.g. code, file, db
-   * @return [array] $backups
-   */
-  public function backups($element = null) {
-    if ($this->backups == null) {
-      $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
-      $response = \TerminusCommand::request(
-        'sites',
-        $this->site->get('id'),
-        $path,
-        'GET'
-      );
-
-      $this->backups = $response['data'];
-    }
-    $backups = (array)$this->backups;
-    ksort($backups);
-    if ($element) {
-      $element = $this->elementAsDatabase($element);
-      foreach ($this->backups as $id => $backup) {
-        if (!isset($backup->filename)) {
-          unset($backups[$id]);
-          continue;
-        }
-        if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
-          unset($backups[$id]);
-          continue;
-        }
-      }
-    }
-
-    return $backups;
-  }
-
-  /**
-   * Gets the URL of a backup
-   *
-   * @param [string] $bucket  Backup folder
-   * @param [string] $element e.g. files, code, database
-   * @return [array] $response['data']
-   */
-  public function backupUrl($bucket, $element) {
-    $element  = $this->elementAsDatabase($element);
-    $path     = sprintf(
-      'environments/%s/backups/catalog/%s/%s/s3token',
-      $this->get('id'),
-      $bucket,
-      $element
-    );
-    $data     = array('method' => 'GET');
-    $options  = array(
-      'body'    => json_encode($data),
-      'headers' => array('Content-type' => 'application/json')
-    );
-    $response = \TerminusCommand::request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'POST',
-      $options
-    );
-    return $response['data'];
-  }
-
-  /**
    * Changes connection mode
    *
    * @param [string] $value Connection mode, "git" or "sftp"
@@ -496,6 +429,115 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Retrieves a backup by its filename
+   *
+   * @param [string] $file Name of the backup file requested
+   * @return [stdClass] $backup The backup object
+   */
+  public function getBackupByFile($file) {
+    $regex = sprintf(
+      '/(%s_%s_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_UTC_(.*).sql|tar.gz)/',
+      $this->collection->site->get('name'),
+      $this->get('id')
+    );
+    preg_match($regex, $file, $matches);
+    if (count($matches) < 3) {
+      throw new TerminusException(
+        'Cannot find a backup named {file}.',
+        compact('file'),
+        1
+      );
+    }
+    $element = $matches[2];
+    $backups = $this->getFinishedBackups($element);
+    foreach ($backups as $folder => $backup) {
+      if ($backup->filename == $file) {
+        $target_backup = $backup;
+        if (!isset($target_backup->folder)) {
+          $target_backup->folder = $folder;
+        }
+      }
+    }
+
+    if (!isset($target_backup)) {
+      throw new TerminusException(
+        'Cannot find a backup named {file}.',
+        compact('file'),
+        1
+      );
+    }
+    $target_backup->element = $element;
+    return $target_backup;
+  }
+
+  /**
+   * Lists all backups
+   *
+   * @param [string] $element e.g. code, file, db
+   * @return [array] $backups
+   */
+  public function getBackups($element = null) {
+    if ($this->backups == null) {
+      $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
+      $response = \TerminusCommand::request(
+        'sites',
+        $this->site->get('id'),
+        $path,
+        'GET'
+      );
+
+      $this->backups = $response['data'];
+    }
+    $backups = (array)$this->backups;
+    ksort($backups);
+    if ($element) {
+      $element = $this->elementAsDatabase($element);
+      foreach ($this->backups as $id => $backup) {
+        if (!isset($backup->filename)) {
+          unset($backups[$id]);
+          continue;
+        }
+        if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
+          unset($backups[$id]);
+          continue;
+        }
+      }
+    }
+
+    return $backups;
+  }
+
+  /**
+   * Gets the URL of a backup
+   *
+   * @param [string] $bucket  Backup folder
+   * @param [string] $element e.g. files, code, database
+   * @return [array] $response['data']
+   */
+  public function getBackupUrl($bucket, $element) {
+    $element  = $this->elementAsDatabase($element);
+    $path     = sprintf(
+      'environments/%s/backups/catalog/%s/%s/s3token',
+      $this->get('id'),
+      $bucket,
+      $element
+    );
+    $data     = array('method' => 'GET');
+    $options  = array(
+      'body'    => json_encode($data),
+      'headers' => array('Content-type' => 'application/json')
+    );
+    $response = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      $path,
+      'POST',
+      $options
+    );
+    return $response['data'];
+  }
+
+  /**
    * Returns the connection mode of this environment
    *
    * @return [string] $connection_mode
@@ -516,6 +558,34 @@ class Environment extends TerminusModel {
       $mode = 'sftp';
     }
     return $mode;
+  }
+
+  /**
+   * Filters the backups for only ones which have finished
+   *
+   * @param [string] $element Element requested (i.e. code, db, or files)
+   * @return [array] $backups An array of stdClass objects representing backups
+   */
+  public function getFinishedBackups($element) {
+    $all_backups = $this->getBackups($element);
+
+    if (empty($all_backups)) {
+      throw new TerminusException(
+        'No backups available. Create one with `terminus site backup create 
+          --site={site} --env={env}`',
+        array('site' => $site->get('name'), 'env' => $this->get('id')),
+        1
+      );
+    }
+
+    $backups = array_filter(
+      $all_backups,
+      function($backup) {
+        return (isset($backup->finish_time) && $backup->finish_time);
+      }
+    );
+
+    return $backups;
   }
 
   /**
@@ -541,6 +611,44 @@ class Environment extends TerminusModel {
   public function getName() {
     $name = $this->get('id');
     return $name;
+  }
+
+  /**
+   * Load site info
+   *
+   * @param [string] $key Set to retrieve a specific attribute as named
+   * @return [array] $info
+   */
+  public function info($key = null) {
+    $path   = sprintf('environments/%s', $this->get('id'));
+    $result = \TerminusCommand::request(
+      'sites',
+      $this->site->get('id'),
+      $path,
+      'GET'
+    );
+    $connection_mode = null;
+    if (isset($result['data']->on_server_development)) {
+      $connection_mode = 'git';
+      if ((boolean)$result['data']->on_server_development) {
+        $connection_mode = 'sftp';
+      }
+    }
+    $info = array(
+      'id'              => $this->get('id'),
+      'connection_mode' => $connection_mode,
+      'php_version'     => $this->site->info('php_version'),
+    );
+
+    if ($key) {
+      if (isset($info[$key])) {
+        return $info[$key];
+      } else {
+        throw new TerminusException('There is no such field.', array(), 1);
+      }
+    } else {
+      return $info;
+    }
   }
 
   /**
@@ -781,44 +889,6 @@ class Environment extends TerminusModel {
       return 'database';
     }
     return $element;
-  }
-
-  /**
-   * Load site info
-   *
-   * @param [string] $key Set to retrieve a specific attribute as named
-   * @return [array] $info
-   */
-  public function info($key = null) {
-    $path   = sprintf('environments/%s', $this->get('id'));
-    $result = \TerminusCommand::request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'GET'
-    );
-    $connection_mode = null;
-    if (isset($result['data']->on_server_development)) {
-      $connection_mode = 'git';
-      if ((boolean)$result['data']->on_server_development) {
-        $connection_mode = 'sftp';
-      }
-    }
-    $info = array(
-      'id'              => $this->get('id'),
-      'connection_mode' => $connection_mode,
-      'php_version'     => $this->site->info('php_version'),
-    );
-
-    if ($key) {
-      if (isset($info[$key])) {
-        return $info[$key];
-      } else {
-        throw new TerminusException('There is no such field.', array(), 1);
-      }
-    } else {
-      return $info;
-    }
   }
 
 }
