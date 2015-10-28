@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##Master
+### Fixed
+- `sites list` no longer capitalizes membership UUIDs. (#642)
+
 ##[0.9.1] - 2015-10-27
 ### Fixed
 - `site backups get` will now find and retrieve backups properly. (#632)
