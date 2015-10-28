@@ -29,13 +29,23 @@ if (file_exists(getcwd() . '/.env')) {
 //Set a custom exception handler
 //set_exception_handler('\Terminus\Utils\handle_exception');
 
+$host = 'dashboard.pantheon.io';
 if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
-  define('TERMINUS_HOST', $_SERVER['TERMINUS_HOST']);
-} else {
-  define('TERMINUS_HOST', 'dashboard.pantheon.io');
+  $host = $_SERVER['TERMINUS_HOST'];
 }
+define('TERMINUS_HOST', $host);
 
-define('TERMINUS_PORT', '443');
+$port = 443;
+if (isset($_SERVER['TERMINUS_PORT']) && ($_SERVER['TERMINUS_PORT'] != '')) {
+  $port = $_SERVER['TERMINUS_PORT'];
+}
+define('TERMINUS_PORT', $port);
+
+$protocol = 'https';
+if (isset($_SERVER['TERMINUS_PROTOCOL']) && ($_SERVER['TERMINUS_PROTOCOL'] != '')) {
+  $protocol = $_SERVER['TERMINUS_PROTOCOL'];
+}
+define('TERMINUS_PROTOCOL', $protocol);
 
 if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
