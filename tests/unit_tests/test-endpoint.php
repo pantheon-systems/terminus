@@ -15,7 +15,7 @@ use \Terminus\Endpoint;
         "$protocol://$host:$port/api/users/UUID/sites" => array(
                 'realm'=>'users','path' => 'sites', 'uuid'=> 'UUID'
         ),
-        "$protocol://$host:$port/api/products" => array(
+        "$protocol://$host:$port/products" => array(
                 'realm'=>'products','path' => false, 'uuid'=> 'public'
         ),
       );
