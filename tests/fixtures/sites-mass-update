@@ -350,3 +350,31 @@
             ETag: 'W/"13-16cce6fe"'
             Vary: Accept-Encoding
         body: '{"has_code": false}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.1 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Wed, 28 Oct 2015 00:10:46 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 566db970-7d08-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:5672622c-7d08-11e5-b495-bc764e117665:cLpyXKGLARiQtIzBr4m1s","expires_at":1448410246,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'

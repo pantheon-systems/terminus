@@ -4,6 +4,7 @@ namespace Terminus\Models\Collections;
 
 use Terminus\Session;
 use Terminus\SitesCache;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 use Terminus\Models\Collections\TerminusCollection;
@@ -124,6 +125,38 @@ class Sites extends TerminusCollection {
       }
     }
     return $this;
+  }
+
+  /**
+   * Filters sites list by tag
+   *
+   * @param [string] $tag Tag to filter by
+   * @param [string] $org Organization which has tagged sites
+   * @return [array] $sites A filtered list of sites
+   */
+  public function filterAllByTag($tag, $org = '') {
+    $all_sites = $this->all();
+    if (!$tag) {
+      return $all_sites;
+    }
+
+    $sites = array();
+    foreach ($all_sites as $id => $site) {
+      if ($site->organizationIsMember($org)) {
+        $tags = $site->getTags($org);
+        if (in_array($tag, $tags)) {
+          $sites[$id] = $site;
+        }
+      }
+    }
+    if (empty($sites)) {
+      throw new TerminusException(
+        'No sites associated with {org} had the tag {tag}.',
+        array('org' => $org, 'tag' => $tag),
+        1
+      );
+    }
+    return $sites;
   }
 
   /**

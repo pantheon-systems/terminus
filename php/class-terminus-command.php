@@ -142,7 +142,7 @@ abstract class TerminusCommand {
         )
       );
       $logger->debug('Request URL: ' . $url);
-      Terminus::getLogger()->debug('URL: {url}', compact('url')); 
+      Terminus::getLogger()->debug('URL: {url}', compact('url'));
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
 
@@ -216,7 +216,7 @@ abstract class TerminusCommand {
     }
 
     try {
-      Terminus::getLogger()->debug('URL: {url}', compact('url')); 
+      Terminus::getLogger()->debug('URL: {url}', compact('url'));
       $resp = Request::send($url, $method, $req_options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
       throw new TerminusException(

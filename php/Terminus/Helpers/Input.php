@@ -180,7 +180,7 @@ class Input {
   */
   public static function orgid(
     $args,
-    $key,
+    $key = 'org',
     $default = null,
     $options = array()
   ) {

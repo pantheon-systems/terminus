@@ -292,17 +292,34 @@ class Sites_Command extends TerminusCommand {
  * [--xoption=<theirs|ours>]
  * : Corresponds to git's -X option, set to 'theirs' by default -- https://www.kernel.org/pub/software/scm/git/docs/git-merge.html
  *
+ * [--tag=<tag>]
+ * : Tag to filter by
+ *
+ * [--org=<id>]
+ * : Only necessary if using --tag. Organization which has tagged the site thusly
+ *
+ * [--cached]
+ * : Set to prevent rebuilding of sites cache
+ *
  * @subcommand mass-update
  */
   public function mass_update($args, $assoc_args) {
     // Ensure the sitesCache is up to date
-    $this->sites->rebuildCache();
-    $sites = $this->sites->all();
+    if (!isset($assoc_args['cached'])) {
+      $this->sites->rebuildCache();
+    }
 
     $upstream = Input::optional('upstream', $assoc_args, false);
     $data     = array();
     $report   = Input::optional('report', $assoc_args, false);
     $confirm  = Input::optional('confirm', $assoc_args, false);
+    $tag      = Input::optional('tag', $assoc_args, false);
+
+    $org = '';
+    if ($tag) {
+      $org = Input::orgid($assoc_args, 'org');
+    }
+    $sites = $this->sites->filterAllByTag($tag, $org);
 
     // Start status messages.
     if($upstream) $this->log()->info('Looking for sites using '.$upstream.'.');
@@ -367,7 +384,7 @@ class Sites_Command extends TerminusCommand {
       sort($data);
       $this->output()->outputRecordList($data);
     } else {
-      $this->log()->info('No sites in need up updating.');
+      $this->log()->info('No sites in need of updating.');
     }
   }
 }
