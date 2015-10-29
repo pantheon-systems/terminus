@@ -93,7 +93,19 @@ class Request {
       }
     }
 
-    $response = $request->send();
+    try {
+      $response = $request->send();
+    } catch (\Exception $e) {
+      if (strpos($e->getMessage(), '[status code] 401')) {
+        $refresh = Session::instance()->get('refresh', false);
+        if ($refresh) {
+          Terminus::launchSelf('auth', array('login'), compact('refresh'));
+        } else {
+          Terminus\Auth::instructToGenerateRefreshToken();
+        }
+      }
+      $response = $request->send();
+    }
 
     return $response;
   }

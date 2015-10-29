@@ -20,60 +20,88 @@ class Auth {
   }
 
   /**
+   * Throws an exception instructing the user to generate a refresh token
+   *
+   * @return [void]
+   */
+  public static function instructToGenerateRefreshToken() {
+    throw new TerminusException(
+      'Please go to {url} in order to generate a refresh token to log in.',
+      array('url' => self::getRefreshTokenUrl()),
+      1
+    );
+  }
+
+  /**
    * Determines if user is logged in
    *
    * @return [boolean] True if user is logged in
    */
   public static function loggedIn() {
-    if (Session::instance()->getValue('session', false) === false) {
-      throw new TerminusException(
-        'Please login first with `terminus auth login`',
-        array(),
-        1
-      );
+    if (Session::instance()->get('id_token', false) === false) {
+      $refresh = Session::instance()->get('refresh', false);
+      if (!$refresh) {
+        self::instructToGenerateRefreshToken();
+      }
     }
     return true;
   }
 
   /**
-   * Execute the login based on an existing session token
+   * Execute the login based on a new refresh token
    *
-   * @param [string] $token Session token to initiate login with
+   * @param [string] $token Refresh token to initiate login with
    * @return [boolean] True if login succeeded
    */
-  public function logInViaSessionToken($token) {
+  public function logInViaRefreshToken($token = '') {
+    if (empty($token)) {
+      $token = Session::instance()->get('refresh', false);
+    }
+    if (!$token) {
+      self::instructToGenerateRefreshToken();
+    }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
-      'cookies' => array('X-Pantheon-Session' => $token),
+      'body'    => array('Authorization' => "Bearer $token"),
     );
+    /* For once JWT is implemented:
+    $options = array(
+      'headers' => array(
+        'Content-type' => 'application/json',
+        'Authorization' => "Bearer $token",
+      ),
+    );
+     */
+    $logger_context = compact('token');
 
-    $this->logger->info('Validating session token');
-    $response = TerminusCommand::request('user', '', '', 'GET', $options);
-
-    if (!$response
-      || !isset($response['info']['http_code'])
-      || $response['info']['http_code'] != '200'
-    ) {
+    $this->logger->info(
+      'Logging in via refresh token {token}',
+      $logger_context
+    );
+    $response = TerminusCommand::request(
+      'auth/refresh',
+      '',
+      '',
+      'POST',
+      $options
+    );
+    if ($response['status_code'] != '200') {
       throw new TerminusException(
-        'The session token {token} is not valid.',
-        array('token' => $token),
+        'Login via refresh token {token} was unsuccessful.',
+        $logger_context,
         1
       );
     }
-    $this->logger->info(
-      'Logged in as {email}.',
-      array('email' => $response['data']->email)
-    );
 
     $this->setInstanceData(
       array(
         'user_uuid'           => $response['data']->id,
-        'session'             => $token,
+        'id_token'            => $response['data']->id_token,
         'session_expire_time' => 0,
         'email'               => $response['data']->email,
+        'refresh'             => $token,
       )
     );
-    return true;
   }
 
   /**
@@ -92,7 +120,7 @@ class Auth {
       );
     }
 
-    $logger_context = array('email' => $email);
+    $logger_context = compact('email');
     $options        = array(
       'body' => json_encode(
         array(
@@ -100,7 +128,7 @@ class Auth {
           'password' => $password,
         )
       ),
-      'headers' => array('Content-type'=>'application/json'),
+      'headers' => array('Content-type' => 'application/json'),
     );
 
     $this->logger->info(
@@ -119,7 +147,7 @@ class Auth {
     $this->setInstanceData(
       array(
         'user_uuid'           => $response['data']->user_id,
-        'session'             => $response['data']->session,
+        'id_token'            => $response['data']->session,
         'session_expire_time' => $response['data']->expires_at,
         'email'               => $email,
       )
@@ -128,13 +156,32 @@ class Auth {
   }
 
   /**
-   * Saves the session data to a cookie
+   * Generates the refresh token-getting Dashboard URL
+   *
+   * @return [string] $url The URL at which to create a refresh token
+   */
+  private static function getRefreshTokenUrl() {
+    $url = sprintf(
+      'https://%s/?local=%s',
+      TERMINUS_HOST,
+      urlencode(gethostname())
+    );
+    return $url;
+  }
+
+  /**
+   * Merges the session data with existing data and saves it.
    *
    * @param [array] $session Session data to save
    * @return [boolean] Always true
    */
   private function setInstanceData($session) {
-    Session::instance()->setData($session);
+    $data = (array)Session::instance()->getData();
+    if (isset($data['data'])) {
+      unset($data['data']);
+    }
+    $full_session = array_merge($data, $session);
+    Session::instance()->setData($full_session);
     return true;
   }
 

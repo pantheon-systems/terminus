@@ -42,3 +42,11 @@ Feature: auth
     """
     You are authenticated as: [[username]]
     """
+
+  Scenario: Running auth login w/o commands to get a Dashboard token-generation URL
+    @vcr auth_login_get_token
+    When I run "terminus auth login"
+    Then I should get:
+    """
+    Please go to https://[[host]]/?local=
+    """
