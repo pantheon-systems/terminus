@@ -141,9 +141,8 @@ abstract class TerminusCommand {
           'path'  => $path,
         )
       );
-      if (Terminus::getConfig('debug')) {
-        $logger->debug('Request URL: ' . $url);
-      }
+      $logger->debug('Request URL: ' . $url);
+      Terminus::getLogger()->debug('URL: {url}', compact('url')); 
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
 
@@ -201,7 +200,13 @@ abstract class TerminusCommand {
       $req_options['headers'] = array('Content-type' => 'application/json');
     }
 
-    $url = 'https://' . TERMINUS_HOST . '/api/' . $path;
+    $url = sprintf(
+      '%s://%s:%s/api/%s',
+      TERMINUS_PROTOCOL,
+      TERMINUS_HOST,
+      TERMINUS_PORT,
+      $path
+    );
 
     if (Session::getValue('session')) {
       $req_options['cookies'] = array(
@@ -211,6 +216,7 @@ abstract class TerminusCommand {
     }
 
     try {
+      Terminus::getLogger()->debug('URL: {url}', compact('url')); 
       $resp = Request::send($url, $method, $req_options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
       throw new TerminusException(
