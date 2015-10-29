@@ -30,6 +30,9 @@ class User extends TerminusModel {
     }
     parent::__construct($attributes, $options);
 
+    if (isset($attributes->profile)) {
+      $this->profile = $attributes->profile;
+    }
     $this->workflows     = new Workflows(
       array('owner' => $this)
     );
@@ -37,7 +40,6 @@ class User extends TerminusModel {
     $this->organizations = new UserOrganizationMemberships(
       array('user' => $this)
     );
-    $this->setProfile();
   }
 
   /**
@@ -50,18 +52,6 @@ class User extends TerminusModel {
       $this->setAliases();
     }
     return $this->aliases;
-  }
-
-  /**
-   * Retrieves profile data for this user
-   *
-   * @return [stdClass] $this->profile
-   */
-  public function getProfile() {
-    if (!$this->profile) {
-      $this->setProfile();
-    }
-    return $this->profile;
   }
 
   /**
@@ -103,18 +93,4 @@ class User extends TerminusModel {
 
     $this->aliases = $response['data']->drush_aliases;
   }
-
-  /**
-   * Requests API data and populates $this->profile
-   *
-   * @return [void]
-   */
-  private function setProfile() {
-    $path     = 'profile';
-    $method   = 'GET';
-    $response = \TerminusCommand::request('users', $this->id, $path, $method);
-
-    $this->profile = $response['data'];
-  }
-
 }
