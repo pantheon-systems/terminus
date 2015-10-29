@@ -173,7 +173,7 @@ class PrettyFormatter implements OutputFormatterInterface {
     $is_assoc = is_array($value) && (bool)count(array_filter(array_keys($value), 'is_string'));
     if ($is_assoc || is_object($value)) {
       foreach ($value as $key => $val) {
-        $value[$key] = PrettyFormatter::getHumanLabel($key, $human_labels) . ': ' . PrettyFormatter::flattenValue($val, $human_labels);
+        $value[$key] = $key . ': ' . PrettyFormatter::flattenValue($val, $human_labels);
       }
     }
     $value = join(', ', (array)$value);
