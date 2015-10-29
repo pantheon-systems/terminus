@@ -79,6 +79,17 @@ class OrganizationSiteMemberships extends TerminusCollection {
   }
 
   /**
+   * Fetches model data from API and instantiates its model instances
+   *
+   * @param [boolean] $paged True to use paginated API requests
+   * @return [OrganizationSiteMemberships] $this
+   */
+  public function fetch($paged = false) {
+    parent::fetch(true);
+    return $this;
+  }
+
+  /**
    * Names the model-owner of this collection, false if DNE
    *
    * @return [string] $owner_name
