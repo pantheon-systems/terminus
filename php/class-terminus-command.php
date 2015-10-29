@@ -118,6 +118,8 @@ abstract class TerminusCommand {
     $method = 'GET',
     $options = null
   ) {
+    $logger = Terminus::getLogger();
+
     if (!in_array($realm, array('login', 'user', 'public'))) {
       Auth::loggedIn();
     }
@@ -140,7 +142,7 @@ abstract class TerminusCommand {
         )
       );
       if (Terminus::getConfig('debug')) {
-        Terminus::log('debug', 'Request URL: ' . $url);
+        $logger->debug('Request URL: ' . $url);
       }
       $resp = Request::send($url, $method, $options);
       $json = $resp->getBody(true);
@@ -235,7 +237,7 @@ abstract class TerminusCommand {
    */
   private function checkCurrentVersion() {
     $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
-    $response = Request::send($url, 'GET');   
+    $response = Request::send($url, 'GET');
     $json     = $response->getBody(true);
     $data     = json_decode($json);
     $release  = array_shift($data);
