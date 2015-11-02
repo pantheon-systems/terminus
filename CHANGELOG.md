@@ -1,15 +1,13 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##[0.9.2] - 2015-10-29
-### Fixed
-- `sites list` no longer capitalizes membership UUIDs. (#642)
-
+##Master
 ### Added
-- `sites list` now has an optional `--cached` flag which makes the command return the cached sites data rather than retrieving it anew. (#637)
-- `sites mass-update` now can be filtered by `--tag=<tag>`. (Note: `--org=<name|id>` is necessary to use the filter.) (#640)
-- `sites mass-update` now has an optional `--cached` tag to optionally prevent retrieving a new sites cache. (#640)
-- Environment variables `TERMINUS_PORT` and `TERMINUS_PROTOCOL` now enabled. (#643)
+- `auth login --refresh=<token>` implemented. If a refresh token is present, user will automatically be logged in henceforth. (#628)
+- When running a command when not logged in or running `auth login` and no refresh token is present, user will be directed to a Dashboard URL in order to generate such a token. (#635)
+
+### Changed
+- Prevented users from losing refresh tokens by using `auth logout`. (#627)
 
 ##[0.9.1] - 2015-10-27
 ### Fixed
