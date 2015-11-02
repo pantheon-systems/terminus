@@ -1016,7 +1016,7 @@ public function environments($args, $assoc_args) {
 
   $data = array();
   foreach ($environments as $name => $env) {
-    $osd  = $locked = 'false';
+    $osd  = $locked = $initialized ='false';
     $lock = $env->get('lock');
     if ((boolean)$lock->locked) {
       $locked = 'true';
@@ -1024,16 +1024,20 @@ public function environments($args, $assoc_args) {
     if ((boolean)$env->get('on_server_development')) {
       $osd = 'true';
     }
+    if ((boolean)$env->isInitialized()) {
+      $initialized = 'true';
+    }
 
     $data[] = array(
-      'name'          => $env->get('id'),
-      'created'       => date('Y-m-dTH:i:s', $env->get('environment_created')),
-      'domain'        => $env->domain(),
-      'onserverdev'   => $osd,
-      'locked'        => $locked,
+      'name'        => $env->get('id'),
+      'created'     => date('Y-m-dTH:i:s', $env->get('environment_created')),
+      'domain'      => $env->domain(),
+      'onserverdev' => $osd,
+      'locked'      => $locked,
+      'initialized' => $initialized,
     );
   }
-  $this->output()->outputRecordList($data, array('name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?'));
+  $this->output()->outputRecordList($data, array('name' => 'Name', 'created' => 'Created', 'domain' => 'Domain', 'onserverdev' => 'OnServer Dev?', 'locked' => 'Locked?', 'initialized' => 'Initialized?'));
   return $data;
 }
 
