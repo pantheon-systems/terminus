@@ -129,7 +129,7 @@ abstract class TerminusCommand {
 
       if (!in_array($realm, array('login', 'user'))) {
         $options['cookies'] = array(
-          'X-Pantheon-Session' => Session::getValue('session')
+          'X-Pantheon-Session' => Session::getValue('id_token')
         );
         $options['verify']  = false;
       }
@@ -208,9 +208,9 @@ abstract class TerminusCommand {
       $path
     );
 
-    if (Session::getValue('session')) {
+    if (Session::getValue('id_token')) {
       $req_options['cookies'] = array(
-      'X-Pantheon-Session' => Session::getValue('session')
+      'X-Pantheon-Session' => Session::getValue('id_token')
       );
       $req_options['verify']  = false;
     }

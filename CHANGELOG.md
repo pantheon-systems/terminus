@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##Master
+### Added
+- `auth login --refresh=<token>` implemented. If a refresh token is present, user will automatically be logged in henceforth. (#628)
+
 ##[0.9.2] - 2015-10-29
 ### Fixed
 - `sites list` no longer capitalizes membership UUIDs. (#642)
