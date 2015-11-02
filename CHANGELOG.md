@@ -2,11 +2,15 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ##Master
+### Added
+- `site environments` now includes data on whether environment is initialized yet. (#654)
+
 ### Changed
 - Cached sites lists are now keyed to UUID, preventing a previously logged-in user's list from interfering with the currently logged-in user. (#652)
 
-### Added
-- `site environments` now includes data on whether environment is initialized yet. (#654)
+### Fixed
+- Automatic version check disabled for testing. (#643)
+- Bad Github API returns for version check now does not cause error. (#643)
 
 ##[0.9.2] - 2015-10-29
 ### Fixed
