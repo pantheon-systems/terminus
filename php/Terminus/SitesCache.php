@@ -30,7 +30,7 @@ use Terminus\Session;
  */
 class SitesCache {
   protected $cache;
-  protected $cachekey = 'sites';
+  protected $cachekey;
 
   /**
    * Object constructor, saves cache to cache property
@@ -38,7 +38,8 @@ class SitesCache {
    * @return [SitesCache] $this
    */
   public function __construct() {
-    $this->cache = Terminus::getCache();
+    $this->cache    = Terminus::getCache();
+    $this->cachekey = Session::instance()->get('user_uuid', '') . '_sites';
   }
 
   /**
