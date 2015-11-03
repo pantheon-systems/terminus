@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c422c06b756b367da2a140fa382c87bd",
-    "content-hash": "b0f7013c2794c91d7e14ac392751fb02",
+    "hash": "93bf02e47856f213a46f432f66bcf3f1",
+    "content-hash": "2c3886c779c9dfcc81e80594c69a16e1",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -41,70 +41,41 @@
             "time": "2014-10-24 07:27:01"
         },
         {
-            "name": "guzzle/guzzle",
-            "version": "v3.9.3",
+            "name": "guzzlehttp/guzzle",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/guzzle/guzzle3.git",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9"
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "66fd14b4d0b8f2389eaf37c5458608c7cb793a81"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle3/zipball/0645b70d953bc1c067bbc8d5bc53194706b628d9",
-                "reference": "0645b70d953bc1c067bbc8d5bc53194706b628d9",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/66fd14b4d0b8f2389eaf37c5458608c7cb793a81",
+                "reference": "66fd14b4d0b8f2389eaf37c5458608c7cb793a81",
                 "shasum": ""
             },
             "require": {
-                "ext-curl": "*",
-                "php": ">=5.3.3",
-                "symfony/event-dispatcher": "~2.1"
-            },
-            "replace": {
-                "guzzle/batch": "self.version",
-                "guzzle/cache": "self.version",
-                "guzzle/common": "self.version",
-                "guzzle/http": "self.version",
-                "guzzle/inflection": "self.version",
-                "guzzle/iterator": "self.version",
-                "guzzle/log": "self.version",
-                "guzzle/parser": "self.version",
-                "guzzle/plugin": "self.version",
-                "guzzle/plugin-async": "self.version",
-                "guzzle/plugin-backoff": "self.version",
-                "guzzle/plugin-cache": "self.version",
-                "guzzle/plugin-cookie": "self.version",
-                "guzzle/plugin-curlauth": "self.version",
-                "guzzle/plugin-error-response": "self.version",
-                "guzzle/plugin-history": "self.version",
-                "guzzle/plugin-log": "self.version",
-                "guzzle/plugin-md5": "self.version",
-                "guzzle/plugin-mock": "self.version",
-                "guzzle/plugin-oauth": "self.version",
-                "guzzle/service": "self.version",
-                "guzzle/stream": "self.version"
+                "guzzlehttp/promises": "~1.0",
+                "guzzlehttp/psr7": "~1.1",
+                "php": ">=5.5.0"
             },
             "require-dev": {
-                "doctrine/cache": "~1.3",
-                "monolog/monolog": "~1.0",
-                "phpunit/phpunit": "3.7.*",
-                "psr/log": "~1.0",
-                "symfony/class-loader": "~2.1",
-                "zendframework/zend-cache": "2.*,<2.3",
-                "zendframework/zend-log": "2.*,<2.3"
-            },
-            "suggest": {
-                "guzzlehttp/guzzle": "Guzzle 5 has moved to a new package name. The package you have installed, Guzzle 3, is deprecated."
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0",
+                "psr/log": "~1.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.9-dev"
+                    "dev-master": "6.1-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Guzzle": "src/",
-                    "Guzzle\\Tests": "tests/"
+                "files": [
+                    "src/functions_include.php"
+                ],
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -116,13 +87,9 @@
                     "name": "Michael Dowling",
                     "email": "mtdowling@gmail.com",
                     "homepage": "https://github.com/mtdowling"
-                },
-                {
-                    "name": "Guzzle Community",
-                    "homepage": "https://github.com/guzzle/guzzle/contributors"
                 }
             ],
-            "description": "PHP HTTP client. This library is deprecated in favor of https://packagist.org/packages/guzzlehttp/guzzle",
+            "description": "Guzzle is a PHP HTTP client library",
             "homepage": "http://guzzlephp.org/",
             "keywords": [
                 "client",
@@ -133,7 +100,116 @@
                 "rest",
                 "web service"
             ],
-            "time": "2015-03-18 18:23:50"
+            "time": "2015-09-08 17:36:26"
+        },
+        {
+            "name": "guzzlehttp/promises",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/promises.git",
+                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/b1e1c0d55f8083c71eda2c28c12a228d708294ea",
+                "reference": "b1e1c0d55f8083c71eda2c28c12a228d708294ea",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle promises library",
+            "keywords": [
+                "promise"
+            ],
+            "time": "2015-10-15 22:28:00"
+        },
+        {
+            "name": "guzzlehttp/psr7",
+            "version": "1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/psr7.git",
+                "reference": "4d0bdbe1206df7440219ce14c972aa57cc5e4982"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/4d0bdbe1206df7440219ce14c972aa57cc5e4982",
+                "reference": "4d0bdbe1206df7440219ce14c972aa57cc5e4982",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "psr/http-message": "~1.0"
+            },
+            "provide": {
+                "psr/http-message-implementation": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Psr7\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "PSR-7 message implementation",
+            "keywords": [
+                "http",
+                "message",
+                "stream",
+                "uri"
+            ],
+            "time": "2015-11-03 01:34:55"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -450,6 +526,55 @@
             "time": "2015-09-19 14:15:08"
         },
         {
+            "name": "psr/http-message",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
+                "reference": "85d63699f0dbedb190bbd4b0d2b9dc707ea4c298",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Http\\Message\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for HTTP messages",
+            "keywords": [
+                "http",
+                "http-message",
+                "psr",
+                "psr-7",
+                "request",
+                "response"
+            ],
+            "time": "2015-05-04 20:22:00"
+        },
+        {
             "name": "psr/log",
             "version": "1.0.0",
             "source": {
@@ -489,29 +614,29 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.5.2",
+            "version": "v0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "aaf8772ade08b5f0f6830774a5d5c2f800415975"
+                "reference": "0f04df0b23663799a8941fae13cd8e6299bde3ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/aaf8772ade08b5f0f6830774a5d5c2f800415975",
-                "reference": "aaf8772ade08b5f0f6830774a5d5c2f800415975",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/0f04df0b23663799a8941fae13cd8e6299bde3ed",
+                "reference": "0f04df0b23663799a8941fae13cd8e6299bde3ed",
                 "shasum": ""
             },
             "require": {
                 "dnoegel/php-xdg-base-dir": "0.1",
                 "jakub-onderka/php-console-highlighter": "0.3.*",
-                "nikic/php-parser": "^1.2.1",
+                "nikic/php-parser": "^1.2.1|~2.0",
                 "php": ">=5.3.9",
                 "symfony/console": "~2.3.10|^2.4.2|~3.0",
                 "symfony/var-dumper": "~2.7|~3.0"
             },
             "require-dev": {
                 "fabpot/php-cs-fixer": "~1.5",
-                "phpunit/phpunit": "~3.7|~4.0",
+                "phpunit/phpunit": "~3.7|~4.0|~5.0",
                 "squizlabs/php_codesniffer": "~2.0",
                 "symfony/finder": "~2.1|~3.0"
             },
@@ -527,15 +652,15 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-develop": "0.6.x-dev"
+                    "dev-develop": "0.7.x-dev"
                 }
             },
             "autoload": {
                 "files": [
                     "src/Psy/functions.php"
                 ],
-                "psr-0": {
-                    "Psy\\": "src/"
+                "psr-4": {
+                    "Psy\\": "src/Psy/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -557,7 +682,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2015-07-16 15:26:57"
+            "time": "2015-11-12 16:18:56"
         },
         {
             "name": "ramsey/array_column",
@@ -711,23 +836,20 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.7.5",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/css-selector.git",
-                "reference": "abe19cc0429a06be0c133056d1f9859854860970"
+                "reference": "e1b865b26be4a56d22a8dee398375044a80c865b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/css-selector/zipball/abe19cc0429a06be0c133056d1f9859854860970",
-                "reference": "abe19cc0429a06be0c133056d1f9859854860970",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/e1b865b26be4a56d22a8dee398375044a80c865b",
+                "reference": "e1b865b26be4a56d22a8dee398375044a80c865b",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -760,28 +882,27 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "https://symfony.com",
-            "time": "2015-09-22 13:49:29"
+            "time": "2015-10-11 09:39:48"
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v2.7.5",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
-                "reference": "2e185ca136399f902b948694987e62c80099c052"
+                "reference": "5fef7d8b80d8f9992df99d8ee283f420484c9612"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/2e185ca136399f902b948694987e62c80099c052",
-                "reference": "2e185ca136399f902b948694987e62c80099c052",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/5fef7d8b80d8f9992df99d8ee283f420484c9612",
+                "reference": "5fef7d8b80d8f9992df99d8ee283f420484c9612",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
             },
             "require-dev": {
-                "symfony/css-selector": "~2.3",
-                "symfony/phpunit-bridge": "~2.7"
+                "symfony/css-selector": "~2.3"
             },
             "suggest": {
                 "symfony/css-selector": ""
@@ -813,84 +934,24 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
-            "time": "2015-09-20 21:13:58"
-        },
-        {
-            "name": "symfony/event-dispatcher",
-            "version": "v2.7.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "87a5db5ea887763fa3a31a5471b512ff1596d9b8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/87a5db5ea887763fa3a31a5471b512ff1596d9b8",
-                "reference": "87a5db5ea887763fa3a31a5471b512ff1596d9b8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "psr/log": "~1.0",
-                "symfony/config": "~2.0,>=2.0.5",
-                "symfony/dependency-injection": "~2.6",
-                "symfony/expression-language": "~2.6",
-                "symfony/stopwatch": "~2.3"
-            },
-            "suggest": {
-                "symfony/dependency-injection": "",
-                "symfony/http-kernel": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\EventDispatcher\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony EventDispatcher Component",
-            "homepage": "https://symfony.com",
             "time": "2015-10-11 09:39:48"
         },
         {
             "name": "symfony/finder",
-            "version": "v2.7.5",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "8262ab605973afbb3ef74b945daabf086f58366f"
+                "reference": "2ffb4e9598db3c48eb6d0ae73b04bbf09280c59d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/8262ab605973afbb3ef74b945daabf086f58366f",
-                "reference": "8262ab605973afbb3ef74b945daabf086f58366f",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/2ffb4e9598db3c48eb6d0ae73b04bbf09280c59d",
+                "reference": "2ffb4e9598db3c48eb6d0ae73b04bbf09280c59d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
-            },
-            "require-dev": {
-                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
@@ -919,7 +980,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2015-09-19 19:59:23"
+            "time": "2015-10-11 09:39:48"
         },
         {
             "name": "symfony/process",
@@ -927,12 +988,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "74078dbc5d7639dc74f7ee30b048cc74c21149bf"
+                "reference": "4b557e0d32e20a16938ead0aec06e4615d84668f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/74078dbc5d7639dc74f7ee30b048cc74c21149bf",
-                "reference": "74078dbc5d7639dc74f7ee30b048cc74c21149bf",
+                "url": "https://api.github.com/repos/symfony/process/zipball/4b557e0d32e20a16938ead0aec06e4615d84668f",
+                "reference": "4b557e0d32e20a16938ead0aec06e4615d84668f",
                 "shasum": ""
             },
             "require": {
@@ -947,7 +1008,10 @@
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Process\\": ""
-                }
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -965,7 +1029,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2015-10-18 09:49:40"
+            "time": "2015-10-30 20:10:21"
         },
         {
             "name": "symfony/var-dumper",
@@ -1732,16 +1796,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.15",
+            "version": "4.8.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "be8f7b9eacf8243940f8412f8b4a9a434c73dd7b"
+                "reference": "fa33d4ad96481b91df343d83e8c8aabed6b1dfd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/be8f7b9eacf8243940f8412f8b4a9a434c73dd7b",
-                "reference": "be8f7b9eacf8243940f8412f8b4a9a434c73dd7b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/fa33d4ad96481b91df343d83e8c8aabed6b1dfd3",
+                "reference": "fa33d4ad96481b91df343d83e8c8aabed6b1dfd3",
                 "shasum": ""
             },
             "require": {
@@ -1800,7 +1864,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-22 09:05:37"
+            "time": "2015-11-11 11:32:49"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2500,6 +2564,63 @@
             "time": "2015-10-27 15:38:06"
         },
         {
+            "name": "symfony/event-dispatcher",
+            "version": "v2.7.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/event-dispatcher.git",
+                "reference": "87a5db5ea887763fa3a31a5471b512ff1596d9b8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/87a5db5ea887763fa3a31a5471b512ff1596d9b8",
+                "reference": "87a5db5ea887763fa3a31a5471b512ff1596d9b8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/config": "~2.0,>=2.0.5",
+                "symfony/dependency-injection": "~2.6",
+                "symfony/expression-language": "~2.6",
+                "symfony/stopwatch": "~2.3"
+            },
+            "suggest": {
+                "symfony/dependency-injection": "",
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\EventDispatcher\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony EventDispatcher Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-10-11 09:39:48"
+        },
+        {
             "name": "symfony/filesystem",
             "version": "v2.7.6",
             "source": {
@@ -2695,7 +2816,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "guzzle/guzzle": 0,
+        "guzzlehttp/guzzle": 0,
         "katzgrau/klogger": 0,
         "psy/psysh": 0,
         "symfony/process": 20,

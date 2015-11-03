@@ -3,7 +3,9 @@
 namespace Terminus;
 
 use Terminus;
-use Guzzle\Http\Client as Browser;
+use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Psr7\Request as HttpRequest;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -16,78 +18,52 @@ use Terminus\Exceptions\TerminusException;
  */
 
 class Request {
-  /**
-   * @var [Guzzle\Http\Client] $browser
-   */
-  public $browser;
-
-  /**
-   * @var [Guzzle\Http\Message\Request] $browser
-   */
-  public $request;
-
-  /**
-   * @var [Guzzle\Http\Message\Response] $response
-   */
-  public $response;
-
-  /**
-   * @var [array] $responses A collection of $response items
-   */
-  public $responses = array();
 
   /**
    * Sends a request to the API
    *
-   * @param [string] $url    URL for API request
-   * @param [string] $method Request method (i.e. PUT, POST, DELETE, or GET)
-   * @param [array]  $data   Options for request
-   * @return [Guzzle\Http\Message\Response] $response
+   * @param [string] $uri        URL for API request
+   * @param [string] $method     Request method (i.e. PUT, POST, DELETE, or GET)
+   * @param [array]  $arg_params Request parameters
+   * @return [GuzzleHttp\Message\Response] $response
    */
-  public static function send($url, $method, $data = array()) {
-    // Create a new Guzzle\Http\Client
-    $browser = new Browser;
-    $browser->setUserAgent(self::userAgent());
-    $options = self::processOptions($data);
-
-    $request = $browser->createRequest($method, $url, null, null, $options);
-
-    if (!empty($data['postdata'])) {
-      foreach ($data['postdata'] as $k=>$v) {
-        $request->setPostField($k, $v);
-      }
-    }
-
-    if (!empty($data['cookies'])) {
-      foreach ($data['cookies'] as $k => $v) {
-        $request->addCookie($k, $v);
-      }
-    }
-
-    if (!empty($data['headers'])) {
-      foreach ($data['headers'] as $k => $v) {
-        $request->setHeader($k, $v);
-      }
-    }
-
-    if (!empty($data['body']) && method_exists($request, 'setBody')) {
-      $request->setBody(json_encode($data['body']));
-    }
-
-    $debug  = '#### REQUEST ####' . PHP_EOL;
-    $debug .= $request->getRawHeaders();
-    Terminus::getLogger()->debug(
-      'Headers: {headers}',
-      array('headers' => $debug)
+  public static function send($uri, $method, array $arg_params = array()) {
+    $extra_params = array(
+      'headers'         => array(
+        'User-Agent'    => self::userAgent(),
+        'Content-type'  => 'application/json',
+      ),
     );
-    if (isset($data['body'])) {
-      Terminus::getLogger()->debug(
-        'Body: {body}',
-        array('body' => $data['body'])
-      );
+
+    if ($session = Session::instance()->get('session', false)) {
+      $extra_params['headers']['Cookie'] = "X-Pantheon-Session=$session"; 
+    }
+    $params = array_merge_recursive($extra_params, $arg_params);
+    if (isset($params['form_params'])) {
+      $params['json'] = $params['form_params'];
+      unset($params['form_params']);
     }
 
-    $response = $request->send();
+    $client = new Client(
+      array(
+        'base_uri' => self::getBaseUri(),
+        'cookies'  => self::fillCookieJar($params)
+      )
+    );
+    unset($params['cookies']);
+
+    Terminus::getLogger()->debug(
+      "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
+      array(
+        'params' => json_encode($params),
+        'uri'    => $uri,
+        'method' => $method
+      )
+    );
+
+    //Required objects and arrays stir benign warnings.
+    $request = @new HttpRequest(ucwords($method), $uri, $params);
+    $response = $client->send($request, $params);
 
     return $response;
   }
@@ -102,15 +78,16 @@ class Request {
   static function download($url, $target) {
     if (file_exists($target)) {
       throw new TerminusException(
-        'Target file {target} already exists.', compact('target')
+        'Target file {target} already exists.',
+        compact('target')
       );
     }
 
     $handle = fopen($target, 'w');
-    $client = new Browser(
+    $client = new Client(
       '',
       array(
-        Browser::CURL_OPTIONS => array(
+        Client::CURL_OPTIONS => array(
           'CURLOPT_RETURNTRANSFER' => true,
           'CURLOPT_FILE'           => $handle,
           'CURLOPT_ENCODING'       => 'gzip',
@@ -124,26 +101,37 @@ class Request {
   }
 
   /**
-   * Merges the given options with defaults to ensure necessary fields exist
+   * Sets up and fills a cookie jar
    *
-   * @param [array] $arg_options Options for a request
-   * @return [array] $options Completed options array
+   * @param [array] $params Request data to fill jar with
+   * @return [GuzzleHttp\Cookie\CookieJar] $jar
    */
-  static function processOptions($arg_options) {
-    $default_options = array(
-      'headers' => array(
-        'Content-type' => 'application/json',
-      ),
-      'verify'  => false,
+  static function fillCookieJar($params) {
+    $jar = new CookieJar();
+    $cookies = array();
+    if ($session = Session::instance()->get('session', false)) {
+      $cookies['X-Pantheon-Session'] = $session; 
+    }
+    if (isset($params['cookies'])) {
+      $cookies = array_merge($cookies, $params['cookies']);
+    }
+    $jar->fromArray($cookies, '');
+    return $jar;
+  }
+
+  /**
+   * Parses the base URI for requests
+   *
+   * @return [string] $base_uri
+   */
+  static function getBaseUri() {
+    $base_uri = sprintf(
+      '%s://%s:%s',
+      TERMINUS_PROTOCOL,
+      TERMINUS_HOST,
+      TERMINUS_PORT
     );
-    $options = array_merge($arg_options, $default_options);
-    if (isset($options['data'])) {
-      $options['body'] = $options['data'];
-    }
-    if (isset($options['body'])) {
-      $options['body'] = json_encode($options['body']);
-    }
-    return $options;
+    return $base_uri;
   }
 
   /**

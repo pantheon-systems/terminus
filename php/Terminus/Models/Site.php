@@ -86,7 +86,7 @@ class Site extends TerminusModel {
     $params   = array($tag => array('sites' => array($this->get('id'))));
     $response = TerminusCommand::simpleRequest(
       sprintf('organizations/%s/tags', $org),
-      array('method' => 'put', 'data' => $params)
+      array('method' => 'put', 'form_params' => $params)
     );
     return $response;
   }
@@ -169,13 +169,13 @@ class Site extends TerminusModel {
    * @return [Workflow] $workflow
    */
   public function createBranch($branch) {
-    $body     = array('refspec' => sprintf('refs/heads/%s', $branch));
-    $response = TerminusCommand::request(
+    $form_params = array('refspec' => sprintf('refs/heads/%s', $branch));
+    $response    = TerminusCommand::request(
       'sites',
       $this->get('id'),
       'code-branch',
       'POST',
-      compact('body')
+      compact('form_params')
     );
     return $response['data'];
   }
@@ -528,17 +528,40 @@ class Site extends TerminusModel {
    * @return [stdClass] $response['data']
    */
   public function updateServiceLevel($level) {
-    $path     = 'service-level';
-    $method   = 'PUT';
-    $body     = $level;
-    $response = TerminusCommand::request(
-      'sites',
-      $this->get('id'),
-      $path,
-      $method,
-      compact('body')
-    );
-    return $response['data'];
+    if (
+      !in_array(
+        $level,
+        array('free', 'basic', 'pro', 'business', 'elite')
+      )
+    ) {
+      throw new TerminusException(
+        'Service level "{level}" is invalid.',
+        compact('level'),
+        1
+      );
+    }
+    $path        = 'service-level';
+    $method      = 'PUT';
+    $form_params = $level;
+    try {
+      $response    = TerminusCommand::request(
+        'sites',
+        $this->get('id'),
+        $path,
+        $method,
+        compact('form_params')
+      );
+      return $response['data'];
+    } catch (TerminusException $e) {
+      if (strpos($e->getReplacements()['msg'], '403') !== false) {
+        throw new TerminusException(
+          'Instrument required to increase service level',
+          array(),
+          1  
+        );
+      }
+      throw $e;  
+    }
   }
 
   /**

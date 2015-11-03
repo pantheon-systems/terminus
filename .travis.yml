@@ -36,6 +36,7 @@ env:
 
 before_script:
   - ./scripts/prepare.sh
+  - if [ $(git branch | sed -n -e 's/^\* \(.*\)/\1/p') == "master" ]; then ./scripts/build.sh; fi
 
 script:
   - ./scripts/test.sh ci
