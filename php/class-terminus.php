@@ -238,7 +238,8 @@ class Terminus {
    * @return [boolean]
    */
   static function isTest() {
-    $is_test = (boolean)getenv('CLI_TEST_MODE');
+    $is_test = (boolean)getenv('CLI_TEST_MODE')
+      || (boolean)getenv('VCR_CASSETTTE');
     return $is_test;
   }
 

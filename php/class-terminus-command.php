@@ -173,7 +173,6 @@ abstract class TerminusCommand {
         array('msg' => $e->getMessage())
       );
     }
-
   }
 
   /**
@@ -227,53 +226,38 @@ abstract class TerminusCommand {
 
     $json = $resp->getBody(true);
     $data = array(
-    'info'        => $resp->getInfo(),
-    'headers'     => $resp->getRawHeaders(),
-    'json'        => $json,
-    'data'        => json_decode($json),
-    'status_code' => $resp->getStatusCode()
+      'info'        => $resp->getInfo(),
+      'headers'     => $resp->getRawHeaders(),
+      'json'        => $json,
+      'data'        => json_decode($json),
+      'status_code' => $resp->getStatusCode()
     );
     return $data;
   }
 
   /**
-   * Retrieves current version number from repository and saves it to the cache
+   * Strips sensitive data out of the JSON printed in a request string
    *
-   * @return [string] $response->name The version number
+   * @param [string] $request   The string with a JSON with sensitive data
+   * @param [array]  $blacklist Array of string keys to remove from request
+   * @return [string] $result Sensitive data-stripped version of $request
    */
-  private function checkCurrentVersion() {
-    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
-    $response = Request::send($url, 'GET');
-    $json     = $response->getBody(true);
-    $data     = json_decode($json);
-    $release  = array_shift($data);
-    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
-    return $release->name;
-  }
+  public static function stripSensitiveData($request, $blacklist = array()) {
+    //Locate the JSON in the string, turn to array
+    $regex = '~\{(.*)\}~';
+    preg_match($regex, $request, $matches);
+    $request_array = json_decode($matches[0], true);
 
-  /**
-   * Checks for new versions of Terminus once per week and saves to cache
-   *
-   * @return [void]
-   */
-  private function checkForUpdate() {
-    $cache_data = $this->cache->get_data(
-      'latest_release',
-      array('decode_array' => true)
-    );
-    if (!$cache_data
-      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
-    ) {
-      $current_version = $this->checkCurrentVersion();
-    } else {
-      $current_version = $cache_data['version'];
+    //See if a blacklisted items are in the arrayed JSON, replace
+    foreach ($blacklist as $blacklisted_item) {
+      if (isset($request_array[$blacklisted_item])) {
+        $request_array[$blacklisted_item] = '*****';
+      }
     }
-    if (version_compare($cache_data['version'], TERMINUS_VERSION, '>')) {
-      $this->logger->info(
-        'An update to Terminus is available. Please update to {version}.',
-        array('version' => $cache_data['version'])
-      );
-    }
+
+    //Turn array back to JSON, put back in string
+    $result = str_replace($matches[0], json_encode($request_array), $request);
+    return $result;
   }
 
   /**
@@ -346,31 +330,6 @@ abstract class TerminusCommand {
   }
 
   /**
-   * Strips sensitive data out of the JSON printed in a request string
-   *
-   * @param [string] $request   The string with a JSON with sensitive data
-   * @param [array]  $blacklist Array of string keys to remove from request
-   * @return [string] $result Sensitive data-stripped version of $request
-   */
-  protected function stripSensitiveData($request, $blacklist = array()) {
-    //Locate the JSON in the string, turn to array
-    $regex = '~\{(.*)\}~';
-    preg_match($regex, $request, $matches);
-    $request_array = json_decode($matches[0], true);
-
-    //See if a blacklisted items are in the arrayed JSON, replace
-    foreach ($blacklist as $blacklisted_item) {
-      if (isset($request_array[$blacklisted_item])) {
-        $request_array[$blacklisted_item] = '*****';
-      }
-    }
-
-    //Turn array back to JSON, put back in string
-    $result = str_replace($matches[0], json_encode($request_array), $request);
-    return $result;
-  }
-
-  /**
    * Outputs basic workflow success/failure messages
    *
    * @param [Workflow] $workflow Workflow to output message about
@@ -382,6 +341,48 @@ abstract class TerminusCommand {
     } else {
       $final_task = $workflow->get('final_task');
       $this->log()->error($final_task->reason);
+    }
+  }
+
+  /**
+   * Retrieves current version number from repository and saves it to the cache
+   *
+   * @return [string] $response->name The version number
+   */
+  protected function checkCurrentVersion() {
+    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
+    $response = Request::send($url, 'GET');
+    $json     = $response->getBody(true);
+    $data     = json_decode($json);
+    $release  = array_shift($data);
+    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
+    return $release->name;
+  }
+
+  /**
+   * Checks for new versions of Terminus once per week and saves to cache
+   *
+   * @return [void]
+   */
+  private function checkForUpdate() {
+    $cache_data = $this->cache->get_data(
+      'latest_release',
+      array('decode_array' => true)
+    );
+    if (!$cache_data
+      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
+    ) {
+      try {
+        $current_version = $this->checkCurrentVersion();
+        if (version_compare($current_version, TERMINUS_VERSION, '>')) {
+          $this->log()->info(
+            'An update to Terminus is available. Please update to {version}.',
+            array('version' => $current_version)
+          );
+        }
+      } catch (\Exception $e) {
+        $this->log()->info('Cannot retrieve current Terminus version.');
+      }
     }
   }
 

@@ -165,6 +165,7 @@ class CLI_Command extends TerminusCommand {
 
     eval(\Psy\sh());
   }
+
 }
 
 Terminus::addCommand('cli', 'CLI_Command');
