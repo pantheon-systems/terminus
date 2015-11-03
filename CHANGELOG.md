@@ -5,6 +5,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - Cached sites lists are now keyed to UUID, preventing a previously logged-in user's list from interfering with the currently logged-in user. (#652)
 
+### Added
+- `site environments` now includes data on whether environment is initialized yet. (#654)
+
 ##[0.9.2] - 2015-10-29
 ### Fixed
 - `sites list` no longer capitalizes membership UUIDs. (#642)
