@@ -47,6 +47,8 @@ abstract class TerminusCommand {
 
   /**
    * Make a request to the Dashbord's internal API
+   * TODO: Move this into Terminus\Request and make an instance thereof a
+   * property of Terminus/Models/TerminusModel, switch all uses.
    *
    * @param [string] $path    API path (URL)
    * @param [array]  $options Options for the request
@@ -100,6 +102,8 @@ abstract class TerminusCommand {
 
   /**
    * Make a request to the Pantheon API
+   * TODO: Move this into Terminus\Request and make an instance thereof a
+   * property of Terminus/Models/TerminusModel, switch all uses.
    *
    * @param [string] $realm   Permissions realm for data request (e.g. user,
    *   site organization, etc. Can also be "public" to simply pull read-only
@@ -114,9 +118,9 @@ abstract class TerminusCommand {
   public static function request(
     $realm,
     $uuid,
-    $path = false,
-    $method = 'GET',
-    $options = null
+    $path          = false,
+    $method        = 'GET',
+    array $options = array()
   ) {
     $logger = Terminus::getLogger();
 
@@ -124,41 +128,37 @@ abstract class TerminusCommand {
       Auth::loggedIn();
     }
 
-    try {
-      $cache = Terminus::getCache();
-
-      if (!in_array($realm, array('login', 'user'))) {
-        $options['cookies'] = array(
-          'X-Pantheon-Session' => Session::getValue('session')
-        );
-        $options['verify']  = false;
+    if (!in_array($realm, array('login', 'user'))
+      && ($session = Session::instance()->get('session', false))
+    ) {
+      if (!isset($options['headers'])) {
+        $options['headers'] = array();
       }
+      $options['headers']['Cookie'] = "X-Pantheon-Session=$session"; 
+    }
 
-      $url = Endpoint::get(
+    try {
+      $uri = Endpoint::get(
         array(
           'realm' => $realm,
           'uuid'  => $uuid,
           'path'  => $path,
         )
       );
-      $logger->debug('Request URL: ' . $url);
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $resp = Request::send($url, $method, $options);
-      $json = $resp->getBody(true);
+      $response = Request::send($uri, $method, $options);
 
       $data = array(
-        'info' => $resp->getInfo(),
-        'headers' => $resp->getRawHeaders(),
-        'json' => $json,
-        'data' => json_decode($json),
-        'status_code' => $resp->getStatusCode()
+        'data'        => json_decode($response->body),
+        'headers'     => $response->headers,
+        'status_code' => $response->status_code,
       );
       return $data;
-    } catch (Guzzle\Http\Exception\BadResponseException $e) {
+    } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       $response = $e->getResponse();
       throw new TerminusException($response->getBody(true));
-    } catch (Guzzle\Http\Exception\HttpException $e) {
+    } catch (\GuzzleHttp\Exception\HttpException $e) {
       $request = $e->getRequest();
+      //TODO: Move this functionality into the logger
       $sanitized_request = TerminusCommand::stripSensitiveData(
         (string)$request,
         TerminusCommand::$blacklist
@@ -177,6 +177,8 @@ abstract class TerminusCommand {
 
   /**
    * Simplified request method for Pantheon API
+   * TODO: Move this into Terminus\Request and make an instance thereof a
+   * property of Terminus/Models/TerminusModel, switch all uses.
    *
    * @param [string] $path    API path (URL)
    * @param [array]  $options Options for the request
@@ -187,56 +189,38 @@ abstract class TerminusCommand {
    * @return [array] $data
    */
   public static function simpleRequest($path, $options = array()) {
-    $req_options = array();
-
     $method = 'get';
     if (isset($options['method'])) {
       $method = $options['method'];
     }
-
-    if (isset($options['data'])) {
-      $req_options['body']    = json_encode($options['data']);
-      $req_options['headers'] = array('Content-type' => 'application/json');
+    $body = array();
+    if (isset($options['body'])) {
+      $body = $options['body'];
     }
 
-    $url = sprintf(
-      '%s://%s:%s/api/%s',
-      TERMINUS_PROTOCOL,
-      TERMINUS_HOST,
-      TERMINUS_PORT,
-      $path
-    );
-
-    if (Session::getValue('session')) {
-      $req_options['cookies'] = array(
-      'X-Pantheon-Session' => Session::getValue('session')
-      );
-      $req_options['verify']  = false;
-    }
+    $uri = "/api/$path";
 
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $resp = Request::send($url, $method, $req_options);
-    } catch (Guzzle\Http\Exception\BadResponseException $e) {
+      $response = Request::send($uri, $method, $body);
+    } catch (GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
         array('msg' => $e->getMessage())
       );
     }
 
-    $json = $resp->getBody(true);
     $data = array(
-      'info'        => $resp->getInfo(),
-      'headers'     => $resp->getRawHeaders(),
-      'json'        => $json,
-      'data'        => json_decode($json),
-      'status_code' => $resp->getStatusCode()
+      'data'        => json_decode($response->body),
+      'headers'     => $response->headers,
+      'status_code' => $response->status_code,
     );
     return $data;
   }
 
   /**
    * Strips sensitive data out of the JSON printed in a request string
+   * TODO: Move this functionality into the logger
    *
    * @param [string] $request   The string with a JSON with sensitive data
    * @param [array]  $blacklist Array of string keys to remove from request
@@ -262,6 +246,8 @@ abstract class TerminusCommand {
 
   /**
    * Downloads the given URL to the given target
+   * TODO: When Terminus\Request is a property of Terminus/Models/TerminusModel,
+   * switch all uses to that property and remove this.
    *
    * @param [string] $url    Location of file to download
    * @param [string] $target Location to download file to
@@ -346,6 +332,7 @@ abstract class TerminusCommand {
 
   /**
    * Retrieves current version number from repository and saves it to the cache
+   * TODO: Move this into Terminus\Utils
    *
    * @return [string] $response->name The version number
    */
@@ -361,6 +348,7 @@ abstract class TerminusCommand {
 
   /**
    * Checks for new versions of Terminus once per week and saves to cache
+   * TODO: Move this into Terminus\Utils
    *
    * @return [void]
    */

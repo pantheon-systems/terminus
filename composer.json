@@ -9,7 +9,7 @@
   ],
   "require": {
     "php": ">=5.5.0",
-    "guzzle/guzzle": "3.9.*@stable",
+    "rmccue/requests": ">=1.0",
     "jlogsdon/cli": "~0.9.4",
     "mustache/mustache": "~2.4",
     "nb/oxymel": "0.1.0",

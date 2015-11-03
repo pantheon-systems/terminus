@@ -3,7 +3,6 @@
 namespace Terminus;
 
 use Terminus;
-use Guzzle\Http\Client as Browser;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -16,86 +15,54 @@ use Terminus\Exceptions\TerminusException;
  */
 
 class Request {
-  /**
-   * @var [Guzzle\Http\Client] $browser
-   */
-  public $browser;
-
-  /**
-   * @var [Guzzle\Http\Message\Request] $browser
-   */
-  public $request;
-
-  /**
-   * @var [Guzzle\Http\Message\Response] $response
-   */
-  public $response;
-
-  /**
-   * @var [array] $responses A collection of $response items
-   */
-  public $responses = array();
 
   /**
    * Sends a request to the API
    *
-   * @param [string] $url    URL for API request
-   * @param [string] $method Request method (i.e. PUT, POST, DELETE, or GET)
-   * @param [array]  $data   Options for request
-   * @return [Guzzle\Http\Message\Response] $response
+   * @param [string] $uri        URL for API request
+   * @param [string] $method     Request method (i.e. PUT, POST, DELETE, or GET)
+   * @param [array]  $arg_params Request parameters
+   * @return [\Requests] $request
    */
-  public static function send($url, $method, $data = array()) {
-    // Create a new Guzzle\Http\Client
-    $browser = new Browser;
-    $browser->setUserAgent(self::userAgent());
-    $options = array(
-      'allow_redirects' => false,
-      'verify'          => false,
-      'json'            => false
+  public static function send($uri, $method, array $arg_params = array()) {
+    $extra_params = array(
+      'headers'         => array(
+        'User-Agent'    => self::userAgent(),
+        'Content-type'  => 'application/json',
+      ),
+      'data'            => array(),
     );
-    if (isset($data['allow_redirects'])) {
-      $options['allow_redirects'] = $data['allow_redirects'];
-    }
-    if (isset($data['json'])) {
-      $options['json'] = $data['json'];
-    }
-    if (isset($data['body']) && $data['body']) {
-      $options['body'] = $data['body'];
-      Terminus::getLogger()->debug($data['body']);
-    }
+    $params  = array_merge_recursive($extra_params, $arg_params);
+    $params['data'] = json_encode($params['data']);
 
-    $request = $browser->createRequest($method, $url, null, null, $options);
+    Terminus::getLogger()->debug(
+      "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
+      array(
+        'params' => $params['data'],
+        'uri'    => $uri,
+        'method' => $method
+      )
+    );
 
-    if (!empty($data['postdata'])) {
-      foreach ($data['postdata'] as $k=>$v) {
-        $request->setPostField($k, $v);
-      }
+    $method  = strtolower($method);
+    $request = false;
+    try {
+      $request = \Requests::$method($uri, $params['headers'], $params['data']);
+    } catch (\Exception $e) {
+      /*
+       * Due to the way the Pantheon API formats its responses, this call will
+       * always throw a benign error.
+       */
     }
-
-    if (!empty($data['cookies'])) {
-      foreach ($data['cookies'] as $k => $v) {
-        $request->addCookie($k, $v);
-      }
+    if (!is_object($request)) {
+      var_dump($request);
+      die();
     }
+    var_dump($request->body);
+    var_dump($request->headers);
+    var_dump($request->status_code);
 
-    if (!empty($data['headers'])) {
-      foreach ($data['headers'] as $k => $v) {
-        $request->setHeader($k, $v);
-      }
-    }
-
-    if (Terminus::getConfig('debug')) {
-      $debug  = '#### REQUEST ####' . PHP_EOL;
-      $debug .= $request->getRawHeaders();
-      Terminus::getLogger()->debug($debug);
-      if (isset($data['body'])) {
-        Terminus::getLogger()->debug($data['body']);
-      }
-    }
-
-    $response = $request->send();
-
-    return $response;
+    return $request;
   }
 
   /**
@@ -108,15 +75,16 @@ class Request {
   static function download($url, $target) {
     if (file_exists($target)) {
       throw new TerminusException(
-        sprintf('Target file (%s) already exists.', $target)
+        'Target file {target} already exists.',
+        compact('target')
       );
     }
 
     $handle = fopen($target, 'w');
-    $client = new Browser(
+    $client = new Client(
       '',
       array(
-        Browser::CURL_OPTIONS => array(
+        Client::CURL_OPTIONS => array(
           'CURLOPT_RETURNTRANSFER' => true,
           'CURLOPT_FILE'           => $handle,
           'CURLOPT_ENCODING'       => 'gzip',
@@ -127,6 +95,55 @@ class Request {
     fclose($handle);
 
     return true;
+  }
+
+  /**
+   * Sets up and fills a cookie jar
+   *
+   * @param [array] $params Request data to fill jar with
+   * @return [GuzzleHttp\Cookie\CookieJar] $jar
+   */
+  static function fillCookieJar($params) {
+    $jar = new CookieJar();
+    $cookies = array();
+    if ($session = Session::instance()->get('session', false)) {
+      $cookies['X-Pantheon-Session'] = $session; 
+    }
+    if (isset($params['cookies'])) {
+      $cookies = array_merge($cookies, $params['cookies']);
+    }
+    $jar->fromArray($cookies, '');
+    return $jar;
+  }
+
+  /**
+   * Parses the base URI for requests
+   *
+   * @return [string] $base_uri
+   */
+  static function getBaseUri() {
+    $base_uri = sprintf(
+      '%s://%s:%s',
+      TERMINUS_PROTOCOL,
+      TERMINUS_HOST,
+      TERMINUS_PORT
+    );
+    return $base_uri;
+  }
+
+  /**
+   * Enables http_build_query to accept a string as its first argument, as
+   * necessitated by some API calls which require only a string in the body.
+   *
+   * @return [boolean] True if override is successful
+   */
+  static function overrideHttpBuildQuery() {
+    $function_overridden = runkit_function_redefine(
+      'http_build_query',
+      '$formdata,$numeric_prefix',
+      'return json_encode($formdata);'
+    );
+    return $function_overridden;
   }
 
   /**
