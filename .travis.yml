@@ -1,8 +1,8 @@
 language: php
 
 php:
-  - 5.3
-  - 5.4
+  - 5.5
+  - 5.6
 
 sudo: false
 
@@ -36,7 +36,7 @@ env:
 
 before_script:
   - ./scripts/prepare.sh
-  - ./scripts/build.sh
+  - if [ $(git branch | sed -n -e 's/^\* \(.*\)/\1/p') == "master" ]; then ./scripts/build.sh; fi
 
 script:
   - ./scripts/test.sh ci

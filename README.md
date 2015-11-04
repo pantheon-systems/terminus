@@ -14,7 +14,7 @@ Installation
 ------------
 
 **Requirements:**
-- PHP version 5.3.2 or later
+- PHP version 5.5.0 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
