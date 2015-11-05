@@ -29,8 +29,8 @@ class Workflows extends TerminusCollection {
     $results = TerminusCommand::simpleRequest(
       $this->getFetchUrl(),
       array(
-        'method'   => 'post',
-        'data'     => array(
+        'method'      => 'post',
+        'body' => array(
           'type'   => $type,
           'params' => (object)$params
         )

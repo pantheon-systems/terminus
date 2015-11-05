@@ -14,7 +14,7 @@ Installation
 ------------
 
 **Requirements:**
-- PHP version 5.3.2 or later
+- PHP version 5.5.0 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
@@ -43,7 +43,7 @@ Your dashboard password (input will not be shown)
 ```
 
 ####Installing with Git
-To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it.
+To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
 
 1. Clone the repository. If you plan on contributing to the project, create a fork and clone the fork instead.
   ```bash

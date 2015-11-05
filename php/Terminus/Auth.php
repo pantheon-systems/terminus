@@ -43,7 +43,6 @@ class Auth {
    */
   public function logInViaSessionToken($token) {
     $options = array(
-      'headers' => array('Content-type' => 'application/json'),
       'cookies' => array('X-Pantheon-Session' => $token),
     );
 
@@ -51,8 +50,8 @@ class Auth {
     $response = TerminusCommand::request('user', '', '', 'GET', $options);
 
     if (!$response
-      || !isset($response['info']['http_code'])
-      || $response['info']['http_code'] != '200'
+      || !isset($response['status_code'])
+      || ($response['status_code'] != '200')
     ) {
       throw new TerminusException(
         'The session token {token} is not valid.',
@@ -94,13 +93,10 @@ class Auth {
 
     $logger_context = array('email' => $email);
     $options        = array(
-      'body' => json_encode(
-        array(
-          'email' => $email,
-          'password' => $password,
-        )
-      ),
-      'headers' => array('Content-type'=>'application/json'),
+      'data' => array(
+        'email'    => $email,
+        'password' => $password,
+      )
     );
 
     $this->logger->info(
