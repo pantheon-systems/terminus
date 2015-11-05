@@ -34,16 +34,22 @@ class Auth_Command extends TerminusCommand {
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
    *
-   * [--refresh=<value>]
-   * : Authenticate using an Auth0 refresh token
+   * [--machine-token=<value>]
+   * : Authenticate using an Auth0 token
    *
    * [--debug]
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    // Try to login using a session token, if provided.
-    if (isset($assoc_args['refresh'])) {
-      $this->auth->logInViaRefreshToken($assoc_args['refresh']);
+    // Try to login using a machine token, if provided.
+    if (isset($assoc_args['machine-token']) 
+      || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
+    ) {
+      $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
+      if (isset($assoc_args['machine-token'])) {
+        $token = $assoc_args['machine-token'];
+      }
+      $this->auth->logInViaMachineToken($token);
     } else {
       // Otherwise, do a normal email/password-based login.
       if (empty($args)) {

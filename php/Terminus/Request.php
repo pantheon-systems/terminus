@@ -102,7 +102,7 @@ class Request {
   static function download($url, $target) {
     if (file_exists($target)) {
       throw new TerminusException(
-        sprintf('Target file (%s) already exists.', $target)
+        'Target file {target} already exists.', compact('target')
       );
     }
 

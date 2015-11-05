@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Auth;
 use Terminus\Utils;
 use Terminus\Helpers\Input;
 use Terminus\Exceptions\TerminusException;
@@ -10,9 +11,11 @@ use Terminus\Models\Collections\Sites;
 * Actions to be taken on an individual site
 */
 class Site_Command extends TerminusCommand {
+
 protected $_headers = false;
 
 public function __construct() {
+  Auth::ensureLogin();
   parent::__construct();
   $this->sites = new Sites();
 }

@@ -42,3 +42,29 @@ Feature: auth
     """
     You are authenticated as: [[user_uuid]]
     """
+
+  #Scenario: Logging in via refresh token
+    #@vcr auth_login_refresh
+    #When I run "terminus auth login --refresh=[[refresh_token]]"
+    #Then I should get:
+    #"""
+    #Logged in as [[user_uuid]]
+    #"""
+
+  #Scenario: Failing to log in via invalid refresh token
+    #@vcr auth_login_refresh_invalid
+    #When I run "terminus auth login --refresh=invalid"
+    #Then I should get:
+    #"""
+    #Authorization failed
+    #"""
+
+  #Scenario: Logging in successfully after session has expired
+    #@vcr auth_login_refresh_expired
+    #When I log in via refresh token
+    #And I expire my session
+    #And I list the sites
+    #Then I should get:
+    #"""
+    #[[test_site_name]]
+    #"""

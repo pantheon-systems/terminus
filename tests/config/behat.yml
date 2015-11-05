@@ -7,7 +7,8 @@ default:
       username:                devuser@pantheon.io
       password:                password1
       user_uuid:               25069e79-eae7-4d41-8925-1f728a114cb8
-      host:                    onebox
+      refresh_token:           xpTgwoH6nqVxnHUGG7gtghrQnr1GWDDJNjWFWdrdvmPvJ
+      host:                    localhost
       vcr_mode:                new_episodes
       test_site_name:          behat-tests
       other_user:              sara@getpantheon.com
@@ -25,6 +26,7 @@ ci:
       username:                devuser@pantheon.io
       password:                password1
       user_uuid:               25069e79-eae7-4d41-8925-1f728a114cb8
+      refresh_token:           xpTgwoH6nqVxnHUGG7gtghrQnr1GWDDJNjWFWdrdvmPvJ
       host:                    onebox
       vcr_mode:                once
       test_site_name:          behat-tests

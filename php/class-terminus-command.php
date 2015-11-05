@@ -120,12 +120,7 @@ abstract class TerminusCommand {
   ) {
     $logger = Terminus::getLogger();
 
-    if (!in_array($realm, array('login', 'user', 'public'))) {
-      Auth::loggedIn();
-    }
-
     try {
-      $cache = Terminus::getCache();
       if (!in_array($realm, array('auth/refresh', 'login', 'user'))) {
         if (!isset($options['headers'])) {
           $options['headers'] = array();

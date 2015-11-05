@@ -4,6 +4,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##Master
 ### Added
 - `site environments` now includes data on whether environment is initialized yet. (#654)
+- Login with Auth0 via `auth login --machine-token=<Auth0 token>` is now available. (#665) 
+- You can set a machine token via the environment variable TERMINUS_MACHINE_TOKEN. (#665)
 
 ### Changed
 - Cached sites lists are now keyed to UUID, preventing a previously logged-in user's list from interfering with the currently logged-in user. (#652)
