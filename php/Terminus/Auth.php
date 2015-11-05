@@ -41,38 +41,33 @@ class Auth {
    * @param [string] $token Session token to initiate login with
    * @return [boolean] True if login succeeded
    */
-  public function logInViaSessionToken($token) {
+  public function logInViaRefreshToken($token) {
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
-      'cookies' => array('X-Pantheon-Session' => $token),
+      'body'    => array(
+        'refresh_token' => $token,
+      ),
     );
 
-    $this->logger->info('Validating session token');
-    $response = TerminusCommand::request('user', '', '', 'GET', $options);
+    $this->logger->info('Logging in via refresh token');
+    $response = TerminusCommand::request('auth/refresh', '', '', 'POST', $options);
 
     if (!$response
       || !isset($response['info']['http_code'])
       || $response['info']['http_code'] != '200'
     ) {
       throw new TerminusException(
-        'The session token {token} is not valid.',
-        array('token' => $token),
+        'The refresh token {token} is not valid.',
+        compact('token'),
         1
       );
     }
     $this->logger->info(
-      'Logged in as {email}.',
-      array('email' => $response['data']->email)
+      'Logged in as {uuid}.',
+      array('uuid' => $response['data']->user_id)
     );
 
-    $this->setInstanceData(
-      array(
-        'user_uuid'           => $response['data']->id,
-        'session'             => $token,
-        'session_expire_time' => 0,
-        'email'               => $response['data']->email,
-      )
-    );
+    $this->setInstanceData($response['data']);
     return true;
   }
 
@@ -94,19 +89,12 @@ class Auth {
 
     $logger_context = array('email' => $email);
     $options        = array(
-      'body' => json_encode(
-        array(
-          'email' => $email,
-          'password' => $password,
-        )
+      'body' => array(
+        'email' => $email,
+        'password' => $password,
       ),
-      'headers' => array('Content-type'=>'application/json'),
     );
 
-    $this->logger->info(
-      'Logging in as {email}',
-      $logger_context
-    );
     $response = TerminusCommand::request('login', '', '', 'POST', $options);
     if ($response['status_code'] != '200') {
       throw new TerminusException(
@@ -115,15 +103,12 @@ class Auth {
         1
       );
     }
-
-    $this->setInstanceData(
-      array(
-        'user_uuid'           => $response['data']->user_id,
-        'session'             => $response['data']->session,
-        'session_expire_time' => $response['data']->expires_at,
-        'email'               => $email,
-      )
+    $this->logger->info(
+      'Logged in as {uuid}.',
+      array('uuid' => $response['data']->user_id)
     );
+
+    $this->setInstanceData($response['data']);
     return true;
   }
 
@@ -133,7 +118,12 @@ class Auth {
    * @param [array] $session Session data to save
    * @return [boolean] Always true
    */
-  private function setInstanceData($session) {
+  private function setInstanceData($data) {
+    $session = array(
+      'user_uuid'           => $data->user_id,
+      'session'             => $data->session,
+      'session_expire_time' => $data->expires_at,
+    );
     Session::instance()->setData($session);
     return true;
   }

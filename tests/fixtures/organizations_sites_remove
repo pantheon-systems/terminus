@@ -218,3 +218,32 @@
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
         body: '{"final_task_id": "94a9f2ba-6243-11e5-a354-bc764e117665", "finished_at": 1443047810.158594, "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "params": {"site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192"}, "reason": "", "result": "succeeded", "role": "admin", "started_at": 1443047810.13336, "task_ids": ["94a9f2ba-6243-11e5-a354-bc764e117665"], "trace_id": "94a636c0-6243-11e5-a139-c95d7f8f209a", "type": "remove_organization_site_membership", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "94a98dac-6243-11e5-a354-bc764e117665", "key": "1443045600", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.025233983993530273, "created_at": 1443047810.113886, "environment": null, "total_time": 0.0447077751159668, "active_description": "Removed a site to the organization", "description": "Remove a site from an organization", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=94a636c0-6243-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T22:31:50.113886Z&to_iso_date=2015-09-23T22:41:50.158594Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"finished_at": 1443047810.146775, "fn_name": "trigger_task", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "params": {"organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "task_type": "remove_organization_site_membership", "site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192"}, "queued_at": 1443047810.133483, "responses": [{"code": 200, "body": "Site d6299162-b51d-4a6c-b05f-640daf8c9192 was successfully removed from organization bf200cbe-8995-4891-b5d4-1a8bdc292905"}], "result": "succeeded", "started_at": 1443047810.133486, "trace_id": "94a636c0-6243-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "94a98dac-6243-11e5-a354-bc764e117665", "id": "94a9f2ba-6243-11e5-a354-bc764e117665", "key": "1443045600", "created_at": 1443047810.116473, "queued_time": 3.0994415283203125e-06, "run_time": 0.01328897476196289, "phase": "finished", "allow_concurrent": false, "total_time": 0.030302047729492188, "internal_reason": "", "build_url": null, "messages": {"2015-09-23T22:36:50.174489": {"message": "Site d6299162-b51d-4a6c-b05f-640daf8c9192 was successfully removed from organization bf200cbe-8995-4891-b5d4-1a8bdc292905", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=94a636c0-6243-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T22:31:50.116473Z&to_iso_date=2015-09-23T22:41:50.146775Z", "type": "remove_organization_site_membership"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/organizations/bf200cbe-8995-4891-b5d4-1a8bdc292905/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.2 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:90f3eacc-6243-11e5-97ba-bc764e117665:2z9Z6Fh8R1W6aLUFeJGsI; X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:90f3eacc-6243-11e5-97ba-bc764e117665:2z9Z6Fh8R1W6aLUFeJGsI'
+            Content-type: application/json
+        body: '"{\"type\":\"remove_organization_site_membership\",\"params\":{\"site_id\":\"d6299162-b51d-4a6c-b05f-640daf8c9192\"}}"'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 05 Nov 2015 23:30:20 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 2dbc6850-8415-11e5-9b12-15e5db30055d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

@@ -522,11 +522,8 @@ class Environment extends TerminusModel {
       $bucket,
       $element
     );
-    $data     = array('method' => 'GET');
-    $options  = array(
-      'body'    => json_encode($data),
-      'headers' => array('Content-type' => 'application/json')
-    );
+    $body     = array('method' => 'GET');
+    $options  = compact('body');
     $response = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),
@@ -859,14 +856,11 @@ class Environment extends TerminusModel {
    */
   public function workflow($workflow) {
     $path     = sprintf("environments/%s/workflows", $this->get('id'));
-    $data     = array(
+    $body     = array(
       'type'        => $workflow,
       'environment' => $this->get('id'),
     );
-    $options  = array(
-      'body'    => json_encode($data),
-      'headers' => array('Content-type' => 'application/json')
-    );
+    $options  = compact('body');
     $response = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),

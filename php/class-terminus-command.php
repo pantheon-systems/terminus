@@ -116,7 +116,7 @@ abstract class TerminusCommand {
     $uuid,
     $path = false,
     $method = 'GET',
-    $options = null
+    $options = array()
   ) {
     $logger = Terminus::getLogger();
 
@@ -126,6 +126,14 @@ abstract class TerminusCommand {
 
     try {
       $cache = Terminus::getCache();
+      if (!in_array($realm, array('auth/refresh', 'login', 'user'))) {
+        if (!isset($options['headers'])) {
+          $options['headers'] = array();
+        }
+        $options['headers']['Cookie'] = array(
+          'X-Pantheon-Session' => Session::getValue('id_token')
+        );
+      }
 
       if (!in_array($realm, array('login', 'user'))) {
         $options['cookies'] = array(
@@ -187,16 +195,10 @@ abstract class TerminusCommand {
    * @return [array] $data
    */
   public static function simpleRequest($path, $options = array()) {
-    $req_options = array();
-
     $method = 'get';
     if (isset($options['method'])) {
       $method = $options['method'];
-    }
-
-    if (isset($options['data'])) {
-      $req_options['body']    = json_encode($options['data']);
-      $req_options['headers'] = array('Content-type' => 'application/json');
+      unset($options['method']);
     }
 
     $url = sprintf(
@@ -208,15 +210,14 @@ abstract class TerminusCommand {
     );
 
     if (Session::getValue('session')) {
-      $req_options['cookies'] = array(
-      'X-Pantheon-Session' => Session::getValue('session')
+      $options['cookies'] = array(
+        'X-Pantheon-Session' => Session::getValue('session')
       );
-      $req_options['verify']  = false;
     }
 
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $resp = Request::send($url, $method, $req_options);
+      $resp = Request::send($url, $method, $options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',

@@ -34,16 +34,16 @@ class Auth_Command extends TerminusCommand {
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
    *
-   * [--session=<value>]
-   * : Authenticate using an existing session token
+   * [--refresh=<value>]
+   * : Authenticate using an Auth0 refresh token
    *
    * [--debug]
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
     // Try to login using a session token, if provided.
-    if (isset($assoc_args['session'])) {
-      $this->auth->logInViaSessionToken($assoc_args['session']);
+    if (isset($assoc_args['refresh'])) {
+      $this->auth->logInViaRefreshToken($assoc_args['refresh']);
     } else {
       // Otherwise, do a normal email/password-based login.
       if (empty($args)) {
@@ -82,9 +82,9 @@ class Auth_Command extends TerminusCommand {
    * Find out what user you are logged in as.
    */
   public function whoami() {
-    if (Session::getValue('email')) {
+    if (Session::getValue('user_uuid')) {
       $this->output()->outputValue(
-        Session::getValue('email'),
+        Session::getValue('user_uuid'),
         'You are authenticated as'
       );
     } else {

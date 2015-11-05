@@ -245,3 +245,32 @@
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
         body: '{"final_task_id": "c5e13ea6-7373-11e5-b40f-bc764e117665", "finished_at": 1444937678.351673, "params": {"environment_id": "multidev", "deploy": {"clone_files": {"from_environment": "dev"}, "annotation": "Create the \"multidev\" environment.", "clone_database": {"from_environment": "dev"}}}, "reason": "The environment \"multidev\" already exists.", "result": "aborted", "role": "owner", "site_id": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "started_at": 1444937678.31784, "task_ids": ["c5e13ea6-7373-11e5-b40f-bc764e117665"], "trace_id": "c5da75d0-7373-11e5-a139-c95d7f8f209a", "type": "create_cloud_development_environment", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "c5df4c9a-7373-11e5-b40f-bc764e117665", "key": "1444935600", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.03383278846740723, "created_at": 1444937678.284713, "environment": null, "total_time": 0.06695985794067383, "active_description": "Created Multidev environment \"multidev\"", "description": "Create a Multidev environment", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c5da75d0-7373-11e5-a139-c95d7f8f209a&from_iso_date=2015-10-15T19:29:38.284713Z&to_iso_date=2015-10-15T19:39:38.351673Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": "multidev", "finished_at": 1444937678.336917, "fn_name": "trigger_task", "has_error": true, "params": {"task_type": "create_cloud_development_environment", "site_id": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "environment_id": "multidev", "pool": null, "deploy": {"clone_files": {"from_environment": "dev"}, "annotation": "Create the \"multidev\" environment.", "clone_database": {"from_environment": "dev"}}}, "queued_at": 1444937678.317941, "responses": [{"code": 400, "body": "The environment \"multidev\" already exists."}], "result": "aborted", "site_id": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "started_at": 1444937678.317944, "trace_id": "c5da75d0-7373-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "c5df4c9a-7373-11e5-b40f-bc764e117665", "id": "c5e13ea6-7373-11e5-b40f-bc764e117665", "key": "1444935600", "created_at": 1444937678.297463, "queued_time": 3.0994415283203125e-06, "run_time": 0.01897287368774414, "phase": "finished", "allow_concurrent": false, "total_time": 0.039453983306884766, "internal_reason": "The environment \"multidev\" already exists.", "build_url": null, "messages": {"2015-10-15T19:34:38.366874": {"message": "The environment \"multidev\" already exists.", "level": "ERROR"}}, "reason": "The environment \"multidev\" already exists.", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c5da75d0-7373-11e5-a139-c95d7f8f209a&from_iso_date=2015-10-15T19:29:38.297463Z&to_iso_date=2015-10-15T19:39:38.336917Z", "type": "create_cloud_development_environment"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/d75eacdd-20d4-40d0-8178-74e4aed0dffc/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.2 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:c1389ef8-7373-11e5-9114-bc764e117665:N15tUYkeq0nWf3KXGaENv; X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:c1389ef8-7373-11e5-9114-bc764e117665:N15tUYkeq0nWf3KXGaENv'
+            Content-type: application/json
+        body: '"{\"type\":\"create_cloud_development_environment\",\"params\":{\"environment_id\":\"multidev\",\"deploy\":{\"clone_database\":{\"from_environment\":\"dev\"},\"clone_files\":{\"from_environment\":\"dev\"},\"annotation\":\"Create the \\\"multidev\\\" environment.\"}}}"'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 05 Nov 2015 23:33:52 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: ac20f990-8415-11e5-9b12-15e5db30055d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

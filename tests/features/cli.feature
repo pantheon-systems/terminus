@@ -62,7 +62,7 @@ Feature: cli
     And I run "terminus cli session-dump"
     Then I should get:
     """
-    [email] => devuser@pantheon.io
+    [user_uuid] => [[user_uuid]]
     """
 
   Scenario: Print Version

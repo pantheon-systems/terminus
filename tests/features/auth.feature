@@ -13,7 +13,7 @@ Feature: auth
     When I run "terminus auth login [[username]] --password=[[password]]"
     Then I should get:
     """
-    Logging in as [[username]]
+    Logged in as [[user_uuid]]
     """
 
   Scenario: Check Which User I Am
@@ -22,7 +22,7 @@ Feature: auth
     When I run "terminus auth whoami"
     Then I should get:
     """
-    You are authenticated as: [[username]]
+    You are authenticated as: [[user_uuid]]
     """
 
   Scenario: Logout
@@ -40,5 +40,5 @@ Feature: auth
     And I run "terminus auth whoami"
     Then I should not get:
     """
-    You are authenticated as: [[username]]
+    You are authenticated as: [[user_uuid]]
     """

@@ -169,17 +169,13 @@ class Site extends TerminusModel {
    * @return [Workflow] $workflow
    */
   public function createBranch($branch) {
-    $data     = array('refspec' => sprintf('refs/heads/%s', $branch));
-    $options  = array(
-      'body'    => json_encode($data),
-      'headers' => array('Content-type' => 'application/json')
-    );
+    $body     = array('refspec' => sprintf('refs/heads/%s', $branch));
     $response = TerminusCommand::request(
       'sites',
       $this->get('id'),
       'code-branch',
       'POST',
-      $options
+      compact('body')
     );
     return $response['data'];
   }
@@ -534,17 +530,13 @@ class Site extends TerminusModel {
   public function updateServiceLevel($level) {
     $path     = 'service-level';
     $method   = 'PUT';
-    $data     = $level;
-    $options  = array(
-      'body' => json_encode($data),
-      'headers' => array('Content-type' => 'application/json')
-    );
+    $body     = $level;
     $response = TerminusCommand::request(
       'sites',
       $this->get('id'),
       $path,
       $method,
-      $options
+      compact('body')
     );
     return $response['data'];
   }
