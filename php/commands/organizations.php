@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Auth;
 use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
@@ -12,6 +13,7 @@ use Terminus\Models\Collections\UserOrganizationMemberships;
 class Organizations_Command extends TerminusCommand {
 
   public function __construct() {
+    Auth::ensureLogin();
     parent::__construct();
     $this->sites = new Sites();
   }

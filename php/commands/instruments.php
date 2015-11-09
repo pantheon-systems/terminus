@@ -1,11 +1,22 @@
 <?php
 
+use Terminus\Auth;
 use Terminus\Models\User;
 
 /**
  * Show information for your Pantheon instruments
  */
 class Instruments_Command extends TerminusCommand {
+
+  /**
+   * Instantiates object, ensures login
+   *
+   * @return [Instruments_Command] $this
+   */
+  public function __construct() {
+    Auth::ensureLogin();
+    parent::__construct();
+  }
 
   /**
    * Show a list of your instruments on Pantheon

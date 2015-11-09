@@ -272,3 +272,32 @@
             ETag: 'W/"37WfMDyslLNdpoARfcU33g=="'
             Vary: Accept-Encoding
         body: '{"params": {"environment_id": "multidev", "deploy": {"clone_files": {"from_environment": "dev"}, "annotation": "Create the \"multidev\" environment.", "clone_database": {"from_environment": "dev"}}}, "role": "owner", "site_id": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "started_at": 1444937749.245147, "task_ids": ["f027eab6-7373-11e5-864a-bc764e117665", "f0518b14-7373-11e5-864a-bc764e117665", "f0535322-7373-11e5-864a-bc764e117665", "f0543f62-7373-11e5-864a-bc764e117665", "f055236e-7373-11e5-864a-bc764e117665", "f058a76e-7373-11e5-864a-bc764e117665", "f06178d0-7373-11e5-864a-bc764e117665", "f064114e-7373-11e5-864a-bc764e117665", "f0645618-7373-11e5-864a-bc764e117665", "f0646068-7373-11e5-864a-bc764e117665", "f06f26ba-7373-11e5-864a-bc764e117665", "f070df3c-7373-11e5-864a-bc764e117665", "f071dc52-7373-11e5-864a-bc764e117665", "f072b6ae-7373-11e5-864a-bc764e117665", "f074b7e2-7373-11e5-864a-bc764e117665", "f0761c0e-7373-11e5-864a-bc764e117665", "f077475a-7373-11e5-864a-bc764e117665", "f08e568e-7373-11e5-864a-bc764e117665", "f0903332-7373-11e5-864a-bc764e117665", "f09129ae-7373-11e5-864a-bc764e117665", "f0921152-7373-11e5-864a-bc764e117665", "f0941826-7373-11e5-864a-bc764e117665", "f09c8d30-7373-11e5-864a-bc764e117665", "f09e9abc-7373-11e5-864a-bc764e117665", "f0a76c32-7373-11e5-864a-bc764e117665", "f0b01b0c-7373-11e5-864a-bc764e117665", "f0b1c6f0-7373-11e5-864a-bc764e117665", "f0b2d4aa-7373-11e5-864a-bc764e117665"], "trace_id": "f0209a90-7373-11e5-a139-c95d7f8f209a", "type": "create_cloud_development_environment", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": "f0518b14-7373-11e5-864a-bc764e117665", "id": "f025ed4c-7373-11e5-864a-bc764e117665", "key": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "environment_id": null, "keep_forever": false, "phase": "started", "queued_time": null, "run_time": null, "created_at": 1444937749.211886, "reason": "", "environment": null, "final_task_id": null, "result": "succeeded", "total_time": null, "active_description": "Creating Multidev environment \"multidev\"", "description": "Create a Multidev environment", "step": 2, "number_of_tasks": 28, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=f0209a90-7373-11e5-a139-c95d7f8f209a&from_iso_date=2015-10-15T19:30:49.211886Z&to_iso_date=now", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"allow_concurrent": true, "build": {"url": "job/chef_solo_bindings/176191/", "number": 176191, "phase": "STARTED", "estimated_duration": 4803, "duration": 0, "full_url": "https://162.242.168.41:8090/jenkins/job/chef_solo_bindings/176191/"}, "environment": "multidev", "fn_name": "queue_jenkins_task", "params": {"host": "162.242.168.41", "task_type": "deploy_dbserver_binding", "job_id": "f0518b14-7373-11e5-864a-bc764e117665", "binding_id": "4a4f0af1b7094785a749871834d808fa"}, "queued_at": 1444937750.277983, "responses": [{"code": 302, "body": "Successfully queued deploy_dbserver_binding"}], "site_id": "d75eacdd-20d4-40d0-8178-74e4aed0dffc", "started_at": 1444937750.405234, "trace_id": "f0209a90-7373-11e5-a139-c95d7f8f209a", "user_id": "pantheon", "workflow_id": "f025ed4c-7373-11e5-864a-bc764e117665", "id": "f0518b14-7373-11e5-864a-bc764e117665", "key": "1444935600", "created_at": 1444937749.49773, "queued_time": 0.12725114822387695, "run_time": null, "phase": "started", "result": null, "total_time": null, "internal_reason": "", "build_url": "https://162.242.168.41:8090/jenkins/job/chef_solo_bindings/176191/", "messages": {"2015-10-15T19:35:50.706575": {"message": "Successfully queued deploy_dbserver_binding", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=f0209a90-7373-11e5-a139-c95d7f8f209a&from_iso_date=2015-10-15T19:30:49.497730Z&to_iso_date=now", "type": "deploy_dbserver_binding"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/d75eacdd-20d4-40d0-8178-74e4aed0dffc/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.2 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:eba6cae8-7373-11e5-864a-bc764e117665:19essvOMvAHEERhEHo7Z0; X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:eba6cae8-7373-11e5-864a-bc764e117665:19essvOMvAHEERhEHo7Z0'
+            Content-type: application/json
+        body: '"{\"type\":\"create_cloud_development_environment\",\"params\":{\"environment_id\":\"multidev\",\"deploy\":{\"clone_database\":{\"from_environment\":\"dev\"},\"clone_files\":{\"from_environment\":\"dev\"},\"annotation\":\"Create the \\\"multidev\\\" environment.\"}}}"'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 05 Nov 2015 23:33:17 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 97a830f0-8415-11e5-9b12-15e5db30055d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

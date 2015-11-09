@@ -48,21 +48,7 @@ class Request {
     // Create a new Guzzle\Http\Client
     $browser = new Browser;
     $browser->setUserAgent(self::userAgent());
-    $options = array(
-      'allow_redirects' => false,
-      'verify'          => false,
-      'json'            => false
-    );
-    if (isset($data['allow_redirects'])) {
-      $options['allow_redirects'] = $data['allow_redirects'];
-    }
-    if (isset($data['json'])) {
-      $options['json'] = $data['json'];
-    }
-    if (isset($data['body']) && $data['body']) {
-      $options['body'] = $data['body'];
-      Terminus::getLogger()->debug($data['body']);
-    }
+    $options = self::processOptions($data);
 
     $request = $browser->createRequest($method, $url, null, null, $options);
 
@@ -84,13 +70,21 @@ class Request {
       }
     }
 
-    if (Terminus::getConfig('debug')) {
-      $debug  = '#### REQUEST ####' . PHP_EOL;
-      $debug .= $request->getRawHeaders();
-      Terminus::getLogger()->debug($debug);
-      if (isset($data['body'])) {
-        Terminus::getLogger()->debug($data['body']);
-      }
+    if (!empty($data['body']) && method_exists($request, 'setBody')) {
+      $request->setBody(json_encode($data['body']));
+    }
+
+    $debug  = '#### REQUEST ####' . PHP_EOL;
+    $debug .= $request->getRawHeaders();
+    Terminus::getLogger()->debug(
+      'Headers: {headers}',
+      array('headers' => $debug)
+    );
+    if (isset($data['body'])) {
+      Terminus::getLogger()->debug(
+        'Body: {body}',
+        array('body' => $data['body'])
+      );
     }
 
     $response = $request->send();
@@ -108,7 +102,7 @@ class Request {
   static function download($url, $target) {
     if (file_exists($target)) {
       throw new TerminusException(
-        sprintf('Target file (%s) already exists.', $target)
+        'Target file {target} already exists.', compact('target')
       );
     }
 
@@ -127,6 +121,29 @@ class Request {
     fclose($handle);
 
     return true;
+  }
+
+  /**
+   * Merges the given options with defaults to ensure necessary fields exist
+   *
+   * @param [array] $arg_options Options for a request
+   * @return [array] $options Completed options array
+   */
+  static function processOptions($arg_options) {
+    $default_options = array(
+      'headers' => array(
+        'Content-type' => 'application/json',
+      ),
+      'verify'  => false,
+    );
+    $options = array_merge($arg_options, $default_options);
+    if (isset($options['data'])) {
+      $options['body'] = $options['data'];
+    }
+    if (isset($options['body'])) {
+      $options['body'] = json_encode($options['body']);
+    }
+    return $options;
   }
 
   /**

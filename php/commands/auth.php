@@ -34,16 +34,22 @@ class Auth_Command extends TerminusCommand {
    * [--password=<value>]
    * : Log in non-interactively with this password. Useful for automation.
    *
-   * [--session=<value>]
-   * : Authenticate using an existing session token
+   * [--machine-token=<value>]
+   * : Authenticate using an Auth0 token
    *
    * [--debug]
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    // Try to login using a session token, if provided.
-    if (isset($assoc_args['session'])) {
-      $this->auth->logInViaSessionToken($assoc_args['session']);
+    // Try to login using a machine token, if provided.
+    if (isset($assoc_args['machine-token']) 
+      || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
+    ) {
+      $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
+      if (isset($assoc_args['machine-token'])) {
+        $token = $assoc_args['machine-token'];
+      }
+      $this->auth->logInViaMachineToken($token);
     } else {
       // Otherwise, do a normal email/password-based login.
       if (empty($args)) {
@@ -82,9 +88,9 @@ class Auth_Command extends TerminusCommand {
    * Find out what user you are logged in as.
    */
   public function whoami() {
-    if (Session::getValue('email')) {
+    if (Session::getValue('user_uuid')) {
       $this->output()->outputValue(
-        Session::getValue('email'),
+        Session::getValue('user_uuid'),
         'You are authenticated as'
       );
     } else {

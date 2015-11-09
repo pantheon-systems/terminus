@@ -20,59 +20,75 @@ class Auth {
   }
 
   /**
-   * Determines if user is logged in
+   * Ensures the user is logged in or errs.
    *
-   * @return [boolean] True if user is logged in
+   * @return [boolean] Always true
    */
-  public static function loggedIn() {
-    if (Session::instance()->getValue('session', false) === false) {
-      throw new TerminusException(
-        'Please login first with `terminus auth login`',
-        array(),
-        1
-      );
+  public static function ensureLogin() {
+    $session = Session::instance()->getData();
+    $auth    = new Auth();
+    if (!$auth->loggedIn()) {
+      if (isset($session->refresh)) {
+        $auth->logInViaMachineToken($session->refresh);
+      } else {
+        throw new TerminusException(
+          'Please login first with `terminus auth login`',
+          array(),
+          1
+        );
+      }
     }
     return true;
   }
 
   /**
-   * Execute the login based on an existing session token
+   * Checks to see if the current user is logged in
    *
-   * @param [string] $token Session token to initiate login with
+   * @return [boolean] $is_logged_in True if the user is logged in
+   */
+  public function loggedIn() {
+    $session = Session::instance()->getData();
+    $is_logged_in = (
+      isset($session->session)
+      && (Terminus::isTest() || ($session->session_expire_time >= time()))
+    );
+    return $is_logged_in;
+  }
+
+  /**
+   * Execute the login based on a machine token
+   *
+   * @param [string] $token Machine token to initiate login with
    * @return [boolean] True if login succeeded
    */
-  public function logInViaSessionToken($token) {
+  public function logInViaMachineToken($token) {
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
-      'cookies' => array('X-Pantheon-Session' => $token),
+      'body'    => array(
+        'refresh_token' => $token,
+      ),
     );
 
-    $this->logger->info('Validating session token');
-    $response = TerminusCommand::request('user', '', '', 'GET', $options);
+    $this->logger->info('Logging in via machine token');
+    $response = TerminusCommand::request('auth/refresh', '', '', 'POST', $options);
 
     if (!$response
       || !isset($response['info']['http_code'])
       || $response['info']['http_code'] != '200'
     ) {
       throw new TerminusException(
-        'The session token {token} is not valid.',
-        array('token' => $token),
+        'The provided machine token is not valid.',
+        array(),
         1
       );
     }
     $this->logger->info(
-      'Logged in as {email}.',
-      array('email' => $response['data']->email)
+      'Logged in as {uuid}.',
+      array('uuid' => $response['data']->user_id)
     );
-
-    $this->setInstanceData(
-      array(
-        'user_uuid'           => $response['data']->id,
-        'session'             => $token,
-        'session_expire_time' => 0,
-        'email'               => $response['data']->email,
-      )
-    );
+    $data = $response['data'];
+    $data->refresh = $token;
+    $this->setInstanceData($response['data']);
     return true;
   }
 
@@ -94,19 +110,12 @@ class Auth {
 
     $logger_context = array('email' => $email);
     $options        = array(
-      'body' => json_encode(
-        array(
-          'email' => $email,
-          'password' => $password,
-        )
+      'body' => array(
+        'email' => $email,
+        'password' => $password,
       ),
-      'headers' => array('Content-type'=>'application/json'),
     );
 
-    $this->logger->info(
-      'Logging in as {email}',
-      $logger_context
-    );
     $response = TerminusCommand::request('login', '', '', 'POST', $options);
     if ($response['status_code'] != '200') {
       throw new TerminusException(
@@ -115,25 +124,35 @@ class Auth {
         1
       );
     }
-
-    $this->setInstanceData(
-      array(
-        'user_uuid'           => $response['data']->user_id,
-        'session'             => $response['data']->session,
-        'session_expire_time' => $response['data']->expires_at,
-        'email'               => $email,
-      )
+    $this->logger->info(
+      'Logged in as {uuid}.',
+      array('uuid' => $response['data']->user_id)
     );
+
+    $this->setInstanceData($response['data']);
     return true;
   }
 
   /**
    * Saves the session data to a cookie
    *
-   * @param [array] $session Session data to save
+   * @param [array] $data Session data to save
    * @return [boolean] Always true
    */
-  private function setInstanceData($session) {
+  private function setInstanceData($data) {
+    if (!isset($data->refresh)) {
+      $refresh = (array)Session::instance()->get('refresh');
+    } else {
+      $refresh = $data->refresh;
+    }
+    $session = array(
+      'user_uuid'           => $data->user_id,
+      'session'             => $data->session,
+      'session_expire_time' => $data->expires_at,
+    );
+    if ($refresh && is_string($refresh)) {
+      $session['refresh'] = $refresh;
+    }
     Session::instance()->setData($session);
     return true;
   }

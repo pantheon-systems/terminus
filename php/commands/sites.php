@@ -5,17 +5,16 @@
  *
  */
 
-use Terminus\Utils;
-use Terminus\Models\Organization;
-use Terminus\Models\Upstreams;
-use Terminus\Models\Collections\Sites;
-use Terminus\Session;
-use Terminus\Models\Site;
 use Terminus\Auth;
+use Terminus\Session;
+use Terminus\Utils;
 use Terminus\Helpers\Input;
+use Terminus\Models\Organization;
+use Terminus\Models\Site;
+use Terminus\Models\Upstreams;
 use Terminus\Models\User;
-use Symfony\Component\Finder\SplFileInfo;
 use Terminus\Models\Workflow;
+use Terminus\Models\Collections\Sites;
 
 class Sites_Command extends TerminusCommand {
   public $sites;
@@ -26,8 +25,8 @@ class Sites_Command extends TerminusCommand {
    * @version 2.0
    */
   public function __construct() {
+    Auth::ensureLogin();
     parent::__construct();
-    Auth::loggedIn();
     $this->sites = new Sites();
   }
 

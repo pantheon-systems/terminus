@@ -218,3 +218,32 @@
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
         body: '{"final_task_id": "cdbca7a0-6243-11e5-b40f-bc764e117665", "finished_at": 1443047905.916542, "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "params": {"role": "team_member", "site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192"}, "reason": "", "result": "succeeded", "role": "admin", "started_at": 1443047905.887449, "task_ids": ["cdbca7a0-6243-11e5-b40f-bc764e117665"], "trace_id": "cdb88120-6243-11e5-a139-c95d7f8f209a", "type": "add_organization_site_membership", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "cdbc3d92-6243-11e5-b40f-bc764e117665", "key": "1443045600", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.029093027114868164, "created_at": 1443047905.866485, "environment": null, "total_time": 0.05005693435668945, "active_description": "Added a site to the organization", "description": "Add a site to an organization", "step": 1, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=cdb88120-6243-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T22:33:25.866485Z&to_iso_date=2015-09-23T22:43:25.916542Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"finished_at": 1443047905.898544, "fn_name": "trigger_task", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "params": {"organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192", "task_type": "add_organization_site_membership", "role": "team_member"}, "queued_at": 1443047905.887551, "responses": [{"code": 200, "body": {"role": "team_member", "archived": false, "invited_by_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "key": "d6299162-b51d-4a6c-b05f-640daf8c9192", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192"}}], "result": "succeeded", "started_at": 1443047905.887553, "trace_id": "cdb88120-6243-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "cdbc3d92-6243-11e5-b40f-bc764e117665", "id": "cdbca7a0-6243-11e5-b40f-bc764e117665", "key": "1443045600", "created_at": 1443047905.8692, "queued_time": 1.9073486328125e-06, "run_time": 0.010991096496582031, "phase": "finished", "allow_concurrent": false, "total_time": 0.02934408187866211, "internal_reason": "", "build_url": null, "messages": {"2015-09-23T22:38:25.931449": {"message": {"role": "team_member", "archived": false, "invited_by_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "key": "d6299162-b51d-4a6c-b05f-640daf8c9192", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "site_id": "d6299162-b51d-4a6c-b05f-640daf8c9192"}, "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=cdb88120-6243-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-23T22:33:25.869200Z&to_iso_date=2015-09-23T22:43:25.898544Z", "type": "add_organization_site_membership"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/organizations/bf200cbe-8995-4891-b5d4-1a8bdc292905/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.2 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:ca29c0a0-6243-11e5-b495-bc764e117665:NIxqJId7N8X5WIouu2sM8; X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:ca29c0a0-6243-11e5-b495-bc764e117665:NIxqJId7N8X5WIouu2sM8'
+            Content-type: application/json
+        body: '"{\"type\":\"add_organization_site_membership\",\"params\":{\"site_id\":\"d6299162-b51d-4a6c-b05f-640daf8c9192\",\"role\":\"team_member\"}}"'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 05 Nov 2015 23:29:35 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 133d9210-8415-11e5-9b12-15e5db30055d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

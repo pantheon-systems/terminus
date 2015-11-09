@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Session;
 use Behat\Behat\Context\BehatContext;
 use Behat\Gherkin\Node\PyStringNode;
 
@@ -8,6 +9,7 @@ use Behat\Gherkin\Node\PyStringNode;
  */
 class FeatureContext extends BehatContext {
   public $cliroot = '';
+  private $_cache_file_name;
   private $_parameters;
   private $_output;
   private $_start_time;
@@ -23,6 +25,7 @@ class FeatureContext extends BehatContext {
     $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
     $this->_parameters      = $parameters;
     $this->_start_time      = time();
+    $this->_cache_file_name = $_SERVER['HOME'] . '/.terminus/cache/session';
     $this->_connection_info = array(
       'username' => $parameters['username'],
       'password' => $parameters['password'],
@@ -350,6 +353,18 @@ class FeatureContext extends BehatContext {
   }
 
   /**
+   * Intentionally expires the user's session
+   * @When /^I expire my session$/
+   *
+   * @return [void]
+   */
+  public function iExpireMySession() {
+    $session = json_decode(file_get_contents($this->_cache_file_name));
+    $session->session_expire_time = -386299860;
+    file_put_contents($this->_cache_file_name, $session);
+  }
+
+  /**
    * Queries for info for a given site
    * @Given /^I get info for the site "([^"]*)"$/
    *
@@ -470,6 +485,20 @@ class FeatureContext extends BehatContext {
   }
 
   /**
+   * Logs in user
+   * @When /^I log in via refresh token "([^"]*)"$/
+   * @When /^I log in via refresh token$/
+   *
+   * @param [string] $token An Auth0 refresh token
+   * @return [void]
+   */
+  public function iLogInViaRefreshToken(
+      $token = '[[refresh_token]]'
+  ) {
+    $this->iRun("terminus auth login --refresh=$token");
+  }
+
+  /**
    * Logs user out
    * @When /^I log out$/
    *
@@ -543,6 +572,7 @@ class FeatureContext extends BehatContext {
     $command      = $this->_replacePlaceholders($command);
     $regex        = '/(?<!\.)terminus/';
     $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
+    $command = 'TERMINUS_PROTOCOL=http TERMINUS_PORT=4000 ' . $command;
     if($this->_cassette_name) {
       $command = 'VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
     }
@@ -555,9 +585,11 @@ class FeatureContext extends BehatContext {
         . ' ' . $command;
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
+    echo $command . PHP_EOL;
     ob_start();
     passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
+    echo $this->_output . PHP_EOL;
     return $this->_output;
   }
 

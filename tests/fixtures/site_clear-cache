@@ -246,3 +246,32 @@
             ETag: 'W/"sihqxj2rT9Hk7gRxhXphFA=="'
             Vary: Accept-Encoding
         body: '{"environment_id": "dev", "final_task_id": "c513374a-5749-11e5-beec-bc764e117665", "finished_at": 1441841006.752224, "params": {}, "reason": "", "result": "succeeded", "role": "owner", "site_id": "2818deff-34e7-44dd-a871-14fa640a2d84", "started_at": 1441841005.569708, "task_ids": ["c511dcf6-5749-11e5-beec-bc764e117665", "c513374a-5749-11e5-beec-bc764e117665"], "trace_id": "c50d9920-5749-11e5-a139-c95d7f8f209a", "type": "clear_cache", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "waiting_for_task_id": null, "id": "c5114b38-5749-11e5-beec-bc764e117665", "key": "2818deff-34e7-44dd-a871-14fa640a2d84", "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 1.1825158596038818, "created_at": 1441841005.51422, "environment": "dev", "total_time": 1.2380039691925049, "active_description": "Cleared caches for \"dev\"", "description": "Clear cache for \"dev\"", "step": 2, "number_of_tasks": 2, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c50d9920-5749-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-09T23:18:25.514220Z&to_iso_date=2015-09-09T23:28:26.752224Z", "user": {"created_at": 1435781178, "email": "devuser@pantheon.io", "password": "SCRUBBED", "id": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "user_email": "devuser@pantheon.io", "final_task": {"build": {"url": "job/take_screenshot/334/", "number": 334, "phase": "STARTED", "estimated_duration": 18854, "duration": 0, "full_url": "https://162.242.168.41:8090/jenkins/job/take_screenshot/334/"}, "environment": "dev", "finished_at": 1441841006.735094, "fn_name": "queue_jenkins_task", "params": {"site_hostname": "dev-behat-tests.onebox.pantheon.io", "task_type": "take_screenshot", "job_id": "c513374a-5749-11e5-beec-bc764e117665", "envs": "dev", "host": "162.242.168.41", "site_uuid": "2818deff-34e7-44dd-a871-14fa640a2d84", "pool": ["162.242.168.41"]}, "queued_at": 1441841006.573646, "responses": [{"code": 302, "body": "Successfully queued take_screenshot"}], "result": "succeeded", "site_id": "2818deff-34e7-44dd-a871-14fa640a2d84", "started_at": 1441841006.73509, "trace_id": "c50d9920-5749-11e5-a139-c95d7f8f209a", "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "workflow_id": "c5114b38-5749-11e5-beec-bc764e117665", "id": "c513374a-5749-11e5-beec-bc764e117665", "key": "1441839600", "created_at": 1441841005.526817, "queued_time": 0.16144394874572754, "run_time": 4.0531158447265625e-06, "phase": "finished", "allow_concurrent": false, "total_time": 1.2082769870758057, "internal_reason": "", "build_url": "https://162.242.168.41:8090/jenkins/job/take_screenshot/334/", "messages": {"2015-09-09T23:23:27.020561": {"message": "Successfully queued take_screenshot", "level": "INFO"}}, "reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c50d9920-5749-11e5-a139-c95d7f8f209a&from_iso_date=2015-09-09T23:18:25.526817Z&to_iso_date=2015-09-09T23:28:26.735094Z", "type": "take_screenshot"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/2818deff-34e7-44dd-a871-14fa640a2d84/environments/dev/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept: null
+            User-Agent: 'Terminus/0.9.2 (php_version=5.6.14&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:c18ab5da-5749-11e5-a354-bc764e117665:Qf8DH30VlqgfqCYaQBcij; X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:c18ab5da-5749-11e5-a354-bc764e117665:Qf8DH30VlqgfqCYaQBcij'
+            Content-type: application/json
+        body: '"{\"type\":\"clear_cache\",\"params\":{}}"'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 05 Nov 2015 23:32:15 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 728b2750-8415-11e5-9b12-15e5db30055d
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
