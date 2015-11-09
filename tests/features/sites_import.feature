@@ -1,7 +1,10 @@
-Feature: Site import
+Feature: Create a site and import its content
+  In order to quickly move sites onto Pantheon
+  As a user
+  I need to be able to import content into a new site.
 
+  @vcr sites_import_new
   Scenario: Import files and database into a new site
-    @vcr sites_import_new
     Given I am authenticated
     And no site named "[[test_site_name]]"
     When I run "terminus sites import --site=[[test_site_name]] --label=[[test_site_name]] --url=https://s3.amazonaws.com/pantheon-infrastructure/testing/canary.tgz"
@@ -15,8 +18,8 @@ Feature: Site import
     Importing database/files to "dev"
     """
 
+  @vcr sites_import_duplicate
   Scenario: Failing to import files and database into an existing site
-    @vcr sites_import_duplicate
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus sites import --site=[[test_site_name]] --label=[[test_site_name]] --url=https://s3.amazonaws.com/pantheon-infrastructure/testing/canary.tgz --yes"

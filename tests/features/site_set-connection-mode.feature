@@ -1,7 +1,10 @@
-Feature: Site set connection mode
+Feature: Set a site's connection mode
+  In order to ensure the correct sort of connectivity for my site
+  As a user
+  I need to be able to change my site's connection mode.
 
+  @vcr site_set-connection-mode_git
   Scenario: Setting connection mode to git
-    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=git"
@@ -11,8 +14,8 @@ Feature: Site set connection mode
     Enable git push mode for "dev"
     """
 
+  @vcr site_set-connection-mode_sftp
   Scenario: Setting connection mode to sftp
-    @vcr site_set-connection-mode_sftp
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
@@ -22,8 +25,8 @@ Feature: Site set connection mode
     Enabling on-server development via SFTP for "dev"
     """
 
+  @vcr site_set-connection-mode_git
   Scenario: Failing to set connection mode to invalid mode
-    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=invalid"
@@ -33,8 +36,8 @@ Feature: Site set connection mode
     You must specify the mode as either sftp or git.
     """
 
+  @vcr site_set-connection-mode_git
   Scenario: Failing to set the connection mode to the current mode
-    @vcr site_set-connection-mode_git
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"

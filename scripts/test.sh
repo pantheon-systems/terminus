@@ -14,5 +14,11 @@ vendor/bin/phpunit --debug
 
 # Run the functional tests
 behat_cmd="vendor/bin/behat -c=tests/config/behat.yml"
-if [ ! -z $1 ]; then behat_cmd+=" -p=$1"; fi
-eval $behat_cmd
+behat_setup="./tests/config/behat_parameters.php"
+if [ ! -z $1 ]; then
+  behat_setup+=" $1"
+  behat_cmd+=" --suite=$1"
+fi
+params=$(eval $behat_setup)
+cmd="TEST_PARAMS='$params' $behat_cmd"
+eval $cmd

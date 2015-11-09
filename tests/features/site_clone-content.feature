@@ -1,7 +1,10 @@
-Feature: site
+Feature: Cloning site content
+  In order to duplicate a site
+  As a user
+  I need to be able to duplicate a site.
 
+  @vcr site-clone-content
   Scenario: Site Clone Environment
-    @vcr site-clone-content
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site clone-content --site=[[test_site_name]] --from-env=test --to-env=dev --yes"

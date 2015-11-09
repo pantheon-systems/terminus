@@ -1,7 +1,10 @@
-Feature: sites
+Feature: Listing sites
+  In order to administer my sites
+  As a user
+  I need to be able to list those sites.
 
+  @vcr sites-list-empty
   Scenario: JSON List Sites
-    @vcr sites-list-empty
     Given I am authenticated
     When I run "terminus sites list --format=json"
     Then I should get:
@@ -9,8 +12,8 @@ Feature: sites
     []
     """
 
+  @vcr sites-list-empty
   Scenario: List Sites
-    @vcr sites-list-empty
     Given I am authenticated
     When I run "terminus sites list"
     Then I should get:
@@ -18,8 +21,8 @@ Feature: sites
     You have no sites
     """
 
+  @vcr sites-list
   Scenario: List Sites
-    @vcr sites-list
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus sites list"
@@ -28,8 +31,8 @@ Feature: sites
     [[test_site_name]]
     """
 
+  @vcr sites-list
   Scenario: List Team Sites
-    @vcr sites-list
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus sites list --team"
@@ -38,8 +41,8 @@ Feature: sites
     enterprise-site-yo
     """
 
+  @vcr sites-list
   Scenario: List Organization Sites
-    @vcr sites-list
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus sites list --org=34b1ba6e-d59e-489b-9179-9121722a1bc1"

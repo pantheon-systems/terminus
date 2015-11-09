@@ -1,13 +1,12 @@
 <?php
 
-use Terminus\Session;
-use Behat\Behat\Context\BehatContext;
+use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 
 /**
  * Features context for Behat feature testing
  */
-class FeatureContext extends BehatContext {
+class FeatureContext implements Context {
   public $cliroot = '';
   private $_cache_file_name;
   private $_parameters;
@@ -17,10 +16,10 @@ class FeatureContext extends BehatContext {
   /**
   * Initializes context
   *
-  * @param [array] $parameters Context parameters, set through behat.yml
   * @return [void]
   */
-  public function __construct(array $parameters) {
+  public function __construct() {
+    $parameters = (array)json_decode(getenv('TEST_PARAMS'));
     date_default_timezone_set('UTC');
     $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
     $this->_parameters      = $parameters;

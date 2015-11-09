@@ -1,7 +1,10 @@
-Feature: Environment Initializiaton
+Feature: Initializing environments
+  In order to use Pantheon's default site environments
+  As a user
+  I need to be able to initialize those environments.
 
+  @vcr site-init-env
   Scenario: Initializing the test environment
-    @vcr site-init-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site init-env --site=[[test_site_name]] --env=test"
@@ -11,8 +14,8 @@ Feature: Environment Initializiaton
     Deploying code to "test", and cloning files from "dev", and cloning database from "dev"
     """
 
+  @vcr site-init-env-already-initialized
   Scenario: Should not allow re-initializing an environment
-    @vcr site-init-env-already-initialized
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site init-env --site=[[test_site_name]] --env=test"

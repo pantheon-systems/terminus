@@ -28,7 +28,7 @@
     "files": [ "php/Spyc.php" ]
   },
   "require-dev": {
-    "behat/behat": "2.5.*@stable",
+    "behat/behat": "3.0.*@stable",
     "phpunit/phpunit": "~4.6",
     "php-vcr/php-vcr": "~1.2",
     "php-vcr/phpunit-testlistener-vcr": "*",
