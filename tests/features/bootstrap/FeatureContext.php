@@ -572,7 +572,6 @@ class FeatureContext extends BehatContext {
     $command      = $this->_replacePlaceholders($command);
     $regex        = '/(?<!\.)terminus/';
     $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
-    $command = 'TERMINUS_PROTOCOL=http TERMINUS_PORT=4000 ' . $command;
     if($this->_cassette_name) {
       $command = 'VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
     }
@@ -585,11 +584,9 @@ class FeatureContext extends BehatContext {
         . ' ' . $command;
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
-    echo $command . PHP_EOL;
     ob_start();
     passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
-    echo $this->_output . PHP_EOL;
     return $this->_output;
   }
 
