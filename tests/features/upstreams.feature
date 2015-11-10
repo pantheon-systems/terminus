@@ -3,7 +3,7 @@ Feature: Listing upstreams
   As a user
   I need to be able to list available Pantheon upstreams.
 
-  @vcr upstreams-list
+  @vcr upstreams_list
   Scenario: List Upstreams
     When I run "terminus upstreams list"
     Then I should get:

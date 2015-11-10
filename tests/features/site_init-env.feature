@@ -3,7 +3,7 @@ Feature: Initializing environments
   As a user
   I need to be able to initialize those environments.
 
-  @vcr site-init-env
+  @vcr site_init-env
   Scenario: Initializing the test environment
     Given I am authenticated
     And a site named "[[test_site_name]]"
@@ -14,7 +14,7 @@ Feature: Initializing environments
     Deploying code to "test", and cloning files from "dev", and cloning database from "dev"
     """
 
-  @vcr site-init-env-already-initialized
+  @vcr site_init-env_already-initialized
   Scenario: Should not allow re-initializing an environment
     Given I am authenticated
     And a site named "[[test_site_name]]"

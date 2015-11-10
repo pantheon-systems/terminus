@@ -3,7 +3,7 @@ Feature: Site Deployment
   As a user
   I need to be able to deploy sites on Pantheon.
 
-  @vcr site-deploy
+  @vcr site_deploy
   Scenario: Deploy dev to test
     Given I am authenticated
     And a site named "[[test_site_name]]"

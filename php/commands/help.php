@@ -65,14 +65,15 @@ class Help_Command extends TerminusCommand {
       }
     }
 
-    // section headers
-    $out = preg_replace('/^## ([A-Z]+)/m', Terminus::colorize('%9\1%n'), $out);
+    if (is_string($out)) {
+      // section headers
+      $out = preg_replace('/^## ([A-Z]+)/m', Terminus::colorize('%9\1%n'), $out);
 
-    // definition lists
-    $out = preg_replace_callback('/([^\n]+)\n: (.+?)(\n\n|$)/s', array(__CLASS__, 'rewrap_param_desc'), $out);
+      // definition lists
+      $out = preg_replace_callback('/([^\n]+)\n: (.+?)(\n\n|$)/s', array(__CLASS__, 'rewrap_param_desc'), $out);
 
-    $out = str_replace("\t", '  ', $out);
-
+      $out = str_replace("\t", '  ', $out);
+    }
     $this->pass_through_pager($out);
   }
 

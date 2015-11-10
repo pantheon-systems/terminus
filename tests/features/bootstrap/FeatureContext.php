@@ -18,8 +18,7 @@ class FeatureContext implements Context {
   *
   * @return [void]
   */
-  public function __construct() {
-    $parameters = (array)json_decode(getenv('TEST_PARAMS'));
+  public function __construct($parameters) {
     date_default_timezone_set('UTC');
     $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
     $this->_parameters      = $parameters;

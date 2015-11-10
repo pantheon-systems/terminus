@@ -3,10 +3,54 @@ default:
   suites:
     default:
       paths: [ %paths.base%/../features ]
+      contexts:
+        - FeatureContext:
+            parameters:
+              username:                'devuser@pantheon.io'
+              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
+              password:                'password1'
+              host:                    'onebox'
+              vcr_mode:                'new_episodes'
+              test_site_name:          'behat-tests'
+              other_user:              'sara@getpantheon.com'
+              php_site_domain:         'onebox.pantheon.io'
+              payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
+              enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
+              enterprise_org_name:     'EnterpriseOrg'
     ci:
       paths: [ %paths.base%/../features ]
+      contexts:
+        - FeatureContext:
+            parameters:
+              username:                'devuser@pantheon.io'
+              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
+              password:                'password1'
+              host:                    'onebox'
+              vcr_mode:                'once'
+              test_site_name:          'behat-tests'
+              other_user:              'sara@getpantheon.com'
+              php_site_domain:         'onebox.pantheon.io'
+              payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
+              enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
+              enterprise_org_name:     'EnterpriseOrg'
+    ci:
     qa:
       paths: [ %paths.base%/../qa_features ]
+      contexts:
+        - FeatureContext:
+            parameters:
+              username:                'devuser@pantheon.io'
+              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
+              password:                'password1'
+              host:                    'onebox'
+              vcr_mode:                null
+              test_site_name:          'saras-qa-test'
+              other_user:              'sara@getpantheon.com'
+              php_site_domain:         'onebox.pantheon.io'
+              payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
+              enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
+              enterprise_org_name:     'EnterpriseOrg'
+    ci:
       formatter:
-        name: [ Behat\Behat\Formatter\TerminusHtmlFormatter ]
+        name: HtmlFormatter
         output_path: /tmp/terminus_qa_report.html

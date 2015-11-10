@@ -13,7 +13,7 @@ Feature: CLI Commands
     #testfile
     #"""
 
-  @vcr cli-cmd-dump
+  @vcr cli_cmd-dump
   Scenario: Dumping Commands
     When I run "terminus cli cmd-dump"
     Then I should get:
@@ -21,7 +21,7 @@ Feature: CLI Commands
     Dump the list of installed commands, as JSON.
     """
 
-  @vcr cli-info
+  @vcr cli_info
   Scenario: CLI Information
     When I run "terminus cli info"
     Then I should get:
@@ -29,7 +29,7 @@ Feature: CLI Commands
     Terminus version
     """
 
-  @vcr cli-param-dump
+  @vcr cli_param-dump
   Scenario: Dumping Parameters
     When I run "terminus cli param-dump"
     Then I should get:
@@ -37,7 +37,7 @@ Feature: CLI Commands
     Answer yes to all prompts
     """
 
-  @vcr cli-session-clear
+  @vcr cli_session-clear
   Scenario: Clearing Session
     When I run "touch ~/.terminus/cache/session"
     And I run "terminus cli session-clear"
@@ -47,7 +47,7 @@ Feature: CLI Commands
     session
     """
 
-  @vcr cli-session-dump-empty
+  @vcr cli_session-dump_empty
   Scenario: Dumping Empty Session
     When I run "terminus auth logout"
     And I run "terminus cli session-dump --format=json"
@@ -56,7 +56,7 @@ Feature: CLI Commands
     false
     """
 
-  @vcr cli-session-dump
+  @vcr cli_session-dump
   Scenario: Dumping Session
     When I run "terminus auth login [[username]] --password=[[password]]"
     And I run "terminus cli session-dump"
@@ -65,7 +65,7 @@ Feature: CLI Commands
     [user_uuid] => [[user_uuid]]
     """
 
-  @vcr cli-version
+  @vcr cli_version
   Scenario: Print Version
     When I run "terminus cli version"
     Then I should get:

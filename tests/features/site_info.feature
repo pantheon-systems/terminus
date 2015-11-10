@@ -1,9 +1,9 @@
-Feature: Site Commands
+Feature: View site information
   In order to view site information
   As a user
   I need to be able to list data related to it.
 
-  @vcr site-info
+  @vcr site_info
   Scenario: Site Info
     Given I am authenticated
     And a site named "[[test_site_name]]"
@@ -11,14 +11,4 @@ Feature: Site Commands
     Then I should get:
     """
     Service Level
-    """
-
-  @vcr site-workflows
-  Scenario: Site Workflows
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I run "terminus site workflows --site=[[test_site_name]]"
-    Then I should get:
-    """
-    Converge "dev"
     """

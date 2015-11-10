@@ -3,7 +3,7 @@ Feature: Authorization command
   As a user
   I need to be able to log in to the system.
 
-  @vcr auth-login-bad
+  @vcr auth_login_bad
   Scenario: Not Authorizing
     When I run "terminus auth login fake@email.com --password=BAD_PASSWORD"
     Then I should not get:
@@ -11,7 +11,7 @@ Feature: Authorization command
     Saving session data
     """
 
-  @vcr auth-login
+  @vcr auth_login
   Scenario: Login
     When I run "terminus auth login [[username]] --password=[[password]]"
     Then I should get:
@@ -19,7 +19,7 @@ Feature: Authorization command
     Logged in as [[user_uuid]]
     """
 
-  @vcr auth-whoami
+  @vcr auth_whoami
   Scenario: Check Which User I Am
     Given I am authenticated
     When I run "terminus auth whoami"
@@ -28,7 +28,7 @@ Feature: Authorization command
     You are authenticated as: [[user_uuid]]
     """
 
-  @vcr auth-logout
+  @vcr auth_logout
   Scenario: Logout
     Given I am authenticated
     When I run "terminus auth logout"
@@ -37,7 +37,7 @@ Feature: Authorization command
     Logging out of Pantheon
     """
 
-  @vcr auth-whoami-logged-out
+  @vcr auth_whoami_logged-out
   Scenario: Checking My User When Logged Out
     When I run "terminus auth logout"
     And I run "terminus auth whoami"

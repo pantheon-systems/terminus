@@ -3,7 +3,7 @@ Feature: Update sites with all their upstream's updates
   As a user
   I need to be able to update all my sites to reflect the current upstream.
 
-  @vcr sites-mass-update
+  @vcr sites_mass-update
   Scenario: Mass-Update Sites
     Given I am authenticated
     When I run "terminus sites mass-update --yes"

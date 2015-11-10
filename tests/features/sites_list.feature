@@ -3,7 +3,7 @@ Feature: Listing sites
   As a user
   I need to be able to list those sites.
 
-  @vcr sites-list-empty
+  @vcr sites_list_empty
   Scenario: JSON List Sites
     Given I am authenticated
     When I run "terminus sites list --format=json"
@@ -12,7 +12,7 @@ Feature: Listing sites
     []
     """
 
-  @vcr sites-list-empty
+  @vcr sites_list_empty
   Scenario: List Sites
     Given I am authenticated
     When I run "terminus sites list"
@@ -21,7 +21,7 @@ Feature: Listing sites
     You have no sites
     """
 
-  @vcr sites-list
+  @vcr sites_list
   Scenario: List Sites
     Given I am authenticated
     And a site named "[[test_site_name]]"
@@ -31,7 +31,7 @@ Feature: Listing sites
     [[test_site_name]]
     """
 
-  @vcr sites-list
+  @vcr sites_list
   Scenario: List Team Sites
     Given I am authenticated
     And a site named "[[test_site_name]]"
@@ -41,7 +41,7 @@ Feature: Listing sites
     enterprise-site-yo
     """
 
-  @vcr sites-list
+  @vcr sites_list
   Scenario: List Organization Sites
     Given I am authenticated
     And a site named "[[test_site_name]]"

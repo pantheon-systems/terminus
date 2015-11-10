@@ -3,7 +3,7 @@ Feature: Managing a site's team
   As a user
   I need to be able to alter a site's team membership.
 
-  @vcr site-team-add-member
+  @vcr site_team_add-member
   Scenario: Adding a team member
     Given I am authenticated
     And a site named "[[test_site_name]]"
@@ -14,14 +14,14 @@ Feature: Managing a site's team
     [[other_user]]
     """
 
-  @vcr site-team-change-role
+  @vcr site_team_change-role
   Scenario: Changing a team member's role
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site team change-role --site=[[test_site_name]] --member=[[other_user]] --role=admin"
     Then I should get one of the following: "This site does not have the authority to conduct this operation, Changed a user role"
 
-  @vcr site-team-remove-member
+  @vcr site_team_remove-member
   Scenario: Removing a team member
     Given I am authenticated
     And a site named "[[test_site_name]]"

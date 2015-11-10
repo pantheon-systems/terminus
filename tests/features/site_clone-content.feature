@@ -3,7 +3,7 @@ Feature: Cloning site content
   As a user
   I need to be able to duplicate a site.
 
-  @vcr site-clone-content
+  @vcr site_clone-content
   Scenario: Site Clone Environment
     Given I am authenticated
     And a site named "[[test_site_name]]"

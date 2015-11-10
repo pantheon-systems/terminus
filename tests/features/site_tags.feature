@@ -3,7 +3,7 @@ Feature: Tagging organizational sites
   As a user
   I need to be able to apply tags to those sites.
 
-  @vcr site-tags-add
+  @vcr site_tags_add
   Scenario: Adding a tag
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_uuid]]"
@@ -13,7 +13,7 @@ Feature: Tagging organizational sites
     Tag "testtag" has been added to [[test_site_name]]
     """
 
-  @vcr site-tags-remove
+  @vcr site_tags_remove
   Scenario: Removing a tag
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_uuid]]"

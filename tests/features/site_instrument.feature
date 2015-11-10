@@ -7,7 +7,6 @@ Feature: Set payment instruments
   Scenario: Adding instruments
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    And a payment instrument with uuid "[[payment_instrument_uuid]]"
     When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=[[payment_instrument_uuid]]"
     Then I should get:
     """
@@ -18,7 +17,6 @@ Feature: Set payment instruments
   Scenario: Removing instruments
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    And a payment instrument with uuid "[[payment_instrument_uuid]]"
     When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=none"
     Then I should not get:
     """

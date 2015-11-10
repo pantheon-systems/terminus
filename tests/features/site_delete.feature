@@ -3,7 +3,7 @@ Feature: Deleting a site
   As a user
   I need to be able to delete sites.
 
-  @vcr site-delete
+  @vcr site_delete
   Scenario: Delete Site
     Given I am authenticated
     And a site named "[[test_site_name]]"
