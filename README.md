@@ -21,10 +21,16 @@ Installation
 Once you have at least the requirements installed, you can install Terminus via Composer, cURL, or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
 **Optional but recommended:**
-- [Drush](http://docs.drush.org/en/master/install/) (Required for all `drush` commands)
-- [WP-CLI](http://wp-cli.org/) (Required for all `wp` commands)
+- [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
+- [WP-CLI](http://wp-cli.org/) (Useful to run incompatible-with-Terminus WP-CLI commands)
 - [Composer](https://getcomposer.org/doc/00-intro.md)
 - [Git](https://help.github.com/articles/set-up-git/)
+
+####Installing with Composer
+
+The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminus client:
+```composer require pantheon-systems/cli
+```
 
 ####Installing with cURL
 
