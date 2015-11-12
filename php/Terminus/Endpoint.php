@@ -8,11 +8,11 @@ namespace Terminus;
  **/
 class Endpoint {
   public $patterns = array(
-    'deprecated'   => '%s://%s:%s/terminus.php?%s=%s',
-    'private'      => '%s://%s:%s/api/%s/%s',
-    'public'       => '%s://%s:%s/api/%s',
-    'login'        => '%s://%s:%s/api/authorize',
-    'auth/refresh' => '%s://%s:%s/auth/refresh',
+    'deprecated'   => '/terminus.php?%s=%s',
+    'private'      => '/api/%s/%s',
+    'public'       => '/api/%s',
+    'login'        => '/api/authorize',
+    'auth/refresh' => '/auth/refresh',
   );
 
   private $public_realms = array(
@@ -67,20 +67,8 @@ class Endpoint {
       $this->target = 'auth/refresh';
     }
 
-    if (!isset($args['protocol']) || ($args['protocol'] == '')) {
-      $args['protocol'] = TERMINUS_PROTOCOL;
-    }
-
-    if (!isset($args['host']) || ($args['host'] == '')) {
-      $args['host'] = TERMINUS_HOST;
-    }
-
-    if (!isset($args['port']) || ($args['port'] == '')) {
-      $args['port'] = TERMINUS_PORT;
-    }
-
     //A substiution array to pass to the vsprintf
-    $substitutions = array($args['protocol'], $args['host'], $args['port'], $args['realm']);
+    $substitutions = array($args['realm']);
     if (isset($args['uuid']) && $args['uuid'] != 'public') {
       array_push($substitutions, $args['uuid']);
     }

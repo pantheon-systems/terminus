@@ -64,7 +64,7 @@ class Auth {
   public function logInViaMachineToken($token) {
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
-      'body'    => array(
+      'form_params'    => array(
         'refresh_token' => $token,
       ),
     );
@@ -73,8 +73,8 @@ class Auth {
     $response = TerminusCommand::request('auth/refresh', '', '', 'POST', $options);
 
     if (!$response
-      || !isset($response['info']['http_code'])
-      || $response['info']['http_code'] != '200'
+      || !isset($response['status_code'])
+      || ($response['status_code'] != '200')
     ) {
       throw new TerminusException(
         'The provided machine token is not valid.',
@@ -110,7 +110,7 @@ class Auth {
 
     $logger_context = array('email' => $email);
     $options        = array(
-      'body' => array(
+      'form_params' => array(
         'email' => $email,
         'password' => $password,
       ),

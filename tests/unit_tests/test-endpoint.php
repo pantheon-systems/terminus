@@ -7,15 +7,12 @@ use \Terminus\Endpoint;
  class EndpointTest extends PHPUnit_Framework_TestCase {
 
    function testEndpoints() {
-      $host = getenv("TERMINUS_HOST") ?: 'dashboard.pantheon.io';
-      $protocol = getenv("TERMINUS_PROTOCOL") ?: 'https';
-      $port = getenv("TERMINUS_PORT") ?: '443';
       // expected => test
       $tests = array(
-        "$protocol://$host:$port/api/users/UUID/sites" => array(
+        '/api/users/UUID/sites' => array(
                 'realm'=>'users','path' => 'sites', 'uuid'=> 'UUID'
         ),
-        "$protocol://$host:$port/api/products" => array(
+        '/api/products' => array(
                 'realm'=>'products','path' => false, 'uuid'=> 'public'
         ),
       );

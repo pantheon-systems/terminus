@@ -114,29 +114,13 @@ abstract class TerminusCommand {
   public static function request(
     $realm,
     $uuid,
-    $path = false,
-    $method = 'GET',
+    $path    = false,
+    $method  = 'GET',
     $options = array()
   ) {
     $logger = Terminus::getLogger();
 
     try {
-      if (!in_array($realm, array('auth/refresh', 'login', 'user'))) {
-        if (!isset($options['headers'])) {
-          $options['headers'] = array();
-        }
-        $options['headers']['Cookie'] = array(
-          'X-Pantheon-Session' => Session::getValue('id_token')
-        );
-      }
-
-      if (!in_array($realm, array('login', 'user'))) {
-        $options['cookies'] = array(
-          'X-Pantheon-Session' => Session::getValue('session')
-        );
-        $options['verify']  = false;
-      }
-
       $url = Endpoint::get(
         array(
           'realm' => $realm,
@@ -145,16 +129,12 @@ abstract class TerminusCommand {
         )
       );
       $logger->debug('Request URL: ' . $url);
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $resp = Request::send($url, $method, $options);
-      $json = $resp->getBody(true);
+      $response = Request::send($url, $method, $options);
 
       $data = array(
-        'info' => $resp->getInfo(),
-        'headers' => $resp->getRawHeaders(),
-        'json' => $json,
-        'data' => json_decode($json),
-        'status_code' => $resp->getStatusCode()
+        'data'        => json_decode($response->getBody()->getContents()),
+        'headers'     => $response->getHeaders(),
+        'status_code' => $response->getStatusCode(),
       );
       return $data;
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
@@ -212,7 +192,7 @@ abstract class TerminusCommand {
 
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $resp = Request::send($url, $method, $options);
+      $response = Request::send($url, $method, $options);
     } catch (Guzzle\Http\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
@@ -220,13 +200,10 @@ abstract class TerminusCommand {
       );
     }
 
-    $json = $resp->getBody(true);
     $data = array(
-      'info'        => $resp->getInfo(),
-      'headers'     => $resp->getRawHeaders(),
-      'json'        => $json,
-      'data'        => json_decode($json),
-      'status_code' => $resp->getStatusCode()
+      'data'        => json_decode($response->getBody()->getContents()),
+      'headers'     => $response->getHeaders(),
+      'status_code' => $response->getStatusCode(),
     );
     return $data;
   }

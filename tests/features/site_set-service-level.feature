@@ -27,5 +27,5 @@ Feature: Service level
     When I run "terminus site set-service-level --site=[[test_site_name]] --level=professional"
     Then I should get:
     """
-    Service level invalid
+    Service level "professional" is invalid.
     """

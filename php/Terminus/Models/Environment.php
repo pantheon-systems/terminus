@@ -293,9 +293,7 @@ class Environment extends TerminusModel {
    */
   public function create($env_name) {
     $path     = sprintf('environments/%s', $env_name);
-    $params   = array(
-      'headers' => array('Content-type' => 'application/json')
-    );
+    $params   = array();
     $response = \TerminusCommand::request(
       'sites',
       $site_id,
@@ -522,14 +520,13 @@ class Environment extends TerminusModel {
       $bucket,
       $element
     );
-    $body     = array('method' => 'GET');
-    $options  = compact('body');
-    $response = \TerminusCommand::request(
+    $form_params = array('method' => 'GET');
+    $response    = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),
       $path,
       'POST',
-      $options
+      compact('form_params')
     );
     return $response['data'];
   }
@@ -855,18 +852,17 @@ class Environment extends TerminusModel {
    * @return [array] $response['data']
    */
   public function workflow($workflow) {
-    $path     = sprintf("environments/%s/workflows", $this->get('id'));
-    $body     = array(
+    $path        = sprintf("environments/%s/workflows", $this->get('id'));
+    $form_params = array(
       'type'        => $workflow,
       'environment' => $this->get('id'),
     );
-    $options  = compact('body');
-    $response = \TerminusCommand::request(
+    $response    = \TerminusCommand::request(
       'sites',
       $this->site->get('id'),
       $path,
       'POST',
-      $options
+      compact('form_params')
     );
 
     return $response['data'];
