@@ -225,7 +225,7 @@ public function dashboard($args, $assoc_args) {
   $env  = Input::optional('env', $assoc_args);
   if (isset($env) && ($env != null)) {
     $env = '#' . $env;
-  } 
+  }
   $url = sprintf(
     'https://dashboard.pantheon.io/sites/%s%s',
     $site->get('id'),
@@ -517,19 +517,19 @@ public function backups($args, $assoc_args) {
       $this->output()->outputValue($url->url, 'Backup URL');
       return $url->url;
       break;
-  case 'load':
-    $assoc_args['to'] = '/tmp';
-    $assoc_args['element'] = 'database';
-    if (isset($assoc_args['database'])) {
-      $database = $assoc_args['database'];
-    } else {
-      $database = escapeshellarg(Terminus::prompt('Name of database to import to'));
-    }
-    if (isset($assoc_args['username'])) {
-      $username = $assoc_args['username'];
-    } else {
-      $username = escapeshellarg(Terminus::prompt('Username'));
-    }
+    case 'load':
+      $assoc_args['to'] = '/tmp';
+      $assoc_args['element'] = 'database';
+      if (isset($assoc_args['database'])) {
+        $database = $assoc_args['database'];
+      } else {
+        $database = escapeshellarg(Terminus::prompt('Name of database to import to'));
+      }
+      if (isset($assoc_args['username'])) {
+        $username = $assoc_args['username'];
+      } else {
+        $username = escapeshellarg(Terminus::prompt('Username'));
+      }
       if (isset($assoc_args['password'])) {
         $password = $assoc_args['password'];
       } else {
@@ -588,7 +588,7 @@ public function backups($args, $assoc_args) {
         if (
           !isset($backup->filename)
           || (
-            $element_name 
+            $element_name
             && !preg_match(sprintf('/_%s/', $element_name), $id)
           )
         ) {
@@ -1068,18 +1068,18 @@ public function environments($args, $assoc_args) {
     $env    = $site->environments->get(Input::env($assoc_args, 'env'));
     switch ($action) {
       case 'list':
-      $hostnames = $env->getHostnames();
-      $data      = $hostnames;
-      if (Terminus::getConfig('format') != 'json') {
-        //If were not just dumping the JSON, then we should reformat the data.
-        $data = array();
-        foreach ($hostnames as $hostname => $details) {
-          $data[] = array_merge(
-            array('domain' => $hostname),
-            (array)$details
-          );
+        $hostnames = $env->getHostnames();
+        $data      = $hostnames;
+        if (Terminus::getConfig('format') != 'json') {
+          //If were not just dumping the JSON, then we should reformat the data.
+          $data = array();
+          foreach ($hostnames as $hostname => $details) {
+            $data[] = array_merge(
+              array('domain' => $hostname),
+              (array)$details
+            );
+          }
         }
-      }
         $this->output()->outputRecordList($data);
       break;
       case 'add':
@@ -1684,64 +1684,63 @@ public function upstream_updates($args, $assoc_args) {
     case 'list':
       $data = array();
       if(isset($upstream->remote_url) && isset($upstream->behind)) {
-          $update_log = (array)$upstream->update_log;
-          if (!isset($upstream) || empty($update_log)) {
-            $this->log()->info('No updates to show');
-            exit(0);
-          }
-          $upstreams = (array)$upstream->update_log;
-          if (!empty($upstreams)) {
-            $data = array();
-            foreach ($upstreams as $commit) {
-              $data[] = array(
-                'hash'     => $commit->hash,
-                'datetime' => $commit->datetime,
-                'message'  => $commit->message,
-                'author'   => $commit->author,
-              );
-            }
-          }
-          $this->output()->outputRecordList($data);
-        } else {
-          $this->log()->warning(
-            'There was a problem checking your upstream status. Please try again.'
-          );
+        $update_log = (array)$upstream->update_log;
+        if (!isset($upstream) || empty($update_log)) {
+          $this->log()->info('No updates to show');
+          exit(0);
         }
-        break;
-      case 'apply':
-        if (!empty($upstream->update_log)) {
-          $env = 'dev';
-          if (isset($assoc_args['env'])) {
-            $env = $assoc_args['env'];
-          }
-          if (in_array($env, array('test', 'live'))) {
-            $this->failure(
-              'Upstream updates cannot be applied to the {env} environment',
-              array('env' => $env)
+        $upstreams = (array)$upstream->update_log;
+        if (!empty($upstreams)) {
+          $data = array();
+          foreach ($upstreams as $commit) {
+            $data[] = array(
+              'hash'     => $commit->hash,
+              'datetime' => $commit->datetime,
+              'message'  => $commit->message,
+              'author'   => $commit->author,
             );
           }
+        }
+        $this->output()->outputRecordList($data);
+      } else {
+        $this->log()->warning(
+          'There was a problem checking your upstream status. Please try again.'
+        );
+      }
+      break;
+    case 'apply':
+      if (!empty($upstream->update_log)) {
+        $env = 'dev';
+        if (isset($assoc_args['env'])) {
+          $env = $assoc_args['env'];
+        }
+        if (in_array($env, array('test', 'live'))) {
+          $this->failure(
+            'Upstream updates cannot be applied to the {env} environment',
+            array('env' => $env)
+          );
+        }
 
-          $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
-          $acceptupstream = (isset($assoc_args['accept-upstream']) && $assoc_args['accept-upstream']);
-          Terminus::confirm(
-            sprintf(
-              'Are you sure you want to apply the upstream updates to %s-dev',
-              $site->get('name'),
-              $env
-            )
-          );
-          $workflow = $site->applyUpstreamUpdates($env, $updatedb, $acceptupstream);
-          $workflow->wait();
-          $this->workflowOutput($workflow);
-        }
-        else {
-          $this->log()->warning(
-            'There are no upstream updates to apply.'
-          );
-        }
-        break;
+        $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
+        $acceptupstream = (isset($assoc_args['accept-upstream']) && $assoc_args['accept-upstream']);
+        Terminus::confirm(
+          sprintf(
+            'Are you sure you want to apply the upstream updates to %s-dev',
+            $site->get('name'),
+            $env
+          )
+        );
+        $workflow = $site->applyUpstreamUpdates($env, $updatedb, $acceptupstream);
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+      }
+      else {
+        $this->log()->warning(
+          'There are no upstream updates to apply.'
+        );
+      }
+      break;
     }
-
   }
 
   /**
