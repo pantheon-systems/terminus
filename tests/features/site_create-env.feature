@@ -1,7 +1,10 @@
-Feature: Multidev environments
+Feature: Working with multidev environments
+  In order to work collaboratively on Pantheon
+  As a user
+  I need to be able to create, remove, and alter multidev environments.
 
+  @vcr site_create-env
   Scenario: Create a multidev environment
-    @vcr site_create-env
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the service level of "[[test_site_name]]" is "business"
@@ -12,8 +15,8 @@ Feature: Multidev environments
     Creating Multidev environment "multidev"
     """
 
+  @vcr site_create-env_bad_name
   Scenario: Fail to create necessary environment
-    @vcr site_create-env_bad_name
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the service level of "[[test_site_name]]" is "business"
@@ -23,8 +26,8 @@ Feature: Multidev environments
     Environment name "dev" is reserved by Pantheon and cannot becreated into a Multidev environment.
     """
 
+  @vcr site_create-env_duplicate
   Scenario: Fail to create extant environment
-    @vcr site_create-env_duplicate
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the service level of "[[test_site_name]]" is "business"
@@ -34,8 +37,8 @@ Feature: Multidev environments
     The environment "multidev" already exists.
     """
 
+  @vcr site_create-env_unauthorized
   Scenario: Fail to create environment due to service level
-    @vcr site_create-env_unauthorized
     Given I am authenticated
     And a site named "[[test_site_name]]"
     And the service level of "[[test_site_name]]" is "basic"
@@ -45,8 +48,8 @@ Feature: Multidev environments
     This site does not have the authority to conduct this operation.
     """
 
+  #@vcr site_delete-env
   #Scenario: Delete a multidev environment
-    #@vcr site_delete-env
     #Given I am authenticated
     #And a site named "[[test_site_name]]"
     #And the service level of "[[test_site_name]]" is "business"
@@ -55,8 +58,8 @@ Feature: Multidev environments
       #"""
       #"""
     
+  #@vcr site_delete-env_bad_name
   #Scenario: Fail to delete a required environment
-    #@vcr site_delete-env_bad_name
     #Given I am authenticated
     #And a site named "[[test_site_name]]"
     #And the service level of "[[test_site_name]]" is "business"
@@ -65,8 +68,8 @@ Feature: Multidev environments
       #"""
       #"""
     
+  #@vcr site_delete-env_unauthorized
   #Scenario: Fail to delete an environment due to service level
-    #@vcr site_delete-env_unauthorized
     #Given I am authenticated
     #And a site named "[[test_site_name]]"
     #And the service level of "[[test_site_name]]" is "basic"

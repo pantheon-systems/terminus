@@ -1,23 +1,26 @@
-Feature: auth
+Feature: Authorization command
+  In order to use Terminus
+  As a user
+  I need to be able to log in to the system.
 
+  @vcr auth_login_bad
   Scenario: Not Authorizing
-    @vcr auth-login-bad
     When I run "terminus auth login fake@email.com --password=BAD_PASSWORD"
     Then I should not get:
     """
     Saving session data
     """
 
+  @vcr auth_login
   Scenario: Login
-    @vcr auth-login
     When I run "terminus auth login [[username]] --password=[[password]]"
     Then I should get:
     """
     Logged in as [[user_uuid]]
     """
 
+  @vcr auth_whoami
   Scenario: Check Which User I Am
-    @vcr auth-whoami
     Given I am authenticated
     When I run "terminus auth whoami"
     Then I should get:
@@ -25,8 +28,8 @@ Feature: auth
     You are authenticated as: [[user_uuid]]
     """
 
+  @vcr auth_logout
   Scenario: Logout
-    @vcr auth-logout
     Given I am authenticated
     When I run "terminus auth logout"
     Then I should get:
@@ -34,8 +37,8 @@ Feature: auth
     Logging out of Pantheon
     """
 
+  @vcr auth_whoami_logged-out
   Scenario: Checking My User When Logged Out
-    @vcr auth-whoami-logged-out
     When I run "terminus auth logout"
     And I run "terminus auth whoami"
     Then I should not get:

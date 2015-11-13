@@ -1,7 +1,10 @@
-Feature: Site Organization Tags
+Feature: Tagging organizational sites
+  In order to organize and categorize sites
+  As a user
+  I need to be able to apply tags to those sites.
 
+  @vcr site_tags_add
   Scenario: Adding a tag
-    @vcr site-tags-add
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_uuid]]"
     When I run "terminus site tags add --site=[[test_site_name]] --org=[[enterprise_org_uuid]] --tag=testtag"
@@ -10,8 +13,8 @@ Feature: Site Organization Tags
     Tag "testtag" has been added to [[test_site_name]]
     """
 
+  @vcr site_tags_remove
   Scenario: Removing a tag
-    @vcr site-tags-remove
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_uuid]]"
     When I run "terminus site tags remove --site=[[test_site_name]] --org=[[enterprise_org_uuid]] --tag=testtag"

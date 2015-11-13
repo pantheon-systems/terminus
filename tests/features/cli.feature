@@ -1,7 +1,10 @@
-Feature: cli
+Feature: CLI Commands
+  In order to control Terminus
+  As a user
+  I need to be able to check and clear system files.
 
+  #@vcr cli-clear-cache
   #Scenario: Clearing Cache
-    #@vcr cli-clear-cache
     #When I run "touch ~/.terminus/cache/testfile"
     #And I run "terminus cli clear-cache"
     #And I run "ls ~/.terminus/cache"
@@ -10,35 +13,32 @@ Feature: cli
     #testfile
     #"""
 
+  @vcr cli_cmd-dump
   Scenario: Dumping Commands
-    @vcr cli-cmd-dump
     When I run "terminus cli cmd-dump"
     Then I should get:
     """
     Dump the list of installed commands, as JSON.
     """
 
-  Scenario: Generate Tab Completions
-    @vcr cli-completions
-
+  @vcr cli_info
   Scenario: CLI Information
-    @vcr cli-info
     When I run "terminus cli info"
     Then I should get:
     """
     Terminus version
     """
 
+  @vcr cli_param-dump
   Scenario: Dumping Parameters
-    @vcr cli-param-dump
     When I run "terminus cli param-dump"
     Then I should get:
     """
     Answer yes to all prompts
     """
 
+  @vcr cli_session-clear
   Scenario: Clearing Session
-    @vcr cli-session-clear
     When I run "touch ~/.terminus/cache/session"
     And I run "terminus cli session-clear"
     And I run "ls ~/.terminus/cache"
@@ -47,8 +47,8 @@ Feature: cli
     session
     """
 
+  @vcr cli_session-dump_empty
   Scenario: Dumping Empty Session
-    @vcr cli-session-dump-empty
     When I run "terminus auth logout"
     And I run "terminus cli session-dump --format=json"
     Then I should get:
@@ -56,8 +56,8 @@ Feature: cli
     false
     """
 
+  @vcr cli_session-dump
   Scenario: Dumping Session
-    @vcr cli-session-dump
     When I run "terminus auth login [[username]] --password=[[password]]"
     And I run "terminus cli session-dump"
     Then I should get:
@@ -65,8 +65,8 @@ Feature: cli
     [user_uuid] => [[user_uuid]]
     """
 
+  @vcr cli_version
   Scenario: Print Version
-    @vcr cli-version
     When I run "terminus cli version"
     Then I should get:
     """
