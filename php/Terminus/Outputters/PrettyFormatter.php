@@ -107,7 +107,7 @@ class PrettyFormatter implements OutputFormatterInterface {
    *
    * @param [mixed]  $value       A scalar value to format
    * @param [string] $human_label A human readable label for that value
-   * @return [string] $formatted_value;
+   * @return [string] $formatted_value
    */
   public function formatValue($value, $human_label = '') {
     $formatted_value = PrettyFormatter::flattenValue($value);
