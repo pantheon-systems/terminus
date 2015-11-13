@@ -47,7 +47,7 @@ class Auth {
    * @return [boolean] $is_logged_in True if the user is logged in
    */
   public function loggedIn() {
-    $session = Session::instance()->getData();
+    $session      = Session::instance()->getData();
     $is_logged_in = (
       isset($session->session)
       && (Terminus::isTest() || ($session->session_expire_time >= time()))
@@ -70,7 +70,13 @@ class Auth {
     );
 
     $this->logger->info('Logging in via machine token');
-    $response = TerminusCommand::request('auth/refresh', '', '', 'POST', $options);
+    $response = TerminusCommand::request(
+      'auth/refresh',
+      '',
+      '',
+      'POST',
+      $options
+    );
 
     if (!$response
       || !isset($response['status_code'])
@@ -86,7 +92,7 @@ class Auth {
       'Logged in as {uuid}.',
       array('uuid' => $response['data']->user_id)
     );
-    $data = $response['data'];
+    $data          = $response['data'];
     $data->refresh = $token;
     $this->setInstanceData($response['data']);
     return true;

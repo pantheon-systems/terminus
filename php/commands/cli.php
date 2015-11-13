@@ -121,7 +121,7 @@ class CLI_Command extends TerminusCommand {
   * @subcommand session-dump
   */
   public function session_dump() {
-    $session = $this->cache->get_data("session");
+    $session = $this->cache->getData("session");
     $this->output()->outputDump($session);
   }
 

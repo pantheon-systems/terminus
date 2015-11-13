@@ -252,8 +252,9 @@ abstract class TerminusCommand {
   /**
    * Sends the given message to logger as an error and exits with -1
    *
-   * @param [string] $message Message to log as error before exit
-   * @param [array]  $context Vars to interpolate in message
+   * @param [string]  $message   Message to log as error before exit
+   * @param [array]   $context   Vars to interpolate in message
+   * @param [integer] $exit_code Code to exit with
    * @return [void]
    */
   protected function failure(
@@ -323,12 +324,16 @@ abstract class TerminusCommand {
    * @return [string] $response->name The version number
    */
   protected function checkCurrentVersion() {
-    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases?per_page=1';
+    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
+    $url     .= '?per_page=1';
     $response = Request::send($url, 'GET');
     $json     = $response->getBody(true);
     $data     = json_decode($json);
     $release  = array_shift($data);
-    $this->cache->put_data('latest_release', array('version' => $release->name, 'check_date' => time()));
+    $this->cache->putData(
+      'latest_release',
+      array('version' => $release->name, 'check_date' => time())
+    );
     return $release->name;
   }
 
@@ -338,7 +343,7 @@ abstract class TerminusCommand {
    * @return [void]
    */
   private function checkForUpdate() {
-    $cache_data = $this->cache->get_data(
+    $cache_data = $this->cache->getData(
       'latest_release',
       array('decode_array' => true)
     );
