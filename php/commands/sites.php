@@ -275,7 +275,7 @@ class Sites_Command extends TerminusCommand {
 
 
 /**
- * Update alls dev sites with an available upstream update.
+ * Update all dev sites with an available upstream update.
  *
  * ## OPTIONS
  *
