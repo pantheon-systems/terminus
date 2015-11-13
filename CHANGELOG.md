@@ -4,13 +4,14 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##Master
 ### Added
 - `site environments` now includes data on whether environment is initialized yet. (#654)
-- Login with Auth0 via `auth login --machine-token=<Auth0 token>` is now available. (#665) 
+- Login with Auth0 via `auth login --machine-token=<Auth0 token>` is now available. (#665)
 - You can set a machine token via the environment variable TERMINUS_MACHINE_TOKEN. (#665)
 
 ### Changed
 - Cached sites lists are now keyed to UUID, preventing a previously logged-in user's list from interfering with the currently logged-in user. (#652)
 - Terminus now requires PHP version 5.5.0 or greater. (#661)
 - Upgraded behavioral testing to Behat 3.0.x. (#670)
+- `site workflows` command moved to `workflows list`. (#676)
 
 ### Fixed
 - Automatic version check disabled for testing. (#643)
@@ -131,7 +132,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ##[0.6.1] - 2015-08-11
 ### Fixed
-- `site deploy` will not overwrite the Live environment's content (#373) 
+- `site deploy` will not overwrite the Live environment's content (#373)
 
 ### Changed
 - `site deploy` has a `--clone-live-environment` flag for copying Live content into Test (#373)

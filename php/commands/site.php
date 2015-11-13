@@ -1807,44 +1807,6 @@ public function upstream_updates($args, $assoc_args) {
   }
 
   /**
-   * List a site's workflows
-   *
-   * ## OPTIONS
-   * [--site=<site>]
-   * : Site to check
-   *
-   * @subcommand workflows
-   */
-  public function workflows($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $workflows = $site->workflows->all();
-    $data = array();
-    foreach($workflows as $workflow) {
-      $user = 'Pantheon';
-      if (isset($workflow->get('user')->email)) {
-        $user = $workflow->get('user')->email;
-      }
-      $data[] = array(
-        'workflow'       => $workflow->get('description'),
-        'user'           => $user,
-        'status'         => $workflow->get('phase'),
-        'update'         => date(
-          'Y-m-dTH:i:s',
-          ($workflow->get('created_at') + $workflow->get('total_time'))
-        ),
-        'tasks' =>
-          $workflow->get('number_of_tasks'),
-        'complete' =>
-          $workflow->get('step'),
-      );
-    }
-    if (count($data) == 0) {
-      $this->log()->warning('No workflows have been run on {site}', array('site' => $site->getName()));
-    }
-    $this->output()->outputRecordList($data, array('update' => 'Last update'));
-  }
-
-  /**
    * Checks to ensure user can access the given organization
    *
    * @param [string] $org_id Organization name or UUID
