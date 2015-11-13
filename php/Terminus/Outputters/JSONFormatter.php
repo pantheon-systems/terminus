@@ -36,7 +36,7 @@ class JSONFormatter implements OutputFormatterInterface {
    * @return [string] $printout
    */
   public function formatDump($object) {
-    $prinout = json_encode($object, $this->json_options);
+    $printout = json_encode($object, $this->json_options);
     return $printout;
   }
 

@@ -513,8 +513,8 @@ class Environment extends TerminusModel {
    * @return [array] $response['data']
    */
   public function getBackupUrl($bucket, $element) {
-    $element  = $this->elementAsDatabase($element);
-    $path     = sprintf(
+    $element     = $this->elementAsDatabase($element);
+    $path        = sprintf(
       'environments/%s/backups/catalog/%s/%s/s3token',
       $this->get('id'),
       $bucket,

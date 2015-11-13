@@ -424,7 +424,11 @@ class Site extends TerminusModel {
     }
 
     if ($key) {
-      return isset($info[$key]) ? $info[$key] : null;
+      if (isset($info[$key])) {
+        return $info[$key];
+      } else {
+        return null;
+      }
     } else {
       return $info;
     }
@@ -528,11 +532,10 @@ class Site extends TerminusModel {
    * @return [stdClass] $response['data']
    */
   public function updateServiceLevel($level) {
-    if (
-      !in_array(
-        $level,
-        array('free', 'basic', 'pro', 'business', 'elite')
-      )
+    if (!in_array(
+      $level,
+      array('free', 'basic', 'pro', 'business', 'elite')
+    )
     ) {
       throw new TerminusException(
         'Service level "{level}" is invalid.',
@@ -544,7 +547,7 @@ class Site extends TerminusModel {
     $method      = 'PUT';
     $form_params = $level;
     try {
-      $response    = TerminusCommand::request(
+      $response = TerminusCommand::request(
         'sites',
         $this->get('id'),
         $path,
@@ -557,10 +560,10 @@ class Site extends TerminusModel {
         throw new TerminusException(
           'Instrument required to increase service level',
           array(),
-          1  
+          1
         );
       }
-      throw $e;  
+      throw $e;
     }
   }
 

@@ -72,11 +72,17 @@ class Workflow extends TerminusModel {
     while (!$this->isFinished()) {
       $this->fetch();
       sleep(3);
-      // TODO: output this to stdout so that it doesn't get mixed with any actual output.
-      // We can't use the logger here because that might be redirected to a log-file and each line is timestamped.
+      /**
+       * TODO: Output this to stdout so that it doesn't get mixed with any
+       *   actual output. We can't use the logger here because that might be
+       *   redirected to a log file where each line is timestamped.
+       */
       fwrite(STDERR, '.');
     }
-    // TODO: output this to stdout so that it doesn't get mixed with any actual output.
+    /**
+     * TODO: Output this to stdout so that it doesn't get mixed with any
+     *   actual output.
+     */
     Terminus::line();
     if ($this->isSuccessful()) {
       return $this;

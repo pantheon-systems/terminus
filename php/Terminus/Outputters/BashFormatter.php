@@ -77,7 +77,7 @@ class BashFormatter implements OutputFormatterInterface {
    * @return [string] $formatted_value
    */
   public function formatValue($value, $human_label = '') {
-    $value = BashFormatter::flattenValue($value);
+    $value = BashFormatter::flattenValue($value)
       . BashFormatter::ROW_SEPARATOR;
     return $value;
   }

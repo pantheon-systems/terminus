@@ -93,4 +93,5 @@ class User extends TerminusModel {
 
     $this->aliases = $response['data']->drush_aliases;
   }
+
 }

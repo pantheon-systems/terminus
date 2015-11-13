@@ -44,7 +44,7 @@ class Runner {
    * @return [mixed] $this->$key
    */
   public function __get($key) {
-    if (($key[0] == '_') || !isset($this->$key)) {
+    if (($key[0] == '_') || (!isset($this->$key))) {
       return null;
     }
     return $this->$key;
