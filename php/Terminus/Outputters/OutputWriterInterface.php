@@ -1,10 +1,10 @@
 <?php
+
 /**
  * @file
  */
 
 namespace Terminus\Outputters;
-
 
 /**
  * Interface OutputWriterInterface
@@ -15,9 +15,9 @@ namespace Terminus\Outputters;
 interface OutputWriterInterface {
 
   /**
-   * @param string $output
-   *  The formatted output to be written.
-   * @return mixed
+   * @param [string] $output The formatted output to be written.
+   * @return [void]
    */
   public function write($output);
+
 }

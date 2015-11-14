@@ -36,7 +36,7 @@ class Request {
     );
 
     if ($session = Session::instance()->get('session', false)) {
-      $extra_params['headers']['Cookie'] = "X-Pantheon-Session=$session"; 
+      $extra_params['headers']['Cookie'] = "X-Pantheon-Session=$session";
     }
     $params = array_merge_recursive($extra_params, $arg_params);
     if (isset($params['form_params'])) {
@@ -62,7 +62,9 @@ class Request {
     );
 
     //Required objects and arrays stir benign warnings.
-    $request = @new HttpRequest(ucwords($method), $uri, $params);
+    error_reporting(E_ALL ^ E_WARNING);
+    $request = new HttpRequest(ucwords($method), $uri, $params);
+    error_reporting(E_ALL);
     $response = $client->send($request, $params);
 
     return $response;
@@ -107,10 +109,10 @@ class Request {
    * @return [GuzzleHttp\Cookie\CookieJar] $jar
    */
   static function fillCookieJar($params) {
-    $jar = new CookieJar();
+    $jar     = new CookieJar();
     $cookies = array();
     if ($session = Session::instance()->get('session', false)) {
-      $cookies['X-Pantheon-Session'] = $session; 
+      $cookies['X-Pantheon-Session'] = $session;
     }
     if (isset($params['cookies'])) {
       $cookies = array_merge($cookies, $params['cookies']);

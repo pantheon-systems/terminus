@@ -1,9 +1,9 @@
 <?php
+
 /**
  * @file
  * Contains Terminus\Outputters\JSON
  */
-
 
 namespace Terminus\Outputters;
 
@@ -14,80 +14,80 @@ namespace Terminus\Outputters;
 class JSONFormatter implements OutputFormatterInterface {
 
   /**
-   * @var int
-   *  The options to be passed to json_encode.
-   *  See: http://php.net/manual/en/function.json-encode.php
+   * @var [integer] The options to be passed to json_encode
+   * See: http://php.net/manual/en/function.json-encode.php
    */
   protected $json_options;
 
   /**
-   * @param int $options
-   *  The json_encode options bitmask.
+   * Object constructor. Sets the JSON options property
+   *
+   * @param [integer] $options The json_encode options bitmask
+   * @return [JSONFormatter] $this
    */
   public function __construct($options = 0) {
     $this->json_options = $options;
   }
 
   /**
-   * Formats a single scalar value with an optional human label.
+   * Formats any kind of value as a raw dump
    *
-   * @param mixed $value
-   *  The scalar value to format
-   * @param string $human_label
-   *  The human readable label for the value
-   * @return string
+   * @param [mixed] $object An object to dump via print_r
+   * @return [string] $printout
    */
-  public function formatValue($value, $human_label = '') {
-    return json_encode($value, $this->json_options);
+  public function formatDump($object) {
+    $printout = json_encode($object, $this->json_options);
+    return $printout;
   }
 
   /**
    * Format a single record or object
    *
-   * @param array|object $record
-   *   A key/value array or object
-   * @param array $human_labels
-   *   A key/value array mapping the keys in the record to human labels
-   * @return string
+   * @param [array|object] $record       A key/value array or object
+   * @param [array]        $human_labels A key/value array mapping the keys in
+   *   the record to human labels
+   * @return [string] $record
    */
   public function formatRecord($record, $human_labels = array()) {
-    return json_encode((array)$record, $this->json_options);
-  }
-
-  /**
-   * Format a list of scalar values
-   *
-   * @param array $values
-   *  The values to format
-   * @param string $human_label
-   *  A human name for the entire list. If each value needs a separate label then
-   *  formatRecord should be used.
-   * @return string
-   */
-  public function formatValueList($values, $human_label = '') {
-    return json_encode((array)$values, $this->json_options);
+    $record = json_encode((array)$record, $this->json_options);
+    return $record;
   }
 
   /**
    * Format a list of records of the same type.
    *
-   * @param array $records
-   *  A list of arrays or objects.
-   * @param array $human_labels
-   *  An array that maps the record keys to human names.
-   * @return string
+   * @param [array] $records      A list of arrays or objects.
+   * @param [array] $human_labels An array mapping record keys to human names
+   * @return [string] $list
    */
   public function formatRecordList($records, $human_labels = array()) {
-    return json_encode((array)$records, $this->json_options);
+    $list = json_encode((array)$records, $this->json_options);
+    return $list;
   }
 
   /**
-   * Format any kind of value as a raw dump.
+   * Formats a single scalar value with an optional human label.
    *
-   * @param $object
-   * @return string
+   * @param [mixed]  $value       A scalar value to format
+   * @param [string] $human_label A human readable label for that value
+   * @return [string] $formatted_value
    */
-  public function formatDump($object) {
-    return json_encode($object, $this->json_options);
+  public function formatValue($value, $human_label = '') {
+    $formatted_value = json_encode($value, $this->json_options);
+    return $formatted_value;
   }
+
+  /**
+   * Format a list of scalar values
+   *
+   * @param [array]  $values      The values to format
+   * @param [string] $human_label A human name for the entire list. If each
+   *   value needs a separate label, then formatRecord should be used.
+   * @return [string] $list
+   */
+  public function formatValueList($values, $human_label = '') {
+    $list = json_encode((array)$values, $this->json_options);
+    return $list;
+  }
+
 }

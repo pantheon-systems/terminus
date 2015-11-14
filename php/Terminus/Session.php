@@ -15,7 +15,7 @@ class Session {
    */
   public function __construct() {
     $cache   = Terminus::getCache();
-    $session = $cache->get_data('session');
+    $session = $cache->getData('session');
 
     $this->data = $session;
     if (empty($session)) {
@@ -98,7 +98,7 @@ class Session {
   public static function setData($data) {
     $cache = Terminus::getCache();
     Terminus::getLogger()->info('Saving session data');
-    $cache->put_data('session', $data);
+    $cache->putData('session', $data);
     $session = self::instance();
     $session->set('data', $data);
     if (empty($data)) {

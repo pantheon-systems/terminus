@@ -42,7 +42,9 @@ if (isset($_SERVER['TERMINUS_PORT']) && ($_SERVER['TERMINUS_PORT'] != '')) {
 define('TERMINUS_PORT', $port);
 
 $protocol = 'https';
-if (isset($_SERVER['TERMINUS_PROTOCOL']) && ($_SERVER['TERMINUS_PROTOCOL'] != '')) {
+if (isset($_SERVER['TERMINUS_PROTOCOL'])
+  && ($_SERVER['TERMINUS_PROTOCOL'] != '')
+) {
   $protocol = $_SERVER['TERMINUS_PROTOCOL'];
 }
 define('TERMINUS_PROTOCOL', $protocol);

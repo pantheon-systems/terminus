@@ -45,9 +45,10 @@ class Auth_Command extends TerminusCommand {
     if (isset($assoc_args['machine-token']) 
       || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
     ) {
-      $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
       if (isset($assoc_args['machine-token'])) {
         $token = $assoc_args['machine-token'];
+      } elseif (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
+        $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
       }
       $this->auth->logInViaMachineToken($token);
     } else {

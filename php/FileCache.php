@@ -42,49 +42,150 @@ class FileCache {
   protected $whitelist;
 
   /**
-   * @param string $cacheDir  location of the cache
-   * @param int    $ttl       cache files default time to live (expiration)
-   * @param int    $maxSize   max total cache size
-   * @param string $whitelist List of characters that are allowed in path names (used in a regex character class)
+   * Object constructor. Sets properties.
+   *
+   * @param [string]  $cacheDir  The location of the cache
+   * @param [integer] $ttl       The cache file's default expiry time
+   * @param [integer] $maxSize   The max total cache size
+   * @param [string]  $whitelist A list of characters that are allowed in path
+   * @return [FileCache] $this
    */
-  public function __construct( $cacheDir, $ttl, $maxSize, $whitelist = 'a-z0-9._-' ) {
+  public function __construct(
+    $cacheDir,
+    $ttl,
+    $maxSize,
+    $whitelist = 'a-z0-9._-'
+  ) {
     $this->root      = rtrim($cacheDir, '/\\') . '/';
     $this->ttl       = (int)$ttl;
     $this->maxSize   = (int)$maxSize;
     $this->whitelist = $whitelist;
 
-    if (!$this->ensure_dir_exists($this->root)) {
+    if (!$this->ensureDirExists($this->root)) {
       $this->enabled = false;
     }
 
   }
 
   /**
-   * Cache is enabled
+   * Clean cache based on time to live and max size
    *
-   * @return bool
+   * @return [boolean] True if cache clean succeeded
    */
-  public function is_enabled() {
-    return $this->enabled;
+  public function clean() {
+    if (!$this->enabled) {
+      return false;
+    }
+
+    $ttl     = $this->ttl;
+    $maxSize = $this->maxSize;
+
+    // unlink expired files
+    if ($ttl > 0) {
+      $expire = new \DateTime();
+      $expire->modify('-' . $ttl . ' seconds');
+
+      $finder = $this->getFinder()->date(
+        'until ' . $expire->format('Y-m-d H:i:s')
+      );
+      foreach ($finder as $file) {
+        unlink($file->getRealPath());
+      }
+    }
+
+    // unlink older files if max cache size is exceeded
+    if ($maxSize > 0) {
+      $files = array_reverse(
+        iterator_to_array(
+          $this->getFinder()->sortByAccessedTime()->getIterator()
+        )
+      );
+      $total = 0;
+
+      foreach ($files as $file) {
+        if ($total + $file->getSize() <= $maxSize) {
+          $total += $file->getSize();
+        } else {
+          unlink($file->getRealPath());
+        }
+      }
+    }
+
+    return true;
   }
 
   /**
-   * Cache root
+   * Copies a file out of the cache
    *
-   * @return string
+   * @param [string]  $key    Cache key
+   * @param [string]  $target Target filename
+   * @param [integer] $ttl    Time to live
+   * @return [boolean] $export True if export succeeded
    */
-  public function get_root() {
+  public function export($key, $target, $ttl = null) {
+    $filename = $this->has($key, $ttl);
+
+    $export = false;
+    if ($filename) {
+      $export = copy($filename, $target);
+    }
+    return $export;
+  }
+
+  /**
+   * Flushes all caches
+   *
+   * @return [void]
+   */
+  public function flush() {
+    $finder = $this->getFinder();
+    foreach ($finder as $file) {
+      unlink($file->getRealPath());
+    }
+  }
+
+  /**
+   * Reads retrieves data from cache
+   *
+   * @param [string] $key     A cache key
+   * @param [array]  $options Elements as follows:
+   *        [boolean] decode_array Argument 2 for json_decode
+   *        [boolean] ttl          TTL for file read
+   * @return [boolean|string] $data The file contents or false
+   */
+  public function getData($key, $options = array()) {
+    $defaults = array(
+      'decode_array' => false,
+      'ttl'          => null
+    );
+    $options  = array_merge($defaults, $options);
+
+    $contents = $this->read($key, $options['ttl']);
+
+    $data = false;
+    if ($contents) {
+      $data = json_decode($contents, $options['decode_array']);
+    }
+    return $data;
+  }
+
+  /**
+   * Returns the cache root
+   *
+   * @return [string] $this->root
+   */
+  public function getRoot() {
     return $this->root;
   }
 
   /**
-   * Check if a file is in cache and return its filename
+   * Checks if a file is in cache and return its filename
    *
-   * @param string $key cache key
-   * @param int    $ttl time to live
-   * @return bool|string filename or false
+   * @param [string]  $key Cache key
+   * @param [integer] $ttl Time to live
+   * @return [boolean|string] The filename or false
    */
-  public function has( $key, $ttl = null ) {
+  public function has($key, $ttl = null) {
     if (!$this->enabled) {
       return false;
     }
@@ -116,101 +217,65 @@ class FileCache {
   }
 
   /**
-   * Writes to cache file
+   * Copies a file into the cache
    *
-   * @param [string] $key      A cache key
-   * @param [string] $contents The file contents
-   * @return [boolean]
+   * @param [string] $key    Cache key
+   * @param [string] $source Source filename
+   * @return [boolean] $import True if import succeeded
    */
-  public function write( $key, $contents ) {
-    $filename = $this->prepare_write($key);
+  public function import($key, $source) {
+    $filename = $this->prepareWrite($key);
 
+    $import = false;
     if ($filename) {
-      return file_put_contents($filename, $contents) && touch($filename);
-    } else {
-      return false;
+      $import = (copy($source, $filename) && touch($filename));
     }
+    return $import;
   }
 
-  public function put_data( $key, $array ) {
-    $json   = json_encode($array);
+  /**
+   * Returns whether cache is enabled
+   *
+   * @return [boolean] $this->enabled
+   */
+  public function isEnabled() {
+    return $this->enabled;
+  }
+
+  /**
+   * Saves data to the cache, JSON-encoded
+   *
+   * @param [string] $key  A cache key
+   * @param [mixed]  $data Data to save to cache
+   * @return [boolean] $result True if write succeeded
+   */
+  public function putData($key, $data) {
+    $json   = json_encode($data);
     $result = $this->write($key, $json);
     return $result;
   }
 
   /**
-   * Read from cache file
+   * Reads from the cache file
    *
    * @param [string]  $key A cache key
    * @param [integer] $ttl The time to live
-   * @return [boolean|string] The file contents or false
+   * @return [boolean|string] $data The file contents or false
    */
-  public function read( $key, $ttl = null ) {
+  public function read($key, $ttl = null) {
     $filename = $this->has($key, $ttl);
 
+    $data = false;
     if ($filename) {
-      return file_get_contents($filename);
-    } else {
-      return false;
+      $data = file_get_contents($filename);
     }
-  }
-
-  public function get_data($key, $options = array()) {
-    $defaults = array(
-      'decode_array' => false,
-      'ttl' => null
-    );
-    $options  = array_merge($defaults, $options);
-
-    $contents = $this->read($key, $options['ttl']);
-
-    if ($contents) {
-      return json_decode($contents, $options['decode_array']);
-    }
-    else {
-      return false;
-    }
-  }
-
-  /**
-   * Copy a file into the cache
-   *
-   * @param string $key    cache key
-   * @param string $source source filename
-   * @return bool
-   */
-  public function import( $key, $source ) {
-    $filename = $this->prepare_write($key);
-
-    if ($filename) {
-      return copy($source, $filename) && touch($filename);
-    } else {
-      return false;
-    }
-  }
-
-  /**
-   * Copy a file out of the cache
-   *
-   * @param [string]  $key    cache key
-   * @param [string]  $target target filename
-   * @param [integer] $ttl    time to live
-   * @return bool
-   */
-  public function export( $key, $target, $ttl = null ) {
-    $filename = $this->has($key, $ttl);
-
-    if ($filename) {
-      return copy($filename, $target);
-    } else {
-      return false;
-    }
+    return $data;
   }
 
   /**
    * Remove file from cache
    *
-   * @param [string] $key cache key
+   * @param [string] $key Cache key
    * @return [boolean]
    */
   public function remove($key) {
@@ -229,50 +294,20 @@ class FileCache {
   }
 
   /**
-   * Clean cache based on time to live and max size
+   * Writes to cache file
    *
-   * @return bool
+   * @param [string] $key      A cache key
+   * @param [string] $contents The file contents
+   * @return [boolean] $written True if write was successful
    */
-  public function clean() {
-    if (!$this->enabled) {
-      return false;
+  public function write($key, $contents) {
+    $filename = $this->prepareWrite($key);
+
+    $written = false;
+    if ($filename) {
+      $written = (file_put_contents($filename, $contents) && touch($filename));
     }
-
-    $ttl     = $this->ttl;
-    $maxSize = $this->maxSize;
-
-    // unlink expired files
-    if ($ttl > 0) {
-      $expire = new \DateTime();
-      $expire->modify('-' . $ttl . ' seconds');
-
-      $finder = $this->get_finder()->date(
-        'until ' . $expire->format('Y-m-d H:i:s')
-      );
-      foreach ($finder as $file) {
-        unlink($file->getRealPath());
-      }
-    }
-
-    // unlink older files if max cache size is exceeded
-    if ($maxSize > 0) {
-      $files = array_reverse(
-        iterator_to_array(
-          $this->get_finder()->sortByAccessedTime()->getIterator()
-        )
-      );
-      $total = 0;
-
-      foreach ($files as $file) {
-        if ($total + $file->getSize() <= $maxSize) {
-          $total += $file->getSize();
-        } else {
-          unlink($file->getRealPath());
-        }
-      }
-    }
-
-    return true;
+    return $written;
   }
 
   /**
@@ -281,7 +316,7 @@ class FileCache {
    * @param [string] $dir Directory to ensure existence of
    * @return [boolean] $dir_exists
    */
-  protected function ensure_dir_exists($dir) {
+  protected function ensureDirExists($dir) {
     $dir_exists = (
       is_dir($dir)
       || (!file_exists($dir) && mkdir($dir, 0777, true))
@@ -290,17 +325,38 @@ class FileCache {
   }
 
   /**
+   * Filename from key
+   *
+   * @param [string] $key Key to validate
+   * @return [string] $filename
+   */
+  protected function filename($key) {
+    $filename = $this->root . $this->validateKey($key);
+    return $filename;
+  }
+
+  /**
+   * Get a Finder that iterates in cache root only the files
+   *
+   * @return [Finder] $finder
+   */
+  protected function getFinder() {
+    $finder = Finder::create()->in($this->root)->files();
+    return $finder;
+  }
+
+  /**
    * Prepare cache write
    *
    * @param [string] $key A cache key
    * @return [bool|string] A filename or false
    */
-  protected function prepare_write($key) {
+  protected function prepareWrite($key) {
     if (!$this->enabled) {
       return false;
     }
     $filename = $this->filename($key);
-    if (!$this->ensure_dir_exists(dirname($this->filename($key)))) {
+    if (!$this->ensureDirExists(dirname($this->filename($key)))) {
       return false;
     }
     return $filename;
@@ -312,7 +368,7 @@ class FileCache {
    * @param [string] $key A cache key
    * @return [string] $parts_string A relative filename
    */
-  protected function validate_key($key) {
+  protected function validateKey($key) {
     $url_parts = parse_url($key);
     if (! empty($url_parts['scheme'])) { // is url
       $parts = array('misc');
@@ -339,39 +395,6 @@ class FileCache {
 
     $parts_string = implode('/', $parts);
     return $parts_string;
-  }
-
-  /**
-   * Filename from key
-   *
-   * @param [string] $key Key to validate
-   * @return [string] $filename
-   */
-  protected function filename($key) {
-    $filename = $this->root . $this->validate_key($key);
-    return $filename;
-  }
-
-  /**
-   * Get a Finder that iterates in cache root only the files
-   *
-   * @return [Finder] $finder
-   */
-  public function get_finder() {
-    $finder = Finder::create()->in($this->root)->files();
-    return $finder;
-  }
-
-  /**
-   * Flushes all caches
-   *
-   * @return [void]
-   */
-  public function flush() {
-    $finder = $this->get_finder();
-    foreach ($finder as $file) {
-      unlink($file->getRealPath());
-    }
   }
 
 }

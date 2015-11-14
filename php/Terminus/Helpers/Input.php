@@ -19,7 +19,7 @@ class Input {
    *
    * @param [array] $arg_options Elements as follows:
    *        [string] label         Prompt for STDOUT
-   *        [array]  backups       An array of stdClass objects representing backups
+   *        [array]  backups       Array of stdClass objs representing backups
    *        [array]  target_backup For STDERR, if necessary. As follows:
    *          [string] site Name of the site we want a backup from
    *          [string] env  Name of the environment we want a backup from
@@ -31,16 +31,17 @@ class Input {
       'backups' => array(),
       'context' => array(),
     );
-    $options = array_merge($default_options, $arg_options);
-    $backups = $options['backups'];
+    $options         = array_merge($default_options, $arg_options);
+    $backups         = $options['backups'];
     if (empty($options['backups'])) {
+      $command = 'terminus site backup create --site=<site> --env=<env>`';
       throw new TerminusException(
-        'No backups available. Create one with `terminus site backup create --site={site} --env={env}`',
-        $backups['context'],
+        'No backups available. Create one with `{command}`',
+        array_merge($backups['context'], compact('command')),
         1
       );
     }
-    
+
     $choices = array();
     foreach ($backups as $folder => $backup) {
       if (!isset($backup->filename)) {
@@ -52,7 +53,7 @@ class Input {
       }
       $choices[] = $backup->filename;
     }
-    $backups = array_values($backups);
+    $backups       = array_values($backups);
     $target_backup = $backups[self::menu($choices, null, $options['label'])];
 
     return $target_backup;
@@ -88,12 +89,12 @@ class Input {
         return $args[$key];
       }
       throw new TerminusException(
-        '{element} is an invalid element. Please select one of the following: {choices}',
+        '{element} is an invalid element. Please select from these: {choices}',
         array('element' => $args[$key], 'choices' => implode(', ', $choices)),
         1
       );
     }
-    
+
     $element = self::menu($choices, null, $options['label'], true);
     return $element;
   }
@@ -120,7 +121,7 @@ class Input {
       return $args[$key];
     }
     if (in_array($key, array('env', 'from-env'))) {
-      if(isset($_SERVER['TERMINUS_ENV'])) {
+      if (isset($_SERVER['TERMINUS_ENV'])) {
         return $_SERVER['TERMINUS_ENV'];
       }
     }
@@ -164,7 +165,7 @@ class Input {
    * @return [mixed] Either $args[$key] or $default
    */
   public static function optional($key, $args, $default = null) {
-    if(isset($args[$key])) {
+    if (isset($args[$key])) {
       return $args[$key];
     }
     return $default;
@@ -176,6 +177,7 @@ class Input {
    * @param [array]  $args    The args passed in from argv
    * @param [string] $key     Args key to search for
    * @param [string] $default Returned if arg and stdin fail in interactive
+   * @param [array]  $options Options to feed into the orglist function
    * @return [string] ID of selected organization
   */
   public static function orgid(
@@ -196,8 +198,7 @@ class Input {
         return $flip[$arguments[$key]];
       } elseif (isset($orglist[$arguments[$key]])) {
         return $arguments[$key];
-      } elseif (
-        in_array($arguments[$key], self::$NULL_INPUTS)
+      } elseif (in_array($arguments[$key], self::$NULL_INPUTS)
         || !empty($arguments)
       ) {
         return $default;
@@ -215,7 +216,7 @@ class Input {
     }
 
     $org = Terminus::menu($orglist_with_id, false, "Choose organization");
-    if($org == '-') {
+    if ($org == '-') {
       return $default;
     }
     return $org;
@@ -224,7 +225,9 @@ class Input {
   /**
    * Returns an array listing organizaitions applicable to user
    *
-   * @return [array] List of organizations
+   * @param [array] $options Elements as follows:
+   *        [boolean] allow_none True to allow the "none" option
+   * @return [array] $orgs A list of organizations
   */
   public static function orglist($options = array()) {
     $orgs = array();
@@ -234,7 +237,7 @@ class Input {
     }
 
     $user = new User();
-    foreach($user->organizations->all() as $id => $org) {
+    foreach ($user->organizations->all() as $id => $org) {
       $org_data = $org->get('organization');
       $orgs[$org->get('id')] = $org_data->profile->name;
     }
@@ -250,9 +253,9 @@ class Input {
   */
   public static function orgname($args, $key) {
     $orglist = Input::orglist();
-    if(isset($args[$key])) {
+    if (isset($args[$key])) {
       //If org id is sent, fetch the name
-      if(array_key_exists($args[$key], $orglist)) {
+      if (array_key_exists($args[$key], $orglist)) {
         return $orglist[$args[$key]];
       }
       return $args[$key];
@@ -265,20 +268,24 @@ class Input {
    * Helper function to get role
    *
    * @param [array]  $assoc_args Argument array passed from commands
-   * @param [string] $message Prompt to STDOUT
+   * @param [string] $message    Prompt to STDOUT
    * @return [string] $role Name of role
    */
-  static public function role($assoc_args, $message = 'Select a role for this member') {
+  static public function role(
+    $assoc_args,
+    $message = 'Select a role for this member'
+  ) {
     $roles = array('developer', 'team_member', 'admin');
-    if(
-      !isset($assoc_args['role'])
+    if (!isset($assoc_args['role'])
       || !in_array(strtolower($assoc_args['role']), $roles)
     ) {
-      $role = strtolower($roles[Input::menu(
-        $roles,
-        null,
-        'Select a role for the new member'
-      )]);
+      $role = strtolower(
+        $roles[Input::menu(
+          $roles,
+          null,
+          $message
+        )]
+      );
     } else {
       $role = $assoc_args['role'];
     }
@@ -293,22 +300,29 @@ class Input {
    * @param [string] $label Prompt for STDOUT
    * @return [string] Site name
   */
-  public static function sitename($args = array(), $key = 'site', $label = 'Choose site') {
+  public static function sitename(
+    $args = array(),
+    $key = 'site',
+    $label = 'Choose site'
+  ) {
     // return early if sitename is provided in args
-    if(isset($args[$key])) {
+    if (isset($args[$key])) {
       return $args[$key];
     }
-    if(isset($_SERVER['TERMINUS_SITE'])) {
+    if (isset($_SERVER['TERMINUS_SITE'])) {
       return $_SERVER['TERMINUS_SITE'];
     }
-    $sites = new Sites();
-    $sites = $sites->all();
-    $sitenames = array_map(function($site) {
-      return $site->get('name');
-    }, $sites);
+    $sites     = new Sites();
+    $sites     = $sites->all();
+    $sitenames = array_map(
+      function($site) {
+        $site_name = $site->get('name');
+        return $site_name;
+      }, $sites
+    );
 
     $choices = array();
-    foreach($sitenames as $sitename) {
+    foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
     $menu = self::menu($choices, $default = null, $label);
@@ -331,7 +345,7 @@ class Input {
       $label = "Enter",
       $default = null
   ) {
-    if(isset($args[$key])) {
+    if (isset($args[$key])) {
       return $args[$key];
     }
     if (Terminus::getConfig('format') != 'normal') {
@@ -356,9 +370,13 @@ class Input {
   public static function upstream($args, $key, $exit = true) {
     $upstreams = new Upstreams();
     if (isset($args[$key])) {
-      $upstream  = $upstreams->getByIdOrName($args[$key]);
+      $upstream = $upstreams->getByIdOrName($args[$key]);
       if ($upstream == null) {
-        throw new TerminusException("Couldn't find upstream: {upstream}", array('upstream' => $args['upstream']));
+        throw new TerminusException(
+          'Could not find upstream: {upstream}',
+          array('upstream' => $args['upstream']),
+          (integer)$exit
+        );
       }
     } else {
       $upstream = $upstreams->get(
@@ -377,7 +395,7 @@ class Input {
    * @return [boolean] $is_yes
    */
   public static function yesno($question, $params = array()) {
-    if(Terminus::getConfig('yes')) {
+    if (Terminus::getConfig('yes')) {
       return true;
     }
     $question = vsprintf($question, $params);
@@ -387,6 +405,6 @@ class Input {
 
     $is_yes = (boolean)($answer == 'y');
     return $is_yes;
-
   }
+
 }

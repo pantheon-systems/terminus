@@ -9,6 +9,8 @@ fi
 
 for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "^D" | awk '{print $2}') ; do php -l $f ; done
 
+./scripts/lint.sh
+
 # Run the functional tests
 behat_cmd="vendor/bin/behat -c=tests/config/behat.yml"
 if [ ! -z $1 ]; then

@@ -1,12 +1,10 @@
 <?php
+
 /**
- * @file
- * Contains Terminus\Outputters\Outputter
+ * @file Contains Terminus\Outputters\Outputter
  */
 
-
 namespace Terminus\Outputters;
-
 
 /**
  * A base class which takes output, formats it and writes it.
@@ -17,113 +15,130 @@ namespace Terminus\Outputters;
 class Outputter implements OutputterInterface {
 
   /**
-   * @var OutputFormatterInterface
+   * @var [OutputFormatterInterface]
    */
   protected $formatter;
 
   /**
-   * @var OutputWriterInterface
+   * @var [OutputWriterInterface]
    */
   protected $writer;
 
   /**
-   * @param OutputWriterInterface $writer
-   * @param OutputFormatterInterface $formatter
+   * Object constructor. Sets writer and formatter properties.
+   *
+   * @param [OutputWriterInterface]    $writer    Writer object to set
+   * @param [OutputFormatterInterface] $formatter Formatter object to set
+   * @return [Outputter] $this
    */
-  public function __construct(OutputWriterInterface $writer, OutputFormatterInterface $formatter) {
+  public function __construct(
+    OutputWriterInterface $writer,
+    OutputFormatterInterface $formatter
+  ) {
     $this->setFormatter($formatter);
     $this->setWriter($writer);
   }
 
-
   /**
-   * Formats a single scalar value with an optional human label.
+   * Retrieves the set formatter object
    *
-   * @param mixed $value
-   *  The scalar value to format
-   * @param string $human_label
-   *  The human readable label for the value
-   * @return string
-   */
-  public function outputValue($value, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatValue($value, $human_label));
-  }
-
-  /**
-   * Format a single record or object
-   *
-   * @param array|object $record
-   *   A key/value array or object
-   * @param array $human_labels
-   *   A key/value array mapping the keys in the record to human labels
-   * @return string
-   */
-  public function outputRecord($record, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($record, $human_labels));
-  }
-
-  /**
-   * Format a list of scalar values
-   *
-   * @param array $values
-   *  The values to format
-   * @param string $human_label
-   *  A human name for the entire list. If each value needs a separate label then
-   *  formatRecord should be used.
-   * @return string
-   */
-  public function outputValueList($values, $human_label = '') {
-    $this->getWriter()->write($this->getFormatter()->formatRecord($values, $human_label));
-  }
-
-  /**
-   * Format a list of records of the same type.
-   *
-   * @param array $records
-   *  A list of arrays or objects.
-   * @param array $human_labels
-   *  An array that maps the record keys to human names.
-   * @return string
-   */
-  public function outputRecordList($records, $human_labels = array()) {
-    $this->getWriter()->write($this->getFormatter()->formatRecordList($records, $human_labels));
-  }
-
-  /**
-   * Output any variable type as a raw dump.
-   *
-   * @param $object
-   * @return string
-   */
-  public function outputDump($object) {
-    $this->getWriter()->write($this->getFormatter()->formatDump($object));
-  }
-
-  /**
-   * @return OutputWriterInterface
-   */
-  public function getWriter() {
-    return $this->writer;
-  }
-
-  /**
-   * @return OutputFormatterInterface
+   * @return [OutputFormatterInterface] $this->formatter
    */
   public function getFormatter() {
     return $this->formatter;
   }
 
   /**
-   * @param OutputFormatterInterface $formatter
+   * Retrieves the set writer object
+   *
+   * @return [OutputWriterInterface] $this->writer
+   */
+  public function getWriter() {
+    return $this->writer;
+  }
+
+  /**
+   * Outputs any variable type as a raw dump
+   *
+   * @param [object|array] $object Item to dump information on
+   * @return [void]
+   */
+  public function outputDump($object) {
+    $this->getWriter()->write($this->getFormatter()->formatDump($object));
+  }
+
+  /**
+   * Formats a single record or object
+   *
+   * @param [array|object] $record       A key/value array or object
+   * @param [array]        $human_labels A key/value array mapping the keys in
+   *   the record to human labels
+   * @return [void]
+   */
+  public function outputRecord($record, $human_labels = array()) {
+    $this->getWriter()->write(
+      $this->getFormatter()->formatRecord($record, $human_labels)
+    );
+  }
+
+  /**
+   * Formats a list of records of the same type
+   *
+   * @param [array] $records      A list of arrays or objects.
+   * @param [array] $human_labels An array that maps record keys to human names
+   * @return [void]
+   */
+  public function outputRecordList($records, $human_labels = array()) {
+    $this->getWriter()->write(
+      $this->getFormatter()->formatRecordList($records, $human_labels)
+    );
+  }
+
+  /**
+   * Formats a single scalar value with an optional human label
+   *
+   * @param [mixed]  $value       The scalar value to format
+   * @param [string] $human_label The human readable label for the value
+   * @return [void]
+   */
+  public function outputValue($value, $human_label = '') {
+    $this->getWriter()->write(
+      $this->getFormatter()->formatValue($value, $human_label)
+    );
+  }
+
+  /**
+   * Formats a list of scalar values
+   *
+   * @param [array]  $values      The values to format
+   * @param [string] $human_label One human name for the entire list. If each
+   *   value needs a separate label, then formatRecord should be used.
+   * @return [void]
+   */
+  public function outputValueList($values, $human_label = '') {
+    $this->getWriter()->write(
+      $this->getFormatter()->formatRecord($values, $human_label)
+    );
+  }
+
+  /**
+   * Sets the formatter which converts the output to a useful string
+   *
+   * @param [OutputFormatterInterface] $formatter Formatter selected for use
+   * @return [void]
    */
   public function setFormatter(OutputFormatterInterface $formatter) {
     $this->formatter = $formatter;
   }
 
   /**
-   * @param OutputWriterInterface $writer
+   * Sets the writer which sends the output to it's final destination
+   *
+   * @param [OutputWriterInterface] $writer Writer selected for use
+   * @return [void]
    */
   public function setWriter(OutputWriterInterface $writer) {
     $this->writer = $writer;
   }
+
 }

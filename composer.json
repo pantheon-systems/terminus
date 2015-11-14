@@ -24,8 +24,7 @@
     "vlucas/phpdotenv": "2.1.*@stable"
   },
   "autoload": {
-    "psr-0": { "Terminus": "php" },
-    "files": [ "php/Spyc.php" ]
+    "psr-0": { "Terminus": "php" }
   },
   "require-dev": {
     "behat/behat": "3.0.*@stable",

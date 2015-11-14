@@ -30,7 +30,7 @@ abstract class CommandWithSSH extends TerminusCommand {
    */
   protected function checkCommand($command) {
     if (isset($this->unavailable_commands[$command])) {
-      $error_message = "$command is not available via Terminus. " 
+      $error_message = "$command is not available via Terminus. "
         . 'Please run it via ' . $this->client;
       if (!empty($this->unavailable_commands[$command])) {
         $error_message .= ', or you can use `terminus '
@@ -65,7 +65,7 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Parses server information for connections
    *
-   * @param [array]  $site_info  Elements as follows:
+   * @param [array] $site_info Elements as follows:
    *        [string] site        Site UUID
    *        [string] environment Environment name
    * @return [array] $server Connection info
@@ -78,7 +78,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       'host' => "appserver.$env_id.$site_id.drush.in",
       'port' => '2222'
     );
-    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
+    if (strpos(TERMINUS_HOST, 'onebox') !== false) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = TERMINUS_HOST;
     }
