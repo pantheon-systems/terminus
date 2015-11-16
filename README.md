@@ -30,7 +30,8 @@ Once you have at least the requirements installed, you can install Terminus via 
 ####Installing with Composer
 
 The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminus client:
-```composer require pantheon-systems/cli
+```
+composer require pantheon-systems/cli
 ```
 
 ####Installing with cURL
