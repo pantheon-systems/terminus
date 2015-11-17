@@ -120,7 +120,7 @@ function isWindows() {
  * @return [void]
  */
 function loadAllCommands() {
-  $cmd_dir = TERMINUS_ROOT . '/php/commands';
+  $cmd_dir = TERMINUS_ROOT . '/php/Terminus/Commands';
 
   $iterator = new \DirectoryIterator($cmd_dir);
 
@@ -140,7 +140,11 @@ function loadAllCommands() {
  * @return [void]
  */
 function loadCommand($name) {
-  $path = TERMINUS_ROOT . "/php/commands/$name.php";
+  $path = sprintf(
+    '%s/php/Terminus/Commands/%sCommand.php',
+    TERMINUS_ROOT,
+    ucwords($name)
+  );
 
   if (is_readable($path)) {
     include_once $path;
