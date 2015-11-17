@@ -8,7 +8,7 @@ use Terminus\Models\User;
  * Get information about Terminus itself.
  *
  */
-class CLI_Command extends TerminusCommand {
+class CliCommand extends TerminusCommand {
   public function __construct() {
     parent::__construct();
     $this->sitesCache = new SitesCache();
@@ -166,4 +166,4 @@ class CLI_Command extends TerminusCommand {
 
 }
 
-Terminus::addCommand('cli', 'CLI_Command');
+Terminus::addCommand('cli', 'CliCommand');

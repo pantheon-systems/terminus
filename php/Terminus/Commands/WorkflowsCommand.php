@@ -10,7 +10,7 @@ use Terminus\Models\Collections\Sites;
 /**
 * Actions to be taken on an individual site
 */
-class Workflows_Command extends TerminusCommand {
+class WorkflowsCommand extends TerminusCommand {
 
 protected $_headers = false;
 
@@ -60,4 +60,4 @@ public function __construct() {
   }
 }
 
-\Terminus::addCommand('workflows', 'Workflows_Command');
+\Terminus::addCommand('workflows', 'WorkflowsCommand');

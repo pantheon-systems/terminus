@@ -16,7 +16,7 @@ use Terminus\Models\User;
 use Terminus\Models\Workflow;
 use Terminus\Models\Collections\Sites;
 
-class Sites_Command extends TerminusCommand {
+class SitesCommand extends TerminusCommand {
   public $sites;
 
   /**
@@ -118,7 +118,7 @@ class Sites_Command extends TerminusCommand {
    *
    */
   public function create($args, $assoc_args) {
-    $options = Sites_Command::getSiteCreateOptions($assoc_args);
+    $options = SitesCommand::getSiteCreateOptions($assoc_args);
 
     $upstream = Input::upstream($assoc_args, 'upstream');
     $options['upstream_id'] = $upstream->get('id');
@@ -163,7 +163,7 @@ class Sites_Command extends TerminusCommand {
   * @subcommand import
   */
   public function import($args, $assoc_args) {
-    $options = Sites_Command::getSiteCreateOptions($assoc_args);
+    $options = SitesCommand::getSiteCreateOptions($assoc_args);
 
     $url = Input::string($assoc_args, 'url', 'URL of archive to import');
     if (!$url) {
@@ -388,4 +388,4 @@ class Sites_Command extends TerminusCommand {
   }
 }
 
-Terminus::addCommand( 'sites', 'Sites_Command' );
+Terminus::addCommand( 'sites', 'SitesCommand' );

@@ -5,7 +5,7 @@ use Terminus\Models\Collections\Upstreams;
 /**
  * Show Pantheon upstream information
  */
-class Upstreams_Command extends TerminusCommand {
+class UpstreamsCommand extends TerminusCommand {
 
   /**
   * Search for Pantheon upstream info
@@ -40,4 +40,4 @@ class Upstreams_Command extends TerminusCommand {
 
 }
 
-Terminus::addCommand('upstreams', 'Upstreams_Command');
+Terminus::addCommand('upstreams', 'UpstreamsCommand');

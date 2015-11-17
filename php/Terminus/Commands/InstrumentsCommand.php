@@ -6,12 +6,12 @@ use Terminus\Models\User;
 /**
  * Show information for your Pantheon instruments
  */
-class Instruments_Command extends TerminusCommand {
+class InstrumentsCommand extends TerminusCommand {
 
   /**
    * Instantiates object, ensures login
    *
-   * @return [Instruments_Command] $this
+   * @return [InstrumentsCommand] $this
    */
   public function __construct() {
     Auth::ensureLogin();
@@ -39,4 +39,4 @@ class Instruments_Command extends TerminusCommand {
 
 }
 
-Terminus::addCommand('instruments', 'Instruments_Command');
+Terminus::addCommand('instruments', 'InstrumentsCommand');
