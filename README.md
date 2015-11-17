@@ -38,7 +38,7 @@ composer require pantheon-systems/cli
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.9.2/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.9.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 
 To get started with Terminus, you must first authenticate:
