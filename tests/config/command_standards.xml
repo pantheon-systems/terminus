@@ -9,7 +9,6 @@
 <rule ref="Generic.CodeAnalysis.JumbledIncrementer"/>
 <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
 <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
-<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
 <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
 <rule ref="Generic.Commenting.Todo"/>
 <rule ref="Generic.Commenting.Fixme"/>
@@ -46,6 +45,7 @@
 </rule>
 <rule ref="MySource.PHP.GetRequestData"/>
 <rule ref="MySource.PHP.ReturnFunctionValue"/>
+<rule ref="PEAR.Commenting.FunctionComment"/>
 <rule ref="PEAR.Commenting.InlineComment"/>
 <rule ref="PEAR.ControlStructures.ControlSignature"/>
 <rule ref="PEAR.Functions.FunctionCallSignature">

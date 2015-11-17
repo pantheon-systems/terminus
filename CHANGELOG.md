@@ -12,6 +12,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Terminus now requires PHP version 5.5.0 or greater. (#661)
 - Upgraded behavioral testing to Behat 3.0.x. (#670)
 - `site workflows` command moved to `workflows list`. (#676)
+- Moved command files from `php/commands` to `php/Terminus/Commands` and standardized file names. (#682)
+- Added an assets directory, moved ASCII art out of ArtCommand and into assets. (#685)
 
 ### Fixed
 - Automatic version check disabled for testing. (#643)
