@@ -5,6 +5,7 @@ namespace Terminus\Models;
 use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
+use Terminus\Models\WorkflowOperation;
 
 class Workflow extends TerminusModel {
 
@@ -61,6 +62,60 @@ class Workflow extends TerminusModel {
   public function isSuccessful() {
     $is_successful = ($this->get('result') == 'succeeded');
     return $is_successful;
+  }
+
+  /**
+   * Returns a list of WorkflowOperations for this workflow
+   *
+   * @return [Array<WorkflowOperation>] $operations list of WorkflowOperations
+   */
+  public function operations() {
+    if (is_array($this->get('operations'))) {
+      $operations_data = $this->get('operations');
+    } else {
+      $operations_data = array();
+    }
+
+    $operations = array();
+    foreach ($operations_data as $operation_data) {
+      $operations[] = new WorkflowOperation($operation_data);
+    }
+
+    return $operations;
+  }
+
+  /**
+   * Formats workflow object into an associative array for output
+   *
+   * @return [array] $data associative array of data for output
+   */
+  public function serialize() {
+    $user = 'Pantheon';
+    if (isset($this->get('user')->email)) {
+      $user = $this->get('user')->email;
+    }
+    if ($this->get('total_time')) {
+      $elapsed_time = $this->get('total_time');
+    } else {
+      $elapsed_time = time() - $this->get('created_at');
+    }
+
+    $operations_data = array();
+    foreach ($this->operations() as $operation) {
+      $operations_data[] = $operation->serialize();
+    }
+
+    $data = array(
+      'id'             => $this->id,
+      'env'            => $this->get('environment'),
+      'workflow'       => $this->get('description'),
+      'user'           => $user,
+      'status'         => $this->get('phase'),
+      'time'           => sprintf("%ds", $elapsed_time),
+      'operations'     => $operations_data
+    );
+
+    return $data;
   }
 
   /**

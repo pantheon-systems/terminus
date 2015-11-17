@@ -387,6 +387,46 @@ class Input {
   }
 
   /**
+   * Helper function to select Site Workflow
+   *
+   * @param [Site]   $site Site from which to fetch workflows
+   * @param [array]  $args Args to parse value from
+   * @param [string] $key  Index to search for in args
+   *
+   * @return [Workflow] $workflow
+   */
+  public static function workflow($site, $args, $key = 'workflow_id') {
+    if (isset($args['workflow_id'])) {
+      $workflow_id = $args[$key];
+    } else {
+      $workflow_menu_args = array();
+      foreach ($site->workflows->all() as $workflow) {
+        if ($workflow->get('environment')) {
+          $environment = $workflow->get('environment');
+        } else {
+          $environment = 'None';
+        }
+
+        $workflow_description = sprintf(
+          "%s - %s - %s",
+          $environment,
+          $workflow->get('description'),
+          $workflow->id
+        );
+        $workflow_menu_args[$workflow->id] = $workflow_description;
+      }
+      $workflow_id = Input::menu(
+        $workflow_menu_args,
+        null,
+        'Choose workflow'
+      );
+    }
+
+    $workflow = $site->workflows->get($workflow_id);
+    return $workflow;
+  }
+
+  /**
    * Same as confirm but doesn't exit
    *
    * @param [string] $question Question to ask
