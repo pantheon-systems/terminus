@@ -24,11 +24,15 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [UserOrganizationMemberships] $this
    */
-  public function fetch($paged = false) {
-    parent::fetch(true);
+  public function fetch($options = array()) {
+    if (!isset($options['paged'])) {
+      $options['paged'] = true;
+    }
+
+    parent::fetch($options);
     return $this;
   }
 

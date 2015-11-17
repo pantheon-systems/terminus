@@ -34,11 +34,11 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [TerminusCollection] $this
    */
-  public function fetch($paged = false) {
-    $results = $this->getCollectionData($paged);
+  public function fetch($options = array()) {
+    $results = $this->getCollectionData($options);
     $data    = $this->objectify($results['data']);
 
     foreach (get_object_vars($data) as $id => $model_data) {
@@ -128,18 +128,23 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Retrieves collection data from the API
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [array] $results
    */
-  protected function getCollectionData($paged = false) {
+  protected function getCollectionData($options = array()) {
     $function_name = 'simpleRequest';
-    if ($paged) {
+    if (isset($options['paged']) && $options['paged']) {
       $function_name = 'pagedRequest';
     }
 
+    $fetch_args = array();
+    if (isset($options['fetch_args'])) {
+      $fetch_args = $options['fetch_args'];
+    }
     $options = array_merge(
       array('options' => array('method' => 'get')),
-      $this->getFetchArgs()
+      $this->getFetchArgs(),
+      $fetch_args
     );
     $results = TerminusCommand::$function_name(
       $this->getFetchUrl(),

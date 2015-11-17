@@ -243,10 +243,10 @@ class Site extends TerminusModel {
   /**
    * Fetches this object from Pantheon
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [Site] $this
    */
-  public function fetch($paged = true) {
+  public function fetch($options = array()) {
     $response         = TerminusCommand::simpleRequest(
       sprintf('sites/%s?site_state=true', $this->get('id'))
     );
