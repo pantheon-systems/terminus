@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##Master
+##[0.9.3] - 2015-11-17
 ### Added
 - `site environments` now includes data on whether environment is initialized yet. (#654)
 - Login with Auth0 via `auth login --machine-token=<Auth0 token>` is now available. (#665)
@@ -18,6 +18,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - Automatic version check disabled for testing. (#643)
 - Bad Github API returns for version check now does not cause error. (#643)
+- Composer installation does not return stability errors. (#661)
 
 ##[0.9.2] - 2015-10-29
 ### Fixed
