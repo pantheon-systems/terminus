@@ -10,7 +10,7 @@ use Terminus\Models\Collections\Sites;
 /**
 * Actions to be taken on an individual site
 */
-class Site_Command extends TerminusCommand {
+class SiteCommand extends TerminusCommand {
 
 protected $_headers = false;
 
@@ -1821,4 +1821,4 @@ public function upstream_updates($args, $assoc_args) {
 
 }
 
-\Terminus::addCommand('site', 'Site_Command');
+\Terminus::addCommand('site', 'SiteCommand');

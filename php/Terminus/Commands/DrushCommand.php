@@ -7,7 +7,7 @@ use Terminus\Models\Collections\Sites;
 use Terminus\Helpers\Input;
 
 
-class Drush_Command extends CommandWithSSH {
+class DrushCommand extends CommandWithSSH {
   /**
    * Name of client that command will be run on server via
    */
@@ -92,4 +92,4 @@ class Drush_Command extends CommandWithSSH {
   }
 }
 
-Terminus::addCommand( 'drush', 'Drush_Command' );
+Terminus::addCommand( 'drush', 'DrushCommand' );

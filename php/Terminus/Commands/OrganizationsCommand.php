@@ -10,7 +10,7 @@ use Terminus\Models\Collections\UserOrganizationMemberships;
  * Show information for your Pantheon organizations
  *
  */
-class Organizations_Command extends TerminusCommand {
+class OrganizationsCommand extends TerminusCommand {
 
   public function __construct() {
     Auth::ensureLogin();
@@ -205,4 +205,4 @@ class Organizations_Command extends TerminusCommand {
 
 }
 
-Terminus::addCommand('organizations', 'Organizations_Command');
+Terminus::addCommand('organizations', 'OrganizationsCommand');

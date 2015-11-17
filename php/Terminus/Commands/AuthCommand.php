@@ -7,7 +7,7 @@
 use Terminus\Session;
 use Terminus\Utils;
 
-class Auth_Command extends TerminusCommand {
+class AuthCommand extends TerminusCommand {
   private $auth;
   private $logged_in = false;
   private $sessionid;
@@ -17,7 +17,7 @@ class Auth_Command extends TerminusCommand {
   /**
    * Instantiates object, sets auth property
    *
-   * @return [Auth_Command] $this
+   * @return [AuthCommand] $this
    */
   public function __construct() {
     parent::__construct();
@@ -101,4 +101,4 @@ class Auth_Command extends TerminusCommand {
 
 }
 
-Terminus::addCommand('auth', 'Auth_Command');
+Terminus::addCommand('auth', 'AuthCommand');

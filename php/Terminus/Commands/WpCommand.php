@@ -4,7 +4,7 @@ use Terminus\CommandWithSSH;
 use Terminus\Helpers\Input;
 use Terminus\Models\Collections\Sites;
 
-class WPCLI_Command extends CommandWithSSH {
+class WpCommand extends CommandWithSSH {
   /**
    * Name of client that command will be run on server via
    */
@@ -91,4 +91,4 @@ class WPCLI_Command extends CommandWithSSH {
 
 }
 
-Terminus::addCommand( 'wp', 'WPCLI_Command' );
+Terminus::addCommand( 'wp', 'WpCommand' );
