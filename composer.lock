@@ -1,11 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fb56292ba714bfe47fbf43c64d27e9b0",
-    "content-hash": "bcc5cf3699096d8c225bb988c57b44b0",
+    "hash": "b62445cea6da87d12f3772a77450e1c2",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -984,16 +983,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "2.7.x-dev",
+            "version": "v2.7.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "4b557e0d32e20a16938ead0aec06e4615d84668f"
+                "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/4b557e0d32e20a16938ead0aec06e4615d84668f",
-                "reference": "4b557e0d32e20a16938ead0aec06e4615d84668f",
+                "url": "https://api.github.com/repos/symfony/process/zipball/4a959dd4e19c2c5d7512689413921e0a74386ec7",
+                "reference": "4a959dd4e19c2c5d7512689413921e0a74386ec7",
                 "shasum": ""
             },
             "require": {
@@ -1008,10 +1007,7 @@
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Process\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1029,7 +1025,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2015-10-30 20:10:21"
+            "time": "2015-10-23 14:47:27"
         },
         {
             "name": "symfony/var-dumper",
@@ -2924,7 +2920,6 @@
         "guzzlehttp/guzzle": 0,
         "katzgrau/klogger": 0,
         "psy/psysh": 0,
-        "symfony/process": 20,
         "vlucas/phpdotenv": 0,
         "behat/behat": 0
     },

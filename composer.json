@@ -18,7 +18,7 @@
     "ramsey/array_column": "~1.1",
     "rmccue/requests": "~1.6",
     "symfony/finder": "~2.7",
-    "symfony/process": "2.7.*@dev",
+    "symfony/process": "2.7.*",
     "symfony/dom-crawler": "2.7.*",
     "symfony/css-selector": "2.7.*",
     "vlucas/phpdotenv": "2.1.*@stable"
