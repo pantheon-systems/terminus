@@ -2,9 +2,10 @@
 
 namespace Terminus\Utils;
 
+use ArrayIterator;
 use Terminus;
 use Terminus\Iterators\Transform;
-use ArrayIterator;
+use Terminus\Exceptions\TerminusException;
 
 if (!defined('JSON_PRETTY_PRINT')) {
   define('JSON_PRETTY_PRINT', 128);
@@ -131,6 +132,33 @@ function loadAllCommands() {
 
     include_once "$cmd_dir/$filename";
   }
+}
+
+/**
+ * Loads a file of the given name from the assets directory.
+ *
+ * @param [string] $file Relative file path from the assets dir
+ * @return [string] $asset_location Contents of the asset file
+ */
+function loadAsset($file) {
+  $asset_location = sprintf('%s/assets/%s', TERMINUS_ROOT, $file);
+  /**
+   * The warning reporting is disabled because missing files will both issue
+   * warnings and return false, and we cannot just catch the warning such as
+   * things are currently set.
+   */
+  error_reporting(E_ALL ^ E_WARNING);
+  $asset_file = file_get_contents($asset_location);
+  error_reporting(E_ALL);
+
+  if (!$asset_file) {
+    throw new TerminusException(
+      'Terminus could not locate an asset file at {asset_location}',
+      compact('asset_location'),
+      1
+    );
+  }
+  return $asset_file;
 }
 
 /**
