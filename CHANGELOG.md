@@ -2,6 +2,9 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ##Master
+### Added
+- New command `workflows show` displays details about a workflow (#687)
+
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
 
