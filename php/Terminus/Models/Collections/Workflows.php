@@ -48,17 +48,6 @@ class Workflows extends TerminusCollection {
   }
 
   /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param [boolean] $paged True to use paginated API requests
-   * @return [Workflows] $this
-   */
-  public function fetch($paged = false) {
-    parent::fetch(true);
-    return $this;
-  }
-
-  /**
    * Give the URL for collection data fetching
    *
    * @return [string] $url URL to use in fetch query

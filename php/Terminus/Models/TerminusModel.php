@@ -52,18 +52,24 @@ abstract class TerminusModel {
   /**
    * Fetches this object from Pantheon
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [TerminusModel] $this
    */
-  public function fetch($paged = false) {
-    $function_name = 'simpleRequest';
-    if ($paged) {
-      $function_name = 'pagedRequest';
+  public function fetch($options = array()) {
+    $fetch_args = array();
+    if (isset($options['fetch_args'])) {
+      $fetch_args = $options['fetch_args'];
     }
 
-    $results = TerminusCommand::$function_name(
+    $options = array_merge(
+      array('options' => array('method' => 'get')),
+      $this->getFetchArgs(),
+      $fetch_args
+    );
+
+    $results = TerminusCommand::simpleRequest(
       $this->getFetchUrl(),
-      $this->getFetchArgs()
+      $options
     );
 
     $this->attributes = $results['data'];

@@ -110,10 +110,10 @@ class Sites extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [boolean] $paged True to use paginated API requests
+   * @param [array] $options params to pass to url request
    * @return [Sites] $this
    */
-  public function fetch($paged = false) {
+  public function fetch($options = array()) {
     if (empty($this->models)) {
       $cache = $this->sites_cache->all();
       if (count($cache) === 0) {
