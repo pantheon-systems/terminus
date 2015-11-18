@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+##Master
+### Fixed
+- `site backups get` no longer errs when there are no backups. (#690)
+
 ##[0.9.3] - 2015-11-17
 ### Added
 - `site environments` now includes data on whether environment is initialized yet. (#654)

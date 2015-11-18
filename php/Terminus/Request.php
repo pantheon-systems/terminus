@@ -85,20 +85,12 @@ class Request {
       );
     }
 
-    $handle = fopen($target, 'w');
-    $client = new Client(
-      '',
-      array(
-        Client::CURL_OPTIONS => array(
-          'CURLOPT_RETURNTRANSFER' => true,
-          'CURLOPT_FILE'           => $handle,
-          'CURLOPT_ENCODING'       => 'gzip',
-        )
-      )
-    );
-    $client->get($url)->send();
-    fclose($handle);
-
+    try {
+      $client   = new Client();
+      $response = $client->request('GET', $url, array('sink' => $target));
+    } catch (\Exception $e) {
+      throw new TerminusException($e->getMessage(), array(), 1);
+    }
     return true;
   }
 

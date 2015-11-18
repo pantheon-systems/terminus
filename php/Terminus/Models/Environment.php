@@ -564,10 +564,11 @@ class Environment extends TerminusModel {
     $all_backups = $this->getBackups($element);
 
     if (empty($all_backups)) {
+      $message  = 'No backups available. Please create one with ';
+      $message .= '`terminus site backup create --site={site} --env={env}`';
       throw new TerminusException(
-        'No backups available. Create one with `terminus site backup create 
-          --site={site} --env={env}`',
-        array('site' => $site->get('name'), 'env' => $this->get('id')),
+        $message,
+        array('site' => $this->site->get('name'), 'env' => $this->get('id')),
         1
       );
     }
