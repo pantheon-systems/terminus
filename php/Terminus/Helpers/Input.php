@@ -399,6 +399,9 @@ class Input {
     if (isset($args['workflow_id'])) {
       $workflow_id = $args[$key];
     } else {
+      // Only retrieve the most-recent 100 workflows
+      $site->workflows->fetch(array('paged' => false));
+
       $workflow_menu_args = array();
       foreach ($site->workflows->all() as $workflow) {
         if ($workflow->get('environment')) {
@@ -407,10 +410,13 @@ class Input {
           $environment = 'None';
         }
 
+        $created_at = date('Y-m-d H:i:s', $workflow->get('created_at'));
+
         $workflow_description = sprintf(
-          "%s - %s - %s",
+          "%s - %s - %s - %s",
           $environment,
           $workflow->get('description'),
+          $created_at,
           $workflow->id
         );
         $workflow_menu_args[$workflow->id] = $workflow_description;
