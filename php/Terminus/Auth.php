@@ -99,6 +99,42 @@ class Auth {
   }
 
   /**
+   * Execute the login based on an existing session token
+   *
+   * @param [string] $token Session token to initiate login with
+   * @return [boolean] True if login succeeded
+   */
+  public function logInViaSessionToken($token) {
+    $options = array(
+      'headers' => array('Content-type' => 'application/json'),
+      'cookies' => array('X-Pantheon-Session' => $token),
+    );
+    $this->logger->info('Validating session token');
+    $response = TerminusCommand::request('user', '', '', 'GET', $options);
+    if (!$response
+      || !isset($response['status_code'])
+      || $response['status_code'] != '200'
+    ) {
+      throw new TerminusException(
+        'The session token {token} is not valid.',
+        array('token' => $token),
+        1
+      );
+    }
+    $this->logger->info(
+      'Logged in as {uuid}.',
+      array('uuid' => $response['data']->id)
+    );
+    $session = array(
+      'user_uuid'           => $response['data']->id,
+      'session'             => $token,
+      'session_expire_time' => 0,
+    );
+    Session::instance()->setData($session);
+    return true;
+  }
+
+  /**
    * Execute the login via email/password
    *
    * @param [string] $email    Email address associated with a Pantheon account

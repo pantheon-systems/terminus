@@ -37,6 +37,8 @@ class AuthCommand extends TerminusCommand {
    * [--machine-token=<value>]
    * : Authenticate using an Auth0 token
    *
+   * [--session=<value>]
+   * : Authenticate using an existing session token
    * [--debug]
    * : dump call information when logging in.
    */
@@ -51,6 +53,8 @@ class AuthCommand extends TerminusCommand {
         $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
       }
       $this->auth->logInViaMachineToken($token);
+    } elseif (isset($assoc_args['session'])) {
+      $this->auth->logInViaSessionToken($assoc_args['session']);
     } else {
       // Otherwise, do a normal email/password-based login.
       if (empty($args)) {

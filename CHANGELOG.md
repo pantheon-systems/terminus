@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ##Master
 ### Added
 - New command `workflows show` displays details about a workflow (#687)
+- Added back session token-based login. (#693)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
