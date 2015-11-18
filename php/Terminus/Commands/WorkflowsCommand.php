@@ -34,29 +34,47 @@ public function __construct() {
     $workflows = $site->workflows->all();
     $data = array();
     foreach($workflows as $workflow) {
-      $user = 'Pantheon';
-      if (isset($workflow->get('user')->email)) {
-        $user = $workflow->get('user')->email;
-      }
-      if ($workflow->get('total_time')) {
-        $elapsed_time = $workflow->get('total_time');
-      } else {
-        $elapsed_time = time() - $workflow->get('created_at');
-      }
-
-      $data[] = array(
-        'id'             => $workflow->id,
-        'env'            => $workflow->get('environment'),
-        'workflow'       => $workflow->get('description'),
-        'user'           => $user,
-        'status'         => $workflow->get('phase'),
-        'time'           => sprintf("%ds", $elapsed_time)
-      );
+      $workflow_data = $workflow->serialize();
+      unset($workflow_data['operations']);
+      $data[] = $workflow_data;
     }
     if (count($data) == 0) {
       $this->log()->warning('No workflows have been run on {site}', array('site' => $site->get('name')));
     }
     $this->output()->outputRecordList($data, array('update' => 'Last update'));
+  }
+
+  /**
+   * Show operation details for a workflow
+   *
+   * ## OPTIONS
+   * [--workflow_id]
+   * : Uuid of workflow to show
+   * [--site=<site>]
+   * : Site from which to list workflows
+   *
+   * @subcommand show
+   */
+  public function show($args, $assoc_args) {
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    $workflow = Input::workflow($site, $assoc_args, 'workflow_id');
+
+    $workflow_data = $workflow->serialize();
+    if (Terminus::getConfig('format') == 'normal') {
+      $operations_data = $workflow_data['operations'];
+      unset($workflow_data['operations']);
+
+      $this->output()->outputRecord($workflow_data);
+
+      if (count($operations_data)) {
+        $this->log()->info('Workflow operations:');
+        $this->output()->outputRecordList($operations_data);
+      } else {
+        $this->log()->info('Workflow has no operations');
+      }
+    } else {
+      $this->output()->outputRecordList($workflow_data);
+    }
   }
 }
 

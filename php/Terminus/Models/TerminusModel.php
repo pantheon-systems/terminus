@@ -19,6 +19,9 @@ abstract class TerminusModel {
     if ($attributes == null) {
       $attributes = new \stdClass();
     }
+    if (isset($attributes->id)) {
+      $this->id = $attributes->id;
+    }
     foreach ($options as $var_name => $value) {
       $this->$var_name = $value;
     }
