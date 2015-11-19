@@ -1,9 +1,9 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Commands;
 
 use Terminus;
-use TerminusCommand;
+use Terminus\Commands\TerminusCommand;
 
 /**
  * Base class for Terminus commands that deal with sending SSH commands

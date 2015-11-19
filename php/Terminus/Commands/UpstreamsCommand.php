@@ -1,5 +1,9 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Upstreams;
 
 /**

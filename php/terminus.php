@@ -16,7 +16,6 @@ include TERMINUS_ROOT . '/php/utils.php';
 include TERMINUS_ROOT . '/php/FileCache.php';
 include TERMINUS_ROOT . '/php/dispatcher.php';
 include TERMINUS_ROOT . '/php/class-terminus.php';
-include TERMINUS_ROOT . '/php/class-terminus-command.php';
 
 \Terminus\Utils\loadDependencies();
 

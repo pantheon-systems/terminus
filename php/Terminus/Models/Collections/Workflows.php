@@ -2,7 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-use TerminusCommand;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Workflow;
 use Terminus\Models\Collections\TerminusCollection;
 

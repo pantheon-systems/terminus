@@ -1,6 +1,9 @@
 <?php
 
-use Terminus\CommandWithSSH;
+namespace Terminus\Commands;
+
+use Terminus;
+use Terminus\Commands\CommandWithSSH;
 use Terminus\Helpers\Input;
 use Terminus\Models\Collections\Sites;
 

@@ -3,8 +3,8 @@
 namespace Terminus;
 
 use Terminus;
-use TerminusCommand;
 use Terminus\Session;
+use Terminus\Commands\TerminusCommand;
 
 /**
  * Persists a mapping between Site names and Site IDs

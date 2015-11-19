@@ -1,7 +1,11 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
 use Terminus\Utils;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
@@ -1821,4 +1825,4 @@ public function upstream_updates($args, $assoc_args) {
 
 }
 
-\Terminus::addCommand('site', 'SiteCommand');
+Terminus::addCommand('site', 'SiteCommand');

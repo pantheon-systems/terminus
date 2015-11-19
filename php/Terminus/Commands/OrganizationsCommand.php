@@ -1,7 +1,11 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
 use Terminus\Helpers\Input;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;

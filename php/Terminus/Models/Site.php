@@ -3,7 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus;
-use TerminusCommand;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
@@ -555,8 +555,8 @@ class Site extends TerminusModel {
         compact('form_params')
       );
       return $response['data'];
-    } catch (TerminusException $e) {
-      if (strpos($e->getReplacements()['msg'], '403') !== false) {
+    } catch (\Exception $e) {
+      if (strpos($e->getMessage(), '403') !== false) {
         throw new TerminusException(
           'Instrument required to increase service level',
           array(),

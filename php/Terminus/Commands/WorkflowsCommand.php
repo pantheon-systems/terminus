@@ -1,9 +1,13 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
 use Terminus\Utils;
-use Terminus\Helpers\Input;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 
@@ -78,4 +82,4 @@ public function __construct() {
   }
 }
 
-\Terminus::addCommand('workflows', 'WorkflowsCommand');
+Terminus::addCommand('workflows', 'WorkflowsCommand');
