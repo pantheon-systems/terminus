@@ -4,6 +4,7 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Auth;
+use Terminus\Request;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;

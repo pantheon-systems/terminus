@@ -181,13 +181,16 @@ class Request {
       unset($options['method']);
     }
 
-    $url = sprintf(
-      '%s://%s:%s/api/%s',
-      TERMINUS_PROTOCOL,
-      TERMINUS_HOST,
-      TERMINUS_PORT,
-      $path
-    );
+    $url = $path;
+    if (!isset($options['absolute_url']) || !$options['absolute_url']) {
+      $url = sprintf(
+        '%s://%s:%s/api/%s',
+        TERMINUS_PROTOCOL,
+        TERMINUS_HOST,
+        TERMINUS_PORT,
+        $path
+      );
+    }
 
     if (Session::getValue('session')) {
       $options['cookies'] = array(

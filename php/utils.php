@@ -38,12 +38,11 @@ function assocArgsToStr($assoc_args) {
   * @return [string] $response->name The version number
   */
 function checkCurrentVersion() {
+  $request  = new Request();
   $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
   $url     .= '?per_page=1';
-  $response = Request::send($url, 'GET');
-  $json     = $response->getBody(true);
-  $data     = json_decode($json);
-  $release  = array_shift($data);
+  $response = $request->simpleRequest($url, array('absolute_url' => true));
+  $release  = array_shift($response['data']);
   Terminus::getCache()->putData(
     'latest_release',
     array('version' => $release->name, 'check_date' => time())
@@ -66,7 +65,7 @@ function checkForUpdate() {
   ) {
     $logger = Terminus::getLogger();
     try {
-      $current_version = Utils\checkCurrentVersion();
+      $current_version = checkCurrentVersion();
       if (version_compare($current_version, TERMINUS_VERSION, '>')) {
         $logger->info(
           'An update to Terminus is available. Please update to {version}.',
@@ -74,6 +73,7 @@ function checkForUpdate() {
         );
       }
     } catch (\Exception $e) {
+      $logger->info($e->getMessage());
       $logger->info('Cannot retrieve current Terminus version.');
     }
   }
