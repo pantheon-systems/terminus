@@ -19,18 +19,22 @@ abstract class TerminusCommand {
   public $session;
   public $sites;
 
-  protected static $blacklist = array('password');
   protected $func;
 
   /**
-   * @var LoggerInterface
+   * @var [LoggerInterface]
    */
   protected $logger;
 
   /**
-   * @var OutputterInterface
+   * @var [OutputterInterface]
    */
   protected $outputter;
+
+  /**
+   * @var [Request]
+   */
+  protected $request;
 
   /**
    * Instantiates object, sets cache and session
@@ -43,212 +47,9 @@ abstract class TerminusCommand {
     $this->logger    = Terminus::getLogger();
     $this->outputter = Terminus::getOutputter();
     $this->session   = Session::instance();
+    $this->request   = new Request();
     if (!Terminus::isTest()) {
-      $this->checkForUpdate();
-    }
-  }
-
-  /**
-   * Make a request to the Dashbord's internal API
-   *
-   * @param [string] $path    API path (URL)
-   * @param [array]  $options Options for the request
-   *   [string] method GET is default
-   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-   *     simple object) to be sent along with the request. Will be encoded as
-   *     JSON for you.
-   * @return [array] $return
-   */
-  public static function pagedRequest($path, $options = array()) {
-    $limit = 100;
-    if (isset($options['limit'])) {
-      $limit = $options['limit'];
-    }
-
-    //$results is an associative array so we don't refetch
-    $results  = array();
-    $finished = false;
-    $start    = null;
-
-    while (!$finished) {
-      $paged_path = $path . '?limit=' . $limit;
-      if ($start) {
-        $paged_path .= '&start=' . $start;
-      }
-
-      $resp = self::simpleRequest($paged_path);
-
-      $data = $resp['data'];
-      if (count($data) > 0) {
-        $start = end($data)->id;
-
-        //If the last item of the results has previously been received,
-        //that means there are no more pages to fetch
-        if (isset($results[$start])) {
-          $finished = true;
-          continue;
-        }
-
-        foreach ($data as $item) {
-          $results[$item->id] = $item;
-        }
-      } else {
-        $finished = true;
-      }
-    }
-
-    $return = array('data' => array_values($results));
-    return $return;
-  }
-
-  /**
-   * Make a request to the Pantheon API
-   *
-   * @param [string] $realm   Permissions realm for data request (e.g. user,
-   *   site organization, etc. Can also be "public" to simply pull read-only
-   *   data that is not privileged.
-   * @param [string] $uuid    The UUID of the item in the realm to access
-   * @param [string] $path    API path (URL)
-   * @param [string] $method  HTTP method to use
-   * @param [mixed]  $options A native PHP data structure (e.g. int, string,
-   *   array, or stdClass) to be sent along with the request
-   * @return [array] $data
-   */
-  public static function request(
-    $realm,
-    $uuid,
-    $path    = false,
-    $method  = 'GET',
-    $options = array()
-  ) {
-    $logger = Terminus::getLogger();
-
-    try {
-      $url = Endpoint::get(
-        array(
-          'realm' => $realm,
-          'uuid'  => $uuid,
-          'path'  => $path,
-        )
-      );
-      $logger->debug('Request URL: ' . $url);
-      $response = Request::send($url, $method, $options);
-
-      $data = array(
-        'data'        => json_decode($response->getBody()->getContents()),
-        'headers'     => $response->getHeaders(),
-        'status_code' => $response->getStatusCode(),
-      );
-      return $data;
-    } catch (Guzzle\Http\Exception\BadResponseException $e) {
-      $response = $e->getResponse();
-      throw new TerminusException($response->getBody(true));
-    } catch (Guzzle\Http\Exception\HttpException $e) {
-      $request = $e->getRequest();
-      $sanitized_request = TerminusCommand::stripSensitiveData(
-        (string)$request,
-        TerminusCommand::$blacklist
-      );
-      throw new TerminusException(
-        'API Request Error. {msg} - Request: {req}',
-        array('req' => $sanitized_request, 'msg' => $e->getMessage())
-      );
-    } catch (Exception $e) {
-      throw new TerminusException(
-        'API Request Error: {msg}',
-        array('msg' => $e->getMessage())
-      );
-    }
-  }
-
-  /**
-   * Simplified request method for Pantheon API
-   *
-   * @param [string] $path    API path (URL)
-   * @param [array]  $options Options for the request
-   *   [string] method GET is default
-   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-   *     simple object) to be sent along with the request. Will be encoded as
-   *     JSON for you.
-   * @return [array] $data
-   */
-  public static function simpleRequest($path, $options = array()) {
-    $method = 'get';
-    if (isset($options['method'])) {
-      $method = $options['method'];
-      unset($options['method']);
-    }
-
-    $url = sprintf(
-      '%s://%s:%s/api/%s',
-      TERMINUS_PROTOCOL,
-      TERMINUS_HOST,
-      TERMINUS_PORT,
-      $path
-    );
-
-    if (Session::getValue('session')) {
-      $options['cookies'] = array(
-        'X-Pantheon-Session' => Session::getValue('session')
-      );
-    }
-
-    try {
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $response = Request::send($url, $method, $options);
-    } catch (Guzzle\Http\Exception\BadResponseException $e) {
-      throw new TerminusException(
-        'API Request Error: {msg}',
-        array('msg' => $e->getMessage())
-      );
-    }
-
-    $data = array(
-      'data'        => json_decode($response->getBody()->getContents()),
-      'headers'     => $response->getHeaders(),
-      'status_code' => $response->getStatusCode(),
-    );
-    return $data;
-  }
-
-  /**
-   * Strips sensitive data out of the JSON printed in a request string
-   *
-   * @param [string] $request   The string with a JSON with sensitive data
-   * @param [array]  $blacklist Array of string keys to remove from request
-   * @return [string] $result Sensitive data-stripped version of $request
-   */
-  public static function stripSensitiveData($request, $blacklist = array()) {
-    //Locate the JSON in the string, turn to array
-    $regex = '~\{(.*)\}~';
-    preg_match($regex, $request, $matches);
-    $request_array = json_decode($matches[0], true);
-
-    //See if a blacklisted items are in the arrayed JSON, replace
-    foreach ($blacklist as $blacklisted_item) {
-      if (isset($request_array[$blacklisted_item])) {
-        $request_array[$blacklisted_item] = '*****';
-      }
-    }
-
-    //Turn array back to JSON, put back in string
-    $result = str_replace($matches[0], json_encode($request_array), $request);
-    return $result;
-  }
-
-  /**
-   * Downloads the given URL to the given target
-   *
-   * @param [string] $url    Location of file to download
-   * @param [string] $target Location to download file to
-   * @return [void]
-   */
-  protected function download($url, $target) {
-    try {
-      $response = Request::download($url, $target);
-      return $target;
-    } catch (Exception $e) {
-      $this->log()->error($e->getMessage());
+      Utils\checkForUpdate();
     }
   }
 
@@ -318,52 +119,6 @@ abstract class TerminusCommand {
     } else {
       $final_task = $workflow->get('final_task');
       $this->log()->error($final_task->reason);
-    }
-  }
-
-  /**
-   * Retrieves current version number from repository and saves it to the cache
-   *
-   * @return [string] $response->name The version number
-   */
-  protected function checkCurrentVersion() {
-    $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
-    $url     .= '?per_page=1';
-    $response = Request::send($url, 'GET');
-    $json     = $response->getBody(true);
-    $data     = json_decode($json);
-    $release  = array_shift($data);
-    $this->cache->putData(
-      'latest_release',
-      array('version' => $release->name, 'check_date' => time())
-    );
-    return $release->name;
-  }
-
-  /**
-   * Checks for new versions of Terminus once per week and saves to cache
-   *
-   * @return [void]
-   */
-  private function checkForUpdate() {
-    $cache_data = $this->cache->getData(
-      'latest_release',
-      array('decode_array' => true)
-    );
-    if (!$cache_data
-      || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
-    ) {
-      try {
-        $current_version = $this->checkCurrentVersion();
-        if (version_compare($current_version, TERMINUS_VERSION, '>')) {
-          $this->log()->info(
-            'An update to Terminus is available. Please update to {version}.',
-            array('version' => $current_version)
-          );
-        }
-      } catch (\Exception $e) {
-        $this->log()->info('Cannot retrieve current Terminus version.');
-      }
     }
   }
 

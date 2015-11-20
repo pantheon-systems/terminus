@@ -2,10 +2,11 @@
 
 namespace Terminus\Models;
 
-use Terminus\Commands\TerminusCommand;
+use Terminus\Request;
 
 abstract class TerminusModel {
   protected $id;
+  protected $request;
   private $attributes;
 
   /**
@@ -26,6 +27,7 @@ abstract class TerminusModel {
       $this->$var_name = $value;
     }
     $this->attributes = $attributes;
+    $this->request    = new Request();
   }
 
   /**
@@ -55,7 +57,7 @@ abstract class TerminusModel {
   /**
    * Fetches this object from Pantheon
    *
-   * @param [array] $options params to pass to url request
+   * @param [array] $options Params to pass to url request
    * @return [TerminusModel] $this
    */
   public function fetch($options = array()) {
@@ -70,7 +72,7 @@ abstract class TerminusModel {
       $fetch_args
     );
 
-    $results = TerminusCommand::simpleRequest(
+    $results = $this->request->simpleRequest(
       $this->getFetchUrl(),
       $options
     );

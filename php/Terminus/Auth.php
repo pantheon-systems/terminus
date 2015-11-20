@@ -3,12 +3,13 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\Request;
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 
 class Auth {
   private $logger;
+  private $request;
 
   /**
    * Object constructor. Sets the logger class property.
@@ -16,7 +17,8 @@ class Auth {
    * @return [Auth] $this
    */
   public function __construct() {
-    $this->logger = Terminus::getLogger();
+    $this->logger  = Terminus::getLogger();
+    $this->request = new Request();
   }
 
   /**
@@ -70,7 +72,7 @@ class Auth {
     );
 
     $this->logger->info('Logging in via machine token');
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'auth/refresh',
       '',
       '',
@@ -122,7 +124,7 @@ class Auth {
       ),
     );
 
-    $response = TerminusCommand::request('login', '', '', 'POST', $options);
+    $response = $this->request->request('login', '', '', 'POST', $options);
     if ($response['status_code'] != '200') {
       throw new TerminusException(
         'Login unsuccessful for {email}',
