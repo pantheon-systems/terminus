@@ -17,9 +17,6 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Environment variable `TERMINUS_SSH_HOST` targets a specific host for `drush` and `wp` commands. (#737)
 - Documentation and examples for the use of Terminus as a library. (#738)
 
-### Changed
-- Drush and WP-CLI commands routed through Terminus must now make use of quotes to pass the command and arguments. (#702)
-
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
 - Interactive commands' environment menus now consistently include multidev environments, where applicable. (#701)
@@ -34,6 +31,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Extricated the request logic from TerminusCommand class and moved it to the Request class. (#704)
 - Replaced Mustache templates with Twig. (#730)
 - Resolved Terminus base class' and Runner's interfunctionality. Terminus can now be used as a library. (#738)
+- Drush and WP-CLI commands routed through Terminus must now make use of quotes to pass the command and arguments. (#702)
 
 ##[0.9.3] - 2015-11-17
 ### Added
