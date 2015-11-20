@@ -41,7 +41,7 @@ class WpCommand extends CommandWithSSH {
     $this->checkCommand($command);
     $sites       = new Sites();
     $site        = $sites->get(Input::sitename($assoc_args));
-    $environment = Input::env($assoc_args);
+    $environment = Input::env(array('args' => $assoc_args, 'site' => $site));
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }

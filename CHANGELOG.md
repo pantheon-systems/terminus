@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
+- Interactive commands' environment menus now consistently include multidev environments, where applicable. (#701)
 
 ##[0.9.3] - 2015-11-17
 ### Added

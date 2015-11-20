@@ -102,31 +102,42 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param [array]  $args    Arguments given via param
-   * @param [string] $key     Args key to search for
-   * @param [string] $label   Prompt for STDOUT
-   * @param [array]  $choices Menu options for the user
+   * @param [array] $arg_options Arguments as follows:
+   *        [array]  args    Arguments given via param
+   *        [string] key     Args key to search for
+   *        [string] label   Prompt for STDOUT
+   *        [array]  choices Menu options for the user, may be a collection
+   *        [Site]   site    Site object to gather environment choices from
    * @return [string] Either the selection, its index, or the default
    */
-  public static function env(
-      $args = array(),
-      $key = 'env',
-      $label = 'Choose environment',
-      $choices = null
-  ) {
-    if (!$choices) {
-      $choices = array('dev', 'test', 'live');
+  public static function env(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 'env',
+      'label'   => 'Choose environment',
+      'choices' => array('dev', 'test', 'live'),
+      'site'    => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
     }
-    if (isset($args[$key])) {
-      return $args[$key];
-    }
-    if (in_array($key, array('env', 'from-env'))) {
+    if (in_array($options['key'], array('env', 'from-env'))) {
       if (isset($_SERVER['TERMINUS_ENV'])) {
         return $_SERVER['TERMINUS_ENV'];
       }
     }
+    $choices = $options['choices'];
+    if (get_class($options['site']) == 'Site') {
+      $choices = $options['site']->environments->ids();
+    }
 
-    $menu = self::menu($choices, $default = 'dev', $label, true);
+    $menu = self::menu(
+      $choices,
+      $default = 'dev',
+      $options['label'],
+      true
+    );
     return $menu;
   }
 
