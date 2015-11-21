@@ -32,7 +32,7 @@ class Request {
       'headers'         => array(
         'User-Agent'    => self::userAgent(),
         'Content-type'  => 'application/json',
-      ),
+      )
     );
 
     if ($session = Session::instance()->get('session', false)) {
