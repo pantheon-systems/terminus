@@ -45,7 +45,6 @@
 </rule>
 <rule ref="MySource.PHP.GetRequestData"/>
 <rule ref="MySource.PHP.ReturnFunctionValue"/>
-<rule ref="PEAR.Commenting.FunctionComment"/>
 <rule ref="PEAR.Commenting.InlineComment"/>
 <rule ref="PEAR.ControlStructures.ControlSignature"/>
 <rule ref="PEAR.Functions.FunctionCallSignature">

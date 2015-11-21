@@ -19,10 +19,6 @@ class ArtCommand extends TerminusCommand {
    *
    * ## OPTIONS
    * <druplicon|fist|unicorn|wordpress>
-   *
-   * @param [array] $args       The non-param aspects of the entered command
-   * @param [array] $assoc_args The param aspects of the entered command
-   * @return [void]
    */
   function __invoke($args, $assoc_args) {
     $artwork = $this->works[array_rand($this->works)];
