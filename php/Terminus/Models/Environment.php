@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+use GuzzleHttp\TransferStats as TransferStats;
 use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
@@ -822,16 +823,21 @@ class Environment extends TerminusModel {
    * @return [array] $return_data
    */
   public function wake() {
+    $on_stats = function (TransferStats $stats) {
+      $this->transfertime = $stats->getTransferTime();
+    };
     $hostnames   = $this->getHostnames();
     $target      = key($hostnames);
-    $response    = Request::send("http://$target/pantheon_healthcheck", 'GET');
+    $healthc     = "http://$target/pantheon_healthcheck";
+    $response    = Request::send($healthc, 'GET', array('on_stats' => $on_stats));
     $return_data = array(
-      'success'  => $response->isSuccessful(),
-      'time'     => $response->getInfo('total_time'),
+      'success'  => $response->getStatusCode() === 200,
+      'time'     => $this->transfertime,
       'styx'     => $response->getHeader('X-Pantheon-Styx-Hostname'),
       'response' => $response,
       'target'   => $target,
     );
+
     return $return_data;
   }
 

@@ -229,7 +229,7 @@ class Request {
       'headers'         => array(
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
-      ),
+      )
     );
 
     if ($session = Session::instance()->get('session', false)) {
