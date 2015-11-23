@@ -52,7 +52,9 @@ class DrushCommand extends CommandWithSSH {
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
-    $assoc_args['env'] = $environment = Input::env($assoc_args);
+    $assoc_args['env'] = $environment = Input::env(
+      array('args' => $assoc_args, 'site' => $site)
+    );
     $server = $this->getAppserverInfo(
       array('site' => $site->get('id'), 'environment' => $environment)
     );

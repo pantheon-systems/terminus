@@ -42,7 +42,7 @@ public function __construct() {
   */
 public function clear_cache($args, $assoc_args) {
   $site = $this->sites->get(Input::sitename($assoc_args));
-  $env_id = Input::env($assoc_args, 'env');
+  $env_id = Input::env(array('args' => $assoc_args, 'site' => $site));
   $workflow = $site->workflows->create(
     'clear_cache',
     array('environment' => $env_id)
@@ -72,7 +72,9 @@ public function code($args, $assoc_args) {
   $subcommand = array_shift($args);
   $site = $this->sites->get(Input::sitename($assoc_args));
   $data = $headers = array();
-  $env = $site->environments->get(Input::env($assoc_args, 'env'));
+  $env = $site->environments->get(
+    Input::env(array('args' => $assoc_args, 'site' => $site))
+  );
   switch ($subcommand) {
     case 'log':
       $logs = $env->log();
@@ -164,7 +166,7 @@ public function set_connection_mode($args, $assoc_args) {
   $environments = array_diff($site->environments->ids(), array('test', 'live'));
 
   $env = $site->environments->get(
-    Input::env($assoc_args, 'env', 'Choose environment', $environments)
+    Input::env(array('args' => $assoc_args, 'choices' => $environments))
   );
   if (in_array($env->get('id'), array('test', 'live'))) {
     $this->failure('Connection mode cannot be set in Test or Live environments');
@@ -291,12 +293,7 @@ public function dashboard($args, $assoc_args) {
 public function environment_info($args, $assoc_args) {
   $site = $this->sites->get(Input::sitename($assoc_args));
   $env  = $site->environments->get(
-    Input::env(
-      $assoc_args,
-      'env',
-      'Choose environment',
-      $site->environments->ids()
-    )
+    Input::env(array('args' => $assoc_args, 'site' => $site))
   );
 
   if (isset($assoc_args['field'])) {
@@ -355,7 +352,7 @@ public function info($args, $assoc_args) {
   */
 public function connection_info($args, $assoc_args) {
   $site        = $this->sites->get(Input::sitename($assoc_args));
-  $env_id      = Input::env($assoc_args, 'env', 'Choose environment');
+  $env_id      = Input::env(array('args' => $assoc_args, 'site' => $site));
   $environment = $site->environments->get($env_id);
   $info        = $environment->connectionInfo();
 
@@ -474,7 +471,9 @@ public function organizations($args, $assoc_args) {
 public function backups($args, $assoc_args) {
   $action = array_shift($args);
   $site   = $this->sites->get(Input::sitename($assoc_args));
-  $env    = $site->environments->get(Input::env($assoc_args, 'env'));
+  $env    = $site->environments->get(
+    Input::env(array('args' => $assoc_args, 'site' => $site))
+  );
   //Backward compatability supports "database" as a valid element value.
   if(
     isset($assoc_args['element'])
@@ -648,14 +647,12 @@ public function backups($args, $assoc_args) {
   * @subcommand init-env
   */
   public function init_env($args, $assoc_args) {
-    $site         = $this->sites->get(Input::sitename($assoc_args));
-    $environments = array('dev', 'test', 'live');
-    $env          = $site->environments->get(Input::env(
-      $assoc_args,
-      'env',
-      'Choose environment you want to initialize',
-      array('test', 'live')
-    ));
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    $env  = $site->environments->get(
+      Input::env(
+        array('args' => $assoc_args, 'choices' => array('test', 'live'))
+      )
+    );
 
     if ($env->isInitialized()) {
       $this->log()->warning(
@@ -696,16 +693,18 @@ public function backups($args, $assoc_args) {
   */
 public function clone_content($args, $assoc_args) {
   $site     = $this->sites->get(Input::sitename($assoc_args));
-  $from_env = $site->environments->get(Input::env(
-    $assoc_args,
-    'from-env',
-    'Choose environment you want to clone from'
+  $from_env = $site->environments->get(Input::env(array(
+    'args'  => $assoc_args,
+    'key'   => 'from-env',
+    'label' => 'Choose environment you want to clone from',
+    'site'  => $site,
+  )));
+  $to_env   = Input::env(array(
+    'args'  => $assoc_args,
+    'key'   => 'to-env',
+    'label' => 'Choose environment you want to clone to',
+    'site'  => $site,
   ));
-  $to_env   = Input::env(
-    $assoc_args,
-    'to-env',
-    'Choose environment you want to clone to'
-  );
 
   $db     = isset($assoc_args['db-only']);
   $files  = isset($assoc_args['files-only']);
@@ -777,12 +776,12 @@ public function create_env($args, $assoc_args) {
     }
 
     $from_env = $site->environments->get(
-      Input::env(
-        $assoc_args,
-        'from-env',
-        'Environment to clone content from',
-        $site->environments->ids()
-      )
+      Input::env(array(
+        'args' => $assoc_args,
+        'key' => 'from-env',
+        'label' => 'Environment to clone content from',
+        'site' => $site,
+      ))
     );
 
     $workflow = $site->environments->create($to_env_id, $from_env);
@@ -814,7 +813,13 @@ public function create_env($args, $assoc_args) {
     $multidev_ids = array_map(function($env) {
       return $env->get('id');}, $site->environments->multidev()
     );
-    $multidev_id = Input::env($assoc_args, 'env', "Multidev environment to merge into Dev Environment", $multidev_ids);
+    $multidev_id = Input::env(
+      array(
+        'args' => $assoc_args,
+        'label' => 'Multidev environment to merge into dev environment',
+        'choices' => $multidev_ids
+      )
+    );
     $environment = $site->environments->get($multidev_id);
 
     $workflow = $environment->mergeToDev();
@@ -843,12 +848,12 @@ public function merge_from_dev($args, $assoc_args) {
     function($env) {return $env->get('id');},
     $site->environments->multidev()
   );
-  $multidev_id = Input::env(
-    $assoc_args,
-    'env',
-    'Multidev environment that the Dev Environment will be merged into',
-    $multidev_ids
-  );
+  $multidev_id = Input::env(array(
+    'args'    => $assoc_args,
+    'label'   =>
+      'Multidev environment that the dev environment will be merged into',
+    'choices' => $multidev_ids
+  ));
   $environment = $site->environments->get($multidev_id);
 
   $workflow = $environment->mergeFromDev();
@@ -875,12 +880,12 @@ public function delete_branch($args, $assoc_args) {
     $site->environments->ids(),
     array('dev', 'test', 'live')
   );
-  $branch = Input::env(
-    $assoc_args,
-    'branch',
-    'Branch to delete',
-    $multidev_envs
-  );
+  $branch = Input::env(array(
+    'args'    => $assoc_args,
+    'key'     => 'branch',
+    'label'   => 'Branch to delete',
+    'choices' => $multidev_envs,
+  ));
 
   Terminus::confirm(
     sprintf(
@@ -917,12 +922,11 @@ public function delete_env($args, $assoc_args) {
     $site->environments->ids(),
     array('dev', 'test', 'live')
   );
-  $env = Input::env(
-    $assoc_args,
-    'env',
-    'Environment to delete',
-    $multidev_envs
-  );
+  $env = Input::env(array(
+    'args'    => $assoc_args,
+    'label'   => 'Environment to delete',
+    'choices' => $multidev_envs
+  ));
   $delete_branch = false;
   if(isset($assoc_args['remove_branch'])) {
     $delete_branch = (boolean)$assoc_args['remove_branch'];
@@ -967,12 +971,11 @@ public function delete_env($args, $assoc_args) {
   */
 public function deploy($args, $assoc_args) {
   $site = $this->sites->get(Input::sitename($assoc_args));
-  $env  = $site->environments->get(Input::env(
-    $assoc_args,
-    'env',
-    'Choose environment to deploy to',
-    array('test', 'live')
-  ));
+  $env  = $site->environments->get(Input::env(array(
+    'args' => $assoc_args,
+    'label' => 'Choose environment to deploy to',
+    'choices' => array('test', 'live'),
+  )));
 
   if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
     $this->failure('You can only deploy to the test or live environment.');
@@ -1069,7 +1072,9 @@ public function environments($args, $assoc_args) {
   public function hostnames($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get(Input::sitename($assoc_args));
-    $env    = $site->environments->get(Input::env($assoc_args, 'env'));
+    $env    = $site->environments->get(
+      Input::env(array('args' => $assoc_args, 'site' => $site))
+    );
     switch ($action) {
       case 'list':
         $hostnames = $env->getHostnames();
@@ -1135,7 +1140,9 @@ public function environments($args, $assoc_args) {
 function lock($args, $assoc_args) {
   $action = array_shift($args);
   $site   = $this->sites->get(Input::sitename($assoc_args));
-  $env    = $site->environments->get(Input::env($assoc_args, 'env'));
+  $env    = $site->environments->get(
+    Input::env(array('args' => $assoc_args, 'site' => $site))
+  );
   switch ($action) {
     case 'info':
       $info = $env->lockinfo();
@@ -1298,7 +1305,7 @@ public function mount($args, $assoc_args) {
   $destination = Utils\destinationIsValid($assoc_args['destination']);
 
   $site = $this->sites->get(Input::sitename($assoc_args));
-  $env  = Input::env($assoc_args, 'env');
+  $env  = Input::env(array('args' => $assoc_args, 'site' => $site));
 
   exec('uname', $output, $ret);
   $darwin = '';
@@ -1763,7 +1770,7 @@ public function upstream_updates($args, $assoc_args) {
   */
   public function wake($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = Input::env($assoc_args, 'env');
+    $env  = Input::env(array('args' => $assoc_args, 'site' => $site));
     $data = $site->environments->get($env)->wake();
     if (!$data['success']) {
       $this->failure('Could not reach {target}', array('target' => $data['target']));
@@ -1790,7 +1797,9 @@ public function upstream_updates($args, $assoc_args) {
    */
   public function wipe($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = $site->environments->get(Input::env($assoc_args, 'env'));
+    $env  = $site->environments->get(
+      Input::env(array('args' => $assoc_args, 'site' => $site))
+    );
     Terminus::confirm(
       'Are you sure you want to wipe {site}-{env}?',
       array(
