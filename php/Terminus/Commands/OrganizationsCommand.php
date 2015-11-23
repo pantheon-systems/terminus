@@ -26,18 +26,17 @@ class OrganizationsCommand extends TerminusCommand {
    * Show a list of your organizations on Pantheon
    *
    * @subcommand list
-   *
    */
   public function all($args, $assoc_args) {
      $user = new User();
      $data = array();
-     foreach ($user->getOrganizations() as $id => $org) {
-       $org_data = $org->get('organization');
-       $data[] = array(
-         'name' => $org_data->profile->name,
-         'id' => $org->get('id'),
-       );
-     }
+    foreach ($user->getOrganizations() as $id => $org) {
+      $org_data = $org->get('organization');
+      $data[]   = array(
+        'name' => $org_data->profile->name,
+        'id' => $org->get('id'),
+      );
+    }
 
     $this->output()->outputRecordList($data);
   }
@@ -60,11 +59,15 @@ class OrganizationsCommand extends TerminusCommand {
    * : Site to add to or remove from organization
    *
    * @subcommand sites
-   *
    */
   public function sites($args, $assoc_args) {
     $action   = array_shift($args);
-    $org_id   = Input::orgid($assoc_args, 'org', null, array('allow_none' => false));
+    $org_id   = Input::orgid(
+      $assoc_args,
+      'org',
+      null,
+      array('allow_none' => false)
+    );
     $orgs     = new UserOrganizationMemberships();
     $org      = $orgs->get($org_id);
     $org_info = $org->get('organization');
@@ -101,7 +104,7 @@ class OrganizationsCommand extends TerminusCommand {
         $workflow = $org->site_memberships->addMember($site);
         $workflow->wait();
         $this->workflowOutput($workflow);
-        break;
+          break;
       case 'remove':
         if (isset($assoc_args['site'])) {
           if (!$this->siteIsMember($memberships, $assoc_args['site'])) {
@@ -132,17 +135,16 @@ class OrganizationsCommand extends TerminusCommand {
         $workflow = $member->removeMember();
         $workflow->wait();
         $this->workflowOutput($workflow);
-        break;
+          break;
       case 'list':
       default:
         foreach ($memberships as $membership) {
-          if (
-            isset($assoc_args['tag'])
+          if (isset($assoc_args['tag'])
             && !(in_array($assoc_args['tag'], $membership->get('tags')))
           ) {
             continue;
           }
-          $site = $membership->get('site');
+          $site       = $membership->get('site');
           $data_array = array(
             'name'          => null,
             'id'            => null,
@@ -160,7 +162,7 @@ class OrganizationsCommand extends TerminusCommand {
           $data[] = $data_array;
         }
         $this->output()->outputRecordList($data);
-        break;
+          break;
     }
   }
 
@@ -187,8 +189,8 @@ class OrganizationsCommand extends TerminusCommand {
    */
   private function getNonmemberSiteList($memberships) {
     $members = $this->getMemberSiteList($memberships);
-    $sites = $this->sites->getMemberList();
-    $list = array_diff($sites, $members);
+    $sites   = $this->sites->getMemberList();
+    $list    = array_diff($sites, $members);
     return $list;
   }
 
