@@ -17,7 +17,6 @@ Installation
 - PHP version 5.5.0 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
-- [Runkit extension for PHP](https://github.com/zenovich/runkit)
 
 Once you have at least the requirements installed, you can install Terminus via Composer, cURL, or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
@@ -29,7 +28,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 ####Installing with Composer
 
-The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminus client:
+The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminal client:
 ```
 composer require pantheon-systems/cli
 ```
