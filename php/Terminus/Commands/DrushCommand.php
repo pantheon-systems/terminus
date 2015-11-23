@@ -9,7 +9,6 @@ use Terminus\Commands\CommandWithSSH;
 use Terminus\Models\Collections\Sites;
 use Terminus\Helpers\Input;
 
-
 class DrushCommand extends CommandWithSSH {
   /**
    * Name of client that command will be run on server via
@@ -46,9 +45,9 @@ class DrushCommand extends CommandWithSSH {
     $command = implode($args, ' ');
     $this->checkCommand($command);
 
-    $sites              = new Sites();
+    $sites = new Sites();
     $assoc_args['site'] = Input::sitename($assoc_args);
-    $site               = $sites->get($assoc_args['site']);
+    $site = $sites->get($assoc_args['site']);
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
@@ -59,8 +58,7 @@ class DrushCommand extends CommandWithSSH {
       array('site' => $site->get('id'), 'environment' => $environment)
     );
 
-    # Sanitize assoc args so we don't try to pass our own flags.
-    # TODO: DRY this out?
+    // Sanitize assoc args so we don't try to pass our own flags.
     if (isset($assoc_args['site'])) {
       unset($assoc_args['site']);
     }
@@ -68,17 +66,19 @@ class DrushCommand extends CommandWithSSH {
       unset($assoc_args['env']);
     }
 
-    # Create user-friendly output
+    // Create user-friendly output
     $flags = '';
-    foreach ( $assoc_args as $k => $v ) {
-      if (isset($v) && (string) $v != '') {
+    foreach ($assoc_args as $k => $v) {
+      if (isset($v) && (string)$v != '') {
         $flags .= "--$k=$v ";
-      }
-      else {
+      } else {
         $flags .= "--$k ";
       }
     }
-    if (in_array(Terminus::getConfig('format'), array('bash', 'json', 'silent'))) {
+    if (in_array(
+      Terminus::getConfig('format'),
+      array('bash', 'json', 'silent')
+    )) {
       $assoc_args['pipe'] = 1;
     }
     $this->log()->info(
@@ -95,6 +95,7 @@ class DrushCommand extends CommandWithSSH {
       $this->output()->outputRecordList($result);
     }
   }
+
 }
 
-Terminus::addCommand( 'drush', 'DrushCommand' );
+Terminus::addCommand('drush', 'DrushCommand');
