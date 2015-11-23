@@ -15,14 +15,18 @@ use Terminus\Models\Collections\Sites;
 * Actions to be taken on an individual site
 */
 class WorkflowsCommand extends TerminusCommand {
+  protected $_headers = false;
 
-protected $_headers = false;
-
-public function __construct() {
-  Auth::ensureLogin();
-  parent::__construct();
-  $this->sites = new Sites();
-}
+  /**
+   * Object constructor.
+   *
+   * @return [WorkflowsCommand] $this
+   */
+  public function __construct() {
+    Auth::ensureLogin();
+    parent::__construct();
+    $this->sites = new Sites();
+  }
 
   /**
    * List Worflows for a Site
@@ -34,16 +38,19 @@ public function __construct() {
    * @subcommand list
    */
   public function index($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
+    $site      = $this->sites->get(Input::sitename($assoc_args));
     $workflows = $site->workflows->all();
-    $data = array();
-    foreach($workflows as $workflow) {
+    $data      = array();
+    foreach ($workflows as $workflow) {
       $workflow_data = $workflow->serialize();
       unset($workflow_data['operations']);
       $data[] = $workflow_data;
     }
     if (count($data) == 0) {
-      $this->log()->warning('No workflows have been run on {site}', array('site' => $site->get('name')));
+      $this->log()->warning(
+        'No workflows have been run on {site}.',
+        array('site' => $site->get('name'))
+      );
     }
     $this->output()->outputRecordList($data, array('update' => 'Last update'));
   }
@@ -60,7 +67,7 @@ public function __construct() {
    * @subcommand show
    */
   public function show($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
+    $site     = $this->sites->get(Input::sitename($assoc_args));
     $workflow = Input::workflow($site, $assoc_args, 'workflow_id');
 
     $workflow_data = $workflow->serialize();
@@ -80,6 +87,7 @@ public function __construct() {
       $this->output()->outputRecordList($workflow_data);
     }
   }
+
 }
 
 Terminus::addCommand('workflows', 'WorkflowsCommand');
