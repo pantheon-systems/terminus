@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Actions on multiple sites
- *
- */
-
 namespace Terminus\Commands;
 
 use Terminus;
@@ -20,18 +15,177 @@ use Terminus\Models\User;
 use Terminus\Models\Workflow;
 use Terminus\Models\Collections\Sites;
 
+/**
+ * Actions on multiple sites
+ */
 class SitesCommand extends TerminusCommand {
   public $sites;
 
   /**
-   * Show a list of your sites on Pantheon
-   * @package Terminus
-   * @version 2.0
+   * Shows a list of your sites on Pantheon
+   *
+   * @return [SitesCommand] $this
    */
   public function __construct() {
     Auth::ensureLogin();
     parent::__construct();
     $this->sites = new Sites();
+  }
+
+  /**
+   * Print and save drush aliases
+   *
+   * ## OPTIONS
+   *
+   * [--print]
+   * : print aliases to screen
+   *
+   * [--location=<location>]
+   * : Specify the the full path, including the filename, to the alias file
+   *   you wish to create. Without this option a default of
+   *   '~/.drush/pantheon.aliases.drushrc.php' will be used.
+   */
+  public function aliases($args, $assoc_args) {
+    $user     = new User(new stdClass(), array());
+    $print    = Input::optional('print', $assoc_args, false);
+    $location = Input::optional(
+      'location',
+      $assoc_args,
+      getenv('HOME') . '/.drush/pantheon.aliases.drushrc.php'
+    );
+
+    if (is_dir($location)) {
+      $message  = 'Please provide a full path with filename,';
+      $message .= ' e.g. {location}/pantheon.aliases.drushrc.php';
+      $this->failure($message, compact('location'));
+    }
+
+    $file_exists = file_exists($location);
+
+    // Create the directory if it doesn't yet exist
+    $dirname = dirname($location);
+    if (!is_dir($dirname)) {
+      mkdir($dirname, 0700, true);
+    }
+
+    $content = $user->getAliases();
+    $h       = fopen($location, 'w+');
+    fwrite($h, $content);
+    fclose($h);
+    chmod($location, 0700);
+
+    $message = 'Pantheon aliases created';
+    if ($file_exists) {
+      $message = 'Pantheon aliases updated';
+    }
+    $this->log()->info($message);
+
+    if ($print) {
+      eval(str_replace(array('<?php', '?>'), '', $content));
+      $this->output()->outputDump($aliases);
+    }
+  }
+
+  /**
+   * Create a new site
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to create (machine-readable)
+   *
+   * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--label=<label>]
+   * : Label for the site
+   *
+   * [--upstream=<upstreamid>]
+   * : Specify the upstream upstream to use
+   *
+   * [--org=<id>]
+   * : UUID of organization into which to add this site
+   *
+   */
+  public function create($args, $assoc_args) {
+    $options  = $this->getSiteCreateOptions($assoc_args);
+    $upstream = Input::upstream($assoc_args, 'upstream');
+    $options['upstream_id'] = $upstream->get('id');
+    $this->log()->info(
+      'Creating new {upstream} installation ... ',
+      array('upstream' => $upstream->get('longname'))
+    );
+
+    $workflow = $this->sites->addSite($options);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
+
+    // Add Site to SitesCache
+    $final_task = $workflow->get('final_task');
+    $this->sites->addSiteToCache($final_task->site_id);
+
+    Terminus::launchSelf(
+      'site', array('info'), array(
+      'site' => $options['name'],
+      )
+    );
+
+    return true;
+  }
+
+  /**
+  * Import a new site
+  * @package 2.0
+  *
+  * ## OPTIONS
+  *
+  * [--url=<url>]
+  * : URL of archive to import
+  *
+  * [--name=<name>]
+  * : (deprecated) use --site instead
+  *
+  * [--site=<site>]
+  * : Name of the site to create (machine-readable)
+  *
+  * [--label=<label>]
+  * : Label for the site
+  *
+  * [--org=<id>]
+  * : UUID of organization into which to add this site
+  *
+  * @subcommand import
+  */
+  public function import($args, $assoc_args) {
+    $options = $this->getSiteCreateOptions($assoc_args);
+
+    $url = Input::string($assoc_args, 'url', 'URL of archive to import');
+    if (!$url) {
+      $this->failure('Please enter a URL.');
+    }
+
+    try {
+      //If the site does not yet exist, it will throw an error.
+      $site = $this->sites->get($options['name']);
+      $this->failure(
+        sprintf('A site named {name} already exists.', $options)
+      );
+      exit;
+    } catch (\Exception $e) {
+      //Creating a new site
+      $workflow = $this->sites->addSite($options);
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+
+      //Add site to SitesCache
+      $final_task = $workflow->get('final_task');
+      $site       = $this->sites->addSiteToCache($final_task->site_id);
+      sleep(10); //Avoid false site-DNE errors
+    }
+
+    $workflow = $site->import($url);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
   }
 
   /**
@@ -72,241 +226,83 @@ class SitesCommand extends TerminusCommand {
         'created' => date('Y-m-d H:i:s', $site->get('created')),
         'memberships' => $memberships,
       );
-    } 
+    }
 
-    usort($rows, function($row_1, $row_2) {
-      return strcasecmp($row_1['name'], $row_2['name']);
-    });
+    usort(
+      $rows, function($row_1, $row_2) {
+        $comparison = strcasecmp($row_1['name'], $row_2['name']);
+        return $comparison;
+      }
+    );
 
     if (isset($assoc_args['team'])) {
-      $rows = array_filter($rows, function($site) {
-        return in_array('Team', $site['memberships']);
-      });
+      $rows = array_filter(
+        $rows, function($site) {
+          $is_membership = in_array('Team', $site['memberships']);
+          return $is_membership;
+        }
+      );
     }
 
     if (isset($assoc_args['org'])) {
       $org_id = $assoc_args['org'];
 
-      $rows = array_filter($rows, function($site) use ($org_id) {
-        return (isset($org_ids[$org_id]) || in_array($org_id, $site['memberships']));
-      });
+      $rows = array_filter(
+        $rows, function($site) use ($org_id) {
+          $is_member = (
+            isset($org_ids[$org_id])
+            || in_array($org_id, $site['memberships'])
+          );
+          return $is_member;
+        }
+      );
     }
 
     if (count($rows) == 0) {
       $this->log()->warning('You have no sites.');
     }
 
-    $labels = array('name' => 'Name', 'id', 'ID', 'service_level', 'Service Level', 'framework' => 'Framework', 'created' => 'Created', 'memberships' => 'Memberships');
+    $labels = array(
+      'name'          => 'Name',
+      'id'            => 'ID',
+      'service_level' => 'Service Level',
+      'framework'     => 'Framework',
+      'created'       => 'Created',
+      'memberships'   => 'Memberships'
+    );
     $this->output()->outputRecordList($rows, $labels);
   }
 
   /**
-   * Create a new site
+   * Update all dev sites with an available upstream update.
    *
    * ## OPTIONS
    *
-   * [--site=<site>]
-   * : Name of the site to create (machine-readable)
+   * [--report]
+   * : If set output will contain list of sites and whether they are up-to-date
    *
-   * [--name=<name>]
-   * : (deprecated) use --site instead
+   * [--upstream=<upstream>]
+   * : Specify a specific upstream to check for updating.
    *
-   * [--label=<label>]
-   * : Label for the site
+   * [--no-updatedb]
+   * : Use flag to skip running update.php after the update has applied
    *
-   * [--upstream=<upstreamid>]
-   * : Specify the upstream upstream to use
+   * [--xoption=<theirs|ours>]
+   * : Corresponds to git's -X option, set to 'theirs' by default
+   *   -- https://www.kernel.org/pub/software/scm/git/docs/git-merge.html
+   *
+   * [--tag=<tag>]
+   * : Tag to filter by
    *
    * [--org=<id>]
-   * : UUID of organization into which to add this site
+   * : Only necessary if using --tag. Organization which has tagged the site
    *
+   * [--cached]
+   * : Set to prevent rebuilding of sites cache
+   *
+   * @subcommand mass-update
    */
-  public function create($args, $assoc_args) {
-    $options = SitesCommand::getSiteCreateOptions($assoc_args);
-
-    $upstream = Input::upstream($assoc_args, 'upstream');
-    $options['upstream_id'] = $upstream->get('id');
-    $this->log()->info("Creating new {upstream} installation ... ", array('upstream' => $upstream->get('longname')));
-
-    $workflow = $this->sites->addSite($options);
-    $workflow->wait();
-    $this->workflowOutput($workflow);
-
-    // Add Site to SitesCache
-    $final_task = $workflow->get('final_task');
-    $this->sites->addSiteToCache($final_task->site_id);
-
-    Terminus::launchSelf('site', array('info'), array(
-      'site' => $options['name'],
-    ));
-
-    return true;
-  }
-
-  /**
-  * Import a new site
-  * @package 2.0
-  *
-  * ## OPTIONS
-  *
-  * [--url=<url>]
-  * : URL of archive to import
-  *
-  * [--name=<name>]
-  * : (deprecated) use --site instead
-  *
-  * [--site=<site>]
-  * : Name of the site to create (machine-readable)
-  *
-  * [--label=<label>]
-  * : Label for the site
-  *
-  * [--org=<id>]
-  * : UUID of organization into which to add this site
-  *
-  * @subcommand import
-  */
-  public function import($args, $assoc_args) {
-    $options = SitesCommand::getSiteCreateOptions($assoc_args);
-
-    $url = Input::string($assoc_args, 'url', 'URL of archive to import');
-    if (!$url) {
-      $this->logger->error('Please enter a URL.');
-    }
-
-    try {
-      //If the site does not yet exist, it will throw an error.
-      $site = $this->sites->get($options['name']);
-      $this->logger->error(
-        sprintf('A site named %s already exists.', $options['name'])
-      );
-      exit;
-    } catch (\Exception $e) {
-      //Creating a new site
-      $workflow = $this->sites->addSite($options);
-      $workflow->wait();
-      $this->workflowOutput($workflow);
-
-      //Add site to SitesCache
-      $final_task = $workflow->get('final_task');
-      $site = $this->sites->addSiteToCache($final_task->site_id);
-      sleep(10); //Avoid false site-DNE errors
-    }
-
-    $workflow = $site->import($url);
-    $workflow->wait();
-    $this->workflowOutput($workflow);
-  }
-
-  /**
-   * A helper function for getting/prompting for the site create options.
-   *
-   * @param [array] $assoc_args Arguments from command
-   * @return [array]
-   */
-  static function getSiteCreateOptions($assoc_args) {
-    $options = array();
-    $options['label'] = Input::string($assoc_args, 'label', 'Human-readable label for the site');
-    $suggested_name = Utils\sanitizeName($options['label']);
-
-    if (array_key_exists('name', $assoc_args)) {
-      // Deprecated but kept for backwards compatibility
-      $options['name'] = $assoc_args['name'];
-    } elseif (array_key_exists('site', $assoc_args)) {
-      $options['name'] = $assoc_args['site'];
-    } elseif (isset($_SERVER['TERMINUS_SITE'])) {
-      $options['name'] = $_SERVER['TERMINUS_SITE'];
-    } else {
-      $options['name'] = Input::string(
-        $assoc_args,
-        'site',
-        "Machine name of the site; used as part of the default URL (if left blank will be $suggested_name)",
-        $suggested_name
-      );
-    }
-    if (isset($assoc_args['org'])) {
-      $options['organization_id'] = Input::orgid($assoc_args, 'org', false);
-    }
-    return $options;
-  }
-
-  /**
-   * Print and save drush aliases
-   *
-   * ## OPTIONS
-   *
-   * [--print]
-   * : print aliases to screen
-   *
-   * [--location=<location>]
-   * : Specify the the full path, including the filename, to the alias file you wish to create.
-   *   Without this option a default of '~/.drush/pantheon.aliases.drushrc.php' will be used.
-   *
-   */
-  public function aliases($args, $assoc_args) {
-    $user = new User(new stdClass(), array());
-    $print = Input::optional('print', $assoc_args, false);
-    $location = Input::optional('location', $assoc_args, getenv("HOME").'/.drush/pantheon.aliases.drushrc.php');
-
-    // Cannot provide just a directory
-    if (is_dir($location)) {
-      $this->log()->error("Please provide a full path with filename, e.g. %s/pantheon.aliases.drushrc.php", $location);
-      exit(1);
-    }
-
-    $file_exists = file_exists($location);
-
-    // Create the directory if it doesn't yet exist
-    $dirname = dirname($location);
-    if (!is_dir($dirname)) {
-      mkdir($dirname, 0700, true);
-    }
-
-    $content = $user->getAliases();
-    $h = fopen($location, 'w+');
-    fwrite($h, $content);
-    fclose($h);
-    chmod($location, 0700);
-
-    $message = $file_exists ? 'Pantheon aliases updated' : 'Pantheon aliases created';
-    $this->log()->info($message);
-
-    if ($print) {
-      eval(str_replace(array('<?php', '?>'), '', $content));
-      $this->output()->outputDump($aliases);
-    }
-  }
-
-
-/**
- * Update all dev sites with an available upstream update.
- *
- * ## OPTIONS
- *
- * [--report]
- * : If set output will contain list of sites and whether they are up-to-date
- *
- * [--upstream=<upstream>]
- * : Specify a specific upstream to check for updating.
- *
- * [--no-updatedb]
- * : Use flag to skip running update.php after the update has applied
- *
- * [--xoption=<theirs|ours>]
- * : Corresponds to git's -X option, set to 'theirs' by default -- https://www.kernel.org/pub/software/scm/git/docs/git-merge.html
- *
- * [--tag=<tag>]
- * : Tag to filter by
- *
- * [--org=<id>]
- * : Only necessary if using --tag. Organization which has tagged the site thusly
- *
- * [--cached]
- * : Set to prevent rebuilding of sites cache
- *
- * @subcommand mass-update
- */
-  public function mass_update($args, $assoc_args) {
+  public function massUpdate($args, $assoc_args) {
     // Ensure the sitesCache is up to date
     if (!isset($assoc_args['cached'])) {
       $this->sites->rebuildCache();
@@ -325,9 +321,15 @@ class SitesCommand extends TerminusCommand {
     $sites = $this->sites->filterAllByTag($tag, $org);
 
     // Start status messages.
-    if($upstream) $this->log()->info('Looking for sites using '.$upstream.'.');
+    if ($upstream) {
+      $this->log()->info(
+        'Looking for sites using {upstream}.',
+        compact('upstream')
+      );
+    }
 
-    foreach($sites as $site) {
+    foreach ($sites as $site) {
+      $context = array('site' => $site->get('name'));
       $site->fetch();
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
@@ -336,49 +338,71 @@ class SitesCommand extends TerminusCommand {
       }
       // Check for upstream argument and site upstream URL match.
       $siteUpstream = $site->info('upstream');
-      if ( $upstream AND isset($siteUpstream->url)) {
-        if($siteUpstream->url <> $upstream ) {
+      if ($upstream && isset($siteUpstream->url)) {
+        if ($siteUpstream->url <> $upstream) {
           // Uptream doesn't match, go back to start.
           continue;
         }
       }
 
-      if( $updates->behind > 0 ) {
-        $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Needs update");
+      if ($updates->behind > 0) {
+        $data[$site->get('name')] = array(
+          'site'   => $site->get('name'),
+          'status' => 'Needs update'
+        );
         $env = $site->environments->get('dev');
         if ($env->getConnectionMode() == 'sftp') {
-          $this->log()->warning(
-            '{site} has available updates, but is in SFTP mode. Switch to Git mode to apply updates.',
-            array('site' => $site->get('name'))
+          $message  = '{site} has available updates, but is in SFTP mode.';
+          $message .= ' Switch to Git mode to apply updates.';
+          $this->log()->warning($message, $context);
+          $data[$site->get('name')] = array(
+            'site'=> $site->get('name'),
+            'status' => 'Needs update - switch to Git mode'
           );
-          $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Needs update - switch to Git mode");
           continue;
         }
         $updatedb = !Input::optional($assoc_args, 'updatedb', false);
-        $xoption = Input::optional($assoc_args, 'xoption', 'theirs');
+        $xoption  = Input::optional($assoc_args, 'xoption', 'theirs');
         if (!$report) {
-          $confirmed = Input::yesno("Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ", array($site->get('name'), var_export($updatedb,1), var_export($xoption,1)));
-          if(!$confirmed) continue; // User says No, go back to start.
-
+          $confirmed = Input::yesno(
+            'Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ',
+            array(
+              $site->get('name'),
+              var_export($updatedb, 1),
+              var_export($xoption, 1)
+            )
+          );
+          if (!$confirmed) {
+            continue; // User says No, go back to start.
+          }
           // Backup the DB so the client can restore if something goes wrong.
-          $this->log()->info('Backing up '.$site->get('name').'.');
+          $this->log()->info('Backing up {site}.', $context);
           $backup = $env->createBackup(array('element'=>'all'));
           // Only continue if the backup was successful.
-          if($backup) {
-            $this->log()->info("Backup of ".$site->get('name')." created.");
-            $this->log()->info('Updating '.$site->get('name').'.');
-            // Apply the update, failure here would trigger a guzzle exception so no need to validate success.
-            $response = $site->applyUpstreamUpdates($env->get('id'), $updatedb, $xoption);
+          if ($backup) {
+            $this->log()->info('Backup of {site} created.', $context);
+            $this->log()->info('Updating {site}.', $context);
+            $response = $site->applyUpstreamUpdates(
+              $env->get('id'),
+              $updatedb,
+              $xoption
+            );
             $data[$site->get('name')]['status'] = 'Updated';
-            $this->log()->info($site->get('name').' is updated.');
+            $this->log()->info('{site} is updated.', $context);
           } else {
             $data[$site->get('name')]['status'] = 'Backup failed';
-            $this->log()->error('There was a problem backing up '.$site->get('name').'. Update aborted.');
+            $this->failure(
+              'There was a problem backing up {site}. Update aborted.',
+              $context
+            );
           }
         }
       } else {
         if (isset($assoc_args['report'])) {
-          $data[$site->get('name')] = array('site'=> $site->get('name'), 'status' => "Up to date");
+          $data[$site->get('name')] = array(
+            'site'   => $site->get('name'),
+            'status' => 'Up to date'
+          );
         }
       }
     }
@@ -390,6 +414,46 @@ class SitesCommand extends TerminusCommand {
       $this->log()->info('No sites in need of updating.');
     }
   }
+
+  /**
+   * A helper function for getting/prompting for the site create options.
+   *
+   * @param [array] $assoc_args Arguments from command
+   * @return [array] $options
+   */
+  private function getSiteCreateOptions($assoc_args) {
+    $options          = array();
+    $options['label'] = Input::string(
+      $assoc_args,
+      'label',
+      'Human-readable label for the site'
+    );
+    $suggested_name   = Utils\sanitizeName($options['label']);
+
+    if (array_key_exists('name', $assoc_args)) {
+      // Deprecated but kept for backwards compatibility
+      $options['name'] = $assoc_args['name'];
+    } elseif (array_key_exists('site', $assoc_args)) {
+      $options['name'] = $assoc_args['site'];
+    } elseif (isset($_SERVER['TERMINUS_SITE'])) {
+      $options['name'] = $_SERVER['TERMINUS_SITE'];
+    } else {
+      $message  = 'Machine name of the site; used as part of the default URL';
+      $message .= " (if left blank will be $suggested_name)";
+
+      $options['name'] = Input::string(
+        $assoc_args,
+        'site',
+        $message,
+        $suggested_name
+      );
+    }
+    if (isset($assoc_args['org'])) {
+      $options['organization_id'] = Input::orgid($assoc_args, 'org', false);
+    }
+    return $options;
+  }
+
 }
 
-Terminus::addCommand( 'sites', 'SitesCommand' );
+Terminus::addCommand('sites', 'SitesCommand');
