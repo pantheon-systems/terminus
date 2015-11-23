@@ -31,6 +31,7 @@ $finder = new Finder();
 $finder
   ->files()
   ->ignoreVCS(true)
+  ->in('./assets')
   ->in('./php')
   ->in('./vendor')
   ->exclude('test')
