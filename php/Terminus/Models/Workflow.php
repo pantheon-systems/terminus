@@ -14,7 +14,7 @@ class Workflow extends TerminusModel {
    *
    * @return [string] $url URL to use in fetch query
    */
-  protected function getFetchUrl() {
+  public function getFetchUrl() {
     $url = '';
     switch ($this->getOwnerName()) {
       case 'user':
@@ -32,16 +32,32 @@ class Workflow extends TerminusModel {
         );
           break;
       case 'organization':
-        $user = $this->get('user');
         $url  = sprintf(
           'users/%s/organizations/%s/workflows/%s',
-          $user->id,
+          $this->owner->user->id,
           $this->owner->get('id'),
           $this->get('id')
         );
           break;
     }
     return $url;
+  }
+
+  /**
+   * Re-fetches workflow data hydrated with logs
+   *
+   * @return [Workflow] $this
+   */
+  public function fetchWithLogs() {
+    $options = array(
+      'fetch_args' => array(
+        'query' => array(
+          'hydrate' => 'operations_with_logs'
+        )
+      )
+    );
+    $this->fetch($options);
+    return $this;
   }
 
   /**

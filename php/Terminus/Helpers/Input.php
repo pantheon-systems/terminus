@@ -404,21 +404,19 @@ class Input {
   /**
    * Helper function to select Site Workflow
    *
-   * @param [Site]   $site Site from which to fetch workflows
-   * @param [array]  $args Args to parse value from
-   * @param [string] $key  Index to search for in args
+   * @param [array<Workflow>] $workflows Array of workflows to list
+   * @param [array]           $args      Args to parse value from
+   * @param [string]          $key       Index to search for in args
    *
    * @return [Workflow] $workflow
    */
-  public static function workflow($site, $args, $key = 'workflow_id') {
+  public static function workflow($workflows, $args, $key = 'workflow_id') {
     if (isset($args['workflow_id'])) {
       $workflow_id = $args[$key];
     } else {
-      // Only retrieve the most-recent 100 workflows
-      $site->workflows->fetch(array('paged' => false));
-
       $workflow_menu_args = array();
-      foreach ($site->workflows->all() as $workflow) {
+
+      foreach ($workflows as $workflow) {
         if ($workflow->get('environment')) {
           $environment = $workflow->get('environment');
         } else {
@@ -443,8 +441,23 @@ class Input {
       );
     }
 
-    $workflow = $site->workflows->get($workflow_id);
-    return $workflow;
+    $filtered_workflow = array_filter(
+      $workflows,
+      function($workflow) use ($workflow_id) {
+        return $workflow->id == $workflow_id;
+      }
+    );
+
+    if (count($filtered_workflow) > 0) {
+      $workflow = array_values($filtered_workflow)[0];
+      return $workflow;
+    } else {
+      throw new TerminusException(
+        'Could not find workflow "{id}"',
+        array('id' => $id),
+        1
+      );
+    }
   }
 
   /**

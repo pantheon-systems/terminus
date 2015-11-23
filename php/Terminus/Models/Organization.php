@@ -27,14 +27,20 @@ class Organization extends TerminusModel {
     if (!isset($this->user)) {
       $this->user = new User();
     }
-    $params = array(
-      'organization' => $this,
-      'owner'        => $this,
-      'owner_type'   => 'organization',
+    $this->site_memberships = new OrganizationSiteMemberships(
+      array(
+        'organization' => $this,
+        'owner'        => $this,
+        'owner_type'   => 'organization',
+      )
     );
-    $this->site_memberships = new OrganizationSiteMemberships($params);
     //$this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows = new Workflows($params);
+    $this->workflows = new Workflows(
+      array(
+        'owner'      => $this,
+        'owner_type' => 'organization',
+      )
+    );
   }
 
   /**

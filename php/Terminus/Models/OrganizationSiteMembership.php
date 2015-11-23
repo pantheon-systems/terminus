@@ -4,6 +4,7 @@ namespace Terminus\Models;
 
 use Terminus\Models\Organization;
 
+// TODO: this should inherit from TerminusModel, with an `organization` property
 class OrganizationSiteMembership extends Organization {
 
   /**
@@ -13,7 +14,7 @@ class OrganizationSiteMembership extends Organization {
    */
   public function removeMember() {
     $site     = $this->get('site');
-    $workflow = $this->workflows->create(
+    $workflow = $this->organization->workflows->create(
       'remove_organization_site_membership',
       array(
         'params'    => array(

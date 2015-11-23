@@ -27,3 +27,13 @@ Feature: View site workflow information
     """
     quicksilver	my_script
     """
+
+  @vcr workflows_logs
+  Scenario: Show logs for a specific Workflow
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    When I run "terminus workflows logs --site=[[test_site_name]] --workflow_id=4b4bbbc4-4602-11e5-a354-bc764e117665"
+    Then I should get:
+    """
+    lorem log ipsum delor
+    """

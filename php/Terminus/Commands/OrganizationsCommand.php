@@ -7,6 +7,7 @@ use Terminus\Auth;
 use Terminus\Helpers\Input;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
+use Terminus\Models\Organization;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;
 
@@ -68,9 +69,11 @@ class OrganizationsCommand extends TerminusCommand {
       null,
       array('allow_none' => false)
     );
-    $orgs     = new UserOrganizationMemberships();
-    $org      = $orgs->get($org_id);
-    $org_info = $org->get('organization');
+    // TODO: clarify that these are OrganizationMemberships, not Organization models
+    $orgs      = new UserOrganizationMemberships();
+    $org       = $orgs->get($org_id);
+    $org_info  = $org->get('organization');
+    $org_model = new Organization($org_info);
 
     $memberships = $org->site_memberships->all();
 
@@ -101,7 +104,7 @@ class OrganizationsCommand extends TerminusCommand {
           'Are you sure you want to add %s to %s ?',
           array($site->get('name'), $org_info->profile->name)
         );
-        $workflow = $org->site_memberships->addMember($site);
+        $workflow = $org_model->site_memberships->addMember($site);
         $workflow->wait();
         $this->workflowOutput($workflow);
           break;
@@ -127,7 +130,7 @@ class OrganizationsCommand extends TerminusCommand {
             )
           );
         }
-        $member = $org->site_memberships->get($site->get('id'));
+        $member = $org_model->site_memberships->get($site->get('id'));
         Terminus::confirm(
           'Are you sure you want to remove %s from %s ?',
           array($site->get('name'), $org_info->profile->name)
