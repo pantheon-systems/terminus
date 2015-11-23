@@ -4,6 +4,7 @@ namespace Terminus\Utils;
 
 use ArrayIterator;
 use Terminus;
+use Terminus\Request;
 use Terminus\Iterators\Transform;
 use Terminus\Exceptions\TerminusException;
 
@@ -29,6 +30,53 @@ function assocArgsToStr($assoc_args) {
   }
 
   return $return;
+}
+
+/**
+  * Retrieves current version number from repository and saves it to the cache
+  *
+  * @return [string] $response->name The version number
+  */
+function checkCurrentVersion() {
+  $request  = new Request();
+  $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
+  $url     .= '?per_page=1';
+  $response = $request->simpleRequest($url, array('absolute_url' => true));
+  $release  = array_shift($response['data']);
+  Terminus::getCache()->putData(
+    'latest_release',
+    array('version' => $release->name, 'check_date' => time())
+  );
+  return $release->name;
+}
+
+/**
+  * Checks for new versions of Terminus once per week and saves to cache
+  *
+  * @return [void]
+  */
+function checkForUpdate() {
+  $cache_data = Terminus::getCache()->getData(
+    'latest_release',
+    array('decode_array' => true)
+  );
+  if (!$cache_data
+    || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
+  ) {
+    $logger = Terminus::getLogger();
+    try {
+      $current_version = checkCurrentVersion();
+      if (version_compare($current_version, TERMINUS_VERSION, '>')) {
+        $logger->info(
+          'An update to Terminus is available. Please update to {version}.',
+          array('version' => $current_version)
+        );
+      }
+    } catch (\Exception $e) {
+      $logger->info($e->getMessage());
+      $logger->info('Cannot retrieve current Terminus version.');
+    }
+  }
 }
 
 /**
@@ -312,3 +360,29 @@ function sqlFromZip($filename) {
   $file = preg_replace('#\.gz$#s', '', $filename);
   return $file;
 }
+
+/**
+  * Strips sensitive data out of the JSON printed in a request string
+  *
+  * @param [string] $request   The string with a JSON with sensitive data
+  * @param [array]  $blacklist Array of string keys to remove from request
+  * @return [string] $result Sensitive data-stripped version of $request
+  */
+function stripSensitiveData($request, $blacklist = array()) {
+  //Locate the JSON in the string, turn to array
+  $regex = '~\{(.*)\}~';
+  preg_match($regex, $request, $matches);
+  $request_array = json_decode($matches[0], true);
+
+  //See if a blacklisted items are in the arrayed JSON, replace
+  foreach ($blacklist as $blacklisted_item) {
+    if (isset($request_array[$blacklisted_item])) {
+      $request_array[$blacklisted_item] = '*****';
+    }
+  }
+
+  //Turn array back to JSON, put back in string
+  $result = str_replace($matches[0], json_encode($request_array), $request);
+  return $result;
+}
+

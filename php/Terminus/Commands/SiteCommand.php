@@ -4,6 +4,7 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Auth;
+use Terminus\Request;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
@@ -510,7 +511,7 @@ public function backups($args, $assoc_args) {
           $target = sprintf('%s/%s', $target, $filename);
         }
         $this->log()->info('Downloading ... please wait ...');
-        if ($this->download($url->url, $target)) {
+        if (Request::download($url->url, $target)) {
           $this->log()->info('Downloaded {target}', compact('target'));
           return $target;
         } else {

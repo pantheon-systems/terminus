@@ -2,7 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Commands\TerminusCommand;
+use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 
@@ -19,6 +19,7 @@ abstract class TerminusCollection extends TerminusModel {
     foreach ($options as $key => $option) {
       $this->$key = $option;
     }
+    $this->request = new Request();
   }
 
   /**
@@ -146,7 +147,7 @@ abstract class TerminusCollection extends TerminusModel {
       $this->getFetchArgs(),
       $fetch_args
     );
-    $results = TerminusCommand::$function_name(
+    $results = $this->request->$function_name(
       $this->getFetchUrl(),
       $options
     );

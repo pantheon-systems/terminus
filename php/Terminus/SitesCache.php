@@ -3,8 +3,8 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\Request;
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
 
 /**
  * Persists a mapping between Site names and Site IDs
@@ -31,6 +31,7 @@ use Terminus\Commands\TerminusCommand;
 class SitesCache {
   protected $cache;
   protected $cachekey;
+  protected $request;
 
   /**
    * Object constructor, saves cache to cache property
@@ -40,6 +41,7 @@ class SitesCache {
   public function __construct() {
     $this->cache    = Terminus::getCache();
     $this->cachekey = Session::instance()->get('user_uuid', '') . '_sites';
+    $this->request  = new Request();
   }
 
   /**
@@ -216,7 +218,7 @@ class SitesCache {
    * @return [array] $memberships_data
    */
   private function fetchOrganizationSites($org_data) {
-    $response = TerminusCommand::pagedRequest(
+    $response = $this->request->pagedRequest(
       'organizations/' . $org_data['id'] . '/memberships/sites'
     );
 
@@ -237,7 +239,7 @@ class SitesCache {
    */
   private function fetchUserSites() {
     $user_id  = Session::getValue('user_uuid');
-    $response = TerminusCommand::pagedRequest(
+    $response = $this->request->pagedRequest(
       'users/' . $user_id . '/memberships/sites'
     );
 
@@ -264,7 +266,7 @@ class SitesCache {
    *         [string] type Always "organization"
    */
   private function fetchUserOrganizations() {
-    $response = TerminusCommand::pagedRequest(
+    $response = $this->request->pagedRequest(
       'users/' . Session::getValue('user_uuid') . '/memberships/organizations'
     );
 

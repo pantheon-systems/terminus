@@ -3,7 +3,6 @@
 namespace Terminus\Models;
 
 use Terminus\Request;
-use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Bindings;
@@ -31,7 +30,7 @@ class Environment extends TerminusModel {
    * @return [array] $response['data']
    */
   public function addHostname($hostname) {
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'sites',
       $this->site->get('id'),
       sprintf(
@@ -295,7 +294,7 @@ class Environment extends TerminusModel {
   public function create($env_name) {
     $path     = sprintf('environments/%s', $env_name);
     $params   = array();
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'sites',
       $site_id,
       $path,
@@ -362,7 +361,7 @@ class Environment extends TerminusModel {
    * @return [array] $response['data']
    */
   public function deleteHostname($hostname) {
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'sites',
       $this->site->get('id'),
       sprintf(
@@ -403,7 +402,7 @@ class Environment extends TerminusModel {
       'environments/%s/on-server-development/diffstat',
       $this->get('id')
     );
-    $data = TerminusCommand::request(
+    $data = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,
@@ -478,7 +477,7 @@ class Environment extends TerminusModel {
   public function getBackups($element = null) {
     if ($this->backups == null) {
       $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
-      $response = TerminusCommand::request(
+      $response = $this->request->request(
         'sites',
         $this->site->get('id'),
         $path,
@@ -522,7 +521,7 @@ class Environment extends TerminusModel {
       $element
     );
     $form_params = array('method' => 'GET');
-    $response    = TerminusCommand::request(
+    $response    = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,
@@ -542,7 +541,7 @@ class Environment extends TerminusModel {
       'environments/%s/on-server-development',
       $this->get('id')
     );
-    $result = TerminusCommand::request(
+    $result = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,
@@ -590,7 +589,7 @@ class Environment extends TerminusModel {
    * @return [array] $response['data']
    */
   public function getHostnames() {
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'sites',
       $this->site->get('id'),
       'environments/' . $this->get('id') . '/hostnames',
@@ -617,7 +616,7 @@ class Environment extends TerminusModel {
    */
   public function info($key = null) {
     $path   = sprintf('environments/%s', $this->get('id'));
-    $result = TerminusCommand::request(
+    $result = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,
@@ -737,7 +736,7 @@ class Environment extends TerminusModel {
    */
   public function log() {
     $path     = sprintf('environments/%s/code-log', $this->get('id'));
-    $response = TerminusCommand::request(
+    $response = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,
@@ -859,7 +858,7 @@ class Environment extends TerminusModel {
       'type'        => $workflow,
       'environment' => $this->get('id'),
     );
-    $response    = TerminusCommand::request(
+    $response    = $this->request->request(
       'sites',
       $this->site->get('id'),
       $path,

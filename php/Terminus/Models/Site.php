@@ -3,7 +3,6 @@
 namespace Terminus\Models;
 
 use Terminus;
-use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
@@ -84,7 +83,7 @@ class Site extends TerminusModel {
    */
   public function addTag($tag, $org) {
     $params   = array($tag => array('sites' => array($this->get('id'))));
-    $response = TerminusCommand::simpleRequest(
+    $response = $this->request->simpleRequest(
       sprintf('organizations/%s/tags', $org),
       array('method' => 'put', 'form_params' => $params)
     );
@@ -127,7 +126,7 @@ class Site extends TerminusModel {
   public function attributes() {
     $path   = 'attributes';
     $method = 'GET';
-    $atts   = TerminusCommand::request(
+    $atts   = $this->request->request(
       'sites',
       $this->get('id'),
       $path,
@@ -144,7 +143,7 @@ class Site extends TerminusModel {
    */
   public function bindings($type = null) {
     if (empty($this->bindings)) {
-      $response = TerminusCommand::simpleRequest(
+      $response = $this->request->simpleRequest(
         'sites/' . $this->get('id') . '/' . $bindings
       );
       foreach ($response['data'] as $id => $binding) {
@@ -170,7 +169,7 @@ class Site extends TerminusModel {
    */
   public function createBranch($branch) {
     $form_params = array('refspec' => sprintf('refs/heads/%s', $branch));
-    $response    = TerminusCommand::request(
+    $response    = $this->request->request(
       'sites',
       $this->get('id'),
       'code-branch',
@@ -186,7 +185,7 @@ class Site extends TerminusModel {
    * @return [array] $response
    */
   public function delete() {
-    $response = TerminusCommand::simpleRequest(
+    $response = $this->request->simpleRequest(
       'sites/' . $this->get('id'),
       array('method' => 'delete')
     );
@@ -247,7 +246,7 @@ class Site extends TerminusModel {
    * @return [Site] $this
    */
   public function fetch($options = array()) {
-    $response         = TerminusCommand::simpleRequest(
+    $response         = $this->request->simpleRequest(
       sprintf('sites/%s?site_state=true', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -275,7 +274,7 @@ class Site extends TerminusModel {
    */
   public function getFeature($feature) {
     if (!isset($this->features)) {
-      $response       = TerminusCommand::simpleRequest(
+      $response       = $this->request->simpleRequest(
         sprintf('sites/%s/features', $this->get('id'))
       );
       $this->features = (array)$response['data'];
@@ -331,7 +330,7 @@ class Site extends TerminusModel {
    * @return [stdClass] $response['data']
    */
   public function getUpstreamUpdates() {
-    $response = TerminusCommand::simpleRequest(
+    $response = $this->request->simpleRequest(
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
@@ -441,7 +440,7 @@ class Site extends TerminusModel {
    */
   public function newRelic() {
     $path     = 'new-relic';
-    $response = TerminusCommand::simpleRequest(
+    $response = $this->request->simpleRequest(
       'sites/' . $this->get('id') . '/new-relic'
     );
     return $response['data'];
@@ -479,7 +478,7 @@ class Site extends TerminusModel {
    * @return [array] $response
    */
   public function removeTag($tag, $org) {
-    $response = TerminusCommand::simpleRequest(
+    $response = $this->request->simpleRequest(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
         $org,
@@ -521,7 +520,7 @@ class Site extends TerminusModel {
    */
   public function tips() {
     $path = 'code-tips';
-    $data = TerminusCommand::request('sites', $this->get('id'), $path, 'GET');
+    $data = $this->request->request('sites', $this->get('id'), $path, 'GET');
     return $data['data'];
   }
 
@@ -547,7 +546,7 @@ class Site extends TerminusModel {
     $method      = 'PUT';
     $form_params = $level;
     try {
-      $response = TerminusCommand::request(
+      $response = $this->request->request(
         'sites',
         $this->get('id'),
         $path,
