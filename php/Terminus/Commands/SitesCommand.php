@@ -5,9 +5,13 @@
  *
  */
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Utils;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
 use Terminus\Models\Organization;
 use Terminus\Models\Site;

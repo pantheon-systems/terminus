@@ -12,9 +12,11 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "
 ./scripts/lint.sh
 
 # Run the functional tests
-behat_cmd="vendor/bin/behat -c=tests/config/behat.yml"
+behat_cmd="vendor/bin/behat -c=tests/config/behat.yml --suite="
 if [ ! -z $1 ]; then
-  behat_cmd+=" --suite=$1"
+  behat_cmd+=$1
+else
+  behat_cmd+="default"
 fi
 if [ -z $2 ]; then
   # Run the unit tests if we are not targeting a feature

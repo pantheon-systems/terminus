@@ -1,6 +1,10 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\SitesCache;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 
@@ -79,7 +83,7 @@ class CliCommand extends TerminusCommand {
    * @subcommand param-dump
    */
   function param_dump() {
-    $this->output()->outputDump(\Terminus::getConfigurator()->getSpec());
+    $this->output()->outputDump(Terminus::getConfigurator()->getSpec());
   }
 
   /**
@@ -104,7 +108,7 @@ class CliCommand extends TerminusCommand {
    */
   function completions( $_, $assoc_args ) {
     $line = substr( $assoc_args['line'], 0, $assoc_args['point'] );
-    $compl = new \Terminus\Completions( $line );
+    $compl = new Terminus\Completions( $line );
     $compl->render();
   }
 

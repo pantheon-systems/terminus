@@ -1,6 +1,10 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
 
 /**

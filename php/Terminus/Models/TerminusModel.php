@@ -2,7 +2,7 @@
 
 namespace Terminus\Models;
 
-use TerminusCommand;
+use Terminus\Commands\TerminusCommand;
 
 abstract class TerminusModel {
   protected $id;

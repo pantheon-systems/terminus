@@ -1,5 +1,8 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Auth;
 use Terminus\Endpoint;
 use Terminus\Request;

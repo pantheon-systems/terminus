@@ -4,8 +4,12 @@
  * Authenticate to Pantheon and store a local secret token.
  */
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Session;
 use Terminus\Utils;
+use Terminus\Commands\TerminusCommand;
 
 class AuthCommand extends TerminusCommand {
   private $auth;
@@ -21,7 +25,7 @@ class AuthCommand extends TerminusCommand {
    */
   public function __construct() {
     parent::__construct();
-    $this->auth = new \Terminus\Auth();
+    $this->auth = new Terminus\Auth();
   }
 
   /**

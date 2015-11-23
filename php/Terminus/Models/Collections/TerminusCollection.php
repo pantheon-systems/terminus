@@ -2,7 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-use TerminusCommand;
+use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 

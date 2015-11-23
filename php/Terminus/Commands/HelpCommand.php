@@ -1,7 +1,11 @@
 <?php
 
+namespace Terminus\Commands;
+
+use Terminus;
 use Terminus\Dispatcher;
 use Terminus\Utils;
+use Terminus\Commands\TerminusCommand;
 
 class HelpCommand extends TerminusCommand {
 
@@ -35,7 +39,7 @@ class HelpCommand extends TerminusCommand {
   }
 
   private static function findSubcommand($args) {
-    $command = \Terminus::getRootCommand();
+    $command = Terminus::getRootCommand();
 
     while (!empty($args) && $command && $command->canHaveSubcommands()) {
       $command = $command->findSubcommand($args);
