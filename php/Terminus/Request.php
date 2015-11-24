@@ -166,23 +166,24 @@ class Request {
   /**
    * Simplified request method for Pantheon API
    *
-   * @param [string] $path    API path (URL)
-   * @param [array]  $options Options for the request
-   *   [string] method GET is default
-   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-   *     simple object) to be sent along with the request. Will be encoded as
-   *     JSON for you.
+   * @param [string] $path        API path (URL)
+   * @param [array]  $arg_options Options for the request
+   *   [string] method        GET is default
+   *   [mixed]  data          Native PHP data structure (e.g. int, string
+   *     array, or simple object) to be sent along with the request. Will
+   *     be encoded as JSON for you.
+   *   [boolean] absolute_url True if URL passed is to be treated as absolute
    * @return [array] $data
    */
-  public function simpleRequest($path, $options = array()) {
-    $method = 'get';
-    if (isset($options['method'])) {
-      $method = $options['method'];
-      unset($options['method']);
-    }
+  public function simpleRequest($path, $arg_options = array()) {
+    $default_options = array(
+      'method'       => 'get',
+      'absolute_url' => false,
+    );
+    $options = array_merge($default_options, $arg_options);
 
     $url = $path;
-    if (!isset($options['absolute_url']) || !$options['absolute_url']) {
+    if ((strpos($path, 'http') !== 0) && !$options['absolute_url']) {
       $url = sprintf(
         '%s://%s:%s/api/%s',
         TERMINUS_PROTOCOL,
@@ -200,7 +201,7 @@ class Request {
 
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
-      $response = $this->send($url, $method, $options);
+      $response = $this->send($url, $options['method'], $options);
     } catch (GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
