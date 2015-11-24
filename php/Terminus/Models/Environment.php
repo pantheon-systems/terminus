@@ -829,7 +829,7 @@ class Environment extends TerminusModel {
     $hostnames   = $this->getHostnames();
     $target      = key($hostnames);
     $healthc     = "http://$target/pantheon_healthcheck";
-    $response    = Request::send($healthc, 'GET', array('on_stats' => $on_stats));
+    $response    = $this->request->simpleRequest($healthc, compact('on_stats'));
     $return_data = array(
       'success'  => $response->getStatusCode() === 200,
       'time'     => $this->transfertime,
