@@ -39,8 +39,8 @@ class WpCommand extends CommandWithSSH {
    * : Your Pantheon environment. Default: dev
    *
    */
-  function __invoke( $args, $assoc_args ) {
-    $command = implode( $args, ' ' );
+  function __invoke($args, $assoc_args) {
+    $command = implode($args, ' ');
     $this->checkCommand($command);
     $sites       = new Sites();
     $site        = $sites->get(Input::sitename($assoc_args));
@@ -49,41 +49,35 @@ class WpCommand extends CommandWithSSH {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
 
-    # see https://github.com/pantheon-systems/titan-mt/blob/master/dashboardng/app/workshops/site/models/environment.coffee
-    $server = Array(
-      'user' => "$environment.{$site->get('id')}",
-      'host' => "appserver.$environment.{$site->get('id')}.drush.in",
-      'port' => '2222'
+    /**
+     * See https://github.com/pantheon-systems/titan-mt/blob/master/..
+     *  ..dashboardng/app/workshops/site/models/environment.coffee
+     */
+    $server = $this->getAppserverInfo(
+      array('site' => $site->get('id'), 'environment' => $environment)
     );
 
-    if (strpos(TERMINUS_HOST, 'onebox') !== FALSE) {
-      $server['user'] = "appserver.$environment.{$site->get('id')}";
-      $server['host'] = TERMINUS_HOST;
-    }
-
-    # Sanitize assoc args so we don't try to pass our own flags.
-    # TODO: DRY this out?
+    // Sanitize assoc args so we don't try to pass our own flags.
     unset($assoc_args['site']);
     if (isset($assoc_args['env'])) {
       unset($assoc_args['env']);
     }
-    # Create user-friendly output
+    // Create user-friendly output
     $flags = '';
-    foreach ( $assoc_args as $k => $v ) {
-      if (isset($v) && (string) $v != '') {
+    foreach ($assoc_args as $k => $v) {
+      if (isset($v) && (string)$v != '') {
         $flags .= "--$k=" . escapeshellarg($v) . ' ';
-      }
-      else {
+      } else {
         $flags .= "--$k ";
       }
     }
     $this->log()->info(
-      "Running wp {cmd} {flags} on {site}-{env}",
+      'Running wp {cmd} {flags} on {site}-{env}',
       array(
-        'cmd' => $command,
+        'cmd'   => $command,
         'flags' => $flags,
-        'site' => $site->get('name'),
-        'env' => $environment
+        'site'  => $site->get('name'),
+        'env'   => $environment
       )
     );
     $result = $this->sendCommand($server, 'wp', $args, $assoc_args);
@@ -94,4 +88,4 @@ class WpCommand extends CommandWithSSH {
 
 }
 
-Terminus::addCommand( 'wp', 'WpCommand' );
+Terminus::addCommand('wp', 'WpCommand');
