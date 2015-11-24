@@ -134,41 +134,40 @@ class SitesCommand extends TerminusCommand {
   }
 
   /**
-  * Import a new site
-  * @package 2.0
-  *
-  * ## OPTIONS
-  *
-  * [--url=<url>]
-  * : URL of archive to import
-  *
-  * [--name=<name>]
-  * : (deprecated) use --site instead
-  *
-  * [--site=<site>]
-  * : Name of the site to create (machine-readable)
-  *
-  * [--label=<label>]
-  * : Label for the site
-  *
-  * [--org=<id>]
-  * : UUID of organization into which to add this site
-  *
-  * @subcommand import
-  */
+   * Import a new site
+   *
+   * ## OPTIONS
+   *
+   * [--url=<url>]
+   * : URL of archive to import
+   *
+   * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--site=<site>]
+   * : Name of the site to create (machine-readable)
+   *
+   * [--label=<label>]
+   * : Label for the site
+   *
+   * [--org=<id>]
+   * : UUID of organization into which to add this site
+   *
+   * @subcommand import
+   */
   public function import($args, $assoc_args) {
-    $options = $this->getSiteCreateOptions($assoc_args);
+    $options = SitesCommand::getSiteCreateOptions($assoc_args);
 
     $url = Input::string($assoc_args, 'url', 'URL of archive to import');
     if (!$url) {
-      $this->failure('Please enter a URL.');
+      $this->logger->error('Please enter a URL.');
     }
 
     try {
       //If the site does not yet exist, it will throw an error.
       $site = $this->sites->get($options['name']);
-      $this->failure(
-        sprintf('A site named {name} already exists.', $options)
+      $this->logger->error(
+        sprintf('A site named %s already exists.', $options['name'])
       );
       exit;
     } catch (\Exception $e) {
