@@ -54,7 +54,8 @@ class Input {
       $choices[] = $backup->filename;
     }
     $backups       = array_values($backups);
-    $target_backup = $backups[self::menu($choices, null, $options['label'])];
+    $choice        = self::menu($choices, null, $options['label']);
+    $target_backup = $backups[$choice];
 
     return $target_backup;
   }
@@ -157,8 +158,11 @@ class Input {
       $return_value = false
   ) {
     if (count($choices) == 1) {
-      $only_choice = array_shift($choices);
-      return $only_choice;
+      if ($return_value) {
+        $only_choice = array_shift($choices);
+        return $only_choice;
+      }
+      return 0;
     }
     $index = \cli\Streams::menu($choices, $default, $text);
     if ($return_value) {
