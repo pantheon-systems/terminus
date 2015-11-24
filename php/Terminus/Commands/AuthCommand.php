@@ -48,7 +48,7 @@ class AuthCommand extends TerminusCommand {
    */
   public function login($args, $assoc_args) {
     // Try to login using a machine token, if provided.
-    if (isset($assoc_args['machine-token']) 
+    if (isset($assoc_args['machine-token'])
       || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
     ) {
       if (isset($assoc_args['machine-token'])) {

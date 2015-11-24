@@ -10,80 +10,30 @@ use Terminus\Models\User;
 
 /**
  * Get information about Terminus itself.
- *
  */
 class CliCommand extends TerminusCommand {
+
   public function __construct() {
     parent::__construct();
     $this->sitesCache = new SitesCache();
   }
 
-  private function command_to_array( $command ) {
-    $dump = array(
-      'name' => $command->getName(),
-      'description' => $command->getShortdesc(),
-      'longdesc' => $command->getLongdesc(),
-    );
-
-    foreach ( $command->getSubcommands() as $subcommand ) {
-      $dump['subcommands'][] = self::command_to_array( $subcommand );
-    }
-
-    if ( empty( $dump['subcommands'] ) ) {
-      $dump['synopsis'] = (string) $command->getSynopsis();
-    }
-
-    return $dump;
-  }
-
   /**
-   * Print Terminus version.
-   */
-  function version() {
-    $labels = array('version' => 'Terminus version', 'script' => 'Terminus script');
-    $this->output()->outputRecord(array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT), $labels);
-  }
-
-  /**
-   * Print various data about the CLI environment.
+   * Clear cached data
    *
    * ## OPTIONS
    *
-   * [--format=<format>]
-   * : Accepted values: json
-   */
-  function info( $_, $assoc_args ) {
-    $php_bin = defined( 'PHP_BINARY' ) ? PHP_BINARY : getenv( 'TERMINUS_PHP_USED' );
-
-    $runner = Terminus::getRunner();
-
-    $info = array(
-      'php_binary_path' => $php_bin,
-      'php_version' => PHP_VERSION,
-      'php_ini' => get_cfg_var( 'cfg_file_path' ),
-      'project_config_path' => $runner->project_config_path,
-      'wp_cli_dir_path' => TERMINUS_ROOT,
-      'wp_cli_version' => TERMINUS_VERSION,
-    );
-    $labels = array(
-      'php_binary_path' => 'PHP binary',
-      'php_version' => 'PHP version',
-      'php_ini' => 'php.ini used',
-      'project_config_path' => 'Terminus project config',
-      'wp_cli_dir_path' => 'Terminus root dir',
-      'wp_cli_version' => 'Terminus version',
-    );
-    $this->output()->outputRecord($info, $labels);
-
-  }
-
-  /**
-   * Dump the list of global parameters, as JSON.
+   * [--cache=<cache>]
+   * : specific cache key to clear
    *
-   * @subcommand param-dump
+   * @subcommand cache-clear
    */
-  function param_dump() {
-    $this->output()->outputDump(Terminus::getConfigurator()->getSpec());
+  public function cacheClear($args, $assoc_args) {
+    if (isset($assoc_args['cache'])) {
+      $this->cache->remove($assoc_args['cache']);
+    } else {
+      $this->cache->flush();
+    }
   }
 
   /**
@@ -91,8 +41,10 @@ class CliCommand extends TerminusCommand {
    *
    * @subcommand cmd-dump
    */
-  function cmd_dump() {
-    $this->output()->outputDump(self::command_to_array( Terminus::getRootCommand() ));
+  public function cmdDump() {
+    $this->output()->outputDump(
+      $this->commandToArray(Terminus::getRootCommand())
+    );
   }
 
   /**
@@ -104,68 +56,136 @@ class CliCommand extends TerminusCommand {
    * : The current command line to be executed
    *
    * --point=<point>
-   * : The index to the current cursor position relative to the beginning of the command
+   * : The index to the current cursor position relative to the beginning of
+   *   the command
    */
-  function completions( $_, $assoc_args ) {
-    $line = substr( $assoc_args['line'], 0, $assoc_args['point'] );
-    $compl = new Terminus\Completions( $line );
+  public function completions($args, $assoc_args) {
+    $line  = substr($assoc_args['line'], 0, $assoc_args['point']);
+    $compl = new Terminus\Completions($line);
     $compl->render();
   }
 
   /**
-  * Clear session data
-  * @subcommand session-clear
-  */
-  function session_clear() {
-    $this->cache->remove("session");
-  }
-
-  /**
-  * Dump session data
-  * @subcommand session-dump
-  */
-  public function session_dump() {
-    $session = $this->cache->getData("session");
-    $this->output()->outputDump($session);
-  }
-
-  /**
-  * Clear cached data
-  *
-  * ## OPTIONS
-  *
-  * [--cache=<cache>]
-  * : specific cache key to clear
-  *
-  * @subcommand cache-clear
-  */
-  public function cache_clear($args, $assoc_args) {
-    if (isset($assoc_args['cache'])) {
-      $this->cache->remove($assoc_args['cache']);
-    } else {
-      $this->cache->flush();
-    }
-  }
-
-  /**
-  * Instantiate a console within Terminus
-  *
-  * ## OPTIONS
-  *
-  * [--site=<site>]
-  * : name of site to load
-  *
-  * @subcommand console
-  */
+   * Instantiate a console within Terminus
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of site to load
+   *
+   * @subcommand console
+   */
   public function console($args, $assoc_args) {
     $user = new User();
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
-      $site_id = $this->sitesCache->findId($sitename);
-      $site = new Site($site_id);
+      $site_id  = $this->sitesCache->findId($sitename);
+      $site     = new Site($site_id);
     }
 
     eval(\Psy\sh());
+  }
+
+  /**
+   * Print various data about the CLI environment.
+   *
+   * ## OPTIONS
+   *
+   * [--format=<format>]
+   * : Accepted values: json
+   */
+  public function info($args, $assoc_args) {
+    $php_bin = getenv('TERMINUS_PHP_USED');
+    if (defined('PHP_BINARY')) {
+      $php_bin = PHP_BINARY;
+    }
+
+    $runner = Terminus::getRunner();
+
+    $info   = array(
+      'php_binary_path'     => $php_bin,
+      'php_version'         => PHP_VERSION,
+      'php_ini'             => get_cfg_var('cfg_file_path'),
+      'project_config_path' => $runner->project_config_path,
+      'wp_cli_dir_path'     => TERMINUS_ROOT,
+      'wp_cli_version'      => TERMINUS_VERSION,
+    );
+    $labels = array(
+      'php_binary_path'     => 'PHP binary',
+      'php_version'         => 'PHP version',
+      'php_ini'             => 'php.ini used',
+      'project_config_path' => 'Terminus project config',
+      'wp_cli_dir_path'     => 'Terminus root dir',
+      'wp_cli_version'      => 'Terminus version',
+    );
+    $this->output()->outputRecord($info, $labels);
+
+  }
+
+  /**
+   * Dump the list of global parameters, as JSON.
+   *
+   * @subcommand param-dump
+   */
+  function paramDump() {
+    $this->output()->outputDump(Terminus::getConfigurator()->getSpec());
+  }
+
+  /**
+   * Clear session data
+   *
+   * @subcommand session-clear
+   */
+  public function sessionClear() {
+    $this->cache->remove('session');
+  }
+
+  /**
+   * Dump session data
+   *
+   * @subcommand session-dump
+   */
+  public function sessionDump() {
+    $session = $this->cache->getData('session');
+    $this->output()->outputDump($session);
+  }
+
+  /**
+   * Print Terminus version.
+   */
+  public function version() {
+    $labels = array(
+      'version' => 'Terminus version',
+      'script'  => 'Terminus script'
+    );
+    $this->output()->outputRecord(
+      array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT),
+      $labels
+    );
+  }
+
+  /**
+   * Splits command attributes into an array for easy use
+   *
+   * @param [mixed] $command Command object to render
+   * @return [array] $dump
+   */
+  private function commandToArray($command) {
+    $dump = array(
+      'name'        => $command->getName(),
+      'description' => $command->getShortdesc(),
+      'longdesc'    => $command->getLongdesc(),
+    );
+
+    foreach ($command->getSubcommands() as $subcommand) {
+      $dump['subcommands'][] = $this->commandToArray($subcommand);
+    }
+
+    if (empty($dump['subcommands'])) {
+      $dump['synopsis'] = (string)$command->getSynopsis();
+    }
+
+    return $dump;
   }
 
 }

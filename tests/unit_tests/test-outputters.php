@@ -1,7 +1,4 @@
 <?php
-/**
- * @file
- */
 
 use Terminus\Outputters\BashFormatter;
 use Terminus\Outputters\JSONFormatter;
@@ -19,25 +16,25 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
 
   public function setUp() {
     $this->values = array(
-      'Integer' => 1234,
-      'String' => 'abc',
+      'Integer'      => 1234,
+      'String'       => 'abc',
       'Human String' => 'Hello, World!',
-      'Nothing' => null,
-      'Array' => array('foo', 'bar', 'baz')
+      'Nothing'      => null,
+      'Array'        => array('foo', 'bar', 'baz')
     );
 
     $this->records = array(
-      (object) array(
+      (object)array(
         'foo' => 'abc',
         'bar' => 123,
         'baz' => 'extra'
       ),
-      (object) array(
-        'foo' => 'def',
-        'bar' => 456,
+      (object)array(
+        'foo'      => 'def',
+        'bar'      => 456,
         'unlabled' => 'abc',
       ),
-      (object) array(
+      (object)array(
         'foo' => 'ghi',
         'bar' => 678,
         'biz' => 'another extra'
@@ -53,9 +50,9 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @covers: \Terminus\Outputters\JSONFormatter
+   * @covers: Terminus\Outputters\JSONFormatter
    */
-  public function testJSONFormatter() {
+  public function testJsonFormatter() {
     $formatter = new JSONFormatter();
 
     foreach ($this->values as $label => $value) {
@@ -74,12 +71,10 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
       $this->assertEquals(JSON_ERROR_NONE, json_last_error());
     }
 
-
     $formatted = $formatter->formatValueList($this->values, array_keys($this->values));
     $this->assertEquals(json_encode($this->values), $formatted);
-    $this->assertEquals($this->values, json_decode($formatted, TRUE));
+    $this->assertEquals($this->values, json_decode($formatted, true));
     $this->assertEquals(JSON_ERROR_NONE, json_last_error());
-
 
     $formatted = $formatter->formatRecordList($this->records, $this->recordLabels);
     $this->assertEquals(json_encode($this->records), $formatted);
@@ -107,14 +102,6 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     // @TODO: This cannot be tested because we're using an output buffer to generate the tables.
     foreach ($this->records as $value) {
       $formatted = $formatter->formatRecord($value, $this->recordLabels);
-//      foreach ((array)$value as $val)
-//      {
-//        $this->assertContains((string)$val, $formatted);
-//      }
-//      foreach ($this->recordLabels as $label) {
-//        // Make sure the human label is there.
-//        $this->assertContains($label, $formatted);
-//      }
     }
   }
 
@@ -138,8 +125,7 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     // @TODO: This cannot be tested because we're using an output buffer to generate the tables.
     foreach ($this->records as $value) {
       $formatted = $formatter->formatRecord($value, $this->recordLabels);
-      foreach ((array)$value as $field => $val)
-      {
+      foreach ((array)$value as $field => $val) {
         $this->assertContains((string)$val, $formatted);
         $this->assertContains($field, $formatted);
       }
@@ -161,14 +147,4 @@ class TestOutputters extends PHPUnit_Framework_TestCase {
     }
   }
 
-
-  /**
-   * @covers: \Terminus\Outputters\JSONFormatter
-   */
-  public function testStreamWriter() {
-    // TODO: Use vfstream (https://github.com/mikey179/vfsStream) or similar to test writing to a stream.
-//    $this->expectOutputString('Hello, World!');
-//    $writer = new StreamWriter('php://stdout');
-//    $writer->write('Hello, World!');
-  }
 }

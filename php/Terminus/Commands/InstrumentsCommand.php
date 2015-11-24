@@ -31,12 +31,12 @@ class InstrumentsCommand extends TerminusCommand {
      $user        = new User();
      $instruments = $user->instruments->all();
      $data        = array();
-     foreach ($instruments as $id => $instrument) {
-       $data[] = array(
-         'label' => $instrument->get('label'),
-         'id'    => $instrument->get('id'),
-       );
-     }
+    foreach ($instruments as $id => $instrument) {
+      $data[] = array(
+        'label' => $instrument->get('label'),
+        'id'    => $instrument->get('id'),
+      );
+    }
 
     $this->output()->outputRecordList($data);
   }
