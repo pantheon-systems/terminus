@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="pcsg-generated-ruleset">
+<description>Created with the PHP Coding Standard Generator. http://edorian.github.com/php-coding-standard-generator/
+</description>
+<rule ref="Generic.Classes.DuplicateClassName"/>
+<rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+<rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+<rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall"/>
+<rule ref="Generic.CodeAnalysis.JumbledIncrementer"/>
+<rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+<rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
+<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+<rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+<rule ref="Generic.Commenting.Todo"/>
+<rule ref="Generic.Commenting.Fixme"/>
+<rule ref="Generic.ControlStructures.InlineControlStructure"/>
+<rule ref="Generic.Files.ByteOrderMark"/>
+<rule ref="Generic.Files.LineEndings"/>
+<rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+<rule ref="Generic.Formatting.MultipleStatementAlignment">
+    <properties>
+        <property name="maxPadding" value="10"/>
+    </properties>
+</rule>
+<rule ref="Generic.Formatting.NoSpaceAfterCast"/>
+<rule ref="Generic.Functions.CallTimePassByReference"/>
+<rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+<rule ref="Generic.Functions.OpeningFunctionBraceKernighanRitchie"/>
+<rule ref="Generic.Metrics.CyclomaticComplexity"/>
+<rule ref="Generic.Metrics.NestingLevel"/>
+<rule ref="Generic.NamingConventions.CamelCapsFunctionName"/>
+<rule ref="Generic.PHP.DeprecatedFunctions"/>
+<rule ref="Generic.PHP.DisallowShortOpenTag"/>
+<rule ref="Generic.PHP.ForbiddenFunctions"/>
+<rule ref="Generic.PHP.LowerCaseConstant"/>
+<rule ref="Generic.PHP.NoSilencedErrors"/>
+<rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+<rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+<rule ref="Squiz.PHP.DisallowInlineIf"/>
+<rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+<rule ref="Generic.WhiteSpace.ScopeIndent">
+    <properties>
+        <property name="indent" value="2"/>
+    </properties>
+</rule>
+<rule ref="MySource.PHP.GetRequestData"/>
+<rule ref="MySource.PHP.ReturnFunctionValue"/>
+<rule ref="PEAR.Commenting.FunctionComment"/>
+<rule ref="PEAR.Commenting.InlineComment"/>
+<rule ref="PEAR.ControlStructures.ControlSignature"/>
+<rule ref="PEAR.Functions.FunctionCallSignature">
+    <properties>
+        <property name="indent" value="2"/>
+    </properties>
+</rule>
+<rule ref="PEAR.Functions.ValidDefaultValue"/>
+<rule ref="PEAR.NamingConventions.ValidClassName"/>
+<rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
+<rule ref="PEAR.WhiteSpace.ScopeClosingBrace"/>
+<rule ref="PSR1.Files.SideEffects"/>
+<rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
+<rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
+<rule ref="PSR2.Namespaces.UseDeclaration"/>
+<rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
+<rule ref="Squiz.WhiteSpace.CastSpacing"/>
+<rule ref="Squiz.WhiteSpace.FunctionSpacing">
+  <properties>
+    <property name="spacing" value="1"/>
+  </properties>
+</rule>
+</ruleset>
