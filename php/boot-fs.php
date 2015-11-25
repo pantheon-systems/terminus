@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This file needs to parse without error in PHP < 5.3
+ * This file needs to parse without error in PHP < 5.5
  */
 
 if (PHP_SAPI != 'cli') {
   echo "Only CLI access.\n";
-  die(-1);
+  die(1);
 }
 
 $min_version = '5.5.0';
@@ -17,7 +17,7 @@ if (version_compare(PHP_VERSION, $min_version, '<')) {
     $min_version,
     PHP_VERSION
   );
-  die(-1);
+  die(1);
 }
 
 define('TERMINUS_ROOT', dirname(__DIR__));
