@@ -1754,10 +1754,10 @@ class SiteCommand extends TerminusCommand {
     if (!$data['styx']) {
       $this->failure('Pantheon headers missing, which is not quite right.');
     }
-
+    $context = array('target' => $data['target'], 'time' => $data['time']);
     $this->log()->info(
       'OK >> {target} responded in {time}',
-      $data
+      $context
     );
   }
 

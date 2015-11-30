@@ -826,14 +826,14 @@ class Environment extends TerminusModel {
     $on_stats = function (TransferStats $stats) {
       $this->transfertime = $stats->getTransferTime();
     };
-    $hostnames   = $this->getHostnames();
-    $target      = key($hostnames);
+    $hostnames   = array_keys((array)$this->getHostnames());
+    $target      = array_pop($hostnames);
     $healthc     = "http://$target/pantheon_healthcheck";
     $response    = $this->request->simpleRequest($healthc, compact('on_stats'));
     $return_data = array(
-      'success'  => $response->getStatusCode() === 200,
+      'success'  => ($response['status_code'] === 200),
       'time'     => $this->transfertime,
-      'styx'     => $response->getHeader('X-Pantheon-Styx-Hostname'),
+      'styx'     => $response['headers']['X-Pantheon-Styx-Hostname'],
       'response' => $response,
       'target'   => $target,
     );
