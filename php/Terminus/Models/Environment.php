@@ -6,6 +6,7 @@ use GuzzleHttp\TransferStats as TransferStats;
 use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
+use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
 
 class Environment extends TerminusModel {
@@ -21,6 +22,7 @@ class Environment extends TerminusModel {
    */
   public function __construct($attributes, $options = array()) {
     parent::__construct($attributes, $options);
+    $this->backups  = new Backups(array('environment' => $this));
     $this->bindings = new Bindings(array('environment' => $this));
   }
 
@@ -308,47 +310,41 @@ class Environment extends TerminusModel {
   /**
    * Create a backup
    *
-   * @param [array] $args Array of args to dictate backup choices
+   * @param [array] $arg_params Array of args to dictate backup choices
    *   [string]  type     Sort of operation to conduct (e.g. backup)
    *   [integer] keep-for Days to keep the backup for
    *   [string]  element  Which aspect of the arg to back up
    * @return [Workflow] $workflow
    */
-  public function createBackup($args) {
-    $type = 'backup';
-    if (array_key_exists('type', $args)) {
-      $type = $args['type'];
-    }
-
-    $ttl = 86400 * 365;
-    if (array_key_exists('keep-for', $args)) {
-      $ttl = 86400 * (int)$args['keep-for'];
-    }
-
-    switch ($args['element']) {
-      case 'db':
-        $args['database'] = true;
-          break;
-      case 'code':
-        $args['code'] = true;
-          break;
-      case 'files':
-        $args['files'] = true;
-          break;
-      case 'all':
-        $args['files']    = true;
-        $args['code']     = true;
-        $args['database'] = true;
-          break;
-    }
-
-    $params = array(
-      'entry_type' => $type,
-      'code'       => isset($args['code']),
-      'database'   => isset($args['database']),
-      'files'      => isset($args['files']),
-      'ttl'        => $ttl
+  public function createBackup($arg_params) {
+    $default_params = array(
+      'code'       => false,
+      'database'   => false,
+      'files'      => false,
+      'ttl'        => 31556736,
+      'entry_type' => 'backup',
     );
+    $params = array_merge($default_params, $arg_params);
+
+    if (isset($params[$params['element']])) {
+      $params[$params['element']] = true;
+    } else {
+      $params = array_merge(
+        $params,
+        array('code' => true, 'database' => true, 'files' => true,)
+      );
+    }
+    unset($params['element']);
+
+    if (isset($params['keep-for'])) {
+      $params['ttl'] = ceil($params['keep-for'] * 86400);
+      unset($params['keep-for']);
+    }
+
+    if (isset($params['type'])) {
+      $params['entry_type'] = $params['type'];
+      unset($params['type']);
+    }
 
     $options  = array('environment' => $this->get('id'), 'params' => $params);
     $workflow = $this->site->workflows->create('do_export', $options);
@@ -472,35 +468,20 @@ class Environment extends TerminusModel {
   /**
    * Lists all backups
    *
-   * @param [string] $element e.g. code, file, db
    * @return [array] $backups
    */
   public function getBackups($element = null) {
-    if ($this->backups == null) {
-      $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
-      $response = $this->request->request(
-        'sites',
-        $this->site->get('id'),
-        $path,
-        'GET'
-      );
-
-      $this->backups = $response['data'];
-    }
-    $backups = (array)$this->backups;
+    $backups = $this->backups->all();
+    die(var_dump($backups));
+    $backups = $this->annotateBackups($backups);
     ksort($backups);
-    if ($element) {
-      $element = $this->elementAsDatabase($element);
-      foreach ($this->backups as $id => $backup) {
-        if (!isset($backup->filename)) {
-          unset($backups[$id]);
-          continue;
+    if ($element != null) {
+      $backups = array_filter(
+        $backups,
+        function($backup) use ($element) {
+          return $backup->element == $element;
         }
-        if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
-          unset($backups[$id]);
-          continue;
-        }
-      }
+      );
     }
 
     return $backups;
@@ -577,7 +558,7 @@ class Environment extends TerminusModel {
     $backups = array_filter(
       $all_backups,
       function($backup) {
-        return (isset($backup->finish_time) && $backup->finish_time);
+        return $backup->finished;
       }
     );
 
@@ -873,6 +854,63 @@ class Environment extends TerminusModel {
     );
 
     return $response['data'];
+  }
+
+  /**
+   * Sifts through the backups data and adds needful properties
+   *
+   * @param [array] $raw_backups Backups data object from Request data
+   * @return [array] $backups
+   */
+  private function annotateBackups($raw_backups) {
+    $backups = array();
+    foreach ($raw_backups as $id => $backup) {
+      $backup->date       = 'Pending';
+      $backup->element    = null;
+      $backup->finished   = false;
+      $backup->initiator  = 'manual';
+      $backup->size_in_mb = 0;
+
+      if (isset($backup->finish_time)) {
+        $datetime = $backup->finish_time;
+      } elseif (isset($backup->timestamp)) {
+        $datetime = $backup->timestamp;
+      }
+      if (isset($datetime)) {
+        $backup->date     = date('Y-m-d H:i:s', $datetime);
+        $backup->finished = true;
+      }
+
+      if (isset($backup->filename)) {
+        preg_match(
+          '~(?:.*_|^)(.*)\.(?:tar|sql).gz$~',
+          $backup->filename,
+          $type_match
+        );
+        if (isset($type_match[1])) {
+          $backup->element = $type_match[1];
+        }
+      }
+
+      if (isset($backup->folder)) {
+        preg_match("/.*_(.*)/", $backup->folder, $automation_match);
+        if ($automation_match[1] == 'automated') {
+          $backup->initiator = 'automated';
+        }
+      }
+
+      if (isset($backup->size)) {
+        $size = $backup->size / 1048576;
+        if ($size > 0.1) {
+          $backup->size_in_mb = sprintf('%.1fMB', $size);
+        } elseif ($size > 0) {
+          $backup->size_in_mb = '0.1MB';
+        }
+      }
+
+      $backups[$id] = $backup;
+    }
+    return $backups;
   }
 
   /**

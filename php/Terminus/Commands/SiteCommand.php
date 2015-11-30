@@ -59,16 +59,6 @@ class SiteCommand extends TerminusCommand {
    */
   public function backups($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get(Input::sitename($assoc_args));
-    $env    = $site->environments->get(
-      Input::env(array('args' => $assoc_args, 'site' => $site))
-    );
-    //Backward compatability supports "database" as a valid element value.
-    if (isset($assoc_args['element'])
-      && ($assoc_args['element'] == 'database')
-    ) {
-      $assoc_args['element'] = 'db';
-    }
 
     switch ($action) {
       case 'get':
@@ -1800,19 +1790,21 @@ class SiteCommand extends TerminusCommand {
    * Creates a backup
    *
    * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [Workflow[ $workflow
+   * @return [Workflow] $workflow
    */
   private function createBackup($assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
     $env  = $site->environments->get(
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
-    if (!array_key_exists('element', $assoc_args)) {
-      $options = array('code', 'db', 'files', 'all');
-      $assoc_args['element'] =
-        $options[Input::menu($options, 'all', 'Select element')];
-    }
-    $workflow = $env->createBackup($assoc_args);
+    $args = $assoc_args;
+    $args['element'] = Input::backupElement(
+      array(
+        'args'    => $args,
+        'choices' => array('all', 'code', 'database', 'files'),
+      )
+    );
+    $workflow        = $env->createBackup($args);
     return $workflow;
   }
 
@@ -1891,62 +1883,30 @@ class SiteCommand extends TerminusCommand {
    *         [string] date The datetime of the backup's creation
    */
   private function listBackups($assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = $site->environments->get(
+    $site    = $this->sites->get(Input::sitename($assoc_args));
+    $env     = $site->environments->get(
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
-
-    $backups      = $env->getBackups();
-    $element_name = false;
-    if (isset($assoc_args['element'])
-      && ($assoc_args['element'] != 'all')
-    ) {
-      $element_name =  $assoc_args['element'];
+    $element = null;
+    if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
+      $element = Input::backupElement(array('args' => $assoc_args));
     }
-    if ($element_name == 'db') {
-      $element_name = 'database';
-    }
-
-    $data = array();
-    foreach ($backups as $id => $backup) {
-      if (!isset($backup->filename)
-        || (
-          $element_name
-          && !preg_match(sprintf('/_%s/', $element_name), $id)
-        )
-      ) {
-        continue;
-      }
-
-      $date = 'Pending';
-      if (isset($backup->finish_time)) {
-        $date = date('Y-m-d H:i:s', $backup->finish_time);
-      }
-
-      $size = 0;
-      if (isset($backup->size)) {
-        $size = $backup->size / 1048576;
-      }
-      if ($size > 0.1) {
-        $size = sprintf('%.1fMB', $size);
-      } elseif ($size > 0) {
-        $size = '0.1MB';
-      } else {
-        //0-byte backups should not be recommended for restoration
-        $size = 'Incomplete';
-      }
-
-      $data[] = array(
-        'file' => $backup->filename,
-        'size' => $size,
-        'date' => $date,
-      );
-    }
-
-    if (empty($data)) {
+    $backups = $env->getFinishedBackups($element);
+    if (empty($backups)) {
       $this->log()->warning('No backups found.');
+    } else {
+      $data = array();
+      foreach ($backups as $id => $backup) {
+        $data[] = array(
+          'file'      => $backup->filename,
+          'size'      => $backup->size_in_mb,
+          'date'      => $backup->date,
+          'initiator' => $backup->initiator,
+        );
+      }
+
+      return $data;
     }
-    return $data;
   }
 
   /**
