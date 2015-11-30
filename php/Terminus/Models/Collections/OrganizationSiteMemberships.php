@@ -6,22 +6,7 @@ use Terminus\Models\User;
 use Terminus\Models\Collections\TerminusCollection;
 
 class OrganizationSiteMemberships extends TerminusCollection {
-  protected $user;
-  protected $workflows;
-
-  /**
-   * Instantiates the collection, sets param members as properties
-   *
-   * @param [array] $options To be set to $this->key
-   * @return [TerminusCollection] $this
-   */
-  public function __construct($options = array()) {
-    parent::__construct($options);
-    $this->user      = new User();
-    $this->workflows = new Workflows(
-      array('owner' => $this, 'owner_type' => 'organization')
-    );
-  }
+  protected $organization;
 
   /**
    * Adds a site to this organization
@@ -30,7 +15,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
    * @return [Workflow] $workflow
    */
   public function addMember($site) {
-    $workflow = $this->workflows->create(
+    $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
       array(
         'params'    => array(

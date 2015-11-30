@@ -78,11 +78,31 @@ class Workflows extends TerminusCollection {
         $url = sprintf(
           'users/%s/organizations/%s/workflows',
           $this->owner->user->id,
-          $this->owner->organization->id
+          $this->owner->get('id')
         );
           break;
     }
     return $url;
+  }
+
+  /**
+   * Fetches workflow data hydrated with operations
+   *
+   * @param [array] $options Additional information for the request
+   * @return [Workflows] $this
+   */
+  public function fetchWithOperations($options = array()) {
+    $options = array_merge(
+      $options,
+      array(
+        'fetch_args' => array(
+          'query' => array(
+            'hydrate' => 'operations'
+          )
+        )
+      )
+    );
+    $this->fetch($options);
   }
 
   /**
@@ -102,6 +122,19 @@ class Workflows extends TerminusCollection {
       )
     );
     return $owner_name;
+  }
+
+  /**
+   * Adds a model to this collection
+   *
+   * @param [stdClass] $model_data Data to feed into attributes of new model
+   * @param [array]    $options    Data to make properties of the new model
+   * @return [mixed] $model newly added model
+   */
+  protected function add($model_data, $options = array()) {
+    $model = parent::add($model_data, $options = array());
+    $model->owner = $this->owner;
+    return $model;
   }
 
 }

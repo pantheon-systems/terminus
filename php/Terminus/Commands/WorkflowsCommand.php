@@ -68,7 +68,9 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function show($args, $assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));
-    $workflow = Input::workflow($site, $assoc_args, 'workflow_id');
+    $site->workflows->fetchWithOperations(array('paged' => false));
+    $workflows = $site->workflows->all();
+    $workflow = Input::workflow($workflows, $assoc_args, 'workflow_id');
 
     $workflow_data = $workflow->serialize();
     if (Terminus::getConfig('format') == 'normal') {
@@ -84,7 +86,57 @@ class WorkflowsCommand extends TerminusCommand {
         $this->log()->info('Workflow has no operations');
       }
     } else {
-      $this->output()->outputRecordList($workflow_data);
+      $this->output()->outputRecord($workflow_data);
+    }
+  }
+
+  /**
+   * Show quicksilver logs from a workflow
+   *
+   * ## OPTIONS
+   * [--workflow_id]
+   * : Uuid of workflow to fetch logs for
+   * [--site=<site>]
+   * : Site from which to list workflows
+   *
+   * @subcommand logs
+   */
+  public function logs($args, $assoc_args) {
+    $site = $this->sites->get(Input::sitename($assoc_args));
+    $site->workflows->fetchWithOperations(array('paged' => false));
+    $workflows = $site->workflows->all();
+    $workflow = Input::workflow($workflows, $assoc_args, 'workflow_id');
+    $workflow->fetchWithLogs();
+
+    if (Terminus::getConfig('format') == 'normal') {
+      $operations = $workflow->operations();
+      if (count($operations) == 0) {
+        $this->log()->info('Workflow has no operations');
+        return;
+      }
+
+      $operations_with_logs = array_filter(
+        $operations,
+        function($operation) {
+          return $operation->get('log_output');
+        }
+      );
+
+      if (count($operations_with_logs) == 0) {
+        $this->log()->info('Workflow has no operations with logs');
+        return;
+      }
+
+      foreach ($operations as $operation) {
+        if ($operation->get('log_output')) {
+          $operation_data = $operation->serialize();
+          $this->output()->outputRecord($operation_data);
+        }
+      }
+    } else {
+      $workflow_data = $workflow->serialize();
+      $operations_data = $workflow_data['operations'];
+      $this->output()->outputRecordList($operations_data);
     }
   }
 

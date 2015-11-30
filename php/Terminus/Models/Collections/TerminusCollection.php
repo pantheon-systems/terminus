@@ -90,7 +90,7 @@ abstract class TerminusCollection extends TerminusModel {
    *
    * @param [stdClass] $model_data Data to feed into attributes of new model
    * @param [array]    $options    Data to make properties of the new model
-   * @return [void]
+   * @return [mixed] $model newly added model
    */
   protected function add($model_data, $options = array()) {
     $model   = $this->getMemberName();
@@ -110,10 +110,14 @@ abstract class TerminusCollection extends TerminusModel {
         $options[$owner] = $this->owner;
       }
     }
-    $this->models[$model_data->id] = new $model(
+
+    $model = new $model(
       $model_data,
       $options
     );
+
+    $this->models[$model_data->id] = $model;
+    return $model;
   }
 
   /**

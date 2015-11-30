@@ -22,6 +22,10 @@ class WorkflowOperation extends TerminusModel {
       'time'      => sprintf('%ss', $this->get('time')),
     );
 
+    if ($this->get('log_output')) {
+      $data['log_output'] = $this->get('log_output');
+    }
+
     return $data;
   }
 
