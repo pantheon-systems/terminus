@@ -94,6 +94,8 @@ class WorkflowsCommand extends TerminusCommand {
    * Show quicksilver logs from a workflow
    *
    * ## OPTIONS
+   * [--latest]
+   * : Display the most-recent workflow with logs
    * [--workflow_id]
    * : Uuid of workflow to fetch logs for
    * [--site=<site>]
@@ -103,10 +105,18 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function logs($args, $assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $site->workflows->fetchWithOperations(array('paged' => false));
-    $workflows = $site->workflows->all();
-    $workflow = Input::workflow($workflows, $assoc_args, 'workflow_id');
-    $workflow->fetchWithLogs();
+    if (isset($assoc_args['latest'])) {
+      $site->workflows->fetchWithOperationsAndLogs(array('paged' => false));
+      $workflow = $site->workflows->findLatestWithLogs();
+      if (is_null($workflow)) {
+        return $this->failure('No recent workflows contain logs');
+      }
+    } else {
+      $site->workflows->fetchWithOperations(array('paged' => false));
+      $workflows = $site->workflows->all();
+      $workflow  = Input::workflow($workflows, $assoc_args, 'workflow_id');
+      $workflow->fetchWithLogs();
+    }
 
     if (Terminus::getConfig('format') == 'normal') {
       $operations = $workflow->operations();
