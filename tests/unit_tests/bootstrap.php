@@ -3,6 +3,9 @@
 /**
  * Bootstrap file for unit tests
  */
+
+unset($GLOBALS['argv']);
+
 define('CLI_ROOT', dirname(__DIR__) . '/..');
 define('TEST_DIR', dirname(__DIR__));
 define('TERMINUS_CMD', 'php ' . CLI_ROOT . '/php/boot-fs.php');

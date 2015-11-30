@@ -55,7 +55,9 @@ if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::insertCassette($_SERVER['VCR_CASSETTE']);
 }
 
-Terminus::getRunner()->run();
+if (isset($GLOBALS['argv'])) {
+  Terminus::getRunner()->run();
+}
 
 if (isset($_SERVER['VCR_CASSETTE'])) {
   \VCR\VCR::eject();

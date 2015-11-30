@@ -69,7 +69,8 @@ class Runner {
       if (!$subcommand) {
         throw new TerminusException(
           "'{cmd}' is not a registered command. See 'terminus help'.",
-          array('cmd' => $full_name)
+          array('cmd' => $full_name),
+          1
         );
       }
 
@@ -95,7 +96,7 @@ class Runner {
    * @return [void]
    */
   public function run() {
-    if (!Terminus::isTest() && empty($this->arguments)) {
+    if (empty($this->arguments)) {
       $this->arguments[] = 'help';
     }
 
@@ -191,11 +192,15 @@ class Runner {
    * @return [void]
    */
   private function initConfig() {
+    $args = array('terminus', '--debug');
+    if (isset($GLOBALS['argv'])) {
+      $args = $GLOBALS['argv'];
+    }
     $configurator = Terminus::getConfigurator();
 
     // Runtime config and args
     list($args, $assoc_args, $runtime_config) = $configurator->parseArgs(
-      array_slice($GLOBALS['argv'], 1)
+      array_slice($args, 1)
     );
 
     $this->arguments  = $args;
