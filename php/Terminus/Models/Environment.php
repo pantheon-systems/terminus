@@ -6,10 +6,12 @@ use GuzzleHttp\TransferStats as TransferStats;
 use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
+use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
 
 class Environment extends TerminusModel {
-  private $backups;
+  public $backups;
+
   private $bindings;
 
   /**
@@ -21,6 +23,7 @@ class Environment extends TerminusModel {
    */
   public function __construct($attributes, $options = array()) {
     parent::__construct($attributes, $options);
+    $this->backups  = new Backups(array('environment' => $this));
     $this->bindings = new Bindings(array('environment' => $this));
   }
 
@@ -306,56 +309,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Create a backup
-   *
-   * @param [array] $args Array of args to dictate backup choices
-   *   [string]  type     Sort of operation to conduct (e.g. backup)
-   *   [integer] keep-for Days to keep the backup for
-   *   [string]  element  Which aspect of the arg to back up
-   * @return [Workflow] $workflow
-   */
-  public function createBackup($args) {
-    $type = 'backup';
-    if (array_key_exists('type', $args)) {
-      $type = $args['type'];
-    }
-
-    $ttl = 86400 * 365;
-    if (array_key_exists('keep-for', $args)) {
-      $ttl = 86400 * (int)$args['keep-for'];
-    }
-
-    switch ($args['element']) {
-      case 'db':
-        $args['database'] = true;
-          break;
-      case 'code':
-        $args['code'] = true;
-          break;
-      case 'files':
-        $args['files'] = true;
-          break;
-      case 'all':
-        $args['files']    = true;
-        $args['code']     = true;
-        $args['database'] = true;
-          break;
-    }
-
-    $params = array(
-      'entry_type' => $type,
-      'code'       => isset($args['code']),
-      'database'   => isset($args['database']),
-      'files'      => isset($args['files']),
-      'ttl'        => $ttl
-    );
-
-    $options  = array('environment' => $this->get('id'), 'params' => $params);
-    $workflow = $this->site->workflows->create('do_export', $options);
-    return $workflow;
-  }
-
-  /**
    * Delete hostname from environment
    *
    * @param [string] $hostname Hostname to remove from environment
@@ -428,111 +381,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Retrieves a backup by its filename
-   *
-   * @param [string] $file Name of the backup file requested
-   * @return [stdClass] $backup The backup object
-   */
-  public function getBackupByFile($file) {
-    $regex = sprintf(
-      '/(%s_%s_\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}_UTC_(.*).sql|tar.gz)/',
-      $this->collection->site->get('name'),
-      $this->get('id')
-    );
-    preg_match($regex, $file, $matches);
-    if (count($matches) < 3) {
-      throw new TerminusException(
-        'Cannot find a backup named {file}.',
-        compact('file'),
-        1
-      );
-    }
-    $element = $matches[2];
-    $backups = $this->getFinishedBackups($element);
-    foreach ($backups as $folder => $backup) {
-      if ($backup->filename == $file) {
-        $target_backup = $backup;
-        if (!isset($target_backup->folder)) {
-          $target_backup->folder = $folder;
-        }
-      }
-    }
-
-    if (!isset($target_backup)) {
-      throw new TerminusException(
-        'Cannot find a backup named {file}.',
-        compact('file'),
-        1
-      );
-    }
-    $target_backup->element = $element;
-    return $target_backup;
-  }
-
-  /**
-   * Lists all backups
-   *
-   * @param [string] $element e.g. code, file, db
-   * @return [array] $backups
-   */
-  public function getBackups($element = null) {
-    if ($this->backups == null) {
-      $path     = sprintf("environments/%s/backups/catalog", $this->get('id'));
-      $response = $this->request->request(
-        'sites',
-        $this->site->get('id'),
-        $path,
-        'GET'
-      );
-
-      $this->backups = $response['data'];
-    }
-    $backups = (array)$this->backups;
-    ksort($backups);
-    if ($element) {
-      $element = $this->elementAsDatabase($element);
-      foreach ($this->backups as $id => $backup) {
-        if (!isset($backup->filename)) {
-          unset($backups[$id]);
-          continue;
-        }
-        if (!preg_match("#.*$element\.\w+\.gz$#", $backup->filename)) {
-          unset($backups[$id]);
-          continue;
-        }
-      }
-    }
-
-    return $backups;
-  }
-
-  /**
-   * Gets the URL of a backup
-   *
-   * @param [string] $bucket  Backup folder
-   * @param [string] $element e.g. files, code, database
-   * @return [array] $response['data']
-   */
-  public function getBackupUrl($bucket, $element) {
-    $element     = $this->elementAsDatabase($element);
-    $path        = sprintf(
-      'environments/%s/backups/catalog/%s/%s/s3token',
-      $this->get('id'),
-      $bucket,
-      $element
-    );
-    $form_params = array('method' => 'GET');
-    $response    = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'POST',
-      compact('form_params')
-    );
-    return $response['data'];
-  }
-
-  /**
    * Returns the connection mode of this environment
    *
    * @return [string] $connection_mode
@@ -553,35 +401,6 @@ class Environment extends TerminusModel {
       $mode = 'sftp';
     }
     return $mode;
-  }
-
-  /**
-   * Filters the backups for only ones which have finished
-   *
-   * @param [string] $element Element requested (i.e. code, db, or files)
-   * @return [array] $backups An array of stdClass objects representing backups
-   */
-  public function getFinishedBackups($element) {
-    $all_backups = $this->getBackups($element);
-
-    if (empty($all_backups)) {
-      $message  = 'No backups available. Please create one with ';
-      $message .= '`terminus site backup create --site={site} --env={env}`';
-      throw new TerminusException(
-        $message,
-        array('site' => $this->site->get('name'), 'env' => $this->get('id')),
-        1
-      );
-    }
-
-    $backups = array_filter(
-      $all_backups,
-      function($backup) {
-        return (isset($backup->finish_time) && $backup->finish_time);
-      }
-    );
-
-    return $backups;
   }
 
   /**
@@ -873,19 +692,6 @@ class Environment extends TerminusModel {
     );
 
     return $response['data'];
-  }
-
-  /**
-   * Returns its argument unless that argument is "db", then returns "database"
-   *
-   * @param [string] $element Represents the request element
-   * @return [string] $element or "database"
-   */
-  private function elementAsDatabase($element) {
-    if ($element == 'db') {
-      return 'database';
-    }
-    return $element;
   }
 
 }
