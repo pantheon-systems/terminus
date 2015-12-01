@@ -1798,13 +1798,15 @@ class SiteCommand extends TerminusCommand {
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
     $args = $assoc_args;
+    unset($args['site']);
+    unset($args['env']);
     $args['element'] = Input::backupElement(
       array(
         'args'    => $args,
         'choices' => array('all', 'code', 'database', 'files'),
       )
     );
-    $workflow        = $env->createBackup($args);
+    $workflow        = $env->backups->create($args);
     return $workflow;
   }
 
@@ -1821,12 +1823,12 @@ class SiteCommand extends TerminusCommand {
     );
     $file = Input::optional('file', $assoc_args, false);
     if ($file) {
-      $backup  = $env->getBackupByFile($file);
-      $element = $backup->element;
+      $backup  = $env->backups->getBackupByFileName($file);
+      $element = $backup->getElement();
     } else {
       $element = Input::backupElement(array('args' => $assoc_args));
       $latest  = (boolean)Input::optional('latest', $assoc_args, false);
-      $backups = $env->getFinishedBackups($element);
+      $backups = $env->backups->getFinishedBackups($element);
 
       if ($latest) {
         $backup = array_pop($backups);
@@ -1841,23 +1843,23 @@ class SiteCommand extends TerminusCommand {
       }
     }
 
-    $url = $env->getBackupUrl($backup->folder, $element);
+    $url = $backup->getUrl();
 
     if (isset($assoc_args['to'])) {
       $target = str_replace('~', $_SERVER['HOME'], $assoc_args['to']);
       if (is_dir($target)) {
-        $filename = Utils\getFilenameFromUrl($url->url);
+        $filename = Utils\getFilenameFromUrl($url);
         $target   = sprintf('%s/%s', $target, $filename);
       }
       $this->log()->info('Downloading ... please wait ...');
-      if (Request::download($url->url, $target)) {
+      if (Request::download($url, $target)) {
         $this->log()->info('Downloaded {target}', compact('target'));
         return $target;
       } else {
         $this->failure('Could not download file');
       }
     }
-    return $url->url;
+    return $url;
   }
 
   /**
@@ -1891,17 +1893,17 @@ class SiteCommand extends TerminusCommand {
     if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
       $element = Input::backupElement(array('args' => $assoc_args));
     }
-    $backups = $env->getFinishedBackups($element);
+    $backups = $env->backups->getFinishedBackups($element);
     if (empty($backups)) {
       $this->log()->warning('No backups found.');
     } else {
       $data = array();
       foreach ($backups as $id => $backup) {
         $data[] = array(
-          'file'      => $backup->filename,
-          'size'      => $backup->size_in_mb,
-          'date'      => $backup->date,
-          'initiator' => $backup->initiator,
+          'file'      => $backup->get('filename'),
+          'size'      => $backup->getSizeInMb(),
+          'date'      => $backup->getDate(),
+          'initiator' => $backup->getInitiator(),
         );
       }
 

@@ -14,9 +14,19 @@ class Backup extends TerminusModel {
   public function backupIsFinished() {
     $is_finished = (
       ($this->get('finish_time') != null)
-      && ($this->get('timestamp') != null)
+      || ($this->get('timestamp') != null)
     );
     return $is_finished;
+  }
+
+  /**
+   * Retruns the bucket name for this backup
+   *
+   * @return [string] $bucket
+   */
+  public function getBucket() {
+    $bucket = str_replace('_' . $this->getElement(), '', $this->get('id'));
+    return $bucket;
   }
 
   /**
@@ -66,7 +76,7 @@ class Backup extends TerminusModel {
   public function getInitiator() {
     $initiator = 'manual';
     preg_match("/.*_(.*)/", $this->get('folder'), $automation_match);
-    if ($automation_match[1] == 'automated') {
+    if (isset($automation_match[1]) && ($automation_match[1] == 'automated')) {
       $initiator = 'automated';
     }
     return $initiator;
@@ -100,7 +110,7 @@ class Backup extends TerminusModel {
     $path        = sprintf(
       'environments/%s/backups/catalog/%s/%s/s3token',
       $this->environment->get('id'),
-      $this->get('id'),
+      $this->getBucket(),
       $this->getElement()
     );
     $form_params = array('method' => 'GET');

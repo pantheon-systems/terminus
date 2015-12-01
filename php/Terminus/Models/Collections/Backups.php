@@ -1,7 +1,8 @@
 <?php
 
-namespace Terminus\Exceptions\TerminusException;
 namespace Terminus\Models\Collections;
+
+use Terminus\Exceptions\TerminusException;
 
 class Backups extends TerminusCollection {
 
@@ -35,7 +36,7 @@ class Backups extends TerminusCollection {
     unset($params['element']);
 
     if (isset($params['keep-for'])) {
-      $params['ttl'] = ceil($params['keep-for'] * 86400);
+      $params['ttl'] = ceil((integer)$params['keep-for'] * 86400);
       unset($params['keep-for']);
     }
 
@@ -67,7 +68,7 @@ class Backups extends TerminusCollection {
       $backup = $this->get(array_shift($matches));
     } catch (\Exception $e) {
       throw new TerminusException(
-        'Could not find a file named {filename}.',
+        'Cannot find a backup named {filename}.',
         compact('filename'),
         1
       );
@@ -110,7 +111,10 @@ class Backups extends TerminusCollection {
       $message .= '`terminus site backup create --site={site} --env={env}`';
       throw new TerminusException(
         $message,
-        array('site' => $this->site->get('name'), 'env' => $this->get('id')),
+        array(
+          'site' => $this->environment->site->get('name'),
+          'env'  => $this->environment->get('id')
+        ),
         1
       );
     }
