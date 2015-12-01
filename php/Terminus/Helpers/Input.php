@@ -18,18 +18,14 @@ class Input {
    * Produces a menu to select a backup
    *
    * @param [array] $arg_options Elements as follows:
-   *        [string] label         Prompt for STDOUT
-   *        [array]  backups       Array of stdClass objs representing backups
-   *        [array]  target_backup For STDERR, if necessary. As follows:
-   *          [string] site Name of the site we want a backup from
-   *          [string] env  Name of the environment we want a backup from
+   *        [string] label   Prompt for STDOUT
+   *        [array]  backups Array of Backup objects
    * @return [stdClass] $target_backup An object representing the backup desired
    */
   public static function backup(array $arg_options = array()) {
     $default_options = array(
       'label'   => 'Select a backup',
       'backups' => array(),
-      'context' => array(),
     );
     $options         = array_merge($default_options, $arg_options);
     $backups         = $options['backups'];
@@ -37,24 +33,21 @@ class Input {
       $command = 'terminus site backup create --site=<site> --env=<env>`';
       throw new TerminusException(
         'No backups available. Create one with `{command}`',
-        array_merge($backups['context'], compact('command')),
+        compact('command'),
         1
       );
     }
 
     $choices = array();
     foreach ($backups as $folder => $backup) {
-      if (!isset($backup->filename)) {
+      if ($backup->get('filename') == null) {
         unset($backups[$folder]);
         continue;
       }
-      if (!isset($backup->folder)) {
-        $backup->folder = $folder;
-      }
-      $choices[] = $backup->filename;
+      $choices[] = $backup->get('filename');
     }
-    $backups       = array_values($backups);
     $choice        = self::menu($choices, null, $options['label']);
+    $backups       = array_values($backups);
     $target_backup = $backups[$choice];
 
     return $target_backup;
