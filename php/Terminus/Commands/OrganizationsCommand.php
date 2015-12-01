@@ -29,9 +29,10 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-     $user = new User();
-     $data = array();
-    foreach ($user->getOrganizations() as $id => $org) {
+    $user          = new User();
+    $data          = array();
+    $organizations = $user->getOrganizations();
+    foreach ($organizations as $id => $org) {
       $org_data = $org->get('organization');
       $data[]   = array(
         'name' => $org_data->profile->name,

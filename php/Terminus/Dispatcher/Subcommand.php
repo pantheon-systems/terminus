@@ -139,7 +139,8 @@ class Subcommand extends CompositeCommand {
     }
 
     $spec = array_filter(
-      Terminus\SynopsisParser::parse($synopsis), function($spec_arg) {
+      Terminus\SynopsisParser::parse($synopsis),
+      function($spec_arg) {
         $is_in_array = in_array(
           $spec_arg['type'],
           array('generic', 'positional', 'assoc', 'flag')
