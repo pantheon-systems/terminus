@@ -228,7 +228,8 @@ class SitesCommand extends TerminusCommand {
     }
 
     usort(
-      $rows, function($row_1, $row_2) {
+      $rows,
+      function($row_1, $row_2) {
         $comparison = strcasecmp($row_1['name'], $row_2['name']);
         return $comparison;
       }
@@ -236,7 +237,8 @@ class SitesCommand extends TerminusCommand {
 
     if (isset($assoc_args['team'])) {
       $rows = array_filter(
-        $rows, function($site) {
+        $rows,
+        function($site) {
           $is_membership = in_array('Team', $site['memberships']);
           return $is_membership;
         }
@@ -247,7 +249,8 @@ class SitesCommand extends TerminusCommand {
       $org_id = $assoc_args['org'];
 
       $rows = array_filter(
-        $rows, function($site) use ($org_id) {
+        $rows,
+        function($site) use ($org_id) {
           $is_member = (
             isset($org_ids[$org_id])
             || in_array($org_id, $site['memberships'])

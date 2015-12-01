@@ -1250,7 +1250,8 @@ class SiteCommand extends TerminusCommand {
             $binding->password
           );
           array_filter(
-            $args, function($a) {
+            $args,
+            function($a) {
               $escaped_arg = escapeshellarg($a);
               return $escaped_arg;
             }

@@ -28,9 +28,9 @@ class InstrumentsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-     $user        = new User();
-     $instruments = $user->instruments->all();
-     $data        = array();
+    $user        = new User();
+    $instruments = $user->instruments->all();
+    $data        = array();
     foreach ($instruments as $id => $instrument) {
       $data[] = array(
         'label' => $instrument->get('label'),

@@ -12,9 +12,9 @@ function convertFile($path) {
 
   // options to definition lists
   $out = preg_replace_callback(
-    '/\n\* (.+?):?\n\n\t/', function( $matches ) {
+    '/\n\* (.+?):?\n\n\t/',
+    function($matches) {
       $arg = str_replace('`', '', $matches[1]);
-
       return "\n$arg\n: ";
     }, $out
   );
