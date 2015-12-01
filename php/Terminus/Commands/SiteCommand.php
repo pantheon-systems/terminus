@@ -59,10 +59,6 @@ class SiteCommand extends TerminusCommand {
    */
   public function backups($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get(Input::sitename($assoc_args));
-    $env    = $site->environments->get(
-      Input::env(array('args' => $assoc_args, 'site' => $site))
-    );
     //Backward compatability supports "database" as a valid element value.
     if (isset($assoc_args['element'])
       && ($assoc_args['element'] == 'database')
