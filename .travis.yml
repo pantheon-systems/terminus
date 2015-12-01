@@ -40,7 +40,6 @@ before_script:
 
 script:
   - ./scripts/test.sh ci
-  - ./scripts/lint.sh ci
 
 after_success: ./scripts/package.sh
 
