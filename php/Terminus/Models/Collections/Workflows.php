@@ -106,6 +106,89 @@ class Workflows extends TerminusCollection {
   }
 
   /**
+   * Fetches workflow data hydrated with operations and logs
+   *
+   * @param [array] $options Additional information for the request
+   * @return [Workflows] $this
+   */
+  public function fetchWithOperationsAndLogs($options = array()) {
+    $options = array_merge(
+      $options,
+      array(
+        'fetch_args' => array(
+          'query' => array(
+            'hydrate' => 'operations_with_logs'
+          )
+        )
+      )
+    );
+    $this->fetch($options);
+  }
+
+  /**
+   * Returns all existing workflows that have finished
+   *
+   * @return [Array<Workflows>] $workflows
+   */
+  public function allFinished() {
+    $workflows = array_filter(
+      $this->all(),
+      function($workflow) {
+        $is_finished = $workflow->isFinished();
+        return $is_finished;
+      }
+    );
+    return $workflows;
+  }
+
+  /**
+   * Returns all existing workflows that contain logs
+   *
+   * @return [Array<Workflows>] $workflows
+   */
+  public function allWithLogs() {
+    $workflows = $this->allFinished();
+    $workflows = array_filter(
+      $workflows,
+      function($workflow) {
+        $has_logs = $workflow->hasLogs();
+        return $has_logs;
+      }
+    );
+
+    return $workflows;
+  }
+
+  /**
+   * Get most-recent workflow from existingcollection that has logs
+   *
+   * @return [Workflow] $workflow
+   */
+  public function findLatestWithLogs() {
+    $workflows = $this->allWithLogs();
+    usort(
+      $workflows,
+      function($a, $b) {
+        $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
+        if ($a_finished_after_b) {
+          $cmp = 1;
+          return $cmp;
+        } else {
+          $cmp = -1;
+          return $cmp;
+        }
+      }
+    );
+
+    if (count($workflows) > 0) {
+      $workflow = $workflows[0];
+    } else {
+      $workflow = null;
+    }
+    return $workflow;
+  }
+
+  /**
    * Names the model-owner of this collection
    *
    * @return [string] $this->owner_type or $owner_name
