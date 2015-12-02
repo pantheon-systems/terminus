@@ -11,6 +11,8 @@ use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 
+define("WORKFLOWS_WATCH_INTERVAL", 5);
+
 /**
 * Actions to be taken on an individual site
 */
@@ -147,6 +149,61 @@ class WorkflowsCommand extends TerminusCommand {
       $workflow_data = $workflow->serialize();
       $operations_data = $workflow_data['operations'];
       $this->output()->outputRecordList($operations_data);
+    }
+  }
+
+  /**
+   * Streams new and finished workflows to the console
+   *
+   * ## OPTIONS
+   * [--site=<site>]
+   * : Site from which to list workflows
+   *
+   * @subcommand watch
+   */
+  public function watch($args, $assoc_args) {
+    $site = $this->sites->get(Input::sitename($assoc_args));
+
+    // Keep track of workflows that have been printed.
+    // This is necessary because the local clock may drift from
+    // the server's clock, causing events to be printed twice.
+    $started = array();
+    $finished = array();
+
+    $this->logger->info('Watching workflows...');
+    while (true) {
+      $last_checked = time();
+      sleep(WORKFLOWS_WATCH_INTERVAL);
+
+      $site->workflows->fetchWithOperations();
+      $workflows = $site->workflows->all();
+      foreach ($workflows as $workflow) {
+        if (($workflow->get('created_at') > $last_checked)
+          && !in_array($workflow->id, $started)
+        ) {
+          $started_message = sprintf(
+            "%s Started %s (%s)",
+            $workflow->id,
+            $workflow->get('description'),
+            $workflow->get('environment')
+          );
+          $this->logger->info($started_message);
+          array_push($started, $workflow->id);
+        }
+
+        if (($workflow->get('finished_at') > $last_checked)
+          && !in_array($workflow->id, $finished)
+        ) {
+          $finished_message = sprintf(
+            "%s Finished %s (%s)",
+            $workflow->id,
+            $workflow->get('description'),
+            $workflow->get('environment')
+          );
+          $this->logger->info($finished_message);
+          array_push($finished, $workflow->id);
+        }
+      }
     }
   }
 
