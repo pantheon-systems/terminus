@@ -52,7 +52,10 @@ class Auth {
     $session      = Session::instance()->getData();
     $is_logged_in = (
       isset($session->session)
-      && (Terminus::isTest() || ($session->session_expire_time >= time()))
+      && (
+        Terminus::isTest()
+        || ($session->session_expire_time >= time())
+      )
     );
     return $is_logged_in;
   }
@@ -130,7 +133,7 @@ class Auth {
     $session = array(
       'user_uuid'           => $response['data']->id,
       'session'             => $token,
-      'session_expire_time' => 0,
+      'session_expire_time' => strtotime('+7 days'),
     );
     Session::instance()->setData($session);
     return true;
