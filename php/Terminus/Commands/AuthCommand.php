@@ -1,16 +1,22 @@
 <?php
 
+/**
+ * Authenticate to Pantheon and store a local secret token.
+ */
+
 namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Session;
+use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 
-/**
- * Authenticate to Pantheon and store a local secret token.
- */
 class AuthCommand extends TerminusCommand {
   private $auth;
+  private $logged_in = false;
+  private $sessionid;
+  private $session_cookie_name = 'X-Pantheon-Session';
+  private $uuid;
 
   /**
    * Instantiates object, sets auth property
