@@ -8,16 +8,16 @@
     "bin/terminus.bat", "bin/terminus"
   ],
   "require": {
-    "php": ">=5.3.2",
+    "php": ">=5.5.0",
     "guzzlehttp/guzzle": "6.1.*@stable",
     "jlogsdon/cli": "~0.9.4",
     "katzgrau/klogger": "1.2.*@stable",
-    "mustache/mustache": "~2.4",
+    "mustache/mustache": "2.4.*",
     "nb/oxymel": "0.1.0",
     "psy/psysh": "@stable",
-    "ramsey/array_column": "~1.1",
-    "rmccue/requests": "~1.6",
-    "symfony/finder": "~2.7",
+    "ramsey/array_column": "1.1.*",
+    "rmccue/requests": "1.6.*",
+    "symfony/finder": "2.7.*",
     "symfony/process": "2.7.*",
     "symfony/dom-crawler": "2.7.*",
     "symfony/css-selector": "2.7.*",
@@ -28,8 +28,8 @@
   },
   "require-dev": {
     "behat/behat": "3.0.*@stable",
-    "phpunit/phpunit": "~4.6",
-    "php-vcr/php-vcr": "~1.2",
+    "phpunit/phpunit": "5.0.*",
+    "php-vcr/php-vcr": "1.2.*",
     "php-vcr/phpunit-testlistener-vcr": "*",
     "sebastian/phpcpd": "*",
     "squizlabs/php_codesniffer": "2.*"
