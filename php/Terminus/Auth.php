@@ -112,7 +112,7 @@ class Auth {
       'cookies' => array('X-Pantheon-Session' => $token),
     );
     $this->logger->info('Validating session token');
-    $response = TerminusCommand::request('user', '', '', 'GET', $options);
+    $response = $this->request->request('user', '', '', 'GET', $options);
     if (!$response
       || !isset($response['status_code'])
       || $response['status_code'] != '200'
