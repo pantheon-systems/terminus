@@ -171,6 +171,60 @@ class OrganizationsCommand extends TerminusCommand {
   }
 
   /**
+   * List an organization's team members
+   *
+   * ## OPTIONS
+   *
+   * [--org=<id|name>]
+   * : Organization UUID or name
+   *
+   * @subcommand team
+   */
+  public function team($args, $assoc_args) {
+    $org_id = Input::orgid(
+      $assoc_args,
+      'org',
+      null,
+      array('allow_none' => false)
+    );
+    $orgs = new UserOrganizationMemberships();
+    $org  = $orgs->get($org_id);
+    if (is_null($org)) {
+      $message  = 'The organization {org} is either invalid or you haven\'t';
+      $message .= ' permission sufficient to access its data.';
+      $this->failure(
+        $message,
+        array('org' => $assoc_args['org'])
+      );
+    }
+    $org_info  = $org->get('organization');
+    $org_model = new Organization($org_info);
+
+    $memberships = $org->user_memberships->all();
+    $data        = array();
+    foreach ($memberships as $membership) {
+      $member = $membership->get('user');
+
+      $first_name = $last_name = null;
+      if (isset($member->profile->firstname)) {
+        $first_name = $member->profile->firstname;
+      }
+      if (isset($member->profile->lastname)) {
+        $last_name = $member->profile->lastname;
+      }
+
+      $data[$member->id] = array(
+        'first' => $first_name,
+        'last'  => $last_name,
+        'email' => $member->email,
+        'uuid'  => $member->id,
+      );
+    }
+    $this->output()->outputRecordList($data);
+    return $data;
+  }
+
+  /**
    * Retrieves a succinct list of member sites
    *
    * @param [array] $memberships Members of this org
