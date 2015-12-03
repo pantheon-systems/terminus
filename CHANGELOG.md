@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site backups get-schedule` shows the scheduled weekly backup day and daily backup time. (#723)
 - New command `workflows watch` to stream workflow updates (#722)
 - New command `organizations team` displays a member list of organizational members. (#726)
+- Added an owners file per the Owners Policy on the Chromium Project. (#727)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
