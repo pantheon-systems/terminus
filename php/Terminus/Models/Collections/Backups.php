@@ -175,15 +175,17 @@ class Backups extends TerminusCollection {
    * @return [boolean] True if operation was successful
    */
   public function setBackupSchedule($day_number) {
+    $daily_ttl   = 691200;
+    $weekly_ttl  = 2764800;
     $backup_hour = rand(1, 24);
     $schedule    = array();
     for ($day = 0; $day < 7; $day++) {
       $schedule[$day] = (object)array(
         'hour' => $backup_hour,
-        'ttl'  => DAILY_BACKUP_TTL,
+        'ttl'  => $daily_ttl,
       );
       if ($day == $day_number) {
-        $schedule[$day]->ttl = WEEKLY_BACKUP_TTL;
+        $schedule[$day]->ttl = $weekly_ttl;
       }
     }
     $schedule = (object)$schedule;
@@ -203,6 +205,7 @@ class Backups extends TerminusCollection {
     return true;
   }
 
+  /**
   /**
    * Give the URL for collection data fetching
    *
