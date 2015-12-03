@@ -94,6 +94,46 @@ class Input {
   }
 
   /**
+   * Facilitates the selection of a day of the week
+   *
+   * @param [array] $arg_options Arguments as follows:
+   *        [array]  args    Arguments given via param
+   *        [string] key     Args key to search for
+   *        [string] label   Prompt for STDOUT
+   *        [array]  choices Menu options for the user, may be a collection
+   * @return [integer] $day_number
+   */
+  public static function day(array $arg_options = array()) {
+    $default_options = array(
+      'args' => array(),
+      'key' => 'day',
+      'label' => 'Select a day',
+      'choices' => array(
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ),
+    );
+    $options         = array_merge($default_options, $arg_options);
+    if (isset($options['args'][$options['key']])) {
+      $day        = date('l', strtotime($options['args'][$options['key']]));
+      $day_number = array_search($day, $options['choices']);
+    } else {
+      $day_number = self::menu(
+        $options['choices'],
+        $default = 'Sunday',
+        $options['label'],
+        false
+      );
+    }
+    return $day_number;
+  }
+
+  /**
    * Produces a menu with the given attributes
    *
    * @param [array] $arg_options Arguments as follows:
