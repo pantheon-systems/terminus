@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added back session token-based login. (#693)
 - New command `workflows logs` displays operation logs for workflow (#708)
 - Added initiator data (manual or automated) to `site backups list`. (#716)
+- New command `site backups get-schedule` shows the scheduled weekly backup day and daily backup time. (#723)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
