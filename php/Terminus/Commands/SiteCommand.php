@@ -30,8 +30,9 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <get|load|create|list|get-schedule|set-schedule>
-   * : Function to run - get, load, create, list, get schedule, or set schedule
+   * <get|load|create|list|get-schedule|set-schedule|cancel-schedule>
+   * : Function to run - get, load, create, list, get schedule, set schedule,
+   *   or cancel schedule
    *
    * [--site=<site>]
    * : Site to load
@@ -69,6 +70,9 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'set-schedule':
         $this->setBackupSchedule($assoc_args);
+          break;
+      case 'cancel-schedule':
+        $this->cancelBackupSchedule($assoc_args);
           break;
       case 'get':
         $url = $this->getBackup($assoc_args);
@@ -1794,6 +1798,23 @@ class SiteCommand extends TerminusCommand {
         'env' => $env->get('id')
       )
     );
+  }
+
+  /**
+   * Cancels an environment's regular backup schedule
+   *
+   * @params [array] $assoc_args Parameters and flags from the command line
+   * @return [void]
+   */
+  private function cancelBackupSchedule($assoc_args) {
+    $site     = $this->sites->get(Input::sitename($assoc_args));
+    $env      = $site->environments->get(
+      Input::env(
+        array('args' => $assoc_args, 'choices' => array('dev', 'live'))
+      )
+    );
+    $success = $env->backups->cancelBackupSchedule();
+    $this->log()->info('Cancelled backup schedule.');
   }
 
   /**

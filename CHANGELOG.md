@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site backups get-schedule` shows the scheduled weekly backup day and daily backup time. (#723)
 - New command `workflows watch` to stream workflow updates (#722)
 - New command `site backups set-schedule` schedules the daily backup and weekly day. (#724)
+- New command `site backups cancel-schedule` cancels the regular backup schedule. (#725)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
