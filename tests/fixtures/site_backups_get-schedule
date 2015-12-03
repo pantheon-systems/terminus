@@ -2,9 +2,9 @@
 -
     request:
         method: POST
-        url: 'https://onebox/api/authorize'
+        url: 'https://dashboard.pantheon.io/api/authorize'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Expect: null
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
@@ -34,9 +34,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/sites?limit=100'
+        url: 'https://dashboard.pantheon.io/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/sites?limit=100'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -66,9 +66,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/organizations?limit=100'
+        url: 'https://dashboard.pantheon.io/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/organizations?limit=100'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -98,9 +98,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments'
+        url: 'https://dashboard.pantheon.io/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -131,9 +131,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments/dev/backups/schedule'
+        url: 'https://dashboard.pantheon.io/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments/dev/backups/schedule'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json

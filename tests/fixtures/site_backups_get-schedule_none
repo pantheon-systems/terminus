@@ -2,12 +2,41 @@
 -
     request:
         method: POST
-        url: 'https://onebox/api/authorize'
+        url: 'https://dashboard.pantheon.io/api/authorize'
         headers:
-            Host: onebox
-        url: 'https://onebox/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/sites?limit=100'
+            Host: dashboard.pantheon.io
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Cookie: 'X-Pantheon-Session=cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:58f2c64c-9953-11e5-ba26-bc764e10d7c2:62Uh4wYdzdO3uPvLEIZ0i'
+            headers: 'X-Pantheon-Session=cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:58f2c64c-9953-11e5-ba26-bc764e10d7c2:62Uh4wYdzdO3uPvLEIZ0i'
+            json: password1
+            Accept: null
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
         headers:
-            Host: onebox
+            Server: nginx
+            Date: 'Thu, 03 Dec 2015 00:18:28 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 608bad10-9953-11e5-9f6d-95f39f00804f
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"session":"cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:60b8eea6-9953-11e5-a632-bc764e10b0ce:h3ZnQTbxapqqyd2Oz9SOD","expires_at":1451521108,"user_id":"cbc3d67f-f2b9-44a0-8dd6-8d63265af96e"}'
+-
+    request:
+        method: GET
+        url: 'https://dashboard.pantheon.io/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/sites?limit=100'
+        headers:
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -37,9 +66,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/organizations?limit=100'
+        url: 'https://dashboard.pantheon.io/api/users/cbc3d67f-f2b9-44a0-8dd6-8d63265af96e/memberships/organizations?limit=100'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -69,9 +98,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments'
+        url: 'https://dashboard.pantheon.io/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
@@ -102,9 +131,9 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments/dev/backups/schedule'
+        url: 'https://dashboard.pantheon.io/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments/dev/backups/schedule'
         headers:
-            Host: onebox
+            Host: dashboard.pantheon.io
             Accept-Encoding: null
             User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
