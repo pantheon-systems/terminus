@@ -94,6 +94,42 @@ class Backups extends TerminusCollection {
   }
 
   /**
+   * Retrieves an environment's regular backup schedule
+   *
+   * @return [array] $schedule Elements as follows:
+   *         [string]  daily_backup_time
+   *         [string]  weekly_backup_day
+   */
+  public function getBackupSchedule() {
+    $path     = sprintf(
+      'sites/%s/environments/%s/backups/schedule',
+      $this->environment->site->get('id'),
+      $this->environment->get('id')
+    );
+    $response      = $this->request->simpleRequest($path);
+    $response_data = (array)$response['data'];
+    $data          = array(
+      'daily_backup_hour' => null,
+      'weekly_backup_day' => null,
+    );
+
+    $schedule_sample = array_shift($response_data);
+    if (!is_null($schedule_sample)) {
+      $schedule = array();
+      foreach ((array)$response['data'] as $day_number => $info) {
+        $schedule[$day_number] = $info->ttl;
+      }
+      $day_number      = array_search(max($schedule), $schedule);
+      $data['weekly_backup_day'] = date(
+        'l',
+        strtotime("Sunday +{$day_number} days")
+      );
+      $data['daily_backup_hour'] = date('H T', strtotime($info->hour . ':00'));
+    }
+    return $data;
+  }
+
+  /**
    * Filters the backups for only ones which have finished
    *
    * @param [string] $element Element requested (i.e. code, db, or files)

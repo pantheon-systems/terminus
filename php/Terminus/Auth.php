@@ -52,7 +52,10 @@ class Auth {
     $session      = Session::instance()->getData();
     $is_logged_in = (
       isset($session->session)
-      && (Terminus::isTest() || ($session->session_expire_time >= time()))
+      && (
+        Terminus::isTest()
+        || ($session->session_expire_time >= time())
+      )
     );
     return $is_logged_in;
   }
@@ -112,7 +115,7 @@ class Auth {
       'cookies' => array('X-Pantheon-Session' => $token),
     );
     $this->logger->info('Validating session token');
-    $response = TerminusCommand::request('user', '', '', 'GET', $options);
+    $response = $this->request->request('user', '', '', 'GET', $options);
     if (!$response
       || !isset($response['status_code'])
       || $response['status_code'] != '200'
@@ -130,7 +133,7 @@ class Auth {
     $session = array(
       'user_uuid'           => $response['data']->id,
       'session'             => $token,
-      'session_expire_time' => 0,
+      'session_expire_time' => strtotime('+7 days'),
     );
     Session::instance()->setData($session);
     return true;
