@@ -715,13 +715,13 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <list|add|remove>
-   * : OPTIONS are list, add, delete
+   * <list|add|remove|lookup>
+   * : OPTIONS are list, add, delete, and lookup
    *
    * [--site=<site>]
    * : Site to use
    *
-   * --env=<env>
+   * [--env=<env>]
    * : environment to use
    *
    * [--hostname=<hostname>]
@@ -730,26 +730,14 @@ class SiteCommand extends TerminusCommand {
    */
   public function hostnames($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get(Input::sitename($assoc_args));
-    $env    = $site->environments->get(
-      Input::env(array('args' => $assoc_args, 'site' => $site))
-    );
+    if ($action != 'lookup') {
+      $site   = $this->sites->get(Input::sitename($assoc_args));
+      $env    = $site->environments->get(
+        Input::env(array('args' => $assoc_args, 'site' => $site))
+      );
+    }
+
     switch ($action) {
-      case 'list':
-        $hostnames = $env->getHostnames();
-        $data      = $hostnames;
-        if (Terminus::getConfig('format') != 'json') {
-          //If were not just dumping the JSON, then we should reformat the data.
-          $data = array();
-          foreach ($hostnames as $hostname => $details) {
-            $data[] = array_merge(
-              array('domain' => $hostname),
-              (array)$details
-            );
-          }
-        }
-        $this->output()->outputRecordList($data);
-          break;
       case 'add':
         if (!isset($assoc_args['hostname'])) {
           $this->failure('Must specify hostname with --hostname');
@@ -778,6 +766,55 @@ class SiteCommand extends TerminusCommand {
             'env' => $env->get('id')
           )
         );
+          break;
+      case 'lookup':
+        $this->log()->warning('This operation may take a long time to run.');
+        $hostname  = Input::string(
+          $assoc_args,
+          'hostname',
+          'Please enter a hostname to look up.'
+        );
+        $sites    = $this->sites->all();
+        $data     = null;
+        foreach ($sites as $site_id => $site) {
+          $environments = array('dev', 'test', 'live');
+          foreach ($environments as $env_name) {
+            $environment = $site->environments->get($env_name);
+            $hostnames   = array_keys((array)$environment->getHostnames());
+            if (in_array($hostname, $hostnames)) {
+              $data = array(
+                array(
+                  'site' => $site->get('name'),
+                  'environment' => $environment->get('id')
+                )
+              );
+              break 2;
+            }
+          }
+        }
+        if (is_null($data)) {
+          $this->log()->info(
+            'Could not locate an environment with the hostname "{hostname}".',
+            compact('hostname')
+          );
+        }
+        $this->output()->outputRecordList($data);
+          break;
+      default:
+      case 'list':
+        $hostnames = $env->getHostnames();
+        $data      = $hostnames;
+        if (Terminus::getConfig('format') != 'json') {
+          //If were not just dumping the JSON, then we should reformat the data.
+          $data = array();
+          foreach ($hostnames as $hostname => $details) {
+            $data[] = array_merge(
+              array('domain' => $hostname),
+              (array)$details
+            );
+          }
+        }
+        $this->output()->outputRecordList($data);
           break;
     }
     return $data;
