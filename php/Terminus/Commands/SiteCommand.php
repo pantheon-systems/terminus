@@ -30,8 +30,8 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <get|load|create|list|get-schedule>
-   * : Function to run - get, load, create, list, or get schedule
+   * <get|load|create|list|get-schedule|set-schedule>
+   * : Function to run - get, load, create, list, get schedule, or set schedule
    *
    * [--site=<site>]
    * : Site to load
@@ -54,6 +54,9 @@ class SiteCommand extends TerminusCommand {
    * [--keep-for]
    * : Number of days to keep this backup
    *
+   * [--day]
+   * : Day of the week on which to run weekly backups
+   *
    * @subcommand backups
    *
    */
@@ -63,6 +66,9 @@ class SiteCommand extends TerminusCommand {
     switch ($action) {
       case 'get-schedule':
         $this->showBackupSchedule($assoc_args);
+          break;
+      case 'set-schedule':
+        $this->setBackupSchedule($assoc_args);
           break;
       case 'get':
         $url = $this->getBackup($assoc_args);
@@ -1991,6 +1997,24 @@ class SiteCommand extends TerminusCommand {
       array('target' => $target, 'db' => $database)
     );
     return true;
+  }
+
+  /**
+   * Sets an environment's regular backup schedule
+   *
+   * @params [array] $assoc_args Parameters and flags from the command line
+   * @return [void]
+   */
+  private function setBackupSchedule($assoc_args) {
+    $site     = $this->sites->get(Input::sitename($assoc_args));
+    $env      = $site->environments->get(
+      Input::env(
+        array('args' => $assoc_args, 'choices' => array('dev', 'live'))
+      )
+    );
+    $day      = Input::day(array('args' => $assoc_args));
+    $schedule = $env->backups->setBackupSchedule($day);
+    $this->log()->info('Backup schedule successfully set.');
   }
 
   /**

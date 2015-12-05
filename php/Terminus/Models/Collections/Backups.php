@@ -4,6 +4,9 @@ namespace Terminus\Models\Collections;
 
 use Terminus\Exceptions\TerminusException;
 
+DEFINE('DAILY_BACKUP_TTL', 691200);
+DEFINE('WEEKLY_BACKUP_TTL', 2764800);
+
 class Backups extends TerminusCollection {
 
   /**
@@ -163,6 +166,41 @@ class Backups extends TerminusCollection {
     );
 
     return $backups;
+  }
+
+  /**
+   * Sets an environment's regular backup schedule
+   *
+   * @param [integer] $day_number A numerical of a day of the week
+   * @return [boolean] True if operation was successful
+   */
+  public function setBackupSchedule($day_number) {
+    $backup_hour = rand(1, 24);
+    $schedule    = array();
+    for ($day = 0; $day < 7; $day++) {
+      $schedule[$day] = (object)array(
+        'hour' => $backup_hour,
+        'ttl'  => DAILY_BACKUP_TTL,
+      );
+      if ($day == $day_number) {
+        $schedule[$day]->ttl = WEEKLY_BACKUP_TTL;
+      }
+    }
+    $schedule = (object)$schedule;
+
+    $path = sprintf(
+      'sites/%s/environments/%s/backups/schedule',
+      $this->environment->site->get('id'),
+      $this->environment->get('id')
+    );
+
+    $params = array(
+      'method'      => 'put',
+      'form_params' => $schedule,
+    );
+
+    $this->request->simpleRequest($path, $params);
+    return true;
   }
 
   /**
