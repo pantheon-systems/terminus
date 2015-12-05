@@ -10,3 +10,11 @@ Feature: Help Command
     """
     "shortdesc":"Get information about Terminus itself."
     """
+
+  @vcr help_recursive
+  Scenario: Viewing all command info recursively
+    When I run "terminus help --recurisve --format=json"
+    Then I should get:
+    """
+    terminus site backups
+    """
