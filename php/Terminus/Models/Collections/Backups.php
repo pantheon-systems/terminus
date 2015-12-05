@@ -10,6 +10,24 @@ DEFINE('WEEKLY_BACKUP_TTL', 2764800);
 class Backups extends TerminusCollection {
 
   /**
+   * Cancels an environment's regular backup schedule
+   *
+   * @return [boolean] True if operation was successful
+   */
+  public function cancelBackupSchedule() {
+    $path_root = sprintf(
+      'sites/%s/environments/%s/backups/schedule',
+      $this->environment->site->get('id'),
+      $this->environment->get('id')
+    );
+    $params    = array('method' => 'delete');
+    for ($day = 0; $day < 7; $day++) {
+      $this->request->simpleRequest("$path_root/$day", $params);
+    }
+    return true;
+  }
+
+  /**
    * Creates a backup
    *
    * @param [array] $arg_params Array of args to dictate backup choices
@@ -175,15 +193,17 @@ class Backups extends TerminusCollection {
    * @return [boolean] True if operation was successful
    */
   public function setBackupSchedule($day_number) {
+    $daily_ttl   = 691200;
+    $weekly_ttl  = 2764800;
     $backup_hour = rand(1, 24);
     $schedule    = array();
     for ($day = 0; $day < 7; $day++) {
       $schedule[$day] = (object)array(
         'hour' => $backup_hour,
-        'ttl'  => DAILY_BACKUP_TTL,
+        'ttl'  => $daily_ttl,
       );
       if ($day == $day_number) {
-        $schedule[$day]->ttl = WEEKLY_BACKUP_TTL;
+        $schedule[$day]->ttl = $weekly_ttl;
       }
     }
     $schedule = (object)$schedule;
