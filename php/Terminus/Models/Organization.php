@@ -5,7 +5,7 @@ namespace Terminus\Models;
 use Terminus\Models\User;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
-//use Terminus\Models\Collections\OrganizationUserMemberships;
+use Terminus\Models\Collections\OrganizationUserMemberships;
 use Terminus\Models\Collections\Workflows;
 
 class Organization extends TerminusModel {
@@ -16,7 +16,6 @@ class Organization extends TerminusModel {
 
   /**
    * Object constructor
-   * TODO: Implement OrganizationUserMemberships
    *
    * @param [stdClass] $attributes Attributes of this model
    * @param [array]    $options    Options to set as $this->key
@@ -28,6 +27,13 @@ class Organization extends TerminusModel {
       $this->user = new User();
     }
     $this->site_memberships = new OrganizationSiteMemberships(
+      array(
+        'organization' => $this,
+        'owner'        => $this,
+        'owner_type'   => 'organization',
+      )
+    );
+    $this->user_memberships = new OrganizationUserMemberships(
       array(
         'organization' => $this,
         'owner'        => $this,
