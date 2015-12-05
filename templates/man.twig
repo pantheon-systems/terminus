@@ -1,0 +1,31 @@
+{{ indent }}##NAME
+{{ indent }}    {{ data.name }}
+
+{% if data.shortdesc %}
+{{ indent }}##DESCRIPTION
+{{ indent }}    {{ data.shortdesc }}
+
+{% endif %}
+{% if data.synopsis %}
+{{ indent }}##SYNOPSIS
+{{ indent }}    {{ data.synopsis|raw }}
+
+{% endif %}
+{% if data.options %}
+{{ indent }}##OPTIONS
+{% for option,description in data.options %}
+{{ indent }}    {{ option|raw }}
+{{ indent }}        {{ description }}
+{% endfor %}
+  
+{% endif %}
+{% if data.subcommands %}
+{{ indent }}##SUBCOMMANDS
+{% for name,subcommand in data.subcommands %}
+{% if options.recursive %}{% include template_name with {'data': subcommand, 'indent': ('    ' ~ indent), 'options': options} %}
+{{ indent }}-------------
+{% else %}{{ indent }}    {{ name }}
+{{ indent }}        {{ subcommand }}
+{% endif %}
+{% endfor %}
+{% endif %}

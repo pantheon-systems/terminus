@@ -76,55 +76,14 @@ class HelpCommand extends TerminusCommand {
       'shortdesc'   => $command->getShortdesc(),
       'synopsis'    => $command->getSynopsis(),
       'subcommands' => null,
-      'options'     => $this->renderOptions($command),
+      'options'     => $this->getOptions($command),
     );
 
     if ($command->canHaveSubcommands()) {
       $binding['subcommands'] =
-        $this->renderSubcommands($command);
+        $this->getSubcommands($command);
     }
     return $binding;
-  }
-
-  /**
-   * Displays the output with Less
-   *
-   * @param [string] $out Help text to be displayed
-   * @return [integer] $exit_status Exit status of Less
-   */
-  private function passThroughPager($out) {
-    // Convert string to file handle
-    $fd = fopen('php://temp', 'r+;');
-    fputs($fd, $out);
-    rewind($fd);
-
-    $descriptorspec = array(
-      0 => $fd,
-      1 => STDOUT,
-      2 => STDERR
-    );
-
-    $exit_status = proc_close(proc_open('less ', $descriptorspec, $pipes));
-    return $exit_status;
-  }
-
-  /**
-   * Gets the basic descriptions of a command's subcommands from internal docs
-   *
-   * @param [CompositeCommand] $command The command of which to get subcommands
-   * @return [array <string>] $subcommands An array of stringified
-   *   subcommands of the command
-   */
-  private function renderSubcommands($command) {
-    $subcommands = array();
-    foreach ($command->getSubcommands() as $subcommand) {
-      if ($this->recursive) {
-        $subcommands[$subcommand->getName()] = $this->getMarkdown($subcommand);
-      } else {
-        $subcommands[$subcommand->getName()] = $subcommand->getShortdesc();
-      }
-    }
-    return $subcommands;
   }
 
   /**
@@ -133,7 +92,7 @@ class HelpCommand extends TerminusCommand {
    * @param [CompositeCommand] $command The command of which to get options
    * @return [array] $options
    */
-  private function renderOptions($command) {
+  private function getOptions($command) {
     $longdesc = $command->getLongdesc();
     $synopses = explode(
       ' ',
@@ -142,7 +101,6 @@ class HelpCommand extends TerminusCommand {
     $options  = array();
     if (is_string($longdesc)) {
       $options_list = explode("\n\n", $longdesc);
-      array_shift($options_list);
       foreach ($options_list as $option) {
         $drilldown = explode("\n", $option);
         $key       = str_replace(array('[', ']'), '', $drilldown[0]);
@@ -165,6 +123,52 @@ class HelpCommand extends TerminusCommand {
       return false;
     }
     return $options;
+  }
+
+  /**
+   * Gets the basic descriptions of a command's subcommands from internal docs
+   *
+   * @param [CompositeCommand] $command The command of which to get subcommands
+   * @return [array <string>] $subcommands An array of stringified
+   *   subcommands of the command
+   */
+  private function getSubcommands($command) {
+    $subcommands = array();
+    foreach ($command->getSubcommands() as $subcommand) {
+      if ($this->recursive) {
+        $subcommands[$subcommand->getName()] = $this->getMarkdown($subcommand);
+      } else {
+        $subcommands[$subcommand->getName()] = $subcommand->getShortdesc();
+      }
+    }
+    return $subcommands;
+  }
+
+  /**
+   * Displays the output with Less
+   *
+   * @param [string] $out Help text to be displayed
+   * @return [integer] $exit_status Exit status of Less
+   */
+  private function passThroughPager($out) {
+    if (Utils\isWindows()) {
+      //No paging for Windows cmd.exe. Sorry!
+      $this->output()->outputValue($out);
+    }
+
+    // Convert string to file handle
+    $fd = fopen('php://temp', 'r+;');
+    fputs($fd, $out);
+    rewind($fd);
+
+    $descriptorspec = array(
+      0 => $fd,
+      1 => STDOUT,
+      2 => STDERR
+    );
+
+    $exit_status = proc_close(proc_open('less ', $descriptorspec, $pipes));
+    return $exit_status;
   }
 
   /**

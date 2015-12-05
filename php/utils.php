@@ -266,32 +266,6 @@ function loadFile($path) {
 }
 
 /**
- * Render PHP or other types of files using Mustache templates
- * IMPORTANT: Automatic HTML escaping is disabled!
- *
- * @param [string] $template_name File name of the template to be used
- * @param [array]  $data          Context to pass through for template use
- * @return [string] $rendered_template The rendered template
- */
-function mustacheRender($template_name, $data) {
-  if (!file_exists($template_name)) {
-    $template_name = TERMINUS_ROOT . "/templates/$template_name";
-  }
-
-  $template = file_get_contents($template_name);
-
-  $mustache = new \Mustache_Engine(
-    array(
-      'escape' => function ($val) {
-        return $val;
-      }
-    )
-  );
-  $rendered_template = $mustache->render($template, $data);
-  return $rendered_template;
-}
-
-/**
  * Takes a host string such as from wp-config.php and parses it into an array
  *
  * @param [string] $raw_host MySQL host string, as defined in wp-config.php
@@ -384,5 +358,27 @@ function stripSensitiveData($request, $blacklist = array()) {
   //Turn array back to JSON, put back in string
   $result = str_replace($matches[0], json_encode($request_array), $request);
   return $result;
+}
+
+/**
+ * Render PHP or other types of files using Twig templates
+ *
+ * @param [string] $template_name File name of the template to be used
+ * @param [array]  $data          Context to pass through for template use
+ * @param [array]  $options       Options to pass through for template use
+ * @return [string] $rendered_template The rendered template
+ */
+function twigRender($template_name, $data, $options) {
+  $loader            = new \Twig_Loader_Filesystem(TERMINUS_ROOT . '/templates');
+  $twig              = new \Twig_Environment($loader);
+  $rendered_template = $twig->render(
+    $template_name,
+    array(
+      'data'          => $data,
+      'template_name' => $template_name,
+      'options'       => $options,
+    )
+  );
+  return $rendered_template;
 }
 
