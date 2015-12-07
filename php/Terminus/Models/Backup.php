@@ -13,7 +13,8 @@ class Backup extends TerminusModel {
    */
   public function backupIsFinished() {
     $is_finished = (
-      ($this->get('finish_time') != null)
+      ($this->get('size') != 0)
+      || ($this->get('finish_time') != null)
       || ($this->get('timestamp') != null)
     );
     return $is_finished;
