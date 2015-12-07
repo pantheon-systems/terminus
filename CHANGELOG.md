@@ -13,6 +13,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site backups cancel-schedule` cancels the regular backup schedule. (#725)
 - New command `organizations team` displays a member list of organizational members. (#726)
 - Added an owners file per the Owners Policy on the Chromium Project. (#727)
+- New subcommand `site hostnames lookup --hostname=<hostname>` to look up a site and environment by hostname. WARNING: May take a long time to run. (#729)
 - New flag `--recursive` on `help` command to show the full details of all subcommands. (#730)
 
 ### Fixed
