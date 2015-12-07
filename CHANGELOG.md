@@ -7,11 +7,13 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added back session token-based login. (#693)
 - New command `workflows logs` displays operation logs for workflow (#708)
 - Added initiator data (manual or automated) to `site backups list`. (#716)
-- New command `site backups get-schedule` shows the scheduled weekly backup day and daily backup time. (#723)
 - New command `workflows watch` to stream workflow updates (#722)
+- New command `site backups get-schedule` shows the scheduled weekly backup day and daily backup time. (#723)
 - New command `site backups set-schedule` schedules the daily backup and weekly day. (#724)
 - New command `site backups cancel-schedule` cancels the regular backup schedule. (#725)
 - New command `organizations team` displays a member list of organizational members. (#726)
+- Added an owners file per the Owners Policy on the Chromium Project. (#727)
+- New flag `--recursive` on `help` command to show the full details of all subcommands. (#730)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
@@ -20,6 +22,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Changed
 - Extricated the request logic from TerminusCommand class and moved it to the Request class. (#704)
+- Replaced Mustache templates with Twig. (#730)
 
 ##[0.9.3] - 2015-11-17
 ### Added

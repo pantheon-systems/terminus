@@ -6,39 +6,44 @@ use Terminus;
 use Terminus\Dispatcher;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Helpers\Input;
 
 class HelpCommand extends TerminusCommand {
+  private $recursive;
 
   /**
    * Get help on a certain command.
    *
-   * <command>
+   * [<commands>...]
+   * : The command you want information on
+   *
+   * [--recursive]
+   * : Display full information on all subcommands and their subcommands
    *
    * ## EXAMPLES
    *
    *     # get help for `sites` command
    *     terminus help sites
    *
+   *     # get help for `sites` command and all its subcommands
+   *     terminus help sites --recursive
+   *
    *     # get help for `sites list` subcommand
    *     terminus help sites list
-   *
-   * @synopsis [<command>...]
    */
   public function __invoke($args, $assoc_args) {
-    $command = $this->findSubcommand($args);
+    $this->recursive = Input::optional('recursive', $assoc_args, false);
+    $command         = $this->findSubcommand($args);
 
     if ($command) {
-      $this->showHelp($command);
-      exit;
+      $status = $this->showHelp($command);
+      exit($status);
     }
 
-    // WordPress is already loaded, so there's no chance we'll find the command
-    if (function_exists('add_filter')) {
-      $this->failure(
-        '"{cmd}" is not a registered command.',
-        array('cmd' => $args[0])
-      );
-    }
+    $this->failure(
+      '"{cmd}" is not a registered command.',
+      array('cmd' => $args[0])
+    );
   }
 
   /**
@@ -61,63 +66,82 @@ class HelpCommand extends TerminusCommand {
    * Retrieves the synopsis of a given command or subcommand
    *
    * @param [mixed] $command The command or subcommand to get documentation on
-   * @return [string] $rendered_help
+   * @return [string] $binding
    */
-  private function getInitialMarkdown($command) {
+  private function getMarkdown($command) {
     $name = implode(' ', Dispatcher\getPath($command));
 
     $binding = array(
-      'name' => $name,
-      'shortdesc' => $command->getShortdesc(),
+      'name'        => $name,
+      'shortdesc'   => $command->getShortdesc(),
+      'synopsis'    => $command->getSynopsis(),
+      'subcommands' => null,
+      'options'     => $this->getOptions($command),
     );
 
-    $binding['synopsis'] = wordwrap($name . ' ' . $command->getSynopsis(), 79);
-
     if ($command->canHaveSubcommands()) {
-      $binding['has-subcommands']['subcommands'] =
-        $this->renderSubcommands($command);
+      $binding['subcommands'] =
+        $this->getSubcommands($command);
     }
-
-    if (Terminus::getConfig('format') == 'json') {
-      $rendered_help = $binding;
-    } else {
-      $rendered_help = Utils\mustacheRender('man.mustache', $binding);
-    }
-    return $rendered_help;
+    return $binding;
   }
 
   /**
-   * Counts the length of the given strings and returns their maximum value
+   * Gets the basic descriptions of a command's paramters and options from docs
    *
-   * @param [array] $strings An array of strings
-   * @return [integer] $max_length
+   * @param [CompositeCommand] $command The command of which to get options
+   * @return [array] $options
    */
-  private function getMaximumLength($strings) {
-    $max_length = 0;
-    foreach ($strings as $string) {
-      $length = strlen($string);
-      if ($length > $max_length) {
-        $max_length = $length;
+  private function getOptions($command) {
+    $longdesc = $command->getLongdesc();
+    $synopses = explode(
+      ' ',
+      str_replace(array('[', ']'), '', $command->getSynopsis())
+    );
+    $options  = array();
+    if (is_string($longdesc)) {
+      $options_list = explode("\n\n", $longdesc);
+      foreach ($options_list as $option) {
+        $drilldown = explode("\n", $option);
+        $key       = str_replace(array('[', ']'), '', $drilldown[0]);
+        if (!in_array($key, $synopses)) {
+          continue;
+        }
+        $value     = str_replace(
+          array(': ', "\n"),
+          array('', ' '),
+          $drilldown[1]
+        );
+        $options[$key] = $value;
+      }
+    } elseif (isset($longdesc['parameters'])) {
+      foreach ($longdesc['parameters'] as $parameter) {
+        $options[$parameter['synopsis']] = $parameter['desc'];
       }
     }
-
-    return $max_length;
+    if (empty($options)) {
+      return false;
+    }
+    return $options;
   }
 
   /**
-   * Intents each new line in the text with the given whitespace string
+   * Gets the basic descriptions of a command's subcommands from internal docs
    *
-   * @param [string] $text       New line-delineated information to intent
-   * @param [string] $whitespace Whitespace string to use in new lines of text
-   * @return [string] $indented_lines
+   * @param [CompositeCommand] $command The command of which to get subcommands
+   * @return [array <string>] $subcommands An array of stringified
+   *   subcommands of the command
    */
-  private function indent($text, $whitespace = "\t\t") {
-    $lines = explode("\n", $text);
-    foreach ($lines as $index => $line) {
-      $lines[$index] = $whitespace . $line;
+  private function getSubcommands($command) {
+    $subcommands = array();
+    foreach ($command->getSubcommands() as $subcommand) {
+      if ($this->recursive) {
+        $subcommands[$subcommand->getName()] = $this->getMarkdown($subcommand);
+      } else {
+        $subcommands[$subcommand->getName()] = $subcommand->getShortdesc();
+      }
     }
-    $indented_lines = implode($lines, "\n");
-    return $indented_lines;
+    return $subcommands;
   }
 
   /**
@@ -127,15 +151,12 @@ class HelpCommand extends TerminusCommand {
    * @return [integer] $exit_status Exit status of Less
    */
   private function passThroughPager($out) {
-    if (Utils\isWindows()
-      || in_array(Terminus::getConfig('format'), array('bash', 'json'))
-    ) {
-      // No paging for Windows cmd.exe; sorry
+    if (Utils\isWindows()) {
+      //No paging for Windows cmd.exe. Sorry!
       $this->output()->outputValue($out);
-      return 0;
     }
 
-    // convert string to file handle
+    // Convert string to file handle
     $fd = fopen('php://temp', 'r+;');
     fputs($fd, $out);
     rewind($fd);
@@ -146,89 +167,35 @@ class HelpCommand extends TerminusCommand {
       2 => STDERR
     );
 
-    $exit_status = proc_close(proc_open('less -r', $descriptorspec, $pipes));
+    $exit_status = proc_close(proc_open('less ', $descriptorspec, $pipes));
     return $exit_status;
-  }
-
-  /**
-   * Gets the basic descriptions of a command's subcommands from internal docs
-   *
-   * @param [CompositeCommand] $command The command of which to get subcommands
-   * @return [array] $lines An array of stringified subcommands of the command
-   */
-  private function renderSubcommands($command) {
-    $subcommands = array();
-    foreach ($command->getSubcommands() as $subcommand) {
-      $subcommands[$subcommand->getName()] = $subcommand->getShortdesc();
-    }
-
-    if (Terminus::getConfig('format') == 'json') {
-      return $subcommands;
-    }
-
-    $max_len = $this->getMaximumLength(array_keys($subcommands));
-    $lines   = array();
-    foreach ($subcommands as $name => $desc) {
-      $lines[] = str_pad($name, $max_len) . "\t\t\t" . $desc;
-    }
-
-    return $lines;
-  }
-
-  /**
-   * Formats the description of the parameter
-   *
-   * @param [array] $matches An array of strings of parameters of a subcommand
-   * @return [string] $description A formatted string of the parameters
-   */
-  private function rewrapParameterDescription($matches) {
-    $param       = $matches[1];
-    $desc        = $this->indent(wordwrap($matches[2]));
-    $description = "\t$param\n$desc\n\n";
-    return $description;
   }
 
   /**
    * Takes a command to get help for and processes its internal documentation
    *
    * @param [mixed] $command The command to offer help for
-   * @return [void]
+   * @return [integer] $exit_status
    */
   private function showHelp($command) {
-    $out      = $this->getInitialMarkdown($command);
-    $longdesc = $command->getLongdesc();
-    if ($longdesc) {
-      if (is_array($longdesc)) {
-        $flag_list = array_pop($longdesc);
-        $flags     = array();
-        foreach ($flag_list as $desc) {
-          $flags[$desc['synopsis']] = $desc['desc'];
-        }
-        $out['parameters'] = $flags;
-        $out = json_encode($out);
+    $out         = $this->getMarkdown($command);
+    $exit_status = 0;
+
+    if (Terminus::getConfig('format') == 'json') {
+      $this->output()->outputRecord($out);
+    } else {
+      $rendered_help = Utils\twigRender(
+        'man.twig',
+        $out,
+        array('recursive' => $this->recursive)
+      );
+      if (Terminus::getConfig('format') == 'normal') {
+        $exit_status = $this->passThroughPager($rendered_help);
       } else {
-        $out .= wordwrap($longdesc, 79) . "\n";
+        $this->output()->outputRecord($rendered_help);
       }
     }
-
-    if (is_string($out)) {
-      // section headers
-      $out = preg_replace(
-        '/^## ([A-Z]+)/m',
-        Terminus::colorize('%9\1%n'),
-        $out
-      );
-
-      // definition lists
-      $out = preg_replace_callback(
-        '/([^\n]+)\n: (.+?)(\n\n|$)/s',
-        array(__CLASS__, 'rewrapParameterDescription'),
-        $out
-      );
-
-      $out = str_replace("\t", '  ', $out);
-    }
-    $this->passThroughPager($out);
+    return $exit_status;
   }
 
 }

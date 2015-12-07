@@ -67,7 +67,6 @@ class RootCommand extends CompositeCommand {
     if (Terminus::getConfig('format') == 'json') {
       return $binding;
     }
-    $binding = Utils\mustacheRender('man-params.mustache', $binding);
     return $binding;
   }
 
