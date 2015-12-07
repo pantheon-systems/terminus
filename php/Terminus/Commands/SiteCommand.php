@@ -1963,9 +1963,13 @@ class SiteCommand extends TerminusCommand {
       $element = Input::backupElement(array('args' => $assoc_args));
     }
     $backups = $env->backups->getFinishedBackups($element);
+    $latest  = (boolean)Input::optional('latest', $assoc_args, false);
     if (empty($backups)) {
       $this->log()->warning('No backups found.');
     } else {
+      if ($latest) {
+        array_splice($backups, 1);
+      }
       $data = array();
       foreach ($backups as $id => $backup) {
         $data[] = array(
