@@ -20,6 +20,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site backups get` no longer errs when there are no backups. (#690)
 - Interactive commands' environment menus now consistently include multidev environments, where applicable. (#701)
 - `site wake` (#710)
+- `sites create` and `sites import` no longer give warnings about missing $org_id variable. (#733)
 
 ### Changed
 - Extricated the request logic from TerminusCommand class and moved it to the Request class. (#704)
