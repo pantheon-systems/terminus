@@ -78,7 +78,10 @@ abstract class CommandWithSSH extends TerminusCommand {
       'host' => "appserver.$env_id.$site_id.drush.in",
       'port' => '2222'
     );
-    if (strpos(TERMINUS_HOST, 'onebox') !== false) {
+    if ($ssh_host = getenv('TERMINUS_SSH_HOST')) {
+      $server['user'] = "appserver.$env_id.$site_id";
+      $server['host'] = $ssh_host;
+    } else if (strpos(TERMINUS_HOST, 'onebox') !== false) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = TERMINUS_HOST;
     }
@@ -115,6 +118,7 @@ abstract class CommandWithSSH extends TerminusCommand {
     $cmd       = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p '
       . $server['port'] . ' -o "AddressFamily inet"' . " "
       . escapeshellarg($remote_cmd);
+    $this->log()->debug('Running command "{cmd}".', compact('cmd'));
     if (!$is_normal) {
       ob_start();
     }
