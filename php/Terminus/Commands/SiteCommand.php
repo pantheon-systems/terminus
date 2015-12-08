@@ -1818,11 +1818,12 @@ class SiteCommand extends TerminusCommand {
     $env  = $site->environments->get(
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
+
     Terminus::confirm(
-      'Are you sure you want to wipe {site}-{env}?',
-      array(
-        'site' => $site->get('name'),
-        'env' => $env->get('id')
+      sprintf(
+        'Are you sure you want to wipe %s-%s?',
+        $site->get('name'),
+        $env->get('id')
       )
     );
 
