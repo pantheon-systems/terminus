@@ -15,6 +15,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added an owners file per the Owners Policy on the Chromium Project. (#727)
 - New subcommand `site hostnames lookup --hostname=<hostname>` to look up a site and environment by hostname. WARNING: May take a long time to run. (#729)
 - New flag `--recursive` on `help` command to show the full details of all subcommands. (#730)
+- Environment variable `TERMINUS_SSH_HOST` targets a specific host for `drush` and `wp` commands. (#737)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
