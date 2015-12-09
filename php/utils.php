@@ -80,6 +80,45 @@ function checkForUpdate() {
 }
 
 /**
+ * Sets constants necessary for the proper functioning of Terminus
+ *
+ * @return [void]
+ */
+function defineConstants() {
+  define('Terminus', true);
+  define('TERMINUS_VERSION', '0.9.3');
+
+  if (!defined('TERMINUS_SCRIPT')) {
+    define('TERMINUS_SCRIPT', 'php/Terminus.php');
+  }
+
+  if (!defined('TERMINUS_TIME_ZONE')) {
+    define('TERMINUS_TIME_ZONE', 'UTC');
+  }
+  date_default_timezone_set(TERMINUS_TIME_ZONE);
+
+  $host = 'dashboard.pantheon.io';
+  if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
+    $host = $_SERVER['TERMINUS_HOST'];
+  }
+  define('TERMINUS_HOST', $host);
+
+  $port = 443;
+  if (isset($_SERVER['TERMINUS_PORT']) && ($_SERVER['TERMINUS_PORT'] != '')) {
+    $port = $_SERVER['TERMINUS_PORT'];
+  }
+  define('TERMINUS_PORT', $port);
+
+  $protocol = 'https';
+  if (isset($_SERVER['TERMINUS_PROTOCOL'])
+    && ($_SERVER['TERMINUS_PROTOCOL'] != '')
+  ) {
+    $protocol = $_SERVER['TERMINUS_PROTOCOL'];
+  }
+  define('TERMINUS_PROTOCOL', $protocol);
+}
+
+/**
  * Ensures that the given destination is valid
  *
  * @param [string]  $destination Location of directory to ensure viability of
@@ -129,6 +168,19 @@ function getVendorPaths() {
     TERMINUS_ROOT . '/vendor'
   );
   return $vendor_paths;
+}
+
+/**
+ * Imports environment variables
+ *
+ * @return [void]
+ */
+function importEnvironmentVariables() {
+  //Load environment variables from __DIR__/.env
+  if (file_exists(getcwd() . '/.env')) {
+    $env = new Dotenv\Dotenv(getcwd());
+    $env->load();
+  }
 }
 
 /**
