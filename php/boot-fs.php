@@ -22,4 +22,4 @@ if (version_compare(PHP_VERSION, $min_version, '<')) {
 
 define('TERMINUS_ROOT', dirname(__DIR__));
 
-include TERMINUS_ROOT . '/php/terminus.php';
+include TERMINUS_ROOT . '/php/boot-cl.php';
