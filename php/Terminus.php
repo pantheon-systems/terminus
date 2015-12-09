@@ -5,6 +5,7 @@ use Terminus\FileCache;
 use Terminus\Runner;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Loggers\Logger;
 
 /**
  * Various utilities for Terminus commands.
@@ -25,11 +26,15 @@ class Terminus {
     $default_options = array(
       'runner'   => null,
       'colorize' => 'auto',
+      'format'   => 'json',
+      'debug'    => false,
+      'verboxe'  => true,
     );
-    $options         = array_merge($default_options, $arg_options);
+    self::$options = $options = array_merge($default_options, $arg_options);
 
     $this->setRunner($options['runner']);
-    self::$options = $options;
+    $this->setLogger($options);
+    $this->setOutputter($options['format']);
   }
 
   /**
@@ -404,21 +409,34 @@ class Terminus {
   /**
    * Set the logger instance to a class property
    *
-   * @param [LoggerInterface] $logger Logger to set
+   * @param [array] $config Configuration options to send to the logger
    * @return [void]
    */
-  static function setLogger($logger) {
-    self::$logger = $logger;
+  static function setLogger($config) {
+    self::$logger = new Logger(compact('config'));
   }
 
   /**
    * Set the outputter instance to a class property
    *
-   * @param [OutputterInterface] $outputter Outputter to set
+   * @param [string] $format Type of formatter to set on outputter
    * @return [void]
    */
-  static function setOutputter($outputter) {
-    self::$outputter = $outputter;
+  static function setOutputter($format) {
+    // Pick an output formatter
+    if ($format == 'json') {
+      $formatter = new Terminus\Outputters\JSONFormatter();
+    } elseif ($format == 'bash') {
+      $formatter = new Terminus\Outputters\BashFormatter();
+    } else {
+      $formatter = new Terminus\Outputters\PrettyFormatter();
+    }
+
+    // Create an output service.
+    self::$outputter = new Terminus\Outputters\Outputter(
+      new Terminus\Outputters\StreamWriter('php://stdout'),
+      $formatter
+    );
   }
 
   /**

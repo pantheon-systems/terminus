@@ -4,26 +4,15 @@ namespace Terminus;
 
 use Terminus;
 use Terminus\Utils;
-use Terminus\Loggers\Logger;
 use Terminus\Exceptions\TerminusException;
 
 class Runner {
-  public $config;
-
   private $arguments;
   private $assoc_args;
+  private $config;
   private $configurator;
-  private $terminus;
-
-  /**
-   * @var LoggerInterface
-   */
   private $logger;
-
-  /**
-   * @var OutputterInterface
-   */
-  private $outputter;
+  private $terminus;
 
   /**
    * Constructs object. Initializes config, colorizaiton, loger, and outputter
@@ -32,15 +21,14 @@ class Runner {
    * @return [Runner] $this
    */
   public function __construct($config = array()) {
-    $params         = array(
+    $this->setConfigurator();
+    $this->setConfig($config);
+    $params          = array(
       'runner' => $this,
     );
-    $this->terminus = new Terminus($params);
-
-    $this->setConfigurator();
-    $this->initConfig($config);
-    $this->initLogger();
-    $this->initOutputter();
+    $params          = array_merge($this->config, $params);
+    $this->terminus  = new Terminus($params);
+    $this->logger    = Terminus::getLogger();
   }
 
   /**
@@ -179,7 +167,7 @@ class Runner {
    * @param [array] $config Config options to set explicitly
    * @return [void]
    */
-  private function initConfig($config = array()) {
+  private function setConfig($config = array()) {
     $args = array('terminus', '--debug');
     if (isset($GLOBALS['argv'])) {
       $args = $GLOBALS['argv'];
@@ -196,40 +184,6 @@ class Runner {
     $this->configurator->mergeArray($runtime_config);
 
     $this->config = array_merge($this->configurator->toArray(), $config);
-  }
-
-  /**
-   * Initializes logger and saves it to Terminus property
-   *
-   * @return [void]
-   */
-  private function initLogger() {
-    $this->logger = new Logger(array('config' => $this->config));
-    Terminus::setLogger($this->logger);
-  }
-
-  /**
-   * Initializes outputter and saves it to Terminus property
-   *
-   * @return [void]
-   */
-  private function initOutputter() {
-    // Pick an output formatter
-    if ($this->config['format'] == 'json') {
-      $formatter = new Terminus\Outputters\JSONFormatter();
-    } elseif ($this->config['format'] == 'bash') {
-      $formatter = new Terminus\Outputters\BashFormatter();
-    } else {
-      $formatter = new Terminus\Outputters\PrettyFormatter();
-    }
-
-    // Create an output service.
-    $this->outputter = new Terminus\Outputters\Outputter(
-      new Terminus\Outputters\StreamWriter('php://stdout'),
-      $formatter
-    );
-
-    Terminus::setOutputter($this->outputter);
   }
 
   /**
