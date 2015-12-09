@@ -5,8 +5,7 @@ namespace Terminus;
 class Configurator {
   private static $special_flags = array('--no-cache-clear');
 
-  private $config       = array();
-  private $extra_config = array();
+  private $config = array();
   private $spec;
 
   /**
@@ -103,13 +102,12 @@ class Configurator {
   }
 
   /**
-   * Puts config and extra config into an array
+   * Returns the config property
    *
-   * @return [array] [0] = $this->config, [1] = $this->extra_config
+   * @return [array] $this->config
    */
   public function toArray() {
-    $array = array($this->config, $this->extra_config);
-    return $array;
+    return $this->config;
   }
 
   /**

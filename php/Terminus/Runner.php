@@ -146,13 +146,7 @@ class Runner {
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
       $name = implode(' ', $cmd_path);
 
-      if (isset($this->extra_config[$name])) {
-        $extra_args = $this->extra_config[$name];
-      } else {
-        $extra_args = array();
-      }
-
-      $command->invoke($final_args, $assoc_args, $extra_args);
+      $command->invoke($final_args, $assoc_args);
 
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
@@ -208,7 +202,7 @@ class Runner {
 
     $configurator->mergeArray($runtime_config);
 
-    list($this->config, $this->extra_config) = $configurator->toArray();
+    $this->config = $configurator->toArray();
   }
 
   /**

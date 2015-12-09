@@ -141,7 +141,7 @@ class Terminus {
         'Unknown config option "{key}".',
         array('key' => $key)
       );
-      $config = null;
+      $config = array();
     } else {
       $config = self::getRunner()->config[$key];
     }

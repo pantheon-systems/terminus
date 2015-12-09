@@ -91,14 +91,13 @@ class Subcommand extends CompositeCommand {
    *
    * @param [array] $args       Array of command line non-params and non-flags
    * @param [array] $assoc_args Array of command line params and flags
-   * @param [array] $extra_args Any additional arguments dispatcher assembled
    * @return [void]
    */
-  public function invoke($args, $assoc_args, $extra_args) {
+  public function invoke($args, $assoc_args) {
     if (Terminus::getConfig('interactive')) {
       list($args, $assoc_args) = $this->promptArgs($args, $assoc_args);
     }
-    $to_unset = $this->validateArgs($args, $assoc_args, $extra_args);
+    $to_unset = $this->validateArgs($args, $assoc_args);
     foreach ($to_unset as $key) {
       unset($assoc_args[$key]);
     }
@@ -106,7 +105,7 @@ class Subcommand extends CompositeCommand {
     call_user_func(
       $this->when_invoked,
       $args,
-      array_merge($extra_args, $assoc_args)
+      $assoc_args
     );
   }
 
@@ -240,10 +239,9 @@ class Subcommand extends CompositeCommand {
    *
    * @param [array] $args       Array of command line non-params and non-flags
    * @param [array] $assoc_args Array of command line params and flags
-   * @param [array] $extra_args Any additional arguments dispatcher assembled
    * @return [array] A list of invalid $assoc_args keys to unset
    */
-  private function validateArgs($args, $assoc_args, $extra_args) {
+  private function validateArgs($args, $assoc_args) {
     $synopsis = $this->getSynopsis();
     if (!$synopsis) {
       return array();
@@ -281,7 +279,7 @@ class Subcommand extends CompositeCommand {
       );
     }
     list($errors, $to_unset) = $validator->validateAssoc(
-      array_merge(Terminus::getConfig(), $extra_args, $assoc_args)
+      array_merge(Terminus::getConfig(), $assoc_args)
     );
     foreach ($validator->unknownAssoc($assoc_args) as $key) {
       $errors['fatal'][] = "unknown --$key parameter";
