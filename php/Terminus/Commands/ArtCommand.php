@@ -28,7 +28,7 @@ class ArtCommand extends TerminusCommand {
 
     try {
       $artwork_content = Utils\loadAsset("$artwork.txt");
-      echo Terminus::colorize(
+      echo Utils\colorize(
         "%g" . base64_decode($artwork_content) . "%n"
       ) . PHP_EOL;
     } catch (TerminusException $e) {

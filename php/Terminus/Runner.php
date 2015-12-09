@@ -9,11 +9,9 @@ use Terminus\Exceptions\TerminusException;
 
 class Runner {
   public $config;
-  public $extra_config;
 
   private $arguments;
   private $assoc_args;
-  private $colorize;
   private $configurator;
   private $terminus;
 
@@ -41,7 +39,6 @@ class Runner {
 
     $this->setConfigurator();
     $this->initConfig($config);
-    $this->initColorizaiton();
     $this->initLogger();
     $this->initOutputter();
   }
@@ -97,15 +94,6 @@ class Runner {
    */
   public function getConfigurator() {
     return $this->configurator;
-  }
-
-  /**
-   * Determines if output is to be colorized
-   *
-   * @return [boolean] $this->colorize
-   */
-  public function inColor() {
-    return $this->colorize;
   }
 
   /**
@@ -183,19 +171,6 @@ class Runner {
    */
   private function _runCommand() {
     $this->runCommand($this->arguments, $this->assoc_args);
-  }
-
-  /**
-   * Initializes colorization and saves to Runner property
-   *
-   * @return [void]
-   */
-  private function initColorizaiton() {
-    if ($this->config['colorize'] == 'auto') {
-      $this->colorize = !\cli\Shell::isPiped();
-    } else {
-      $this->colorize = $this->config['colorize'];
-    }
   }
 
   /**

@@ -94,9 +94,6 @@ class Subcommand extends CompositeCommand {
    * @return [void]
    */
   public function invoke($args, $assoc_args) {
-    if (Terminus::getConfig('interactive')) {
-      list($args, $assoc_args) = $this->promptArgs($args, $assoc_args);
-    }
     $to_unset = $this->validateArgs($args, $assoc_args);
     foreach ($to_unset as $key) {
       unset($assoc_args[$key]);

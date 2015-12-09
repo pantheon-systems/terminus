@@ -10,9 +10,8 @@ use Terminus\Exceptions\TerminusException;
  * Various utilities for Terminus commands.
  */
 class Terminus {
-  private static $hooks        = array();
-  private static $hooks_passed = array();
   private static $logger;
+  private static $options;
   private static $outputter;
   private static $runner;
 
@@ -24,11 +23,13 @@ class Terminus {
    */
   public function __construct(array $arg_options = array()) {
     $default_options = array(
-      'runner' => null,
+      'runner'   => null,
+      'colorize' => 'auto',
     );
     $options         = array_merge($default_options, $arg_options);
 
     $this->setRunner($options['runner']);
+    self::$options = $options;
   }
 
   /**
@@ -75,20 +76,6 @@ class Terminus {
       );
     }
     $command->addSubcommand($leaf_name, $leaf_command);
-  }
-
-  /**
-   * Returns a colorized string
-   *
-   * @param [string] $string Message to colorize for output
-   * @return [string] $colorized_string
-   */
-  static function colorize($string) {
-    $colorized_string = \cli\Colors::colorize(
-      $string,
-      self::getRunner()->inColor()
-    );
-    return $colorized_string;
   }
 
   /**
@@ -148,16 +135,14 @@ class Terminus {
    * @return [mixed] $config
    */
   static function getConfig($key = null) {
-    if (is_null($key)) {
-      $config = self::getRunner()->config;
-    } elseif (!isset(self::getRunner()->config[$key])) {
+    $config = self::$options;
+    if (isset($config[$key])) {
+      $config = $config[$key];
+    } elseif (!is_null($key)) {
       self::getLogger()->warning(
         'Unknown config option "{key}".',
-        array('key' => $key)
+        compact('key')
       );
-      $config = array();
-    } else {
-      $config = self::getRunner()->config[$key];
     }
     return $config;
   }

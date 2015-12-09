@@ -80,6 +80,24 @@ function checkForUpdate() {
 }
 
 /**
+ * Returns a colorized string
+ *
+ * @param [string] $string Message to colorize for output
+ * @return [string] $colorized_string
+ */
+function colorize($string) {
+  $colorize = true;
+  if (Terminus::getConfig('colorize') == 'auto') {
+    $colorize = !\cli\Shell::isPiped();
+  }
+  $colorized_string = \cli\Colors::colorize(
+    $string,
+    $colorize
+  );
+  return $colorized_string;
+}
+
+/**
  * Sets constants necessary for the proper functioning of Terminus
  *
  * @return [void]
