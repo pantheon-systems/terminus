@@ -14,6 +14,8 @@ class Runner {
   private $arguments;
   private $assoc_args;
   private $colorize;
+  private $configurator;
+  private $terminus;
 
   /**
    * @var LoggerInterface
@@ -28,10 +30,17 @@ class Runner {
   /**
    * Constructs object. Initializes config, colorizaiton, loger, and outputter
    *
+   * @param [array] $config Extra settings for the config property
    * @return [Runner] $this
    */
-  public function __construct() {
-    $this->initConfig();
+  public function __construct($config = array()) {
+    $params         = array(
+      'runner' => $this,
+    );
+    $this->terminus = new Terminus($params);
+
+    $this->setConfigurator();
+    $this->initConfig($config);
     $this->initColorizaiton();
     $this->initLogger();
     $this->initOutputter();
@@ -79,6 +88,15 @@ class Runner {
 
     $command_array = array($command, $args, $cmd_path);
     return $command_array;
+  }
+
+  /**
+   * Retrieves the configurator property
+   *
+   * @return [Configurator] $this->configurator
+   */
+  public function getConfigurator() {
+    return $this->configurator;
   }
 
   /**
@@ -183,26 +201,26 @@ class Runner {
   /**
    * Initializes configurator, saves config data to it
    *
+   * @param [array] $config Config options to set explicitly
    * @return [void]
    */
-  private function initConfig() {
+  private function initConfig($config = array()) {
     $args = array('terminus', '--debug');
     if (isset($GLOBALS['argv'])) {
       $args = $GLOBALS['argv'];
     }
-    $configurator = Terminus::getConfigurator();
 
     // Runtime config and args
-    list($args, $assoc_args, $runtime_config) = $configurator->parseArgs(
+    list($args, $assoc_args, $runtime_config) = $this->configurator->parseArgs(
       array_slice($args, 1)
     );
 
     $this->arguments  = $args;
     $this->assoc_args = $assoc_args;
 
-    $configurator->mergeArray($runtime_config);
+    $this->configurator->mergeArray($runtime_config);
 
-    $this->config = $configurator->toArray();
+    $this->config = array_merge($this->configurator->toArray(), $config);
   }
 
   /**
@@ -237,6 +255,22 @@ class Runner {
     );
 
     Terminus::setOutputter($this->outputter);
+  }
+
+  /**
+   * Sets the configurator property
+   *
+   * @param [Configurator] $configurator Configurator object to set
+   * @return [void]
+   */
+  private function setConfigurator($configurator = null) {
+    if (is_null($configurator)) {
+      $this->configurator = new Configurator(
+        TERMINUS_ROOT . '/php/config-spec.php'
+      );
+    } else {
+      $this->configurator = $configurator;
+    }
   }
 
 }

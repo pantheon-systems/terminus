@@ -45,8 +45,9 @@ class RootCommand extends CompositeCommand {
    */
   function getLongdesc() {
     $binding = array();
+    $spec    = Terminus::getRunner()->getConfigurator()->getSpec();
 
-    foreach (Terminus::getConfigurator()->getSpec() as $key => $details) {
+    foreach ($spec as $key => $details) {
       if (($details['runtime'] === false)
         || isset($details['deprecated'])
         || (isset($details['hidden']))

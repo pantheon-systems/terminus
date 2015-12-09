@@ -16,6 +16,7 @@ include TERMINUS_ROOT . '/php/utils.php';
 include TERMINUS_ROOT . '/php/FileCache.php';
 include TERMINUS_ROOT . '/php/dispatcher.php';
 include TERMINUS_ROOT . '/php/Terminus.php';
+include TERMINUS_ROOT . '/php/Terminus/Runner.php';
 
 \Terminus\Utils\loadDependencies();
 
@@ -56,7 +57,8 @@ if (isset($_SERVER['VCR_CASSETTE'])) {
 }
 
 if (isset($GLOBALS['argv'])) {
-  Terminus::getRunner()->run();
+  $runner = new \Terminus\Runner();
+  $runner->run();
 }
 
 if (isset($_SERVER['VCR_CASSETTE'])) {

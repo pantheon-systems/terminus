@@ -13,7 +13,7 @@ putenv('CLI_TEST_MODE=1');
 
 require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
-Terminus::setConfig('debug', false);
+$runner = new \Terminus\Runner(array('debug' => false));
 use Terminus\Session;
 
 $session_id  = '0ffec038-4410-43d0-a404-46997f672d7a%3A68486878';

@@ -1,6 +1,5 @@
 <?php
 
-use Terminus\Configurator;
 use Terminus\Dispatcher;
 use Terminus\FileCache;
 use Terminus\Runner;
@@ -11,11 +10,26 @@ use Terminus\Exceptions\TerminusException;
  * Various utilities for Terminus commands.
  */
 class Terminus {
-  private static $configurator;
   private static $hooks        = array();
   private static $hooks_passed = array();
   private static $logger;
   private static $outputter;
+  private static $runner;
+
+  /**
+   * Object constructor. Sets properties.
+   *
+   * @param [array] $arg_options Options to override defaults
+   * @return [Terminus] $this
+   */
+  public function __construct(array $arg_options = array()) {
+    $default_options = array(
+      'runner' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    $this->setRunner($options['runner']);
+  }
 
   /**
    * Add a command to the terminus list of commands
@@ -149,21 +163,6 @@ class Terminus {
   }
 
   /**
-   * Retrieves the configurator, creating it if DNE
-   *
-   * @return [Configurator] $configurator
-   */
-  static function getConfigurator() {
-    static $configurator;
-
-    if (!$configurator) {
-      $configurator = new Configurator(TERMINUS_ROOT . '/php/config-spec.php');
-    }
-
-    return $configurator;
-  }
-
-  /**
    * Retrieves the instantiated logger
    *
    * @return [LoggerInterface] $logger
@@ -220,17 +219,7 @@ class Terminus {
    * @return [Runner] $runner
    */
   static function getRunner() {
-    try {
-      static $runner;
-
-      if (!isset($runner) || !$runner) {
-        $runner = new Runner();
-      }
-
-      return $runner;
-    } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage(), array(), -1);
-    }
+    return self::$runner;
   }
 
   /**
@@ -445,6 +434,20 @@ class Terminus {
    */
   static function setOutputter($outputter) {
     self::$outputter = $outputter;
+  }
+
+  /**
+   * Sets the runner object
+   *
+   * @param [Runner] $runner Runner object to set
+   * @return [void]
+   */
+  private function setRunner($runner = null) {
+    if (is_null($runner)) {
+      self::$runner = new Runner();
+    } else {
+      self::$runner = $runner;
+    }
   }
 
 }
