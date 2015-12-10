@@ -172,11 +172,10 @@ class Workflows extends TerminusCollection {
         $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
         if ($a_finished_after_b) {
           $cmp = -1;
-          return $cmp;
         } else {
           $cmp = 1;
-          return $cmp;
         }
+        return $cmp;
       }
     );
 

@@ -41,7 +41,9 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function index($args, $assoc_args) {
     $site      = $this->sites->get(Input::sitename($assoc_args));
+    $site->workflows->fetch(array('paged' => false));
     $workflows = $site->workflows->all();
+
     $data      = array();
     foreach ($workflows as $workflow) {
       $workflow_data = $workflow->serialize();
@@ -54,7 +56,7 @@ class WorkflowsCommand extends TerminusCommand {
         array('site' => $site->get('name'))
       );
     }
-    $this->output()->outputRecordList($data, array('update' => 'Last update'));
+    $this->output()->outputRecordList($data);
   }
 
   /**
