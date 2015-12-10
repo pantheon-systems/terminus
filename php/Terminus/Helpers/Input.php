@@ -94,6 +94,30 @@ class Input {
   }
 
   /**
+   * Asks for confirmation before running a destructive operation.
+   *
+   * @param [string] $question Prompt text
+   * @param [array]  $params   Elements to interpolate into the prompt text
+   * @return [boolean] True if prompt is accepted
+   */
+  static function confirm(
+    $question,
+    $params = array()
+  ) {
+    if (Terminus::getConfig('yes')) {
+      return true;
+    }
+    $question = vsprintf($question, $params);
+    fwrite(STDOUT, $question . ' [y/n] ');
+    $answer = trim(fgets(STDIN));
+
+    if ($answer != 'y') {
+      exit(0);
+    }
+    return true;
+  }
+
+  /**
    * Facilitates the selection of a day of the week
    *
    * @param [array] $arg_options Arguments as follows:

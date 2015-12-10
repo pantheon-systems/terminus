@@ -5,6 +5,7 @@ namespace Terminus\Utils;
 use ArrayIterator;
 use Terminus;
 use Terminus\Request;
+use Terminus\Helpers\Input;
 use Terminus\Iterators\Transform;
 use Terminus\Exceptions\TerminusException;
 
@@ -152,7 +153,7 @@ function destinationIsValid($destination, $make = true) {
 
   if (!is_dir($destination)) {
     if (!$make) {
-      $make = Terminus::confirm("Directory does not exists. Create it now?");
+      $make = Input::confirm("Directory does not exists. Create it now?");
     }
     if ($make) {
       mkdir($destination, 0755);

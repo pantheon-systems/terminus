@@ -28,7 +28,7 @@ class Terminus {
       'colorize' => 'auto',
       'format'   => 'json',
       'debug'    => false,
-      'verboxe'  => true,
+      'yes'      => false,
     );
     self::$options = $options = array_merge($default_options, $arg_options);
 
@@ -81,30 +81,6 @@ class Terminus {
       );
     }
     $command->addSubcommand($leaf_name, $leaf_command);
-  }
-
-  /**
-   * Asks for confirmation before running a destructive operation.
-   *
-   * @param [string] $question Prompt text
-   * @param [array]  $params   Elements to interpolate into the prompt text
-   * @return [boolean] True if prompt is accepted
-   */
-  static function confirm(
-    $question,
-    $params = array()
-  ) {
-    if (self::getConfig('yes')) {
-      return true;
-    }
-    $question = vsprintf($question, $params);
-    fwrite(STDOUT, $question . ' [y/n] ');
-    $answer = trim(fgets(STDIN));
-
-    if ($answer != 'y') {
-      exit(0);
-    }
-    return true;
   }
 
   /**
