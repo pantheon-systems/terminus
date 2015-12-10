@@ -106,26 +106,6 @@ class Workflows extends TerminusCollection {
   }
 
   /**
-   * Fetches workflow data hydrated with operations and logs
-   *
-   * @param [array] $options Additional information for the request
-   * @return [Workflows] $this
-   */
-  public function fetchWithOperationsAndLogs($options = array()) {
-    $options = array_merge(
-      $options,
-      array(
-        'fetch_args' => array(
-          'query' => array(
-            'hydrate' => 'operations_with_logs'
-          )
-        )
-      )
-    );
-    $this->fetch($options);
-  }
-
-  /**
    * Returns all existing workflows that have finished
    *
    * @return [Array<Workflows>] $workflows
