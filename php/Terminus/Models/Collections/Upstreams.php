@@ -31,7 +31,7 @@ class Upstreams extends TerminusCollection {
    * @param [array]    $options    Data to make properties of the new model
    * @return [void]
    */
-  protected function add($model_data, $options = array()) {
+  public function add($model_data, $options = array()) {
     parent::add($model_data->attributes, $options);
   }
 

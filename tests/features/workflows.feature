@@ -27,21 +27,11 @@ Feature: View site workflow information
     quicksilver	my_script
     """
 
-  @vcr workflows_logs
-  Scenario: Show logs for a specific Workflow
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I run "terminus workflows logs --site=[[test_site_name]] --workflow_id=4b4bbbc4-4602-11e5-a354-bc764e117665"
-    Then I should get:
-    """
-    lorem log ipsum delor
-    """
-
-  @vcr workflows_logs_latest
+  @vcr workflows_show
   Scenario: Show the most recent set of logs for a workflow that has logs
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    When I run "terminus workflows logs --site=[[test_site_name]] --latest"
+    When I run "terminus workflows show --site=[[test_site_name]] --latest-with-logs"
     Then I should get:
     """
     lorem log ipsum delor

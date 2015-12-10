@@ -88,10 +88,21 @@ abstract class TerminusModel {
    * @return [mixed] $this->attributes->$attribute
    */
   public function get($attribute) {
-    if (isset($this->attributes->$attribute)) {
+    if ($this->has($attribute)) {
       return $this->attributes->$attribute;
     }
     return null;
+  }
+
+  /**
+   * Checks whether the model has an attribute
+   *
+   * @param [string] $attribute Name of the attribute key
+   * @return [boolean] $isset whether the attribute is set
+   */
+  public function has($attribute) {
+    $isset = isset($this->attributes->$attribute);
+    return $isset;
   }
 
   /**

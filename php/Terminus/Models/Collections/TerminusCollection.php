@@ -92,7 +92,7 @@ abstract class TerminusCollection extends TerminusModel {
    * @param [array]    $options    Data to make properties of the new model
    * @return [mixed] $model newly added model
    */
-  protected function add($model_data, $options = array()) {
+  public function add($model_data, $options = array()) {
     $model   = $this->getMemberName();
     $owner   = $this->getOwnerName();
     $options = array_merge(

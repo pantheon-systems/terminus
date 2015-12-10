@@ -151,7 +151,7 @@ class Workflows extends TerminusCollection {
     $workflows = array_filter(
       $workflows,
       function($workflow) {
-        $has_logs = $workflow->hasLogs();
+        $has_logs = $workflow->get('has_operation_log_output');
         return $has_logs;
       }
     );
@@ -171,10 +171,10 @@ class Workflows extends TerminusCollection {
       function($a, $b) {
         $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
         if ($a_finished_after_b) {
-          $cmp = 1;
+          $cmp = -1;
           return $cmp;
         } else {
-          $cmp = -1;
+          $cmp = 1;
           return $cmp;
         }
       }
@@ -214,7 +214,7 @@ class Workflows extends TerminusCollection {
    * @param [array]    $options    Data to make properties of the new model
    * @return [mixed] $model newly added model
    */
-  protected function add($model_data, $options = array()) {
+  public function add($model_data, $options = array()) {
     $model = parent::add($model_data, $options = array());
     $model->owner = $this->owner;
     return $model;

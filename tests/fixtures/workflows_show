@@ -269,6 +269,7 @@
                   "4b67dfca-4602-11e5-a354-bc764e117665",
                   "4b67e8f8-4602-11e5-a354-bc764e117665"
                 ],
+                "has_operation_log_output": true,
                 "operations": [
                   {
                     "id": "9aad8b5d-3ff6-478f-8ec1-119450a8de71",
@@ -473,6 +474,166 @@
                 }
               }
             ]
+
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/f176b6d8-8492-48f7-9d32-b85b225095f6/workflows/4b4bbbc4-4602-11e5-a354-bc764e117665'
+        headers:
+            Host: onebox
+            Accept: null
+            User-Agent: 'Terminus/0.6.1 (php_version=5.5.24&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=25069e79-eae7-4d41-8925-1f728a114cb8:40cef6d8-4603-11e5-864a-bc764e117665:LXoXkca0pnAVexL9hwklA'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 18 Aug 2015 23:45:55 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 449e7630-4603-11e5-a139-c95d7f8f209a
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"8XEI4zHAQTJzmiE51SdZQg=="'
+            Vary: Accept-Encoding
+        body: >
+            {
+              "final_task_id": "4b67e8f8-4602-11e5-a354-bc764e117665",
+              "finished_at": 1439941208.060249,
+              "params": {
+                "product_id": "d4689428-3759-465b-95f6-57ba58471461"
+              },
+              "reason": "",
+              "result": "succeeded",
+              "role": "owner",
+              "site_id": "f176b6d8-8492-48f7-9d32-b85b225095f6",
+              "started_at": 1439941137.453119,
+              "task_ids": [
+                "4b4cb6dc-4602-11e5-a354-bc764e117665",
+                "4b51d5fe-4602-11e5-a354-bc764e117665",
+                "4b53b45a-4602-11e5-a354-bc764e117665",
+                "4b55a918-4602-11e5-a354-bc764e117665",
+                "4b56bbe6-4602-11e5-a354-bc764e117665",
+                "4b57a182-4602-11e5-a354-bc764e117665",
+                "4b5be9a4-4602-11e5-a354-bc764e117665",
+                "4b6553d6-4602-11e5-a354-bc764e117665",
+                "4b6787be-4602-11e5-a354-bc764e117665",
+                "4b67d61a-4602-11e5-a354-bc764e117665",
+                "4b67dfca-4602-11e5-a354-bc764e117665",
+                "4b67e8f8-4602-11e5-a354-bc764e117665"
+              ],
+              "operations": [
+                {
+                  "id": "9aad8b5d-3ff6-478f-8ec1-119450a8de71",
+                  "type": "platform",
+                  "description": "Syncinc git repository",
+                  "result": "success",
+                  "log_output": null,
+                  "time": 4
+                },
+                {
+                  "id": "9aad8b5d-3ff6-478f-8ec1-119450a8de72",
+                  "type": "platform",
+                  "description": "Deploying code",
+                  "result": "success",
+                  "log_output": null,
+                  "time": 6
+                },
+                {
+                  "id": "9aad8b5d-3ff6-478f-8ec1-119450a8de73",
+                  "type": "quicksilver",
+                  "description": "my_script",
+                  "result": "complete",
+                  "log_output": "lorem log ipsum delor",
+                  "time": 2
+                }
+              ],
+              "trace_id": "4b437860-4602-11e5-8293-79dc2085a320",
+              "type": "deploy_product",
+              "user_id": "25069e79-eae7-4d41-8925-1f728a114cb8",
+              "waiting_for_task_id": null,
+              "id": "4b4bbbc4-4602-11e5-a354-bc764e117665",
+              "key": "f176b6d8-8492-48f7-9d32-b85b225095f6",
+              "environment_id": null,
+              "keep_forever": false,
+              "phase": "finished",
+              "queued_time": null,
+              "run_time": 70.60713005065918,
+              "created_at": 1439941137.180154,
+              "environment": null,
+              "total_time": 70.8800950050354,
+              "active_description": "Deployed CMS",
+              "description": "Deploy a CMS (Drupal or Wordpress)",
+              "step": 12,
+              "number_of_tasks": 12,
+              "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=4b437860-4602-11e5-8293-79dc2085a320&from_iso_date=2015-08-18T23:33:57.180154Z&to_iso_date=2015-08-18T23:45:08.060249Z",
+              "user": {
+                "created_at": 1435781178,
+                "email": "devuser@pantheon.io",
+                "password": "SCRUBBED",
+                "id": "25069e79-eae7-4d41-8925-1f728a114cb8"
+              },
+              "user_email": "devuser@pantheon.io",
+              "final_task": {
+                "allow_concurrent": true,
+                "build": {
+                  "url": "job/chef_solo_bindings/91533/",
+                  "number": 91533,
+                  "phase": "STARTED",
+                  "estimated_duration": 9091,
+                  "duration": 0,
+                  "full_url": "https://162.242.168.41:8090/jenkins/job/chef_solo_bindings/91533/"
+                },
+                "details": {},
+                "environment": "dev",
+                "finished_at": 1439941176.005842,
+                "fn_name": "queue_jenkins_task",
+                "params": {
+                  "host": "162.242.168.41",
+                  "task_type": "deploy_codeserver_binding",
+                  "job_id": "4b67e8f8-4602-11e5-a354-bc764e117665",
+                  "binding_id": "45a6fae52dc6440d8c4d63427e4118b1"
+                },
+                "queued_at": 1439941166.954958,
+                "responses": [
+                  {
+                    "code": 302,
+                    "body": "Successfully queued deploy_codeserver_binding"
+                  }
+                ],
+                "result": "succeeded",
+                "site_id": "f176b6d8-8492-48f7-9d32-b85b225095f6",
+                "started_at": 1439941169.497279,
+                "trace_id": "4b437860-4602-11e5-8293-79dc2085a320",
+                "user_id": null,
+                "workflow_id": "4b4bbbc4-4602-11e5-a354-bc764e117665",
+                "id": "4b67e8f8-4602-11e5-a354-bc764e117665",
+                "key": "1439938800",
+                "created_at": 1439941137.364812,
+                "queued_time": 2.542320966720581,
+                "run_time": 6.508563041687012,
+                "phase": "finished",
+                "total_time": 38.641030073165894,
+                "internal_reason": "",
+                "build_url": "https://162.242.168.41:8090/jenkins/job/chef_solo_bindings/91533/",
+                "messages": {
+                  "2015-08-18T23:45:55.507072": {
+                    "message": "Successfully queued deploy_codeserver_binding",
+                    "level": "INFO"
+                  }
+                },
+                "reason": "",
+                "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=4b437860-4602-11e5-8293-79dc2085a320&from_iso_date=2015-08-18T23:33:57.364812Z&to_iso_date=2015-08-18T23:44:36.005842Z",
+                "type": "deploy_codeserver_binding"
+              }
+            }
+
+-
     request:
         method: GET
         url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/profile'
