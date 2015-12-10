@@ -1,12 +1,6 @@
 <?php
 
 return array(
-  'verbose' => array(
-    'runtime' => '',
-    'file'    => '<bool>',
-    'default' => false,
-    'desc'    => 'Show verbose output',
-  ),
   'colorize' => array(
     'runtime' => '',
     'file'    => '<bool>',
