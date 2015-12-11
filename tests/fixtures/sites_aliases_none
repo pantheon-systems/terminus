@@ -1,0 +1,127 @@
+
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Cookie: 'X-Pantheon-Session=cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:06cffa72-a03a-11e5-8bf0-bc764e10b0ce:OJ75IJ90MdpZajmdLsO1u'
+            headers: 'X-Pantheon-Session=cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:06cffa72-a03a-11e5-8bf0-bc764e10b0ce:OJ75IJ90MdpZajmdLsO1u'
+            json: password1
+            Accept: null
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 11 Dec 2015 19:16:48 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: b91369c0-a03b-11e5-a5a3-afe591914534
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"session":"dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH","expires_at":1452280608,"user_id":"dc2b9903-92a5-4585-8686-6bbca4eff092"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/dc2b9903-92a5-4585-8686-6bbca4eff092/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Cookie: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            headers: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 11 Dec 2015 19:16:49 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: ba7d5a00-a03b-11e5-9512-f1586cc674e6
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"2-d4cbb29"'
+            Vary: Accept-Encoding
+        body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/dc2b9903-92a5-4585-8686-6bbca4eff092/memberships/organizations?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Cookie: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            headers: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 11 Dec 2015 19:16:50 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: bac78260-a03b-11e5-a5a3-afe591914534
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"2-d4cbb29"'
+            Vary: Accept-Encoding
+        body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/dc2b9903-92a5-4585-8686-6bbca4eff092/drush_aliases'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.9.3 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Cookie: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            headers: 'X-Pantheon-Session=dc2b9903-92a5-4585-8686-6bbca4eff092:b99c6450-a03b-11e5-8148-bc764e10d7c2:1KpsyOKT36SVy6Doa3LZH'
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 11 Dec 2015 19:17:41 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: d99121b0-a03b-11e5-9512-f1586cc674e6
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"191-93fb5169"'
+            Vary: Accept-Encoding
+        body: '{"drush_aliases": "<?php\n  /**\n   * Pantheon drush alias file, to be placed in your ~/.drush directory or the aliases\n   * directory of your local Drush home. Once it''s in place, clear drush cache:\n   *\n   * drush cc drush\n   *\n   * To see all your available aliases:\n   *\n   * drush sa\n   *\n   * See http://helpdesk.getpantheon.com/customer/portal/articles/411388 for details.\n   */\n\n"}'

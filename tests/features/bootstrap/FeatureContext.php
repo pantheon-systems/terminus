@@ -390,6 +390,41 @@ class FeatureContext implements Context {
   }
 
   /**
+   * Checks which user Terminus is operating as
+   * @Given /^I have at least "([^"]*)" site$/
+   * @Given /^I have at least "([^"]*)" sites$/
+   *
+   * @param [integer] $min The minimum number of sites to have
+   * @return [boolean] $has_the_min
+   */
+  public function iHaveAtLeastSite($min) {
+    $sites       = json_decode($this->iRun('terminus sites list --format=json'));
+    $has_the_min = ($min <= count($sites));
+    if (!$has_the_min) {
+      throw new Exception(count($sites) . ' sites found.');
+    }
+    return $has_the_min;
+  }
+
+  /**
+   * Checks which user Terminus is operating as
+   * @Given /^I have "([^"]*)" site$/
+   * @Given /^I have "([^"]*)" sites$/
+   * @Given /^I have no sites$/
+   *
+   * @param [integer] $num The number of sites to have
+   * @return [boolean] $has_amount
+   */
+  public function iHaveSites($num = 0) {
+    $sites      = json_decode($this->iRun('terminus sites list --format=json'));
+    $has_amount = ($num === count($sites));
+    if (!$has_amount) {
+      throw new Exception(count($sites) . ' sites found.');
+    }
+    return $has_amount;
+  }
+
+  /**
     * @When /^I initialize the "([^"]*)" environment on "([^"]*)"$/
     *
     * @param [string] $env  Name of environment to initialize
@@ -610,7 +645,7 @@ class FeatureContext implements Context {
    * @Then /^I should get one of the following: "([^"]*)"$/
    * Checks the output for the given substrings, comma-separated
    *
-   * @param [array] $list_string Content which ought not be in the output
+   * @param [array] $list_string Content which ought to be in the output
    * @return [boolean] True if a $string exists in output
     */
   public function iShouldGetOneOfTheFollowing($list_string) {
@@ -619,6 +654,24 @@ class FeatureContext implements Context {
       if ($this->_checkResult(trim((string)$string), $this->_output)) {
         return true;
       }
+    }
+    throw new Exception("Actual output:\n" . $this->_output);
+  }
+
+  /**
+   * @Then /^I should not get one of the following:$/
+   * @Then /^I should not get one of the following "([^"]*)"$/
+   * @Then /^I should not get one of the following: "([^"]*)"$/
+   * Checks the output for the given substrings, comma-separated
+   *
+   * @param [array] $list_string Content which ought not be in the output
+   * @return [boolean] True if a $string does not exist in output
+    */
+  public function iShouldNotGetOneOfTheFollowing($list_string) {
+    try {
+      $this->iShouldGetOneOfTheFollowing($list_string);
+    } catch (Exception $e) {
+      return true;
     }
     throw new Exception("Actual output:\n" . $this->_output);
   }
