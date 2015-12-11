@@ -3,7 +3,7 @@ Feature: Gathering sites' aliases
   I need to be able to generate a list of aliases
   So that I may make use of Drush effectively.
 
-  Background: I am authenticated and have at least one site
+  Background: I am authenticated
     Given I am authenticated
 
   @vcr sites_aliases
