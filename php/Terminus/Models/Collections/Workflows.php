@@ -140,6 +140,60 @@ class Workflows extends TerminusCollection {
   }
 
   /**
+   * Get timestamp of most recently finished workflow
+   *
+   * @return [integer] $timestamp
+   */
+  public function lastFinishedAt() {
+    $workflows = $this->all();
+    usort(
+      $workflows,
+      function($a, $b) {
+        $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
+        if ($a_finished_after_b) {
+          $cmp = -1;
+        } else {
+          $cmp = 1;
+        }
+        return $cmp;
+      }
+    );
+    if (count($workflows) > 0) {
+      $timestamp = $workflows[0]->get('finished_at');
+    } else {
+      $timestamp = null;
+    }
+    return $timestamp;
+  }
+
+  /**
+   * Get timestamp of most recently created Workflow
+   *
+   * @return [integer] $timestamp
+   */
+  public function lastCreatedAt() {
+    $workflows = $this->all();
+    usort(
+      $workflows,
+      function($a, $b) {
+        $a_created_after_b = $a->get('created_at') >= $b->get('created_at');
+        if ($a_created_after_b) {
+          $cmp = -1;
+        } else {
+          $cmp = 1;
+        }
+        return $cmp;
+      }
+    );
+    if (count($workflows) > 0) {
+      $timestamp = $workflows[0]->get('created_at');
+    } else {
+      $timestamp = null;
+    }
+    return $timestamp;
+  }
+
+  /**
    * Get most-recent workflow from existingcollection that has logs
    *
    * @return [Workflow] $workflow

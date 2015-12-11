@@ -104,21 +104,27 @@ class WorkflowsCommand extends TerminusCommand {
         $operations_data = array_map(
           function($operation) {
             $operation_data = $operation->serialize();
+            unset($operation_data['id']);
             unset($operation_data['log_output']);
             return $operation_data;
           },
           $operations
         );
+
         $this->output()->outputRecordList(
           $operations_data,
-          array('id' => 'Operation ID')
+          array('description' => 'Operation Description')
         );
 
         // Second output the logs
         foreach ($operations as $operation) {
           if ($operation->has('log_output')) {
-            $this->log()->info($operation->description());
-            $this->log()->info($operation->get('log_output'));
+            $log_msg = sprintf(
+              "\n------ %s ------\n%s",
+              $operation->description(),
+              $operation->get('log_output')
+            );
+            $this->log()->info($log_msg);
           }
         }
       } else {
@@ -148,14 +154,16 @@ class WorkflowsCommand extends TerminusCommand {
     $finished = array();
 
     $this->logger->info('Watching workflows...');
+    $site->workflows->fetchWithOperations();
     while (true) {
-      $last_checked = time();
+      $last_created_at = $site->workflows->lastCreatedAt();
+      $last_finished_at = $site->workflows->lastFinishedAt();
       sleep(WORKFLOWS_WATCH_INTERVAL);
-
       $site->workflows->fetchWithOperations();
+
       $workflows = $site->workflows->all();
       foreach ($workflows as $workflow) {
-        if (($workflow->get('created_at') > $last_checked)
+        if (($workflow->get('created_at') > $last_created_at)
           && !in_array($workflow->id, $started)
         ) {
           array_push($started, $workflow->id);
@@ -169,7 +177,7 @@ class WorkflowsCommand extends TerminusCommand {
           $this->logger->info($started_message);
         }
 
-        if (($workflow->get('finished_at') > $last_checked)
+        if (($workflow->get('finished_at') > $last_finished_at)
           && !in_array($workflow->id, $finished)
         ) {
           array_push($finished, $workflow->id);
@@ -187,8 +195,12 @@ class WorkflowsCommand extends TerminusCommand {
             $operations = $workflow->operations();
             foreach ($operations as $operation) {
               if ($operation->has('log_output')) {
-                $this->log()->info($operation->description());
-                $this->log()->info($operation->get('log_output'));
+                $log_msg = sprintf(
+                  "\n------ %s ------\n%s",
+                  $operation->description(),
+                  $operation->get('log_output')
+                );
+                $this->log()->info($log_msg);
               }
             }
           }
