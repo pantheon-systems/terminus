@@ -24,6 +24,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `sites create` and `sites import` no longer give warnings about missing $org_id variable. (#733)
 - `site backups list` now responds to the `--latest` flag. (#734)
 - Changed Backups#isBackupFinished to falsify if backup size is "0". (#734)
+- Fixed fatal error which appeared when using `sites aliases`. (#743)
+- Fixed missing-variable error when user has no sites while using `sites aliases`. (#743)
 
 ### Changed
 - Extricated the request logic from TerminusCommand class and moved it to the Request class. (#704)

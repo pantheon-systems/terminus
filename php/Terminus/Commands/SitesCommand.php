@@ -46,7 +46,7 @@ class SitesCommand extends TerminusCommand {
    *   '~/.drush/pantheon.aliases.drushrc.php' will be used.
    */
   public function aliases($args, $assoc_args) {
-    $user     = new User(new stdClass(), array());
+    $user     = new User();
     $print    = Input::optional('print', $assoc_args, false);
     $location = Input::optional(
       'location',
@@ -78,10 +78,13 @@ class SitesCommand extends TerminusCommand {
     if ($file_exists) {
       $message = 'Pantheon aliases updated';
     }
+    if (strpos($content, 'pantheon.io') === false) {
+      $message .= ', although you have no sites';
+    }
     $this->log()->info($message);
 
     if ($print) {
-      eval(str_replace(array('<?php', '?>'), '', $content));
+      $aliases = str_replace(array('<?php', '?>'), '', $content);
       $this->output()->outputDump($aliases);
     }
   }
