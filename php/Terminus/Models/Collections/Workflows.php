@@ -106,26 +106,6 @@ class Workflows extends TerminusCollection {
   }
 
   /**
-   * Fetches workflow data hydrated with operations and logs
-   *
-   * @param [array] $options Additional information for the request
-   * @return [Workflows] $this
-   */
-  public function fetchWithOperationsAndLogs($options = array()) {
-    $options = array_merge(
-      $options,
-      array(
-        'fetch_args' => array(
-          'query' => array(
-            'hydrate' => 'operations_with_logs'
-          )
-        )
-      )
-    );
-    $this->fetch($options);
-  }
-
-  /**
    * Returns all existing workflows that have finished
    *
    * @return [Array<Workflows>] $workflows
@@ -151,12 +131,66 @@ class Workflows extends TerminusCollection {
     $workflows = array_filter(
       $workflows,
       function($workflow) {
-        $has_logs = $workflow->hasLogs();
+        $has_logs = $workflow->get('has_operation_log_output');
         return $has_logs;
       }
     );
 
     return $workflows;
+  }
+
+  /**
+   * Get timestamp of most recently finished workflow
+   *
+   * @return [integer] $timestamp
+   */
+  public function lastFinishedAt() {
+    $workflows = $this->all();
+    usort(
+      $workflows,
+      function($a, $b) {
+        $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
+        if ($a_finished_after_b) {
+          $cmp = -1;
+        } else {
+          $cmp = 1;
+        }
+        return $cmp;
+      }
+    );
+    if (count($workflows) > 0) {
+      $timestamp = $workflows[0]->get('finished_at');
+    } else {
+      $timestamp = null;
+    }
+    return $timestamp;
+  }
+
+  /**
+   * Get timestamp of most recently created Workflow
+   *
+   * @return [integer] $timestamp
+   */
+  public function lastCreatedAt() {
+    $workflows = $this->all();
+    usort(
+      $workflows,
+      function($a, $b) {
+        $a_created_after_b = $a->get('created_at') >= $b->get('created_at');
+        if ($a_created_after_b) {
+          $cmp = -1;
+        } else {
+          $cmp = 1;
+        }
+        return $cmp;
+      }
+    );
+    if (count($workflows) > 0) {
+      $timestamp = $workflows[0]->get('created_at');
+    } else {
+      $timestamp = null;
+    }
+    return $timestamp;
   }
 
   /**
@@ -171,12 +205,11 @@ class Workflows extends TerminusCollection {
       function($a, $b) {
         $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
         if ($a_finished_after_b) {
-          $cmp = 1;
-          return $cmp;
-        } else {
           $cmp = -1;
-          return $cmp;
+        } else {
+          $cmp = 1;
         }
+        return $cmp;
       }
     );
 
@@ -214,7 +247,7 @@ class Workflows extends TerminusCollection {
    * @param [array]    $options    Data to make properties of the new model
    * @return [mixed] $model newly added model
    */
-  protected function add($model_data, $options = array()) {
+  public function add($model_data, $options = array()) {
     $model = parent::add($model_data, $options = array());
     $model->owner = $this->owner;
     return $model;

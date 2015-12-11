@@ -443,7 +443,7 @@ class Input {
    *
    * @return [Workflow] $workflow
    */
-  public static function workflow($workflows, $args, $key = 'workflow_id') {
+  public static function workflow($workflows, $args = array(), $key = 'workflow_id') {
     if (isset($args['workflow_id'])) {
       $workflow_id = $args[$key];
     } else {

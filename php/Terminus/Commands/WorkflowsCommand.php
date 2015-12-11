@@ -41,7 +41,9 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function index($args, $assoc_args) {
     $site      = $this->sites->get(Input::sitename($assoc_args));
+    $site->workflows->fetch(array('paged' => false));
     $workflows = $site->workflows->all();
+
     $data      = array();
     foreach ($workflows as $workflow) {
       $workflow_data = $workflow->serialize();
@@ -54,7 +56,7 @@ class WorkflowsCommand extends TerminusCommand {
         array('site' => $site->get('name'))
       );
     }
-    $this->output()->outputRecordList($data, array('update' => 'Last update'));
+    $this->output()->outputRecordList($data);
   }
 
   /**
@@ -65,90 +67,71 @@ class WorkflowsCommand extends TerminusCommand {
    * : Uuid of workflow to show
    * [--site=<site>]
    * : Site from which to list workflows
+   * [--latest-with-logs]
+   * : Display the most-recent workflow with logs
    *
    * @subcommand show
    */
   public function show($args, $assoc_args) {
-    $site     = $this->sites->get(Input::sitename($assoc_args));
-    $site->workflows->fetchWithOperations(array('paged' => false));
-    $workflows = $site->workflows->all();
-    $workflow = Input::workflow($workflows, $assoc_args, 'workflow_id');
+    $site = $this->sites->get(Input::sitename($assoc_args));
+
+    if (isset($assoc_args['workflow_id'])) {
+      $workflow_id = $assoc_args['workflow_id'];
+      $model_data = (object)array('id' => $workflow_id);
+      $workflow = $site->workflows->add($model_data);
+    } elseif (isset($assoc_args['latest-with-logs'])) {
+      $site->workflows->fetch(array('paged' => false));
+      $workflow = $site->workflows->findLatestWithLogs();
+      if (!$workflow) {
+        $this->log()->info('No recent workflow has logs');
+        return;
+      }
+    } else {
+      $site->workflows->fetch(array('paged' => false));
+      $workflows = $site->workflows->all();
+      $workflow = Input::workflow($workflows);
+    }
+    $workflow->fetchWithLogs();
 
     $workflow_data = $workflow->serialize();
     if (Terminus::getConfig('format') == 'normal') {
-      $operations_data = $workflow_data['operations'];
       unset($workflow_data['operations']);
-
       $this->output()->outputRecord($workflow_data);
 
-      if (count($operations_data)) {
-        $this->log()->info('Workflow operations:');
-        $this->output()->outputRecordList($operations_data);
+      $operations = $workflow->operations();
+      if (count($operations)) {
+        // First output a table of operations without logs
+        $operations_data = array_map(
+          function($operation) {
+            $operation_data = $operation->serialize();
+            unset($operation_data['id']);
+            unset($operation_data['log_output']);
+            return $operation_data;
+          },
+          $operations
+        );
+
+        $this->output()->outputRecordList(
+          $operations_data,
+          array('description' => 'Operation Description')
+        );
+
+        // Second output the logs
+        foreach ($operations as $operation) {
+          if ($operation->has('log_output')) {
+            $log_msg = sprintf(
+              "\n------ %s ------\n%s",
+              $operation->description(),
+              $operation->get('log_output')
+            );
+            $this->log()->info($log_msg);
+          }
+        }
       } else {
         $this->log()->info('Workflow has no operations');
       }
     } else {
       $this->output()->outputRecord($workflow_data);
-    }
-  }
-
-  /**
-   * Show quicksilver logs from a workflow
-   *
-   * ## OPTIONS
-   * [--latest]
-   * : Display the most-recent workflow with logs
-   * [--workflow_id]
-   * : Uuid of workflow to fetch logs for
-   * [--site=<site>]
-   * : Site from which to list workflows
-   *
-   * @subcommand logs
-   */
-  public function logs($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    if (isset($assoc_args['latest'])) {
-      $site->workflows->fetchWithOperationsAndLogs(array('paged' => false));
-      $workflow = $site->workflows->findLatestWithLogs();
-      if (is_null($workflow)) {
-        return $this->failure('No recent workflows contain logs');
-      }
-    } else {
-      $site->workflows->fetchWithOperations(array('paged' => false));
-      $workflows = $site->workflows->all();
-      $workflow  = Input::workflow($workflows, $assoc_args, 'workflow_id');
-      $workflow->fetchWithLogs();
-    }
-
-    if (Terminus::getConfig('format') == 'normal') {
-      $operations = $workflow->operations();
-      if (count($operations) == 0) {
-        $this->log()->info('Workflow has no operations');
-        return;
-      }
-
-      $operations_with_logs = array_filter(
-        $operations,
-        function($operation) {
-          return $operation->get('log_output');
-        }
-      );
-
-      if (count($operations_with_logs) == 0) {
-        $this->log()->info('Workflow has no operations with logs');
-        return;
-      }
-
-      foreach ($operations as $operation) {
-        if ($operation->get('log_output')) {
-          $operation_data = $operation->serialize();
-          $this->output()->outputRecord($operation_data);
-        }
-      }
-    } else {
-      $workflow_data = $workflow->serialize();
-      $operations_data = $workflow_data['operations'];
-      $this->output()->outputRecordList($operations_data);
     }
   }
 
@@ -171,37 +154,56 @@ class WorkflowsCommand extends TerminusCommand {
     $finished = array();
 
     $this->logger->info('Watching workflows...');
+    $site->workflows->fetchWithOperations();
     while (true) {
-      $last_checked = time();
+      $last_created_at = $site->workflows->lastCreatedAt();
+      $last_finished_at = $site->workflows->lastFinishedAt();
       sleep(WORKFLOWS_WATCH_INTERVAL);
-
       $site->workflows->fetchWithOperations();
+
       $workflows = $site->workflows->all();
       foreach ($workflows as $workflow) {
-        if (($workflow->get('created_at') > $last_checked)
+        if (($workflow->get('created_at') > $last_created_at)
           && !in_array($workflow->id, $started)
         ) {
+          array_push($started, $workflow->id);
+
           $started_message = sprintf(
-            "%s Started %s (%s)",
+            "Started %s %s (%s)",
             $workflow->id,
             $workflow->get('description'),
             $workflow->get('environment')
           );
           $this->logger->info($started_message);
-          array_push($started, $workflow->id);
         }
 
-        if (($workflow->get('finished_at') > $last_checked)
+        if (($workflow->get('finished_at') > $last_finished_at)
           && !in_array($workflow->id, $finished)
         ) {
+          array_push($finished, $workflow->id);
+
           $finished_message = sprintf(
-            "%s Finished %s (%s)",
+            "Finished Workflow %s %s (%s)",
             $workflow->id,
             $workflow->get('description'),
             $workflow->get('environment')
           );
           $this->logger->info($finished_message);
-          array_push($finished, $workflow->id);
+
+          if ($workflow->get('has_operation_log_output')) {
+            $workflow->fetchWithLogs();
+            $operations = $workflow->operations();
+            foreach ($operations as $operation) {
+              if ($operation->has('log_output')) {
+                $log_msg = sprintf(
+                  "\n------ %s ------\n%s",
+                  $operation->description(),
+                  $operation->get('log_output')
+                );
+                $this->log()->info($log_msg);
+              }
+            }
+          }
         }
       }
     }

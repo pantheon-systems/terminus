@@ -81,28 +81,6 @@ class Workflow extends TerminusModel {
   }
 
   /**
-   * Detects if the workflow has any operation with logs
-   *
-   * @return [boolean] $has_logs True if worklow has logs
-   */
-  public function hasLogs() {
-    $operations = $this->operations();
-    $has_logs = array_reduce(
-      $operations,
-      function($carry, $operation) {
-        $operation_has_logs = (boolean)$operation->get('log_output');
-        if ($operation_has_logs) {
-          $carry = true;
-        }
-        return $carry;
-      },
-      false
-    );
-
-    return $has_logs;
-  }
-
-  /**
    * Returns a list of WorkflowOperations for this workflow
    *
    * @return [Array<WorkflowOperation>] $operations list of WorkflowOperations
