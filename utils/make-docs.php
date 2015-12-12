@@ -133,6 +133,7 @@ foreach ($library_files as $filename) {
   );
   $tokenized_files[$namespace] = getTokens($filename);
 }
+$tokenized_files['Terminus\\Auth'] = getTokens(TERMINUS_ROOT . '/php/Terminus/Auth.php');
 
 $file_functions = array();
 foreach ($tokenized_files as $namespace => $tokens) {
