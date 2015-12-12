@@ -7,10 +7,11 @@ require(TERMINUS_ROOT . '/vendor/autoload.php');
 use Terminus\Utils;
 
 /**
- * Accepts the an array representing a tokenized PHP file and sifts out all sets of tokens meeting a specific pattern
+ * Accepts the an array representing a tokenized PHP file and sifts out all
+ * sets of tokens meeting a specific pattern
  *
- * @param [array]  $tokens    A tokenized PHP file
- * @param [array]  $pattern   Token name pattern to search out
+ * @param [array] $tokens  A tokenized PHP file
+ * @param [array] $pattern Token name pattern to search out
  * @return [array] $matching_patterns
  */
 function findTokenPatterns(
@@ -41,7 +42,7 @@ function findTokenPatterns(
 /**
  * Retrieves all file names from a directory
  *
- * @param $dir_name Name of the directory from which to extract file names
+ * @param [string] $dir_name Name of the directory from which to extract file names
  * @return [array <String>] $file_list
  */
 function getFiles($dir_name) {
@@ -105,8 +106,8 @@ function parseDocs($doc_string) {
 /**
  * Writes documentation to file
  *
- * @param [string]          $namespace Namespace to which the doc file will pertain
- * @param [array <string>]  $docs      Documentation to add to file
+ * @param [string]         $namespace Namespace to which the doc file will pertain
+ * @param [array <string>] $docs      Documentation to add to file
  * @return [boolean] True if write was successful
  */
 function writeDocFile($namespace, $docs) {
