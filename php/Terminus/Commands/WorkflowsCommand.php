@@ -124,11 +124,11 @@ class WorkflowsCommand extends TerminusCommand {
               $operation->description(),
               $operation->get('log_output')
             );
-            $this->log()->info($log_msg);
+            $this->output()->outputValue($log_msg);
           }
         }
       } else {
-        $this->log()->info('Workflow has no operations');
+        $this->output()->outputValue('Workflow has no operations');
       }
     } else {
       $this->output()->outputRecord($workflow_data);
