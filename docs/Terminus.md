@@ -27,12 +27,12 @@ It is possible to create new instances of each of these.
 
 #### Derivative Models & Collections
 You can access these via their owners.
-
+```bash
     $sites        = new Sites();
     $all_sites    = $sites->all();
     $one_site     = array_shift($all_sites);
     $environments = $one_site->environments->all();
-
+```
 - [Terminus\Models\Backup](Models/Backup.md)
 - [Terminus\Models\Environment](Models/Environment.md)
 - [Terminus\Models\Organization](Models/Organization.md)
@@ -53,4 +53,62 @@ You can access these via their owners.
 - [Terminus\Models\Collections\UserOrganizationMemberships](Models/Collections/UserOrganizationMemberships.md)
 
 ### Examples
-- [Gleaning all hostnames from all your sites](examples/getHostnames.php)
+- [Gleaning all the hostnames from all of your sites](examples/getHostnames.php)
+
+### Getting Started
+
+1. Install Terminus via [Composer](https://getcomposer.org/download/).
+Navigate to the directory in which your script is being constructed in the
+terminal and use this command:
+
+`composer require pantheon-systems/cli`
+2. Include the Terminus source code. Composer handily places the code you
+called for into the `vendor` directory within the directory you are in.
+Use this to load Terminus' source to your script:
+
+`require vendor/autoload.php`
+3. Start the Terminus instance.
+
+`$terminus = new Terminus();`
+4. Use the namespaces of the top-level models or collections you are going to make use of
+
+`use Terminus\Models\Collections\Sites;`
+5. Instantiate the top-level models or collections you are using.
+
+`$sites = new Sites();`
+6. Use its properties and functions.
+
+```bash
+$my_site         = $sites->get('my_site');
+$dev_environment = $my_site->environments->get('dev');
+$dev_environment->connectionInfo();
+```
+
+or
+
+`$sites->addSite(array('label' => 'My Site', 'site_name' => 'my_site'));`
+
+### Tips
+
+- You can configure how your Terminus object will behave upon creation. Here
+are the options you can set when instantiating it:
+  - `colorize`: Output text to be colorized as indicated by the functions
+  using it. Defaults to 'auto'.
+  - `format`: 'normal', 'json', or 'bash'. Defaults to 'json'. Formats in
+  Terminus are mostly related to how command-line execution results are
+  displayed, but will affect how the STDERR logs are transmitted, as well.
+  - `debug`: Output debug logs. Defaults to false.
+  You can set these like such in step 3 of the getting-started section above:
+```bash
+$terminus = new Terminus(
+  array('colorize' => false, 'format' => 'bash', 'debug' => true)
+);
+```
+- Many functions will return a Workflow-type object. These functions require
+time to complete their operations on the Pantheon platform. To wait for their
+completion, use the `wait()` function.
+```bash
+$workflow = $object->workflowReturningFunction();
+$workflow->wait();
+$object->otherObjectFunction();
+```
