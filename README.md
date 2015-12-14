@@ -39,16 +39,6 @@ Run this in this in your terminal client:
 ```bash
 curl https://github.com/pantheon-systems/cli/releases/download/0.9.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
-
-To get started with Terminus, you must first authenticate:
-```bash
-terminus auth login
-Your email address?: user@pantheon.io
-Your dashboard password (input will not be shown)
-[1969-07-20 20:18:00] [info] Logging in as user@pantheon.io
-[1969-07-21 02:56:00] [info] Saving session data
-```
-
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
 
@@ -80,6 +70,18 @@ export PATH="$PATH:$HOME/pantheon-cli/bin"
 Once you source the file or restart your terminal client, you can now make use of Terminus using
 ```bash
 terminus
+```
+
+Authentication
+--------------
+
+To get started with Terminus, you must first authenticate:
+```bash
+terminus auth login
+Your email address?: user@pantheon.io
+Your dashboard password (input will not be shown)
+[1969-07-20 20:18:00] [info] Logging in as user@pantheon.io
+[1969-07-21 02:56:00] [info] Saving session data
 ```
 
 Tab completion
