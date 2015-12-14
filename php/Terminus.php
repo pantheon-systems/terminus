@@ -1,21 +1,41 @@
 <?php
 
-use Terminus\Configurator;
 use Terminus\Dispatcher;
 use Terminus\FileCache;
 use Terminus\Runner;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Loggers\Logger;
 
 /**
  * Various utilities for Terminus commands.
  */
 class Terminus {
-  private static $configurator;
-  private static $hooks        = array();
-  private static $hooks_passed = array();
   private static $logger;
+  private static $options;
   private static $outputter;
+  private static $runner;
+
+  /**
+   * Object constructor. Sets properties.
+   *
+   * @param [array] $arg_options Options to override defaults
+   * @return [Terminus] $this
+   */
+  public function __construct(array $arg_options = array()) {
+    $default_options = array(
+      'runner'   => null,
+      'colorize' => 'auto',
+      'format'   => 'json',
+      'debug'    => false,
+      'yes'      => false,
+    );
+    self::$options = $options = array_merge($default_options, $arg_options);
+
+    $this->setRunner($options['runner']);
+    $this->setLogger($options);
+    $this->setOutputter($options['format']);
+  }
 
   /**
    * Add a command to the terminus list of commands
@@ -64,44 +84,6 @@ class Terminus {
   }
 
   /**
-   * Returns a colorized string
-   *
-   * @param [string] $string Message to colorize for output
-   * @return [string] $colorized_string
-   */
-  static function colorize($string) {
-    $colorized_string = \cli\Colors::colorize(
-      $string,
-      self::getRunner()->inColor()
-    );
-    return $colorized_string;
-  }
-
-  /**
-   * Asks for confirmation before running a destructive operation.
-   *
-   * @param [string] $question Prompt text
-   * @param [array]  $params   Elements to interpolate into the prompt text
-   * @return [boolean] True if prompt is accepted
-   */
-  static function confirm(
-    $question,
-    $params = array()
-  ) {
-    if (self::getConfig('yes')) {
-      return true;
-    }
-    $question = vsprintf($question, $params);
-    fwrite(STDOUT, $question . ' [y/n] ');
-    $answer = trim(fgets(STDIN));
-
-    if ($answer != 'y') {
-      exit(0);
-    }
-    return true;
-  }
-
-  /**
    * Retrieves and returns the file cache
    *
    * @return [FileCache] $cache
@@ -134,33 +116,16 @@ class Terminus {
    * @return [mixed] $config
    */
   static function getConfig($key = null) {
-    if (is_null($key)) {
-      $config = self::getRunner()->config;
-    } elseif (!isset(self::getRunner()->config[$key])) {
+    $config = self::$options;
+    if (isset($config[$key])) {
+      $config = $config[$key];
+    } elseif (!is_null($key)) {
       self::getLogger()->warning(
         'Unknown config option "{key}".',
-        array('key' => $key)
+        compact('key')
       );
-      $config = null;
-    } else {
-      $config = self::getRunner()->config[$key];
     }
     return $config;
-  }
-
-  /**
-   * Retrieves the configurator, creating it if DNE
-   *
-   * @return [Configurator] $configurator
-   */
-  static function getConfigurator() {
-    static $configurator;
-
-    if (!$configurator) {
-      $configurator = new Configurator(TERMINUS_ROOT . '/php/config-spec.php');
-    }
-
-    return $configurator;
   }
 
   /**
@@ -220,17 +185,7 @@ class Terminus {
    * @return [Runner] $runner
    */
   static function getRunner() {
-    try {
-      static $runner;
-
-      if (!isset($runner) || !$runner) {
-        $runner = new Runner();
-      }
-
-      return $runner;
-    } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage(), array(), -1);
-    }
+    return self::$runner;
   }
 
   /**
@@ -430,21 +385,55 @@ class Terminus {
   /**
    * Set the logger instance to a class property
    *
-   * @param [LoggerInterface] $logger Logger to set
+   * @param [array] $config Configuration options to send to the logger
    * @return [void]
    */
-  static function setLogger($logger) {
-    self::$logger = $logger;
+  static function setLogger($config) {
+    self::$logger = new Logger(compact('config'));
   }
 
   /**
    * Set the outputter instance to a class property
    *
-   * @param [OutputterInterface] $outputter Outputter to set
+   * @param [string] $format Type of formatter to set on outputter
    * @return [void]
    */
-  static function setOutputter($outputter) {
-    self::$outputter = $outputter;
+  static function setOutputter($format) {
+    // Pick an output formatter
+    if ($format == 'json') {
+      $formatter = new Terminus\Outputters\JSONFormatter();
+    } elseif ($format == 'bash') {
+      $formatter = new Terminus\Outputters\BashFormatter();
+    } else {
+      $formatter = new Terminus\Outputters\PrettyFormatter();
+    }
+
+    // Create an output service.
+    self::$outputter = new Terminus\Outputters\Outputter(
+      new Terminus\Outputters\StreamWriter('php://stdout'),
+      $formatter
+    );
+  }
+
+  /**
+   * Sets the runner object
+   *
+   * @param [Runner] $runner Runner object to set
+   * @return [void]
+   */
+  private function setRunner($runner = null) {
+    if (is_null($runner)) {
+      self::$runner = new Runner();
+    } else {
+      self::$runner = $runner;
+    }
   }
 
 }
+
+if (!defined('TERMINUS_ROOT')) {
+  define('TERMINUS_ROOT', dirname(__DIR__));
+}
+require_once TERMINUS_ROOT . '/php/utils.php';
+Utils\defineConstants();
+Utils\importEnvironmentVariables();

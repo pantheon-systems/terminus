@@ -8,7 +8,7 @@ namespace Terminus;
  **/
 class Endpoint {
   public $patterns = array(
-    'deprecated'   => '/terminus.php?%s=%s',
+    'deprecated'   => '/Terminus.php?%s=%s',
     'private'      => '/api/%s/%s',
     'public'       => '/api/%s',
     'login'        => '/api/authorize',
@@ -19,7 +19,7 @@ class Endpoint {
     'upstreams',
   );
 
-  // Some "realms" are different on Hermes than on terminus.php.
+  // Some "realms" are different on Hermes than on Terminus.php.
   public $realm_map = array(
     'user'    => 'users',
     'site'    => 'sites'

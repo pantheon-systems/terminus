@@ -128,7 +128,8 @@ class CliCommand extends TerminusCommand {
    * @subcommand param-dump
    */
   function paramDump() {
-    $this->output()->outputDump(Terminus::getConfigurator()->getSpec());
+    $spec = Terminus::getRunner()->getConfigurator()->getSpec();
+    $this->output()->outputDump($spec);
   }
 
   /**

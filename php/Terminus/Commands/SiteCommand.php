@@ -189,7 +189,7 @@ class SiteCommand extends TerminusCommand {
       strtoupper($to_env),
       $append
     );
-    Terminus::confirm($confirm);
+    Input::confirm($confirm);
 
     if ($site->environments->get($to_env) == null) {
       $this->failure(
@@ -269,7 +269,7 @@ class SiteCommand extends TerminusCommand {
         $message = "Commit changes to $count files?";
         if ($count === 0) {
           $message = 'There are no changed files. Commit anyway?';
-          Terminus::confirm($message);
+          Input::confirm($message);
         }
         $message  = Input::string(
           $assoc_args,
@@ -431,7 +431,7 @@ class SiteCommand extends TerminusCommand {
     if (isset($assoc_args['print'])) {
       $this->output()->outputValue($url, 'Dashboard URL');
     } else {
-      Terminus::confirm(
+      Input::confirm(
         'Do you want to open your dashboard link in a web browser?'
       );
       $command = sprintf('%s %s', $cmd, $url);
@@ -454,10 +454,10 @@ class SiteCommand extends TerminusCommand {
 
     if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
       //If the force option isn't used, we'll ask you some annoying questions
-      Terminus::confirm(
+      Input::confirm(
         sprintf('Are you sure you want to delete %s?', $site->get('name'))
       );
-      Terminus::confirm('Are you really sure?');
+      Input::confirm('Are you really sure?');
     }
     $this->log()->info(
       'Deleting {site} ...',
@@ -497,7 +497,7 @@ class SiteCommand extends TerminusCommand {
       )
     );
 
-    Terminus::confirm(
+    Input::confirm(
       sprintf(
         'Are you sure you want to delete the "%s" branch from %s?',
         $branch,
@@ -544,7 +544,7 @@ class SiteCommand extends TerminusCommand {
       $delete_branch = (boolean)$assoc_args['remove_branch'];
     }
 
-    Terminus::confirm(
+    Input::confirm(
       sprintf(
         'Are you sure you want to delete the "%s" environment from %s?',
         $env,
@@ -1745,7 +1745,7 @@ class SiteCommand extends TerminusCommand {
             isset($assoc_args['accept-upstream'])
             && $assoc_args['accept-upstream']
           );
-          Terminus::confirm(
+          Input::confirm(
             sprintf(
               'Are you sure you want to apply the upstream updates to %s-dev',
               $site->get('name'),
@@ -1819,7 +1819,7 @@ class SiteCommand extends TerminusCommand {
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
 
-    Terminus::confirm(
+    Input::confirm(
       sprintf(
         'Are you sure you want to wipe %s-%s?',
         $site->get('name'),

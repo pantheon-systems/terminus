@@ -5,6 +5,7 @@ namespace Terminus\Utils;
 use ArrayIterator;
 use Terminus;
 use Terminus\Request;
+use Terminus\Helpers\Input;
 use Terminus\Iterators\Transform;
 use Terminus\Exceptions\TerminusException;
 
@@ -80,6 +81,63 @@ function checkForUpdate() {
 }
 
 /**
+ * Returns a colorized string
+ *
+ * @param [string] $string Message to colorize for output
+ * @return [string] $colorized_string
+ */
+function colorize($string) {
+  $colorize = true;
+  if (Terminus::getConfig('colorize') == 'auto') {
+    $colorize = !\cli\Shell::isPiped();
+  }
+  $colorized_string = \cli\Colors::colorize(
+    $string,
+    $colorize
+  );
+  return $colorized_string;
+}
+
+/**
+ * Sets constants necessary for the proper functioning of Terminus
+ *
+ * @return [void]
+ */
+function defineConstants() {
+  define('Terminus', true);
+  define('TERMINUS_VERSION', '0.9.3');
+
+  if (!defined('TERMINUS_SCRIPT')) {
+    define('TERMINUS_SCRIPT', 'php/Terminus.php');
+  }
+
+  if (!defined('TERMINUS_TIME_ZONE')) {
+    define('TERMINUS_TIME_ZONE', 'UTC');
+  }
+  date_default_timezone_set(TERMINUS_TIME_ZONE);
+
+  $host = 'dashboard.pantheon.io';
+  if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
+    $host = $_SERVER['TERMINUS_HOST'];
+  }
+  define('TERMINUS_HOST', $host);
+
+  $port = 443;
+  if (isset($_SERVER['TERMINUS_PORT']) && ($_SERVER['TERMINUS_PORT'] != '')) {
+    $port = $_SERVER['TERMINUS_PORT'];
+  }
+  define('TERMINUS_PORT', $port);
+
+  $protocol = 'https';
+  if (isset($_SERVER['TERMINUS_PROTOCOL'])
+    && ($_SERVER['TERMINUS_PROTOCOL'] != '')
+  ) {
+    $protocol = $_SERVER['TERMINUS_PROTOCOL'];
+  }
+  define('TERMINUS_PROTOCOL', $protocol);
+}
+
+/**
  * Ensures that the given destination is valid
  *
  * @param [string]  $destination Location of directory to ensure viability of
@@ -95,7 +153,7 @@ function destinationIsValid($destination, $make = true) {
 
   if (!is_dir($destination)) {
     if (!$make) {
-      $make = Terminus::confirm("Directory does not exists. Create it now?");
+      $make = Input::confirm("Directory does not exists. Create it now?");
     }
     if ($make) {
       mkdir($destination, 0755);
@@ -129,6 +187,19 @@ function getVendorPaths() {
     TERMINUS_ROOT . '/vendor'
   );
   return $vendor_paths;
+}
+
+/**
+ * Imports environment variables
+ *
+ * @return [void]
+ */
+function importEnvironmentVariables() {
+  //Load environment variables from __DIR__/.env
+  if (file_exists(getcwd() . '/.env')) {
+    $env = new Dotenv\Dotenv(getcwd());
+    $env->load();
+  }
 }
 
 /**

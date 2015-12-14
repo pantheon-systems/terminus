@@ -101,7 +101,7 @@ class OrganizationsCommand extends TerminusCommand {
             )
           );
         }
-        Terminus::confirm(
+        Input::confirm(
           'Are you sure you want to add %s to %s ?',
           array($site->get('name'), $org_info->profile->name)
         );
@@ -132,7 +132,7 @@ class OrganizationsCommand extends TerminusCommand {
           );
         }
         $member = $org_model->site_memberships->get($site->get('id'));
-        Terminus::confirm(
+        Input::confirm(
           'Are you sure you want to remove %s from %s ?',
           array($site->get('name'), $org_info->profile->name)
         );

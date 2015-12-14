@@ -150,10 +150,9 @@ class CompositeCommand {
    *
    * @param [array] $args       Array of command line non-params and non-flags
    * @param [array] $assoc_args Array of command line params and flags
-   * @param [array] $extra_args Any additional arguments dispatcher assembled
    * @return [void]
    */
-  public function invoke($args, $assoc_args, $extra_args) {
+  public function invoke($args, $assoc_args) {
     $this->showUsage();
   }
 

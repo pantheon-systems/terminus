@@ -123,6 +123,11 @@ And run your tests via:
   cd $HOME/pantheon-cli
   ./scripts/test.sh
   ```
+Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
+  ```bash
+  cd $HOME/pantheon-cli
+  php utils/make-docs.php 
+  ```
 
 3. Open a pull request on GitHub so that we may evaluate and merge your changes.
 

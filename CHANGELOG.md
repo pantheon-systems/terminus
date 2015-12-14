@@ -15,6 +15,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New subcommand `site hostnames lookup --hostname=<hostname>` to look up a site and environment by hostname. WARNING: May take a long time to run. (#729)
 - New flag `--recursive` on `help` command to show the full details of all subcommands. (#730)
 - Environment variable `TERMINUS_SSH_HOST` targets a specific host for `drush` and `wp` commands. (#737)
+- Documentation and examples for the use of Terminus as a library. (#738)
 
 ### Fixed
 - `site backups get` no longer errs when there are no backups. (#690)
@@ -29,6 +30,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - Extricated the request logic from TerminusCommand class and moved it to the Request class. (#704)
 - Replaced Mustache templates with Twig. (#730)
+- Resolved Terminus base class' and Runner's interfunctionality. Terminus can now be used as a library. (#738)
 
 ##[0.9.3] - 2015-11-17
 ### Added
