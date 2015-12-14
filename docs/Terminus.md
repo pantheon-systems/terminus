@@ -81,7 +81,7 @@ Use this to load Terminus' source to your script:
 ```bash
 $my_site         = $sites->get('my_site');
 $dev_environment = $my_site->environments->get('dev');
-$dev_environment->connectionInfo();
+$connection_info = $dev_environment->connectionInfo();
 ```
 
 or
