@@ -141,74 +141,70 @@ class Environment extends TerminusModel {
   public function connectionInfo() {
     $info = array();
 
-    // Can only SFTP into dev/multidev environments
+    $sftp_username = sprintf(
+      '%s.%s',
+      $this->get('id'),
+      $this->site->get('id')
+    );
+    $sftp_password = 'Use your account password';
+    $sftp_host     = sprintf(
+      'appserver.%s.%s.drush.in',
+      $this->get('id'),
+      $this->site->get('id')
+    );
+    $sftp_port     = 2222;
+    $sftp_url      = sprintf(
+      'sftp://%s@%s:%s',
+      $sftp_username,
+      $sftp_host,
+      $sftp_port
+    );
+    $sftp_command  = sprintf(
+      'sftp -o Port=%s %s@%s',
+      $sftp_port,
+      $sftp_username,
+      $sftp_host
+    );
+    $sftp_params   = array(
+      'sftp_username' => $sftp_username,
+      'sftp_host'     => $sftp_host,
+      'sftp_password' => $sftp_password,
+      'sftp_url'      => $sftp_url,
+      'sftp_command'  => $sftp_command
+    );
+    $info = array_merge($info, $sftp_params);
+
+    // Can only Use Git on dev/multidev environments
     if (!in_array($this->get('id'), array('test', 'live'))) {
-      $sftp_username = sprintf(
-        '%s.%s',
-        $this->get('id'),
+      $git_username = sprintf(
+        'codeserver.dev.%s',
         $this->site->get('id')
       );
-      $sftp_password = 'Use your account password';
-      $sftp_host     = sprintf(
-        'appserver.%s.%s.drush.in',
-        $this->get('id'),
+      $git_host     = sprintf(
+        'codeserver.dev.%s.drush.in',
         $this->site->get('id')
       );
-      $sftp_port     = 2222;
-      $sftp_url      = sprintf(
-        'sftp://%s@%s:%s',
-        $sftp_username,
-        $sftp_host,
-        $sftp_port
+      $git_port     = 2222;
+      $git_url      = sprintf(
+        'ssh://%s@%s:%s/~/repository.git',
+        $git_username,
+        $git_host,
+        $git_port
       );
-      $sftp_command  = sprintf(
-        'sftp -o Port=%s %s@%s',
-        $sftp_port,
-        $sftp_username,
-        $sftp_host
+      $git_command  = sprintf(
+        'git clone %s %s',
+        $git_url,
+        $this->site->get('name')
       );
-      $sftp_params   = array(
-        'sftp_username' => $sftp_username,
-        'sftp_host'     => $sftp_host,
-        'sftp_password' => $sftp_password,
-        'sftp_url'      => $sftp_url,
-        'sftp_command'  => $sftp_command
+      $git_params   = array(
+        'git_username' => $git_username,
+        'git_host'     => $git_host,
+        'git_port'     => $git_port,
+        'git_url'      => $git_url,
+        'git_command'  => $git_command
       );
-
-      $info = array_merge($info, $sftp_params);
+      $info = array_merge($info, $git_params);
     }
-
-    $git_username = sprintf(
-      'codeserver.%s.%s',
-      $this->get('id'),
-      $this->site->get('id')
-    );
-    $git_host     = sprintf(
-      'codeserver.%s.%s.drush.in',
-      $this->get('id'),
-      $this->site->get('id')
-    );
-    $git_port     = 2222;
-    $git_url      = sprintf(
-      'ssh://%s@%s:%s/~/repository.git',
-      $git_username,
-      $git_host,
-      $git_port
-    );
-    $git_command  = sprintf(
-      'git clone %s %s',
-      $git_url,
-      $this->site->get('name')
-    );
-    $git_params   = array(
-      'git_username' => $git_username,
-      'git_host'     => $git_host,
-      'git_port'     => $git_port,
-      'git_url'      => $git_url,
-      'git_command'  => $git_command
-    );
-
-    $info = array_merge($info, $git_params);
 
     $dbserver_binding = (array)$this->bindings->getByType('dbserver');
     if (!empty($dbserver_binding)) {
