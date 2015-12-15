@@ -173,7 +173,7 @@ class Environment extends TerminusModel {
       'sftp_command'  => $sftp_command
     );
     $info = array_merge($info, $sftp_params);
-    
+
     // Can only Use Git on dev/multidev environments
     if (!in_array($this->get('id'), array('test', 'live'))) {
       $git_username = sprintf(
