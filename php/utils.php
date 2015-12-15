@@ -197,7 +197,7 @@ function getVendorPaths() {
 function importEnvironmentVariables() {
   //Load environment variables from __DIR__/.env
   if (file_exists(getcwd() . '/.env')) {
-    $env = new Dotenv\Dotenv(getcwd());
+    $env = new \Dotenv\Dotenv(getcwd());
     $env->load();
   }
 }
