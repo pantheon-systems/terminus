@@ -16,9 +16,8 @@ class DrushCommand extends CommandWithSSH {
   protected $client = 'Drush';
 
   /**
-   * A hash of commands which do not work in Terminus
-   * The key is the drush command
-   * The value is the Terminus equivalent, blank if DNE
+   * A hash of commands which do not work in Terminus. The key is the Drush
+   * command, and the value is the Terminus equivalent, blank if DNE
    */
   protected $unavailable_commands = array(
     'sql-connect' => 'site connection-info --field=mysql_connection',
@@ -29,20 +28,17 @@ class DrushCommand extends CommandWithSSH {
    * Invoke `drush` commands on a Pantheon development site
    *
    * <commands>...
-   * : The Drush commands you intend to run.
-   *
-   * [--<flag>=<value>]
-   * : Additional Drush flag(s) to pass in to the command.
+   * : The WP-CLI command you intend to run, with its arguments
    *
    * [--site=<site>]
-   * : The name (DNS shortname) of your site on Pantheon.
+   * : The name (DNS shortname) of your site on Pantheon
    *
    * [--env=<environment>]
    * : Your Pantheon environment. Default: dev
    *
    */
   public function __invoke($args, $assoc_args) {
-    $command = implode($args, ' ');
+    $command = array_pop($args);
     $this->checkCommand($command);
 
     $sites = new Sites();
@@ -58,23 +54,6 @@ class DrushCommand extends CommandWithSSH {
       array('site' => $site->get('id'), 'environment' => $environment)
     );
 
-    // Sanitize assoc args so we don't try to pass our own flags.
-    if (isset($assoc_args['site'])) {
-      unset($assoc_args['site']);
-    }
-    if (isset($assoc_args['env'])) {
-      unset($assoc_args['env']);
-    }
-
-    // Create user-friendly output
-    $flags = '';
-    foreach ($assoc_args as $k => $v) {
-      if (isset($v) && (string)$v != '') {
-        $flags .= "--$k=$v ";
-      } else {
-        $flags .= "--$k ";
-      }
-    }
     if (in_array(
       Terminus::getConfig('format'),
       array('bash', 'json', 'silent')
@@ -82,15 +61,20 @@ class DrushCommand extends CommandWithSSH {
       $assoc_args['pipe'] = 1;
     }
     $this->log()->info(
-      "Running drush {cmd} {flags} on {site}-{env}",
+      "Running drush {cmd} on {site}-{env}",
       array(
-        'cmd' => $command,
-        'flags' => $flags,
-        'site' => $site->get('name'),
-        'env' => $environment
+        'cmd'   => $command,
+        'site'  => $site->get('name'),
+        'env'   => $environment
       )
     );
-    $result = $this->sendCommand($server, 'drush', $args, $assoc_args);
+    $result = $this->sendCommand(
+      array(
+        'server'      => $server,
+        'remote_exec' => 'drush',
+        'command'     => $command,
+      )
+    );
     if (Terminus::getConfig('format') != 'normal') {
       $this->output()->outputRecordList($result);
     }

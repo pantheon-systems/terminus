@@ -29,16 +29,22 @@ abstract class CommandWithSSH extends TerminusCommand {
    * @return [void]
    */
   protected function checkCommand($command) {
-    if (isset($this->unavailable_commands[$command])) {
-      $error_message = "$command is not available via Terminus. "
-        . 'Please run it via ' . $this->client;
-      if (!empty($this->unavailable_commands[$command])) {
-        $error_message .= ', or you can use `terminus '
-          . $this->unavailable_commands[$command]
-          . '` to complete the same task';
+    $command_array = explode(' ', $command);
+    foreach ($command_array as $element) {
+      if (strpos($element, '--') === 0) {
+        continue;
       }
-      $error_message .= '.';
-      $this->failure($error_message);
+      if (isset($this->unavailable_commands[$element])) {
+        $error_message = "$element is not available via Terminus. "
+          . 'Please run it via ' . $this->client;
+        if (!empty($this->unavailable_commands[$element])) {
+          $error_message .= ', or you can use `terminus '
+            . $this->unavailable_commands[$element]
+            . '` to complete the same task';
+        }
+        $error_message .= '.';
+        $this->failure($error_message);
+      }
     }
   }
 
@@ -91,34 +97,25 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Sends command through SSH
    *
-   * @param [string] $server      Server to connect to
-   * @param [string] $remote_exec Command to execute on server
-   * @param [array]  $args        Args from command line
-   * @param [array]  $assoc_args  Arguments sent to command
+   * @param [array] $options Elements as follows:
+   *        [string] server      Server to connect to
+   *        [string] remote_exec Program to execute on server
+   *        [array]  command     Command and arguments
    * @return [array] $formatted_result
    */
-  protected function sendCommand($server, $remote_exec, $args, $assoc_args) {
-    //Unset CLI args
-    unset($assoc_args['site']);
-
-    $remote_cmd = $remote_exec . ' ';
-
-    foreach ($args as $arg) {
-      $remote_cmd .= escapeshellarg($arg) . ' ';
-    }
-
-    foreach ($assoc_args as $key => $value) {
-      $remote_cmd .= ' --' . $key;
-      if ($value != 1) {
-        $remote_cmd .= '=' . escapeshellarg($value);
-      }
-    }
+  protected function sendCommand(array $options = array()) {
+    $server      = $options['server'];
 
     $is_normal = (Terminus::getConfig('format') == 'normal');
     $cmd       = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p '
       . $server['port'] . ' -o "AddressFamily inet"' . " "
-      . escapeshellarg($remote_cmd);
-    $this->log()->debug('Running command "{cmd}".', compact('cmd'));
+      . escapeshellarg(
+        $options['remote_exec'] . ' ' . $options['command'] . ' '
+      );
+    $this->log()->debug(
+      'Command "{command}" is being run.',
+      array('command' => escapeshellarg($cmd))
+    );
     if (!$is_normal) {
       ob_start();
     }

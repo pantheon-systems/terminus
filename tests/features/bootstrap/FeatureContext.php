@@ -125,7 +125,7 @@ class FeatureContext implements Context {
     * @return [void]
     */
   public function iActivateTheDrupalSite($site) {
-    $instruments = $this->iRun("terminus drush site-install -y --site=$site");
+    $instruments = $this->iRun("terminus drush --command='site-install -y' --site=$site");
   }
 
   /**
@@ -444,7 +444,7 @@ class FeatureContext implements Context {
    * @return [void]
    */
   public function iInstallTheModuleTo($module, $site) {
-    $this->iRun("terminus drush dl $module -y --site=$site --env=dev");
+    $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
   }
 
   /**

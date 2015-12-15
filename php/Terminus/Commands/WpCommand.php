@@ -14,9 +14,8 @@ class WpCommand extends CommandWithSSH {
   protected $client = 'WP-CLI';
 
   /**
-   * A hash of commands which do not work in Terminus
-   * The key is the drush command
-   * The value is the Terminus equivalent, blank if DNE
+   * A hash of commands which do not work in Terminus. The key is the WP-CLI
+   * command, and the value is the Terminus equivalent, blank if DNE
    */
   protected $unavailable_commands = array(
     'import' => '',
@@ -27,21 +26,19 @@ class WpCommand extends CommandWithSSH {
    * Invoke `wp` commands on a Pantheon development site
    *
    * <commands>...
-   * : The WP-CLI commands you intend to run.
-   *
-   * [--<flag>=<value>]
-   * : Additional WP-CLI flag(s) to pass in to the command.
+   * : The WP-CLI command you intend to run with its arguments, in quotes
    *
    * [--site=<site>]
-   * : The name (DNS shortname) of your site on Pantheon.
+   * : The name (DNS shortname) of your site on Pantheon
    *
    * [--env=<environment>]
    * : Your Pantheon environment. Default: dev
    *
    */
-  function __invoke($args, $assoc_args) {
-    $command = implode($args, ' ');
+  public function __invoke($args, $assoc_args) {
+    $command = array_pop($args);
     $this->checkCommand($command);
+
     $sites       = new Sites();
     $site        = $sites->get(Input::sitename($assoc_args));
     $environment = Input::env(array('args' => $assoc_args, 'site' => $site));
@@ -57,30 +54,21 @@ class WpCommand extends CommandWithSSH {
       array('site' => $site->get('id'), 'environment' => $environment)
     );
 
-    // Sanitize assoc args so we don't try to pass our own flags.
-    unset($assoc_args['site']);
-    if (isset($assoc_args['env'])) {
-      unset($assoc_args['env']);
-    }
-    // Create user-friendly output
-    $flags = '';
-    foreach ($assoc_args as $k => $v) {
-      if (isset($v) && (string)$v != '') {
-        $flags .= "--$k=" . escapeshellarg($v) . ' ';
-      } else {
-        $flags .= "--$k ";
-      }
-    }
     $this->log()->info(
-      'Running wp {cmd} {flags} on {site}-{env}',
+      'Running wp {cmd} on {site}-{env}',
       array(
         'cmd'   => $command,
-        'flags' => $flags,
         'site'  => $site->get('name'),
         'env'   => $environment
       )
     );
-    $result = $this->sendCommand($server, 'wp', $args, $assoc_args);
+    $result = $this->sendCommand(
+      array(
+        'server'      => $server,
+        'remote_exec' => 'wp',
+        'command'     => $command,
+      )
+    );
     if (Terminus::getConfig('format') != 'normal') {
       $this->output()->outputRecordList($result);
     }
