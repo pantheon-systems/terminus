@@ -2,10 +2,10 @@
 
 ### removeMember
 ##### Description:
-    Adds a site to this organization
+    Removes a site from this organization
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 

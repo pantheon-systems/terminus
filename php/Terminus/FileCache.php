@@ -44,11 +44,10 @@ class FileCache {
   /**
    * Object constructor. Sets properties.
    *
-   * @param [string]  $cacheDir  The location of the cache
-   * @param [integer] $ttl       The cache file's default expiry time
-   * @param [integer] $maxSize   The max total cache size
-   * @param [string]  $whitelist A list of characters that are allowed in path
-   * @return [FileCache] $this
+   * @param string $cacheDir  The location of the cache
+   * @param int    $ttl       The cache file's default expiry time
+   * @param int    $maxSize   The max total cache size
+   * @param string $whitelist A list of characters that are allowed in path
    */
   public function __construct(
     $cacheDir,
@@ -70,7 +69,7 @@ class FileCache {
   /**
    * Clean cache based on time to live and max size
    *
-   * @return [boolean] True if cache clean succeeded
+   * @return bool True if cache clean succeeded
    */
   public function clean() {
     if (!$this->enabled) {
@@ -117,10 +116,10 @@ class FileCache {
   /**
    * Copies a file out of the cache
    *
-   * @param [string]  $key    Cache key
-   * @param [string]  $target Target filename
-   * @param [integer] $ttl    Time to live
-   * @return [boolean] $export True if export succeeded
+   * @param string $key    Cache key
+   * @param string $target Target filename
+   * @param int    $ttl    Time to live
+   * @return bool True if export succeeded
    */
   public function export($key, $target, $ttl = null) {
     $filename = $this->has($key, $ttl);
@@ -135,7 +134,7 @@ class FileCache {
   /**
    * Flushes all caches
    *
-   * @return [void]
+   * @return void
    */
   public function flush() {
     $finder = $this->getFinder();
@@ -147,13 +146,13 @@ class FileCache {
   /**
    * Reads retrieves data from cache
    *
-   * @param [string] $key     A cache key
-   * @param [array]  $options Elements as follows:
-   *        [boolean] decode_array Argument 2 for json_decode
-   *        [boolean] ttl          TTL for file read
-   * @return [boolean|string] $data The file contents or false
+   * @param string $key     A cache key
+   * @param array  $options Elements as follows:
+   *        [bool] decode_array Argument 2 for json_decode
+   *        [bool] ttl          TTL for file read
+   * @return bool|string The file contents or false
    */
-  public function getData($key, $options = array()) {
+  public function getData($key, array $options = array()) {
     $defaults = array(
       'decode_array' => false,
       'ttl'          => null
@@ -172,7 +171,7 @@ class FileCache {
   /**
    * Returns the cache root
    *
-   * @return [string] $this->root
+   * @return string
    */
   public function getRoot() {
     return $this->root;
@@ -181,9 +180,9 @@ class FileCache {
   /**
    * Checks if a file is in cache and return its filename
    *
-   * @param [string]  $key Cache key
-   * @param [integer] $ttl Time to live
-   * @return [boolean|string] The filename or false
+   * @param string $key Cache key
+   * @param int    $ttl Time to live
+   * @return bool|string The filename or false
    */
   public function has($key, $ttl = null) {
     if (!$this->enabled) {
@@ -219,9 +218,9 @@ class FileCache {
   /**
    * Copies a file into the cache
    *
-   * @param [string] $key    Cache key
-   * @param [string] $source Source filename
-   * @return [boolean] $import True if import succeeded
+   * @param string $key    Cache key
+   * @param string $source Source filename
+   * @return bool True if import succeeded
    */
   public function import($key, $source) {
     $filename = $this->prepareWrite($key);
@@ -236,7 +235,7 @@ class FileCache {
   /**
    * Returns whether cache is enabled
    *
-   * @return [boolean] $this->enabled
+   * @return bool
    */
   public function isEnabled() {
     return $this->enabled;
@@ -245,9 +244,9 @@ class FileCache {
   /**
    * Saves data to the cache, JSON-encoded
    *
-   * @param [string] $key  A cache key
-   * @param [mixed]  $data Data to save to cache
-   * @return [boolean] $result True if write succeeded
+   * @param string $key  A cache key
+   * @param mixed  $data Data to save to cache
+   * @return bool True if write succeeded
    */
   public function putData($key, $data) {
     $json   = json_encode($data);
@@ -258,9 +257,9 @@ class FileCache {
   /**
    * Reads from the cache file
    *
-   * @param [string]  $key A cache key
-   * @param [integer] $ttl The time to live
-   * @return [boolean|string] $data The file contents or false
+   * @param string  $key A cache key
+   * @param integer $ttl The time to live
+   * @return bool|string The file contents or false
    */
   public function read($key, $ttl = null) {
     $filename = $this->has($key, $ttl);
@@ -275,8 +274,8 @@ class FileCache {
   /**
    * Remove file from cache
    *
-   * @param [string] $key Cache key
-   * @return [boolean]
+   * @param string $key Cache key
+   * @return bool
    */
   public function remove($key) {
     if (!$this->enabled) {
@@ -296,9 +295,9 @@ class FileCache {
   /**
    * Writes to cache file
    *
-   * @param [string] $key      A cache key
-   * @param [string] $contents The file contents
-   * @return [boolean] $written True if write was successful
+   * @param string $key      A cache key
+   * @param string $contents The file contents
+   * @return bool True if write was successful
    */
   public function write($key, $contents) {
     $filename = $this->prepareWrite($key);
@@ -313,8 +312,8 @@ class FileCache {
   /**
    * Ensures a directory exists
    *
-   * @param [string] $dir Directory to ensure existence of
-   * @return [boolean] $dir_exists
+   * @param string $dir Directory to ensure existence of
+   * @return bool
    */
   protected function ensureDirExists($dir) {
     $dir_exists = (
@@ -327,8 +326,8 @@ class FileCache {
   /**
    * Filename from key
    *
-   * @param [string] $key Key to validate
-   * @return [string] $filename
+   * @param string $key Key to validate
+   * @return string
    */
   protected function filename($key) {
     $filename = $this->root . $this->validateKey($key);
@@ -338,7 +337,7 @@ class FileCache {
   /**
    * Get a Finder that iterates in cache root only the files
    *
-   * @return [Finder] $finder
+   * @return Finder
    */
   protected function getFinder() {
     $finder = Finder::create()->in($this->root)->files();
@@ -348,8 +347,8 @@ class FileCache {
   /**
    * Prepare cache write
    *
-   * @param [string] $key A cache key
-   * @return [bool|string] A filename or false
+   * @param string $key A cache key
+   * @return bool|string A filename or false
    */
   protected function prepareWrite($key) {
     if (!$this->enabled) {
@@ -365,8 +364,8 @@ class FileCache {
   /**
    * Validate cache key
    *
-   * @param [string] $key A cache key
-   * @return [string] $parts_string A relative filename
+   * @param string $key A cache key
+   * @return string A relative filename
    */
   protected function validateKey($key) {
     $url_parts = parse_url($key);

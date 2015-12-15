@@ -5,8 +5,7 @@
     Returns organization object within SiteOrganizationMembership object
 
 ##### Return:
-    [Organization] $this->organization
-    -Org associated with this SiteOrganizationMembership
+    [Organization]
 
 ---
 
@@ -15,7 +14,7 @@
     Remove membership of organization
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -27,7 +26,7 @@
     [string] $role Desired role for this organization
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 

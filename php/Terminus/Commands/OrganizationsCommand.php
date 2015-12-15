@@ -8,6 +8,7 @@ use Terminus\Helpers\Input;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
 use Terminus\Models\Organization;
+use Terminus\Models\OrganizationSiteMembership;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;
 
@@ -227,10 +228,10 @@ class OrganizationsCommand extends TerminusCommand {
   /**
    * Retrieves a succinct list of member sites
    *
-   * @param [array] $memberships Members of this org
-   * @return [array] $list
+   * @param OrganizationSiteMembership[] $memberships Members of this org
+   * @return array
    */
-  private function getMemberSiteList($memberships) {
+  private function getMemberSiteList(array $memberships) {
     $list = array();
     foreach ($memberships as $membership) {
       $site = $membership->get('site');
@@ -242,8 +243,8 @@ class OrganizationsCommand extends TerminusCommand {
   /**
    * Retrieves a succinct list of non-member sites
    *
-   * @param [array] $memberships Members of this org
-   * @return [array] $list
+   * @param OrganizationSiteMembership[] $memberships Members of this org
+   * @return array
    */
   private function getNonmemberSiteList($memberships) {
     $members = $this->getMemberSiteList($memberships);
@@ -255,8 +256,8 @@ class OrganizationsCommand extends TerminusCommand {
   /**
    * Determines whether the site is a member of an org
    *
-   * @param [array] $memberships Members of this org
-   * @return [boolean] $is_member
+   * @param OrganizationSiteMembership[] $memberships Members of this org
+   * @return bool
    */
   private function siteIsMember($memberships, $site_id) {
     $list      = $this->getMemberSiteList($memberships);

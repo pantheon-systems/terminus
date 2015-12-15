@@ -11,8 +11,8 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Formats any kind of value as a raw dump
    *
-   * @param [mixed] $object An object to dump via print_r
-   * @return [string] $printout
+   * @param mixed $object An object to dump via print_r
+   * @return string
    */
   public function formatDump($object) {
     $printout = print_r($object, true);
@@ -22,16 +22,14 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Format a single record or object
    *
-   * @param [array|object] $record       A key/value array or object
-   * @param [array]        $human_labels A key/value array mapping the keys in
+   * @param array|object $record       A key/value array or object
+   * @param array        $human_labels A key/value array mapping the keys in
    *   the record to human labels
-   * @return [string] $table
+   * @return string
    */
-  public function formatRecord($record, $human_labels = array()) {
-    /**
-     * No output for empty records. This should be handled by the logger with
-     * a friendly message.
-     */
+  public function formatRecord($record, array $human_labels = array()) {
+    // No output for empty records. This should be handled by the logger with
+    // a friendly message.
     if (empty($record)) {
       return '';
     }
@@ -53,15 +51,13 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Format a list of records of the same type.
    *
-   * @param [array] $records      A list of arrays or objects.
-   * @param [array] $human_labels An array mapping record keys to human names
-   * @return [string] $table
+   * @param array $records      A list of arrays or objects.
+   * @param array $human_labels An array mapping record keys to human names
+   * @return string
    */
-  public function formatRecordList($records, $human_labels = array()) {
-    /**
-     * No output for empty records. This should be handled by the logger with
-     * a friendly message.
-     */
+  public function formatRecordList(array $records, array $human_labels = array()) {
+     // No output for empty records. This should be handled by the logger with
+     // a friendly message.
     if (empty($records)) {
       return '';
     }
@@ -105,9 +101,9 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Formats a single scalar value with an optional human label.
    *
-   * @param [mixed]  $value       A scalar value to format
-   * @param [string] $human_label A human readable label for that value
-   * @return [string] $formatted_value
+   * @param mixed  $value       A scalar value to format
+   * @param string $human_label A human readable label for that value
+   * @return string
    */
   public function formatValue($value, $human_label = '') {
     $formatted_value = PrettyFormatter::flattenValue($value);
@@ -120,23 +116,23 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Format a list of scalar values
    *
-   * @param [array]  $values      The values to format
-   * @param [string] $human_label A human name for the entire list. If each
+   * @param array  $values      The values to format
+   * @param string $human_label A human name for the entire list. If each
    *   value needs a separate label, then formatRecord should be used.
-   * @return [void]
+   * @return void
    */
-  public function formatValueList($values, $human_label = '') {
+  public function formatValueList(array $values, $human_label = '') {
     $this->formatValue(implode(', ', $values), $human_label);
   }
 
   /**
    * Formats data into a table for display
    *
-   * @param [mixed] $data    Data to format into a table
-   * @param [array] $headers Headers to replace array/object keys
-   * @return [string] $out
+   * @param array      $data    Data to format into a table
+   * @param array|null $headers Headers to replace array/object keys
+   * @return string
    */
-  private function formatTable($data, $headers = null) {
+  private function formatTable(array $data, array $headers = null) {
     $table = new \cli\Table();
 
     if ($headers) {
@@ -162,11 +158,11 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Flatten a value for display
    *
-   * @param [mixed] $value        Value to stringify
-   * @param [array] $human_labels Human-readable labels to replace keys with
-   * @return [string] $value
+   * @param mixed $value        Value to stringify
+   * @param array $human_labels Human-readable labels to replace keys with
+   * @return string
    */
-  private static function flattenValue($value, $human_labels = array()) {
+  private static function flattenValue($value, array $human_labels = array()) {
     if (is_scalar($value)) {
       return $value;
     }
@@ -187,11 +183,11 @@ class PrettyFormatter implements OutputFormatterInterface {
   /**
    * Gets the human name for a key, if available
    *
-   * @param [string] $key          Array key referencing some data item
-   * @param [array]  $human_labels Human-readable labels keyed to data
-   * @return [string] $label
+   * @param string $key          Array key referencing some data item
+   * @param array  $human_labels Human-readable labels keyed to data
+   * @return string
    */
-  private static function getHumanLabel($key, $human_labels) {
+  private static function getHumanLabel($key, array $human_labels) {
     $label = ucwords(strtr($key, '_', ' '));
     if (isset($human_labels[$key])) {
       $label = $human_labels[$key];

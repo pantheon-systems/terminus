@@ -2,20 +2,20 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Binding;
 
 class Bindings extends TerminusCollection {
 
   /**
    * Get bindings by type
    *
-   * @param [string] $type e.g. "appserver", "db server", etc
-   * @return [array] $bindings
+   * @param string $type e.g. "appserver", "db server", etc
+   * @return Binding[]
    */
   public function getByType($type) {
     $models = array_filter(
       $this->all(),
-      function($binding) use ($type) {
+      function(Binding $binding) use ($type) {
         $is_valid = (
           $binding->get('type') == $type
           && !$binding->get('failover')
@@ -32,7 +32,7 @@ class Bindings extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = sprintf('sites/%s/bindings', $this->environment->site->get('id'));
@@ -40,9 +40,9 @@ class Bindings extends TerminusCollection {
   }
 
   /**
-   * Names the model-owner of this collection, false if DNE
+   * Names the model-owner of this collection.
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'environment';

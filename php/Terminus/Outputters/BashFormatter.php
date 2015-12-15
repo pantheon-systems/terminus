@@ -18,8 +18,8 @@ class BashFormatter implements OutputFormatterInterface {
   /**
    * Formats any kind of value as a raw dump
    *
-   * @param [mixed] $object An object to dump via print_r
-   * @return [string] $printout
+   * @param mixed $object An object to dump via print_r
+   * @return string
    */
   public function formatDump($object) {
     $printout = print_r($object, true);
@@ -29,17 +29,17 @@ class BashFormatter implements OutputFormatterInterface {
   /**
    * Format a single record or object
    *
-   * @param [array|object] $record       A key/value array or object
-   * @param [array]        $human_labels A key/value array mapping the keys in
+   * @param array|object $record       A key/value array or object
+   * @param array        $human_labels A key/value array mapping the keys in
    *   the record to human labels
-   * @return [string] $out
+   * @return string
    */
-  public function formatRecord($record, $human_labels = array()) {
+  public function formatRecord($record, array $human_labels = array()) {
     $out = '';
     foreach ((array)$record as $key => $value) {
-      $value = BashFormatter::flattenValue($value);
-      $out  .= $key . BashFormatter::FIELD_SEPARATOR . $value
-        . BashFormatter::ROW_SEPARATOR;
+      $value = self::flattenValue($value);
+      $out  .= $key . self::FIELD_SEPARATOR . $value
+        . self::ROW_SEPARATOR;
     }
     return $out;
   }
@@ -47,24 +47,24 @@ class BashFormatter implements OutputFormatterInterface {
   /**
    * Format a list of records of the same type.
    *
-   * @param [array] $records      A list of arrays or objects.
-   * @param [array] $human_labels An array mapping record keys to human names
-   * @return [string] $table
+   * @param array $records      A list of arrays or objects.
+   * @param array $human_labels An array mapping record keys to human names
+   * @return string
    */
-  public function formatRecordList($records, $human_labels = array()) {
+  public function formatRecordList(array $records, array $human_labels = array()) {
     $out = '';
     foreach ($records as $record) {
       foreach ((array)$record as $value) {
-        $out .= BashFormatter::flattenValue($value);
-        $out .= BashFormatter::FIELD_SEPARATOR;
+        $out .= self::flattenValue($value);
+        $out .= self::FIELD_SEPARATOR;
       }
       // Remove the trailing separator.
       $out  = substr(
         $out,
         0,
-        (strlen($out)-(strlen(BashFormatter::FIELD_SEPARATOR)))
+        (strlen($out)-(strlen(self::FIELD_SEPARATOR)))
       );
-      $out .= BashFormatter::ROW_SEPARATOR;
+      $out .= self::ROW_SEPARATOR;
     }
     return $out;
   }
@@ -72,25 +72,25 @@ class BashFormatter implements OutputFormatterInterface {
   /**
    * Formats a single scalar value with an optional human label.
    *
-   * @param [mixed]  $value       A scalar value to format
-   * @param [string] $human_label A human readable label for that value
-   * @return [string] $formatted_value
+   * @param mixed  $value       A scalar value to format
+   * @param string $human_label A human readable label for that value
+   * @return string
    */
   public function formatValue($value, $human_label = '') {
-    $value = BashFormatter::flattenValue($value)
-      . BashFormatter::ROW_SEPARATOR;
+    $value = self::flattenValue($value)
+      . self::ROW_SEPARATOR;
     return $value;
   }
 
   /**
    * Format a list of scalar values
    *
-   * @param [array]  $values      The values to format
-   * @param [string] $human_label A human name for the entire list. If each
-   *   value needs a separate label, then formatRecord should be used.
-   * @return [string] $out
+   * @param array  $values      The values to format
+   * @param string $human_label A human name for the entire list. If each value
+   *   needs a separate label, then formatRecord should be used.
+   * @return void
    */
-  public function formatValueList($values, $human_label = '') {
+  public function formatValueList(array $values, $human_label = '') {
     $out = '';
     foreach ($values as $value) {
       $out .= $this->formatValue($value);
@@ -101,8 +101,8 @@ class BashFormatter implements OutputFormatterInterface {
   /**
    * Flatten a value for display
    *
-   * @param [mixed] $value Value to stringify
-   * @return [string] $value or $output
+   * @param mixed $value Value to stringify
+   * @return string
    */
   private static function flattenValue($value) {
     if (is_scalar($value)) {
@@ -112,9 +112,9 @@ class BashFormatter implements OutputFormatterInterface {
     $output = array();
 
     foreach ($value as $key => $val) {
-      $output[] = $key . ': ' . BashFormatter::flattenValue($val);
+      $output[] = $key . ': ' . self::flattenValue($val);
     }
-    $output = '(' . implode(BashFormatter::VALUE_SEPARATOR, $output) . ')';
+    $output = '(' . implode(self::VALUE_SEPARATOR, $output) . ')';
     return $output;
   }
 

@@ -20,8 +20,6 @@ class AuthCommand extends TerminusCommand {
 
   /**
    * Instantiates object, sets auth property
-   *
-   * @return [AuthCommand] $this
    */
   public function __construct() {
     parent::__construct();

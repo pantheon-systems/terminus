@@ -7,15 +7,17 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 
 abstract class TerminusCollection extends TerminusModel {
+  /**
+   * @var TerminusModel[]
+   */
   protected $models = array();
 
   /**
    * Instantiates the collection, sets param members as properties
    *
-   * @param [array] $options To be set to $this->key
-   * @return [TerminusCollection] $this
+   * @param array $options To be set to $this->key
    */
-  public function __construct($options = array()) {
+  public function __construct(array $options = array()) {
     foreach ($options as $key => $option) {
       $this->$key = $option;
     }
@@ -25,7 +27,7 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Retrieves all models
    *
-   * @return [array] $models
+   * @return TerminusModel[]
    */
   public function all() {
     $models = array_values($this->getMembers());
@@ -35,10 +37,10 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [TerminusCollection] $this
+   * @param array $options params to pass to url request
+   * @return TerminusCollection $this
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     $results = $this->getCollectionData($options);
     $data    = $this->objectify($results['data']);
 
@@ -55,8 +57,9 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Retrieves the model of the given ID
    *
-   * @param [string] $id ID of desired model instance
-   * @return [TerminusModel] $this->models[$id]
+   * @param string $id ID of desired model instance
+   * @return TerminusModel $this->models[$id]
+   * @throws TerminusException
    */
   public function get($id) {
     $models = $this->getMembers();
@@ -77,7 +80,7 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * List Model IDs
    *
-   * @return [array] $ids Array of all model IDs
+   * @return string[] Array of all model IDs
    */
   public function ids() {
     $models = $this->getMembers();
@@ -88,11 +91,11 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Adds a model to this collection
    *
-   * @param [stdClass] $model_data Data to feed into attributes of new model
-   * @param [array]    $options    Data to make properties of the new model
-   * @return [mixed] $model newly added model
+   * @param object $model_data Data to feed into attributes of new model
+   * @param array  $options    Data to make properties of the new model
+   * @return TerminusModel
    */
-  public function add($model_data, $options = array()) {
+  public function add($model_data, array $options = array()) {
     $model   = $this->getMemberName();
     $owner   = $this->getOwnerName();
     $options = array_merge(
@@ -123,7 +126,7 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Gives the name of this class
    *
-   * @return [string] $class_name
+   * @return string
    */
   protected function getClassName() {
     $class_name = get_class($this);
@@ -133,8 +136,8 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Retrieves collection data from the API
    *
-   * @param [array] $options params to pass to url request
-   * @return [array] $results
+   * @param array $options params to pass to url request
+   * @return array
    */
   protected function getCollectionData($options = array()) {
     $function_name = 'simpleRequest';
@@ -162,15 +165,15 @@ abstract class TerminusCollection extends TerminusModel {
    * Returns an array of data where the keys are the attribute $key and the
    *   values are the attribute $value, filtered by the given array
    *
-   * @param [array]  $filters Attributes to match during filtration
+   * @param array        $filters Attributes to match during filtration
    *   e.g. array('category' => 'other')
-   * @param [string] $key     Name of attribute to make array keys
-   * @param [mixed]  $value   Name(s) of attribute to make array values
-   * @return [array] $member_list Array rendered as requested
-   *         [mixed] $this->attribute->$key = $this->attribute->$value
+   * @param string       $key     Name of attribute to make array keys
+   * @param string|array $value   Name(s) of attribute to make array values
+   * @return array Array rendered as requested
+   *         $this->attribute->$key = $this->attribute->$value
    */
   public function getFilteredMemberList(
-    $filters,
+    array $filters,
     $key   = 'id',
     $value = 'name'
   ) {
@@ -204,7 +207,7 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Names the model-owner of this collection, false if DNE
    *
-   * @return [string|boolean] $owner_name
+   * @return string|bool
    */
   protected function getOwnerName() {
     return false;
@@ -214,10 +217,10 @@ abstract class TerminusCollection extends TerminusModel {
    * Returns an array of data where the keys are the attribute $key and the
    *   values are the attribute $value
    *
-   * @param [string] $key   Name of attribute to make array keys
-   * @param [string] $value Name of attribute to make array values
-   * @return [array] $member_list Array rendered as requested
-   *         [mixed] $this->attribute->$key = $this->attribute->$value
+   * @param string $key   Name of attribute to make array keys
+   * @param string $value Name of attribute to make array values
+   * @return array Array rendered as requested
+   *         $this->attribute->$key = $this->attribute->$value
    */
   public function getMemberList($key = 'id', $value = 'name') {
     $member_list = $this->getFilteredMemberList(array(), $key, $value);
@@ -225,9 +228,9 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
-   * Returns name of the model collected by this collection
+   * Returns class name of the model collected by this collection.
    *
-   * @return [string] $model_name Name of model
+   * @return string Name of model
    */
   protected function getMemberName() {
     $name_array = explode('\\', get_class($this));
@@ -240,7 +243,7 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Retrieves all members of this collection
    *
-   * @return [array] $this->models
+   * @return TerminusModel[]
    */
   protected function getMembers() {
     if (empty($this->models)) {
@@ -252,8 +255,8 @@ abstract class TerminusCollection extends TerminusModel {
   /**
    * Turns an associative array into a stdClass object
    *
-   * @param [array] $array Array to turn into object
-   * @return [stdClass] $object
+   * @param mixed $array Array to turn into object
+   * @return \stdClass
    */
   protected function objectify($array = array()) {
     if (is_array($array)) {

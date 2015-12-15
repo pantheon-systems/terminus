@@ -14,8 +14,6 @@ class InstrumentsCommand extends TerminusCommand {
 
   /**
    * Instantiates object, ensures login
-   *
-   * @return [InstrumentsCommand] $this
    */
   public function __construct() {
     Auth::ensureLogin();

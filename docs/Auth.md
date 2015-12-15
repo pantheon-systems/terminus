@@ -4,9 +4,6 @@
 ##### Description:
     Object constructor. Sets the logger class property.
 
-##### Return:
-    [Auth] $this
-
 ---
 
 ### ensureLogin
@@ -14,7 +11,7 @@
     Ensures the user is logged in or errs.
 
 ##### Return:
-    [boolean] Always true
+    [bool] Always true
 
 ---
 
@@ -23,7 +20,7 @@
     Checks to see if the current user is logged in
 
 ##### Return:
-    [boolean] $is_logged_in True if the user is logged in
+    [bool] True if the user is logged in
 
 ---
 
@@ -35,7 +32,7 @@
     [string] $token Machine token to initiate login with
 
 ##### Return:
-    [boolean] True if login succeeded
+    [bool] True if login succeeded
 
 ---
 
@@ -47,7 +44,7 @@
     [string] $token Session token to initiate login with
 
 ##### Return:
-    [boolean] True if login succeeded
+    [bool] True if login succeeded
 
 ---
 
@@ -60,7 +57,7 @@
     [string] $password Password for the account
 
 ##### Return:
-    [boolean] True if login succeeded
+    [bool] True if login succeeded
 
 ---
 

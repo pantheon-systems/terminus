@@ -5,7 +5,7 @@
     Cancels an environment's regular backup schedule
 
 ##### Return:
-    [boolean] True if operation was successful
+    [bool] True if operation was successful
 
 ---
 
@@ -14,37 +14,38 @@
     Creates a backup
 
 ##### Parameters:
-    [array] $arg_params Array of args to dictate backup choices
-    -[string]  type     Sort of operation to conduct (e.g. backup)
-    -[integer] keep-for Days to keep the backup for
-    -[string]  element  Which aspect of the arg to back up
+    [array] $arg_params Array of args to dictate backup choices,
+    -which may have the following keys:
+    -- type: string: Sort of operation to conduct (e.g. backup)
+    -- keep-for: int: Days to keep the backup for
+    -- element: string: Which aspect of the arg to back up
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
 ### getBackupByFileName
 ##### Description:
-    Lists all backups
+    Fetches backup for a specified filename
 
 ##### Parameters:
     [string] $filename Name of the file name to filter by
 
 ##### Return:
-    [array] $backup
+    [Backup]
 
 ---
 
 ### getBackupsByElement
 ##### Description:
-    Lists all backups
+    Lists all backups for a specific element.
 
 ##### Parameters:
     [string] $element Name of the element type to filter by
 
 ##### Return:
-    [array] $backups
+    [Backup[]]
 
 ---
 
@@ -54,8 +55,8 @@
 
 ##### Return:
     [array] $schedule Elements as follows:
-    -[string]  daily_backup_time
-    -[string]  weekly_backup_day
+    -- daily_backup_time: string
+    -- weekly_backup_day: string
 
 ---
 
@@ -67,7 +68,7 @@
     [string] $element Element requested (i.e. code, db, or files)
 
 ##### Return:
-    [array] $backups An array of stdClass objects representing backups
+    [Backup[]] An array of Backup objects
 
 ---
 
@@ -76,10 +77,10 @@
     Sets an environment's regular backup schedule
 
 ##### Parameters:
-    [integer] $day_number A numerical of a day of the week
+    [int] $day_number A numerical of a day of the week
 
 ##### Return:
-    [boolean] True if operation was successful
+    [bool] True if operation was successful
 
 ---
 

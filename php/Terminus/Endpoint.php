@@ -29,8 +29,6 @@ class Endpoint {
 
   /**
    * Object constructor. Sets target property to private.
-   *
-   * @return [Endpoint] $this
    */
   public function __construct() {
     $this->target = 'private';
@@ -41,8 +39,8 @@ class Endpoint {
    * endpoint. Once we're fully committed to the 2.0 api we can clean it up a
    * bit.
    *
-   * @param [array] $args Should contain a realm and uuid, can also have a path
-   * @return [string] $url
+   * @param array $args Should contain a realm and uuid, can also have a path
+   * @return string
    *
    *    Example:
    *
@@ -85,10 +83,10 @@ class Endpoint {
 
   /**
    * Retrieves an endpoint
-   * @param [array] $args Elements as follow:
+   * @param array $args Elements as follow:
    *        [string] realm user, site, organization
    *        [string] path specific method to call
-   * @return [string] $endpoint_string
+   * @return stringß
    */
   static function get($args) {
     $endpoint        = new Endpoint($args);

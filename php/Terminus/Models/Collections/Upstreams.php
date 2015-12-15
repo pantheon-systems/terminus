@@ -2,15 +2,15 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Upstream;
 
 class Upstreams extends TerminusCollection {
 
   /**
    * Search available upstreams by UUID or name
    *
-   * @param [string] $id_or_name UUID or name
-   * @return [Upstream] $member
+   * @param string $id_or_name UUID or name
+   * @return Upstream
    */
   public function getByIdOrName($id_or_name) {
     $members   = $this->getMemberList('id', 'longname');
@@ -27,18 +27,18 @@ class Upstreams extends TerminusCollection {
   /**
    * Adds a model to this collection
    *
-   * @param [stdClass] $model_data Data to feed into attributes of new model
-   * @param [array]    $options    Data to make properties of the new model
-   * @return [void]
+   * @param object $model_data Data to feed into attributes of new model
+   * @param array  $options    Data to make properties of the new model
+   * @return void
    */
-  public function add($model_data, $options = array()) {
+  public function add($model_data, array $options = array()) {
     parent::add($model_data->attributes, $options);
   }
 
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = 'products';

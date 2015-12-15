@@ -12,8 +12,7 @@ class SynopsisValidator {
   /**
    * Object constructor. Puts synopsis parsing into spec property
    *
-   * @param [string] $synopsis Synopsis from command's internal documentation
-   * @return [SynopsisValidator] $this
+   * @param string $synopsis Synopsis from command's internal documentation
    */
   public function __construct($synopsis) {
     $this->spec = SynopsisParser::parse($synopsis);
@@ -22,7 +21,7 @@ class SynopsisValidator {
   /**
    * Determines unknown positionals
    *
-   * @return [array] $array
+   * @return array
    */
   public function getUnknown() {
     $array = array_column(
@@ -35,8 +34,8 @@ class SynopsisValidator {
   /**
    * Determines whether the command has already had its fill of positional args
    *
-   * @param [args] $args The arguments to count against max args
-   * @return [boolean] $enough_positionals
+   * @param array $args The arguments to count against max args
+   * @return bool
    */
   public function enoughPositionals($args) {
     $positional = $this->querySpec(
@@ -53,8 +52,8 @@ class SynopsisValidator {
   /**
    * Returns invalid positionals, if any. False if not.
    *
-   * @param [array] $args The arguments to evaluate for invalid positionals
-   * @return [string|boolean] Returns the first invalid positional or false
+   * @param array $args The arguments to evaluate for invalid positionals
+   * @return string|bool Returns the first invalid positional or false
    */
   public function invalidPositionals($args) {
     $positionals = $this->querySpec(array('type' => 'positional'));
@@ -70,9 +69,9 @@ class SynopsisValidator {
         $positionals[$i]['token']
       );
       if (in_array(trim($token), array('commands', 'email'))) {
-        //We exit here because the wp and drush commands need to not have
-        //validation running since their commands are dependent on their
-        //respective code bases.
+        // We exit here because the wp and drush commands need to not have
+        // validation running since their commands are dependent on their
+        // respective code bases.
         return false;
       }
       $regex = "#^($token)$#s";
@@ -88,8 +87,8 @@ class SynopsisValidator {
   /**
    * Returns unknown associated arguments (flags and params)
    *
-   * @param [array] $assoc_args Params and flags to evaluate for unknowns
-   * @return [array] $unknowns
+   * @param array $assoc_args Params and flags to evaluate for unknowns
+   * @return array
    */
   public function unknownAssoc($assoc_args) {
     $generic = $this->querySpec(array('type' => 'generic'));
@@ -113,8 +112,8 @@ class SynopsisValidator {
   /**
    * Returns unknown positional arguments
    *
-   * @param [array] $args Positional args to evaluate for unknowns
-   * @return [array] $unknowns
+   * @param array $args Positional args to evaluate for unknowns
+   * @return array
    */
   public function unknownPositionals($args) {
     $positional_repeating = $this->querySpec(
@@ -142,8 +141,8 @@ class SynopsisValidator {
   /**
    * Checks that all required keys are present and that they have values.
    *
-   * @param [array] $assoc_args Params and flags to evaluate for unknowns
-   * @return [array] $feedback Elements as follows:
+   * @param array $assoc_args Params and flags to evaluate for unknowns
+   * @return array $feedback Elements as follows:
    *         [array] errors   Errors relating to any invalid associated args
    *         [array] to_unset The invalid arguments
    */
@@ -185,10 +184,10 @@ class SynopsisValidator {
    * Filters a list of associative arrays, based on a set of key => value
    * arguments.
    *
-   * @param [array]  $args     An array of key => value arguments to match
+   * @param array  $args     An array of key => value arguments to match
    *                             against
-   * @param [string] $operator AND, OR, or NOT
-   * @return [array] $filtered List filtered by operator
+   * @param string $operator AND, OR, or NOT
+   * @return array List filtered by operator
    */
   private function querySpec($args, $operator = 'AND') {
     $operator = strtoupper($operator);

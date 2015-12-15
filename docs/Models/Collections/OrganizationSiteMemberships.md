@@ -8,7 +8,7 @@
     [Site] $site Site object of site to add to this organization
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -20,7 +20,7 @@
     [string] $id UUID or name of desired site membership instance
 
 ##### Return:
-    [Site] $model
+    [Site]
 
 ---
 
@@ -30,9 +30,6 @@
 
 ##### Parameters:
     [array] $options params to pass to url request
-
-##### Return:
-    [OrganizationSiteMemberships] $this
 
 ---
 

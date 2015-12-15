@@ -3,16 +3,18 @@
 namespace Terminus\Models\Collections;
 
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\Workflow;
+use Terminus\Models\Backup;
 
-DEFINE('DAILY_BACKUP_TTL', 691200);
-DEFINE('WEEKLY_BACKUP_TTL', 2764800);
+define('DAILY_BACKUP_TTL', 691200);
+define('WEEKLY_BACKUP_TTL', 2764800);
 
 class Backups extends TerminusCollection {
 
   /**
    * Cancels an environment's regular backup schedule
    *
-   * @return [boolean] True if operation was successful
+   * @return bool True if operation was successful
    */
   public function cancelBackupSchedule() {
     $path_root = sprintf(
@@ -30,13 +32,14 @@ class Backups extends TerminusCollection {
   /**
    * Creates a backup
    *
-   * @param [array] $arg_params Array of args to dictate backup choices
-   *   [string]  type     Sort of operation to conduct (e.g. backup)
-   *   [integer] keep-for Days to keep the backup for
-   *   [string]  element  Which aspect of the arg to back up
-   * @return [Workflow] $workflow
+   * @param array $arg_params Array of args to dictate backup choices,
+   *   which may have the following keys:
+   *   - type: string: Sort of operation to conduct (e.g. backup)
+   *   - keep-for: int: Days to keep the backup for
+   *   - element: string: Which aspect of the arg to back up
+   * @return Workflow
    */
-  public function create($arg_params) {
+  public function create(array $arg_params) {
     $default_params = array(
       'code'       => false,
       'database'   => false,
@@ -78,10 +81,11 @@ class Backups extends TerminusCollection {
   }
 
   /**
-   * Lists all backups
+   * Fetches backup for a specified filename
    *
-   * @param [string] $filename Name of the file name to filter by
-   * @return [array] $backup
+   * @param string $filename Name of the file name to filter by
+   * @return Backup
+   * @throws TerminusException
    */
   public function getBackupByFileName($filename) {
     $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
@@ -98,10 +102,10 @@ class Backups extends TerminusCollection {
   }
 
   /**
-   * Lists all backups
+   * Lists all backups for a specific element.
    *
-   * @param [string] $element Name of the element type to filter by
-   * @return [array] $backups
+   * @param string $element Name of the element type to filter by
+   * @return Backup[]
    */
   public function getBackupsByElement($element = null) {
     $backups = array_filter(
@@ -117,9 +121,9 @@ class Backups extends TerminusCollection {
   /**
    * Retrieves an environment's regular backup schedule
    *
-   * @return [array] $schedule Elements as follows:
-   *         [string]  daily_backup_time
-   *         [string]  weekly_backup_day
+   * @return array $schedule Elements as follows:
+   *   - daily_backup_time: string
+   *   - weekly_backup_day: string
    */
   public function getBackupSchedule() {
     $path     = sprintf(
@@ -153,8 +157,8 @@ class Backups extends TerminusCollection {
   /**
    * Filters the backups for only ones which have finished
    *
-   * @param [string] $element Element requested (i.e. code, db, or files)
-   * @return [array] $backups An array of stdClass objects representing backups
+   * @param string $element Element requested (i.e. code, db, or files)
+   * @return Backup[] An array of Backup objects
    */
   public function getFinishedBackups($element) {
     if ($element != null) {
@@ -189,8 +193,8 @@ class Backups extends TerminusCollection {
   /**
    * Sets an environment's regular backup schedule
    *
-   * @param [integer] $day_number A numerical of a day of the week
-   * @return [boolean] True if operation was successful
+   * @param int $day_number A numerical of a day of the week
+   * @return bool True if operation was successful
    */
   public function setBackupSchedule($day_number) {
     $daily_ttl   = 691200;
@@ -226,7 +230,7 @@ class Backups extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = sprintf(
@@ -238,9 +242,9 @@ class Backups extends TerminusCollection {
   }
 
   /**
-   * Names the model-owner of this collection
+   * Gets the name of the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'environment';

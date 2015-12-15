@@ -12,7 +12,7 @@ class Workflow extends TerminusModel {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string $url URL to use in fetch query
    */
   public function getFetchUrl() {
     $url = '';
@@ -46,7 +46,7 @@ class Workflow extends TerminusModel {
   /**
    * Re-fetches workflow data hydrated with logs
    *
-   * @return [Workflow] $this
+   * @return Workflow
    */
   public function fetchWithLogs() {
     $options = array(
@@ -63,7 +63,7 @@ class Workflow extends TerminusModel {
   /**
    * Detects if the workflow has finished
    *
-   * @return [boolean] $is_finished True if worklow has finished
+   * @return bool True if workflow has finished
    */
   public function isFinished() {
     $is_finished = (boolean)$this->get('result');
@@ -71,9 +71,9 @@ class Workflow extends TerminusModel {
   }
 
   /**
-   * Detects if the workflow was successfsul
+   * Detects if the workflow was successful
    *
-   * @return [boolean] $is_successful True if workflow succeeded
+   * @return bool True if workflow succeeded
    */
   public function isSuccessful() {
     $is_successful = ($this->get('result') == 'succeeded');
@@ -83,7 +83,7 @@ class Workflow extends TerminusModel {
   /**
    * Returns a list of WorkflowOperations for this workflow
    *
-   * @return [Array<WorkflowOperation>] $operations list of WorkflowOperations
+   * @return WorkflowOperation[]
    */
   public function operations() {
     if (is_array($this->get('operations'))) {
@@ -103,7 +103,7 @@ class Workflow extends TerminusModel {
   /**
    * Formats workflow object into an associative array for output
    *
-   * @return [array] $data associative array of data for output
+   * @return array Associative array of data for output
    */
   public function serialize() {
     $user = 'Pantheon';
@@ -137,7 +137,8 @@ class Workflow extends TerminusModel {
   /**
    * Waits on this workflow to finish
    *
-   * @return [Workflow] $this
+   * @return Workflow|void
+   * @throws TerminusException
    */
   public function wait() {
     while (!$this->isFinished()) {
@@ -168,9 +169,9 @@ class Workflow extends TerminusModel {
   }
 
   /**
-   * Names the model-owner of this collection
+   * Gets name of the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = strtolower(

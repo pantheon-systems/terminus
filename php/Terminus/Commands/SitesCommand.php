@@ -23,8 +23,6 @@ class SitesCommand extends TerminusCommand {
 
   /**
    * Shows a list of your sites on Pantheon
-   *
-   * @return [SitesCommand] $this
    */
   public function __construct() {
     Auth::ensureLogin();
@@ -423,8 +421,8 @@ class SitesCommand extends TerminusCommand {
   /**
    * A helper function for getting/prompting for the site create options.
    *
-   * @param [array] $assoc_args Arguments from command
-   * @return [array] $options
+   * @param array $assoc_args Arguments from command
+   * @return array
    */
   private function getSiteCreateOptions($assoc_args) {
     $options          = array();

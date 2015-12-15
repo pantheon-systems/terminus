@@ -13,12 +13,12 @@ class CommandFactory {
   /**
    * Creates a new composite command or subcommand
    *
-   * @param [string]      $name   Name of command to create
-   * @param [string]      $class  Name of class command belongs to
-   * @param [RootCommand] $parent Parent command
-   * @return [mixed] $command Either CompositeCommand or Subcommand
+   * @param string           $name   Name of command to create
+   * @param string           $class  Name of class command belongs to
+   * @param CompositeCommand $parent Parent command
+   * @return CompositeCommand
    */
-  public static function create($name, $class, $parent) {
+  public static function create($name, $class, CompositeCommand $parent) {
     $reflection = new \ReflectionClass($class);
 
     if ($reflection->hasMethod('__invoke')) {
@@ -38,12 +38,16 @@ class CommandFactory {
   /**
    * Creates a new composite command
    *
-   * @param [RootCommand]      $parent     Parent command
-   * @param [string]           $name       Name of command to create
-   * @param [\ReflectionClass] $reflection Object with name of class to call
-   * @return [CompositeCommand] $container
+   * @param RootCommand      $parent     Parent command
+   * @param string           $name       Name of command to create
+   * @param \ReflectionClass $reflection Object with name of class to call
+   * @return CompositeCommand
    */
-  private static function createCompositeCommand($parent, $name, $reflection) {
+  private static function createCompositeCommand(
+    RootCommand $parent,
+    $name,
+    \ReflectionClass $reflection
+  ) {
     $docparser = new DocParser($reflection->getDocComment());
     $container = new CompositeCommand($parent, $name, $docparser);
 
@@ -67,17 +71,17 @@ class CommandFactory {
   /**
    * Creates a new subcommand
    *
-   * @param [RootCommand] $parent     Parent command
-   * @param [string]      $name       Name of command to create
-   * @param [string]      $class_name Name of class command belongs to
-   * @param [string]      $method     Name of function to invoke in class
-   * @return [Subcommand] $subcommand
+   * @param CompositeCommand  $parent     Parent command
+   * @param string            $name       Name of command to create
+   * @param string            $class_name Name of class command belongs to
+   * @param \ReflectionMethod $method     Name of function to invoke in class
+   * @return Subcommand
    */
   private static function createSubcommand(
-    $parent,
+    CompositeCommand $parent,
     $name,
     $class_name,
-    $method
+    \ReflectionMethod $method
   ) {
     $docparser = new DocParser($method->getDocComment());
     if (!$name) {
@@ -103,10 +107,10 @@ class CommandFactory {
   /**
    * Decides if the given method is a good one
    *
-   * @param [string] $method Name of method to be called
-   * @return [boolean] $is_good_method
+   * @param \ReflectionMethod $method Method to be called
+   * @return bool
    */
-  private static function isGoodMethod($method) {
+  private static function isGoodMethod(\ReflectionMethod $method) {
     $is_good_method = $method->isPublic()
       && !$method->isConstructor()
       && !$method->isStatic();

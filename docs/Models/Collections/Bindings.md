@@ -8,7 +8,7 @@
     [string] $type e.g. "appserver", "db server", etc
 
 ##### Return:
-    [array] $bindings
+    [Bindings[]]
 
 ---
 

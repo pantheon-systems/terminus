@@ -5,13 +5,17 @@ namespace Terminus;
 use Terminus;
 
 class Session {
+  /**
+   * @var Session
+   */
   static $instance;
+  /**
+   * @var \stdClass
+   */
   protected $data;
 
   /**
    * Instantiates object, sets session data
-   *
-   * @return [Session] $this
    */
   public function __construct() {
     $cache   = Terminus::getCache();
@@ -23,15 +27,14 @@ class Session {
     }
 
     self::$instance = $this;
-    return $this;
   }
 
   /**
-   * Retruns given data property or default if DNE.
+   * Returns given data property or default if DNE.
    *
-   * @param [string] $key     Name of property to return
-   * @param [mixed]  $default Default return value in case property DNE
-   * @return [mixed] $this->data->$key or $default
+   * @param string $key     Name of property to return
+   * @param mixed  $default Default return value in case property DNE
+   * @return mixed
    */
   public function get($key = 'session', $default = false) {
     if (isset($this->data) && isset($this->data->$key)) {
@@ -43,9 +46,9 @@ class Session {
   /**
    * Sets a keyed value to be part of the data property object
    *
-   * @param [string] $key   Name of data property
-   * @param [mixed]  $value Value of property to set
-   * @return [Session] $this
+   * @param string $key   Name of data property
+   * @param mixed  $value Value of property to set
+   * @return Session
    */
   public function set($key, $value) {
     $this->data->$key = null;
@@ -58,7 +61,7 @@ class Session {
   /**
    * Retrieves session data
    *
-   * @return [array] $data
+   * @return \stdClass
    */
   public static function getData() {
     $session = Session::instance();
@@ -66,10 +69,10 @@ class Session {
   }
 
   /**
-   * Returnes session data indicated by the key
+   * Returns session data indicated by the key
    *
-   * @param [string] $key Name of session property to retrieve
-   * @return [mixed] $session_property
+   * @param string $key Name of session property to retrieve
+   * @return mixed
    */
   public static function getValue($key) {
     $session          = Session::instance();
@@ -80,7 +83,7 @@ class Session {
   /**
    * Returns self, instantiating self if necessary
    *
-   * @return [Session] self::$instance Static version of $this
+   * @return Session
    */
   public static function instance() {
     if (!self::$instance) {
@@ -92,8 +95,9 @@ class Session {
   /**
    * Saves session data to cache
    *
-   * @param [array] $data Session data to save
-   * @return [void]
+   * @param array $data Session data to save
+   * @return void|bool
+   * @todo fix return value on this.
    */
   public static function setData($data) {
     $cache = Terminus::getCache();

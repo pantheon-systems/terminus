@@ -2,16 +2,19 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Models\Environment;
+use Terminus\Models\Workflow;
+
 class Environments extends TerminusCollection {
 
   /**
    * Creates a multidev environment
    *
-   * @param [string]      $to_env_id Name of new the environment
-   * @param [Environment] $from_env  Environment to clone from
-   * @return [Workflow] $workflow
+   * @param string      $to_env_id Name of new the environment
+   * @param Environment $from_env  Environment to clone from
+   * @return Workflow
    */
-  public function create($to_env_id, $from_env) {
+  public function create($to_env_id, Environment $from_env) {
     $workflow = $this->site->workflows->create(
       'create_cloud_development_environment',
       array(
@@ -34,7 +37,7 @@ class Environments extends TerminusCollection {
   /**
    * List Environment IDs, with Dev/Test/Live first
    *
-   * @return [array] $ids
+   * @return string[] $ids
    */
   public function ids() {
     $ids = array_keys($this->getMembers());
@@ -50,7 +53,7 @@ class Environments extends TerminusCollection {
   /**
    * Returns a list of all multidev environments on the collection-owning Site
    *
-   * @return [array] $environment An array of all Environment objects
+   * @return Environment[]
    */
   public function multidev() {
     $environments = array_filter(
@@ -66,7 +69,7 @@ class Environments extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = 'sites/' . $this->site->get('id') . '/environments';
@@ -76,7 +79,7 @@ class Environments extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'site';

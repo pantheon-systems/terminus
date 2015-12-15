@@ -2,10 +2,10 @@
 
 ### removeMember
 ##### Description:
-    Remove membshipship, either org or user
+    Remove membership, either org or user
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -17,7 +17,7 @@
     [string] $role Desired role for this member
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 

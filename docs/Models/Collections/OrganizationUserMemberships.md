@@ -20,7 +20,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [OrganizationUserMemberships] $this
+    [OrganizationUserMemberships]
 
 ---
 

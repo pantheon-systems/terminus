@@ -5,11 +5,8 @@
     Object constructor
 
 ##### Parameters:
-    [stdClass] $attributes Attributes of this model
-    [array]    $options    Options to set as $this->key
-
-##### Return:
-    [TerminusModel] $this
+    [\stdClass] $attributes Attributes of this model
+    [array]     $options    Options to set as $this->key
 
 ---
 
@@ -21,7 +18,7 @@
     [string] $hostname Hostname to add to environment
 
 ##### Return:
-    [array] $response['data']
+    [array] Response data
 
 ---
 
@@ -33,19 +30,19 @@
     [string] $value Connection mode, "git" or "sftp"
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow|string]
 
 ---
 
 ### cloneDatabase
 ##### Description:
-    Clones files from this environment to another
+    Clones database from this environment to another
 
 ##### Parameters:
     [string] $to_env Environment to clone into
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -57,7 +54,7 @@
     [string] $to_env Environment to clone into
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -70,7 +67,7 @@
     -on server changes
 
 ##### Return:
-    [array] $data['data']
+    [array] Response data
 
 ---
 
@@ -79,7 +76,7 @@
     Gives connection info for this environment
 
 ##### Return:
-    [array] $info
+    [array]
 
 ---
 
@@ -91,7 +88,7 @@
     [string] $env_name Name of environment to create
 
 ##### Return:
-    [array] $response['data']
+    [array] Response data
 
 ---
 
@@ -103,7 +100,7 @@
     [string] $hostname Hostname to remove from environment
 
 ##### Return:
-    [array] $response['data']
+    [array] Response data
 
 ---
 
@@ -115,7 +112,7 @@
     [array] $params Parameters for the deploy workflow
 
 ##### Return:
-    [Workflow] workflow response
+    [Workflow]
 
 ---
 
@@ -124,7 +121,7 @@
     Gets diff from multidev environment
 
 ##### Return:
-    [array] $data['data']
+    [array]
 
 ---
 
@@ -133,7 +130,7 @@
     Generate environment URL
 
 ##### Return:
-    [string] $host
+    [string]
 
 ---
 
@@ -142,16 +139,16 @@
     Returns the connection mode of this environment
 
 ##### Return:
-    [string] $connection_mode
+    [string] 'git' or 'sftp'
 
 ---
 
 ### getHostnames
 ##### Description:
-    List hotnames for environment
+    List hostnames for environment
 
 ##### Return:
-    [array] $response['data']
+    [array]
 
 ---
 
@@ -160,7 +157,7 @@
     Returns the environment's name
 
 ##### Return:
-    [string] $name
+    [string]
 
 ---
 
@@ -183,7 +180,7 @@
     clones test content.)
 
 ##### Return:
-    [Workflow] $workflow In-progress workflow
+    [Workflow] In-progress workflow
 
 ---
 
@@ -192,7 +189,7 @@
     Have the environment's bindings have been initialized?
 
 ##### Return:
-    [boolean] $has_commits True if environment has been instantiated
+    [bool] True if environment has been instantiated
 
 ---
 
@@ -201,7 +198,7 @@
     Is this branch a multidev environment?
 
 ##### Return:
-    [boolean] True if ths environment is a multidev environment
+    [bool] True if ths environment is a multidev environment
 
 ---
 
@@ -213,7 +210,7 @@
     [array] $options Parameters to override defaults
 
 ##### Return:
-    [Workflow] $workflow;
+    [Workflow]
 
 ---
 
@@ -222,7 +219,7 @@
     Get Info on an environment lock
 
 ##### Return:
-    [string] $lock
+    [string]
 
 ---
 
@@ -231,7 +228,7 @@
     Get the code log (commits)
 
 ##### Return:
-    [array] $response['data']
+    [array]
 
 ---
 
@@ -243,7 +240,7 @@
     [array] $options Parameters to override defaults
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -255,7 +252,7 @@
     [array] $options Parameters to override defaults
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -264,7 +261,7 @@
     Disable HTTP Basic Access authentication on the web environment
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -273,7 +270,7 @@
     "Wake" a site
 
 ##### Return:
-    [array] $return_data
+    [array]
 
 ---
 
@@ -282,7 +279,7 @@
     Deletes all content (files and database) from the Environment
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -294,7 +291,7 @@
     [Workflow] $workflow String work flow "slot"
 
 ##### Return:
-    [array] $response['data']
+    [array]
 
 ---
 

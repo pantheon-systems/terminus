@@ -10,18 +10,23 @@ use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
 
 class Environment extends TerminusModel {
+  /**
+   * @var Backups
+   */
   public $backups;
 
+  /**
+   * @var Bindings
+   */
   private $bindings;
 
   /**
    * Object constructor
    *
-   * @param [stdClass] $attributes Attributes of this model
-   * @param [array]    $options    Options to set as $this->key
-   * @return [TerminusModel] $this
+   * @param \stdClass $attributes Attributes of this model
+   * @param array     $options    Options to set as $this->key
    */
-  public function __construct($attributes, $options = array()) {
+  public function __construct(\stdClass $attributes, array $options = array()) {
     parent::__construct($attributes, $options);
     $this->backups  = new Backups(array('environment' => $this));
     $this->bindings = new Bindings(array('environment' => $this));
@@ -30,8 +35,8 @@ class Environment extends TerminusModel {
   /**
    * Add hostname to environment
    *
-   * @param [string] $hostname Hostname to add to environment
-   * @return [array] $response['data']
+   * @param string $hostname Hostname to add to environment
+   * @return array Response data
    */
   public function addHostname($hostname) {
     $response = $this->request->request(
@@ -50,8 +55,8 @@ class Environment extends TerminusModel {
   /**
    * Changes connection mode
    *
-   * @param [string] $value Connection mode, "git" or "sftp"
-   * @return [Workflow] $workflow
+   * @param string $value Connection mode, "git" or "sftp"
+   * @return Workflow|string
    */
   public function changeConnectionMode($value) {
     $current_mode = $this->getConnectionMode();
@@ -74,10 +79,10 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Clones files from this environment to another
+   * Clones database from this environment to another
    *
-   * @param [string] $to_env Environment to clone into
-   * @return [Workflow] $workflow
+   * @param string $to_env Environment to clone into
+   * @return Workflow
    */
   public function cloneDatabase($to_env) {
     $params   = array(
@@ -91,8 +96,8 @@ class Environment extends TerminusModel {
   /**
    * Clones files from this environment to another
    *
-   * @param [string] $to_env Environment to clone into
-   * @return [Workflow] $workflow
+   * @param string $to_env Environment to clone into
+   * @return Workflow
    */
   public function cloneFiles($to_env) {
     $params   = array(
@@ -106,9 +111,9 @@ class Environment extends TerminusModel {
   /**
    * Commits changes to code
    *
-   * @param [string] $commit Should be the commit message to use if committing
+   * @param string $commit Should be the commit message to use if committing
    *   on server changes
-   * @return [array] $data['data']
+   * @return array Response data
    */
   public function commitChanges($commit = null) {
     ob_start();
@@ -136,7 +141,7 @@ class Environment extends TerminusModel {
   /**
    * Gives connection info for this environment
    *
-   * @return [array] $info
+   * @return array
    */
   public function connectionInfo() {
     $info = array();
@@ -292,8 +297,10 @@ class Environment extends TerminusModel {
   /**
    * Creates a new environment
    *
-   * @param [string] $env_name Name of environment to create
-   * @return [array] $response['data']
+   * @param string $env_name Name of environment to create
+   * @return array Response data
+   *
+   * @todo This doesn't currently work because $site_id is undefined.
    */
   public function create($env_name) {
     $path     = sprintf('environments/%s', $env_name);
@@ -311,8 +318,8 @@ class Environment extends TerminusModel {
   /**
    * Delete hostname from environment
    *
-   * @param [string] $hostname Hostname to remove from environment
-   * @return [array] $response['data']
+   * @param string $hostname Hostname to remove from environment
+   * @return array Response data
    */
   public function deleteHostname($hostname) {
     $response = $this->request->request(
@@ -326,7 +333,7 @@ class Environment extends TerminusModel {
       'delete'
     );
     return $response['data'];
-
+    // dead code:
     $options  = array('environment' => $this->get('id'), 'params' => $params);
     $workflow = $this->site->workflows->create('do_export', $options);
     $workflow->wait();
@@ -337,8 +344,8 @@ class Environment extends TerminusModel {
   /**
    * Deploys the Test or Live environment
    *
-   * @param [array] $params Parameters for the deploy workflow
-   * @return [Workflow] workflow response
+   * @param array $params Parameters for the deploy workflow
+   * @return Workflow
    */
   public function deploy($params) {
     $params   = array('environment' => $this->get('id'), 'params' => $params);
@@ -349,7 +356,7 @@ class Environment extends TerminusModel {
   /**
    * Gets diff from multidev environment
    *
-   * @return [array] $data['data']
+   * @return array
    */
   public function diffstat() {
     $path = sprintf(
@@ -368,7 +375,7 @@ class Environment extends TerminusModel {
   /**
    * Generate environment URL
    *
-   * @return [string] $host
+   * @return string
    */
   public function domain() {
     $host = sprintf(
@@ -383,7 +390,7 @@ class Environment extends TerminusModel {
   /**
    * Returns the connection mode of this environment
    *
-   * @return [string] $connection_mode
+   * @return string 'git' or 'sftp'
    */
   public function getConnectionMode() {
     $path   = sprintf(
@@ -404,9 +411,9 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * List hotnames for environment
+   * List hostnames for environment
    *
-   * @return [array] $response['data']
+   * @return array
    */
   public function getHostnames() {
     $response = $this->request->request(
@@ -421,7 +428,7 @@ class Environment extends TerminusModel {
   /**
    * Returns the environment's name
    *
-   * @return [string] $name
+   * @return string
    */
   public function getName() {
     $name = $this->get('id');
@@ -431,8 +438,9 @@ class Environment extends TerminusModel {
   /**
    * Load site info
    *
-   * @param [string] $key Set to retrieve a specific attribute as named
-   * @return [array] $info
+   * @param string $key Set to retrieve a specific attribute as named
+   * @return array $info
+   * @throws TerminusException
    */
   public function info($key = null) {
     $path   = sprintf('environments/%s', $this->get('id'));
@@ -471,7 +479,7 @@ class Environment extends TerminusModel {
    * content from previous environment (e.g. test clones dev content, live
    * clones test content.)
    *
-   * @return [Workflow] $workflow In-progress workflow
+   * @return Workflow In-progress workflow
    */
   public function initializeBindings() {
     if ($this->get('id') == 'test') {
@@ -498,11 +506,11 @@ class Environment extends TerminusModel {
   /**
    * Have the environment's bindings have been initialized?
    *
-   * @return [boolean] $has_commits True if environment has been instantiated
+   * @return bool True if environment has been instantiated
    */
   public function isInitialized() {
     // One can determine whether an environment has been initialized
-    // by checking if it has code commits. Unitialized environments do not.
+    // by checking if it has code commits. Uninitialized environments do not.
     $commits     = $this->log();
     $has_commits = (count($commits) > 0);
     return $has_commits;
@@ -511,7 +519,7 @@ class Environment extends TerminusModel {
   /**
    * Is this branch a multidev environment?
    *
-   * @return [boolean] True if ths environment is a multidev environment
+   * @return bool True if ths environment is a multidev environment
    */
   public function isMultidev() {
     $is_multidev = !in_array($this->get('id'), array('dev', 'test', 'live'));
@@ -521,8 +529,8 @@ class Environment extends TerminusModel {
   /**
    * Enable HTTP Basic Access authentication on the web environment
    *
-   * @param [array] $options Parameters to override defaults
-   * @return [Workflow] $workflow;
+   * @param array $options Parameters to override defaults
+   * @return Workflow
    */
   public function lock($options = array()) {
     $username = $options['username'];
@@ -542,7 +550,7 @@ class Environment extends TerminusModel {
   /**
    * Get Info on an environment lock
    *
-   * @return [string] $lock
+   * @return string
    */
   public function lockinfo() {
     $lock = $this->get('lock');
@@ -552,7 +560,7 @@ class Environment extends TerminusModel {
   /**
    * Get the code log (commits)
    *
-   * @return [array] $response['data']
+   * @return array
    */
   public function log() {
     $path     = sprintf('environments/%s/code-log', $this->get('id'));
@@ -568,12 +576,14 @@ class Environment extends TerminusModel {
   /**
    * Merge code from the Dev Environment into this Multidev Environment
    *
-   * @param [array] $options Parameters to override defaults
-   * @return [Workflow] $workflow
+   * @param array $options Parameters to override defaults
+   * @return Workflow
+   * @throws \Exception
+   * @todo Should this throw TerminusException instead?
    */
   public function mergeFromDev($options = array()) {
     if (!$this->isMultidev()) {
-      throw new Exception(
+      throw new \Exception(
         sprintf(
           'The %s environment is not a multidev environment',
           $this->get('id')
@@ -595,12 +605,14 @@ class Environment extends TerminusModel {
   /**
    * Merge code from this Multidev Environment into the Dev Environment
    *
-   * @param [array] $options Parameters to override defaults
-   * @return [Workflow] $workflow
+   * @param array $options Parameters to override defaults
+   * @return Workflow
+   * @throws \Exception
+   * @todo Should this throw TerminusException instead?
    */
   public function mergeToDev($options = array()) {
     if (!$this->isMultidev()) {
-      throw new Exception(
+      throw new \Exception(
         sprintf(
           'The %s environment is not a multidev environment',
           $this->get('id')
@@ -628,7 +640,7 @@ class Environment extends TerminusModel {
   /**
    * Disable HTTP Basic Access authentication on the web environment
    *
-   * @return [Workflow] $workflow
+   * @return Workflow
    */
   public function unlock() {
     $params   = array('environment' => $this->get('id'));
@@ -639,7 +651,7 @@ class Environment extends TerminusModel {
   /**
    * "Wake" a site
    *
-   * @return [array] $return_data
+   * @return array
    */
   public function wake() {
     $on_stats = function (TransferStats $stats) {
@@ -663,7 +675,7 @@ class Environment extends TerminusModel {
   /**
    * Deletes all content (files and database) from the Environment
    *
-   * @return [Workflow] $workflow
+   * @return Workflow
    */
   public function wipe() {
     $params   = array('environment' => $this->get('id'));
@@ -674,10 +686,10 @@ class Environment extends TerminusModel {
   /**
    * Start a work flow
    *
-   * @param [Workflow] $workflow String work flow "slot"
-   * @return [array] $response['data']
+   * @param Workflow $workflow String work flow "slot"
+   * @return array
    */
-  public function workflow($workflow) {
+  public function workflow(Workflow $workflow) {
     $path        = sprintf("environments/%s/workflows", $this->get('id'));
     $form_params = array(
       'type'        => $workflow,

@@ -2,18 +2,26 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Site;
+use Terminus\Models\SiteOrganizationMembership;
+use Terminus\Models\Workflow;
 
 class SiteOrganizationMemberships extends TerminusCollection {
+  /**
+   * @var Site
+   */
   protected $site;
+  /**
+   * @var Workflows
+   */
   protected $workflows;
 
   /**
    * Adds this org as a member to the site
    *
-   * @param [string] $name Name of site to add org to
-   * @param [string] $role Role for supporting organization to take
-   * @return [Workflow] $workflow
+   * @param string $name Name of site to add org to
+   * @param string $role Role for supporting organization to take
+   * @return Workflow
    **/
   public function addMember($name, $role) {
     $workflow = $this->site->workflows->create(
@@ -26,10 +34,10 @@ class SiteOrganizationMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [TerminusModel] $this
+   * @param array $options params to pass to url request
+   * @return SiteOrganizationMemberships
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (!isset($options['paged'])) {
       $options['paged'] = true;
     }
@@ -41,11 +49,10 @@ class SiteOrganizationMemberships extends TerminusCollection {
   /**
    * Returns UUID of organization with given name
    *
-   * @param [string] $name A name to search for
-   * @return [SiteOrganizationMembership] $orgs[$name]
+   * @param string $name A name to search for
+   * @return SiteOrganizationMembership|null
    */
   public function findByName($name) {
-    $orgs = array();
     foreach ($this->models as $org_member) {
       $org = $org_member->getName();
       if ($name == $org) {
@@ -58,7 +65,7 @@ class SiteOrganizationMemberships extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'site';
@@ -68,7 +75,7 @@ class SiteOrganizationMemberships extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = 'sites/' . $this->site->get('id') . '/memberships/organizations';

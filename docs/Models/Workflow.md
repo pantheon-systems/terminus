@@ -14,7 +14,7 @@
     Re-fetches workflow data hydrated with logs
 
 ##### Return:
-    [Workflow] $this
+    [Workflow]
 
 ---
 
@@ -23,25 +23,16 @@
     Detects if the workflow has finished
 
 ##### Return:
-    [boolean] $is_finished True if worklow has finished
+    [bool] True if workflow has finished
 
 ---
 
 ### isSuccessful
 ##### Description:
-    Detects if the workflow was successfsul
+    Detects if the workflow was successful
 
 ##### Return:
-    [boolean] $is_successful True if workflow succeeded
-
----
-
-### hasLogs
-##### Description:
-    Detects if the workflow has any operation with logs
-
-##### Return:
-    [boolean] $has_logs True if worklow has logs
+    [bool] True if workflow succeeded
 
 ---
 
@@ -50,7 +41,7 @@
     Returns a list of WorkflowOperations for this workflow
 
 ##### Return:
-    [Array<WorkflowOperation>] $operations list of WorkflowOperations
+    [WorkflowOperation[]]
 
 ---
 
@@ -59,7 +50,7 @@
     Formats workflow object into an associative array for output
 
 ##### Return:
-    [array] $data associative array of data for output
+    [array] Associative array of data for output
 
 ---
 
@@ -68,7 +59,7 @@
     Waits on this workflow to finish
 
 ##### Return:
-    [Workflow] $this
+    [Workflow|void]
 
 ---
 

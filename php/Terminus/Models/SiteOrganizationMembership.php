@@ -2,17 +2,20 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\TerminusModel;
-
 class SiteOrganizationMembership extends TerminusModel {
+  /**
+   * @var Site
+   */
   protected $site;
+  /**
+   * @var Organization
+   */
   protected $organization;
 
   /**
    * Returns organization object within SiteOrganizationMembership object
    *
-   * @return [Organization] $this->organization
-   *   Org associated with this SiteOrganizationMembership
+   * @return Organization
    */
   public function getOrganization() {
     if (!isset($this->organization)) {
@@ -24,7 +27,7 @@ class SiteOrganizationMembership extends TerminusModel {
   /**
    * Remove membership of organization
    *
-   * @return [Workflow] $workflow
+   * @return Workflow
    **/
   public function removeMember() {
     $workflow = $this->site->workflows->create(
@@ -37,8 +40,8 @@ class SiteOrganizationMembership extends TerminusModel {
   /**
    * Changes the role of the given member
    *
-   * @param [string] $role Desired role for this organization
-   * @return [Workflow] $workflow
+   * @param string $role Desired role for this organization
+   * @return Workflow
    */
   public function setRole($role) {
     $workflow = $this->site->workflows->create(

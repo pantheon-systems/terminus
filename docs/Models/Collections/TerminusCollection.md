@@ -7,9 +7,6 @@
 ##### Parameters:
     [array] $options To be set to $this->key
 
-##### Return:
-    [TerminusCollection] $this
-
 ---
 
 ### all
@@ -17,7 +14,7 @@
     Retrieves all models
 
 ##### Return:
-    [array] $models
+    [TerminusModel[]]
 
 ---
 
@@ -50,7 +47,20 @@
     List Model IDs
 
 ##### Return:
-    [array] $ids Array of all model IDs
+    [string[]] Array of all model IDs
+
+---
+
+### add
+##### Description:
+    Adds a model to this collection
+
+##### Parameters:
+    [\stdClass] $model_data Data to feed into attributes of new model
+    [array]     $options    Data to make properties of the new model
+
+##### Return:
+    [TerminusModel]
 
 ---
 
@@ -63,11 +73,11 @@
     [array]  $filters Attributes to match during filtration
     -e.g. array('category' => 'other')
     [string] $key     Name of attribute to make array keys
-    [mixed]  $value   Name(s) of attribute to make array values
+    [string|array]  $value   Name(s) of attribute to make array values
 
 ##### Return:
-    [array] $member_list Array rendered as requested
-    -[mixed] $this->attribute->$key = $this->attribute->$value
+    [array] Array rendered as requested
+    -$this->attribute->$key = $this->attribute->$value
 
 ---
 
@@ -81,8 +91,8 @@
     [string] $value Name of attribute to make array values
 
 ##### Return:
-    [array] $member_list Array rendered as requested
-    -[mixed] $this->attribute->$key = $this->attribute->$value
+    [array] Array rendered as requested
+    -$this->attribute->$key = $this->attribute->$value
 
 ---
 

@@ -9,7 +9,7 @@
     [Environment] $from_env  Environment to clone from
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -18,7 +18,7 @@
     List Environment IDs, with Dev/Test/Live first
 
 ##### Return:
-    [array] $ids
+    [string[]] $ids
 
 ---
 
@@ -27,7 +27,7 @@
     Returns a list of all multidev environments on the collection-owning Site
 
 ##### Return:
-    [array] $environment An array of all Environment objects
+    [Environment[]]
 
 ---
 

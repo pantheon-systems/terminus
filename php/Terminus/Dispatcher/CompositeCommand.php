@@ -3,6 +3,7 @@
 namespace Terminus\Dispatcher;
 
 use Terminus;
+use Terminus\DocParser;
 
 /**
  * A non-leaf node in the command tree.
@@ -17,12 +18,12 @@ class CompositeCommand {
   /**
    * Object constructor. Sets object properties
    *
-   * @param [RootCommand] $parent    Parent command dispatcher object
-   * @param [string]      $name      Name of command to run
-   * @param [DocParser]   $docparser DocParser object for analysis of docs
-   * @return [CompositeCommand] $this
+   * @param CompositeCommand $parent    Parent command dispatcher object
+   * @param string           $name      Name of command to run
+   * @param DocParser        $docparser DocParser object for analysis of docs
+   * @return CompositeCommand $this
    */
-  public function __construct($parent, $name, $docparser) {
+  public function __construct(CompositeCommand $parent, $name, DocParser $docparser) {
     $this->name      = $name;
     $this->parent    = $parent;
     $this->shortdesc = $docparser->getShortdesc();
@@ -32,18 +33,18 @@ class CompositeCommand {
   /**
    * Adds a subcommand to the subcommand array
    *
-   * @param [string]     $name    Name of subcommand to add
-   * @param [Subcommand] $command Subcommand object to add
-   * @return [void]
+   * @param string           $name    Name of subcommand to add
+   * @param CompositeCommand $command Command object to add
+   * @return void
    */
-  public function addSubcommand($name, $command) {
+  public function addSubcommand($name, CompositeCommand $command) {
     $this->subcommands[$name] = $command;
   }
 
   /**
    * Tells whether there can be subcommands of this object
    *
-   * @return [boolean] Always true
+   * @return bool Always true
    */
   public function canHaveSubcommands() {
     return true;
@@ -52,8 +53,8 @@ class CompositeCommand {
   /**
    * Finds and retrieves the subcommand from the first element of the param
    *
-   * @param [array] $args An array of strings representing subcommand names
-   * @return [mixed] $subcommands[$name] or false if DNE
+   * @param array $args An array of strings representing subcommand names
+   * @return Subcommand|false
    */
   public function findSubcommand(&$args) {
     $name        = array_shift($args);
@@ -76,7 +77,7 @@ class CompositeCommand {
   /**
    * Gets the long description of the command this object represents
    *
-   * @return [string] $this->longdesc
+   * @return string
    */
   public function getLongdesc() {
     return $this->longdesc;
@@ -85,7 +86,7 @@ class CompositeCommand {
   /**
    * Gets the name of the command this object represents
    *
-   * @return [string] $this->name
+   * @return string
    */
   public function getName() {
     return $this->name;
@@ -94,7 +95,7 @@ class CompositeCommand {
   /**
    * Gets the parent command object
    *
-   * @return [RootCommand] $this->parent
+   * @return RootCommand
    */
   public function getParent() {
     return $this->parent;
@@ -103,7 +104,7 @@ class CompositeCommand {
   /**
    * Gets the short description of the command this object represents
    *
-   * @return [string] $this->shortdesc
+   * @return string
    */
   public function getShortdesc() {
     return $this->shortdesc;
@@ -112,7 +113,7 @@ class CompositeCommand {
   /**
    * Sorts and retrieves the subcommands
    *
-   * @return [array] $this->subcommands Array of Subcommand objects
+   * @return Subcommand[]
    */
   public function getSubcommands() {
     ksort($this->subcommands);
@@ -123,7 +124,7 @@ class CompositeCommand {
   /**
    * Gets the synopsis of the command this object represents
    *
-   * @return [string] Always "<command>"
+   * @return string Always "<command>"
    */
   public function getSynopsis() {
     return '<command>';
@@ -132,8 +133,8 @@ class CompositeCommand {
   /**
    * Gets the usage parameters of the command this object represents
    *
-   * @param [string] $prefix Prefix to usage string
-   * @return [string] $usage
+   * @param string $prefix Prefix to usage string
+   * @return string
    */
   public function getUsage($prefix) {
     $usage = sprintf(
@@ -148,18 +149,18 @@ class CompositeCommand {
   /**
    * Displays the usage parameters of the command this object represents
    *
-   * @param [array] $args       Array of command line non-params and non-flags
-   * @param [array] $assoc_args Array of command line params and flags
-   * @return [void]
+   * @param array $args       Array of command line non-params and non-flags
+   * @param array $assoc_args Array of command line params and flags
+   * @return void
    */
-  public function invoke($args, $assoc_args) {
+  public function invoke(array $args, array $assoc_args) {
     $this->showUsage();
   }
 
   /**
    * Displays the usage parameters of the command this object represents
    *
-   * @return [void]
+   * @return void
    */
   public function showUsage() {
     $methods = $this->getSubcommands();
@@ -182,8 +183,8 @@ class CompositeCommand {
   /**
    * Retrieves aliases of a subcommand
    *
-   * @param [array] $subcommands An array of subcommandname strings
-   * @return [array] $aliases An array of alias strings
+   * @param Subcommand[] $subcommands An array of subcommands, keyed by name
+   * @return string[]
    */
   private static function getAliases($subcommands) {
     $aliases = array();

@@ -2,17 +2,22 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Site;
+use Terminus\Models\SiteUserMembership;
+use Terminus\Models\Workflow;
 
 class SiteUserMemberships extends TerminusCollection {
+  /**
+   * @var Site
+   */
   protected $site;
 
   /**
    * Adds this user as a member to the site
    *
-   * @param [string] $email Email of team member to add
-   * @param [string] $role  Role to assign to the new user
-   * @return [workflow] $workflow
+   * @param string $email Email of team member to add
+   * @param string $role  Role to assign to the new user
+   * @return Workflow
    **/
   public function addMember($email, $role) {
     $workflow = $this->site->workflows->create(
@@ -25,10 +30,10 @@ class SiteUserMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [SiteUserMemberships] $this
+   * @param array $options params to pass to url request
+   * @return SiteUserMemberships
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (!isset($options['paged'])) {
       $options['paged'] = true;
     }
@@ -39,8 +44,10 @@ class SiteUserMemberships extends TerminusCollection {
   /**
    * Retrieves the membership of the given UUID or email
    *
-   * @param [string] $id UUID or email of desired user
-   * @return [SiteUserMembership] $membership
+   * @param string $id UUID or email of desired user
+   * @return SiteUserMembership
+   * @throws \Exception
+   * @todo Should this throw TerminusException instead?
    */
   public function get($id) {
     $models     = $this->getMembers();
@@ -65,9 +72,9 @@ class SiteUserMemberships extends TerminusCollection {
   }
 
   /**
-   * Retrieves and fills in team member data
+   * Give the URL for collection data fetching
    *
-   * @return [SiteUserMemberships] $this
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = 'sites/' . $this->site->get('id') . '/memberships/users';
@@ -77,7 +84,7 @@ class SiteUserMemberships extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     return 'site';

@@ -8,7 +8,20 @@
     [string] $id_or_name UUID or name
 
 ##### Return:
-    [Upstream] $member
+    [Upstream]
+
+---
+
+### add
+##### Description:
+    Adds a model to this collection
+
+##### Parameters:
+    [\stdClass] $model_data Data to feed into attributes of new model
+    [array]     $options    Data to make properties of the new model
+
+##### Return:
+    [void]
 
 ---
 

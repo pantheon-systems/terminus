@@ -10,6 +10,7 @@ use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
+use Terminus\Models\Workflow;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -1841,10 +1842,10 @@ class SiteCommand extends TerminusCommand {
   /**
    * Cancels an environment's regular backup schedule
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [void]
+   * @param array $assoc_args Parameters and flags from the command line
+   * @return void
    */
-  private function cancelBackupSchedule($assoc_args) {
+  private function cancelBackupSchedule(array $assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));
     $env      = $site->environments->get(
       Input::env(
@@ -1858,8 +1859,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Creates a backup
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [Workflow] $workflow
+   * @param array $assoc_args Parameters and flags from the command line
+   * @return Workflow
    */
   private function createBackup($assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
@@ -1882,8 +1883,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Retrieves a single backup or downloads it as requested
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [string] $url->url
+   * @param array $assoc_args Parameters and flags from the command line
+   * @return string
    */
   private function getBackup($assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
@@ -1934,8 +1935,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Checks to ensure user can access the given organization
    *
-   * @param [string] $org_id Organization name or UUID
-   * @return [boolean] $is_ok True if this organization is accessible
+   * @param string $org_id Organization name or UUID
+   * @return bool True if this organization is accessible
    */
   private function isOrgAccessible($org_id) {
     $user  = new User();
@@ -1947,8 +1948,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Lists available backups
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [array] $data Elements as follows:
+   * @params array $assoc_args Parameters and flags from the command line
+   * @return array $data Elements as follows:
    *         [string] file The backup's file name
    *         [string] size The backup file's size
    *         [string] date The datetime of the backup's creation
@@ -1987,8 +1988,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Loads a single backup
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [boolean] Always true, else the function has thrown an exception
+   * @params array $assoc_args Parameters and flags from the command line
+   * @return bool Always true, else the function has thrown an exception
    */
   private function loadBackup($assoc_args) {
     $site = $this->sites->get(Input::sitename($assoc_args));
@@ -2065,8 +2066,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Sets an environment's regular backup schedule
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [void]
+   * @param array $assoc_args Parameters and flags from the command line
+   * @return void
    */
   private function setBackupSchedule($assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));
@@ -2083,8 +2084,8 @@ class SiteCommand extends TerminusCommand {
   /**
    * Displays an environment's regular backup schedule
    *
-   * @params [array] $assoc_args Parameters and flags from the command line
-   * @return [void]
+   * @params array $assoc_args Parameters and flags from the command line
+   * @return void
    */
   private function showBackupSchedule($assoc_args) {
     $site     = $this->sites->get(Input::sitename($assoc_args));

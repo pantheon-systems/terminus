@@ -25,8 +25,8 @@ abstract class CommandWithSSH extends TerminusCommand {
    * Checks to see if the command is not available in Terminus and, if not,
    * it will refer you to an equivalent Terminus command, if such exists.
    *
-   * @param [string] $command The command to check for availability
-   * @return [void]
+   * @param string $command The command to check for availability
+   * @return void
    */
   protected function checkCommand($command) {
     $command_array = explode(' ', $command);
@@ -51,8 +51,8 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Formats command output into an array
    *
-   * @param [string] $string Output string to format
-   * @return [array] $formatted_data
+   * @param string $string Output string to format
+   * @return array
    */
   protected function formatOutput($string) {
     $exploded_string = explode("\n", $string);
@@ -71,10 +71,10 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Parses server information for connections
    *
-   * @param [array] $site_info Elements as follows:
+   * @param array $site_info Elements as follows:
    *        [string] site        Site UUID
    *        [string] environment Environment name
-   * @return [array] $server Connection info
+   * @return array Connection info
    */
   protected function getAppserverInfo(array $site_info = array()) {
     $site_id = $site_info['site'];
@@ -97,11 +97,11 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Sends command through SSH
    *
-   * @param [array] $options Elements as follows:
+   * @param array $options Elements as follows:
    *        [string] server      Server to connect to
    *        [string] remote_exec Program to execute on server
    *        [array]  command     Command and arguments
-   * @return [array] $formatted_result
+   * @return array
    */
   protected function sendCommand(array $options = array()) {
     $server      = $options['server'];

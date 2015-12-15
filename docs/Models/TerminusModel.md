@@ -5,17 +5,14 @@
     Object constructor
 
 ##### Parameters:
-    [stdClass] $attributes Attributes of this model
+    [\stdClass] $attributes Attributes of this model
     [array]    $options    Options to set as $this->key
-
-##### Return:
-    [TerminusModel] $this
 
 ---
 
 ### __get
 ##### Description:
-    Handles requests for inaccessable properties
+    Handles requests for inaccessible properties
 
 ##### Parameters:
     [string] $property Name of property being requested
@@ -45,7 +42,19 @@
     [string] $attribute Name of the key of the desired attribute
 
 ##### Return:
-    [mixed] $this->attributes->$attribute
+    [mixed] Value of the attribute, or null if not set.
+
+---
+
+### has
+##### Description:
+    Checks whether the model has an attribute
+
+##### Parameters:
+    [string] $attribute Name of the attribute key
+
+##### Return:
+    [boolean] True if attribute exists, false otherwise
 
 ---
 

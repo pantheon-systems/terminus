@@ -2,8 +2,8 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
 use Terminus\Models\User;
+use Terminus\Models\UserOrganizationMembership;
 
 class UserOrganizationMemberships extends TerminusCollection {
   protected $user;
@@ -11,8 +11,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Object constructor
    *
-   * @param [array] $options Options to set as $this->key
-   * @return [TerminusModel] $this
+   * @param array $options Options to set as $this->key
    */
   public function __construct($options = array()) {
     parent::__construct($options);
@@ -24,10 +23,10 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [UserOrganizationMemberships] $this
+   * @param array $options params to pass to url request
+   * @return UserOrganizationMemberships
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (!isset($options['paged'])) {
       $options['paged'] = true;
     }
@@ -39,8 +38,8 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Retrieves the model of the given ID
    *
-   * @param [string] $id ID or name of desired organization
-   * @return [UserOrganizationMembership] $model
+   * @param string $id ID or name of desired organization
+   * @return UserOrganizationMembership $model
    */
   public function get($id) {
     $orgs    = $this->getMembers();
@@ -57,7 +56,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = sprintf('users/%s/memberships/organizations', $this->user->id);
@@ -67,7 +66,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'user';

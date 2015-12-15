@@ -7,16 +7,16 @@ require(TERMINUS_ROOT . '/vendor/autoload.php');
 use Terminus\Utils;
 
 /**
- * Accepts the an array representing a tokenized PHP file and sifts out all
+ * Accepts an array representing a tokenized PHP file and sifts out all
  * sets of tokens meeting a specific pattern
  *
- * @param [array] $tokens  A tokenized PHP file
- * @param [array] $pattern Token name pattern to search out
- * @return [array] $matching_patterns
+ * @param array $tokens  A tokenized PHP file
+ * @param array $pattern Token name pattern to search out
+ * @return array
  */
 function findTokenPatterns(
-    $tokens,
-    $pattern   = array('T_DOC_COMMENT', 'T_PUBLIC', 'T_FUNCTION', 'T_STRING')
+    array $tokens,
+    array $pattern   = array('T_DOC_COMMENT', 'T_PUBLIC', 'T_FUNCTION', 'T_STRING')
   ) {
   $matching_patterns = array();
   while (!empty($tokens)) {
@@ -42,8 +42,8 @@ function findTokenPatterns(
 /**
  * Retrieves all file names from a directory
  *
- * @param [string] $dir_name Name of the directory from which to extract file names
- * @return [array <String>] $file_list
+ * @param string $dir_name Name of the directory from which to extract file names
+ * @return string[] $file_list
  */
 function getFiles($dir_name) {
   $dir_files = scandir($dir_name);
@@ -62,8 +62,8 @@ function getFiles($dir_name) {
 /**
  * Uses PHP Tokenizer to extract documentation from the PHP files
  *
- * @param [string] $file_name Name of the file to read and tokenize
- * @return [array] $tokens
+ * @param string $file_name Name of the file to read and tokenize
+ * @return array
  */
 function getTokens($file_name) {
   $file_contents = file_get_contents($file_name);
@@ -74,8 +74,8 @@ function getTokens($file_name) {
 /**
  * Parses PHP internal documentation into chunks
  *
- * @param [string] $doc_string The raw doc string from the PHP file
- * @return [array] $parsed_doc
+ * @param string $doc_string The raw doc string from the PHP file
+ * @return array
  */
 function parseDocs($doc_string) {
   $exploded_docs = explode("\n", $doc_string);
@@ -94,6 +94,11 @@ function parseDocs($doc_string) {
       $breakdown = explode(' ', $line);
       $current   = substr($breakdown[0], 1);
       unset($breakdown[0]);
+      if ($current == 'param' || $current == 'return') {
+        if (substr($breakdown[1], 0, 1) != '[') {
+          $breakdown[1] = '[' . $breakdown[1] . ']';
+        }
+      }
       $line = implode(' ', $breakdown);
     } else if ($current != 'description') {
       $line = "-$line";
@@ -106,9 +111,9 @@ function parseDocs($doc_string) {
 /**
  * Writes documentation to file
  *
- * @param [string]         $namespace Namespace to which the doc file will pertain
- * @param [array <string>] $docs      Documentation to add to file
- * @return [boolean] True if write was successful
+ * @param string   $namespace Namespace to which the doc file will pertain
+ * @param string[] $docs      Documentation to add to file
+ * @return bool    True if write was successful
  */
 function writeDocFile($namespace, $docs) {
   $filename    = TERMINUS_ROOT . '/docs/'

@@ -8,9 +8,9 @@ use Terminus\Models\Organization;
 class OrganizationUserMembership extends Organization {
 
   /**
-   * Adds a site to this organization
+   * Removes a user from this organization
    *
-   * @return [Workflow] $workflow
+   * @return Workflow
    */
   public function removeMember() {
     $user     = $this->get('user');

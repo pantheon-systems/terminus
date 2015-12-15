@@ -1,26 +1,39 @@
 <?php
 
 use Terminus\Dispatcher;
+use Terminus\DocParser;
 use Terminus\FileCache;
 use Terminus\Runner;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
+use Terminus\Outputters\OutputterInterface;
 
 /**
  * Various utilities for Terminus commands.
  */
 class Terminus {
+  /**
+   * @var Logger
+   */
   private static $logger;
+  /**
+   * @var array
+   */
   private static $options;
+  /**
+   * @var OutputterInterface
+   */
   private static $outputter;
+  /**
+   * @var Runner
+   */
   private static $runner;
 
   /**
    * Object constructor. Sets properties.
    *
-   * @param [array] $arg_options Options to override defaults
-   * @return [Terminus] $this
+   * @param array $arg_options Options to override defaults
    */
   public function __construct(array $arg_options = array()) {
     $default_options = array(
@@ -40,14 +53,14 @@ class Terminus {
   /**
    * Add a command to the terminus list of commands
    *
-   * @param [string] $name  The name of the command that will be used in the CLI
-   * @param [string] $class The command implementation
-   * @return [void]
+   * @param string $name  The name of the command that will be used in the CLI
+   * @param string $class The command implementation
+   * @return void
+   * @throws TerminusException
    */
-  static function addCommand($name, $class) {
+  public static function addCommand($name, $class) {
     $path      = preg_split('/\s+/', $name);
     $leaf_name = array_pop($path);
-    $full_path = $path;
     $command   = self::getRootCommand();
     $class     = "Terminus\\Commands\\$class";
 
@@ -86,7 +99,7 @@ class Terminus {
   /**
    * Retrieves and returns the file cache
    *
-   * @return [FileCache] $cache
+   * @return FileCache
    */
   public static function getCache() {
     static $cache;
@@ -97,7 +110,8 @@ class Terminus {
         // sometime in windows $HOME is not defined
         $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
       }
-      if (!getenv('TERMINUS_CACHE_DIR')) {
+      $dir = getenv('TERMINUS_CACHE_DIR');
+      if (!$dir) {
         $dir = "$home/.terminus/cache";
       }
 
@@ -112,10 +126,10 @@ class Terminus {
   /**
    * Retrieves the config array or a single element from it
    *
-   * @param [string] $key Hash key of element to retrieve from config
-   * @return [mixed] $config
+   * @param string $key Hash key of element to retrieve from config
+   * @return mixed
    */
-  static function getConfig($key = null) {
+  public static function getConfig($key = null) {
     $config = self::$options;
     if (isset($config[$key])) {
       $config = $config[$key];
@@ -131,25 +145,25 @@ class Terminus {
   /**
    * Retrieves the instantiated logger
    *
-   * @return [LoggerInterface] $logger
+   * @return Logger $logger
    */
-  static function getLogger() {
+  public static function getLogger() {
     return self::$logger;
   }
 
   /**
    * Retrieves the instantiated outputter
    *
-   * @return [OutputterInterface] $outputter
+   * @return OutputterInterface
    */
-  static function getOutputter() {
+  public static function getOutputter() {
     return self::$outputter;
   }
 
   /**
    * Returns location of PHP with which to run Terminus
    *
-   * @return [string] $php_bin
+   * @return string
    */
   private static function getPhpBinary() {
     if (defined('PHP_BINARY')) {
@@ -167,9 +181,9 @@ class Terminus {
   /**
    * Retrieves the root command from the Dispatcher
    *
-   * @return [string] $root
+   * @return \Terminus\Dispatcher\RootCommand
    */
-  static function getRootCommand() {
+  public static function getRootCommand() {
     static $root;
 
     if (!$root) {
@@ -182,18 +196,18 @@ class Terminus {
   /**
    * Retrieves the runner, creating it if DNE
    *
-   * @return [Runner] $runner
+   * @return \Terminus\Runner
    */
-  static function getRunner() {
+  public static function getRunner() {
     return self::$runner;
   }
 
   /**
    * Terminus is in test mode
    *
-   * @return [boolean]
+   * @return bool
    */
-  static function isTest() {
+  public static function isTest() {
     $is_test = (boolean)getenv('CLI_TEST_MODE')
       || (boolean)getenv('VCR_CASSETTE');
     return $is_test;
@@ -202,11 +216,11 @@ class Terminus {
   /**
    * Launch an external process that takes over I/O.
    *
-   * @param [string]  $command       Command to call
-   * @param [boolean] $exit_on_error True to exit if the command returns error
-   * @return [integer] $status The command exit status
+   * @param string $command       Command to call
+   * @param bool   $exit_on_error True to exit if the command returns error
+   * @return int   The command exit status
    */
-  static function launch($command, $exit_on_error = true) {
+  public static function launch($command, $exit_on_error = true) {
     if (Utils\isWindows()) {
       $command = '"' . $command . '"';
     }
@@ -223,13 +237,13 @@ class Terminus {
    * Launch another Terminus command using the runtime arguments for the
    * current process
    *
-   * @param [string]  $command       Command to call
-   * @param [array]   $args          Positional arguments to use
-   * @param [array]   $assoc_args    Associative arguments to use
-   * @param [boolean] $exit_on_error True to exit if the command returns error
-   * @return [integer] $status The command exit status
+   * @param string $command       Command to call
+   * @param array  $args          Positional arguments to use
+   * @param array  $assoc_args    Associative arguments to use
+   * @param bool   $exit_on_error True to exit if the command returns error
+   * @return int   The command exit status
    */
-  static function launchSelf(
+  public static function launchSelf(
     $command,
     $args = array(),
     $assoc_args = array(),
@@ -267,24 +281,24 @@ class Terminus {
    * Display a message in the CLI and end with a newline
    * TODO: Clean this up. There should be no direct access to STDOUT/STDERR
    *
-   * @param [string] $message Message to output before the new line
-   * @return [void]
+   * @param string $message Message to output before the new line
+   * @return void
    */
-  static function line($message = '') {
+  public static function line($message = '') {
     fwrite(STDERR, $message . PHP_EOL);
   }
 
   /**
    * Offers a menu to user and returns selection
    *
-   * @param [array]   $data         Menu items
-   * @param [mixed]   $default      Default menu selection
-   * @param [string]  $text         Prompt text for menu
-   * @param [boolean] $return_value True to return selected value, false for
+   * @param array  $data         Menu items
+   * @param mixed  $default      Default menu selection
+   * @param string $text         Prompt text for menu
+   * @param bool   $return_value True to return selected value, false for
    *   list ordinal
-   * @return [string] $data[$index] or $index
+   * @return string
    */
-  static function menu(
+  public static function menu(
     $data,
     $default = null,
     $text = 'Select one',
@@ -301,11 +315,12 @@ class Terminus {
   /**
    * Prompt the user for input
    *
-   * @param [string] $message Message to give at prompt
-   * @param [mixed]  $default Returned if user does not select a valid option
-   * @return [string] $response
+   * @param string $message Message to give at prompt
+   * @param mixed  $default Returned if user does not select a valid option
+   * @return string
+   * @throws TerminusException
    */
-  static function prompt($message = '', $default = null) {
+  public static function prompt($message = '', $default = null) {
     if (!empty($params)) {
       $message = vsprintf($message, $params);
     }
@@ -325,11 +340,11 @@ class Terminus {
    * By: Troels Knak-Nielsen
    * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
-   * @param [string] $message Message to give at prompt
-   * @param [mixed]  $default Returned if user does not select a valid option
-   * @return [string] $response
+   * @param string $message Message to give at prompt
+   * @param mixed  $default Returned if user does not select a valid option
+   * @return string
    */
-  static function promptSecret($message = '', $default = null) {
+  public static function promptSecret($message = '', $default = null) {
     if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
       file_put_contents(
@@ -344,7 +359,7 @@ class Terminus {
       $command = "/usr/bin/env bash -c 'echo OK'";
       if (rtrim(shell_exec($command)) !== 'OK') {
         trigger_error("Can't invoke bash");
-        return;
+        return '';
       }
       $command  = "/usr/bin/env bash -c 'read -s -p \""
         . addslashes($message)
@@ -361,22 +376,23 @@ class Terminus {
   /**
    * Run a given command.
    *
-   * @param [array] $args       An array of arguments for the runner
-   * @param [array] $assoc_args Another array of arguments for the runner
-   * @return [void]
+   * @param array $args       An array of arguments for the runner
+   * @param array $assoc_args Another array of arguments for the runner
+   * @return void
    */
-  static function runCommand($args, $assoc_args = array()) {
+  public static function runCommand($args, $assoc_args = array()) {
     self::getRunner()->runCommand($args, $assoc_args);
   }
 
   /**
    * Sets the runner config to a class property
    *
-   * @param [string] $key   Key for the config element
-   * @param [mixed]  $value Value for config element
-   * @return [array] $config
+   * @param string $key   Key for the config element
+   * @param mixed  $value Value for config element
+   * @return array
    */
-  static function setConfig($key, $value) {
+  public static function setConfig($key, $value) {
+    // TODO: Runner->config is not defined.
     self::getRunner()->config[$key] = $value;
     $config = self::getRunner()->config;
     return $config;
@@ -385,20 +401,20 @@ class Terminus {
   /**
    * Set the logger instance to a class property
    *
-   * @param [array] $config Configuration options to send to the logger
-   * @return [void]
+   * @param array $config Configuration options to send to the logger
+   * @return void
    */
-  static function setLogger($config) {
+  public static function setLogger($config) {
     self::$logger = new Logger(compact('config'));
   }
 
   /**
    * Set the outputter instance to a class property
    *
-   * @param [string] $format Type of formatter to set on outputter
-   * @return [void]
+   * @param string $format Type of formatter to set on outputter
+   * @return void
    */
-  static function setOutputter($format) {
+  public static function setOutputter($format) {
     // Pick an output formatter
     if ($format == 'json') {
       $formatter = new Terminus\Outputters\JSONFormatter();
@@ -418,11 +434,11 @@ class Terminus {
   /**
    * Sets the runner object
    *
-   * @param [Runner] $runner Runner object to set
-   * @return [void]
+   * @param Runner|null $runner Runner object to set
+   * @return void
    */
   private function setRunner($runner = null) {
-    if (is_null($runner)) {
+    if (!$runner instanceof Runner) {
       self::$runner = new Runner();
     } else {
       self::$runner = $runner;

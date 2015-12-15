@@ -5,11 +5,8 @@
     Object constructor
 
 ##### Parameters:
-    [stdClass] $attributes Attributes of this model
-    [array]    $options    Options to set as $this->key
-
-##### Return:
-    [Site] $this
+    [\stdClass] $attributes Attributes of this model
+    [array]     $options    Options to set as $this->key
 
 ---
 
@@ -21,7 +18,7 @@
     [string] $uuid UUID of new payment instrument
 
 ##### Return:
-    [Workflow] $workflow Workflow object for the request
+    [Workflow]
 
 ---
 
@@ -30,11 +27,11 @@
     Adds a tag to the site
 
 ##### Parameters:
-    [string] $tag Tag to apply
-    [string] $org Organization to add the tag associateion to
+    [string] $tag Name of tag to apply
+    [string] $org Organization to add the tag association to
 
 ##### Return:
-    [array] $response
+    [array]
 
 ---
 
@@ -44,11 +41,11 @@
 
 ##### Parameters:
     [string]  $env_id   Environment name
-    [boolean] $updatedb True to run update.php
-    [boolean] $xoption  True to automatically resolve merge conflicts
+    [bool]    $updatedb True to run update.php
+    [bool]    $xoption  True to automatically resolve merge conflicts
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -57,7 +54,7 @@
     Returns an array of attributes
 
 ##### Return:
-    [stdClass] $atts['data']
+    [\stdClass]
 
 ---
 
@@ -69,7 +66,7 @@
     [string] $type Which sort of binding to retrieve
 
 ##### Return:
-    [array] $this->bindings
+    [array]
 
 ---
 
@@ -81,7 +78,7 @@
     [string] $branch Name of new branch
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -90,7 +87,7 @@
     Deletes site
 
 ##### Return:
-    [array] $response
+    [array]
 
 ---
 
@@ -102,7 +99,7 @@
     [string] $branch Name of branch to remove
 
 ##### Return:
-    [void]
+    [Workflow]
 
 ---
 
@@ -112,10 +109,10 @@
 
 ##### Parameters:
     [string]  $env           Name of environment to remove
-    [boolean] $delete_branch True to delete branch
+    [bool]    $delete_branch True to delete branch
 
 ##### Return:
-    [void]
+    [Workflow]
 
 ---
 
@@ -136,7 +133,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [Site] $this
+    [Site]
 
 ---
 
@@ -148,7 +145,7 @@
     [string] $attribute Name of attribute requested
 
 ##### Return:
-    [mixed] $this->attributes->$attributes;
+    [mixed|null] Attribute value, or null if not found
 
 ---
 
@@ -160,7 +157,7 @@
     [string] $feature Feature to check
 
 ##### Return:
-    [mixed] $this->features[$feature]
+    [mixed|null] Feature value, or null if not found
 
 ---
 
@@ -169,7 +166,7 @@
     Returns all organization members of this site
 
 ##### Return:
-    [array] Array of SiteOrganizationMemberships
+    [SiteOrganizationMembership[]]
 
 ---
 
@@ -178,7 +175,7 @@
     Lists user memberships for this site
 
 ##### Return:
-    [SiteUserMemberships] Collection of user memberships for this site
+    [SiteUserMemberships]
 
 ---
 
@@ -190,7 +187,7 @@
     [string] $org UUID of organization site belongs to
 
 ##### Return:
-    [array] $tags Tags in string format
+    [string[]]
 
 ---
 
@@ -199,7 +196,7 @@
     Get upstream updates
 
 ##### Return:
-    [stdClass] $response['data']
+    [\stdClass]
 
 ---
 
@@ -211,7 +208,7 @@
     [string] $url URL to import data from
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -223,7 +220,7 @@
     [string] $url URL to import data from
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -235,7 +232,7 @@
     [string] $url URL to import data from
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -247,7 +244,9 @@
     [string] $key Set to retrieve a specific attribute as named
 
 ##### Return:
-    [array] $info
+    [array|null|mixed]
+    -If $key is supplied, return named bit of info, or null if not found.
+    -If no $key supplied, return entire info array.
 
 ---
 
@@ -256,19 +255,19 @@
     Retrieve New Relic Info
 
 ##### Return:
-    [stdClass] $response['data']
+    [\stdClass]
 
 ---
 
 ### organizationIsMember
 ##### Description:
-    Returns all organization members of this site
+    Determines if an organization is a member of this site
 
 ##### Parameters:
     [string] $uuid UUID of organization to check for
 
 ##### Return:
-    [boolean] True if organization is a member of this site
+    [bool] True if organization is a member of this site
 
 ---
 
@@ -277,7 +276,7 @@
     Removes payment instrument of given site
 
 ##### Return:
-    [Workflow] $workflow Workflow object for the request
+    [Workflow]
 
 ---
 
@@ -287,10 +286,10 @@
 
 ##### Parameters:
     [string] $tag Tag to remove
-    [string] $org Organization to remove the tag associateion from
+    [string] $org Organization to remove the tag association from
 
 ##### Return:
-    [array] $response
+    [array]
 
 ---
 
@@ -302,7 +301,7 @@
     [string] $owner UUID of new owner of site
 
 ##### Return:
-    [stdClass] $data['data']
+    [\stdClass]
 
 ---
 
@@ -311,7 +310,7 @@
     Just the code branches
 
 ##### Return:
-    [stdClass] $data['data']
+    [\stdClass]
 
 ---
 
@@ -323,7 +322,7 @@
     [string] $level Level to set service on site to
 
 ##### Return:
-    [stdClass] $response['data']
+    [\stdClass]
 
 ---
 
