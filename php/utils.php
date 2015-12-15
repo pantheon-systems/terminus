@@ -105,7 +105,7 @@ function colorize($string) {
  */
 function defineConstants() {
   define('Terminus', true);
-  define('TERMINUS_VERSION', '0.9.3');
+  define('TERMINUS_VERSION', '0.10.0');
 
   if (!defined('TERMINUS_SCRIPT')) {
     define('TERMINUS_SCRIPT', 'php/Terminus.php');
@@ -452,4 +452,3 @@ function twigRender($template_name, $data, $options) {
   );
   return $rendered_template;
 }
-
