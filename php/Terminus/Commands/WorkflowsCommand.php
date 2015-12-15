@@ -31,7 +31,7 @@ class WorkflowsCommand extends TerminusCommand {
   }
 
   /**
-   * List Worflows for a Site
+   * List Workflows for a Site
    *
    * ## OPTIONS
    * [--site=<site>]
