@@ -37,7 +37,7 @@ composer require pantheon-systems/cli
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.9.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.10.0/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
@@ -126,7 +126,7 @@ And run your tests via:
 Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
   ```bash
   cd $HOME/pantheon-cli
-  php utils/make-docs.php 
+  php utils/make-docs.php
   ```
 
 3. Open a pull request on GitHub so that we may evaluate and merge your changes.

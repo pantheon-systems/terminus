@@ -105,7 +105,7 @@ function colorize($string) {
  */
 function defineConstants() {
   define('Terminus', true);
-  define('TERMINUS_VERSION', '0.9.3');
+  define('TERMINUS_VERSION', '0.10.0');
 
   if (!defined('TERMINUS_SCRIPT')) {
     define('TERMINUS_SCRIPT', 'php/Terminus.php');
@@ -197,7 +197,7 @@ function getVendorPaths() {
 function importEnvironmentVariables() {
   //Load environment variables from __DIR__/.env
   if (file_exists(getcwd() . '/.env')) {
-    $env = new Dotenv\Dotenv(getcwd());
+    $env = new \Dotenv\Dotenv(getcwd());
     $env->load();
   }
 }
@@ -452,4 +452,3 @@ function twigRender($template_name, $data, $options) {
   );
   return $rendered_template;
 }
-

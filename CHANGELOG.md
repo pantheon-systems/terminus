@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-##Master
+## [0.10.0] - 2015-12-15
 ### Added
 - New command `workflows show` displays details about a workflow (#687)
 - Added back session token-based login. (#693)
