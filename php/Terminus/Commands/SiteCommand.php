@@ -5,6 +5,7 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Auth;
 use Terminus\Request;
+use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
@@ -1447,7 +1448,7 @@ class SiteCommand extends TerminusCommand {
    *  terminus site set-instrument --site=sitename
    */
   public function setInstrument($args, $assoc_args) {
-    $user        = new User();
+    $user        = Session::getUser();
     $instruments = $user->instruments->getMemberList('id', 'label');
     if (!isset($assoc_args['instrument'])) {
       $instrument_id = Input::menu(
@@ -2021,7 +2022,7 @@ class SiteCommand extends TerminusCommand {
    * @return bool True if this organization is accessible
    */
   private function isOrgAccessible($org_id) {
-    $user  = new User();
+    $user  = Session::getUser();
     $org   = $user->organizations->get($org_id);
     $is_ok = is_object($org);
     return $is_ok;

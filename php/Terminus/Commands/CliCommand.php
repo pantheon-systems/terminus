@@ -3,6 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus;
+use Terminus\Session;
 use Terminus\SitesCache;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Site;
@@ -76,7 +77,7 @@ class CliCommand extends TerminusCommand {
    * @subcommand console
    */
   public function console($args, $assoc_args) {
-    $user = new User();
+    $user = Session::getUser();
     if (isset($assoc_args['site'])) {
       $sitename = $assoc_args['site'];
       $site_id  = $this->sitesCache->findId($sitename);

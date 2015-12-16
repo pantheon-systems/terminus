@@ -4,6 +4,7 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Auth;
+use Terminus\Session;
 use Terminus\Helpers\Input;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
@@ -30,7 +31,7 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    $user          = new User();
+    $user          = Session::getUser();
     $data          = array();
     $organizations = $user->getOrganizations();
     foreach ($organizations as $id => $org) {

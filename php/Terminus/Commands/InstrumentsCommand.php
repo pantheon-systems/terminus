@@ -4,6 +4,7 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Auth;
+use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
 
@@ -26,7 +27,7 @@ class InstrumentsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    $user        = new User();
+    $user        = Session::getUser();
     $instruments = $user->instruments->all();
     $data        = array();
     foreach ($instruments as $id => $instrument) {
