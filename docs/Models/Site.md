@@ -5,8 +5,8 @@
     Object constructor
 
 ##### Parameters:
-    [\stdClass] $attributes Attributes of this model
-    [array]     $options    Options to set as $this->key
+    [object] $attributes Attributes of this model
+    [array]  $options    Options to set as $this->key
 
 ---
 
@@ -301,7 +301,7 @@
     [string] $owner UUID of new owner of site
 
 ##### Return:
-    [\stdClass]
+    [Workflow]
 
 ---
 
