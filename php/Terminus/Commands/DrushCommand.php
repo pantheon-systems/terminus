@@ -38,7 +38,7 @@ class DrushCommand extends CommandWithSSH {
    *
    */
   public function __invoke($args, $assoc_args) {
-    $command = array_pop($args);
+    $command = implode(' ', array_map('escapeshellarg', $args));
     $this->checkCommand($command);
 
     $sites = new Sites();
