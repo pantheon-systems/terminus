@@ -27,10 +27,10 @@ class Organization extends TerminusModel {
   /**
    * Object constructor
    *
-   * @param \stdClass $attributes Attributes of this model
-   * @param array     $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct(\stdClass $attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = array()) {
     parent::__construct($attributes, $options);
     if (!isset($this->user)) {
       $this->user = new User();

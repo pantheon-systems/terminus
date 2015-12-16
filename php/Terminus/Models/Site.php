@@ -52,10 +52,10 @@ class Site extends TerminusModel {
   /**
    * Object constructor
    *
-   * @param \stdClass $attributes Attributes of this model
-   * @param array     $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct(\stdClass $attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = array()) {
     if ($attributes == null) {
       $attributes = new \stdClass();
     }
@@ -522,7 +522,7 @@ class Site extends TerminusModel {
    * Owner handler
    *
    * @param string $owner UUID of new owner of site
-   * @return \stdClass
+   * @return Workflow
    */
   public function setOwner($owner = null) {
     $new_owner = $this->user_memberships->get($owner);
@@ -582,7 +582,6 @@ class Site extends TerminusModel {
         $method,
         compact('form_params')
       );
-      return $response['data'];
     } catch (\Exception $e) {
       if (strpos($e->getMessage(), '403') !== false) {
         throw new TerminusException(
@@ -593,6 +592,7 @@ class Site extends TerminusModel {
       }
       throw $e;
     }
+    return $response['data'];
   }
 
   /**
@@ -600,6 +600,7 @@ class Site extends TerminusModel {
    *
    * @param string $framework_name Name of framework to verify
    * @return bool
+   * @todo This function is unused; remove?
    */
   private function hasFramework($framework_name) {
     $has_framework = ($framework_name == $this->get('framework'));

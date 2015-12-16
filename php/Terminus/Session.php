@@ -10,7 +10,7 @@ class Session {
    */
   static $instance;
   /**
-   * @var \stdClass
+   * @var object
    */
   protected $data;
 
@@ -61,7 +61,7 @@ class Session {
   /**
    * Retrieves session data
    *
-   * @return \stdClass
+   * @return object
    */
   public static function getData() {
     $session = Session::instance();

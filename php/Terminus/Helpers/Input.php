@@ -24,6 +24,7 @@ class Input {
    *        [string] label   Prompt for STDOUT
    *        [array]  backups Array of Backup objects
    * @return \stdClass An object representing the backup desired
+   * @throws TerminusException
    */
   public static function backup(array $arg_options = array()) {
     $default_options = array(

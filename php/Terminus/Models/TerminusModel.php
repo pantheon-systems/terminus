@@ -11,7 +11,7 @@ abstract class TerminusModel {
    */
   protected $request;
   /**
-   * @var \stdClass
+   * @var object
    */
   protected $attributes;
 

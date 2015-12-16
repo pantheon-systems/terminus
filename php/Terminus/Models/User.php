@@ -38,10 +38,10 @@ class User extends TerminusModel {
   /**
    * Object constructor
    *
-   * @param \stdClass $attributes Attributes of this model
-   * @param array     $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct(\stdClass $attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = array()) {
     if (!isset($options['id'])) {
       $options['id'] = Session::getValue('user_uuid');
     }
@@ -62,7 +62,7 @@ class User extends TerminusModel {
   /**
    * Retrieves drush aliases for this user
    *
-   * @return \stdClass $this->aliases
+   * @return \stdClass
    */
   public function getAliases() {
     if (!$this->aliases) {
@@ -74,7 +74,7 @@ class User extends TerminusModel {
   /**
    * Retrieves organization data for this user
    *
-   * @return \stdClass $organizations
+   * @return Organization[]
    */
   public function getOrganizations() {
     $organizations = $this->organizations->all();
@@ -86,7 +86,7 @@ class User extends TerminusModel {
    *
    * @param string $organization UUID of organization to requests sites from,
    *   or null to fetch for all organizations.
-   * @return \stdClass $response['data']
+   * @return \stdClass
    */
   public function getSites($organization = null) {
     if ($organization) {

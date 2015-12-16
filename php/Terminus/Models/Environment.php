@@ -23,10 +23,10 @@ class Environment extends TerminusModel {
   /**
    * Object constructor
    *
-   * @param \stdClass $attributes Attributes of this model
-   * @param array     $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct(\stdClass $attributes, array $options = array()) {
+  public function __construct($attributes, array $options = array()) {
     parent::__construct($attributes, $options);
     $this->backups  = new Backups(array('environment' => $this));
     $this->bindings = new Bindings(array('environment' => $this));
