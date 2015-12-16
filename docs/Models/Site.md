@@ -40,9 +40,9 @@
     Apply upstream updates
 
 ##### Parameters:
-    [string]  $env_id   Environment name
-    [bool]    $updatedb True to run update.php
-    [bool]    $xoption  True to automatically resolve merge conflicts
+    [string] $env_id   Environment name
+    [bool]   $updatedb True to run update.php
+    [bool]   $xoption  True to automatically resolve merge conflicts
 
 ##### Return:
     [Workflow]
@@ -108,8 +108,8 @@
     Delete a multidev environment
 
 ##### Parameters:
-    [string]  $env           Name of environment to remove
-    [bool]    $delete_branch True to delete branch
+    [string] $env           Name of environment to remove
+    [bool]   $delete_branch True to delete branch
 
 ##### Return:
     [Workflow]

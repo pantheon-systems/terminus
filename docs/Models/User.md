@@ -33,9 +33,8 @@
     Requests API data and returns an object of user site data
 
 ##### Parameters:
-    [string] $organization
-    -UUID of organization to requests sites from, or null to fetch for all
-    -organizations.
+    [string] $organization UUID of organization to requests sites from,
+    -or null to fetch for all organizations.
 
 ##### Return:
     [\stdClass] $response['data']

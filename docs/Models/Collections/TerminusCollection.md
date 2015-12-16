@@ -56,8 +56,8 @@
     Adds a model to this collection
 
 ##### Parameters:
-    [\stdClass] $model_data Data to feed into attributes of new model
-    [array]     $options    Data to make properties of the new model
+    [object] $model_data Data to feed into attributes of new model
+    [array]  $options    Data to make properties of the new model
 
 ##### Return:
     [TerminusModel]
@@ -70,10 +70,10 @@
     values are the attribute $value, filtered by the given array
 
 ##### Parameters:
-    [array]  $filters Attributes to match during filtration
+    [array]        $filters Attributes to match during filtration
     -e.g. array('category' => 'other')
-    [string] $key     Name of attribute to make array keys
-    [string|array]  $value   Name(s) of attribute to make array values
+    [string]       $key     Name of attribute to make array keys
+    [string|array] $value   Name(s) of attribute to make array values
 
 ##### Return:
     [array] Array rendered as requested

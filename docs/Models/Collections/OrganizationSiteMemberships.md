@@ -31,5 +31,8 @@
 ##### Parameters:
     [array] $options params to pass to url request
 
+##### Return:
+    [OrganizationSiteMemberships]
+
 ---
 
