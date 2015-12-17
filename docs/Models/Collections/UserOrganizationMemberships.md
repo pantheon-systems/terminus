@@ -7,9 +7,6 @@
 ##### Parameters:
     [array] $options Options to set as $this->key
 
-##### Return:
-    [TerminusModel] $this
-
 ---
 
 ### fetch
@@ -20,7 +17,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [UserOrganizationMemberships] $this
+    [UserOrganizationMemberships]
 
 ---
 

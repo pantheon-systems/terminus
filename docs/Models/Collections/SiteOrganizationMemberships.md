@@ -9,7 +9,7 @@
     [string] $role Role for supporting organization to take
 
 ##### Return:
-    [Workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -21,7 +21,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [TerminusModel] $this
+    [SiteOrganizationMemberships]
 
 ---
 
@@ -33,7 +33,7 @@
     [string] $name A name to search for
 
 ##### Return:
-    [SiteOrganizationMembership] $orgs[$name]
+    [SiteOrganizationMembership|null]
 
 ---
 

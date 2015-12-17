@@ -3,28 +3,45 @@
 namespace Terminus\Models;
 
 use Terminus\Models\Collections\UserOrganizationMemberships;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
 use Terminus\Models\Collections\Workflows;
 use Terminus\Session;
 
 class User extends TerminusModel {
+  /**
+   * @var UserOrganizationMemberships
+   */
   public $organizations;
 
+  /**
+   * @var Instruments
+   */
   protected $instruments;
+
+  /**
+   * @var Workflows
+   */
   protected $workflows;
 
+  /**
+   * @var \stdClass
+   * @todo Wrap this in a proper class.
+   */
   private $aliases;
+
+  /**
+   * @var \stdClass
+   * @todo Wrap this in a proper class.
+   */
   private $profile;
 
   /**
    * Object constructor
    *
-   * @param [stdClass] $attributes Attributes of this model
-   * @param [array]    $options    Options to set as $this->key
-   * @return [User] $this
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, $options = array()) {
+  public function __construct($attributes = null, array $options = array()) {
     if (!isset($options['id'])) {
       $options['id'] = Session::getValue('user_uuid');
     }
@@ -45,7 +62,7 @@ class User extends TerminusModel {
   /**
    * Retrieves drush aliases for this user
    *
-   * @return [stdClass] $this->aliases
+   * @return \stdClass
    */
   public function getAliases() {
     if (!$this->aliases) {
@@ -57,7 +74,7 @@ class User extends TerminusModel {
   /**
    * Retrieves organization data for this user
    *
-   * @return [stdClass] $organizations
+   * @return Organization[]
    */
   public function getOrganizations() {
     $organizations = $this->organizations->all();
@@ -67,8 +84,9 @@ class User extends TerminusModel {
   /**
    * Requests API data and returns an object of user site data
    *
-   * @param [string] $organization UUID of organization to requests sites from
-   * @return [stdClass] $response['data']
+   * @param string $organization UUID of organization to requests sites from,
+   *   or null to fetch for all organizations.
+   * @return \stdClass
    */
   public function getSites($organization = null) {
     if ($organization) {
@@ -84,7 +102,7 @@ class User extends TerminusModel {
   /**
    * Requests API data and populates $this->aliases
    *
-   * @return [void]
+   * @return void
    */
   private function setAliases() {
     $path     = 'drush_aliases';

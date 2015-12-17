@@ -5,16 +5,16 @@
     Determines whether the backup has been completed or not
 
 ##### Return:
-    [boolean]] $is_finished
+    [bool] True if backup is completed.
 
 ---
 
 ### getBucket
 ##### Description:
-    Retruns the bucket name for this backup
+    Returns the bucket name for this backup
 
 ##### Return:
-    [string] $bucket
+    [string]
 
 ---
 
@@ -23,25 +23,25 @@
     Returns the date the backup was completed
 
 ##### Return:
-    [string] $date Y-m-d H:i:s completion time or "Pending"
+    [string] Y-m-d H:i:s completion time or "Pending"
 
 ---
 
 ### getElement
 ##### Description:
-    Retruns the element type of the backup
+    Returns the element type of the backup
 
 ##### Return:
-    [string] $type code, database, files, or null
+    [string] code, database, files, or null
 
 ---
 
 ### getInitiator
 ##### Description:
-    Retruns the type of initiator of the backup
+    Returns the type of initiator of the backup
 
 ##### Return:
-    [string] $initiator Either "manual" or "automated"
+    [string] Either "manual" or "automated"
 
 ---
 
@@ -50,7 +50,7 @@
     Returns the size of the backup in MB
 
 ##### Return:
-    [string] $size_string
+    [string] A number (int or float) followed by 'MB'.
 
 ---
 
@@ -59,7 +59,7 @@
     Gets the URL of a backup
 
 ##### Return:
-    [string] $response['data']->url
+    [string]
 
 ---
 

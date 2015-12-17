@@ -29,14 +29,21 @@ use Terminus\Session;
  *
  */
 class SitesCache {
+  /**
+   * @var FileCache
+   */
   protected $cache;
+  /**
+   * @var string
+   */
   protected $cachekey;
+  /**
+   * @var Request
+   */
   protected $request;
 
   /**
    * Object constructor, saves cache to cache property
-   *
-   * @return [SitesCache] $this
    */
   public function __construct() {
     $this->cache    = Terminus::getCache();
@@ -61,10 +68,10 @@ class SitesCache {
    *       )
    *     )
    *
-   * @param [array] $memberships_data Memberships of use to add to cache
-   * @return [array] $sites
+   * @param array $memberships_data Memberships of use to add to cache
+   * @return array
    */
-  public function add($memberships_data = array()) {
+  public function add(array $memberships_data = array()) {
     $cache = (array)$this->cache->getData(
       $this->cachekey,
       array('decode_array' => true)
@@ -102,7 +109,7 @@ class SitesCache {
   /**
    * Returns all cached site data
    *
-   * @return [array] $cache_data
+   * @return array
    */
   public function all() {
     $cache_data = $this->cache->getData(
@@ -119,7 +126,7 @@ class SitesCache {
   /**
    * Clears cache data
    *
-   * @return [void]
+   * @return void
    */
   public function clear() {
     $this->cache->putData($this->cachekey, array());
@@ -128,10 +135,10 @@ class SitesCache {
   /**
    * Finds the site of the given attributes within the cache
    *
-   * @param [string] $name    Name of site to retrieve
-   * @param [array]  $options Options to run array with
+   * @param string $name    Name of site to retrieve
+   * @param array  $options Options to run array with
    *        [boolean] rebuild True to rebuild cache when run
-   * @return [array] Found site's data
+   * @return array|null
    */
   private function find($name, $options = array()) {
     $defaults = array('rebuild' => true);
@@ -156,13 +163,13 @@ class SitesCache {
   }
 
   /**
-   * Searches the SitesCache for an ID, given a name
+   * Searches the SitesCache for a UUID, given a name
    *
-   * @param [string] $name    Name of site to retrieve UUID of
-   * @param [array]  $options Options with which to find array, passed to find
-   * @return [string] $site_id UUID of site
+   * @param string $name    Name of site to retrieve UUID of
+   * @param array  $options Options with which to find array, passed to find
+   * @return string|null
    */
-  public function findId($name, $options = array()) {
+  public function findId($name, array $options = array()) {
     $site_data = $this->find($name, $options);
     if ($site_data) {
       $site_id = $site_data['id'];
@@ -175,7 +182,7 @@ class SitesCache {
   /**
    * Rebuilds sites cache
    *
-   * @return [array] $cached_sites
+   * @return array
    */
   public function rebuild() {
     // Clear out the cache
@@ -198,8 +205,8 @@ class SitesCache {
   /**
    * Removes a site from the sites cache
    *
-   * @param [string] $sitename Name of site to remove from array
-   * @return [void'
+   * @param string $sitename Name of site to remove from array
+   * @return void
    */
   public function remove($sitename) {
     $cache = (array)$this->cache->getData(
@@ -213,9 +220,9 @@ class SitesCache {
   /**
    * Fetches organizational sites from API
    *
-   * @param [array] $org_data Properties below:
+   * @param array $org_data Properties below:
    *        [string] id Organizaiton UUID
-   * @return [array] $memberships_data
+   * @return array $memberships_data
    */
   private function fetchOrganizationSites($org_data) {
     $response = $this->request->pagedRequest(
@@ -235,7 +242,7 @@ class SitesCache {
   /**
    * Fetches organizational team-membership sites for user from API
    *
-   * @return [array] $memberships_data
+   * @return array
    */
   private function fetchUserSites() {
     $user_id  = Session::getValue('user_uuid');
@@ -260,7 +267,7 @@ class SitesCache {
   /**
    * Fetches organizational memberships for user
    *
-   * @return [array] $data Properties below:
+   * @return array $data Properties below:
    *         [string] id   UUID of membership join
    *         [string] name Name of organization
    *         [string] type Always "organization"
@@ -291,9 +298,9 @@ class SitesCache {
   /**
    * Formats site data from response for use
    *
-   * @param [array] $response_data   Data about the site from API
-   * @param [array] $membership_data Data about membership to this site
-   * @return [array] $membership_array
+   * @param array $response_data   Data about the site from API
+   * @param array $membership_data Data about membership to this site
+   * @return array
    */
   private function getSiteData($response_data, $membership_data = array()) {
     $site_data = array(

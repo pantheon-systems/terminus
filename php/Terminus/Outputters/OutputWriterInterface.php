@@ -15,8 +15,8 @@ namespace Terminus\Outputters;
 interface OutputWriterInterface {
 
   /**
-   * @param [string] $output The formatted output to be written.
-   * @return [void]
+   * @param string $output The formatted output to be written.
+   * @return void
    */
   public function write($output);
 

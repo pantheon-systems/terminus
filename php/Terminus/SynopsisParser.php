@@ -7,8 +7,8 @@ class SynopsisParser {
   /**
    * Parses a command from documentation and command input
    *
-   * @param [string] $synopsis Command synopsis from the inline docs
-   * @return [array] $params List of parameters
+   * @param string $synopsis Command synopsis from the inline docs
+   * @return array List of parameters
    */
   static function parse($synopsis) {
     $tokens = array_filter(preg_split('/[\s\t]+/', $synopsis));
@@ -36,8 +36,8 @@ class SynopsisParser {
   /**
    * Decides type of token and sanitizes it appropriately.
    *
-   * @param [string] $token Token to check for brackets
-   * @return [array] $param Elements as follows:
+   * @param string $token Token to check for brackets
+   * @return array $param Elements as follows:
    *         [string]  type      Gives token type (e.g. generic, flag, etc)
    *         [string]  name      Regex'd out name of token
    *         [boolean] optional  True if param is optional
@@ -87,8 +87,8 @@ class SynopsisParser {
   /**
    * An optional parameter is surrounded by square brackets.
    *
-   * @param [string] $token Token to check for brackets
-   * @return [array] $array Elements as follows:
+   * @param string $token Token to check for brackets
+   * @return array $array Elements as follows:
    *         [boolean] True if optional, false if not
    *         [string]  $token if optional, without brackets if not
    */
@@ -104,8 +104,8 @@ class SynopsisParser {
   /**
    * A repeating parameter is followed by an ellipsis.
    *
-   * @param [string] $token Token to check for ellipses
-   * @return [array] $array Elements as follows:
+   * @param string $token Token to check for ellipses
+   * @return array $array Elements as follows:
    *         [boolean] True if repeating, false if not
    *         [string]  $token if not repeating, without ellipses if not
    */

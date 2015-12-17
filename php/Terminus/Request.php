@@ -22,6 +22,7 @@ class Request {
 
   /**
    * A list of fields not to display values for in output
+   * @var array
    * TODO: Move this logic to the logger
    */
   protected static $blacklist = array('password');
@@ -29,9 +30,9 @@ class Request {
   /**
    * Download file from target URL
    *
-   * @param [string] $url    URL to download from
-   * @param [string] $target Target file's name
-   * @return [boolean] True if download succeeded
+   * @param string $url    URL to download from
+   * @param string $target Target file's name
+   * @return bool True if download succeeded
    */
   public static function download($url, $target) {
     if (file_exists($target)) {
@@ -53,15 +54,15 @@ class Request {
   /**
    * Make a request to the Dashbord's internal API
    *
-   * @param [string] $path    API path (URL)
-   * @param [array]  $options Options for the request
+   * @param string $path    API path (URL)
+   * @param array  $options Options for the request
    *   [string] method GET is default
    *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
    *     simple object) to be sent along with the request. Will be encoded as
    *     JSON for you.
-   * @return [array] $return
+   * @return array
    */
-  public function pagedRequest($path, $options = array()) {
+  public function pagedRequest($path, array $options = array()) {
     $limit = 100;
     if (isset($options['limit'])) {
       $limit = $options['limit'];
@@ -106,15 +107,16 @@ class Request {
   /**
    * Make a request to the Pantheon API
    *
-   * @param [string] $realm   Permissions realm for data request (e.g. user,
+   * @param string      $realm   Permissions realm for data request (e.g. user,
    *   site organization, etc. Can also be "public" to simply pull read-only
    *   data that is not privileged.
-   * @param [string] $uuid    The UUID of the item in the realm to access
-   * @param [string] $path    API path (URL)
-   * @param [string] $method  HTTP method to use
-   * @param [mixed]  $options A native PHP data structure (e.g. int, string,
+   * @param string      $uuid    The UUID of the item in the realm to access
+   * @param string|bool $path    API path (URL)
+   * @param string      $method  HTTP method to use
+   * @param mixed       $options A native PHP data structure (e.g. int, string,
    *   array, or stdClass) to be sent along with the request
-   * @return [array] $data
+   * @return array
+   * @throws TerminusException
    */
   public function request(
     $realm,
@@ -142,20 +144,20 @@ class Request {
         'status_code' => $response->getStatusCode(),
       );
       return $data;
-    } catch (GuzzleHttp\Exception\BadResponseException $e) {
+    } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       $response = $e->getResponse();
       throw new TerminusException($response->getBody(true));
-    } catch (GuzzleHttp\Exception\HttpException $e) {
+    } catch (\GuzzleHttp\Exception\RequestException $e) {
       $request = $e->getRequest();
       $sanitized_request = Utils\stripSensitiveData(
         (string)$request,
-        $this->blacklist
+        self::$blacklist
       );
       throw new TerminusException(
         'API Request Error. {msg} - Request: {req}',
         array('req' => $sanitized_request, 'msg' => $e->getMessage())
       );
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
         array('msg' => $e->getMessage())
@@ -166,14 +168,15 @@ class Request {
   /**
    * Simplified request method for Pantheon API
    *
-   * @param [string] $path        API path (URL)
-   * @param [array]  $arg_options Options for the request
+   * @param string $path        API path (URL)
+   * @param array  $arg_options Options for the request
    *   [string] method        GET is default
    *   [mixed]  data          Native PHP data structure (e.g. int, string
    *     array, or simple object) to be sent along with the request. Will
    *     be encoded as JSON for you.
    *   [boolean] absolute_url True if URL passed is to be treated as absolute
-   * @return [array] $data
+   * @return array
+   * @throws TerminusException
    */
   public function simpleRequest($path, $arg_options = array()) {
     $default_options = array(
@@ -202,7 +205,7 @@ class Request {
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
       $response = $this->send($url, $options['method'], $options);
-    } catch (GuzzleHttp\Exception\BadResponseException $e) {
+    } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
         array('msg' => $e->getMessage())
@@ -220,10 +223,10 @@ class Request {
   /**
    * Sends a request to the API
    *
-   * @param [string] $uri        URL for API request
-   * @param [string] $method     Request method (i.e. PUT, POST, DELETE, or GET)
-   * @param [array]  $arg_params Request parameters
-   * @return [GuzzleHttp\Message\Response] $response
+   * @param string $uri        URL for API request
+   * @param string $method     Request method (i.e. PUT, POST, DELETE, or GET)
+   * @param array  $arg_params Request parameters
+   * @return \Psr\Http\Message\ResponseInterface
    */
   private function send($uri, $method, array $arg_params = array()) {
     $extra_params = array(
@@ -271,10 +274,10 @@ class Request {
   /**
    * Sets up and fills a cookie jar
    *
-   * @param [array] $params Request data to fill jar with
-   * @return [GuzzleHttp\Cookie\CookieJar] $jar
+   * @param array $params Request data to fill jar with
+   * @return \GuzzleHttp\Cookie\CookieJar $jar
    */
-  private function fillCookieJar($params) {
+  private function fillCookieJar(array $params) {
     $jar     = new CookieJar();
     $cookies = array();
     if ($session = Session::instance()->get('session', false)) {
@@ -290,7 +293,7 @@ class Request {
   /**
    * Parses the base URI for requests
    *
-   * @return [string] $base_uri
+   * @return string
    */
   private function getBaseUri() {
     $base_uri = sprintf(
@@ -305,7 +308,7 @@ class Request {
   /**
    * Gives the user-agent string
    *
-   * @return [string] $agent
+   * @return string
    */
   private function userAgent() {
     $agent = sprintf(

@@ -11,8 +11,7 @@ class Configurator {
   /**
    * Constructs configurator, configures
    *
-   * @param [string] $path Path to configuration specification file
-   * @return [Configurator] $this
+   * @param string $path Path to configuration specification file
    */
   public function __construct($path) {
     $this->spec = include $path;
@@ -34,10 +33,10 @@ class Configurator {
   /**
    * Splits positional args from associative args.
    *
-   * @param [array] $arguments Arguments to parse
-   * @return [array] $array
+   * @param array $arguments Arguments to parse
+   * @return array
    */
-  public static function extractAssoc($arguments) {
+  public static function extractAssoc(array $arguments) {
     $positional_args = $assoc_args = array();
 
     foreach ($arguments as $arg) {
@@ -61,7 +60,7 @@ class Configurator {
   /**
    * Get configuration specification, i.e. list of accepted keys.
    *
-   * @return [array] $this->spec
+   * @return array
    */
   public function getSpec() {
     return $this->spec;
@@ -70,8 +69,8 @@ class Configurator {
   /**
    * Adds the given array to the config property array
    *
-   * @param [array] $config Details to add to config
-   * @return [void]
+   * @param array $config Details to add to config
+   * @return void
    */
   public function mergeArray($config) {
     foreach ($this->spec as $key => $details) {
@@ -91,8 +90,8 @@ class Configurator {
   /**
    * Splits a list of arguments into positional, associative and config.
    *
-   * @param [array] $arguments Arguments to parse
-   * @return [array] $array positional_args, assoc_args, runtime_config
+   * @param array $arguments Arguments to parse
+   * @return array positional_args, assoc_args, runtime_config
    */
   public function parseArgs($arguments) {
     list($positional_args, $mixed_args) = self::extractAssoc($arguments);
@@ -104,7 +103,7 @@ class Configurator {
   /**
    * Returns the config property
    *
-   * @return [array] $this->config
+   * @return array
    */
   public function toArray() {
     return $this->config;
@@ -113,8 +112,8 @@ class Configurator {
   /**
    * Puts the given value into an array, if it is not already
    *
-   * @param [mixed] $val Value to put in an array
-   * @return [array] $val
+   * @param mixed $val Value to put in an array
+   * @return array
    */
   private function arrayify($val) {
     if (!is_array($val)) {
@@ -126,8 +125,8 @@ class Configurator {
   /**
    * Separates assoc_args from runtime configuration
    *
-   * @param [array] $mixed_args A mixture of runtime args and command args
-   * @return [array] $array [0] = assoc_args, [1] = runtime_config
+   * @param array $mixed_args A mixture of runtime args and command args
+   * @return array [0] = assoc_args, [1] = runtime_config
    */
   private function unmixAssocArgs($mixed_args) {
     $assoc_args = $runtime_config = array();

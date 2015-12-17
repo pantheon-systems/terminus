@@ -6,6 +6,8 @@ use Terminus;
 use Terminus\Dispatcher;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Dispatcher\CompositeCommand;
+use Terminus\Dispatcher\RootCommand;
 use Terminus\Helpers\Input;
 
 class HelpCommand extends TerminusCommand {
@@ -49,8 +51,8 @@ class HelpCommand extends TerminusCommand {
   /**
    * Finds a subcommand listed in the arguments, else returns the root command
    *
-   * @param [array] $args Given command-line arguments
-   * @return [mixed] $command
+   * @param array $args Given command-line arguments
+   * @return mixed
    */
   private function findSubcommand($args) {
     $command = Terminus::getRootCommand();
@@ -65,8 +67,8 @@ class HelpCommand extends TerminusCommand {
   /**
    * Retrieves the synopsis of a given command or subcommand
    *
-   * @param [mixed] $command The command or subcommand to get documentation on
-   * @return [string] $binding
+   * @param mixed $command The command or subcommand to get documentation on
+   * @return array
    */
   private function getMarkdown($command) {
     $name = implode(' ', Dispatcher\getPath($command));
@@ -89,10 +91,10 @@ class HelpCommand extends TerminusCommand {
   /**
    * Gets the basic descriptions of a command's paramters and options from docs
    *
-   * @param [CompositeCommand] $command The command of which to get options
-   * @return [array] $options
+   * @param CompositeCommand $command The command of which to get options
+   * @return array
    */
-  private function getOptions($command) {
+  private function getOptions(CompositeCommand $command) {
     $longdesc = $command->getLongdesc();
     $synopses = explode(
       ' ',
@@ -128,8 +130,8 @@ class HelpCommand extends TerminusCommand {
   /**
    * Gets the basic descriptions of a command's subcommands from internal docs
    *
-   * @param [CompositeCommand] $command The command of which to get subcommands
-   * @return [array <string>] $subcommands An array of stringified
+   * @param CompositeCommand $command The command of which to get subcommands
+   * @return string[] $subcommands An array of stringified
    *   subcommands of the command
    */
   private function getSubcommands($command) {
@@ -147,8 +149,8 @@ class HelpCommand extends TerminusCommand {
   /**
    * Displays the output with Less
    *
-   * @param [string] $out Help text to be displayed
-   * @return [integer] $exit_status Exit status of Less
+   * @param string $out Help text to be displayed
+   * @return int Exit status of Less
    */
   private function passThroughPager($out) {
     if (Utils\isWindows()) {
@@ -174,10 +176,10 @@ class HelpCommand extends TerminusCommand {
   /**
    * Takes a command to get help for and processes its internal documentation
    *
-   * @param [mixed] $command The command to offer help for
-   * @return [integer] $exit_status
+   * @param CompositeCommand $command The command to offer help for
+   * @return int
    */
-  private function showHelp($command) {
+  private function showHelp(CompositeCommand $command) {
     $out         = $this->getMarkdown($command);
     $exit_status = 0;
 

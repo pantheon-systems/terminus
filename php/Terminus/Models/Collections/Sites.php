@@ -5,21 +5,28 @@ namespace Terminus\Models\Collections;
 use Terminus\Session;
 use Terminus\SitesCache;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\User;
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Workflow;
 
 class Sites extends TerminusCollection {
+  /**
+   * @var SitesCache
+   */
   private $sites_cache;
+  /**
+   * @var User
+   */
   private $user;
 
   /**
    * Instantiates the collection, sets param members as properties
    *
-   * @param [array] $options To be set to $this->key
-   * @return [Sites] $this
+   * @param array $options To be set to $this->key
+   * @return Sites
    */
-  public function __construct($options = array()) {
+  public function __construct(array $options = array()) {
     parent::__construct($options);
     $this->sites_cache = new SitesCache();
     $this->user        = new User();
@@ -28,12 +35,13 @@ class Sites extends TerminusCollection {
   /**
    * Creates a new site
    *
-   * @param [array] $options Information to run workflow
-   *        [string] label
-   *        [string] name
-   *        [string] organization_id
-   *        [string] upstream_id
-   * @return [Workflow]
+   * @param string[] $options Information to run workflow, with the following
+   *   keys:
+   *   - label
+   *   - name
+   *   - organization_id
+   *   - upstream_id
+   * @return Workflow
    */
   public function addSite($options = array()) {
     $data = array(
@@ -62,9 +70,9 @@ class Sites extends TerminusCollection {
   /**
    * Adds site with given site ID to cache
    *
-   * @param [string] $site_id UUID of site to add to cache
-   * @param [string] $org_id  UUID of org to which new site belongs
-   * @return [Site] $site The newly created site object
+   * @param string $site_id UUID of site to add to cache
+   * @param string $org_id  UUID of org to which new site belongs
+   * @return Site The newly created site object
    */
   public function addSiteToCache($site_id, $org_id = null) {
     if (count($this->models) == 0) {
@@ -101,8 +109,8 @@ class Sites extends TerminusCollection {
   /**
    * Removes site with given site ID from cache
    *
-   * @param [string] $site_name Name of site to remove from cache
-   * @return [void]
+   * @param string $site_name Name of site to remove from cache
+   * @return void
    */
   public function deleteSiteFromCache($site_name) {
     $this->sites_cache->remove($site_name);
@@ -111,10 +119,10 @@ class Sites extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [Sites] $this
+   * @param array $options params to pass to url request
+   * @return Sites
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (empty($this->models)) {
       $cache = $this->sites_cache->all();
       if (count($cache) === 0) {
@@ -131,9 +139,9 @@ class Sites extends TerminusCollection {
   /**
    * Filters sites list by tag
    *
-   * @param [string] $tag Tag to filter by
-   * @param [string] $org Organization which has tagged sites
-   * @return [array] $sites A filtered list of sites
+   * @param string $tag Tag to filter by
+   * @param string $org Organization which has tagged sites
+   * @return Site[]
    */
   public function filterAllByTag($tag, $org = '') {
     $all_sites = $this->all();
@@ -163,8 +171,10 @@ class Sites extends TerminusCollection {
   /**
    * Retrieves the site of the given UUID or name
    *
-   * @param [string] $id UUID or name of desired site
-   * @return [Site] $site
+   * @param string $id UUID or name of desired site
+   * @return Site
+   * @throws \Exception
+   * @todo Shouldn't this throw a TerminusException instead?
    */
   public function get($id) {
     $models = $this->getMembers();
@@ -184,7 +194,7 @@ class Sites extends TerminusCollection {
   /**
    * Clears sites cache
    *
-   * @return [void]
+   * @return void
    */
   public function rebuildCache() {
     $this->sites_cache->rebuild();

@@ -2,14 +2,12 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\TerminusModel;
-
 class Backup extends TerminusModel {
 
   /**
    * Determines whether the backup has been completed or not
    *
-   * @return [boolean]] $is_finished
+   * @return bool True if backup is completed.
    */
   public function backupIsFinished() {
     $is_finished = (
@@ -23,9 +21,9 @@ class Backup extends TerminusModel {
   }
 
   /**
-   * Retruns the bucket name for this backup
+   * Returns the bucket name for this backup
    *
-   * @return [string] $bucket
+   * @return string
    */
   public function getBucket() {
     $bucket = str_replace('_' . $this->getElement(), '', $this->get('id'));
@@ -35,7 +33,7 @@ class Backup extends TerminusModel {
   /**
    * Returns the date the backup was completed
    *
-   * @return [string] $date Y-m-d H:i:s completion time or "Pending"
+   * @return string Y-m-d H:i:s completion time or "Pending"
    */
   public function getDate() {
     if ($this->get('finish_time') != null) {
@@ -50,9 +48,9 @@ class Backup extends TerminusModel {
   }
 
   /**
-   * Retruns the element type of the backup
+   * Returns the element type of the backup
    *
-   * @return [string] $type code, database, files, or null
+   * @return string code, database, files, or null
    */
   public function getElement() {
     if ($this->get('filename') == null) {
@@ -72,9 +70,9 @@ class Backup extends TerminusModel {
   }
 
   /**
-   * Retruns the type of initiator of the backup
+   * Returns the type of initiator of the backup
    *
-   * @return [string] $initiator Either "manual" or "automated"
+   * @return string Either "manual" or "automated"
    */
   public function getInitiator() {
     $initiator = 'manual';
@@ -88,10 +86,9 @@ class Backup extends TerminusModel {
   /**
    * Returns the size of the backup in MB
    *
-   * @return [string] $size_string
+   * @return string A number (int or float) followed by 'MB'.
    */
   public function getSizeInMb() {
-    $size        = 0;
     $size_string = '0';
     if ($this->get('size') != null) {
       $size = $this->get('size') / 1048576;
@@ -107,7 +104,7 @@ class Backup extends TerminusModel {
   /**
    * Gets the URL of a backup
    *
-   * @return [string] $response['data']->url
+   * @return string
    */
   public function getUrl() {
     $path        = sprintf(

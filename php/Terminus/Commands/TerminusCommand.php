@@ -8,8 +8,10 @@ use Terminus\Endpoint;
 use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
+use Terminus\Outputters\OutputterInterface;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Loggers\Regular as Logger;
+use Terminus\Models\Workflow;
+use Terminus\Loggers\Logger;
 
 /**
  * The base class for Terminus commands
@@ -22,24 +24,22 @@ abstract class TerminusCommand {
   protected $func;
 
   /**
-   * @var [LoggerInterface]
+   * @var Logger
    */
   protected $logger;
 
   /**
-   * @var [OutputterInterface]
+   * @var OutputterInterface
    */
   protected $outputter;
 
   /**
-   * @var [Request]
+   * @var Request
    */
   protected $request;
 
   /**
    * Instantiates object, sets cache and session
-   *
-   * @return [TerminusCommand] $this
    */
   public function __construct() {
     //Load commonly used data from cache
@@ -56,10 +56,11 @@ abstract class TerminusCommand {
   /**
    * Sends the given message to logger as an error and exits with -1
    *
-   * @param [string]  $message   Message to log as error before exit
-   * @param [array]   $context   Vars to interpolate in message
-   * @param [integer] $exit_code Code to exit with
-   * @return [void]
+   * @param string $message   Message to log as error before exit
+   * @param array  $context   Vars to interpolate in message
+   * @param int    $exit_code Code to exit with
+   * @return void
+   * @throws TerminusException
    */
   protected function failure(
     $message       = 'Command failed',
@@ -72,7 +73,7 @@ abstract class TerminusCommand {
   /**
    * Retrieves the logger for use
    *
-   * @return [LoggerInterface] $this->logger
+   * @return Logger
    */
   protected function log() {
     return $this->logger;
@@ -81,7 +82,7 @@ abstract class TerminusCommand {
   /**
    * Retrieves the outputter for use
    *
-   * @return [OutputterInterface] $this->outputter
+   * @return OutputterInterface
    */
   protected function output() {
     return $this->outputter;
@@ -90,28 +91,28 @@ abstract class TerminusCommand {
   /**
    * Saves the logger object as a class property
    *
-   * @param [LoggerInterface] $logger Logger object to save
-   * @return [void]
+   * @param Logger $logger Logger object to save
+   * @return void
    */
-  protected function setLogger($logger) {
+  protected function setLogger(Logger $logger) {
     $this->logger = $logger;
   }
 
   /**
    * Saves the outputter object as a class property
    *
-   * @param [OutputterInterface] $outputter Outputter object to save
-   * @return [void]
+   * @param OutputterInterface $outputter Outputter object to save
+   * @return void
    */
-  protected function setOutputter($outputter) {
+  protected function setOutputter(OutputterInterface $outputter) {
     $this->outputter = $outputter;
   }
 
   /**
    * Outputs basic workflow success/failure messages
    *
-   * @param [Workflow] $workflow Workflow to output message about
-   * @return [void]
+   * @param Workflow $workflow Workflow to output message about
+   * @return void
    */
   protected function workflowOutput($workflow) {
     if ($workflow->get('result') == 'succeeded') {

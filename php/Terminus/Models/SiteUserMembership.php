@@ -8,9 +8,9 @@ class SiteUserMembership extends TerminusModel {
   protected $site;
 
   /**
-   * Remove membshipship, either org or user
+   * Remove membership, either org or user
    *
-   * @return [Workflow] $workflow
+   * @return Workflow
    **/
   public function removeMember() {
     $workflow = $this->site->workflows->create(
@@ -23,8 +23,8 @@ class SiteUserMembership extends TerminusModel {
   /**
    * Changes the role of the given member
    *
-   * @param [string] $role Desired role for this member
-   * @return [Workflow] $workflow
+   * @param string $role Desired role for this member
+   * @return Workflow
    */
   public function setRole($role) {
     $workflow = $this->site->workflows->create(

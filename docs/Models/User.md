@@ -5,11 +5,8 @@
     Object constructor
 
 ##### Parameters:
-    [stdClass] $attributes Attributes of this model
-    [array]    $options    Options to set as $this->key
-
-##### Return:
-    [User] $this
+    [object] $attributes Attributes of this model
+    [array]  $options    Options to set as $this->key
 
 ---
 
@@ -18,7 +15,7 @@
     Retrieves drush aliases for this user
 
 ##### Return:
-    [stdClass] $this->aliases
+    [\stdClass]
 
 ---
 
@@ -27,7 +24,7 @@
     Retrieves organization data for this user
 
 ##### Return:
-    [stdClass] $organizations
+    [Organization[]]
 
 ---
 
@@ -36,10 +33,11 @@
     Requests API data and returns an object of user site data
 
 ##### Parameters:
-    [string] $organization UUID of organization to requests sites from
+    [string] $organization UUID of organization to requests sites from,
+    -or null to fetch for all organizations.
 
 ##### Return:
-    [stdClass] $response['data']
+    [\stdClass]
 
 ---
 

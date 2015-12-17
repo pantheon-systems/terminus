@@ -9,7 +9,7 @@
     [string] $role  Role to assign to the new user
 
 ##### Return:
-    [workflow] $workflow
+    [Workflow]
 
 ---
 
@@ -21,7 +21,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [SiteUserMemberships] $this
+    [SiteUserMemberships]
 
 ---
 
@@ -33,7 +33,7 @@
     [string] $id UUID or email of desired user
 
 ##### Return:
-    [SiteUserMembership] $membership
+    [SiteUserMembership]
 
 ---
 

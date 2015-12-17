@@ -16,8 +16,8 @@ if (!defined('JSON_PRETTY_PRINT')) {
 /**
  * Composes associative arguments into a command string
  *
- * @param [array] $assoc_args Arguments for command line in array form
- * @return [string] $return Command string form of param
+ * @param array $assoc_args Arguments for command line in array form
+ * @return string Command string form of param
  */
 function assocArgsToStr($assoc_args) {
   $return = '';
@@ -36,7 +36,7 @@ function assocArgsToStr($assoc_args) {
 /**
   * Retrieves current version number from repository and saves it to the cache
   *
-  * @return [string] $response->name The version number
+  * @return string The version number
   */
 function checkCurrentVersion() {
   $request  = new Request();
@@ -54,7 +54,7 @@ function checkCurrentVersion() {
 /**
   * Checks for new versions of Terminus once per week and saves to cache
   *
-  * @return [void]
+  * @return void
   */
 function checkForUpdate() {
   $cache_data = Terminus::getCache()->getData(
@@ -83,8 +83,8 @@ function checkForUpdate() {
 /**
  * Returns a colorized string
  *
- * @param [string] $string Message to colorize for output
- * @return [string] $colorized_string
+ * @param string $string Message to colorize for output
+ * @return string
  */
 function colorize($string) {
   $colorize = true;
@@ -101,7 +101,7 @@ function colorize($string) {
 /**
  * Sets constants necessary for the proper functioning of Terminus
  *
- * @return [void]
+ * @return void
  */
 function defineConstants() {
   define('Terminus', true);
@@ -140,9 +140,10 @@ function defineConstants() {
 /**
  * Ensures that the given destination is valid
  *
- * @param [string]  $destination Location of directory to ensure viability of
- * @param [boolean] $make        True to create destination if it does not exist
- * @return [string] $destination Same as the parameter
+ * @param string $destination Location of directory to ensure viability of
+ * @param bool   $make        True to create destination if it does not exist
+ * @return string Same as the parameter
+ * @throws TerminusException
  */
 function destinationIsValid($destination, $make = true) {
   if (file_exists($destination) AND !is_dir($destination)) {
@@ -166,8 +167,8 @@ function destinationIsValid($destination, $make = true) {
 /**
  * Get file name from a URL
  *
- * @param [string] $url A valid URL
- * @return [string] The file name from the given URL
+ * @param string $url A valid URL
+ * @return string The file name from the given URL
  */
 function getFilenameFromUrl($url) {
   $path     = parseUrl($url);
@@ -179,7 +180,7 @@ function getFilenameFromUrl($url) {
 /**
  * Return an array of paths where vendor autoload files may be located
  *
- * @return [array] $vendor_paths
+ * @return array
  */
 function getVendorPaths() {
   $vendor_paths = array(
@@ -192,7 +193,7 @@ function getVendorPaths() {
 /**
  * Imports environment variables
  *
- * @return [void]
+ * @return void
  */
 function importEnvironmentVariables() {
   //Load environment variables from __DIR__/.env
@@ -205,8 +206,8 @@ function importEnvironmentVariables() {
 /**
  * Checks given path for whether it is absolute
  *
- * @param [string] $path Path to check
- * @return [boolean] $is_root True if path is absolute
+ * @param string $path Path to check
+ * @return bool True if path is absolute
  */
 function isPathAbsolute($path) {
   $is_root = (isset($path[1]) && ($path[1] == ':') || ($path[0] == '/'));
@@ -216,8 +217,8 @@ function isPathAbsolute($path) {
 /**
  * Checks whether email is in a valid or not
  *
- * @param [string] $email String to be evaluated for email address format
- * @return [boolean] $is_email True if $email is in email address format
+ * @param string $email String to be evaluated for email address format
+ * @return bool True if $email is in email address format
  */
 function isValidEmail($email) {
   $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
@@ -227,7 +228,7 @@ function isValidEmail($email) {
 /**
  * Check whether Terminus is running in a Windows environment
  *
- * @return [boolean] $is_windows True if OS running Terminus is Windows
+ * @return bool True if OS running Terminus is Windows
  */
 function isWindows() {
   $is_windows = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN');
@@ -237,7 +238,7 @@ function isWindows() {
 /**
  * Includes every command file in the commands directory
  *
- * @return [void]
+ * @return void
  */
 function loadAllCommands() {
   $cmd_dir = TERMINUS_ROOT . '/php/Terminus/Commands';
@@ -256,8 +257,8 @@ function loadAllCommands() {
 /**
  * Loads a file of the given name from the assets directory.
  *
- * @param [string] $file Relative file path from the assets dir
- * @return [string] $asset_location Contents of the asset file
+ * @param string $file Relative file path from the assets dir
+ * @return string Contents of the asset file
  */
 function loadAsset($file) {
   $asset_location = sprintf('%s/assets/%s', TERMINUS_ROOT, $file);
@@ -283,8 +284,8 @@ function loadAsset($file) {
 /**
  * Includes a single command file
  *
- * @param [string] $name Of command of which the class file will be included
- * @return [void]
+ * @param string $name Of command of which the class file will be included
+ * @return void
  */
 function loadCommand($name) {
   $path = sprintf(
@@ -301,7 +302,7 @@ function loadCommand($name) {
 /**
  * Requires inclusion of Composer's autoload file
  *
- * @return [void]
+ * @return void
  */
 function loadDependencies() {
   if (strpos(TERMINUS_ROOT, 'phar:') === 0) {
@@ -329,8 +330,8 @@ function loadDependencies() {
  * Using require() directly inside a class grants access to private methods
  * to the loaded code
  *
- * @param [string] $path Path to the file to be required
- * @return [void]
+ * @param string $path Path to the file to be required
+ * @return void
  */
 function loadFile($path) {
   require $path;
@@ -339,8 +340,8 @@ function loadFile($path) {
 /**
  * Takes a host string such as from wp-config.php and parses it into an array
  *
- * @param [string] $raw_host MySQL host string, as defined in wp-config.php
- * @return [array] $assoc_args Connection inforrmation for MySQL
+ * @param string $raw_host MySQL host string, as defined in wp-config.php
+ * @return array $assoc_args Connection inforrmation for MySQL
  */
 function mysqlHostToCliArgs($raw_host) {
   $assoc_args = array();
@@ -365,8 +366,8 @@ function mysqlHostToCliArgs($raw_host) {
 /**
  * Parses a URL and returns its components
  *
- * @param [string] $url URL to parse
- * @return [array] $url_parts An array of URL components
+ * @param string $url URL to parse
+ * @return array An array of URL components
  */
 function parseUrl($url) {
   $url_parts = parse_url($url);
@@ -381,8 +382,8 @@ function parseUrl($url) {
 /**
  * Sanitize the site name field
  *
- * @param [string] $string String to be sanitized
- * @return [string] $name Param string, sanitized
+ * @param string $string String to be sanitized
+ * @return string Param string, sanitized
  */
 function sanitizeName($string) {
   $name = $string;
@@ -398,8 +399,8 @@ function sanitizeName($string) {
 /**
  * Removes ".gz" from a filename
  *
- * @param [string] $filename Name of file from which to remove ".gz"
- * @return [string] $file Param string, ".gz" removed
+ * @param string $filename Name of file from which to remove ".gz"
+ * @return string Param string, ".gz" removed
  */
 function sqlFromZip($filename) {
   $file = preg_replace('#\.gz$#s', '', $filename);
@@ -409,9 +410,9 @@ function sqlFromZip($filename) {
 /**
   * Strips sensitive data out of the JSON printed in a request string
   *
-  * @param [string] $request   The string with a JSON with sensitive data
-  * @param [array]  $blacklist Array of string keys to remove from request
-  * @return [string] $result Sensitive data-stripped version of $request
+  * @param string $request   The string with a JSON with sensitive data
+  * @param array  $blacklist Array of string keys to remove from request
+  * @return string Sensitive data-stripped version of $request
   */
 function stripSensitiveData($request, $blacklist = array()) {
   //Locate the JSON in the string, turn to array
@@ -434,10 +435,10 @@ function stripSensitiveData($request, $blacklist = array()) {
 /**
  * Render PHP or other types of files using Twig templates
  *
- * @param [string] $template_name File name of the template to be used
- * @param [array]  $data          Context to pass through for template use
- * @param [array]  $options       Options to pass through for template use
- * @return [string] $rendered_template The rendered template
+ * @param string $template_name File name of the template to be used
+ * @param array  $data          Context to pass through for template use
+ * @param array  $options       Options to pass through for template use
+ * @return string The rendered template
  */
 function twigRender($template_name, $data, $options) {
   $loader            = new \Twig_Loader_Filesystem(TERMINUS_ROOT . '/templates');

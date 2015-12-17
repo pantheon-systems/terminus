@@ -4,8 +4,8 @@
  * Converts a file to make it usable in a PHAR and writes it
  * @usage "php utils/convert-docs.php man-src/*.txt"
  *
- * @param [string] $path Path to file to convert
- * @return [void]
+ * @param string $path Path to file to convert
+ * @return void
  */
 function convertFile($path) {
   $out = file_get_contents($path);

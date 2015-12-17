@@ -2,8 +2,8 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\User;
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\Site;
+use Terminus\Models\Workflow;
 
 class OrganizationSiteMemberships extends TerminusCollection {
   protected $organization;
@@ -11,10 +11,10 @@ class OrganizationSiteMemberships extends TerminusCollection {
   /**
    * Adds a site to this organization
    *
-   * @param [Site] $site Site object of site to add to this organization
-   * @return [Workflow] $workflow
+   * @param Site $site Site object of site to add to this organization
+   * @return Workflow
    */
-  public function addMember($site) {
+  public function addMember(Site $site) {
     $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
       array(
@@ -30,8 +30,8 @@ class OrganizationSiteMemberships extends TerminusCollection {
   /**
    * Retrieves the model with site of the given UUID or name
    *
-   * @param [string] $id UUID or name of desired site membership instance
-   * @return [Site] $model
+   * @param string $id UUID or name of desired site membership instance
+   * @return Site
    */
   public function get($id) {
     $models = $this->getMembers();
@@ -53,7 +53,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = sprintf(
@@ -66,10 +66,10 @@ class OrganizationSiteMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [OrganizationSiteMemberships] $this
+   * @param array $options params to pass to url request
+   * @return OrganizationSiteMemberships
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (!isset($options['paged'])) {
       $options['paged'] = true;
     }
@@ -79,9 +79,9 @@ class OrganizationSiteMemberships extends TerminusCollection {
   }
 
   /**
-   * Names the model-owner of this collection, false if DNE
+   * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'organization';

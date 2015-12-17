@@ -21,8 +21,6 @@ class WorkflowsCommand extends TerminusCommand {
 
   /**
    * Object constructor.
-   *
-   * @return [WorkflowsCommand] $this
    */
   public function __construct() {
     Auth::ensureLogin();

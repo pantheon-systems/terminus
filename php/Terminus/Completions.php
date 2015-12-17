@@ -6,14 +6,19 @@ use Terminus;
 
 class Completions {
 
+  /**
+   * @var array
+   */
   private $words;
+  /**
+   * @var array
+   */
   private $opts = array();
 
   /**
    * Constructs object, parses command
    *
-   * @param [string] $line Command to make completions for
-   * @return [Completions] $htis
+   * @param string $line Command to make completions for
    */
   function __construct($line) {
     // TODO: properly parse single and double quotes
@@ -30,6 +35,7 @@ class Completions {
       return;
     }
 
+    /** @var \Terminus\Dispatcher\RootCommand $command */
     list($command, $args, $assoc_args) = $r;
 
     $spec = SynopsisParser::parse($command->getSynopsis());
@@ -69,8 +75,8 @@ class Completions {
   /**
    * Adds options to opts array
    *
-   * @param [string] $opt Option to add
-   * @return [void]
+   * @param string $opt Option to add
+   * @return void
    */
   private function add($opt) {
     if ($this->cur_word !== '') {
@@ -85,9 +91,9 @@ class Completions {
   /**
    * Gets command to run
    *
-   * @param [array] $words Words of the command-line string to process
-   * @return [array] $command_array
-   *         [string] $command
+   * @param array $words Words of the command-line string to process
+   * @return array $command_array
+   *         [RootCommand] $command
    *         [array]  $args
    *         [array]  $assoc_args
    */
@@ -119,7 +125,7 @@ class Completions {
   /**
    * Prints out all opt elements on their own lines
    *
-   * @return [void]
+   * @return void
    */
   public function render() {
     foreach ($this->opts as $opt) {

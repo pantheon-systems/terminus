@@ -3,22 +3,29 @@
 namespace Terminus\Models\Collections;
 
 use Terminus\Models\Workflow;
-use Terminus\Models\Collections\TerminusCollection;
 
 class Workflows extends TerminusCollection {
+  /**
+   * @var string
+   */
   protected $environment;
+  /**
+   * @var object
+   * @todo Find specific type for this
+   */
   protected $owner;
 
   /**
    * Creates a new workflow and adds its data to the collection
    *
-   * @param [string] $type    Type of workflow to create
-   * @param [array]  $options Additional information for the request
-   *        [string] environment UUID of environment running workflow
-   *        [array]  params      Parameters for the request
-   * @return [TerminusModel] $model
+   * @param string $type    Type of workflow to create
+   * @param array  $options Additional information for the request, with the
+   *   following possible keys:
+   *   - environment: string
+   *   - params: associative array of parameters for the request
+   * @return Workflow $model
    */
-  public function create($type, $options = array()) {
+  public function create($type, array $options = array()) {
     $options = array_merge(array('params' => array()), $options);
     if (isset($options['environment'])) {
       $this->environment = $options['environment'];
@@ -49,7 +56,7 @@ class Workflows extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = '';
@@ -88,8 +95,8 @@ class Workflows extends TerminusCollection {
   /**
    * Fetches workflow data hydrated with operations
    *
-   * @param [array] $options Additional information for the request
-   * @return [Workflows] $this
+   * @param array $options Additional information for the request
+   * @return void
    */
   public function fetchWithOperations($options = array()) {
     $options = array_merge(
@@ -108,7 +115,7 @@ class Workflows extends TerminusCollection {
   /**
    * Returns all existing workflows that have finished
    *
-   * @return [Array<Workflows>] $workflows
+   * @return Workflow[]
    */
   public function allFinished() {
     $workflows = array_filter(
@@ -124,7 +131,7 @@ class Workflows extends TerminusCollection {
   /**
    * Returns all existing workflows that contain logs
    *
-   * @return [Array<Workflows>] $workflows
+   * @return Workflow[]
    */
   public function allWithLogs() {
     $workflows = $this->allFinished();
@@ -142,7 +149,7 @@ class Workflows extends TerminusCollection {
   /**
    * Get timestamp of most recently finished workflow
    *
-   * @return [integer] $timestamp
+   * @return int|null Timestamp
    */
   public function lastFinishedAt() {
     $workflows = $this->all();
@@ -169,7 +176,7 @@ class Workflows extends TerminusCollection {
   /**
    * Get timestamp of most recently created Workflow
    *
-   * @return [integer] $timestamp
+   * @return int|null Timestamp
    */
   public function lastCreatedAt() {
     $workflows = $this->all();
@@ -194,9 +201,9 @@ class Workflows extends TerminusCollection {
   }
 
   /**
-   * Get most-recent workflow from existingcollection that has logs
+   * Get most-recent workflow from existing collection that has logs
    *
-   * @return [Workflow] $workflow
+   * @return Workflow|null
    */
   public function findLatestWithLogs() {
     $workflows = $this->allWithLogs();
@@ -224,7 +231,7 @@ class Workflows extends TerminusCollection {
   /**
    * Names the model-owner of this collection
    *
-   * @return [string] $this->owner_type or $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     if (isset($this->owner_type)) {
@@ -243,12 +250,12 @@ class Workflows extends TerminusCollection {
   /**
    * Adds a model to this collection
    *
-   * @param [stdClass] $model_data Data to feed into attributes of new model
-   * @param [array]    $options    Data to make properties of the new model
-   * @return [mixed] $model newly added model
+   * @param object $model_data Data to feed into attributes of new model
+   * @param array  $options    Data to make properties of the new model
+   * @return Workflow  The newly-added model
    */
-  public function add($model_data, $options = array()) {
-    $model = parent::add($model_data, $options = array());
+  public function add($model_data, array $options = array()) {
+    $model = parent::add($model_data, $options);
     $model->owner = $this->owner;
     return $model;
   }

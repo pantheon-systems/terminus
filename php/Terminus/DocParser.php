@@ -9,8 +9,8 @@ class DocParser {
   /**
    * Object constructor
    *
-   * @param [string] $docComment Will be undeorated and saved
-   * @return [DocParser] $this
+   * @param string $docComment Will be undecorated and saved
+   * @return DocParser
    */
   function __construct($docComment) {
     $this->docComment = $this->removeDecorations($docComment);
@@ -19,7 +19,7 @@ class DocParser {
   /**
    * Gives short description plus more information
    *
-   * @return [string] $longdesc
+   * @return string
    */
   public function getLongdesc() {
     $shortdesc = $this->getShortdesc();
@@ -45,7 +45,7 @@ class DocParser {
   /**
    * Parses the doc comment to find short description
    *
-   * @return [string] $matches[1]
+   * @return string
    */
   public function getShortdesc() {
     if (!preg_match('|^([^@][^\n]+)\n*|', $this->docComment, $matches)) {
@@ -58,7 +58,7 @@ class DocParser {
   /**
    * Parses the synopsis out of the doc comment
    *
-   * @return [string] $matches[1]
+   * @return string
    */
   public function getSynopsis() {
     if (!preg_match('|^@synopsis\s+(.+)|m', $this->docComment, $matches)) {
@@ -71,8 +71,8 @@ class DocParser {
   /**
    * Parses tag of given name out of the doc comment
    *
-   * @param [string] $name Name of the tag to retrieve
-   * @return [string] $matches[1]
+   * @param string $name Name of the tag to retrieve
+   * @return string
    */
   public function getTag($name) {
     if (preg_match(
@@ -89,8 +89,8 @@ class DocParser {
   /**
    * Removes decorators from the given string
    *
-   * @param [string] $comment Will be undecorated
-   * @return [string] $comment
+   * @param string $comment Will be undecorated
+   * @return string
    */
   private function removeDecorations($comment) {
     $comment = preg_replace('|^/\*\*[\r\n]+|', '', $comment);

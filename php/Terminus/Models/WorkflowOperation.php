@@ -11,7 +11,7 @@ class WorkflowOperation extends TerminusModel {
   /**
    * Formats operation object into an associative array for output
    *
-   * @return [array] $data associative array of data for output
+   * @return array
    */
   public function serialize() {
     $data = array(
@@ -32,7 +32,7 @@ class WorkflowOperation extends TerminusModel {
   /**
    * Formats operation object into a descriptive string
    *
-   * @return [string] $description string description of operation
+   * @return string
    */
   public function description() {
     $description = sprintf(
@@ -46,7 +46,7 @@ class WorkflowOperation extends TerminusModel {
   /**
    * Formats operation duration into a string
    *
-   * @return [string] $duration
+   * @return string
    */
   protected function duration() {
     if ($this->has('run_time')) {

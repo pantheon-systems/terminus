@@ -5,11 +5,8 @@
     Object constructor
 
 ##### Parameters:
-    [stdClass] $attributes Attributes of this model
-    [array]    $options    Options to set as $this->key
-
-##### Return:
-    [Organization] $this
+    [object] $attributes Attributes of this model
+    [array]  $options    Options to set as $this->key
 
 ---
 
@@ -18,7 +15,7 @@
     Retrieves organization sites
 
 ##### Return:
-    [array] $sites An array of OrganizationSiteMember objects
+    [OrganizationSiteMembership[]]
 
 ---
 
@@ -27,7 +24,7 @@
     Retrieves organization users
 
 ##### Return:
-    [array] $users An array of OrganizationUserMember objects
+    [OrganizationUserMembership[]]
 
 ---
 

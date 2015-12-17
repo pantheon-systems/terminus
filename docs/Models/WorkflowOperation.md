@@ -2,10 +2,19 @@
 
 ### serialize
 ##### Description:
-    Formats workflow object into an associative array for output
+    Formats operation object into an associative array for output
 
 ##### Return:
-    [array] $data associative array of data for output
+    [array]
+
+---
+
+### description
+##### Description:
+    Formats operation object into a descriptive string
+
+##### Return:
+    [string]
 
 ---
 

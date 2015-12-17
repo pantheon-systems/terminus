@@ -3,18 +3,22 @@
 namespace Terminus;
 
 use Terminus;
-use Terminus\Request;
-use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Loggers\Logger;
 
 class Auth {
+
+  /**
+   * @var Logger
+   */
   private $logger;
+  /**
+   * @var Request
+   */
   private $request;
 
   /**
    * Object constructor. Sets the logger class property.
-   *
-   * @return [Auth] $this
    */
   public function __construct() {
     $this->logger  = Terminus::getLogger();
@@ -24,7 +28,8 @@ class Auth {
   /**
    * Ensures the user is logged in or errs.
    *
-   * @return [boolean] Always true
+   * @return bool Always true
+   * @throws TerminusException
    */
   public static function ensureLogin() {
     $session = Session::instance()->getData();
@@ -46,7 +51,7 @@ class Auth {
   /**
    * Checks to see if the current user is logged in
    *
-   * @return [boolean] $is_logged_in True if the user is logged in
+   * @return bool True if the user is logged in
    */
   public function loggedIn() {
     $session      = Session::instance()->getData();
@@ -63,8 +68,9 @@ class Auth {
   /**
    * Execute the login based on a machine token
    *
-   * @param [string] $token Machine token to initiate login with
-   * @return [boolean] True if login succeeded
+   * @param string $token Machine token to initiate login with
+   * @return bool True if login succeeded
+   * @throws TerminusException
    */
   public function logInViaMachineToken($token) {
     $options = array(
@@ -106,8 +112,9 @@ class Auth {
   /**
    * Execute the login based on an existing session token
    *
-   * @param [string] $token Session token to initiate login with
-   * @return [boolean] True if login succeeded
+   * @param string $token Session token to initiate login with
+   * @return bool True if login succeeded
+   * @throws TerminusException
    */
   public function logInViaSessionToken($token) {
     $options = array(
@@ -142,9 +149,10 @@ class Auth {
   /**
    * Execute the login via email/password
    *
-   * @param [string] $email    Email address associated with a Pantheon account
-   * @param [string] $password Password for the account
-   * @return [boolean] True if login succeeded
+   * @param string $email    Email address associated with a Pantheon account
+   * @param string $password Password for the account
+   * @return bool True if login succeeded
+   * @throws TerminusException
    */
   public function logInViaUsernameAndPassword($email, $password) {
     if (!Terminus\Utils\isValidEmail($email)) {
@@ -183,10 +191,10 @@ class Auth {
   /**
    * Saves the session data to a cookie
    *
-   * @param [array] $data Session data to save
-   * @return [boolean] Always true
+   * @param \stdClass $data Session data to save
+   * @return bool Always true
    */
-  private function setInstanceData($data) {
+  private function setInstanceData(\stdClass $data) {
     if (!isset($data->refresh)) {
       $refresh = (array)Session::instance()->get('refresh');
     } else {

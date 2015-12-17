@@ -8,7 +8,7 @@
     [array] $options To be set to $this->key
 
 ##### Return:
-    [Sites] $this
+    [Sites]
 
 ---
 
@@ -17,11 +17,12 @@
     Creates a new site
 
 ##### Parameters:
-    [array] $options Information to run workflow
-    -[string] label
-    -[string] name
-    -[string] organization_id
-    -[string] upstream_id
+    [string[]] $options Information to run workflow, with the following
+    -keys:
+    -- label
+    -- name
+    -- organization_id
+    -- upstream_id
 
 ##### Return:
     [Workflow]
@@ -34,9 +35,10 @@
 
 ##### Parameters:
     [string] $site_id UUID of site to add to cache
+    [string] $org_id  UUID of org to which new site belongs
 
 ##### Return:
-    [Site] $site The newly created site object
+    [Site] The newly created site object
 
 ---
 
@@ -60,7 +62,7 @@
     [array] $options params to pass to url request
 
 ##### Return:
-    [Sites] $this
+    [Sites]
 
 ---
 
@@ -73,7 +75,7 @@
     [string] $org Organization which has tagged sites
 
 ##### Return:
-    [array] $sites A filtered list of sites
+    [Site[]]
 
 ---
 
@@ -85,7 +87,7 @@
     [string] $id UUID or name of desired site
 
 ##### Return:
-    [Site] $site
+    [Site]
 
 ---
 

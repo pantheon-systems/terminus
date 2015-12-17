@@ -10,11 +10,10 @@ class Logger extends KLogger {
   /**
    * Class constructor. Feeds in output destination from env vars
    *
-   * @param [array]  $options           Options for operation of logger
+   * @param array  $options           Options for operation of logger
    *        [array] config Configuration options from Runner
-   * @param [string] $logDirectory      File path to the logging directory
-   * @param [string] $logLevelThreshold The LogLevel Threshold
-   * @return [Logger] $this
+   * @param string $logDirectory      File path to the logging directory
+   * @param string $logLevelThreshold The LogLevel Threshold
    */
   public function __construct(
     array $options = array(),
@@ -50,10 +49,10 @@ class Logger extends KLogger {
   /**
     * Logs with an arbitrary level
     *
-    * @param [mixed]  $level   PSR log level of message
-    * @param [string] $message Message to give
-    * @param [array]  $context Context of message
-    * @return [void]
+    * @param mixed  $level   PSR log level of message
+    * @param string $message Message to give
+    * @param array  $context Context of message
+    * @return void
     */
   public function log($level, $message, array $context = array()) {
     if (isset($this->logLevelThreshold)
@@ -78,22 +77,12 @@ class Logger extends KLogger {
   }
 
   /**
-   * Sets the output handle to php://std___
-   *
-   * @return [void]
-   */
-  public function setBufferHandle() {
-    $handle_name      = strtoupper(substr($this->getLogFilePath(), 6));
-    $this->fileHandle = constant($handle_name);
-  }
-
-  /**
     * Formats the message for logging.
     *
-    * @param  [string] $level   The Log Level of the message
-    * @param  [string] $message The message to log
-    * @param  [array]  $context The context
-    * @return [string] $message
+    * @param  string $level   The Log Level of the message
+    * @param  string $message The message to log
+    * @param  array  $context The context
+    * @return string
     */
   protected function formatMessage($level, $message, $context) {
     if (isset($this->options)
@@ -120,9 +109,9 @@ class Logger extends KLogger {
   /**
     * Formats the message for bash-type logging.
     *
-    * @param  [string] $level   The Log Level of the message
-    * @param  [string] $message The message to log
-    * @return [string] $message
+    * @param  string $level   The Log Level of the message
+    * @param  string $message The message to log
+    * @return string
     */
   private function formatBashMessages($level, $message) {
     $parts   = $this->getMessageParts($level, $message);
@@ -136,9 +125,9 @@ class Logger extends KLogger {
   /**
     * Formats the message for JSON-type logging.
     *
-    * @param  [string] $level   The Log Level of the message
-    * @param  [string] $message The message to log
-    * @return [string] $message
+    * @param  string $level   The Log Level of the message
+    * @param  string $message The message to log
+    * @return string
     */
   private function formatJsonMessages($level, $message) {
     $parts   = $this->getMessageParts($level, $message);
@@ -149,9 +138,9 @@ class Logger extends KLogger {
   /**
     * Collects and formats the log message parts
     *
-    * @param  [string] $level   The Log Level of the message
-    * @param  [string] $message The message to log
-    * @return [string] $parts
+    * @param  string $level   The Log Level of the message
+    * @param  string $message The message to log
+    * @return array
     */
   private function getMessageParts($level, $message) {
     $parts = array(
@@ -167,7 +156,7 @@ class Logger extends KLogger {
   /**
    * Gets the correctly formatted Date/Time for the log entry.
    *
-   * @return [string] $date
+   * @return string $date
    */
   private function getTimestamp() {
     $date_format = 'Y-m-dTH:i:s';
@@ -181,9 +170,9 @@ class Logger extends KLogger {
   /**
    * Interpolates context variables per the PSR spec
    *
-   * @param [string] $message The message containing curly brace-enclosed keys
-   * @param [array]  $context The array containing substitutionary values
-   * @return [string] $interpolated_string
+   * @param string $message The message containing curly brace-enclosed keys
+   * @param array  $context The array containing substitutionary values
+   * @return string
    */
   private function interpolate($message, $context) {
     // build a replacement array with braces around the context keys

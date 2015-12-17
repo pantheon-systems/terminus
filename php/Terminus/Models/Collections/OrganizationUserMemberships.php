@@ -2,7 +2,8 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Models\User;
+use Terminus\Models\Workflow;
 
 class OrganizationUserMemberships extends TerminusCollection {
   protected $organization;
@@ -10,10 +11,10 @@ class OrganizationUserMemberships extends TerminusCollection {
   /**
    * Adds a user to this organization
    *
-   * @param [User] $user User object of user to add to this organization
-   * @return [Workflow] $workflow
+   * @param User $user User object of user to add to this organization
+   * @return Workflow $workflow
    */
-  public function addMember($user) {
+  public function addMember(User $user) {
     $workflow = $this->organization->workflows->create(
       'add_organization_user_membership',
       array(
@@ -29,7 +30,7 @@ class OrganizationUserMemberships extends TerminusCollection {
   /**
    * Give the URL for collection data fetching
    *
-   * @return [string] $url URL to use in fetch query
+   * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
     $url = sprintf(
@@ -42,10 +43,10 @@ class OrganizationUserMemberships extends TerminusCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param [array] $options params to pass to url request
-   * @return [OrganizationUserMemberships] $this
+   * @param array $options params to pass to url request
+   * @return OrganizationUserMemberships
    */
-  public function fetch($options = array()) {
+  public function fetch(array $options = array()) {
     if (!isset($options['paged'])) {
       $options['paged'] = true;
     }
@@ -55,9 +56,9 @@ class OrganizationUserMemberships extends TerminusCollection {
   }
 
   /**
-   * Names the model-owner of this collection, false if DNE
+   * Names the model-owner of this collection
    *
-   * @return [string] $owner_name
+   * @return string
    */
   protected function getOwnerName() {
     $owner_name = 'organization';

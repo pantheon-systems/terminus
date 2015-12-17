@@ -5,20 +5,38 @@ namespace Terminus;
 use Terminus;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Loggers\Logger;
 
 class Runner {
+  /**
+   * @var array
+   */
   private $arguments;
+  /**
+   * @var array
+   */
   private $assoc_args;
+  /**
+   * @var array
+   */
   private $config;
+  /**
+   * @var Configurator
+   */
   private $configurator;
+  /**
+   * @var Logger
+   */
   private $logger;
+  /**
+   * @var Terminus
+   */
   private $terminus;
 
   /**
-   * Constructs object. Initializes config, colorizaiton, loger, and outputter
+   * Constructs object. Initializes config, colorization, loger, and outputter
    *
-   * @param [array] $config Extra settings for the config property
-   * @return [Runner] $this
+   * @param array $config Extra settings for the config property
    */
   public function __construct($config = array()) {
     $this->setConfigurator();
@@ -34,8 +52,8 @@ class Runner {
   /**
    * Retrieves properties requested
    *
-   * @param [string] $key Property name to return
-   * @return [mixed] $this->$key
+   * @param string $key Property name to return
+   * @return mixed
    */
   public function __get($key) {
     if (($key[0] == '_') || (!isset($this->$key))) {
@@ -47,8 +65,11 @@ class Runner {
   /**
    * Identifies the command to be run
    *
-   * @param [array] $args The non-hyphenated (--) terms from the CL
-   * @return [array] $command_array
+   * @param array $args The non-hyphenated (--) terms from the CL
+   * @return array
+   *   0 => [Terminus\Dispatcher\RootCommand]
+   *   1 => [array] args
+   *   2 => [array] command path
    */
   public function findCommandToRun($args) {
     $command = Terminus::getRootCommand();
@@ -78,7 +99,7 @@ class Runner {
   /**
    * Retrieves the configurator property
    *
-   * @return [Configurator] $this->configurator
+   * @return Configurator
    */
   public function getConfigurator() {
     return $this->configurator;
@@ -87,7 +108,7 @@ class Runner {
   /**
    * Runs the Terminus command
    *
-   * @return [void]
+   * @return void
    */
   public function run() {
     if (empty($this->arguments)) {
@@ -108,6 +129,7 @@ class Runner {
       // Show synopsis if it's a composite command.
       $r = $this->findCommandToRun($this->arguments);
       if (is_array($r)) {
+        /** @var \Terminus\Dispatcher\RootCommand $command */
         list($command) = $r;
 
         if ($command->canHaveSubcommands()) {
@@ -131,12 +153,13 @@ class Runner {
   /**
    * Runs a command
    *
-   * @param [array] $args       The non hyphenated (--) terms from the CL
-   * @param [array] $assoc_args The hyphenated terms from the CL
-   * @return [void]
+   * @param array $args       The non hyphenated (--) terms from the CL
+   * @param array $assoc_args The hyphenated terms from the CL
+   * @return void
    */
   public function runCommand($args, $assoc_args = array()) {
     try {
+      /** @var \Terminus\Dispatcher\RootCommand $command */
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
       $name = implode(' ', $cmd_path);
 
@@ -155,7 +178,7 @@ class Runner {
   /**
    * Runs a command via runCommand by supplying it with properties as args
    *
-   * @return [void]
+   * @return void
    */
   private function _runCommand() {
     $this->runCommand($this->arguments, $this->assoc_args);
@@ -164,8 +187,8 @@ class Runner {
   /**
    * Initializes configurator, saves config data to it
    *
-   * @param [array] $config Config options to set explicitly
-   * @return [void]
+   * @param array $config Config options to set explicitly
+   * @return void
    */
   private function setConfig($config = array()) {
     $args = array('terminus', '--debug');
@@ -189,10 +212,10 @@ class Runner {
   /**
    * Sets the configurator property
    *
-   * @param [Configurator] $configurator Configurator object to set
-   * @return [void]
+   * @param Configurator|null $configurator Configurator object to set
+   * @return void
    */
-  private function setConfigurator($configurator = null) {
+  private function setConfigurator(Configurator $configurator = null) {
     if (is_null($configurator)) {
       $this->configurator = new Configurator(
         TERMINUS_ROOT . '/php/config-spec.php'
