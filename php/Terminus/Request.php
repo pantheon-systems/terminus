@@ -196,12 +196,6 @@ class Request {
       );
     }
 
-    if (Session::getValue('session')) {
-      $options['cookies'] = array(
-        'X-Pantheon-Session' => Session::getValue('session')
-      );
-    }
-
     try {
       Terminus::getLogger()->debug('URL: {url}', compact('url'));
       $response = $this->send($url, $options['method'], $options);
@@ -237,7 +231,7 @@ class Request {
     );
 
     if ($session = Session::instance()->get('session', false)) {
-      $extra_params['headers']['Cookie'] = "X-Pantheon-Session=$session";
+      $extra_params['headers']['Authorization'] = "Bearer $session";
     }
     $params = array_merge_recursive($extra_params, $arg_params);
     if (isset($params['form_params'])) {
@@ -280,9 +274,6 @@ class Request {
   private function fillCookieJar(array $params) {
     $jar     = new CookieJar();
     $cookies = array();
-    if ($session = Session::instance()->get('session', false)) {
-      $cookies['X-Pantheon-Session'] = $session;
-    }
     if (isset($params['cookies'])) {
       $cookies = array_merge($cookies, $params['cookies']);
     }
