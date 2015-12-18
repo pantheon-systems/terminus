@@ -1910,7 +1910,7 @@ class SiteCommand extends TerminusCommand {
       $backups = $env->backups->getFinishedBackups($element);
 
       if ($latest) {
-        $backup = array_pop($backups);
+        $backup = array_shift($backups);
       } else {
         $context = array(
           'site' => $site->get('name'),
