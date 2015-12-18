@@ -8,10 +8,8 @@ Feature: Organization sites
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_name]]"
     When I run "terminus organizations sites list --org=[[enterprise_org_name]]"
-    Then I should get:
-    """
-    [[test_site_name]]
-    """
+    Then I should get: "[[test_site_name]]"
+    And I should not get: "PHP Notice"
 
   @vcr organizations_sites_add
   Scenario: Add a site to an organization
