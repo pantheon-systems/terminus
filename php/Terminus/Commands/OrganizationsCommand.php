@@ -163,7 +163,10 @@ class OrganizationsCommand extends TerminusCommand {
               $data_array[$key] = $site->$key;
             }
           }
-          $data_array['created'] = date('Y-m-dTH:i:s', $data_array['created']);
+          $data_array['created'] = date(
+            'Y-m-dTH:i:s',
+            strtotime($data_array['created'])
+          );
           $data[] = $data_array;
         }
         $this->output()->outputRecordList($data);
