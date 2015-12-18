@@ -59,6 +59,15 @@ class SiteCommand extends TerminusCommand {
    * [--day]
    * : Day of the week on which to run weekly backups
    *
+   * [--username]
+   * : MySQL username (Used for site backups load --element=db)
+   *
+   * [--password]
+   * : MySQL password (Used for site backups load --element=db)
+   *
+   * [--database]
+   * : MySQL database name (Used for site backups load --element=db)
+   *
    * @subcommand backups
    *
    */
@@ -1992,11 +2001,6 @@ class SiteCommand extends TerminusCommand {
    * @return bool Always true, else the function has thrown an exception
    */
   private function loadBackup($assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = $site->environments->get(
-      Input::env(array('args' => $assoc_args, 'site' => $site))
-    );
-
     $assoc_args['to']      = '/tmp';
     $assoc_args['element'] = 'database';
     if (isset($assoc_args['database'])) {
@@ -2019,15 +2023,14 @@ class SiteCommand extends TerminusCommand {
       );
     }
 
-    exec('mysql -e "show databases"', $stdout, $exit);
+    exec('mysql --version', $stdout, $exit);
     if ($exit != 0) {
       $this->failure(
         'MySQL does not appear to be installed on your server.'
       );
     }
 
-    $assoc_args['env'] = $env->get('id');
-    $target = $this->backup(array('get'), $assoc_args);
+    $target = $this->getBackup($assoc_args);
     $target = '/tmp/' . Utils\getFilenameFromUrl($target);
 
     if (!file_exists($target)) {
