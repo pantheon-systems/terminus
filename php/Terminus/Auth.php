@@ -118,8 +118,10 @@ class Auth {
    */
   public function logInViaSessionToken($token) {
     $options = array(
-      'headers' => array('Content-type' => 'application/json'),
-      'cookies' => array('X-Pantheon-Session' => $token),
+      'headers' => array(
+        'Content-type' => 'application/json',
+        'Cookie'       => "X-Pantheon-Session=$token",
+      )
     );
     $this->logger->info('Validating session token');
     $response = $this->request->request('user', '', '', 'GET', $options);
