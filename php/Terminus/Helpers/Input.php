@@ -3,6 +3,7 @@
 namespace Terminus\Helpers;
 
 use Terminus;
+use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
 use Terminus\Models\Upstream;
@@ -291,7 +292,7 @@ class Input {
       $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
-    $org = Terminus::menu($orglist_with_id, false, "Choose organization");
+    $org = self::menu($orglist_with_id, false, "Choose organization");
     if ($org == '-') {
       return $default;
     }
@@ -336,8 +337,69 @@ class Input {
       }
       return $args[$key];
     }
-    $org = Terminus::menu($orglist, false, "Choose organization");
+    $org = self::menu($orglist, false, "Choose organization");
     return $orglist[$org];
+  }
+
+  /**
+   * Prompt the user for input
+   *
+   * @param string $message Message to give at prompt
+   * @param mixed  $default Returned if user does not select a valid option
+   * @return string
+   * @throws TerminusException
+   */
+  public static function prompt($message = '', $default = null) {
+    if (!empty($params)) {
+      $message = vsprintf($message, $params);
+    }
+    try {
+      $response = \cli\prompt($message);
+    } catch (\Exception $e) {
+      throw new TerminusException($e->getMessage, array(), -1);
+    }
+    if (empty($response) && $default) {
+      $response = $default;
+    }
+    return $response;
+  }
+
+  /**
+   * Gets input from STDIN silently
+   * By: Troels Knak-Nielsen
+   * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
+   *
+   * @param string $message Message to give at prompt
+   * @param mixed  $default Returned if user does not select a valid option
+   * @return string
+   */
+  public static function promptSecret($message = '', $default = null) {
+    if (Utils\isWindows()) {
+      $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+      file_put_contents(
+        $vbscript, 'wscript.echo(InputBox("'
+        . addslashes($message)
+        . '", "", "password here"))'
+      );
+      $command  = "cscript //nologo " . escapeshellarg($vbscript);
+      $response = rtrim(shell_exec($command));
+      unlink($vbscript);
+    } else {
+      $command = "/usr/bin/env bash -c 'echo OK'";
+      if (rtrim(shell_exec($command)) !== 'OK') {
+        trigger_error("Can't invoke bash");
+        return '';
+      }
+      $command  = "/usr/bin/env bash -c 'read -s -p \""
+        . addslashes($message)
+        . "\" mypassword && echo \$mypassword'";
+      $response = rtrim(shell_exec($command));
+      echo "\n";
+    }
+    if (empty($response) && $default) {
+      $response = $default;
+    }
+    return $response;
   }
 
   /**
@@ -427,7 +489,7 @@ class Input {
     if (Terminus::getConfig('format') != 'normal') {
       return $default;
     }
-    $string = Terminus::prompt($label);
+    $string = self::prompt($label);
     if ($string == '') {
       return $default;
     }
@@ -456,7 +518,7 @@ class Input {
       }
     } else {
       $upstream = $upstreams->get(
-        Terminus::menu($upstreams->getMemberList('id', 'longname'))
+        self::menu($upstreams->getMemberList('id', 'longname'))
       );
     }
     return $upstream;
