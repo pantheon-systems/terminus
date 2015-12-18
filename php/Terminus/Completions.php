@@ -9,11 +9,11 @@ class Completions {
   /**
    * @var array
    */
-  private $words;
+  private $opts = array();
   /**
    * @var array
    */
-  private $opts = array();
+  private $words;
 
   /**
    * Constructs object, parses command
@@ -129,7 +129,7 @@ class Completions {
    */
   public function render() {
     foreach ($this->opts as $opt) {
-      Terminus::line($opt);
+      Terminus::getOutputter()->line($opt);
     }
   }
 

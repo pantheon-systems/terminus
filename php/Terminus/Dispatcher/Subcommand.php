@@ -78,7 +78,7 @@ class Subcommand extends CompositeCommand {
    * @return void
    */
   public function showUsage($prefix = 'usage: ') {
-    Terminus::line($this->getUsage($prefix));
+    Terminus::getOutputter()->line($this->getUsage($prefix));
   }
 
   /**
@@ -181,7 +181,7 @@ class Subcommand extends CompositeCommand {
             $key_prompt = str_repeat(" ", strlen($current_prompt)) . $key_token;
           }
 
-          $key = Terminus::prompt($key_prompt, $default);
+          $key = Input::prompt($key_prompt, $default);
           if ($key === false) {
             return array($args, $assoc_args);
           }
@@ -191,7 +191,7 @@ class Subcommand extends CompositeCommand {
             $value_prompt     =
               str_repeat(' ', $key_prompt_count) . '=' . $value_token;
 
-            $value = Terminus::prompt($value_prompt, $default);
+            $value = Input::prompt($value_prompt, $default);
             if (false === $value) {
               return array($args, $assoc_args);
             }
@@ -212,7 +212,7 @@ class Subcommand extends CompositeCommand {
           $prompt .= ' (Y/n)';
         }
 
-        $response = Terminus::prompt($prompt, $default);
+        $response = Input::prompt($prompt, $default);
         if (false === $response) {
           return array($args, $assoc_args);
         }

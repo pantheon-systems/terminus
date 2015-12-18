@@ -367,7 +367,7 @@ class SiteCommand extends TerminusCommand {
       if (isset($assoc_args['to-env'])) {
         $to_env_id = $assoc_args['to-env'];
       } else {
-        $to_env_id = Terminus::prompt('Name of new multidev environment');
+        $to_env_id = Input::prompt('Name of new multidev environment');
       }
 
       $from_env = $site->environments->get(
@@ -604,7 +604,7 @@ class SiteCommand extends TerminusCommand {
     );
 
     if (!isset($assoc_args['note'])) {
-      $annotation = Terminus::prompt(
+      $annotation = Input::prompt(
         'Custom note for the deploy log',
         'Deploy from Terminus 2.0'
       );
@@ -968,12 +968,12 @@ class SiteCommand extends TerminusCommand {
           array('site' => $site->get('name'), 'env' => $env->get('id'))
         );
         if (!isset($assoc_args['username'])) {
-          $username = Terminus::prompt('Username for the lock');
+          $username = Input::prompt('Username for the lock');
         } else {
           $username = $assoc_args['username'];
         }
         if (!isset($assoc_args['password'])) {
-          $password = Terminus::promptSecret('Password for the lock');
+          $password = Input::promptSecret('Password for the lock');
         } else {
           $password = $assoc_args['password'];
         }
@@ -2003,18 +2003,20 @@ class SiteCommand extends TerminusCommand {
       $database = $assoc_args['database'];
     } else {
       $database = escapeshellarg(
-        Terminus::prompt('Name of database to import to')
+        Input::prompt('Name of database to import to')
       );
     }
     if (isset($assoc_args['username'])) {
       $username = $assoc_args['username'];
     } else {
-      $username = escapeshellarg(Terminus::prompt('Username'));
+      $username = escapeshellarg(Input::prompt('Username'));
     }
     if (isset($assoc_args['password'])) {
       $password = $assoc_args['password'];
     } else {
-      $password = escapeshellarg(Terminus::prompt('Password'));
+      $password = Input::promptSecret(
+        'Your MySQL password (input will not be shown)'
+      );
     }
 
     exec('mysql -e "show databases"', $stdout, $exit);

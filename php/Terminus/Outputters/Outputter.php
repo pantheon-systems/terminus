@@ -57,6 +57,17 @@ class Outputter implements OutputterInterface {
   }
 
   /**
+   * Display a message in the CLI and end with a newline
+   * TODO: Clean this up. There should be no direct access to STDOUT/STDERR
+   *
+   * @param string $message Message to output before the new line
+   * @return void
+   */
+  public function line($message = '') {
+    fwrite(STDERR, $message . PHP_EOL);
+  }
+
+  /**
    * Outputs any variable type as a raw dump
    *
    * @param object|array $object Item to dump information on

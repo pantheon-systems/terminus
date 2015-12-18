@@ -155,7 +155,7 @@ class Workflow extends TerminusModel {
      * TODO: Output this to stdout so that it doesn't get mixed with any
      *   actual output.
      */
-    Terminus::line();
+    Terminus::getOutputter()->line();
     if ($this->isSuccessful()) {
       return $this;
     } else {

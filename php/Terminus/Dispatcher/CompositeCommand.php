@@ -163,17 +163,18 @@ class CompositeCommand {
    * @return void
    */
   public function showUsage() {
-    $methods = $this->getSubcommands();
+    $methods   = $this->getSubcommands();
+    $outputter = Terminus::getOutputter();
 
     if (!empty($methods)) {
       $subcommand = array_shift($methods);
-      Terminus::line($subcommand->getUsage('usage: '));
+      $outputter->line($subcommand->getUsage('usage: '));
       foreach ($methods as $name => $subcommand) {
-        Terminus::line($subcommand->getUsage('   or: '));
+        $outputter->line($subcommand->getUsage('   or: '));
       }
     }
-    Terminus::line();
-    Terminus::line(
+    $outputter->line();
+    $outputter->line(
       'See "terminus help '
       . $this->name
       . '<command>" for more information on a specific command.'

@@ -5,6 +5,7 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Helpers\Input;
 
 /**
  * Authenticate to Pantheon and store a local secret token.
@@ -57,7 +58,7 @@ class AuthCommand extends TerminusCommand {
         if (isset($_SERVER['TERMINUS_USER'])) {
           $email = $_SERVER['TERMINUS_USER'];
         } else {
-          $email = Terminus::prompt('Your email address?', null);
+          $email = Input::prompt('Your email address?', null);
         }
       } else {
         $email = $args[0];
@@ -66,7 +67,7 @@ class AuthCommand extends TerminusCommand {
       if (isset($assoc_args['password'])) {
         $password = $assoc_args['password'];
       } else {
-        $password = Terminus::promptSecret(
+        $password = Input::promptSecret(
           'Your dashboard password (input will not be shown)'
         );
       }
