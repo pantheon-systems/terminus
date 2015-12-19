@@ -1549,14 +1549,12 @@ class SiteCommand extends TerminusCommand {
     if ($site->organizationIsMember($org)) {
       switch ($action) {
         case 'add':
-          $tag      = Input::string(
-            array(
-              'args'    => $assoc_args,
-              'key'     => 'tag',
-              'message' => 'Enter a tag to add'
-            )
-          );
-          $response = $site->addTag($tag, $org);
+          $tag      = Input::string($assoc_args, 'tag', 'Enter a tag to add');
+          try {
+            $response = $site->addTag($tag, $org);
+          } catch (TerminusException $e) {
+            $this->failure($e->getMessage(), $e->getReplacements());
+          }
 
           $context = array(
             'tag'  => $tag,

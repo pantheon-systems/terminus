@@ -102,14 +102,22 @@ class Site extends TerminusModel {
   /**
    * Adds a tag to the site
    *
-   * @param string $tag Name of tag to apply
-   * @param string $org Organization to add the tag association to
+   * @param string $tag    Name of tag to apply
+   * @param string $org_id Organization to add the tag association to
    * @return array
    */
-  public function addTag($tag, $org) {
-    $params   = array($tag => array('sites' => array($this->get('id'))));
-    $response = $this->request->simpleRequest(
-      sprintf('organizations/%s/tags', $org),
+  public function addTag($tag, $org_id) {
+    if ($this->hasTag($tag, $org_id)) {
+      $message  = 'This site already has the tag {tag} ';
+      $message .= 'associated with the organization {org}.';
+      throw new TerminusException(
+        $message,
+        array('tag' => $tag, 'org' => $org_id)
+      );
+    }
+    $params    = array($tag => array('sites' => array($this->get('id'))));
+    $response  = $this->request->simpleRequest(
+      sprintf('organizations/%s/tags', $org_id),
       array('method' => 'put', 'form_params' => $params)
     );
     return $response;
@@ -335,15 +343,15 @@ class Site extends TerminusModel {
   /**
    * Returns tags from the site/org join
    *
-   * @param string $org UUID of organization site belongs to
+   * @param string $org_id UUID of organization site belongs to
    * @return string[]
    */
-  public function getTags($org) {
+  public function getTags($org_id) {
     if (isset($this->tags)) {
       return $this->tags;
     }
     $org_site_member = new OrganizationSiteMemberships(
-      array('organization' => new Organization(null, array('id' => $org)))
+      array('organization' => new Organization(null, array('id' => $org_id)))
     );
     $org_site_member->fetch();
     $org  = $org_site_member->get($this->get('id'));
@@ -361,6 +369,19 @@ class Site extends TerminusModel {
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
+  }
+
+  /**
+   * Checks to see whether the site has a tag associated with the given org
+   *
+   * @param string $tag    Name of tag to check for
+   * @param string $org_id Organization with which this tag is associated
+   * @return bool
+   */
+  public function hasTag($tag, $org_id) {
+    $tags    = $this->getTags($org_id);
+    $has_tag = in_array($tag, $tags);
+    return $has_tag;
   }
 
   /**
@@ -501,15 +522,15 @@ class Site extends TerminusModel {
   /**
    * Removes a tag to the site
    *
-   * @param string $tag Tag to remove
-   * @param string $org Organization to remove the tag association from
+   * @param string $tag    Tag to remove
+   * @param string $org_id Organization to remove the tag association from
    * @return array
    */
-  public function removeTag($tag, $org) {
+  public function removeTag($tag, $org_id) {
     $response = $this->request->simpleRequest(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
-        $org,
+        $org_id,
         $tag,
         $this->get('id')
       ),

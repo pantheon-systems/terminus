@@ -15,9 +15,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - Missing creation dates in site data while using organizations site list command will no longer cause errors. (#766)
 - Fixed headers in session token-based login. (#764)
-- `site backups load --element=database` no longer errs upon calling the renamed function "backup". (#767)
-- `site backups get --latest` bug wherein it was returning the oldest backup, rather than the most recent. (#770)
-- `sites aliases` will no longer tell you you have no sites when none of your domains include 'pantheon.io'. (#782)
+<<<<<<< 12240f76d4dfd9e994c02b550801fc18c1ced63e
+- `sites backups load --element=database` no longer errs upon calling the renamed function "backup". (#767)
+- `site tags add` now searches for existing tags before adding another. (#771)
 
 ## [0.10.0] - 2015-12-15
 ### Added
