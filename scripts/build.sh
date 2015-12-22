@@ -4,6 +4,8 @@ set -ex
 
 TERMINUS_BIN_DIR=${TERMINUS_BIN_DIR-builds}
 
+# Regenerate the internal documentation
+php utils/make-docs.php
 # Install Composer nearby for use
 curl -sS https://getcomposer.org/installer | php -- --filename=$TERMINUS_BIN_DIR/composer.phar
 # Remove dev packages for massive PHAR size reduction
@@ -16,3 +18,4 @@ cp $TERMINUS_BIN_DIR/terminus.phar $TERMINUS_BIN_DIR/terminus
 chmod +x $TERMINUS_BIN_DIR/terminus.phar
 chmod +x $TERMINUS_BIN_DIR/terminus
 php $TERMINUS_BIN_DIR/composer.phar update
+rm $TERMINUS_BIN_DIR/composer.phar
