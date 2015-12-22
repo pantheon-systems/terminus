@@ -9,7 +9,7 @@ if (PHP_SAPI != 'cli') {
   die(1);
 }
 
-$min_version = '5.5.0';
+$min_version = '5.5.9';
 
 if (version_compare(PHP_VERSION, $min_version, '<')) {
   printf(
