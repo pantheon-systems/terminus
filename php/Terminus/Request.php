@@ -7,6 +7,7 @@ use Terminus\Utils;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use GuzzleHttp\RequestOptions;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -136,6 +137,11 @@ class Request {
         )
       );
       $logger->debug('Request URL: ' . $url);
+      // Turn off cert verification if we are sending to a Onebox.
+      // Is there a better place to do this?
+      if(TRUE) {
+        $options += [RequestOptions::VERIFY => false];
+      }
       $response = $this->send($url, $method, $options);
 
       $data = array(
