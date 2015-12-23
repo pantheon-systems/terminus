@@ -17,7 +17,7 @@ Feature: List Backups for a Site
   Scenario: Show only the latest backup for an environment
     When I run "terminus site backups list --site=[[test_site_name]] --env=dev --latest --format=json"
     Then I should have "1" records
-    And I should get: "files.tar.gz"
+    And I should get: "database.sql.gz"
 
   @vcr site_backups_list
   Scenario: Filter backups by element

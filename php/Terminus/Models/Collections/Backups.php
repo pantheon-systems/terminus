@@ -180,12 +180,21 @@ class Backups extends TerminusCollection {
       );
     }
 
-    $backups = array_filter(
+    $finished_backups = array_filter(
       $all_backups,
       function($backup) {
         return $backup->backupIsFinished();
       }
     );
+    $ordered_backups  = array();
+    foreach ($finished_backups as $id => $backup) {
+      $ordered_backups[$id] = $backup->get('start_time');
+    }
+    arsort($ordered_backups);
+    $backups = array();
+    foreach ($ordered_backups as $id => $start_time) {
+      $backups[] = $finished_backups[$id];
+    }
 
     return $backups;
   }
