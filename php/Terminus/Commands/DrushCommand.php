@@ -38,7 +38,11 @@ class DrushCommand extends CommandWithSSH {
    *
    */
   public function __invoke($args, $assoc_args) {
-    $command = implode(' ', array_map('escapeshellarg', $args));
+    // Escape any argument that contains non-alphanumeric values (dash and underscore also allowed.
+    // Leave simple arguments unchanged.
+    $command = implode(' ', array_map(function ($item) {
+        return preg_match('#[^a-zA-Z0-9_-]#', $item) ? escapeshellarg($item) : $item;
+      }, $args));
     $this->checkCommand($command);
 
     $sites = new Sites();
