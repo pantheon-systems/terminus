@@ -6,6 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Moved Terminus::prompt(), Terminus::promptSecret() to Terminus\Helpers\Input. (#768)
 - Removed duplicative Terminus::menu() in favor of Terminus\Helpers\Input::menu. (#768)
 - Moved Terminus::line() to Terminus\Outputters\Outputter. (#768)
+- Updated Symfony to version 3.0.0. Minimum PHP version required to run Terminus is now 5.5.9. (#772)
 
 ### Fixed
 - Missing creation dates in site data while using organizations site list command will no longer cause errors. (#766)

@@ -8,18 +8,14 @@
     "bin/terminus.bat", "bin/terminus"
   ],
   "require": {
-    "php": ">=5.3.2",
+    "php": ">=5.5.9",
     "guzzlehttp/guzzle": "6.1.*@stable",
     "jlogsdon/cli": "~0.9.4",
     "katzgrau/klogger": "1.2.*@stable",
-    "nb/oxymel": "0.1.0",
     "psy/psysh": "@stable",
     "ramsey/array_column": "~1.1",
-    "rmccue/requests": "~1.6",
+    "rmccue/requests": "^1.6",
     "symfony/finder": "~2.7",
-    "symfony/process": "2.7.*",
-    "symfony/dom-crawler": "2.7.*",
-    "symfony/css-selector": "2.7.*",
     "twig/twig": "1.*",
     "vlucas/phpdotenv": "2.1.*@stable"
   },
