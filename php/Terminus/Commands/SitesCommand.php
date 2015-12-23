@@ -76,7 +76,7 @@ class SitesCommand extends TerminusCommand {
     if ($file_exists) {
       $message = 'Pantheon aliases updated';
     }
-    if (strpos($content, 'pantheon.io') === false) {
+    if (strpos($content, 'array') === false) {
       $message .= ', although you have no sites';
     }
     $this->log()->info($message);
