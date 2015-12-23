@@ -49,6 +49,24 @@ abstract class CommandWithSSH extends TerminusCommand {
   }
 
   /**
+   * Verifies that there is only one argument given and no extaneous params
+   *
+   * @param array $args       Command(s) given in the command line
+   * @param array $assoc_args Arguments and flags passed into the former
+   * @return bool True if correct
+   */
+  protected function ensureQuotation($args, $assoc_args) {
+    unset($assoc_args['site']);
+    unset($assoc_args['env']);
+    if (!empty($assoc_args) || (count($args) !== 1)) {
+      $message  = 'Your full {client} command and its arguments ';
+      $message .= 'must be in quotation marks.';
+      $this->failure($message, array('client' => $this->client));
+    }
+    return true;
+  }
+
+  /**
    * Formats command output into an array
    *
    * @param string $string Output string to format
