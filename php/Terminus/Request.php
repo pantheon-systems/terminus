@@ -5,6 +5,7 @@ namespace Terminus;
 use Terminus;
 use Terminus\Utils;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use Terminus\Exceptions\TerminusException;
@@ -148,9 +149,8 @@ class Request {
       $response = $e->getResponse();
       throw new TerminusException($response->getBody(true));
     } catch (\GuzzleHttp\Exception\RequestException $e) {
-      $request = $e->getRequest();
       $sanitized_request = Utils\stripSensitiveData(
-        (string)$request,
+        $e->getMessage(),
         self::$blacklist
       );
       throw new TerminusException(
@@ -238,6 +238,7 @@ class Request {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
+    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
       array(
