@@ -26,7 +26,7 @@ class Request {
    * @var array
    * TODO: Move this logic to the logger
    */
-  protected static $blacklist = array('password');
+  protected $blacklist = array('password');
 
   /**
    * Download file from target URL
@@ -127,16 +127,16 @@ class Request {
     $options = array()
   ) {
     $logger = Terminus::getLogger();
+    $url    = Endpoint::get(
+      array(
+        'realm' => $realm,
+        'uuid'  => $uuid,
+        'path'  => $path,
+      )
+    );
 
+    $logger->debug('Request URL: ' . $url);
     try {
-      $url = Endpoint::get(
-        array(
-          'realm' => $realm,
-          'uuid'  => $uuid,
-          'path'  => $path,
-        )
-      );
-      $logger->debug('Request URL: ' . $url);
       $response = $this->send($url, $method, $options);
 
       $data = array(
@@ -149,9 +149,11 @@ class Request {
       $response = $e->getResponse();
       throw new TerminusException($response->getBody(true));
     } catch (\GuzzleHttp\Exception\RequestException $e) {
-      $sanitized_request = Utils\stripSensitiveData(
-        $e->getMessage(),
-        self::$blacklist
+      $sanitized_request = json_encode(
+        Utils\stripSensitiveData(
+          array('url' => $url, 'method' => $method, 'options' => $options),
+          $this->blacklist
+        )
       );
       throw new TerminusException(
         'API Request Error. {msg} - Request: {req}',
@@ -227,7 +229,8 @@ class Request {
       'headers'         => array(
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
-      )
+      ),
+      RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
     );
 
     if ($session = Session::instance()->get('session', false)) {
@@ -238,7 +241,6 @@ class Request {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
-    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
       array(
