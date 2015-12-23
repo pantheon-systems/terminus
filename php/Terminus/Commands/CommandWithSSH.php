@@ -4,20 +4,27 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Helpers\Input;
+use Terminus\Models\Collections\Sites;
 
 /**
  * Base class for Terminus commands that deal with sending SSH commands
  */
 abstract class CommandWithSSH extends TerminusCommand {
   /**
-   * Name of client that command will be run on server via
+   * @var string Name of the client to run a command on the platform
    */
   protected $client = '';
 
   /**
-   * A hash of commands which do not work in Terminus
-   * The key is the drush command
-   * The value is the Terminus equivalent, blank if DNE
+   * @var string Name of the command to be run as it will be used on server
+   */
+  protected $command = '';
+
+  /**
+   * @var string[] A hash of commands which do not work in Terminus. The key
+   *   is the Drush command, and the value is the Terminus equivalent, and
+   *   blank if DNE.
    */
   protected $unavailable_commands = array();
 
@@ -51,8 +58,8 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Verifies that there is only one argument given and no extaneous params
    *
-   * @param array $args       Command(s) given in the command line
-   * @param array $assoc_args Arguments and flags passed into the former
+   * @param string[] $args       Command(s) given in the command line
+   * @param string[] $assoc_args Arguments and flags passed into the former
    * @return bool True if correct
    */
   protected function ensureQuotation($args, $assoc_args) {
@@ -113,22 +120,65 @@ abstract class CommandWithSSH extends TerminusCommand {
   }
 
   /**
+   * Parent function to SSH-based command invocations
+   *
+   * @param string[] $args       Command(s) given in the command line
+   * @param string[] $assoc_args Arguments and flags passed into the former
+   * @return array Elements as follow:
+   *         Site   site    Site being invoked
+   *         string env_id  Name of the environment being invoked
+   *         string command Command to run remotely
+   *         string server  Server connection info
+   */
+  protected function getElements($args, $assoc_args) {
+    $this->ensureQuotation($args, $assoc_args);
+    $command = array_pop($args);
+    $this->checkCommand($command);
+
+    $sites = new Sites();
+    $site  = $sites->get(Input::sitename($assoc_args));
+    if (!$site) {
+      $this->failure('Command could not be completed. Unknown site specified.');
+    }
+
+    $env_id = Input::env(array('args' => $assoc_args, 'site' => $site));
+
+    $elements = array(
+      'site'    => $site,
+      'env_id'  => $env_id,
+      'command' => $command,
+      'server'  => $this->getAppserverInfo(
+        array('site' => $site->get('id'), 'environment' => $env_id)
+      )
+    );
+    return $elements;
+  }
+
+  /**
    * Sends command through SSH
    *
    * @param array $options Elements as follows:
-   *        [string] server      Server to connect to
-   *        [string] remote_exec Program to execute on server
-   *        [array]  command     Command and arguments
+   *        Site   site    Site being invoked
+   *        string env_id  Name of the environment being invoked
+   *        string command Command to run remotely
+   *        string server  Server connection info
    * @return array
    */
   protected function sendCommand(array $options = array()) {
-    $server      = $options['server'];
-
+    $this->log()->info(
+      sprintf('Running %s {cmd} on {site}-{env}', $this->command),
+      array(
+        'cmd'   => $options['command'],
+        'site'  => $options['site']->get('name'),
+        'env'   => $options['env_id'],
+      )
+    );
+    $server    = $options['server'];
     $is_normal = (Terminus::getConfig('format') == 'normal');
     $cmd       = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p '
       . $server['port'] . ' -o "AddressFamily inet"' . " "
       . escapeshellarg(
-        $options['remote_exec'] . ' ' . $options['command'] . ' '
+        $this->command . ' ' . $options['command'] . ' '
       );
     $this->log()->debug(
       'Command "{command}" is being run.',
