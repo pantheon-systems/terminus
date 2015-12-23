@@ -38,6 +38,7 @@ class DrushCommand extends CommandWithSSH {
    *
    */
   public function __invoke($args, $assoc_args) {
+    $this->ensureQuotation($args, $assoc_args);
     $command = array_pop($args);
     $this->checkCommand($command);
 
