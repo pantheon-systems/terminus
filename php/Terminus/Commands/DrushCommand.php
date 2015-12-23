@@ -28,7 +28,7 @@ class DrushCommand extends CommandWithSSH {
    * Invoke `drush` commands on a Pantheon development site
    *
    * <commands>...
-   * : The WP-CLI command you intend to run, with its arguments
+   * : The Drush command you intend to run with its arguments, in quotes
    *
    * [--site=<site>]
    * : The name (DNS shortname) of your site on Pantheon
