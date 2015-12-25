@@ -432,7 +432,7 @@ class SiteCommand extends TerminusCommand {
           break;
     }
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = Input::optional('env', $assoc_args);
+    $env  = Input::optional(array('key' => 'env', 'choices' => $assoc_args));
     if (isset($env) && ($env != null)) {
       $env = '#' . $env;
     }
@@ -1118,7 +1118,13 @@ class SiteCommand extends TerminusCommand {
     $data   = array();
     switch ($action) {
       case 'add':
-        $role = Input::optional('role', $assoc_args, 'team_member');
+        $role = Input::optional(
+          array(
+            'key'     => 'role',
+            'choices' => $assoc_args,
+            'default' => 'team_member'
+          )
+        );
         $org  = Input::orgname($assoc_args, 'org');
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
@@ -1909,13 +1915,25 @@ class SiteCommand extends TerminusCommand {
     $env  = $site->environments->get(
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
-    $file = Input::optional('file', $assoc_args, false);
+    $file = Input::optional(
+      array(
+        'key'     => 'file',
+        'choices' => $assoc_args,
+        'default' => false
+      )
+    );
     if ($file) {
       $backup  = $env->backups->getBackupByFileName($file);
       $element = $backup->getElement();
     } else {
       $element = Input::backupElement(array('args' => $assoc_args));
-      $latest  = (boolean)Input::optional('latest', $assoc_args, false);
+      $latest  = (boolean)Input::optional(
+        array(
+          'key'     => 'latest',
+          'choices' => $assoc_args,
+          'default' => false
+        )
+      );
       $backups = $env->backups->getFinishedBackups($element);
 
       if ($latest) {
@@ -1982,7 +2000,13 @@ class SiteCommand extends TerminusCommand {
       $element = Input::backupElement(array('args' => $assoc_args));
     }
     $backups = $env->backups->getFinishedBackups($element);
-    $latest  = (boolean)Input::optional('latest', $assoc_args, false);
+    $latest  = (boolean)Input::optional(
+      array(
+        'key'     => 'latest',
+        'choices' => $assoc_args,
+        'default' => false
+      )
+    );
     if (empty($backups)) {
       $this->log()->warning('No backups found.');
     } else {

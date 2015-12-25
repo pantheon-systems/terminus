@@ -48,4 +48,34 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(0, $only_option_index);
   }
 
+  function testOptional() {
+    $option = Input::optional(
+      array(
+        'key'     => 'key',
+        'choices' => array('key' => 'value', 'not' => 'me'),
+        'default' => true,
+      )
+    );
+    $this->assertInternalType('string', $option);
+    $this->assertEquals('value', $option);
+
+    $default = Input::optional(
+      array(
+        'key'     => 'key',
+        'choices' => array('not' => 'me'),
+        'default' => true,
+      )
+    );
+    $this->assertInternalType('bool', $default);
+    $this->assertEquals(true, $default);
+
+    $default_null = Input::optional(
+      array(
+        'key'     => 'key',
+        'choices' => array('not' => 'me'),
+      )
+    );
+    $this->assertEquals(null, $default_null);
+  }
+
 }

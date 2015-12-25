@@ -222,10 +222,10 @@ class Input {
    * Produces a menu with the given attributes
    *
    * @param array $arg_options Arguments as follows:
-   *        array  $choices      Menu options for the user
-   *        mixed  $default      Given as null option in the menu
-   *        string $text         Prompt printed to STDOUT
-   *        bool   $return_value If true, returns selection. False, the index
+   *        array  choices      Menu options for the user
+   *        mixed  default      Given as null option in the menu
+   *        string text         Prompt printed to STDOUT
+   *        bool   return_value If true, returns selection. False, the index
    * @return string Either the selection, its index, or the default
    */
   public static function menu(array $arg_options = array()) {
@@ -255,16 +255,24 @@ class Input {
   /**
    * Returns $args[$key] if exists, $default otherwise
    *
-   * @param string $key     Index of arg to return
-   * @param array  $args    Args to search for key
-   * @param mixed  $default Returned if $args[$key] DNE
+   * @param array $arg_options Arguments as follows:
+   *        string key     Index of arg to return
+   *        array  args    Args to search for key
+   *        mixed  default Returned if $args[$key] DNE
    * @return mixed Either $args[$key] or $default
    */
-  public static function optional($key, $args, $default = null) {
-    if (isset($args[$key])) {
-      return $args[$key];
+  public static function optional(array $arg_options = array()) {
+    $default_options = array(
+      'key'     => 0,
+      'choices' => array(),
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['choices'][$options['key']])) {
+      return $options['choices'][$options['key']];
     }
-    return $default;
+    return $options['default'];
   }
 
   /**

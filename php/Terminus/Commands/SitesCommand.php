@@ -45,11 +45,19 @@ class SitesCommand extends TerminusCommand {
    */
   public function aliases($args, $assoc_args) {
     $user     = new User();
-    $print    = Input::optional('print', $assoc_args, false);
+    $print    = Input::optional(
+      array(
+        'key'     => 'print',
+        'choices' => $assoc_args,
+        'default' => false,
+      )
+    );
     $location = Input::optional(
-      'location',
-      $assoc_args,
-      getenv('HOME') . '/.drush/pantheon.aliases.drushrc.php'
+      array(
+        'key'     => 'location',
+        'choices' => $assoc_args,
+        'default' => getenv('HOME') . '/.drush/pantheon.aliases.drushrc.php',
+      )
     );
 
     if (is_dir($location)) {
@@ -311,11 +319,35 @@ class SitesCommand extends TerminusCommand {
       $this->sites->rebuildCache();
     }
 
-    $upstream = Input::optional('upstream', $assoc_args, false);
+    $upstream = Input::optional(
+      array(
+        'key'     => 'upstream',
+        'choices' => $assoc_args,
+        'default' => false,
+      )
+    );
     $data     = array();
-    $report   = Input::optional('report', $assoc_args, false);
-    $confirm  = Input::optional('confirm', $assoc_args, false);
-    $tag      = Input::optional('tag', $assoc_args, false);
+    $report   = Input::optional(
+      array(
+        'key'     => 'report',
+        'choices' => $assoc_args,
+        'default' => false,
+      )
+    );
+    $confirm   = Input::optional(
+      array(
+        'key'     => 'confirm',
+        'choices' => $assoc_args,
+        'default' => false,
+      )
+    );
+    $tag       = Input::optional(
+      array(
+        'key'     => 'tag',
+        'choices' => $assoc_args,
+        'default' => false,
+      )
+    );
 
     $org = '';
     if ($tag) {
@@ -364,8 +396,20 @@ class SitesCommand extends TerminusCommand {
           );
           continue;
         }
-        $updatedb = !Input::optional($assoc_args, 'updatedb', false);
-        $xoption  = Input::optional($assoc_args, 'xoption', 'theirs');
+        $updatedb = !Input::optional(
+          array(
+            'key'     => 'updatedb',
+            'choices' => $assoc_args,
+            'default' => false,
+          )
+        );
+        $xoption  = !Input::optional(
+          array(
+            'key'     => 'xoption',
+            'choices' => $assoc_args,
+            'default' => 'theirs',
+          )
+        );
         if (!$report) {
           $confirmed = Input::yesno(
             'Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ',
