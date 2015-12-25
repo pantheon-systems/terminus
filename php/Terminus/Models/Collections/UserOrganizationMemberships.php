@@ -42,12 +42,12 @@ class UserOrganizationMemberships extends TerminusCollection {
    * @return UserOrganizationMembership $model
    */
   public function get($id) {
-    $orgs    = $this->getMembers();
-    $orglist = \Terminus\Helpers\Input::orglist();
-    $model   = null;
+    $orgs     = $this->getMembers();
+    $org_list = \Terminus\Helpers\Input::orgList();
+    $model    = null;
     if (isset($orgs[$id])) {
       $model = $this->models[$id];
-    } elseif (($location = array_search($id, $orglist)) !== false) {
+    } elseif (($location = array_search($id, $org_list)) !== false) {
       $model = $this->models[$location];
     }
     return $model;

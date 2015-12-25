@@ -224,7 +224,7 @@ class Input {
    * @param array $arg_options Arguments as follows:
    *        array  choices      Menu options for the user
    *        mixed  default      Given as null option in the menu
-   *        string text         Prompt printed to STDOUT
+   *        string message      Prompt printed to STDOUT
    *        bool   return_value If true, returns selection. False, the index
    * @return string Either the selection, its index, or the default
    */
@@ -257,7 +257,7 @@ class Input {
    *
    * @param array $arg_options Arguments as follows:
    *        string key     Index of arg to return
-   *        array  args    Args to search for key
+   *        array  choices    Args to search for key
    *        mixed  default Returned if $args[$key] DNE
    * @return mixed Either $args[$key] or $default
    */
@@ -278,57 +278,62 @@ class Input {
   /**
    * Input helper that provides interactive menu to select org name
    *
-   * @param array  $args    The args passed in from argv
-   * @param string $key     Args key to search for
-   * @param string $default Returned if arg and stdin fail in interactive
-   * @param array  $options Options to feed into the orglist function
+   * @param array $arg_options Arguments as follows:
+   *        array  args       The args passed in from argv
+   *        string key        Args key to search for
+   *        string default    Returned if arg and stdin fail in interactive
+   *        array  allow_none True to permit no selection to be an option
    * @return string ID of selected organization
   */
-  public static function orgid(
-    $args,
-    $key = 'org',
-    $default = null,
-    $options = array()
-  ) {
-    $arguments = $args;
+  public static function orgid(array $arg_options = array()) {
+    $default_options = array(
+      'args'       => array(),
+      'key'        => 'org',
+      'default'    => null,
+      'allow_none' => true,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    $arguments = $options['args'];
+    $key       = $options['key'];
     if (!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
       $arguments[$key] = $_SERVER['TERMINUS_ORG'];
     }
 
-    $orglist = self::orglist($options);
-    $flip    = array_flip($orglist);
+    $org_list = self::orgList($options);
+    $flip    = array_flip($org_list);
     if (isset($arguments[$key])) {
       if (isset($flip[$arguments[$key]])) {
         return $flip[$arguments[$key]];
-      } elseif (isset($orglist[$arguments[$key]])) {
+      } elseif (isset($org_list[$arguments[$key]])) {
         return $arguments[$key];
       } elseif (in_array($arguments[$key], self::$NULL_INPUTS)
         || !empty($arguments)
       ) {
-        return $default;
+        return $options['default'];
       }
     }
 
     // include the Org ID in the output menu
-    $orglist_with_id = array();
-    foreach ($orglist as $id => $name) {
+    $org_list_with_id = array();
+    foreach ($org_list as $id => $name) {
       if ($name == 'None') {
-        $orglist_with_id[$id] = $name;
+        $org_list_with_id[$id] = $name;
         continue;
       }
-      $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
+      $org_list_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
     $org = self::menu(
       array(
-        'choices' => $orglist_with_id,
+        'choices' => $org_list_with_id,
         'default' => false,
         'message' => 'Choose an organization',
       )
     );
 
     if ($org == '-') {
-      return $default;
+      return $options['default'];
     }
     return $org;
   }
@@ -340,7 +345,7 @@ class Input {
    *        bool allow_none True to allow the "none" option
    * @return array A list of organizations
   */
-  public static function orglist(array $arg_options = array()) {
+  public static function orgList(array $arg_options = array()) {
     $default_options = array('allow_none' => true);
     $options         = array_merge($default_options, $arg_options);
 
@@ -365,22 +370,22 @@ class Input {
    * @return string Site name
   */
   public static function orgname($args, $key) {
-    $orglist = self::orglist();
+    $org_list = self::orgList();
     if (isset($args[$key])) {
       //If org id is sent, fetch the name
-      if (array_key_exists($args[$key], $orglist)) {
-        return $orglist[$args[$key]];
+      if (array_key_exists($args[$key], $org_list)) {
+        return $org_list[$args[$key]];
       }
       return $args[$key];
     }
     $org = self::menu(
       array(
-        'choices' => $orglist,
+        'choices' => $org_list,
         'default' => false,
         'message' => 'Choose an organization',
       )
     );
-    return $orglist[$org];
+    return $org_list[$org];
   }
 
   /**

@@ -1125,7 +1125,7 @@ class SiteCommand extends TerminusCommand {
             'default' => 'team_member'
           )
         );
-        $org  = Input::orgname($assoc_args, 'org');
+        $org  = Input::orgName($assoc_args, 'org');
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
             "Organization is either invalid or you are not a member."
@@ -1135,7 +1135,7 @@ class SiteCommand extends TerminusCommand {
         $workflow->wait();
           break;
       case 'remove':
-        $org = Input::orgid($assoc_args, 'org');
+        $org = Input::orgId(array('args' => $assoc_args));
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
             "Organization is either invalid or you are not a member."
@@ -1510,7 +1510,7 @@ class SiteCommand extends TerminusCommand {
   public function tags($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get(Input::sitename($assoc_args));
-    $org    = Input::orgid($assoc_args, 'org');
+    $org    = Input::orgId(array('args' => $assoc_args));
 
     if ($site->organizationIsMember($org)) {
       switch ($action) {

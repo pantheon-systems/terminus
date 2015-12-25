@@ -65,11 +65,11 @@ class OrganizationsCommand extends TerminusCommand {
    */
   public function sites($args, $assoc_args) {
     $action   = array_shift($args);
-    $org_id   = Input::orgid(
-      $assoc_args,
-      'org',
-      null,
-      array('allow_none' => false)
+    $org_id   = Input::orgId(
+      array(
+        'args'       => $assoc_args,
+        'allow_none' => false,
+      )
     );
     // TODO: clarify that these are OrganizationMemberships, not Organization models
     $orgs      = new UserOrganizationMemberships();
@@ -191,11 +191,11 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand team
    */
   public function team($args, $assoc_args) {
-    $org_id = Input::orgid(
-      $assoc_args,
-      'org',
-      null,
-      array('allow_none' => false)
+    $org_id = Input::orgId(
+      array(
+        'args'       => $assoc_args,
+        'allow_none' => false,
+      )
     );
     $orgs = new UserOrganizationMemberships();
     $org  = $orgs->get($org_id);

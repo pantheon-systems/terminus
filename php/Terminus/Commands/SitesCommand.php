@@ -351,7 +351,7 @@ class SitesCommand extends TerminusCommand {
 
     $org = '';
     if ($tag) {
-      $org = Input::orgid($assoc_args, 'org');
+      $org = Input::orgId(array('args' => $assoc_args));
     }
     $sites = $this->sites->filterAllByTag($tag, $org);
 
@@ -496,7 +496,9 @@ class SitesCommand extends TerminusCommand {
       );
     }
     if (isset($assoc_args['org'])) {
-      $options['organization_id'] = Input::orgid($assoc_args, 'org', false);
+      $options['organization_id'] = Input::orgId(
+        array('args' => $assoc_args, 'default' => false)
+      );
     }
     return $options;
   }
