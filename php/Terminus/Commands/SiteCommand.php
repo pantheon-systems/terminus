@@ -193,13 +193,16 @@ class SiteCommand extends TerminusCommand {
       $append[] = 'FILES';
     }
     $append  = implode(' and ', $append);
-    $confirm = sprintf(
-      "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
-      strtoupper($from_env->getName()),
-      strtoupper($to_env),
-      $append
+    Input::confirm(
+      array(
+        'message' => "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
+        'context' => array(
+          strtoupper($from_env->getName()),
+          strtoupper($to_env),
+          $append
+        )
+      )
     );
-    Input::confirm($confirm);
 
     if ($site->environments->get($to_env) == null) {
       $this->failure(
@@ -279,7 +282,7 @@ class SiteCommand extends TerminusCommand {
         $message = "Commit changes to $count files?";
         if ($count === 0) {
           $message = 'There are no changed files. Commit anyway?';
-          Input::confirm($message);
+          Input::confirm(compact('message'));
         }
         $message  = Input::string(
           $assoc_args,
@@ -441,9 +444,8 @@ class SiteCommand extends TerminusCommand {
     if (isset($assoc_args['print'])) {
       $this->output()->outputValue($url, 'Dashboard URL');
     } else {
-      Input::confirm(
-        'Do you want to open your dashboard link in a web browser?'
-      );
+      $message = 'Do you want to open your dashboard link in a web browser?';
+      Input::confirm(compact('message'));
       $command = sprintf('%s %s', $cmd, $url);
       exec($command);
     }
@@ -465,9 +467,12 @@ class SiteCommand extends TerminusCommand {
     if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
       //If the force option isn't used, we'll ask you some annoying questions
       Input::confirm(
-        sprintf('Are you sure you want to delete %s?', $site->get('name'))
+        array(
+          'message' => 'Are you sure you want to delete %s?',
+          'context' => $site->get('name')
+        )
       );
-      Input::confirm('Are you really sure?');
+      Input::confirm(array('message' => 'Are you really sure?'));
     }
     $this->log()->info(
       'Deleting {site} ...',
@@ -507,11 +512,11 @@ class SiteCommand extends TerminusCommand {
       )
     );
 
+    $message = 'Are you sure you want to delete the "%s" branch from %s?';
     Input::confirm(
-      sprintf(
-        'Are you sure you want to delete the "%s" branch from %s?',
-        $branch,
-        $site->get('name')
+      array(
+        'message' => $message,
+        'context' => array($branch, $site->get('name')),
       )
     );
 
@@ -554,11 +559,11 @@ class SiteCommand extends TerminusCommand {
       $delete_branch = (boolean)$assoc_args['remove_branch'];
     }
 
+    $message = 'Are you sure you want to delete the "%s" environment from %s?';
     Input::confirm(
-      sprintf(
-        'Are you sure you want to delete the "%s" environment from %s?',
-        $env,
-        $site->get('name')
+      array(
+        'message' => $message,
+        'context' => array($env, $site->get('name')),
       )
     );
 
@@ -1755,11 +1760,12 @@ class SiteCommand extends TerminusCommand {
             isset($assoc_args['accept-upstream'])
             && $assoc_args['accept-upstream']
           );
+          $message  = 'Are you sure you want to apply the ';
+          $message .= 'upstream updates to %s-dev';
           Input::confirm(
-            sprintf(
-              'Are you sure you want to apply the upstream updates to %s-dev',
-              $site->get('name'),
-              $env
+            array(
+              'message' => $message,
+              'context' => array($site->get('name'), $env),
             )
           );
           $workflow = $site->applyUpstreamUpdates(
@@ -1830,10 +1836,9 @@ class SiteCommand extends TerminusCommand {
     );
 
     Input::confirm(
-      sprintf(
-        'Are you sure you want to wipe %s-%s?',
-        $site->get('name'),
-        $env->get('id')
+      array(
+        'message' => 'Are you sure you want to wipe %s-%s?',
+        'context' => array($site->get('name'), $env->get('id')),
       )
     );
 

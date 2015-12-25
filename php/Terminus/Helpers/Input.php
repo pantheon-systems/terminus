@@ -16,7 +16,7 @@ use Terminus\Models\Collections\Upstreams;
  * Helper class to handle inputs
  */
 class Input {
-  public static $NULL_INPUTS = array('', 'false', 'None', 'Null', '0');
+  static $NULL_INPUTS = array('', 'false', 'None', 'Null', '0');
 
   /**
    * Produces a menu to select a backup
@@ -101,18 +101,21 @@ class Input {
   /**
    * Asks for confirmation before running a destructive operation.
    *
-   * @param string $question Prompt text
-   * @param array  $params   Elements to interpolate into the prompt text
+   * @param array $arg_options Arguments as follows:
+   *        string $question Prompt text
+   *        array  $params   Elements to interpolate into the prompt text
    * @return bool True if prompt is accepted
    */
-  static function confirm(
-    $question,
-    $params = array()
-  ) {
+  static function confirm(array $arg_options = array()) {
     if (Terminus::getConfig('yes')) {
       return true;
     }
-    $question = vsprintf($question, $params);
+    $default_options = array(
+      'message' => 'Do you want to continue?',
+      'context' => array(),
+    );
+    $options         = array_merge($default_options, $arg_options);
+    $question        = vsprintf($options['message'], $options['context']);
     fwrite(STDOUT, $question . ' [y/n] ');
     $answer = trim(fgets(STDIN));
 

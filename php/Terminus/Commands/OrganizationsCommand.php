@@ -103,8 +103,10 @@ class OrganizationsCommand extends TerminusCommand {
           );
         }
         Input::confirm(
-          'Are you sure you want to add %s to %s ?',
-          array($site->get('name'), $org_info->profile->name)
+          array(
+            'message' => 'Are you sure you want to add %s to %s ?',
+            'context' => array($site->get('name'), $org_info->profile->name),
+          )
         );
         $workflow = $org_model->site_memberships->addMember($site);
         $workflow->wait();
@@ -134,8 +136,10 @@ class OrganizationsCommand extends TerminusCommand {
         }
         $member = $org_model->site_memberships->get($site->get('id'));
         Input::confirm(
-          'Are you sure you want to remove %s from %s ?',
-          array($site->get('name'), $org_info->profile->name)
+          array(
+            'message' => 'Are you sure you want to remove %s from %s ?',
+            'context' => array($site->get('name'), $org_info->profile->name),
+          )
         );
         $workflow = $member->removeMember();
         $workflow->wait();
