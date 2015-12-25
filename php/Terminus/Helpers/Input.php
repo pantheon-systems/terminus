@@ -287,7 +287,7 @@ class Input {
       $arguments[$key] = $_SERVER['TERMINUS_ORG'];
     }
 
-    $orglist = Input::orglist($options);
+    $orglist = self::orglist($options);
     $flip    = array_flip($orglist);
     if (isset($arguments[$key])) {
       if (isset($flip[$arguments[$key]])) {
@@ -328,23 +328,25 @@ class Input {
   /**
    * Returns an array listing organizaitions applicable to user
    *
-   * @param array $options Elements as follows:
-   *        [boolean] allow_none True to allow the "none" option
+   * @param array $arg_options Elements as follows:
+   *        bool allow_none True to allow the "none" option
    * @return array A list of organizations
   */
-  public static function orglist($options = array()) {
-    $orgs = array();
+  public static function orglist(array $arg_options = array()) {
+    $default_options = array('allow_none' => true);
+    $options         = array_merge($default_options, $arg_options);
 
-    if (!isset($options['allow_none']) || (boolean)$options['allow_none']) {
-      $orgs = array('-' => 'None');
+    $org_list = array();
+    if ($options['allow_none']) {
+      $org_list = array('-' => 'None');
     }
-
-    $user = new User();
-    foreach ($user->organizations->all() as $id => $org) {
-      $org_data = $org->get('organization');
-      $orgs[$org->get('id')] = $org_data->profile->name;
+    $user          = new User();
+    $organizations = $user->organizations->all();
+    foreach ($organizations as $id => $org) {
+      $org_data                  = $org->get('organization');
+      $org_list[$org->get('id')] = $org_data->profile->name;
     }
-    return $orgs;
+    return $org_list;
   }
 
   /**
@@ -355,7 +357,7 @@ class Input {
    * @return string Site name
   */
   public static function orgname($args, $key) {
-    $orglist = Input::orglist();
+    $orglist = self::orglist();
     if (isset($args[$key])) {
       //If org id is sent, fetch the name
       if (array_key_exists($args[$key], $orglist)) {
