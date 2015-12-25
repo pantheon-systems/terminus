@@ -96,9 +96,10 @@ class OrganizationsCommand extends TerminusCommand {
         } else {
           $site = $this->sites->get(
             Input::menu(
-              $this->getNonmemberSiteList($memberships),
-              null,
-              'Choose site'
+              array(
+                'choices' => $this->getNonmemberSiteList($memberships),
+                'message' => 'Choose site'
+              )
             )
           );
         }
@@ -128,9 +129,10 @@ class OrganizationsCommand extends TerminusCommand {
         } else {
           $site = $this->sites->get(
             Input::menu(
-              $this->getMemberSiteList($memberships),
-              null,
-              'Choose site'
+              array(
+                'choices' => $this->getMemberSiteList($memberships),
+                'message' => 'Choose site',
+              )
             )
           );
         }

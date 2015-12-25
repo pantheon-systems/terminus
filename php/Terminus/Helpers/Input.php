@@ -51,7 +51,9 @@ class Input {
       }
       $choices[] = $backup->get('filename');
     }
-    $choice        = self::menu($choices, null, $options['label']);
+    $choice        = self::menu(
+      array('choices' => $choices, 'message' => $options['label'])
+    );
     $backups       = array_values($backups);
     $target_backup = $backups[$choice];
 
@@ -94,7 +96,13 @@ class Input {
       );
     }
 
-    $element = self::menu($choices, null, $options['label'], true);
+    $element = self::menu(
+      array(
+        'choices' => $choices,
+        'message' => $options['label'],
+        'return_value' => true,
+      )
+    );
     return $element;
   }
 
@@ -156,10 +164,11 @@ class Input {
       $day_number = array_search($day, $options['choices']);
     } else {
       $day_number = self::menu(
-        $options['choices'],
-        $default = 'Sunday',
-        $options['label'],
-        false
+        array(
+          'choices' => $options['choices'],
+          'default' => 'Sunday',
+          'message' => $options['label'],
+        )
       );
     }
     return $day_number;
@@ -199,10 +208,12 @@ class Input {
     }
 
     $menu = self::menu(
-      $choices,
-      $default = 'dev',
-      $options['label'],
-      true
+      array(
+        'choices'      => $choices,
+        'default'      => 'dev',
+        'message'      => $options['label'],
+        'return_value' => true
+      )
     );
     return $menu;
   }
@@ -210,28 +221,33 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param array  $choices      Menu options for the user
-   * @param mixed  $default      Given as null option in the menu
-   * @param string $text         Prompt printed to STDOUT
-   * @param bool   $return_value If true, returns selection. False, the index
+   * @param array $arg_options Arguments as follows:
+   *        array  $choices      Menu options for the user
+   *        mixed  $default      Given as null option in the menu
+   *        string $text         Prompt printed to STDOUT
+   *        bool   $return_value If true, returns selection. False, the index
    * @return string Either the selection, its index, or the default
    */
-  public static function menu(
-      $choices,
-      $default = null,
-      $text = "Select one",
-      $return_value = false
-  ) {
-    if (count($choices) == 1) {
-      if ($return_value) {
-        $only_choice = array_shift($choices);
-        return $only_choice;
-      }
-      return 0;
+  public static function menu(array $arg_options = array()) {
+    $default_options = array(
+      'choices'      => array(self::$NULL_INPUTS[0]),
+      'default'      => null,
+      'message'      => 'Select one',
+      'return_value' => false
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (count($options['choices']) == 1) {
+      $index = 0;
+    } else {
+      $index = \cli\Streams::menu(
+        $options['choices'],
+        $options['default'],
+        $options['message']
+      );
     }
-    $index = \cli\Streams::menu($choices, $default, $text);
-    if ($return_value) {
-      return $choices[$index];
+    if ($options['return_value']) {
+      return $options['choices'][$index];
     }
     return $index;
   }
@@ -295,7 +311,14 @@ class Input {
       $orglist_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
-    $org = self::menu($orglist_with_id, false, "Choose organization");
+    $org = self::menu(
+      array(
+        'choices' => $orglist_with_id,
+        'default' => false,
+        'message' => 'Choose an organization',
+      )
+    );
+
     if ($org == '-') {
       return $default;
     }
@@ -340,7 +363,13 @@ class Input {
       }
       return $args[$key];
     }
-    $org = self::menu($orglist, false, "Choose organization");
+    $org = self::menu(
+      array(
+        'choices' => $orglist,
+        'default' => false,
+        'message' => 'Choose an organization',
+      )
+    );
     return $orglist[$org];
   }
 
@@ -421,10 +450,11 @@ class Input {
       || !in_array(strtolower($assoc_args['role']), $roles)
     ) {
       $role = strtolower(
-        $roles[Input::menu(
-          $roles,
-          null,
-          $message
+        $roles[self::menu(
+          array(
+            'choices' => $roles,
+            'message' => $message
+          )
         )]
       );
     } else {
@@ -466,7 +496,7 @@ class Input {
     foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
-    $menu = self::menu($choices, $default = null, $label);
+    $menu = self::menu(array('choices' => $choices, 'message' => $label));
     return $menu;
   }
 
@@ -521,7 +551,9 @@ class Input {
       }
     } else {
       $upstream = $upstreams->get(
-        self::menu($upstreams->getMemberList('id', 'longname'))
+        self::menu(
+          array('choices' => $upstreams->getMemberList('id', 'longname'))
+        )
       );
     }
     return $upstream;
@@ -560,10 +592,11 @@ class Input {
         );
         $workflow_menu_args[$workflow->id] = $workflow_description;
       }
-      $workflow_id = Input::menu(
-        $workflow_menu_args,
-        null,
-        'Choose workflow'
+      $workflow_id = self::menu(
+        array(
+          'choices' => $workflow_menu_args,
+          'message' => 'Choose workflow'
+        )
       );
     }
 

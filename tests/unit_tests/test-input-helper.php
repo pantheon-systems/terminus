@@ -36,4 +36,16 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
      $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
+  function testMenu() {
+    $only_option = Input::menu(
+      array('choices' => array(5), 'return_value' => true)
+    );
+    $this->assertInternalType('integer', $only_option);
+    $this->assertEquals(5, $only_option);
+
+    $only_option_index = Input::menu(array('choices' => array('Pick me!')));
+    $this->assertInternalType('integer', $only_option_index);
+    $this->assertEquals(0, $only_option_index);
+  }
+
 }

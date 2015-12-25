@@ -863,9 +863,10 @@ class SiteCommand extends TerminusCommand {
     if (!isset($assoc_args['element'])) {
       $element_options = array('database', 'files');
       $element_key     = Input::menu(
-        $element_options,
-        null,
-        'Which element are you importing?'
+        array(
+          'choices' => $element_options,
+          'message' => 'Which element are you importing?',
+        )
       );
       $element         = $element_options[$element_key];
     } else {
@@ -1412,9 +1413,10 @@ class SiteCommand extends TerminusCommand {
     $instruments = $user->instruments->getMemberList('id', 'label');
     if (!isset($assoc_args['instrument'])) {
       $instrument_id = Input::menu(
-        $instruments,
-        null,
-        'Select a payment instrument'
+        array(
+          'choices' => $instruments,
+          'message' => 'Select a payment instrument',
+        )
       );
     } else {
       $instrument_id = $assoc_args['instrument'];
@@ -1535,7 +1537,9 @@ class SiteCommand extends TerminusCommand {
           } elseif (!isset($assoc_args['tag'])
             || !in_array($assoc_args['tag'], $tags)
           ) {
-            $tag = $tags[Input::menu($tags, null, 'Select a tag to delete')];
+            $tag = $tags[Input::menu(
+              array('choices' => $tags, 'message' => 'Select a tag to delete')
+            )];
           } else {
             $tag = $assoc_args['tag'];
           }
