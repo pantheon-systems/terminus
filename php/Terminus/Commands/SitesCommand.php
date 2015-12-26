@@ -118,7 +118,7 @@ class SitesCommand extends TerminusCommand {
    */
   public function create($args, $assoc_args) {
     $options  = $this->getSiteCreateOptions($assoc_args);
-    $upstream = Input::upstream($assoc_args, 'upstream');
+    $upstream = Input::upstream(array('args' => $assoc_args));
     $options['upstream_id'] = $upstream->get('id');
     $this->log()->info(
       'Creating new {upstream} installation ... ',

@@ -573,21 +573,29 @@ class Input {
   /**
    * Helper function to select valid upstream
    *
-   * @param array  $args Args to parse value from
-   * @param string $key  Index to search for in args
-   * @param bool   $exit If true, throw error when no value is found
+   * @param array $arg_options Elements as follow:
+   *        array  args Args to parse value from
+   *        string key  Index to search for in args
+   *        bool   exit If true, throw error when no value is found
    * @return Upstream
    * @throws TerminusException
    */
-  public static function upstream($args, $key, $exit = true) {
+  public static function upstream(array $arg_options = array()) {
+    $default_options = array(
+      'args' => array(),
+      'key'  => 'upstream',
+      'exit' => true
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $upstreams = new Upstreams();
-    if (isset($args[$key])) {
-      $upstream = $upstreams->getByIdOrName($args[$key]);
+    if (isset($options['args'][$options['key']])) {
+      $upstream = $upstreams->getByIdOrName($options['args'][$options['key']]);
       if ($upstream == null) {
         throw new TerminusException(
           'Could not find upstream: {upstream}',
-          array('upstream' => $args['upstream']),
-          (integer)$exit
+          array('upstream' => $options['args'][$options['key']]),
+          (integer)$options['exit']
         );
       }
     } else {
