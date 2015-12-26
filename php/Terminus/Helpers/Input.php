@@ -470,29 +470,33 @@ class Input {
   /**
    * Helper function to get role
    *
-   * @param array  $assoc_args Argument array passed from commands
-   * @param string $message    Prompt to STDOUT
+   * @param array $arg_options Elements as follow:
+   *        array  $assoc_args Argument array passed from commands
+   *        string $message    Prompt to STDOUT
    * @return string Name of role
    */
-  static public function role(
-    $assoc_args,
-    $message = 'Select a role for this member'
-  ) {
+  static public function role(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 'role',
+      'message' => 'Select a role for this member',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $roles = array('developer', 'team_member', 'admin');
-    if (!isset($assoc_args['role'])
-      || !in_array(strtolower($assoc_args['role']), $roles)
+    if (isset($options['args'][$options['key']])
+      && in_array(strtolower($options['args'][$options['key']]), $roles)
     ) {
-      $role = strtolower(
-        $roles[self::menu(
-          array(
-            'choices' => $roles,
-            'message' => $message
-          )
-        )]
-      );
-    } else {
-      $role = $assoc_args['role'];
+      return $options['args'][$options['key']];
     }
+    $role = strtolower(
+      $roles[self::menu(
+        array(
+          'choices' => $roles,
+          'message' => $options['message'],
+        )
+      )]
+    );
     return $role;
   }
 

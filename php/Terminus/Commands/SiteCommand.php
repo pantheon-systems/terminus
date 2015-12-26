@@ -1616,7 +1616,7 @@ class SiteCommand extends TerminusCommand {
     switch($action) {
       case 'add-member':
         if ((boolean)$site->getFeature('change_management')) {
-          $role = Input::role($assoc_args);
+          $role = Input::role(array('args' => $assoc_args));
         } else {
           $role = 'team_member';
         }
@@ -1637,7 +1637,7 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'change-role':
         if ((boolean)$site->getFeature('change_management')) {
-          $role = Input::role($assoc_args);
+          $role = Input::role(array('args' => $assoc_args));
           $user = $team->get($assoc_args['member']);
           if ($user != null) {
             $workflow = $user->setRole($role);

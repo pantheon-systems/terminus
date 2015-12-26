@@ -101,4 +101,10 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
+  function testRole() {
+    $args = array('role' => 'admin');
+    $role = Input::role(compact('args'));
+    $this->assertEquals('admin', $role);
+  }
+
 }
