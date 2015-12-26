@@ -58,7 +58,7 @@ class AuthCommand extends TerminusCommand {
         if (isset($_SERVER['TERMINUS_USER'])) {
           $email = $_SERVER['TERMINUS_USER'];
         } else {
-          $email = Input::prompt('Your email address?', null);
+          $email = Input::prompt(array('message' => 'Your email address?'));
         }
       } else {
         $email = $args[0];

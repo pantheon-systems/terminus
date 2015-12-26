@@ -398,22 +398,26 @@ class Input {
   /**
    * Prompt the user for input
    *
-   * @param string $message Message to give at prompt
-   * @param mixed  $default Returned if user does not select a valid option
+   * @param array $arg_options Elements as follow:
+   *        string message Message to give at prompt
+   *        mixed  default Returned if user does not select a valid option
    * @return string
    * @throws TerminusException
    */
-  public static function prompt($message = '', $default = null) {
-    if (!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
+  public static function prompt(array $arg_options = array()) {
+    $default_options = array(
+      'message' => '',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     try {
-      $response = \cli\prompt($message);
+      $response = \cli\prompt($options['message']);
     } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage, array(), -1);
+      throw new TerminusException($e->getMessage, array(), 1);
     }
-    if (empty($response) && $default) {
-      $response = $default;
+    if (empty($response)) {
+      return $options['default'];
     }
     return $response;
   }

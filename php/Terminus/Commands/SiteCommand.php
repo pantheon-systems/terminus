@@ -379,7 +379,9 @@ class SiteCommand extends TerminusCommand {
       if (isset($assoc_args['to-env'])) {
         $to_env_id = $assoc_args['to-env'];
       } else {
-        $to_env_id = Input::prompt('Name of new multidev environment');
+        $to_env_id = Input::prompt(
+          array('message' => 'Name of new multidev environment')
+        );
       }
 
       $from_env = $site->environments->get(
@@ -619,8 +621,10 @@ class SiteCommand extends TerminusCommand {
 
     if (!isset($assoc_args['note'])) {
       $annotation = Input::prompt(
-        'Custom note for the deploy log',
-        'Deploy from Terminus 2.0'
+        array(
+          'message' => 'Custom note for the deploy log',
+          'default' => 'Deploy from Terminus 2.0',
+        )
       );
     } else {
       $annotation = $assoc_args['note'];
@@ -983,7 +987,7 @@ class SiteCommand extends TerminusCommand {
           array('site' => $site->get('name'), 'env' => $env->get('id'))
         );
         if (!isset($assoc_args['username'])) {
-          $username = Input::prompt('Username for the lock');
+          $username = Input::prompt(array('message' => 'Username for the lock'));
         } else {
           $username = $assoc_args['username'];
         }
@@ -2040,13 +2044,13 @@ class SiteCommand extends TerminusCommand {
       $database = $assoc_args['database'];
     } else {
       $database = escapeshellarg(
-        Input::prompt('Name of database to import to')
+        Input::prompt(array('message' =>'Name of database to import to'))
       );
     }
     if (isset($assoc_args['username'])) {
       $username = $assoc_args['username'];
     } else {
-      $username = escapeshellarg(Input::prompt('Username'));
+      $username = escapeshellarg(Input::prompt(array('message' =>'Username')));
     }
     if (isset($assoc_args['password'])) {
       $password = $assoc_args['password'];
