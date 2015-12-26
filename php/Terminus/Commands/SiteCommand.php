@@ -992,7 +992,9 @@ class SiteCommand extends TerminusCommand {
           $username = $assoc_args['username'];
         }
         if (!isset($assoc_args['password'])) {
-          $password = Input::promptSecret('Password for the lock');
+          $password = Input::promptSecret(
+            array('message' => 'Password for the lock')
+          );
         } else {
           $password = $assoc_args['password'];
         }
@@ -2056,7 +2058,7 @@ class SiteCommand extends TerminusCommand {
       $password = $assoc_args['password'];
     } else {
       $password = Input::promptSecret(
-        'Your MySQL password (input will not be shown)'
+        array('message' => 'Your MySQL password (input will not be shown)')
       );
     }
 

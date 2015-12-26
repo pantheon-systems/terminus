@@ -68,7 +68,7 @@ class AuthCommand extends TerminusCommand {
         $password = $assoc_args['password'];
       } else {
         $password = Input::promptSecret(
-          'Your dashboard password (input will not be shown)'
+          array('message' => 'Your dashboard password (input will not be shown)')
         );
       }
 

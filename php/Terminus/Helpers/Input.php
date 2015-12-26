@@ -427,16 +427,24 @@ class Input {
    * By: Troels Knak-Nielsen
    * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
-   * @param string $message Message to give at prompt
-   * @param mixed  $default Returned if user does not select a valid option
+   * @param array $arg_options Elements as follow:
+   *        string message Message to give at prompt
+   *        mixed  default Returned if user does not select a valid option
    * @return string
+   * @throws TerminusException
    */
-  public static function promptSecret($message = '', $default = null) {
+  public static function promptSecret(array $arg_options = array()) {
+    $default_options = array(
+      'message' => '',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
       file_put_contents(
         $vbscript, 'wscript.echo(InputBox("'
-        . addslashes($message)
+        . addslashes($options['message'])
         . '", "", "password here"))'
       );
       $command  = "cscript //nologo " . escapeshellarg($vbscript);
@@ -445,17 +453,16 @@ class Input {
     } else {
       $command = "/usr/bin/env bash -c 'echo OK'";
       if (rtrim(shell_exec($command)) !== 'OK') {
-        trigger_error("Can't invoke bash");
-        return '';
+        throw new TerminusException("Can't invoke bash", array(), 1);
       }
       $command  = "/usr/bin/env bash -c 'read -s -p \""
-        . addslashes($message)
+        . addslashes($options['message'])
         . "\" mypassword && echo \$mypassword'";
       $response = rtrim(shell_exec($command));
       echo "\n";
     }
-    if (empty($response) && $default) {
-      $response = $default;
+    if (empty($response)) {
+      return $options['default'];
     }
     return $response;
   }
