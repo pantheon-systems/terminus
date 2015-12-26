@@ -471,8 +471,8 @@ class Input {
    * Helper function to get role
    *
    * @param array $arg_options Elements as follow:
-   *        array  $assoc_args Argument array passed from commands
-   *        string $message    Prompt to STDOUT
+   *        array  assoc_args Argument array passed from commands
+   *        string message    Prompt to STDOUT
    * @return string Name of role
    */
   static public function role(array $arg_options = array()) {
@@ -503,19 +503,23 @@ class Input {
   /**
    * Input helper that provides interactive site list
    *
-   * @param array  $args  The args passed in from argv
-   * @param string $key   Args key to search for
-   * @param string $label Prompt for STDOUT
+   * @param array $arg_options Elements as follow:
+   *        array  args    The args passed in from argv
+   *        string key     Args key to search for
+   *        string message Prompt for STDOUT
    * @return string Site name
   */
-  public static function sitename(
-    $args = array(),
-    $key = 'site',
-    $label = 'Choose site'
-  ) {
+  public static function siteName(array $arg_options = array()) {
+    $default_options = array(
+      'args'  => array(),
+      'key'   => 'site',
+      'message' => 'Choose site',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     // return early if sitename is provided in args
-    if (isset($args[$key])) {
-      return $args[$key];
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
     }
     if (isset($_SERVER['TERMINUS_SITE'])) {
       return $_SERVER['TERMINUS_SITE'];
@@ -533,7 +537,7 @@ class Input {
     foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
-    $menu = self::menu(array('choices' => $choices, 'message' => $label));
+    $menu = self::menu(array('choices' => $choices, 'message' => $message));
     return $menu;
   }
 
