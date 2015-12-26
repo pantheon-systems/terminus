@@ -1125,7 +1125,7 @@ class SiteCommand extends TerminusCommand {
             'default' => 'team_member'
           )
         );
-        $org  = Input::orgName($assoc_args, 'org');
+        $org  = Input::orgName(array('args' => $assoc_args));
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
             "Organization is either invalid or you are not a member."

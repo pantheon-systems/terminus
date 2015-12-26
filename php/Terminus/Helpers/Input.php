@@ -21,7 +21,7 @@ class Input {
   /**
    * Produces a menu to select a backup
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        [string] label   Prompt for STDOUT
    *        [array]  backups Array of Backup objects
    * @return \stdClass An object representing the backup desired
@@ -63,7 +63,7 @@ class Input {
   /**
    * Produces a menu to narrow down an element selection
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -109,7 +109,7 @@ class Input {
   /**
    * Asks for confirmation before running a destructive operation.
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        string $question Prompt text
    *        array  $params   Elements to interpolate into the prompt text
    * @return bool True if prompt is accepted
@@ -136,7 +136,7 @@ class Input {
   /**
    * Facilitates the selection of a day of the week
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -177,7 +177,7 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -221,7 +221,7 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        array  choices      Menu options for the user
    *        mixed  default      Given as null option in the menu
    *        string message      Prompt printed to STDOUT
@@ -255,7 +255,7 @@ class Input {
   /**
    * Returns $args[$key] if exists, $default otherwise
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        string key     Index of arg to return
    *        array  choices    Args to search for key
    *        mixed  default Returned if $args[$key] DNE
@@ -278,14 +278,14 @@ class Input {
   /**
    * Input helper that provides interactive menu to select org name
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        array  args       The args passed in from argv
    *        string key        Args key to search for
    *        string default    Returned if arg and stdin fail in interactive
    *        array  allow_none True to permit no selection to be an option
    * @return string ID of selected organization
   */
-  public static function orgid(array $arg_options = array()) {
+  public static function orgId(array $arg_options = array()) {
     $default_options = array(
       'args'       => array(),
       'key'        => 'org',
@@ -341,7 +341,7 @@ class Input {
   /**
    * Returns an array listing organizaitions applicable to user
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        bool allow_none True to allow the "none" option
    * @return array A list of organizations
   */
@@ -365,18 +365,25 @@ class Input {
   /**
    * Input helper that provides interactive menu to select org name
    *
-   * @param array  $args The args passed in from argv
-   * @param string $key  Args key to search for
+   * @param array $arg_options Elements as follow:
+   *        array  args The args passed in from argv
+   *        string key  Args key to search for
    * @return string Site name
   */
-  public static function orgname($args, $key) {
+  public static function orgName(array $arg_options = array()) {
+    $default_options = array(
+      'args' => array(),
+      'key'  => 'org',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $org_list = self::orgList();
-    if (isset($args[$key])) {
+    if (isset($options['args'][$options['key']])) {
       //If org id is sent, fetch the name
-      if (array_key_exists($args[$key], $org_list)) {
-        return $org_list[$args[$key]];
+      if (isset($org_list[$options['args'][$options['key']]])) {
+        return $org_list[$options['args'][$options['key']]];
       }
-      return $args[$key];
+      return $options['args'][$options['key']];
     }
     $org = self::menu(
       array(
