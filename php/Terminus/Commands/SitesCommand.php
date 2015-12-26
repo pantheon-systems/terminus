@@ -167,7 +167,13 @@ class SitesCommand extends TerminusCommand {
   public function import($args, $assoc_args) {
     $options = SitesCommand::getSiteCreateOptions($assoc_args);
 
-    $url = Input::string($assoc_args, 'url', 'URL of archive to import');
+    $url = Input::string(
+      array(
+        'args'    => $assoc_args,
+        'key'     => 'url',
+        'message' => 'URL of archive to import',
+      )
+    );
     if (!$url) {
       $this->logger->error('Please enter a URL.');
     }
@@ -471,9 +477,11 @@ class SitesCommand extends TerminusCommand {
   private function getSiteCreateOptions($assoc_args) {
     $options          = array();
     $options['label'] = Input::string(
-      $assoc_args,
-      'label',
-      'Human-readable label for the site'
+      array(
+        'args'    => $assoc_args,
+        'key'     => 'label',
+        'message' => 'Human-readable label for the site',
+      )
     );
     $suggested_name   = Utils\sanitizeName($options['label']);
 
@@ -489,10 +497,12 @@ class SitesCommand extends TerminusCommand {
       $message .= " (if left blank will be $suggested_name)";
 
       $options['name'] = Input::string(
-        $assoc_args,
-        'site',
-        $message,
-        $suggested_name
+        array(
+          'args'    => $assoc_args,
+          'key'     => 'site',
+          'message' => $message,
+          'deafult' => $suggested_name,
+        )
       );
     }
     if (isset($assoc_args['org'])) {

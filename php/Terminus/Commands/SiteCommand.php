@@ -291,10 +291,12 @@ class SiteCommand extends TerminusCommand {
           Input::confirm(compact('message'));
         }
         $message  = Input::string(
-          $assoc_args,
-          'message',
-          'Please enter a commit message.',
-          'Terminus commit.'
+          array(
+            'args'    => $assoc_args,
+            'key'     => 'message',
+            'message' => 'Please enter a commit message.',
+            'default' => 'Terminus commit.'
+          )
         );
         $workflow = $env->commitChanges($message);
         $workflow->wait();
@@ -805,9 +807,11 @@ class SiteCommand extends TerminusCommand {
       case 'lookup':
         $this->log()->warning('This operation may take a long time to run.');
         $hostname  = Input::string(
-          $assoc_args,
-          'hostname',
-          'Please enter a hostname to look up.'
+          array(
+            'args'    => $assoc_args,
+            'key'     => 'hostname',
+            'message' => 'Please enter a hostname to look up.'
+          )
         );
         $sites    = $this->sites->all();
         $data     = null;
@@ -875,7 +879,13 @@ class SiteCommand extends TerminusCommand {
    */
   public function import($args, $assoc_args) {
     $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
-    $url  = Input::string($assoc_args, 'url', 'URL of archive to import');
+    $url  = Input::string(
+      array(
+        'args'    => $assoc_args,
+        'key'     => 'url',
+        'message' => 'URL of archive to import'
+      )
+    );
     if (!$url) {
       $this->logger->error('Please enter a URL.');
     }
@@ -1539,7 +1549,13 @@ class SiteCommand extends TerminusCommand {
     if ($site->organizationIsMember($org)) {
       switch ($action) {
         case 'add':
-          $tag      = Input::string($assoc_args, 'tag', 'Enter a tag to add');
+          $tag      = Input::string(
+            array(
+              'args'    => $assoc_args,
+              'key'     => 'tag',
+              'message' => 'Enter a tag to add'
+            )
+          );
           $response = $site->addTag($tag, $org);
 
           $context = array(

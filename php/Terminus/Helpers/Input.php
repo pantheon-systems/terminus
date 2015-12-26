@@ -544,29 +544,29 @@ class Input {
   /**
    * Returns $args[key] if exists, then STDIN, then $default
    *
-   * @param array  $args    Args already input
-   * @param string $key     Key for searched-for argument
-   * @param string $label   Prompt printed to STDOUT
-   * @param mixed  $default Returns if no other choice
-   *
+   * @param array $arg_options Elements as follow:
+   *        array  args    Args already input
+   *        string key     Key for searched-for argument
+   *        string message Prompt printed to STDOUT
+   *        mixed  default Returns if no other choice
    * @return string Either $args[$key], $default, or string from prompt
    */
-  public static function string(
-      $args,
-      $key,
-      $label = "Enter",
-      $default = null
-  ) {
-    if (isset($args[$key])) {
-      return $args[$key];
+  public static function string(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 0,
+      'message' => 'Enter',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
     }
     if (Terminus::getConfig('format') != 'normal') {
-      return $default;
+      return $options['default'];
     }
-    $string = self::prompt($label);
-    if ($string == '') {
-      return $default;
-    }
+    $string = self::prompt($options);
     return $string;
   }
 
