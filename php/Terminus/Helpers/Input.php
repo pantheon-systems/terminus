@@ -121,6 +121,7 @@ class Input {
     $default_options = array(
       'message' => 'Do you want to continue?',
       'context' => array(),
+      'exit'    => true,
     );
     $options         = array_merge($default_options, $arg_options);
     $question        = vsprintf($options['message'], $options['context']);
@@ -128,7 +129,10 @@ class Input {
     $answer = trim(fgets(STDIN));
 
     if ($answer != 'y') {
-      exit(0);
+      if ($options['exit']) {
+        exit((integer)$options['exit']);
+      }
+      return false;
     }
     return true;
   }
@@ -674,27 +678,6 @@ class Input {
         1
       );
     }
-  }
-
-  /**
-   * Same as confirm but doesn't exit
-   *
-   * @param string $question Question to ask
-   * @param array  $params   Args for vsprintf()
-   *
-   * @return bool
-   */
-  public static function yesno($question, $params = array()) {
-    if (Terminus::getConfig('yes')) {
-      return true;
-    }
-    $question = vsprintf($question, $params);
-    fwrite(STDOUT, $question . " [y/n] ");
-
-    $answer = trim(fgets(STDIN));
-
-    $is_yes = (boolean)($answer == 'y');
-    return $is_yes;
   }
 
 }

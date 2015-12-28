@@ -417,12 +417,17 @@ class SitesCommand extends TerminusCommand {
           )
         );
         if (!$report) {
-          $confirmed = Input::yesno(
-            'Apply upstream updates to %s ( run update.php:%s, xoption:%s ) ',
+          $message = 'Apply upstream updates to %s ';
+          $message .= '( run update.php:%s, xoption:%s ) ';
+          $confirmed = Input::confirm(
             array(
-              $site->get('name'),
-              var_export($updatedb, 1),
-              var_export($xoption, 1)
+              'message' => $message,
+              'context' => array(
+                $site->get('name'),
+                var_export($updatedb, 1),
+                var_export($xoption, 1)
+              ),
+              'exit' => false,
             )
           );
           if (!$confirmed) {
