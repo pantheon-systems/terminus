@@ -611,19 +611,27 @@ class Input {
   /**
    * Helper function to select Site Workflow
    *
-   * @param Workflow[] $workflows Array of workflows to list
-   * @param array      $args      Args to parse value from
-   * @param string     $key       Index to search for in args
+   * @param array $arg_options Elements as follow:
+   *        Workflow[] workflows Array of workflows to list
+   *        array      args      Args to parse value from
+   *        string     key       Index to search for in args
    * @return Workflow
    * @throws TerminusException
    */
-  public static function workflow($workflows, $args = array(), $key = 'workflow_id') {
-    if (isset($args['workflow_id'])) {
-      $workflow_id = $args[$key];
+  public static function workflow(array $arg_options = array()) {
+    $default_options = array(
+      'workflows' => array(),
+      'args'      => array(),
+      'key'       => 'workflow_id'
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      $workflow_id = $options['args'][$options['key']];
     } else {
       $workflow_menu_args = array();
 
-      foreach ($workflows as $workflow) {
+      foreach ($options['workflows'] as $workflow) {
         if ($workflow->get('environment')) {
           $environment = $workflow->get('environment');
         } else {
@@ -650,7 +658,7 @@ class Input {
     }
 
     $filtered_workflow = array_filter(
-      $workflows,
+      $options['workflows'],
       function($workflow) use ($workflow_id) {
         return $workflow->id == $workflow_id;
       }
@@ -662,7 +670,7 @@ class Input {
     } else {
       throw new TerminusException(
         'Could not find workflow "{id}"',
-        array('id' => $id),
+        compact('id'),
         1
       );
     }
