@@ -89,7 +89,7 @@ class WorkflowsCommand extends TerminusCommand {
     } else {
       $site->workflows->fetch(array('paged' => false));
       $workflows = $site->workflows->all();
-      $workflow = Input::workflow($workflows);
+      $workflow = Input::workflow(compact('workflows'));
     }
     $workflow->fetchWithLogs();
 

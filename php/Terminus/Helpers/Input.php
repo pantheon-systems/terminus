@@ -121,6 +121,7 @@ class Input {
     $default_options = array(
       'message' => 'Do you want to continue?',
       'context' => array(),
+      'exit'    => true,
     );
     $options         = array_merge($default_options, $arg_options);
     $question        = vsprintf($options['message'], $options['context']);
@@ -128,7 +129,10 @@ class Input {
     $answer = trim(fgets(STDIN));
 
     if ($answer != 'y') {
-      exit(0);
+      if ($options['exit']) {
+        exit((integer)$options['exit']);
+      }
+      return false;
     }
     return true;
   }
@@ -544,50 +548,58 @@ class Input {
   /**
    * Returns $args[key] if exists, then STDIN, then $default
    *
-   * @param array  $args    Args already input
-   * @param string $key     Key for searched-for argument
-   * @param string $label   Prompt printed to STDOUT
-   * @param mixed  $default Returns if no other choice
-   *
+   * @param array $arg_options Elements as follow:
+   *        array  args    Args already input
+   *        string key     Key for searched-for argument
+   *        string message Prompt printed to STDOUT
+   *        mixed  default Returns if no other choice
    * @return string Either $args[$key], $default, or string from prompt
    */
-  public static function string(
-      $args,
-      $key,
-      $label = "Enter",
-      $default = null
-  ) {
-    if (isset($args[$key])) {
-      return $args[$key];
+  public static function string(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 0,
+      'message' => 'Enter',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
     }
     if (Terminus::getConfig('format') != 'normal') {
-      return $default;
+      return $options['default'];
     }
-    $string = self::prompt($label);
-    if ($string == '') {
-      return $default;
-    }
+    $string = self::prompt($options);
     return $string;
   }
 
   /**
    * Helper function to select valid upstream
    *
-   * @param array  $args Args to parse value from
-   * @param string $key  Index to search for in args
-   * @param bool   $exit If true, throw error when no value is found
+   * @param array $arg_options Elements as follow:
+   *        array  args Args to parse value from
+   *        string key  Index to search for in args
+   *        bool   exit If true, throw error when no value is found
    * @return Upstream
    * @throws TerminusException
    */
-  public static function upstream($args, $key, $exit = true) {
+  public static function upstream(array $arg_options = array()) {
+    $default_options = array(
+      'args' => array(),
+      'key'  => 'upstream',
+      'exit' => true
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $upstreams = new Upstreams();
-    if (isset($args[$key])) {
-      $upstream = $upstreams->getByIdOrName($args[$key]);
+    if (isset($options['args'][$options['key']])) {
+      $upstream = $upstreams->getByIdOrName($options['args'][$options['key']]);
       if ($upstream == null) {
         throw new TerminusException(
           'Could not find upstream: {upstream}',
-          array('upstream' => $args['upstream']),
-          (integer)$exit
+          array('upstream' => $options['args'][$options['key']]),
+          (integer)$options['exit']
         );
       }
     } else {
@@ -603,19 +615,27 @@ class Input {
   /**
    * Helper function to select Site Workflow
    *
-   * @param Workflow[] $workflows Array of workflows to list
-   * @param array      $args      Args to parse value from
-   * @param string     $key       Index to search for in args
+   * @param array $arg_options Elements as follow:
+   *        Workflow[] workflows Array of workflows to list
+   *        array      args      Args to parse value from
+   *        string     key       Index to search for in args
    * @return Workflow
    * @throws TerminusException
    */
-  public static function workflow($workflows, $args = array(), $key = 'workflow_id') {
-    if (isset($args['workflow_id'])) {
-      $workflow_id = $args[$key];
+  public static function workflow(array $arg_options = array()) {
+    $default_options = array(
+      'workflows' => array(),
+      'args'      => array(),
+      'key'       => 'workflow_id'
+    );
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      $workflow_id = $options['args'][$options['key']];
     } else {
       $workflow_menu_args = array();
 
-      foreach ($workflows as $workflow) {
+      foreach ($options['workflows'] as $workflow) {
         if ($workflow->get('environment')) {
           $environment = $workflow->get('environment');
         } else {
@@ -642,7 +662,7 @@ class Input {
     }
 
     $filtered_workflow = array_filter(
-      $workflows,
+      $options['workflows'],
       function($workflow) use ($workflow_id) {
         return $workflow->id == $workflow_id;
       }
@@ -654,31 +674,10 @@ class Input {
     } else {
       throw new TerminusException(
         'Could not find workflow "{id}"',
-        array('id' => $id),
+        compact('id'),
         1
       );
     }
-  }
-
-  /**
-   * Same as confirm but doesn't exit
-   *
-   * @param string $question Question to ask
-   * @param array  $params   Args for vsprintf()
-   *
-   * @return bool
-   */
-  public static function yesno($question, $params = array()) {
-    if (Terminus::getConfig('yes')) {
-      return true;
-    }
-    $question = vsprintf($question, $params);
-    fwrite(STDOUT, $question . " [y/n] ");
-
-    $answer = trim(fgets(STDIN));
-
-    $is_yes = (boolean)($answer == 'y');
-    return $is_yes;
   }
 
 }

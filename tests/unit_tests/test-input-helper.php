@@ -107,4 +107,15 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('admin', $role);
   }
 
+  function testStringReturnsString() {
+    $args   = array(
+      'args'    => array('key' => 'value'),
+      'key'     => 'key',
+      'default' => false,
+    );
+    $string = Input::string($args);
+    $this->assertInternalType('string', $string);
+    $this->assertEquals('value', $string);
+  }
+
 }
