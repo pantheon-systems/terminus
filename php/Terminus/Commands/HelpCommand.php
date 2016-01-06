@@ -34,7 +34,13 @@ class HelpCommand extends TerminusCommand {
    *     terminus help sites list
    */
   public function __invoke($args, $assoc_args) {
-    $this->recursive = Input::optional('recursive', $assoc_args, false);
+    $this->recursive = Input::optional(
+      array(
+        'key' => 'recursive',
+        'choices' => $assoc_args,
+        'default' => false
+      )
+    );
     $command         = $this->findSubcommand($args);
 
     if ($command) {

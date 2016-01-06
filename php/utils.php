@@ -154,7 +154,9 @@ function destinationIsValid($destination, $make = true) {
 
   if (!is_dir($destination)) {
     if (!$make) {
-      $make = Input::confirm("Directory does not exists. Create it now?");
+      $make = Input::confirm(
+        array('message' => 'Directory does not exists. Create it now?')
+      );
     }
     if ($make) {
       mkdir($destination, 0755);

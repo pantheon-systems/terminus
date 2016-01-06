@@ -193,13 +193,16 @@ class SiteCommand extends TerminusCommand {
       $append[] = 'FILES';
     }
     $append  = implode(' and ', $append);
-    $confirm = sprintf(
-      "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
-      strtoupper($from_env->getName()),
-      strtoupper($to_env),
-      $append
+    Input::confirm(
+      array(
+        'message' => "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
+        'context' => array(
+          strtoupper($from_env->getName()),
+          strtoupper($to_env),
+          $append
+        )
+      )
     );
-    Input::confirm($confirm);
 
     if ($site->environments->get($to_env) == null) {
       $this->failure(
@@ -279,7 +282,7 @@ class SiteCommand extends TerminusCommand {
         $message = "Commit changes to $count files?";
         if ($count === 0) {
           $message = 'There are no changed files. Commit anyway?';
-          Input::confirm($message);
+          Input::confirm(compact('message'));
         }
         $message  = Input::string(
           $assoc_args,
@@ -429,7 +432,7 @@ class SiteCommand extends TerminusCommand {
           break;
     }
     $site = $this->sites->get(Input::sitename($assoc_args));
-    $env  = Input::optional('env', $assoc_args);
+    $env  = Input::optional(array('key' => 'env', 'choices' => $assoc_args));
     if (isset($env) && ($env != null)) {
       $env = '#' . $env;
     }
@@ -441,9 +444,8 @@ class SiteCommand extends TerminusCommand {
     if (isset($assoc_args['print'])) {
       $this->output()->outputValue($url, 'Dashboard URL');
     } else {
-      Input::confirm(
-        'Do you want to open your dashboard link in a web browser?'
-      );
+      $message = 'Do you want to open your dashboard link in a web browser?';
+      Input::confirm(compact('message'));
       $command = sprintf('%s %s', $cmd, $url);
       exec($command);
     }
@@ -465,9 +467,12 @@ class SiteCommand extends TerminusCommand {
     if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
       //If the force option isn't used, we'll ask you some annoying questions
       Input::confirm(
-        sprintf('Are you sure you want to delete %s?', $site->get('name'))
+        array(
+          'message' => 'Are you sure you want to delete %s?',
+          'context' => $site->get('name')
+        )
       );
-      Input::confirm('Are you really sure?');
+      Input::confirm(array('message' => 'Are you really sure?'));
     }
     $this->log()->info(
       'Deleting {site} ...',
@@ -507,11 +512,11 @@ class SiteCommand extends TerminusCommand {
       )
     );
 
+    $message = 'Are you sure you want to delete the "%s" branch from %s?';
     Input::confirm(
-      sprintf(
-        'Are you sure you want to delete the "%s" branch from %s?',
-        $branch,
-        $site->get('name')
+      array(
+        'message' => $message,
+        'context' => array($branch, $site->get('name')),
       )
     );
 
@@ -554,11 +559,11 @@ class SiteCommand extends TerminusCommand {
       $delete_branch = (boolean)$assoc_args['remove_branch'];
     }
 
+    $message = 'Are you sure you want to delete the "%s" environment from %s?';
     Input::confirm(
-      sprintf(
-        'Are you sure you want to delete the "%s" environment from %s?',
-        $env,
-        $site->get('name')
+      array(
+        'message' => $message,
+        'context' => array($env, $site->get('name')),
       )
     );
 
@@ -858,9 +863,10 @@ class SiteCommand extends TerminusCommand {
     if (!isset($assoc_args['element'])) {
       $element_options = array('database', 'files');
       $element_key     = Input::menu(
-        $element_options,
-        null,
-        'Which element are you importing?'
+        array(
+          'choices' => $element_options,
+          'message' => 'Which element are you importing?',
+        )
       );
       $element         = $element_options[$element_key];
     } else {
@@ -1112,8 +1118,14 @@ class SiteCommand extends TerminusCommand {
     $data   = array();
     switch ($action) {
       case 'add':
-        $role = Input::optional('role', $assoc_args, 'team_member');
-        $org  = Input::orgname($assoc_args, 'org');
+        $role = Input::optional(
+          array(
+            'key'     => 'role',
+            'choices' => $assoc_args,
+            'default' => 'team_member'
+          )
+        );
+        $org  = Input::orgName($assoc_args, 'org');
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
             "Organization is either invalid or you are not a member."
@@ -1123,7 +1135,7 @@ class SiteCommand extends TerminusCommand {
         $workflow->wait();
           break;
       case 'remove':
-        $org = Input::orgid($assoc_args, 'org');
+        $org = Input::orgId(array('args' => $assoc_args));
         if (!$this->isOrgAccessible($org)) {
           $this->failure(
             "Organization is either invalid or you are not a member."
@@ -1407,9 +1419,10 @@ class SiteCommand extends TerminusCommand {
     $instruments = $user->instruments->getMemberList('id', 'label');
     if (!isset($assoc_args['instrument'])) {
       $instrument_id = Input::menu(
-        $instruments,
-        null,
-        'Select a payment instrument'
+        array(
+          'choices' => $instruments,
+          'message' => 'Select a payment instrument',
+        )
       );
     } else {
       $instrument_id = $assoc_args['instrument'];
@@ -1497,7 +1510,7 @@ class SiteCommand extends TerminusCommand {
   public function tags($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get(Input::sitename($assoc_args));
-    $org    = Input::orgid($assoc_args, 'org');
+    $org    = Input::orgId(array('args' => $assoc_args));
 
     if ($site->organizationIsMember($org)) {
       switch ($action) {
@@ -1530,7 +1543,9 @@ class SiteCommand extends TerminusCommand {
           } elseif (!isset($assoc_args['tag'])
             || !in_array($assoc_args['tag'], $tags)
           ) {
-            $tag = $tags[Input::menu($tags, null, 'Select a tag to delete')];
+            $tag = $tags[Input::menu(
+              array('choices' => $tags, 'message' => 'Select a tag to delete')
+            )];
           } else {
             $tag = $assoc_args['tag'];
           }
@@ -1755,11 +1770,12 @@ class SiteCommand extends TerminusCommand {
             isset($assoc_args['accept-upstream'])
             && $assoc_args['accept-upstream']
           );
+          $message  = 'Are you sure you want to apply the ';
+          $message .= 'upstream updates to %s-dev';
           Input::confirm(
-            sprintf(
-              'Are you sure you want to apply the upstream updates to %s-dev',
-              $site->get('name'),
-              $env
+            array(
+              'message' => $message,
+              'context' => array($site->get('name'), $env),
             )
           );
           $workflow = $site->applyUpstreamUpdates(
@@ -1830,10 +1846,9 @@ class SiteCommand extends TerminusCommand {
     );
 
     Input::confirm(
-      sprintf(
-        'Are you sure you want to wipe %s-%s?',
-        $site->get('name'),
-        $env->get('id')
+      array(
+        'message' => 'Are you sure you want to wipe %s-%s?',
+        'context' => array($site->get('name'), $env->get('id')),
       )
     );
 
@@ -1900,13 +1915,25 @@ class SiteCommand extends TerminusCommand {
     $env  = $site->environments->get(
       Input::env(array('args' => $assoc_args, 'site' => $site))
     );
-    $file = Input::optional('file', $assoc_args, false);
+    $file = Input::optional(
+      array(
+        'key'     => 'file',
+        'choices' => $assoc_args,
+        'default' => false
+      )
+    );
     if ($file) {
       $backup  = $env->backups->getBackupByFileName($file);
       $element = $backup->getElement();
     } else {
       $element = Input::backupElement(array('args' => $assoc_args));
-      $latest  = (boolean)Input::optional('latest', $assoc_args, false);
+      $latest  = (boolean)Input::optional(
+        array(
+          'key'     => 'latest',
+          'choices' => $assoc_args,
+          'default' => false
+        )
+      );
       $backups = $env->backups->getFinishedBackups($element);
 
       if ($latest) {
@@ -1973,7 +2000,13 @@ class SiteCommand extends TerminusCommand {
       $element = Input::backupElement(array('args' => $assoc_args));
     }
     $backups = $env->backups->getFinishedBackups($element);
-    $latest  = (boolean)Input::optional('latest', $assoc_args, false);
+    $latest  = (boolean)Input::optional(
+      array(
+        'key'     => 'latest',
+        'choices' => $assoc_args,
+        'default' => false
+      )
+    );
     if (empty($backups)) {
       $this->log()->warning('No backups found.');
     } else {

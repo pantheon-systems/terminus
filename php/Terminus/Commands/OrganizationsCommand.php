@@ -65,11 +65,11 @@ class OrganizationsCommand extends TerminusCommand {
    */
   public function sites($args, $assoc_args) {
     $action   = array_shift($args);
-    $org_id   = Input::orgid(
-      $assoc_args,
-      'org',
-      null,
-      array('allow_none' => false)
+    $org_id   = Input::orgId(
+      array(
+        'args'       => $assoc_args,
+        'allow_none' => false,
+      )
     );
     // TODO: clarify that these are OrganizationMemberships, not Organization models
     $orgs      = new UserOrganizationMemberships();
@@ -96,15 +96,18 @@ class OrganizationsCommand extends TerminusCommand {
         } else {
           $site = $this->sites->get(
             Input::menu(
-              $this->getNonmemberSiteList($memberships),
-              null,
-              'Choose site'
+              array(
+                'choices' => $this->getNonmemberSiteList($memberships),
+                'message' => 'Choose site'
+              )
             )
           );
         }
         Input::confirm(
-          'Are you sure you want to add %s to %s ?',
-          array($site->get('name'), $org_info->profile->name)
+          array(
+            'message' => 'Are you sure you want to add %s to %s ?',
+            'context' => array($site->get('name'), $org_info->profile->name),
+          )
         );
         $workflow = $org_model->site_memberships->addMember($site);
         $workflow->wait();
@@ -126,16 +129,19 @@ class OrganizationsCommand extends TerminusCommand {
         } else {
           $site = $this->sites->get(
             Input::menu(
-              $this->getMemberSiteList($memberships),
-              null,
-              'Choose site'
+              array(
+                'choices' => $this->getMemberSiteList($memberships),
+                'message' => 'Choose site',
+              )
             )
           );
         }
         $member = $org_model->site_memberships->get($site->get('id'));
         Input::confirm(
-          'Are you sure you want to remove %s from %s ?',
-          array($site->get('name'), $org_info->profile->name)
+          array(
+            'message' => 'Are you sure you want to remove %s from %s ?',
+            'context' => array($site->get('name'), $org_info->profile->name),
+          )
         );
         $workflow = $member->removeMember();
         $workflow->wait();
@@ -185,11 +191,11 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand team
    */
   public function team($args, $assoc_args) {
-    $org_id = Input::orgid(
-      $assoc_args,
-      'org',
-      null,
-      array('allow_none' => false)
+    $org_id = Input::orgId(
+      array(
+        'args'       => $assoc_args,
+        'allow_none' => false,
+      )
     );
     $orgs = new UserOrganizationMemberships();
     $org  = $orgs->get($org_id);
