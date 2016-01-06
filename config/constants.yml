@@ -1,0 +1,12 @@
+# TERMINUS CONSTANTS
+#
+# These are default values for each of the constants bearing the same name
+# within Terminus. They may be overridden by exporting an environmental
+# variable of the same name, or by adding it to a file named ".env" in the
+# directory from which you are running Terminus.
+--- 
+TERMINUS_HOST:      'dashboard.pantheon.io'
+TERMINUS_PORT:      443
+TERMINUS_PROTOCOL:  'https'
+TERMINUS_TIME_ZONE: 'UTC'
+TERMINUS_VERSION:   '0.10.0'

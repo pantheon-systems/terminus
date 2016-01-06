@@ -2,6 +2,9 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## Master
+### Added
+- `config/constants.yml` file to contain the default constants for Terminus. (#791)
+
 ### Changed
 - Moved Terminus::prompt(), Terminus::promptSecret() to Terminus\Helpers\Input. (#768)
 - Removed duplicative Terminus::menu() in favor of Terminus\Helpers\Input::menu. (#768)

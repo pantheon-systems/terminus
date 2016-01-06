@@ -39,4 +39,26 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(Utils\isValidEmail('this.is.a.valid.email@ddre.ss'));
   }
 
+  public function testDefineConstants() {
+    $this->assertTrue(Terminus);
+
+    $this->assertTrue(defined('TERMINUS_VERSION'));
+    $this->assertInternalType('string', TERMINUS_VERSION);
+
+    $this->assertTrue(defined('TERMINUS_PROTOCOL'));
+    $this->assertInternalType('string', TERMINUS_PROTOCOL);
+
+    $this->assertTrue(defined('TERMINUS_HOST'));
+    $this->assertInternalType('string', TERMINUS_HOST);
+
+    $this->assertTrue(defined('TERMINUS_PORT'));
+    $this->assertInternalType('integer', TERMINUS_PORT);
+
+    $this->assertTrue(defined('TERMINUS_TIME_ZONE'));
+    $this->assertInternalType('string', TERMINUS_TIME_ZONE);
+
+    $this->assertTrue(defined('TERMINUS_SCRIPT'));
+    $this->assertInternalType('string', TERMINUS_SCRIPT);
+  }
+
 }

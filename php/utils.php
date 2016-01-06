@@ -3,6 +3,7 @@
 namespace Terminus\Utils;
 
 use ArrayIterator;
+use Symfony\Component\Yaml\Yaml;
 use Terminus;
 use Terminus\Request;
 use Terminus\Helpers\Input;
@@ -105,36 +106,21 @@ function colorize($string) {
  */
 function defineConstants() {
   define('Terminus', true);
-  define('TERMINUS_VERSION', '0.10.0');
+  $default_constants = Yaml::parse(
+    file_get_contents(TERMINUS_ROOT . '/config/constants.yml')
+  );
+  foreach ($default_constants as $var_name => $default) {
+    if (isset($_SERVER[$var_name]) && ($_SERVER[$var_name] != '')) {
+      define($var_name, $_SERVER[$var_name]);
+    } else if (!defined($var_name)) {
+      define($var_name, $default);
+    }
+  }
+  date_default_timezone_set(TERMINUS_TIME_ZONE);
 
   if (!defined('TERMINUS_SCRIPT')) {
     define('TERMINUS_SCRIPT', 'php/Terminus.php');
   }
-
-  if (!defined('TERMINUS_TIME_ZONE')) {
-    define('TERMINUS_TIME_ZONE', 'UTC');
-  }
-  date_default_timezone_set(TERMINUS_TIME_ZONE);
-
-  $host = 'dashboard.pantheon.io';
-  if (isset($_SERVER['TERMINUS_HOST']) && ($_SERVER['TERMINUS_HOST'] != '')) {
-    $host = $_SERVER['TERMINUS_HOST'];
-  }
-  define('TERMINUS_HOST', $host);
-
-  $port = 443;
-  if (isset($_SERVER['TERMINUS_PORT']) && ($_SERVER['TERMINUS_PORT'] != '')) {
-    $port = $_SERVER['TERMINUS_PORT'];
-  }
-  define('TERMINUS_PORT', $port);
-
-  $protocol = 'https';
-  if (isset($_SERVER['TERMINUS_PROTOCOL'])
-    && ($_SERVER['TERMINUS_PROTOCOL'] != '')
-  ) {
-    $protocol = $_SERVER['TERMINUS_PROTOCOL'];
-  }
-  define('TERMINUS_PROTOCOL', $protocol);
 }
 
 /**
