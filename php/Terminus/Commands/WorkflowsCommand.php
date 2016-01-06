@@ -38,11 +38,13 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function index($args, $assoc_args) {
-    $site      = $this->sites->get(Input::sitename($assoc_args));
+    $site = $this->sites->get(
+      Input::siteName(array('args' => $assoc_args))
+    );
     $site->workflows->fetch(array('paged' => false));
     $workflows = $site->workflows->all();
 
-    $data      = array();
+    $data = array();
     foreach ($workflows as $workflow) {
       $workflow_data = $workflow->serialize();
       unset($workflow_data['operations']);
@@ -71,7 +73,7 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand show
    */
   public function show($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
+    $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
 
     if (isset($assoc_args['workflow_id'])) {
       $workflow_id = $assoc_args['workflow_id'];
@@ -143,7 +145,7 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand watch
    */
   public function watch($args, $assoc_args) {
-    $site = $this->sites->get(Input::sitename($assoc_args));
+    $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
 
     // Keep track of workflows that have been printed.
     // This is necessary because the local clock may drift from

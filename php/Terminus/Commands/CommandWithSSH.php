@@ -136,7 +136,7 @@ abstract class CommandWithSSH extends TerminusCommand {
     $this->checkCommand($command);
 
     $sites = new Sites();
-    $site  = $sites->get(Input::sitename($assoc_args));
+    $site  = $sites->get(Input::siteName(array('args' => $assoc_args)));
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }

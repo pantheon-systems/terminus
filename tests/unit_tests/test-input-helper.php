@@ -70,7 +70,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgNameAcceptsName() {
     $args = array('org' => 'Terminus Testing');
-    $org  = Input::orgName($args, 'org');
+    $org  = Input::orgName(compact('args'));
     $this->assertEquals('Terminus Testing', $org);
   }
 
@@ -79,7 +79,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgNameAcceptsUuid() {
     $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = Input::orgName($args, 'org');
+    $org  = Input::orgName(compact('args'));
     $this->assertEquals('Terminus Testing', $org);
   }
 
@@ -99,6 +99,12 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $args = array('org' => 'Terminus Testing');
     $org  = Input::orgId(compact('args'));
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
+  }
+
+  function testRole() {
+    $args = array('role' => 'admin');
+    $role = Input::role(compact('args'));
+    $this->assertEquals('admin', $role);
   }
 
 }

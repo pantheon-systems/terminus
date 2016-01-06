@@ -181,7 +181,9 @@ class Subcommand extends CompositeCommand {
             $key_prompt = str_repeat(" ", strlen($current_prompt)) . $key_token;
           }
 
-          $key = Input::prompt($key_prompt, $default);
+          $key = Input::prompt(
+            array('message' => $key_prompt, 'default' => $default)
+          );
           if ($key === false) {
             return array($args, $assoc_args);
           }
@@ -191,7 +193,9 @@ class Subcommand extends CompositeCommand {
             $value_prompt     =
               str_repeat(' ', $key_prompt_count) . '=' . $value_token;
 
-            $value = Input::prompt($value_prompt, $default);
+            $value = Input::prompt(
+              array('message' => $value_prompt, 'default' => $default)
+            );
             if (false === $value) {
               return array($args, $assoc_args);
             }
@@ -212,7 +216,7 @@ class Subcommand extends CompositeCommand {
           $prompt .= ' (Y/n)';
         }
 
-        $response = Input::prompt($prompt, $default);
+        $response = Input::prompt(array('message' => $prompt, 'default' => $default));
         if (false === $response) {
           return array($args, $assoc_args);
         }

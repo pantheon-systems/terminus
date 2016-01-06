@@ -21,7 +21,7 @@ class Input {
   /**
    * Produces a menu to select a backup
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        [string] label   Prompt for STDOUT
    *        [array]  backups Array of Backup objects
    * @return \stdClass An object representing the backup desired
@@ -63,7 +63,7 @@ class Input {
   /**
    * Produces a menu to narrow down an element selection
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -109,7 +109,7 @@ class Input {
   /**
    * Asks for confirmation before running a destructive operation.
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        string $question Prompt text
    *        array  $params   Elements to interpolate into the prompt text
    * @return bool True if prompt is accepted
@@ -136,7 +136,7 @@ class Input {
   /**
    * Facilitates the selection of a day of the week
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -177,7 +177,7 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        [array]  args    Arguments given via param
    *        [string] key     Args key to search for
    *        [string] label   Prompt for STDOUT
@@ -221,7 +221,7 @@ class Input {
   /**
    * Produces a menu with the given attributes
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        array  choices      Menu options for the user
    *        mixed  default      Given as null option in the menu
    *        string message      Prompt printed to STDOUT
@@ -255,7 +255,7 @@ class Input {
   /**
    * Returns $args[$key] if exists, $default otherwise
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        string key     Index of arg to return
    *        array  choices    Args to search for key
    *        mixed  default Returned if $args[$key] DNE
@@ -278,14 +278,14 @@ class Input {
   /**
    * Input helper that provides interactive menu to select org name
    *
-   * @param array $arg_options Arguments as follows:
+   * @param array $arg_options Elements as follow:
    *        array  args       The args passed in from argv
    *        string key        Args key to search for
    *        string default    Returned if arg and stdin fail in interactive
    *        array  allow_none True to permit no selection to be an option
    * @return string ID of selected organization
   */
-  public static function orgid(array $arg_options = array()) {
+  public static function orgId(array $arg_options = array()) {
     $default_options = array(
       'args'       => array(),
       'key'        => 'org',
@@ -341,7 +341,7 @@ class Input {
   /**
    * Returns an array listing organizaitions applicable to user
    *
-   * @param array $arg_options Elements as follows:
+   * @param array $arg_options Elements as follow:
    *        bool allow_none True to allow the "none" option
    * @return array A list of organizations
   */
@@ -365,18 +365,25 @@ class Input {
   /**
    * Input helper that provides interactive menu to select org name
    *
-   * @param array  $args The args passed in from argv
-   * @param string $key  Args key to search for
+   * @param array $arg_options Elements as follow:
+   *        array  args The args passed in from argv
+   *        string key  Args key to search for
    * @return string Site name
   */
-  public static function orgname($args, $key) {
+  public static function orgName(array $arg_options = array()) {
+    $default_options = array(
+      'args' => array(),
+      'key'  => 'org',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $org_list = self::orgList();
-    if (isset($args[$key])) {
+    if (isset($options['args'][$options['key']])) {
       //If org id is sent, fetch the name
-      if (array_key_exists($args[$key], $org_list)) {
-        return $org_list[$args[$key]];
+      if (isset($org_list[$options['args'][$options['key']]])) {
+        return $org_list[$options['args'][$options['key']]];
       }
-      return $args[$key];
+      return $options['args'][$options['key']];
     }
     $org = self::menu(
       array(
@@ -391,22 +398,26 @@ class Input {
   /**
    * Prompt the user for input
    *
-   * @param string $message Message to give at prompt
-   * @param mixed  $default Returned if user does not select a valid option
+   * @param array $arg_options Elements as follow:
+   *        string message Message to give at prompt
+   *        mixed  default Returned if user does not select a valid option
    * @return string
    * @throws TerminusException
    */
-  public static function prompt($message = '', $default = null) {
-    if (!empty($params)) {
-      $message = vsprintf($message, $params);
-    }
+  public static function prompt(array $arg_options = array()) {
+    $default_options = array(
+      'message' => '',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     try {
-      $response = \cli\prompt($message);
+      $response = \cli\prompt($options['message']);
     } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage, array(), -1);
+      throw new TerminusException($e->getMessage, array(), 1);
     }
-    if (empty($response) && $default) {
-      $response = $default;
+    if (empty($response)) {
+      return $options['default'];
     }
     return $response;
   }
@@ -416,16 +427,24 @@ class Input {
    * By: Troels Knak-Nielsen
    * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
-   * @param string $message Message to give at prompt
-   * @param mixed  $default Returned if user does not select a valid option
+   * @param array $arg_options Elements as follow:
+   *        string message Message to give at prompt
+   *        mixed  default Returned if user does not select a valid option
    * @return string
+   * @throws TerminusException
    */
-  public static function promptSecret($message = '', $default = null) {
+  public static function promptSecret(array $arg_options = array()) {
+    $default_options = array(
+      'message' => '',
+      'default' => null,
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
       file_put_contents(
         $vbscript, 'wscript.echo(InputBox("'
-        . addslashes($message)
+        . addslashes($options['message'])
         . '", "", "password here"))'
       );
       $command  = "cscript //nologo " . escapeshellarg($vbscript);
@@ -434,17 +453,16 @@ class Input {
     } else {
       $command = "/usr/bin/env bash -c 'echo OK'";
       if (rtrim(shell_exec($command)) !== 'OK') {
-        trigger_error("Can't invoke bash");
-        return '';
+        throw new TerminusException("Can't invoke bash", array(), 1);
       }
       $command  = "/usr/bin/env bash -c 'read -s -p \""
-        . addslashes($message)
+        . addslashes($options['message'])
         . "\" mypassword && echo \$mypassword'";
       $response = rtrim(shell_exec($command));
       echo "\n";
     }
-    if (empty($response) && $default) {
-      $response = $default;
+    if (empty($response)) {
+      return $options['default'];
     }
     return $response;
   }
@@ -452,48 +470,56 @@ class Input {
   /**
    * Helper function to get role
    *
-   * @param array  $assoc_args Argument array passed from commands
-   * @param string $message    Prompt to STDOUT
+   * @param array $arg_options Elements as follow:
+   *        array  assoc_args Argument array passed from commands
+   *        string message    Prompt to STDOUT
    * @return string Name of role
    */
-  static public function role(
-    $assoc_args,
-    $message = 'Select a role for this member'
-  ) {
+  static public function role(array $arg_options = array()) {
+    $default_options = array(
+      'args'    => array(),
+      'key'     => 'role',
+      'message' => 'Select a role for this member',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     $roles = array('developer', 'team_member', 'admin');
-    if (!isset($assoc_args['role'])
-      || !in_array(strtolower($assoc_args['role']), $roles)
+    if (isset($options['args'][$options['key']])
+      && in_array(strtolower($options['args'][$options['key']]), $roles)
     ) {
-      $role = strtolower(
-        $roles[self::menu(
-          array(
-            'choices' => $roles,
-            'message' => $message
-          )
-        )]
-      );
-    } else {
-      $role = $assoc_args['role'];
+      return $options['args'][$options['key']];
     }
+    $role = strtolower(
+      $roles[self::menu(
+        array(
+          'choices' => $roles,
+          'message' => $options['message'],
+        )
+      )]
+    );
     return $role;
   }
 
   /**
    * Input helper that provides interactive site list
    *
-   * @param array  $args  The args passed in from argv
-   * @param string $key   Args key to search for
-   * @param string $label Prompt for STDOUT
+   * @param array $arg_options Elements as follow:
+   *        array  args    The args passed in from argv
+   *        string key     Args key to search for
+   *        string message Prompt for STDOUT
    * @return string Site name
   */
-  public static function sitename(
-    $args = array(),
-    $key = 'site',
-    $label = 'Choose site'
-  ) {
+  public static function siteName(array $arg_options = array()) {
+    $default_options = array(
+      'args'  => array(),
+      'key'   => 'site',
+      'message' => 'Choose site',
+    );
+    $options         = array_merge($default_options, $arg_options);
+
     // return early if sitename is provided in args
-    if (isset($args[$key])) {
-      return $args[$key];
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
     }
     if (isset($_SERVER['TERMINUS_SITE'])) {
       return $_SERVER['TERMINUS_SITE'];
@@ -511,7 +537,7 @@ class Input {
     foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
-    $menu = self::menu(array('choices' => $choices, 'message' => $label));
+    $menu = self::menu(array('choices' => $choices, 'message' => $message));
     return $menu;
   }
 
