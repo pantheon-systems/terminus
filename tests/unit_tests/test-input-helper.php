@@ -7,6 +7,25 @@ use Terminus\Helpers\Input;
  */
 class InputHelperTest extends PHPUnit_Framework_TestCase {
 
+  function testDay() {
+    $day = Input::day(array('args' => array('day' => 'Monday')));
+    $this->assertInternalType('integer', $day);
+    $this->assertEquals(1, $day);
+  }
+
+  function testEnvironmentFromArgs() {
+    $env_id = Input::env(array('args' => array('env' => 'test')));
+    $this->assertInternalType('string', $env_id);
+    $this->assertEquals('test', $env_id);
+  }
+
+  function testEnvironmentFromEnvironmentVariable() {
+    $_SERVER['TERMINUS_ENV'] = 'live';
+    $env_id = Input::env();
+    $this->assertInternalType('string', $env_id);
+    $this->assertEquals('live', $env_id);
+  }
+
   function testMenuSingleOptionReturningValue() {
     $only_option = Input::menu(
       array('choices' => array(5), 'return_value' => true)
@@ -101,7 +120,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
-  function testRole() {
+  function testRoleFromArgs() {
     $args = array('role' => 'admin');
     $role = Input::role(compact('args'));
     $this->assertEquals('admin', $role);
