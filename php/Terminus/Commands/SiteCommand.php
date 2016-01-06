@@ -1402,6 +1402,79 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Add/replace an HTTPS Certificate for an environment
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of the site
+   *
+   * [--env=<env>]
+   * : site environment
+   *
+   * [--certificate=<value>]
+   * : Certificate
+   *
+   * [--private_key=<value>]
+   * : RSA Private Key
+   *
+   * [--intermediate_certificate=<value>]
+   * : (optional) CA Intermediate Certificate(s)
+   *
+   * @subcommand set-https-certificate
+   */
+  public function setHttpsCertificate($args, $assoc_args) {
+    $site        = $this->sites->get($this->input()->sitename(['args' => $assoc_args]));
+    $environment = $site->environments->get(
+      $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+    );
+
+    $certificate = $this->input()->string(
+      [
+        'args' => $assoc_args,
+        'key' => 'certificate',
+        'message' => 'Certificate',
+      ]
+    );
+    $private_key = $this->input()->string(
+      [
+        'args' => $assoc_args,
+        'key' => 'private_key',
+        'message' => 'RSA Private Key',
+      ]
+    );
+
+    $is_interactive = !isset($assoc_args['certificate']);
+    if ($is_interactive) {
+      $intermediate_certificate = $this->input()->string(
+        [
+          'args' => $assoc_args,
+          'key' => 'intermediate_certificate',
+          'message' => 'CA Intermediate Certificate(s) (optional)',
+        ]
+      );
+    } else {
+      $intermediate_certificate = '';
+    }
+
+    $options = [
+      'certificate' => trim($certificate),
+      'private_key' => trim($private_key)
+    ];
+
+    $intermediate_certificate = trim($intermediate_certificate);
+    if ($intermediate_certificate != '') {
+      $options['intermediate_certificate'] = $intermediate_certificate;
+    }
+
+    $workflow = $environment->setHttpsCertificate($options);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
+
+    return true;
+  }
+
+  /**
    * Change connection mode between SFTP and Git
    *
    * ## OPTIONS
@@ -2257,4 +2330,3 @@ class SiteCommand extends TerminusCommand {
   }
 
 }
-
