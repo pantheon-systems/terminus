@@ -53,11 +53,7 @@ class Auth {
       ) {
         $auth->logInViaMachineToken(compact('email'));
       } else {
-        throw new TerminusException(
-          'Please login first with `terminus auth login`',
-          [],
-          1
-        );
+        throw new TerminusException(TERMINUS_TOKEN_URL, [], 1);
       }
     }
     return true;

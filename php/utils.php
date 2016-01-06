@@ -121,6 +121,7 @@ function defineConstants() {
   if (!defined('TERMINUS_SCRIPT')) {
     define('TERMINUS_SCRIPT', 'php/Terminus.php');
   }
+  define('TERMINUS_PROTOCOL', $protocol);
 }
 
 /**

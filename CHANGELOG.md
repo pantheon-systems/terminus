@@ -26,6 +26,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Status on `workflows list` and `workflows show` now read "running", "succeeded", or "failed". (#850)
 - Renamed Environment#log() to Environment#getCodeLog(). (#831)
 - `site deploy` will exit with status 1 and the message "There is nothing to deploy." if there are no changes to deploy. (#831)
+- When not logged in, the message given now refers the user to create a machine token in order to log in. (#790)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
