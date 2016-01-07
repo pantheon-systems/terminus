@@ -280,7 +280,8 @@ class Subcommand extends CompositeCommand {
       if ($invalid) {
         throw new TerminusException(
           'Invalid positional value: {invalid}',
-          array('invalid' => $invalid)
+          compact('invalid'),
+          1
         );
       }
     }
@@ -289,7 +290,8 @@ class Subcommand extends CompositeCommand {
     if (!empty($unknownPositionals)) {
       throw new TerminusException(
         'Too many positional arguments: {args}',
-        array('args' => implode(' ', $unknownPositionals))
+        ['args' => implode(' ', $unknownPositionals)],
+        1
       );
     }
     list($errors, $to_unset) = $validator->validateAssoc(
@@ -304,7 +306,7 @@ class Subcommand extends CompositeCommand {
         $out .= "\n " . $error;
       }
 
-      throw new TerminusException($out);
+      throw new TerminusException($out, [], 1);
     }
     foreach ($errors['warning'] as $warning) {
       Terminus::getLogger()->warning($warning);

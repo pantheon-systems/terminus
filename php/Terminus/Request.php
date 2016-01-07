@@ -34,6 +34,7 @@ class Request {
    * @param string $url    URL to download from
    * @param string $target Target file's name
    * @return bool True if download succeeded
+   * @throws TerminusException
    */
   public static function download($url, $target) {
     if (file_exists($target)) {

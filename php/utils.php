@@ -261,6 +261,7 @@ function loadAllCommands() {
  *
  * @param string $file Relative file path from the assets dir
  * @return string Contents of the asset file
+ * @throws TerminusException
  */
 function loadAsset($file) {
   $asset_location = sprintf('%s/assets/%s', TERMINUS_ROOT, $file);

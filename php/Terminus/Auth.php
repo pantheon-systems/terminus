@@ -1,4 +1,4 @@
-<?php
+, [], 1<?php
 
 namespace Terminus;
 
@@ -40,7 +40,7 @@ class Auth {
       } else {
         throw new TerminusException(
           'Please login first with `terminus auth login`',
-          array(),
+          [],
           1
         );
       }
@@ -95,7 +95,7 @@ class Auth {
     ) {
       throw new TerminusException(
         'The provided machine token is not valid.',
-        array(),
+        [],
         1
       );
     }
@@ -131,7 +131,7 @@ class Auth {
     ) {
       throw new TerminusException(
         'The session token {token} is not valid.',
-        array('token' => $token),
+        compact('token'),
         1
       );
     }
@@ -160,24 +160,22 @@ class Auth {
     if (!Terminus\Utils\isValidEmail($email)) {
       throw new TerminusException(
         '{email} is not a valid email address.',
-        array('email' => $email),
+        compact('email'),
         1
       );
     }
 
-    $logger_context = array('email' => $email);
-    $options        = array(
+    $options  = array(
       'form_params' => array(
         'email' => $email,
         'password' => $password,
       ),
     );
-
     $response = $this->request->request('login', '', '', 'POST', $options);
     if ($response['status_code'] != '200') {
       throw new TerminusException(
         'Login unsuccessful for {email}',
-        $logger_context,
+        compact('email'),
         1
       );
     }

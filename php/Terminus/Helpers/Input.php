@@ -69,6 +69,7 @@ class Input {
    *        [string] label   Prompt for STDOUT
    *        [array]  choices Menu options for the user
    * @return string Either the selection, its index, or the default
+   * @throws TerminusException
    */
   public static function backupElement(array $arg_options = array()) {
     $default_options = array(
@@ -457,7 +458,7 @@ class Input {
     } else {
       $command = "/usr/bin/env bash -c 'echo OK'";
       if (rtrim(shell_exec($command)) !== 'OK') {
-        throw new TerminusException("Can't invoke bash", array(), 1);
+        throw new TerminusException("Can't invoke bash", [], 1);
       }
       $command  = "/usr/bin/env bash -c 'read -s -p \""
         . addslashes($options['message'])

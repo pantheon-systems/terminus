@@ -46,8 +46,7 @@ class SiteUserMemberships extends TerminusCollection {
    *
    * @param string $id UUID or email of desired user
    * @return SiteUserMembership
-   * @throws \Exception
-   * @todo Should this throw TerminusException instead?
+   * @throws TerminusException
    */
   public function get($id) {
     $models     = $this->getMembers();
@@ -64,8 +63,10 @@ class SiteUserMemberships extends TerminusCollection {
       }
     }
     if ($membership == null) {
-      throw new \Exception(
-        sprintf('Cannot find site user with the name "%s"', $id)
+      throw new TerminusException(
+        'Cannot find site user with the name "{id}"',
+        compact('id'),
+        1
       );
     }
     return $membership;

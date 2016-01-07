@@ -70,6 +70,7 @@ class Runner {
    *   0 => [Terminus\Dispatcher\RootCommand]
    *   1 => [array] args
    *   2 => [array] command path
+   * @throws TerminusException
    */
   public function findCommandToRun($args) {
     $command = Terminus::getRootCommand();
