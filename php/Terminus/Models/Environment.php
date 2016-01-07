@@ -407,6 +407,63 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Retrieves recommended DNS settings for this environment
+   *
+   * @return array[]
+   * @throws TerminusException
+   */
+  public function getDns() {
+    if ($this->site->get('service_level') == 'free') {
+      throw new TerminusException(
+        'To add custom domains, this site must be upgraded to a paid plan.',
+        [],
+        1
+      );
+    }
+    $response = $this->request->simpleRequest(
+      sprintf(
+        'sites/%s/environments/%s?environment_state=true',
+        $this->site->get('id'),
+        $this->get('id')
+      )
+    );
+    $hosts          = $response['data']->urls;
+    $base_names     = $this->determineBaseNames($hosts);
+    $load_balancers = (array)$response['data']->loadbalancers;
+    $load_balancer  = array_shift($load_balancers);
+    $dns_settings   = [];
+    foreach ($hosts as $host) {
+      preg_match("/pantheon.io$/", $host, $matches);
+      if (empty($matches)) {
+        if (in_array($host, $base_names)) {
+          $dns_settings[] = [
+            'host'        => $host,
+            'record_type' => 'A',
+            'value'       => $load_balancer->ipv4,
+          ];
+          $dns_settings[] = [
+            'host'        => $host,
+            'record_type' => 'AAAA',
+            'value'       => $load_balancer->ipv6,
+          ];
+        } else {
+          $dns_settings[] = [
+            'host'        => $host,
+            'record_type' => 'CNAME',
+            'value'       => sprintf(
+              '%s-%s.pantheon.io',
+              $this->get('id'),
+              $this->site->get('name')
+            )
+          ];
+        }
+      }
+    }
+
+    return $dns_settings;
+  }
+
+  /**
    * List hostnames for environment
    *
    * @return array
@@ -700,6 +757,30 @@ class Environment extends TerminusModel {
     );
 
     return $response['data'];
+  }
+
+  /**
+   * Accepts an array of hostnames for an environment and determines which
+   *   are base names (i.e. not subdomains)
+   *
+   * @param string[] $hosts An array of all hostnames for an environment
+   * @return string[] All of those names which are base names
+   */
+  private function determineBaseNames(array $hosts = []) {
+    $base_names = $hosts;
+    foreach ($hosts as $id => $host) {
+      preg_match('/' . $this->get('dns_zone') . '$/', $host, $matches);
+      if (!empty($matches)) {
+        unset($hosts[$id]);
+        continue;
+      }
+      foreach ($hosts as $key => $name) {
+        if ((boolean)strpos($name, ".$host")) {
+          unset($hosts[$key]);
+        }
+      }
+    }
+    return $hosts;
   }
 
 }

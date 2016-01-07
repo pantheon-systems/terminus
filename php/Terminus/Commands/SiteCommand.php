@@ -750,8 +750,8 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <list|add|remove|lookup>
-   * : OPTIONS are list, add, delete, and lookup
+   * <list|add|remove|lookup|get-dns>
+   * : OPTIONS are list, add, delete, lookup, and get DNS
    *
    * [--site=<site>]
    * : Site to use
@@ -837,6 +837,10 @@ class SiteCommand extends TerminusCommand {
             compact('hostname')
           );
         }
+        $this->output()->outputRecordList($data);
+          break;
+      case 'get-dns':
+        $data = $env->getDns();
         $this->output()->outputRecordList($data);
           break;
       default:

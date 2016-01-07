@@ -155,3 +155,36 @@
             ETag: 'W/"2-d4cbb29"'
             Vary: Accept-Encoding
         body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '404'
+            message: 'Not Found'
+        headers:
+            Server: nginx
+            Date: 'Thu, 07 Jan 2016 21:16:13 GMT'
+            Content-Type: 'text/plain; charset=utf-8'
+            Content-Length: '11'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e18919b0-b583-11e5-a4a7-616c19831610
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"b-c46f8466"'
+            Vary: Accept-Encoding
+        body: "Not found.\n"
