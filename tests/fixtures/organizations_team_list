@@ -91,3 +91,36 @@
             ETag: 'W/"mHI4cE245UhZ10cWLM8e4A=="'
             Vary: Accept-Encoding
         body: '[{"archived": false, "invited_by_id": "25069e79-eae7-4d41-8925-1f728a114cb8", "role": "admin", "id": "3a1d2042-cca3-432e-94c4-12a8f2b6a950", "key": "d3ecc20c-395a-43c4-93ee-f5f43808b6c8", "organization_id": "d3ecc20c-395a-43c4-93ee-f5f43808b6c8", "user_id": "3a1d2042-cca3-432e-94c4-12a8f2b6a950", "admin": true, "user": {"profile": {"utm_term": "", "tracking_first_organization_invite": 1433793605, "seen_first_time_user_popover": true, "utm_content": "", "experiments": {"welcome_video": "shown"}, "full_name": "Dev User", "utm_device": "", "utm_campaign": "", "tracking_first_site_create": 1433800577, "verify": "d5a12ecd05e3a95dfeaf21cc71005959", "tracking_first_code_push": 1433802676, "google_adwords_account_registered_sent": 1433793462, "invites_to_user": 4, "utm_medium": "", "job_function": "", "tracking_first_workflow_in_live": 1433800882, "tracking_first_team_invite": 1439491299, "firstname": "Dev", "invites_to_site": 3, "lastname": "User", "pda_campaign": null, "utm_source": "", "invites_sent": 4, "google_adwords_pushed_code_sent": 1433804021, "last-org-spinup": "none", "web_services_business": null, "guilty_of_abuse": null, "invites_to_org": 1, "tracking_first_site_upgrade": 1433800858, "google_adwords_paid_for_site_sent": 1433801971, "modified": 1433793438, "maxdevsites": 2, "lead_type": "", "organization": ""}, "verified": false, "id": "3a1d2042-cca3-432e-94c4-12a8f2b6a950", "email": "devuser@pantheon.io"}}]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/25069e79-eae7-4d41-8925-1f728a114cb8/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '404'
+            message: 'Not Found'
+        headers:
+            Server: nginx
+            Date: 'Thu, 07 Jan 2016 21:16:10 GMT'
+            Content-Type: 'text/plain; charset=utf-8'
+            Content-Length: '11'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: dff1b0d0-b583-11e5-a4a7-616c19831610
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"b-c46f8466"'
+            Vary: Accept-Encoding
+        body: "Not found.\n"
