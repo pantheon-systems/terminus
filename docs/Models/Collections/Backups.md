@@ -35,6 +35,9 @@
 ##### Return:
     [Backup]
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### getBackupsByElement
@@ -69,6 +72,9 @@
 
 ##### Return:
     [Backup[]] An array of Backup objects
+
+##### Throws:
+    TerminusException
 
 ---
 

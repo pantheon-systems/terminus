@@ -13,6 +13,9 @@
 ##### Return:
     [bool] Always true
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### loggedIn
@@ -34,6 +37,9 @@
 ##### Return:
     [bool] True if login succeeded
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### logInViaSessionToken
@@ -45,6 +51,9 @@
 
 ##### Return:
     [bool] True if login succeeded
+
+##### Throws:
+    TerminusException
 
 ---
 
@@ -58,6 +67,9 @@
 
 ##### Return:
     [bool] True if login succeeded
+
+##### Throws:
+    TerminusException
 
 ---
 

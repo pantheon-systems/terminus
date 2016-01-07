@@ -171,6 +171,9 @@
 ##### Return:
     [array] $info
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### initializeBindings
@@ -242,6 +245,9 @@
 ##### Return:
     [Workflow]
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### mergeToDev
@@ -253,6 +259,9 @@
 
 ##### Return:
     [Workflow]
+
+##### Throws:
+    TerminusException
 
 ---
 

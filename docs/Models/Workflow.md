@@ -61,5 +61,8 @@
 ##### Return:
     [Workflow|void]
 
+##### Throws:
+    TerminusException
+
 ---
 

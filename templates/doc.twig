@@ -23,6 +23,13 @@
 {% endfor %}
 
 {% endif %}
+{% if function.throws %}
+##### Throws:
+{% for line in function.throws %}
+    {{ line|raw }}
+{% endfor %}
+
+{% endif %}
 ---
 
 {% endfor %}
