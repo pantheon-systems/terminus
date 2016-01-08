@@ -53,10 +53,30 @@ class Auth {
       ) {
         $auth->logInViaMachineToken(compact('email'));
       } else {
-        throw new TerminusException(TERMINUS_TOKEN_URL, [], 1);
+        throw new TerminusException(
+          "In order to log in, you must create a machine token here:\n{url}",
+          ['url' => self::getMachineTokenCreationUrl()],
+          1
+        );
       }
     }
     return true;
+  }
+
+  /*
+   * Generates the URL string for where to create a machine token
+   *
+   * @return string
+   */
+  public static function getMachineTokenCreationUrl() {
+    $url = sprintf(
+      '%s://%s:%s/machine-token/create?client=terminus&device=%s',
+      TERMINUS_PROTOCOL,
+      TERMINUS_HOST,
+      TERMINUS_PORT,
+      gethostname()
+    );
+    return $url;
   }
 
   /**
