@@ -9,6 +9,7 @@ default:
               username:                'devuser@pantheon.io'
               user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
               password:                'password1'
+              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
               host:                    'onebox'
               vcr_mode:                'new_episodes'
               test_site_name:          'behat-tests'
@@ -16,6 +17,8 @@ default:
               other_user:              'sara@getpantheon.com'
               php_site_domain:         'onebox.pantheon.io'
               payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
+              machine_token_id:        'dcr_NVvFVvHaPrQRfMZX'
+              machine_token_device:    'Terminus on My Laptop'
               enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
               enterprise_org_name:     'EnterpriseOrg'
     ci:
@@ -33,6 +36,8 @@ default:
               other_user:              'sara@getpantheon.com'
               php_site_domain:         'onebox.pantheon.io'
               payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
+              machine_token_id:        'dcr_NVvFVvHaPrQRfMZX'
+              machine_token_device:    'Terminus on My Laptop'
               enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
               enterprise_org_name:     'EnterpriseOrg'
     ci:
