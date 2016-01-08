@@ -536,6 +536,7 @@ class FeatureContext implements Context {
   /**
    * Logs user out
    * @When /^I log out$/
+   * @Given /^I am not authenticated$/
    *
    * @return [void]
    */
