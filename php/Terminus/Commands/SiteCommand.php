@@ -1315,13 +1315,15 @@ class SiteCommand extends TerminusCommand {
    *
    * ## Examples
    *
-   *    terminus site redis clear --site=mikes-wp-test --env=live
+   *    terminus site redis clear --site=behat-tests --env=live
    */
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
+    $site   = $this->sites->get(Input::siteName(['args' => $assoc_args]));
     if (isset($assoc_args['env'])) {
-      $env = $assoc_args['env'];
+      $environments = [$site->environments->get($assoc_args['env'])];
+    } else {
+      $environments = $site->environments->all();
     }
     switch ($action) {
       case 'clear':
@@ -1330,19 +1332,17 @@ class SiteCommand extends TerminusCommand {
           $this->failure('Redis cache not enabled');
         }
         $commands = array();
-        foreach ($bindings as $binding) {
-          if (isset($env) && (boolean)$env && $env != $binding->environment) {
-            continue;
-          }
-          $args = array(
-            $binding->environment,
+        foreach ($environments as $environment) {
+          $connection_info = $environment->connectionInfo();
+          $args = [
+            $environment->get('id'),
             $site->get('id'),
-            $binding->environment,
+            $environment->get('id'),
             $site->get('id'),
-            $binding->host,
-            $binding->port,
-            $binding->password
-          );
+            $connection_info['redis_host'],
+            $connection_info['redis_port'],
+            $connection_info['redis_password'],
+          ];
           array_filter(
             $args,
             function($a) {
@@ -1352,12 +1352,14 @@ class SiteCommand extends TerminusCommand {
           );
           $command  = 'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in';
           $command .= ' "redis-cli -h %s -p %s -a %s flushall"';
-          $commands[$binding->environment] = vsprintf($command, $args);
+          $commands[$environment->get('id')] = vsprintf($command, $args);
         }
         foreach ($commands as $env => $command) {
           $this->log()->info('Clearing redis on {env}', array('env' => $env));
           exec($command, $stdout, $return);
-          $this->log()->info($stdout[0]);
+          if (!empty($stdout)) {
+            $this->log()->info($stdout[0]);
+          }
         }
           break;
     }

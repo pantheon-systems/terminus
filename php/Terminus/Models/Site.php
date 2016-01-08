@@ -176,9 +176,8 @@ class Site extends TerminusModel {
    */
   public function bindings($type = null) {
     if (empty($this->bindings)) {
-      // TODO: $bindings is undefined.
       $response = $this->request->simpleRequest(
-        'sites/' . $this->get('id') . '/' . $bindings
+        'sites/' . $this->get('id') . '/bindings'
       );
       foreach ($response['data'] as $id => $binding) {
         $binding->id = $id;
@@ -188,9 +187,8 @@ class Site extends TerminusModel {
     if ($type) {
       if (isset($this->bindings[$type])) {
         return $this->bindings[$type];
-      } else {
-        return false;
       }
+      return false;
     }
     return $this->bindings;
   }
