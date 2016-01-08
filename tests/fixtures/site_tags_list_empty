@@ -9,8 +9,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:43f5c004-b632-11e5-ab27-bc764e10f058:r0JEXmDjR5DuP6A3kloXF'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:43f5c004-b632-11e5-ab27-bc764e10f058:r0JEXmDjR5DuP6A3kloXF'
             verify: ''
             json: password1
             Accept: null
@@ -22,16 +22,16 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:27 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:11 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: e98e9b60-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: df8e55b0-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf","expires_at":1454696607,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
+        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL","expires_at":1454696591,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
 -
     request:
         method: GET
@@ -41,8 +41,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
             verify: ''
             method: get
             absolute_url: ''
@@ -54,11 +54,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:29 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:12 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: ea56a650-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: e0417910-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -74,8 +74,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
             verify: ''
             method: get
             absolute_url: ''
@@ -87,11 +87,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:29 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:12 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: eaaf2690-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: e084c3a0-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -107,8 +107,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
             verify: ''
             method: get
             absolute_url: ''
@@ -120,17 +120,17 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:30 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:13 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: eafa6060-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: e0c5c440-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"Ms9QK3Bw0vQ5rPLjGi8syA=="'
+            ETag: 'W/"cg9gRgPYddDGc7qwpYhRJg=="'
             Vary: Accept-Encoding
-        body: '[{"archived": false, "invited_by_id": null, "role": "team_member", "id": "387c605f-c540-412b-9526-7eb4d0d5c857", "key": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "site_id": "387c605f-c540-412b-9526-7eb4d0d5c857", "site": {"created_by_user_id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "user_in_charge_id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "product": {"id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "longname": "WordPress"}, "holder_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "name": "behat-tests", "user_in_charge": {"profile": {"utm_content": "", "experiments": {"welcome_video": "not_shown"}, "full_name": "Sara McCutcheon", "utm_campaign": "", "tracking_first_site_create": 1452217732, "google_adwords_paid_for_site_do_send": null, "verify": 1, "google_adwords_account_registered_sent": 1452217358, "utm_device": "", "utm_medium": "", "job_function": "", "google_adwords_account_registered_do_send": null, "firstname": "Sara", "utm_term": "", "lastname": "McCutcheon", "pda_campaign": null, "utm_source": "", "google_adwords_paid_for_site_sent": 1452275891, "last-org-spinup": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "web_services_business": null, "guilty_of_abuse": null, "tracking_first_site_upgrade": 1452275707, "modified": 1452217355, "maxdevsites": 2, "lead_type": "", "organization": ""}, "id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "email": "sara@getpantheon.com"}, "created": 1452275900, "upstream_updates_by_environment": {"remote_head": "93d1c75f1d1025b4b42f01305f5d09c71764f247", "ahead": 1, "remote_branch": "refs/remotes/origin/master", "live": {}, "dev": {"has_code": true, "is_up_to_date_with_upstream": true}, "behind": 0, "has_code": true, "test": {}, "has_remote_head": true, "remote_url": "https://github.com/pantheon-systems/WordPress"}, "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "branch": "master"}, "instrument": "ad82f83d-ea58-4c23-b05a-23d0f3112232", "holder_type": "organization", "service_level": "free", "framework": "wordpress", "php_version": 55, "owner": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "organization": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "attributes": {"label": "Behat Tests"}, "holder": {"profile": {"machine_name": null, "change_service_url": null, "name": "EnterpriseOrg", "email_domain": null, "org_logo_width": null, "org_logo_height": null, "base_domain": null, "billing_url": "http://tesladethray.com", "terms_of_service": null, "org_logo": null}, "id": "bf200cbe-8995-4891-b5d4-1a8bdc292905"}, "id": "387c605f-c540-412b-9526-7eb4d0d5c857", "preferred_zone": "onebox", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75"}, "tags": ["testtag"]}]'
+        body: '[{"archived": false, "invited_by_id": null, "role": "team_member", "id": "387c605f-c540-412b-9526-7eb4d0d5c857", "key": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "organization_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "site_id": "387c605f-c540-412b-9526-7eb4d0d5c857", "site": {"created_by_user_id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "user_in_charge_id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "product": {"id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "longname": "WordPress"}, "holder_id": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "name": "behat-tests", "user_in_charge": {"profile": {"utm_content": "", "experiments": {"welcome_video": "not_shown"}, "full_name": "Sara McCutcheon", "utm_campaign": "", "tracking_first_site_create": 1452217732, "google_adwords_paid_for_site_do_send": null, "verify": 1, "google_adwords_account_registered_sent": 1452217358, "utm_device": "", "utm_medium": "", "job_function": "", "google_adwords_account_registered_do_send": null, "firstname": "Sara", "utm_term": "", "lastname": "McCutcheon", "pda_campaign": null, "utm_source": "", "google_adwords_paid_for_site_sent": 1452275891, "last-org-spinup": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "web_services_business": null, "guilty_of_abuse": null, "tracking_first_site_upgrade": 1452275707, "modified": 1452217355, "maxdevsites": 2, "lead_type": "", "organization": ""}, "id": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "email": "sara@getpantheon.com"}, "created": 1452275900, "upstream_updates_by_environment": {"remote_head": "93d1c75f1d1025b4b42f01305f5d09c71764f247", "ahead": 1, "remote_branch": "refs/remotes/origin/master", "live": {}, "dev": {"has_code": true, "is_up_to_date_with_upstream": true}, "behind": 0, "has_code": true, "test": {}, "has_remote_head": true, "remote_url": "https://github.com/pantheon-systems/WordPress"}, "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "branch": "master"}, "instrument": "ad82f83d-ea58-4c23-b05a-23d0f3112232", "holder_type": "organization", "service_level": "free", "framework": "wordpress", "php_version": 55, "owner": "50f6d1d6-5da3-4d2c-8f49-86ee213f0985", "organization": "bf200cbe-8995-4891-b5d4-1a8bdc292905", "attributes": {"label": "Behat Tests"}, "holder": {"profile": {"machine_name": null, "change_service_url": null, "name": "EnterpriseOrg", "email_domain": null, "org_logo_width": null, "org_logo_height": null, "base_domain": null, "billing_url": "http://tesladethray.com", "terms_of_service": null, "org_logo": null}, "id": "bf200cbe-8995-4891-b5d4-1a8bdc292905"}, "id": "387c605f-c540-412b-9526-7eb4d0d5c857", "preferred_zone": "onebox", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75"}, "tags": []}]'
 -
     request:
         method: GET
@@ -140,8 +140,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
             verify: ''
             method: get
             absolute_url: ''
@@ -154,11 +154,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:31 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:14 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: ebb042e0-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: e179f910-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -174,8 +174,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.0 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
-            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:e9948b74-b634-11e5-ab64-bc764e10f058:lsIzUvWbA5zwu6bpayzCf'
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:df94c850-b634-11e5-b524-bc764e10f058:ghpSyA7yg09wGU570H2rL'
             verify: ''
             method: get
             absolute_url: ''
@@ -187,11 +187,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 08 Jan 2016 18:23:32 GMT'
+            Date: 'Fri, 08 Jan 2016 18:23:15 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: ec686f50-b634-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: e242ee60-b634-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'

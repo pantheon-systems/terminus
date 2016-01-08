@@ -398,11 +398,11 @@ function sqlFromZip($filename) {
 /**
   * Strips sensitive data out of the JSON printed in a request string
   *
-  * @param array $request_data Elements as follows:
+  * @param array $request   Elements as follows:
   *        string url     URL for the request
   *        string method  Method for request (e.g. PUT, POST)
   *        array  options Settings for the request
-  * @param array $blacklist    Array of string keys to remove from request
+  * @param array $blacklist Array of string keys to remove from request
   * @return string Sensitive data-stripped version of $request_data
   */
 function stripSensitiveData($request, $blacklist = array()) {
