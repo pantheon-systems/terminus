@@ -43,6 +43,10 @@ script:
 
 after_success: ./scripts/package.sh
 
+branches:
+  only:
+    - master
+
 notifications:
   email:
     on_success: never
