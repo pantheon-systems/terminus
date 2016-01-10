@@ -32,6 +32,24 @@ Feature: Listing sites
     """
 
   @vcr sites_list
+  Scenario: Filter sites list by name
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    When I run "terminus sites list --name=[[test_site_name]]"
+    Then I should get:
+    """
+    [[test_site_name]]
+    """
+
+  @vcr sites_list
+  Scenario: Filter sites list by name, excluding the test site
+    Given I am authenticated
+    And a site named "[[test_site_name]]"
+    When I run "terminus sites list --name=missing"
+    Then I should not get: "[[test_site_name]]"
+    And I should get: "You have no sites."
+
+  @vcr sites_list
   Scenario: List Team Sites
     Given I am authenticated
     And a site named "[[test_site_name]]"

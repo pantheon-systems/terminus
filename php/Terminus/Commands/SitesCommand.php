@@ -208,13 +208,16 @@ class SitesCommand extends TerminusCommand {
    *   and also is the basis for loading individual sites by name
    *
    * [--team]
-   * : filter sites you are a team member of
+   * : Filter sites you are a team member of
    *
    * [--org=<id>]
-   * : filter sites you can access via the organization
+   * : Filter sites you can access via the organization
+   *
+   * [--name=<regex>]
+   * : Filter sites you can access via name
    *
    * [--cached]
-   * : causes the command to return cached sites list instead of retrieving anew
+   * : Causes the command to return cached sites list instead of retrieving anew
    *
    * @subcommand list
    * @alias show
@@ -271,6 +274,19 @@ class SitesCommand extends TerminusCommand {
             || in_array($org_id, $site['memberships'])
           );
           return $is_member;
+        }
+      );
+    }
+
+    if (isset($assoc_args['name'])) {
+      $search_string = $assoc_args['name'];
+
+      $rows = array_filter(
+        $rows,
+        function($site) use ($search_string) {
+          preg_match("~$search_string~", $site['name'], $matches);
+          $is_match = !empty($matches);
+          return $is_match;
         }
       );
     }
