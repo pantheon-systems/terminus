@@ -77,6 +77,9 @@
 ##### Return:
     [Site[]]
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### get
@@ -88,6 +91,9 @@
 
 ##### Return:
     [Site]
+
+##### Throws:
+    TerminusException
 
 ---
 

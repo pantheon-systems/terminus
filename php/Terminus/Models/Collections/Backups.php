@@ -159,6 +159,7 @@ class Backups extends TerminusCollection {
    *
    * @param string $element Element requested (i.e. code, db, or files)
    * @return Backup[] An array of Backup objects
+   * @throws TerminusException
    */
   public function getFinishedBackups($element) {
     if ($element != null) {
@@ -172,10 +173,10 @@ class Backups extends TerminusCollection {
       $message .= '`terminus site backup create --site={site} --env={env}`';
       throw new TerminusException(
         $message,
-        array(
+        [
           'site' => $this->environment->site->get('name'),
           'env'  => $this->environment->get('id')
-        ),
+        ],
         1
       );
     }

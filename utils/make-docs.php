@@ -86,7 +86,7 @@ function parseDocs($doc_string) {
       $lines[] = $line;
     }
   }
-  $parsed_doc = array('description' => array(), 'param' => array(), 'return' => array());
+  $parsed_doc = ['description' => [], 'param' => [], 'return' => [], 'throws' => [],];
   $current    = 'description';
   do {
     $line = array_shift($lines);

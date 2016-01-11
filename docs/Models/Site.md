@@ -303,6 +303,9 @@
 ##### Return:
     [Workflow]
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### tips
@@ -323,6 +326,9 @@
 
 ##### Return:
     [\stdClass]
+
+##### Throws:
+    TerminusException
 
 ---
 

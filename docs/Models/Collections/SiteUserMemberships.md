@@ -35,5 +35,8 @@
 ##### Return:
     [SiteUserMembership]
 
+##### Throws:
+    TerminusException
+
 ---
 

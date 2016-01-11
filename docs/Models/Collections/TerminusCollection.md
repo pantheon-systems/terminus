@@ -40,6 +40,9 @@
 ##### Return:
     [TerminusModel] $this->models[$id]
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### ids

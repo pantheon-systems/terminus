@@ -463,7 +463,7 @@ class Environment extends TerminusModel {
       if (isset($info[$key])) {
         return $info[$key];
       } else {
-        throw new TerminusException('There is no such field.', array(), 1);
+        throw new TerminusException('There is no such field.', [], 1);
       }
     } else {
       return $info;
@@ -574,16 +574,14 @@ class Environment extends TerminusModel {
    *
    * @param array $options Parameters to override defaults
    * @return Workflow
-   * @throws \Exception
-   * @todo Should this throw TerminusException instead?
+   * @throws TerminusException
    */
   public function mergeFromDev($options = array()) {
     if (!$this->isMultidev()) {
-      throw new \Exception(
-        sprintf(
-          'The %s environment is not a multidev environment',
-          $this->get('id')
-        )
+      throw new TerminusException(
+        'The {env} environment is not a multidev environment',
+        ['env' => $this->get('id')],
+        1
       );
     }
     $default_params = array('updatedb' => false);
@@ -603,16 +601,14 @@ class Environment extends TerminusModel {
    *
    * @param array $options Parameters to override defaults
    * @return Workflow
-   * @throws \Exception
-   * @todo Should this throw TerminusException instead?
+   * @throws TerminusException
    */
   public function mergeToDev($options = array()) {
     if (!$this->isMultidev()) {
-      throw new \Exception(
-        sprintf(
-          'The %s environment is not a multidev environment',
-          $this->get('id')
-        )
+      throw new TerminusException(
+        'The {env} environment is not a multidev environment',
+        ['env' => $this->get('id')],
+        1
       );
     }
 

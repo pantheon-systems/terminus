@@ -142,6 +142,7 @@ class Sites extends TerminusCollection {
    * @param string $tag Tag to filter by
    * @param string $org Organization which has tagged sites
    * @return Site[]
+   * @throws TerminusException
    */
   public function filterAllByTag($tag, $org = '') {
     $all_sites = $this->all();
@@ -173,8 +174,7 @@ class Sites extends TerminusCollection {
    *
    * @param string $id UUID or name of desired site
    * @return Site
-   * @throws \Exception
-   * @todo Shouldn't this throw a TerminusException instead?
+   * @throws TerminusException
    */
   public function get($id) {
     $models = $this->getMembers();
@@ -186,7 +186,11 @@ class Sites extends TerminusCollection {
       $site = $models[$list[$id]];
     }
     if ($site == null) {
-      throw new \Exception(sprintf('Cannot find site with the name "%s"', $id));
+      throw new TerminusException(
+        'Cannot find site with the name "{id}"',
+        compact('id'),
+        1
+      );
     }
     return $site;
   }

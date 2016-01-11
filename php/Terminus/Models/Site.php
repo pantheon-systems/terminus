@@ -544,6 +544,7 @@ class Site extends TerminusModel {
    *
    * @param string $owner UUID of new owner of site
    * @return Workflow
+   * @throws TerminusException
    */
   public function setOwner($owner = null) {
     $new_owner = $this->user_memberships->get($owner);
@@ -607,7 +608,7 @@ class Site extends TerminusModel {
       if (strpos($e->getMessage(), '403') !== false) {
         throw new TerminusException(
           'Instrument required to increase service level',
-          array(),
+          [],
           1
         );
       }
