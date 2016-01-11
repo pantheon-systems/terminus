@@ -179,14 +179,22 @@ function getVendorPaths() {
 }
 
 /**
- * Imports environment variables
+ * Imports environment variables from all files ending in '.env'
  *
  * @return void
  */
 function importEnvironmentVariables() {
-  //Load environment variables from __DIR__/.env
-  if (file_exists(getcwd() . '/.env')) {
-    $env = new \Dotenv\Dotenv(getcwd());
+  //Load environment variables from __DIR__/*.env
+  $files = array_filter(
+    scandir(getcwd()),
+    function($file) {
+      preg_match("/.env$/", $file, $matches);
+      $is_env = !empty($matches);
+      return $is_env;
+    }
+  );
+  foreach ($files as $file) {
+    $env = new \Dotenv\Dotenv(getcwd(), $file);
     $env->load();
   }
 }

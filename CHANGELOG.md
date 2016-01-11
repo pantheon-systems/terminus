@@ -12,6 +12,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Moved Terminus::line() to Terminus\Outputters\Outputter. (#768)
 - Removed dev packages from PHAR file. (#774)
 - Updated Symfony to version 3.0.0. Minimum PHP version required to run Terminus is now 5.5.9. (#772)
+- Environmental variables are now automatically loaded from all .env files in the current directory. (#803)
 
 ### Fixed
 - Missing creation dates in site data while using organizations site list command will no longer cause errors. (#766)

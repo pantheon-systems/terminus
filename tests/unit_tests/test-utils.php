@@ -23,6 +23,13 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql', $actual);
   }
 
+  public function testImportEnvironmentVariables() {
+    exec('echo "TERMINUS_TEST_VAR=test" >> pantheontest.env');
+    Utils\importEnvironmentVariables();
+    exec('rm pantheontest.env');
+    $this->assertEquals($_ENV['TERMINUS_TEST_VAR'], 'test');
+  }
+
   public function testIsTest() {
     $this->assertTrue(\Terminus::isTest());
   }
