@@ -4,6 +4,7 @@ namespace Terminus\Models;
 
 use Terminus\Models\Collections\UserOrganizationMemberships;
 use Terminus\Models\Collections\Instruments;
+use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\Workflows;
 use Terminus\Session;
 
@@ -82,24 +83,6 @@ class User extends TerminusModel {
   }
 
   /**
-   * Requests API data and returns an object of user site data
-   *
-   * @param string $organization UUID of organization to requests sites from,
-   *   or null to fetch for all organizations.
-   * @return \stdClass
-   */
-  public function getSites($organization = null) {
-    if ($organization) {
-      $path = sprintf('organizations/%s/memberships/sites', $organization);
-    } else {
-      $path = 'sites';
-    }
-    $method   = 'GET';
-    $response = $this->request->request('users', $this->id, $path, $method);
-    return $response['data'];
-  }
-
-  /**
    * Requests API data and populates $this->aliases
    *
    * @return void
@@ -108,8 +91,80 @@ class User extends TerminusModel {
     $path     = 'drush_aliases';
     $method   = 'GET';
     $response = $this->request->request('users', $this->id, $path, $method);
+    eval(str_replace('<?php', '', $response['data']->drush_aliases));
 
-    $this->aliases = $response['data']->drush_aliases;
+    $formatted_aliases = substr($response['data']->drush_aliases, 0, -1);
+
+    $sites_object = new Sites();
+    $sites        = $sites_object->all();
+    foreach ($sites as $site) {
+      $environments = $site->environments->all();
+      foreach ($environments as $environment) {
+        $key = $site->get('name') . '.'. $environment->get('id');
+        if (isset($aliases[$key])) {
+          break;
+        }
+        try {
+          $formatted_aliases .= PHP_EOL . "  \$aliases['$key'] = ";
+          $formatted_aliases .= $this->constructAlias($environment);
+        } catch (TerminusException $e) {
+          continue;
+        }
+      }
+    }
+    $formatted_aliases .= PHP_EOL;
+    $this->aliases      = $formatted_aliases;
+  }
+
+  /**
+   * Constructs a Drush alias for an environment. Used to supply
+   *   organizational Drush aliases not provided by the API.
+   *
+   * @param Environment $environment Environment to create an alias for
+   * @return string
+   */
+  private function constructAlias($environment) {
+    $site_name   = $environment->site->get('name');
+    $site_id     = $environment->site->get('id');
+    $env_id      = $environment->get('id');
+    $db_bindings = $environment->bindings->getByType('dbserver');
+    $hostnames   = array_keys((array)$environment->getHostnames());
+    if (empty($hostnames) || empty($db_bindings)) {
+      throw new TerminusException(
+        'No hostname entry for {site}.{env}',
+        ['site' => $site_name, 'env' => $env_id,],
+        1
+      );
+    }
+    $db_binding = array_shift($db_bindings);
+    $uri        = array_shift($hostnames);
+    $db_pass    = $db_binding->get('password');
+    $db_port    = $db_binding->get('port');
+
+    if (strpos(TERMINUS_HOST, 'onebox') !== false) {
+      $remote_user = "appserver.$env_id.$site_id";
+      $remote_host = TERMINUS_HOST;
+      $db_url      = "mysql://pantheon:$db_pass@$remote_host:$db_port";
+      $db_url     .= '/pantheon';
+    } else {
+      $remote_user = "$env_id.$site_id";
+      $remote_host = "appserver.$env_id.$site_id.drush.in";
+      $db_url      = "mysql://pantheon:$db_pass@dbserver.$environment.$site_id";
+      $db_url     .= ".drush.in:$db_port/pantheon";
+    }
+    $output = "array(
+    'uri'              => $uri,
+    'db-url'           => $db_url,
+    'db-allows-remote' => true,
+    'remote-host'      => $remote_host,
+    'remote-user'      => $remote_user,
+    'ssh-options'      => '-p 2222 -o \"AddressFamily inet\"',
+    'path-aliases'     => array(
+      '%files'        => 'code/sites/default/files',
+      '%drush-script' => 'drush',
+    ),
+  );";
+    return $output;
   }
 
 }

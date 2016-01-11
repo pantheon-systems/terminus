@@ -18,7 +18,7 @@ class Environment extends TerminusModel {
   /**
    * @var Bindings
    */
-  private $bindings;
+  public $bindings;
 
   /**
    * Object constructor
