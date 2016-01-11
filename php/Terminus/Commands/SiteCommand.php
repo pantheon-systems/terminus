@@ -1327,13 +1327,12 @@ class SiteCommand extends TerminusCommand {
     }
     switch ($action) {
       case 'clear':
-        $bindings = $site->bindings('cacheserver');
-        if (empty($bindings)) {
-          $this->failure('Redis cache not enabled');
-        }
         $commands = array();
         foreach ($environments as $environment) {
           $connection_info = $environment->connectionInfo();
+          if (!isset($connection_info['redis_host'])) {
+            $this->failure('Redis cache not enabled');
+          }
           $args = [
             $environment->get('id'),
             $site->get('id'),
