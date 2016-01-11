@@ -1550,11 +1550,11 @@ class SiteCommand extends TerminusCommand {
       switch ($action) {
         case 'add':
           $tag      = Input::string(
-            array(
+            [
               'args'    => $assoc_args,
               'key'     => 'tag',
-              'message' => 'Enter a tag to add'
-            )
+              'message' => 'Enter a tag to add',
+            ]
           );
           $response = $site->addTag($tag, $org);
 

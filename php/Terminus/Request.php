@@ -149,11 +149,9 @@ class Request {
       $response = $e->getResponse();
       throw new TerminusException($response->getBody(true));
     } catch (\GuzzleHttp\Exception\RequestException $e) {
-      $sanitized_request = json_encode(
-        Utils\stripSensitiveData(
-          array('url' => $url, 'method' => $method, 'options' => $options),
-          $this->blacklist
-        )
+      $sanitized_request = Utils\stripSensitiveData(
+        $e->getMessage(),
+        self::$blacklist
       );
       throw new TerminusException(
         'API Request Error. {msg} - Request: {req}',
@@ -241,6 +239,7 @@ class Request {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
+    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
       array(

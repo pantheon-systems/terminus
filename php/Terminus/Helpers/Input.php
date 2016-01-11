@@ -541,7 +541,9 @@ class Input {
     foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
-    $menu = self::menu(array('choices' => $choices, 'message' => $message));
+    $menu = self::menu(
+      ['choices' => $choices, 'message' => $choices['message']]
+    );
     return $menu;
   }
 

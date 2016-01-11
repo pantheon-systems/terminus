@@ -398,19 +398,26 @@ function sqlFromZip($filename) {
 /**
   * Strips sensitive data out of the JSON printed in a request string
   *
-  * @param array $request_data Elements as follows:
+  * @param array $request   Elements as follows:
   *        string url     URL for the request
   *        string method  Method for request (e.g. PUT, POST)
   *        array  options Settings for the request
-  * @param array $blacklist    Array of string keys to remove from request
+  * @param array $blacklist Array of string keys to remove from request
   * @return string Sensitive data-stripped version of $request_data
   */
-function stripSensitiveData($request_data, $blacklist = array()) {
-  foreach ($request_data as $key => $value) {
-    if (in_array($key, $blacklist)) {
-      $request_data[$key] = '*****';
-    } else if (is_array($value)) {
-      $request_data[$key] = stripSensitiveData($value, $blacklist);
+function stripSensitiveData($request, $blacklist = array()) {
+  //Locate the JSON in the string, turn to array
+  $regex = '~\{(.*)\}~';
+  preg_match($regex, $request, $matches);
+  if (empty($matches)) {
+    return $request;
+  }
+  $request_array = json_decode($matches[0], true);
+
+  //See if a blacklisted items are in the arrayed JSON, replace
+  foreach ($blacklist as $blacklisted_item) {
+    if (isset($request_array[$blacklisted_item])) {
+      $request_array[$blacklisted_item] = '*****';
     }
   }
   return $request_data;
