@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## Master
+## [0.10.1] - 2015-01-12
 ### Added
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)
 - Added a `--name=<regex>` filter to `sites list`. Use regex to filter the sites by name. (#802)
@@ -12,6 +12,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Moved Terminus::line() to Terminus\Outputters\Outputter. (#768)
 - Removed dev packages from PHAR file. (#774)
 - Updated Symfony to version 3.0.0. Minimum PHP version required to run Terminus is now 5.5.9. (#772)
+- `auth whoami` now returns a user profile rather than their UUID. (#763)
 
 ### Fixed
 - Missing creation dates in site data while using organizations site list command will no longer cause errors. (#766)

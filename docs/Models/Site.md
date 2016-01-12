@@ -27,8 +27,8 @@
     Adds a tag to the site
 
 ##### Parameters:
-    [string] $tag Name of tag to apply
-    [string] $org Organization to add the tag association to
+    [string] $tag    Name of tag to apply
+    [string] $org_id Organization to add the tag association to
 
 ##### Return:
     [array]
@@ -55,18 +55,6 @@
 
 ##### Return:
     [\stdClass]
-
----
-
-### bindings
-##### Description:
-    Fetch Binding info
-
-##### Parameters:
-    [string] $type Which sort of binding to retrieve
-
-##### Return:
-    [array]
 
 ---
 
@@ -184,7 +172,7 @@
     Returns tags from the site/org join
 
 ##### Parameters:
-    [string] $org UUID of organization site belongs to
+    [string] $org_id UUID of organization site belongs to
 
 ##### Return:
     [string[]]
@@ -197,6 +185,19 @@
 
 ##### Return:
     [\stdClass]
+
+---
+
+### hasTag
+##### Description:
+    Checks to see whether the site has a tag associated with the given org
+
+##### Parameters:
+    [string] $tag    Name of tag to check for
+    [string] $org_id Organization with which this tag is associated
+
+##### Return:
+    [bool]
 
 ---
 
@@ -285,8 +286,8 @@
     Removes a tag to the site
 
 ##### Parameters:
-    [string] $tag Tag to remove
-    [string] $org Organization to remove the tag association from
+    [string] $tag    Tag to remove
+    [string] $org_id Organization to remove the tag association from
 
 ##### Return:
     [array]

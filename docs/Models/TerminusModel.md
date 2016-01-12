@@ -34,6 +34,18 @@
 
 ---
 
+### parseAttributes
+##### Description:
+    Modify response data between fetch and assignment
+
+##### Parameters:
+    [object] $data attributes received from API response
+
+##### Return:
+    [object] $data
+
+---
+
 ### get
 ##### Description:
     Retrieves attribute of given name

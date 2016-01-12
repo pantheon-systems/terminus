@@ -42,6 +42,7 @@ $finder
     ->in('./assets')
     ->in('./php')
     ->in('./vendor')
+    ->in('./config')
     ->exclude('test')
     ->exclude('tests')
     ->exclude('Tests')
