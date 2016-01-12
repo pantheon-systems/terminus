@@ -14,7 +14,7 @@ Installation
 ------------
 
 **Requirements:**
-- PHP version 5.5.0 or later
+- PHP version 5.5.9 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
@@ -37,7 +37,7 @@ composer require pantheon-systems/cli
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.10.0/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/cli/releases/download/0.10.1/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
