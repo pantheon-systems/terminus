@@ -16,6 +16,7 @@
     "ramsey/array_column": "~1.1",
     "rmccue/requests": "^1.6",
     "symfony/finder": "~2.8",
+    "symfony/yaml": "~2.1",
     "twig/twig": "~1.23",
     "vlucas/phpdotenv": "~2.1"
   },
