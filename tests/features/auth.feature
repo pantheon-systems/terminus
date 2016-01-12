@@ -25,7 +25,7 @@ Feature: Authorization command
     When I run "terminus auth whoami"
     Then I should get:
     """
-    You are authenticated as: [[user_uuid]]
+    [[user_uuid]]
     """
 
   @vcr auth_logout

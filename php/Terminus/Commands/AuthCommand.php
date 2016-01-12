@@ -91,10 +91,11 @@ class AuthCommand extends TerminusCommand {
    */
   public function whoami() {
     if (Session::getValue('user_uuid')) {
-      $this->output()->outputValue(
-        Session::getValue('user_uuid'),
-        'You are authenticated as'
-      );
+      $user = Session::getUser();
+      $user->fetch();
+
+      $data = $user->serialize();
+      $this->output()->outputRecord($data);
     } else {
       $this->failure('You are not logged in.');
     }

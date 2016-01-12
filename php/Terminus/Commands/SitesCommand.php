@@ -44,7 +44,7 @@ class SitesCommand extends TerminusCommand {
    *   '~/.drush/pantheon.aliases.drushrc.php' will be used.
    */
   public function aliases($args, $assoc_args) {
-    $user     = new User();
+    $user     = Session::getUser();
     $print    = Input::optional(
       array(
         'key'     => 'print',

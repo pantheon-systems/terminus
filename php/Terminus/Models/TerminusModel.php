@@ -82,8 +82,21 @@ abstract class TerminusModel {
       $options
     );
 
-    $this->attributes = $results['data'];
+    $data = $results['data'];
+    $data = $this->parseAttributes($data);
+    $this->attributes = $data;
+
     return $this;
+  }
+
+  /**
+   * Modify response data between fetch and assignment
+   *
+   * @param [object] $data attributes received from API response
+   * @return [object] $data
+   */
+  public function parseAttributes($data) {
+    return $data;
   }
 
   /**

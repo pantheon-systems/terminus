@@ -3,6 +3,7 @@
 namespace Terminus\Helpers;
 
 use Terminus;
+use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
@@ -358,7 +359,7 @@ class Input {
     if ($options['allow_none']) {
       $org_list = array('-' => 'None');
     }
-    $user          = new User();
+    $user          = Session::getUser();
     $organizations = $user->organizations->all();
     foreach ($organizations as $id => $org) {
       $org_data                  = $org->get('organization');

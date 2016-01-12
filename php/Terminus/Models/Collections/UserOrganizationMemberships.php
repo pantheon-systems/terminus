@@ -2,6 +2,8 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Models\Collections\TerminusCollection;
+use Terminus\Session;
 use Terminus\Models\User;
 use Terminus\Models\UserOrganizationMembership;
 
@@ -16,7 +18,7 @@ class UserOrganizationMemberships extends TerminusCollection {
   public function __construct($options = array()) {
     parent::__construct($options);
     if (!isset($this->user)) {
-      $this->user = new User();
+      $this->user = Session::getUser();
     }
   }
 

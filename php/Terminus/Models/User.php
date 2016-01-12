@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus\Models\Collections\UserOrganizationMemberships;
+use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
 use Terminus\Models\Collections\Workflows;
 use Terminus\Session;
@@ -42,9 +43,6 @@ class User extends TerminusModel {
    * @param array  $options    Options to set as $this->key
    */
   public function __construct($attributes = null, array $options = array()) {
-    if (!isset($options['id'])) {
-      $options['id'] = Session::getValue('user_uuid');
-    }
     parent::__construct($attributes, $options);
 
     if (isset($attributes->profile)) {
@@ -57,6 +55,29 @@ class User extends TerminusModel {
     $this->organizations = new UserOrganizationMemberships(
       array('user' => $this)
     );
+  }
+
+  /**
+   * Give the URL for collection data fetching
+   *
+   * @return [string] $url URL to use in fetch query
+   */
+  protected function getFetchUrl() {
+    $url = sprintf('users/%s', $this->id);
+    return $url;
+  }
+
+  /**
+   * Modify response data between fetch and assignment
+   *
+   * @param [object] $data attributes received from API response
+   * @return [object] $data
+   */
+  public function parseAttributes($data) {
+    if (isset($data->profile)) {
+      $this->profile = $data->profile;
+    }
+    return $data;
   }
 
   /**
@@ -97,6 +118,29 @@ class User extends TerminusModel {
     $method   = 'GET';
     $response = $this->request->request('users', $this->id, $path, $method);
     return $response['data'];
+  }
+
+  /**
+   * Formats User object into an associative array for output
+   *
+   * @return [array] $data associative array of data for output
+   */
+  public function serialize() {
+    $first_name = $last_name = null;
+    if (isset($this->profile->firstname)) {
+      $first_name = $this->profile->firstname;
+    }
+    if (isset($this->profile->lastname)) {
+      $last_name = $this->profile->lastname;
+    }
+
+    $data = array(
+      'firstname' => $first_name,
+      'lastname'  => $last_name,
+      'email' => $this->get('email'),
+      'id'  => $this->id,
+    );
+    return $data;
   }
 
   /**

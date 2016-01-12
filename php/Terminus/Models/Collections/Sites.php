@@ -29,7 +29,7 @@ class Sites extends TerminusCollection {
   public function __construct(array $options = array()) {
     parent::__construct($options);
     $this->sites_cache = new SitesCache();
-    $this->user        = new User();
+    $this->user        = Session::getUser();
   }
 
   /**

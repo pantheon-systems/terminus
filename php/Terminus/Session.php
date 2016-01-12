@@ -3,6 +3,8 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\Request;
+use Terminus\Models\User;
 
 class Session {
   /**
@@ -111,6 +113,17 @@ class Session {
     foreach ($data as $k => $v) {
       $session->set($k, $v);
     }
+  }
+
+  /**
+   * Returns a user with the current session user id
+   *
+   * @return [user] $session user
+   */
+  public static function getUser() {
+    $user_uuid = Session::getValue('user_uuid');
+    $user = new User((object)array('id' => $user_uuid));
+    return $user;
   }
 
 }
