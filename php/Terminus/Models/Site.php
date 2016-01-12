@@ -169,33 +169,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Fetch Binding info
-   *
-   * @param string $type Which sort of binding to retrieve
-   * @return array
-   */
-  public function bindings($type = null) {
-    if (empty($this->bindings)) {
-      // TODO: $bindings is undefined.
-      $response = $this->request->simpleRequest(
-        'sites/' . $this->get('id') . '/' . $bindings
-      );
-      foreach ($response['data'] as $id => $binding) {
-        $binding->id = $id;
-        $this->bindings[$binding->type][] = $binding;
-      }
-    }
-    if ($type) {
-      if (isset($this->bindings[$type])) {
-        return $this->bindings[$type];
-      } else {
-        return false;
-      }
-    }
-    return $this->bindings;
-  }
-
-  /**
    * Create a new branch
    *
    * @param string $branch Name of new branch
