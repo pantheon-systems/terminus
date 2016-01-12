@@ -8,11 +8,11 @@ namespace Terminus;
  **/
 class Endpoint {
   public $patterns = array(
-    'deprecated'   => '/Terminus.php?%s=%s',
-    'private'      => '/api/%s/%s',
-    'public'       => '/api/%s',
-    'login'        => '/api/authorize',
-    'auth/refresh' => '/auth/refresh',
+    'deprecated'  => '/Terminus.php?%s=%s',
+    'private'     => '/api/%s/%s',
+    'public'      => '/api/%s',
+    'login'       => '/api/authorize',
+    'authorize'   => '/api/authorize/machine-token',
   );
 
   private $public_realms = array(
@@ -61,8 +61,8 @@ class Endpoint {
       $this->target = 'login';
     }
 
-    if (isset($args['realm']) && ($args['realm'] == 'auth/refresh')) {
-      $this->target = 'auth/refresh';
+    if (isset($args['realm']) && ($args['realm'] == 'authorize')) {
+      $this->target = 'authorize';
     }
 
     //A substiution array to pass to the vsprintf
