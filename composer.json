@@ -15,9 +15,9 @@
     "psy/psysh": "@stable",
     "ramsey/array_column": "~1.1",
     "rmccue/requests": "^1.6",
-    "symfony/finder": "~2.7",
-    "twig/twig": "1.*",
-    "vlucas/phpdotenv": "2.1.*@stable"
+    "symfony/finder": "~2.8",
+    "twig/twig": "~1.23",
+    "vlucas/phpdotenv": "~2.1"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" }
