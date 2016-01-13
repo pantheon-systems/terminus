@@ -521,16 +521,16 @@ class FeatureContext implements Context {
 
   /**
    * Logs in user
-   * @When /^I log in via refresh token "([^"]*)"$/
-   * @When /^I log in via refresh token$/
+   * @When /^I log in via machine token "([^"]*)"$/
+   * @When /^I log in via machine token$/
    *
-   * @param [string] $token An Auth0 refresh token
+   * @param [string] $token A Pantheon machine token
    * @return [void]
    */
-  public function iLogInViaRefreshToken(
-      $token = '[[refresh_token]]'
+  public function iLogInViaMachineToken(
+      $token = '[[machine_token]]'
   ) {
-    $this->iRun("terminus auth login --refresh=$token");
+    $this->iRun("terminus auth login --machine-token=$token");
   }
 
   /**

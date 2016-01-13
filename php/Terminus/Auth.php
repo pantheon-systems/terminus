@@ -35,8 +35,8 @@ class Auth {
     $session = Session::instance()->getData();
     $auth    = new Auth();
     if (!$auth->loggedIn()) {
-      if (isset($session->refresh)) {
-        $auth->logInViaMachineToken($session->refresh);
+      if (isset($session->machine_token)) {
+        $auth->logInViaMachineToken($session->machine_token);
       } else {
         throw new TerminusException(
           'Please login first with `terminus auth login`',
@@ -76,13 +76,14 @@ class Auth {
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
       'form_params'    => array(
-        'refresh_token' => $token,
+        'machine_token' => $token,
+        'client'        => 'terminus',
       ),
     );
 
     $this->logger->info('Logging in via machine token');
     $response = $this->request->request(
-      'auth/refresh',
+      'authorize',
       '',
       '',
       'POST',
@@ -103,8 +104,8 @@ class Auth {
       'Logged in as {uuid}.',
       array('uuid' => $response['data']->user_id)
     );
-    $data          = $response['data'];
-    $data->refresh = $token;
+    $data                 = $response['data'];
+    $data->machine_token  = $token;
     $this->setInstanceData($response['data']);
     return true;
   }
@@ -195,18 +196,18 @@ class Auth {
    * @return bool Always true
    */
   private function setInstanceData(\stdClass $data) {
-    if (!isset($data->refresh)) {
-      $refresh = (array)Session::instance()->get('refresh');
+    if (!isset($data->machine_token)) {
+      $machine_token = (array)Session::instance()->get('machine_token');
     } else {
-      $refresh = $data->refresh;
+      $machine_token = $data->machine_token;
     }
     $session = array(
       'user_uuid'           => $data->user_id,
       'session'             => $data->session,
       'session_expire_time' => $data->expires_at,
     );
-    if ($refresh && is_string($refresh)) {
-      $session['refresh'] = $refresh;
+    if ($machine_token && is_string($machine_token)) {
+      $session['machine_token'] = $machine_token;
     }
     Session::instance()->setData($session);
     return true;

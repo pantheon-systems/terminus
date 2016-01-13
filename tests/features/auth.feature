@@ -46,25 +46,25 @@ Feature: Authorization command
     You are authenticated as: [[user_uuid]]
     """
 
-  #Scenario: Logging in via refresh token
-    #@vcr auth_login_refresh
-    #When I run "terminus auth login --refresh=[[refresh_token]]"
+  #Scenario: Logging in via machine token
+    #@vcr auth_login_machine_token
+    #When I run "terminus auth login --machine-token=[[machine_token]]"
     #Then I should get:
     #"""
     #Logged in as [[user_uuid]]
     #"""
 
-  #Scenario: Failing to log in via invalid refresh token
-    #@vcr auth_login_refresh_invalid
-    #When I run "terminus auth login --refresh=invalid"
+  #Scenario: Failing to log in via invalid machine token
+    #@vcr auth_login_machine_token_invalid
+    #When I run "terminus auth login --machine-token=invalid"
     #Then I should get:
     #"""
     #Authorization failed
     #"""
 
   #Scenario: Logging in successfully after session has expired
-    #@vcr auth_login_refresh_expired
-    #When I log in via refresh token
+    #@vcr auth_login_machine_token_expired
+    #When I log in via machine token
     #And I expire my session
     #And I list the sites
     #Then I should get:
