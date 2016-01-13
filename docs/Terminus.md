@@ -54,6 +54,7 @@ You can access these via their owners.
 
 ### Examples
 - [Gleaning all the hostnames from all of your sites](examples/getHostnames.php)
+- [Generating Drush aliases for all your sites](examples/PantheonAliases.php)
 
 ### Getting Started
 
