@@ -1372,11 +1372,11 @@ class SiteCommand extends TerminusCommand {
             }
           );
           $command  = 'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in';
-          $command .= ' "redis-cli -h %s -p %s -a %s flushall"';
+          $command .= ' "redis-cli -h %s -p %s -a %s flushall" 2> /dev/null';
           $commands[$environment->get('id')] = vsprintf($command, $args);
         }
         foreach ($commands as $env => $command) {
-          $this->log()->info('Clearing redis on {env}.', compact('env'));
+          $this->log()->info('Clearing Redis on {env}.', compact('env'));
           exec($command, $stdout, $return);
           if (!empty($stdout)) {
             $this->log()->info($stdout[0]);

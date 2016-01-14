@@ -33,10 +33,3 @@ Feature: Using Redis
     """
     Redis disabled. Converging bindings...
     """
-
-  @vcr site_redis_clear
-  Scenario: Clearing redis cache
-    Given the service level of "[[test_site_name]]" is "business"
-    When I run "terminus site redis clear --site=[[test_site_name]] --env=dev"
-    Then I should get: "drush"
-    And I should get: "Clearing Redis on dev."
