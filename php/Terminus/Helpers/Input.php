@@ -290,6 +290,7 @@ class Input {
    *        string default    Returned if arg and stdin fail in interactive
    *        array  allow_none True to permit no selection to be an option
    * @return string ID of selected organization
+   * @throws TerminusException
   */
   public static function orgId(array $arg_options = array()) {
     $default_options = array(
@@ -302,31 +303,32 @@ class Input {
 
     $arguments = $options['args'];
     $key       = $options['key'];
-    if (!isset($arguments[$key]) && isset($_SERVER['TERMINUS_ORG'])) {
-      $arguments[$key] = $_SERVER['TERMINUS_ORG'];
-    }
-
-    $org_list = self::orgList($options);
-    $flip    = array_flip($org_list);
+    $org_list  = self::orgList($options);
     if (isset($arguments[$key])) {
-      if (isset($flip[$arguments[$key]])) {
-        return $flip[$arguments[$key]];
-      } elseif (isset($org_list[$arguments[$key]])) {
-        return $arguments[$key];
-      } elseif (in_array($arguments[$key], self::$NULL_INPUTS)
-        || !empty($arguments)
-      ) {
+      if ($id = array_search($arguments[$key], $org_list)) {
+        return $id;
+      }
+      return $arguments[$key];
+    } else if (isset($_SERVER['TERMINUS_ORG'])) {
+      return $_SERVER['TERMINUS_ORG'];
+    }
+    if (count($org_list) == 0) {
+      if ($options['allow_none']) {
         return $options['default'];
       }
+      throw new TerminusException('You are not a member of an organization.');
     }
-
-    // include the Org ID in the output menu
-    $org_list_with_id = array();
+    if (count($org_list) == 1) {
+      $org_ids = array_keys($org_list);
+      $org     = array_shift($org_ids);
+      return $org;
+    }
+    // Include the Org ID in the output menu
+    $org_list_with_ids = array();
+    if ($options['allow_none']) {
+      $org_list_with_ids['-'] = 'None';
+    }
     foreach ($org_list as $id => $name) {
-      if ($name == 'None') {
-        $org_list_with_id[$id] = $name;
-        continue;
-      }
       $org_list_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
