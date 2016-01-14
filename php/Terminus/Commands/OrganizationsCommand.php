@@ -150,6 +150,7 @@ class OrganizationsCommand extends TerminusCommand {
           break;
       case 'list':
       default:
+        $data = [];
         foreach ($memberships as $membership) {
           if (isset($assoc_args['tag'])
             && !(in_array($assoc_args['tag'], $membership->get('tags')))
@@ -175,6 +176,17 @@ class OrganizationsCommand extends TerminusCommand {
             strtotime($data_array['created'])
           );
           $data[] = $data_array;
+        }
+        if (empty($data)) {
+          $message = 'No sites match your ';
+          if (empty($assoc_args)
+            || ((count($assoc_args) == 1) && (isset($assoc_args['org'])))
+          ) {
+            $message .= 'criterion.';
+          } else {
+            $message .= 'criteria.';
+          }
+          $this->log()->info($message);
         }
         $this->output()->outputRecordList($data);
           break;
