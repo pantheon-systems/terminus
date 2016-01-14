@@ -169,6 +169,19 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Converges all bindings on a site
+   *
+   * @return array
+   */
+  public function convergeBindings() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/converge',
+      ['method' => 'post']
+    );
+    return $response['data'];
+  }
+
+  /**
    * Create a new branch
    *
    * @param string $branch Name of new branch
@@ -245,6 +258,32 @@ class Site extends TerminusModel {
   public function deleteFromCache() {
     // TODO: $this->collection is not defined.
     $this->collection->deleteSiteFromCache($this->get('name'));
+  }
+
+  /**
+   * Enables Redis caching
+   *
+   * @return array
+   */
+  public function disableRedis() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/settings',
+      ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
+    );
+    return $response['data'];
+  }
+
+  /**
+   * Enables Redis caching
+   *
+   * @return array
+   */
+  public function enableRedis() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/settings',
+      ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
+    );
+    return $response['data'];
   }
 
   /**

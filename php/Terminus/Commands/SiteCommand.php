@@ -1305,8 +1305,8 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <clear>
-   * : clear - Clear redis cache on remote server
+   * <enable|disable|clear>
+   * : Options are enable, disable, and clear.
    *
    * [--site=<site>]
    * : site name
@@ -1317,22 +1317,43 @@ class SiteCommand extends TerminusCommand {
    * ## Examples
    *
    *    terminus site redis clear --site=behat-tests --env=live
+   *    terminus site redis enable --site=behat-tests
+   *    terminus site redis disable --site=behat-tests
    */
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get(Input::siteName(['args' => $assoc_args]));
-    if (isset($assoc_args['env'])) {
-      $environments = [$site->environments->get($assoc_args['env'])];
-    } else {
-      $environments = $site->environments->all();
+    if (in_array($site->info('service_level'), ['free', 'basic', 'pro'])) {
+      $this->failure(
+        'You must upgrade to a business or an elite plan to use Redis.'
+      );
     }
     switch ($action) {
+      case 'enable':
+        $redis    = $site->enableRedis();
+        if ($redis) {
+          $this->log()->info('Redis enabled. Converging bindings...');
+        }
+        $result = $site->convergeBindings();
+          break;
+      case 'disable':
+        $redis       = $site->disableRedis();
+        if ($redis) {
+          $this->log()->info('Redis disabled. Converging bindings...');
+        }
+        $result = $site->convergeBindings();
+          break;
       case 'clear':
+        if (isset($assoc_args['env'])) {
+          $environments = [$site->environments->get($assoc_args['env'])];
+        } else {
+          $environments = $site->environments->all();
+        }
         $commands = array();
         foreach ($environments as $environment) {
           $connection_info = $environment->connectionInfo();
           if (!isset($connection_info['redis_host'])) {
-            $this->failure('Redis cache not enabled');
+            $this->failure('Redis cache is not enabled.');
           }
           $args = [
             $environment->get('id'),
@@ -1355,7 +1376,7 @@ class SiteCommand extends TerminusCommand {
           $commands[$environment->get('id')] = vsprintf($command, $args);
         }
         foreach ($commands as $env => $command) {
-          $this->log()->info('Clearing redis on {env}', array('env' => $env));
+          $this->log()->info('Clearing redis on {env}.', compact('env'));
           exec($command, $stdout, $return);
           if (!empty($stdout)) {
             $this->log()->info($stdout[0]);
