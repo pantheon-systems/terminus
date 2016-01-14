@@ -261,7 +261,7 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Enables Redis caching
+   * Disables Redis caching
    *
    * @return array
    */
@@ -271,6 +271,19 @@ class Site extends TerminusModel {
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
     $this->convergeBindings();
+    return $response['data'];
+  }
+
+  /**
+   * Disables Solr indexing
+   *
+   * @return array
+   */
+  public function disableSolr() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/settings',
+      ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
+    );
     return $response['data'];
   }
 
@@ -285,6 +298,19 @@ class Site extends TerminusModel {
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
     $this->convergeBindings();
+    return $response['data'];
+  }
+
+  /**
+   * Enables Solr indexing
+   *
+   * @return array
+   */
+  public function enableSolr() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/settings',
+      ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
+    );
     return $response['data'];
   }
 

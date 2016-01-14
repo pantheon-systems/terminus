@@ -1266,9 +1266,12 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get New Relic Info for site
+   * Enable, disable, or get information on New Relic
    *
    * ## OPTIONS
+   *
+   * <enable|disable|info>
+   * : Options are enable, disable, or info
    *
    * [--site=<site>]
    * : site for which to retreive notifications
@@ -1277,6 +1280,11 @@ class SiteCommand extends TerminusCommand {
    */
   public function newRelic($args, $assoc_args) {
     $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
+    if (in_array($site->info('service_level'), ['free', 'basic', 'pro'])) {
+      $this->failure(
+        'You must upgrade to a business or an elite plan to use Redis.'
+      );
+    }
     $data = $site->newRelic();
     if (!empty($data->account)) {
       $this->output()->outputRecord($data->account);
@@ -1541,6 +1549,45 @@ class SiteCommand extends TerminusCommand {
     $level = $assoc_args['level'];
     $data  = $site->updateServiceLevel($level);
     $this->log()->info("Service level has been updated to '$level'");
+  }
+
+  /**
+   * Enable or disable Solr indexing
+   *
+   * ## OPTIONS
+   *
+   * <enable|disable>
+   * : Options are enable and disable
+   *
+   * [--site=<site>]
+   * : Sitei on which to change Solr
+   *
+   * @subcommand solr
+   */
+  public function solr($args, $assoc_args) {
+    $action = array_shift($args);
+    $site   = $this->sites->get(Input::siteName(['args' => $assoc_args]));
+    if (in_array($site->info('service_level'), ['free', 'basic', 'pro'])) {
+      $this->failure(
+        'You must upgrade to a business or an elite plan to use Solr.'
+      );
+    }
+    switch ($action) {
+      case 'enable':
+        $redis    = $site->enableSolr();
+        if ($redis) {
+          $this->log()->info('Solr enabled. Converging bindings...');
+        }
+        $result = $site->convergeBindings();
+          break;
+      case 'disable':
+        $redis       = $site->disableSolr();
+        if ($redis) {
+          $this->log()->info('Solr disabled. Converging bindings...');
+        }
+        $result = $site->convergeBindings();
+          break;
+    }
   }
 
   /**
