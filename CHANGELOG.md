@@ -13,6 +13,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)
 - Added a `--name=<regex>` filter to `sites list`. Use regex to filter the sites by name. (#802)
 
+### Fixed
+- Fixed missing-variable error on site selection prompt. (#809)
+
 ### Changed
 - Moved Terminus::prompt(), Terminus::promptSecret() to Terminus\Helpers\Input. (#768)
 - Removed duplicative Terminus::menu() in favor of Terminus\Helpers\Input::menu. (#768)

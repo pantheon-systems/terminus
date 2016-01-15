@@ -544,7 +544,7 @@ class Input {
       $choices[$sitename] = $sitename;
     }
     $menu = self::menu(
-      ['choices' => $choices, 'message' => $choices['message']]
+      ['choices' => $choices, 'message' => $options['message']]
     );
     return $menu;
   }
