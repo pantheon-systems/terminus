@@ -5,6 +5,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)
 
+### Changed
+- Removed field name in reply of `site info --field=<field_name>`. (#811)
+
 ## [0.10.1] - 2015-01-12
 ### Added
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)

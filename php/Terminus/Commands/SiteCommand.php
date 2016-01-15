@@ -935,7 +935,7 @@ class SiteCommand extends TerminusCommand {
 
     if (isset($assoc_args['field'])) {
       $field = $assoc_args['field'];
-      $this->output()->outputValue($site->info($field), $field);
+      $this->output()->outputValue($site->info($field));
     } else {
       $this->output()->outputRecord($site->attributes);
     }
