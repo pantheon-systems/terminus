@@ -1266,7 +1266,7 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get New Relic Info for site
+   * Get information on New Relic
    *
    * ## OPTIONS
    *
@@ -1541,6 +1541,43 @@ class SiteCommand extends TerminusCommand {
     $level = $assoc_args['level'];
     $data  = $site->updateServiceLevel($level);
     $this->log()->info("Service level has been updated to '$level'");
+  }
+
+  /**
+   * Enable or disable Solr indexing
+   *
+   * ## OPTIONS
+   *
+   * <enable|disable>
+   * : Options are enable and disable
+   *
+   * [--site=<site>]
+   * : Sitei on which to change Solr
+   *
+   * @subcommand solr
+   */
+  public function solr($args, $assoc_args) {
+    $action = array_shift($args);
+    $site   = $this->sites->get(Input::siteName(['args' => $assoc_args]));
+    if (in_array($site->info('service_level'), ['free', 'basic', 'pro'])) {
+      $this->failure(
+        'You must upgrade to a business or an elite plan to use Solr.'
+      );
+    }
+    switch ($action) {
+      case 'enable':
+        $solr = $site->enableSolr();
+        if ($solr) {
+          $this->log()->info('Solr enabled. Converging bindings...');
+        }
+          break;
+      case 'disable':
+        $solr = $site->disableSolr();
+        if ($solr) {
+          $this->log()->info('Solr disabled. Converging bindings...');
+        }
+          break;
+    }
   }
 
   /**

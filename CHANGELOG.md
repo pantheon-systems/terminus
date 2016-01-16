@@ -6,6 +6,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)
 - New command `site redis enable` to enable Redis caching. (#813)
 - New command `site redis disable` to disable Redis caching. (#813)
+- New command `site solr enable` to enable Solr indexing. (#814)
+- New command `site solr disable` to disable Solr indexing. (#814)
 
 ### Changed
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
