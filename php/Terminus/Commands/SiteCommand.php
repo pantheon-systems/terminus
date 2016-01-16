@@ -1266,12 +1266,9 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Enable, disable, or get information on New Relic
+   * Get information on New Relic
    *
    * ## OPTIONS
-   *
-   * <enable|disable|info>
-   * : Options are enable, disable, or info
    *
    * [--site=<site>]
    * : site for which to retreive notifications
@@ -1280,11 +1277,6 @@ class SiteCommand extends TerminusCommand {
    */
   public function newRelic($args, $assoc_args) {
     $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
-    if (in_array($site->info('service_level'), ['free', 'basic', 'pro'])) {
-      $this->failure(
-        'You must upgrade to a business or an elite plan to use Redis.'
-      );
-    }
     $data = $site->newRelic();
     if (!empty($data->account)) {
       $this->output()->outputRecord($data->account);
@@ -1574,18 +1566,16 @@ class SiteCommand extends TerminusCommand {
     }
     switch ($action) {
       case 'enable':
-        $redis    = $site->enableSolr();
-        if ($redis) {
+        $solr = $site->enableSolr();
+        if ($solr) {
           $this->log()->info('Solr enabled. Converging bindings...');
         }
-        $result = $site->convergeBindings();
           break;
       case 'disable':
-        $redis       = $site->disableSolr();
-        if ($redis) {
+        $solr = $site->disableSolr();
+        if ($solr) {
           $this->log()->info('Solr disabled. Converging bindings...');
         }
-        $result = $site->convergeBindings();
           break;
     }
   }

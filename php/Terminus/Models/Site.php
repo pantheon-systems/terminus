@@ -284,6 +284,7 @@ class Site extends TerminusModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
+    $this->convergeBindings();
     return $response['data'];
   }
 
@@ -311,6 +312,7 @@ class Site extends TerminusModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
+    $this->convergeBindings();
     return $response['data'];
   }
 
