@@ -4,9 +4,12 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## Master
 ### Added
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)
+- New command `site redis enable` to enable Redis caching. (#813)
+- New command `site redis disable` to disable Redis caching. (#813)
 
 ### Changed
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
+- `site redis clear` no longer complains of an inability to find hosts. (#813)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
