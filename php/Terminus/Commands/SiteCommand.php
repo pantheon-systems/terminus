@@ -1330,18 +1330,16 @@ class SiteCommand extends TerminusCommand {
     }
     switch ($action) {
       case 'enable':
-        $redis    = $site->enableRedis();
+        $redis = $site->enableRedis();
         if ($redis) {
           $this->log()->info('Redis enabled. Converging bindings...');
         }
-        $result = $site->convergeBindings();
           break;
       case 'disable':
         $redis       = $site->disableRedis();
         if ($redis) {
           $this->log()->info('Redis disabled. Converging bindings...');
         }
-        $result = $site->convergeBindings();
           break;
       case 'clear':
         if (isset($assoc_args['env'])) {
