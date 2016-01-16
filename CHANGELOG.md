@@ -8,6 +8,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
 
+### Fixed
+- Fixed bug in Input#orgId. (#812)
+- Fixed error appearing in `organizations sites list` when there are no results. (#812)
+
 ## [0.10.1] - 2015-01-12
 ### Added
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)
