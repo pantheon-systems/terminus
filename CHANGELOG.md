@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site solr disable` to disable Solr indexing. (#814)
 
 ### Changed
+- `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
 - `site redis clear` no longer complains of an inability to find hosts. (#813)
 

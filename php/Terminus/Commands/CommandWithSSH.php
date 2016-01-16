@@ -56,6 +56,22 @@ abstract class CommandWithSSH extends TerminusCommand {
   }
 
   /**
+   * Checks the site's mode and suggests SFTP if it is not set.
+   *
+   * @param Environment $environment Environment object to check mode of
+   * @return void
+   */
+  protected function checkConnectionMode($environment) {
+    if ($environment->getConnectionMode() != 'sftp') {
+      $message  = 'Note: This environment is in read-only Git mode. If you ';
+      $message .= 'want to make changes to the codebase of this site ';
+      $message .= '(e.g. updating modules or plugins), you will need to ';
+      $message .= 'toggle into read/write SFTP mode first.';
+      $this->log()->warning($message);
+    }
+  }
+
+  /**
    * Verifies that there is only one argument given and no extaneous params
    *
    * @param string[] $args       Command(s) given in the command line
@@ -142,6 +158,9 @@ abstract class CommandWithSSH extends TerminusCommand {
     }
 
     $env_id = Input::env(array('args' => $assoc_args, 'site' => $site));
+    if (!in_array($env_id, ['test', 'live'])) {
+      $this->checkConnectionMode($site->environments->get($env_id));
+    }
 
     $elements = array(
       'site'    => $site,
