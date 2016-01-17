@@ -82,9 +82,18 @@ abstract class CommandWithSSH extends TerminusCommand {
     unset($assoc_args['site']);
     unset($assoc_args['env']);
     if (!empty($assoc_args) || (count($args) !== 1)) {
+      if ($this->client == 'WP-CLI') {
+        $example = "\n\n\t\tExample: terminus wp \"cache flush\"\n";
+      }
+      elseif ($this->client == 'Drush') {
+        $example = "\n\n\t\tExample: terminus drush \"cc all\"\n";
+      }
+      else {
+        $example = '';
+      }
       $message  = 'The arguments of your {client} command ';
       $message .= 'must be in quotation marks.';
-      $message .= "\n\n\t\tExample: terminus drush \"cc all\"\n";
+      $message .= $example;
       $this->failure($message, array('client' => $this->client));
     }
     return true;
