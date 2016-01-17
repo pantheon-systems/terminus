@@ -82,9 +82,14 @@ abstract class CommandWithSSH extends TerminusCommand {
     unset($assoc_args['site']);
     unset($assoc_args['env']);
     if (!empty($assoc_args) || (count($args) !== 1)) {
-      $message  = 'Your full {client} command and its arguments ';
-      $message .= 'must be in quotation marks.';
-      $this->failure($message, array('client' => $this->client));
+      $message  = 'Your {client} subcommands and arguments must be in ';
+      $message .= "quotation marks.\n    Example: terminus {command} ";
+      $message .= '"subcommand --arg=value" --site=<site> --env=<env>';
+
+      $this->failure(
+        $message,
+        ['client' => $this->client, 'command' => $this->command]
+      );
     }
     return true;
   }
