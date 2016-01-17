@@ -72,7 +72,7 @@ abstract class CommandWithSSH extends TerminusCommand {
   }
 
   /**
-   * Verifies that there is only one argument given and no extaneous params
+   * Verifies that there is only one argument given and no extraneous params
    *
    * @param string[] $args       Command(s) given in the command line
    * @param string[] $assoc_args Arguments and flags passed into the former
@@ -82,8 +82,18 @@ abstract class CommandWithSSH extends TerminusCommand {
     unset($assoc_args['site']);
     unset($assoc_args['env']);
     if (!empty($assoc_args) || (count($args) !== 1)) {
-      $message  = 'Your full {client} command and its arguments ';
+      if ($this->client == 'WP-CLI') {
+        $example = "\n\n\t\tExample: terminus wp \"cache flush\"\n";
+      }
+      elseif ($this->client == 'Drush') {
+        $example = "\n\n\t\tExample: terminus drush \"cc all\"\n";
+      }
+      else {
+        $example = '';
+      }
+      $message  = 'The arguments of your {client} command ';
       $message .= 'must be in quotation marks.';
+      $message .= $example;
       $this->failure($message, array('client' => $this->client));
     }
     return true;
