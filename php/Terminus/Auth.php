@@ -74,17 +74,17 @@ class Auth {
   /**
    * Execute the login based on a machine token
    *
-   * @param string[] $options Elements as follow:
+   * @param string[] $args Elements as follow:
    *   string token Machine token to initiate login with
    *   string email Email address to locate token with
    * @return bool True if login succeeded
    * @throws TerminusException
    */
-  public function logInViaMachineToken($options) {
-    if (isset($options['token'])) {
-      $token = $options['token'];
-    } elseif (isset($options['email'])) {
-      $token = $this->tokens_cache->findByEmail($email);
+  public function logInViaMachineToken($args) {
+    if (isset($args['token'])) {
+      $token = $args['token'];
+    } elseif (isset($args['email'])) {
+      $token = $this->tokens_cache->findByEmail($args['email'])['token'];
     }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
@@ -113,15 +113,18 @@ class Auth {
         1
       );
     }
-    $this->logger->info(
-      'Logged in as {uuid}.',
-      array('uuid' => $response['data']->user_id)
-    );
     $data                 = $response['data'];
     $this->setInstanceData($response['data']);
-    if (isset($options['token'])) {
+    $user = Session::getUser();
+    $user->fetch();
+    $user_data = $user->serialize();
+    $this->logger->info(
+      'Logged in as {email}.',
+      ['email' => $user_data['email']]
+    );
+    if (isset($args['token'])) {
       $this->tokens_cache->add(
-        ['email' => 'test@email.com', 'token' => $token]
+        ['email' => $user_data['email'], 'token' => $token]
       );
     }
     return true;

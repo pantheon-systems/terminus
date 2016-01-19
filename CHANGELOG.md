@@ -8,11 +8,13 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site redis disable` to disable Redis caching. (#813)
 - New command `site solr enable` to enable Solr indexing. (#814)
 - New command `site solr disable` to disable Solr indexing. (#814)
+- Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
 
 ### Changed
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
 - `site redis clear` no longer complains of an inability to find hosts. (#813)
+- Machine tokens are now saved in a '/tokens' in a sibling to the Terminus cache directory. (#825)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
