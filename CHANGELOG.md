@@ -23,6 +23,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed bug in Input#orgId. (#812)
 - Fixed error appearing in `organizations sites list` when there are no results. (#812)
 
+### Removed
+- `--session=<session_id>` argument has been removed from `auth login`. (#826)
+- `logInViaSessionToken()` as been removed from Auth. (#826)
+
 ## [0.10.1] - 2015-01-12
 ### Added
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)
