@@ -3,6 +3,7 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\TokensCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
 
@@ -16,13 +17,18 @@ class Auth {
    * @var Request
    */
   private $request;
+  /**
+   * @var TokensCache
+   */
+  private $tokens_cache;
 
   /**
    * Object constructor. Sets the logger class property.
    */
   public function __construct() {
-    $this->logger  = Terminus::getLogger();
-    $this->request = new Request();
+    $this->logger       = Terminus::getLogger();
+    $this->request      = new Request();
+    $this->tokens_cache = new TokensCache();
   }
 
   /**
