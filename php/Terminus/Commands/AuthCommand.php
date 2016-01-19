@@ -35,6 +35,9 @@ class AuthCommand extends TerminusCommand {
    * : Authenticates using a machine token from your dashboard. Stores the
    *   token for future use.
    *
+   * [--email=<email>]
+   * : Authenticate using an existing machine token, saved using an email
+   *
    * [--session=<value>]
    * : Authenticate using an existing session token
    *
@@ -44,14 +47,17 @@ class AuthCommand extends TerminusCommand {
   public function login($args, $assoc_args) {
     // Try to login using a machine token, if provided.
     if (isset($assoc_args['machine-token'])
+      || isset($assoc_args['email'])
       || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
     ) {
       if (isset($assoc_args['machine-token'])) {
-        $token = $assoc_args['machine-token'];
+        $token_data = ['token' => $assoc_args['machine-token']];
+      } elseif (isset($assoc_args['email'])) {
+        $token_data = $assoc_args;
       } elseif (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
-        $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
+        $token_data = ['token' => $_SERVER['TERMINUS_MACHINE_TOKEN']];
       }
-      $this->auth->logInViaMachineToken($token);
+      $this->auth->logInViaMachineToken($token_data);
     } elseif (isset($assoc_args['session'])) {
       $this->auth->logInViaSessionToken($assoc_args['session']);
     } else {

@@ -74,11 +74,18 @@ class Auth {
   /**
    * Execute the login based on a machine token
    *
-   * @param string $token Machine token to initiate login with
+   * @param string[] $options Elements as follow:
+   *   string token Machine token to initiate login with
+   *   string email Email address to locate token with
    * @return bool True if login succeeded
    * @throws TerminusException
    */
-  public function logInViaMachineToken($token) {
+  public function logInViaMachineToken($options) {
+    if (isset($options['token'])) {
+      $token = $options['token'];
+    } elseif (isset($options['email'])) {
+      $token = $this->tokens_cache->findByEmail($email);
+    }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
       'form_params'    => array(
@@ -111,8 +118,12 @@ class Auth {
       array('uuid' => $response['data']->user_id)
     );
     $data                 = $response['data'];
-    $data->machine_token  = $token;
     $this->setInstanceData($response['data']);
+    if (isset($options['token'])) {
+      $this->tokens_cache->add(
+        ['email' => 'test@email.com', 'token' => $token]
+      );
+    }
     return true;
   }
 
