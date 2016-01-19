@@ -32,10 +32,12 @@ class AuthCommand extends TerminusCommand {
    * : Log in non-interactively with this password. Useful for automation.
    *
    * [--machine-token=<value>]
-   * : Authenticate using an Auth0 token
+   * : Authenticates using a machine token from your dashboard. Stores the
+   *   token for future use.
    *
    * [--session=<value>]
    * : Authenticate using an existing session token
+   *
    * [--debug]
    * : dump call information when logging in.
    */
