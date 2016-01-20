@@ -1270,18 +1270,30 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
+   * <enable|info>
+   * : Options are enable and info.
+   *
    * [--site=<site>]
-   * : site for which to retreive notifications
+   * : Site for which to access New Relic
    *
    * @subcommand new-relic
    */
   public function newRelic($args, $assoc_args) {
-    $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
-    $data = $site->newRelic();
-    if (!empty($data->account)) {
-      $this->output()->outputRecord($data->account);
-    } else {
-      $this->log()->warning('New Relic is not enabled.');
+    $action = array_shift($args);
+    $site = $this->sites->get(Input::siteName(['args' => $assoc_args]));
+    switch ($action) {
+      case 'enable':
+        $site->enableNewRelic(); 
+          break;
+      default:
+      case 'info':
+        $data = $site->getNewRelicData();
+        if (!empty($data->account)) {
+          $this->output()->outputRecord($data->account);
+        } else {
+          $this->log()->warning('New Relic is not enabled.');
+        }
+          break;
     }
   }
 

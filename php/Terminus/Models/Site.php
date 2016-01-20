@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus;
+use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
@@ -299,11 +300,12 @@ class Site extends TerminusModel {
    * @return array
    */
   public function enableNewRelic() {
-    $response = $this->request->simpleRequest(
+    $enable = $this->request->simpleRequest(
       'sites/' . $this->get('id') . '/new-relic',
       ['method' => 'put']
     );
-    return (array)$response['data'];
+    $this->convergeBindings();
+    return (array)$deploy['data'];
   }
 
   /**
