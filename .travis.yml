@@ -41,7 +41,9 @@ before_script:
 script:
   - ./scripts/test.sh ci
 
-after_success: ./scripts/package.sh
+after_success: 
+  - ./scripts/package.sh
+  - bin/atoum --test-all
 
 notifications:
   email:
