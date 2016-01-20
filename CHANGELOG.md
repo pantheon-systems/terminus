@@ -14,7 +14,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
 - Removed field name in reply of `site info --field=<field_name>`. (#811)
 - `site redis clear` no longer complains of an inability to find hosts. (#813)
-- Machine tokens are now saved in a '/tokens' in a sibling to the Terminus cache directory. (#825)
+- Machine tokens are now saved in a `~/.terminus/tokens` directory, a sibling to the Terminus cache directory. (#825)
+- The `<email>` in `auth login <email>` will now reuse a saved machine token for the account associated with that email address, if present. (#825)
+- `TERMINUS_USER` will be used to locate a matching saved machine token before user/password login is attempted. (#825)
+- If only one saved token is present, `auth login` will use it when it has no other arguments. (#825)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)

@@ -55,6 +55,20 @@ class Auth {
   }
 
   /**
+   * Gets the only saved token or returns false
+   *
+   * @return bool|string
+   */
+  public function getOnlySavedToken() {
+    $emails = $this->tokens_cache->getAllSavedTokenEmails();
+    if (count($emails) == 1) {
+      $email = array_shift($emails);
+      return $this->tokens_cache->findByEmail($email);
+    }
+    return false;
+  }
+
+  /**
    * Checks to see if the current user is logged in
    *
    * @return bool True if the user is logged in
@@ -207,6 +221,17 @@ class Auth {
 
     $this->setInstanceData($response['data']);
     return true;
+  }
+
+  /**
+   * Checks to see whether the email has been set with a machine token
+   *
+   * @param string $email Email address to check for
+   * @return bool
+   */
+  public function tokenExistsForEmail($email) {
+    $file_exists = $this->tokens_cache->tokenExistsForEmail($email);
+    return $file_exists;
   }
 
   /**

@@ -35,16 +35,42 @@ class TokensCache {
    * @throws TerminusException
    */
   public function findByEmail($email) {
-    $file_name = $this->getCacheDir() . "/$email";
-    if (!file_exists($file_name)) {
+    if (!$this->tokenExistsForEmail($email)) {
       throw new TerminusException(
         'There is no saved token for the account with email address {email}.',
         compact('email'),
         1
       );
     }
+    $file_name = $this->getCacheDir() . "/$email";
     $contents = (array)json_decode(file_get_contents($file_name));
     return $contents;
+  }
+
+  /**
+   * Returns a list of all emails with saved tokens
+   *
+   * @return string[]
+   */
+  public function getAllSavedTokenEmails() {
+    $dir_files = array_diff(scandir($this->getCacheDir()), array('..', '.'));
+    $files     = [];
+    foreach ($dir_files as $file) {
+      $files[] = str_replace($this->getCacheDir() . '/', '', $file);
+    }
+    return $files;
+  }
+
+  /**
+   * Checks to see whether the email has been set with a machine token
+   *
+   * @param string $email Email address to check for
+   * @return bool
+   */
+  public function tokenExistsForEmail($email) {
+    $file_name   = $this->getCacheDir() . "/$email";
+    $file_exists = file_exists($file_name);
+    return $file_exists;
   }
 
   /**
