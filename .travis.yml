@@ -43,7 +43,6 @@ script:
 
 after_success: 
   - ./scripts/package.sh
-  - bin/atoum --test-all
 
 notifications:
   email:
