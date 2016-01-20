@@ -18,6 +18,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - The `<email>` in `auth login <email>` will now reuse a saved machine token for the account associated with that email address, if present. (#825)
 - `TERMINUS_USER` will be used to locate a matching saved machine token before user/password login is attempted. (#825)
 - If only one saved token is present, `auth login` will use it when it has no other arguments. (#825)
+- If a `drush` or `wp` command exits with any status except for 0, Terminus now exits with that status. (#827)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
