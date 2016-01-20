@@ -294,6 +294,19 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Enables New Relic
+   *
+   * @return array
+   */
+  public function enableNewRelic() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/new-relic',
+      ['method' => 'put']
+    );
+    return (array)$response['data'];
+  }
+
+  /**
    * Enables Redis caching
    *
    * @return array
@@ -388,6 +401,18 @@ class Site extends TerminusModel {
       return $this->features[$feature];
     }
     return null;
+  }
+
+  /**
+   * Retrieve New Relic Info
+   *
+   * @return \stdClass
+   */
+  public function getNewRelicData() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/new-relic'
+    );
+    return $response['data'];
   }
 
   /**
@@ -551,18 +576,6 @@ class Site extends TerminusModel {
     } else {
       return $info;
     }
-  }
-
-  /**
-   * Retrieve New Relic Info
-   *
-   * @return \stdClass
-   */
-  public function newRelic() {
-    $response = $this->request->simpleRequest(
-      'sites/' . $this->get('id') . '/new-relic'
-    );
-    return $response['data'];
   }
 
   /**
