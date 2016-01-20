@@ -42,6 +42,11 @@ class Site extends TerminusModel {
   /**
    * @var array
    */
+  private $addons;
+
+  /**
+   * @var array
+   */
   private $features;
 
   /**
@@ -341,6 +346,29 @@ class Site extends TerminusModel {
       return $this->attributes->$attribute;
     }
     return null;
+  }
+
+  /**
+   * Returns the add-ons for a site
+   *
+   * @param string $addon The title of a specific add-on to check for
+   * @return string[]|string
+   */
+  public function getAddons($addon = null) {
+    if (!isset($this->addons)) {
+      $response = $this->request->simpleRequest(
+        sprintf('sites/%s/add-ons', $this->get('id'))
+      );
+      $addons = [];
+      foreach ($response['data'] as $addon) {
+        $addons[$addon->id] = (array)$addon;
+      }
+      $this->addons = $addons;
+    }
+    if (isset($this->addons[$addon])) {
+      return $this->addons[$addon];
+    }
+    return $this->addons;
   }
 
   /**
