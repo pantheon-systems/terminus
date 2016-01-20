@@ -35,9 +35,6 @@ class AuthCommand extends TerminusCommand {
    * : Authenticates using a machine token from your dashboard. Stores the
    *   token for future use.
    *
-   * [--session=<value>]
-   * : Authenticate using an existing session token
-   *
    * [--debug]
    * : dump call information when logging in.
    */
@@ -66,9 +63,6 @@ class AuthCommand extends TerminusCommand {
     ) {
       // Try to log in using a machine token, if there is only one saved token.
       $this->auth->logInViaMachineToken($only_token);
-    } elseif (isset($assoc_args['session'])) {
-      // Try to log in via session token, if provided.
-      $this->auth->logInViaSessionToken($assoc_args['session']);
     } else {
       // Otherwise, do a normal email/password-based login.
       if (!isset($email)) {
