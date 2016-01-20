@@ -87,7 +87,7 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'get':
         $url = $this->getBackup($assoc_args);
-        $this->output()->outputValue($url, 'Backup URL');
+        $this->output()->outputValue($url);
           break;
       case 'load':
         $this->loadBackup($assoc_args);
