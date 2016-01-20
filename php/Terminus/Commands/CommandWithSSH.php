@@ -219,10 +219,10 @@ abstract class CommandWithSSH extends TerminusCommand {
       $this->logger->info($result);
     }
 
-    if ($exit_code == 255) {
+    if ((boolean)$exit_code) {
       $this->failure(
-        'Failed to connect. Check your credentials and the target environment.',
-        array(),
+        'Either we could not connect, or {client} has exited with code {code}',
+        ['client' => $this->client, 'code' => $exit_code],
         $exit_code
       );
     }
