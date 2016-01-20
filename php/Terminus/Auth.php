@@ -3,6 +3,7 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\TokensCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
 
@@ -16,13 +17,18 @@ class Auth {
    * @var Request
    */
   private $request;
+  /**
+   * @var TokensCache
+   */
+  private $tokens_cache;
 
   /**
    * Object constructor. Sets the logger class property.
    */
   public function __construct() {
-    $this->logger  = Terminus::getLogger();
-    $this->request = new Request();
+    $this->logger       = Terminus::getLogger();
+    $this->request      = new Request();
+    $this->tokens_cache = new TokensCache();
   }
 
   /**
@@ -49,6 +55,20 @@ class Auth {
   }
 
   /**
+   * Gets the only saved token or returns false
+   *
+   * @return bool|string
+   */
+  public function getOnlySavedToken() {
+    $emails = $this->tokens_cache->getAllSavedTokenEmails();
+    if (count($emails) == 1) {
+      $email = array_shift($emails);
+      return $this->tokens_cache->findByEmail($email);
+    }
+    return false;
+  }
+
+  /**
    * Checks to see if the current user is logged in
    *
    * @return bool True if the user is logged in
@@ -68,11 +88,18 @@ class Auth {
   /**
    * Execute the login based on a machine token
    *
-   * @param string $token Machine token to initiate login with
+   * @param string[] $args Elements as follow:
+   *   string token Machine token to initiate login with
+   *   string email Email address to locate token with
    * @return bool True if login succeeded
    * @throws TerminusException
    */
-  public function logInViaMachineToken($token) {
+  public function logInViaMachineToken($args) {
+    if (isset($args['token'])) {
+      $token = $args['token'];
+    } elseif (isset($args['email'])) {
+      $token = $this->tokens_cache->findByEmail($args['email'])['token'];
+    }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
       'form_params'    => array(
@@ -100,13 +127,20 @@ class Auth {
         1
       );
     }
-    $this->logger->info(
-      'Logged in as {uuid}.',
-      array('uuid' => $response['data']->user_id)
-    );
     $data                 = $response['data'];
-    $data->machine_token  = $token;
     $this->setInstanceData($response['data']);
+    $user = Session::getUser();
+    $user->fetch();
+    $user_data = $user->serialize();
+    $this->logger->info(
+      'Logged in as {email}.',
+      ['email' => $user_data['email']]
+    );
+    if (isset($args['token'])) {
+      $this->tokens_cache->add(
+        ['email' => $user_data['email'], 'token' => $token]
+      );
+    }
     return true;
   }
 
@@ -187,6 +221,17 @@ class Auth {
 
     $this->setInstanceData($response['data']);
     return true;
+  }
+
+  /**
+   * Checks to see whether the email has been set with a machine token
+   *
+   * @param string $email Email address to check for
+   * @return bool
+   */
+  public function tokenExistsForEmail($email) {
+    $file_exists = $this->tokens_cache->tokenExistsForEmail($email);
+    return $file_exists;
   }
 
   /**

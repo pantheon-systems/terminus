@@ -32,43 +32,58 @@ class AuthCommand extends TerminusCommand {
    * : Log in non-interactively with this password. Useful for automation.
    *
    * [--machine-token=<value>]
-   * : Authenticate using an Auth0 token
+   * : Authenticates using a machine token from your dashboard. Stores the
+   *   token for future use.
    *
    * [--session=<value>]
    * : Authenticate using an existing session token
+   *
    * [--debug]
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    // Try to login using a machine token, if provided.
-    if (isset($assoc_args['machine-token'])
-      || (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN']))
+    if (!empty($args)) {
+      $email = array_shift($args);
+    }
+    if (isset($assoc_args['machine-token'])) {
+      // Try to log in using a machine token, if provided.
+      $token_data = ['token' => $assoc_args['machine-token']];
+      $this->auth->logInViaMachineToken($token_data);
+    } elseif (isset($email) && $this->auth->tokenExistsForEmail($email)) {
+      // Try to log in using a machine token, if the account email was provided.
+      $this->auth->logInViaMachineToken(compact('email'));
+    } elseif (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
+      // Try to log in using a machine token, if it's in the $_SERVER.
+      $token_data = ['token' => $_SERVER['TERMINUS_MACHINE_TOKEN']];
+      $this->auth->logInViaMachineToken($token_data);
+    } elseif (isset($_SERVER['TERMINUS_USER'])
+      && $this->auth->tokenExistsForEmail($_SERVER['TERMINUS_USER'])
     ) {
-      if (isset($assoc_args['machine-token'])) {
-        $token = $assoc_args['machine-token'];
-      } elseif (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
-        $token = $_SERVER['TERMINUS_MACHINE_TOKEN'];
-      }
-      $this->auth->logInViaMachineToken($token);
+      // Try to log in using a machine token, if $_SERVER provides account email.
+      $this->auth->logInViaMachineToken(['email' => $_SERVER['TERMINUS_USER']]);
+    } elseif (!isset($email)
+      && $only_token = $this->auth->getOnlySavedToken()
+    ) {
+      // Try to log in using a machine token, if there is only one saved token.
+      $this->auth->logInViaMachineToken($only_token);
     } elseif (isset($assoc_args['session'])) {
+      // Try to log in via session token, if provided.
       $this->auth->logInViaSessionToken($assoc_args['session']);
     } else {
       // Otherwise, do a normal email/password-based login.
-      if (empty($args)) {
+      if (!isset($email)) {
         if (isset($_SERVER['TERMINUS_USER'])) {
           $email = $_SERVER['TERMINUS_USER'];
         } else {
-          $email = Input::prompt(array('message' => 'Your email address?'));
+          $email = Input::prompt(['message' => 'Your email address?']);
         }
-      } else {
-        $email = $args[0];
       }
 
       if (isset($assoc_args['password'])) {
         $password = $assoc_args['password'];
       } else {
         $password = Input::promptSecret(
-          array('message' => 'Your dashboard password (input will not be shown)')
+          ['message' => 'Your dashboard password (input will not be shown)']
         );
       }
 
