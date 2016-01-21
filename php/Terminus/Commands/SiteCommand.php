@@ -261,27 +261,33 @@ class SiteCommand extends TerminusCommand {
     );
     switch ($subcommand) {
       case 'log':
-        $logs = $env->getCodeLog();
+        $logs = $env->code_logs->all();
         $data = array();
         foreach ($logs as $log) {
           $data[] = array(
-            'time'    => $log->datetime,
-            'author'  => $log->author,
-            'labels'  => implode(', ', $log->labels),
-            'hash'    => $log->hash,
+            'time'    => $log->get('datetime'),
+            'author'  => $log->get('author'),
+            'labels'  => implode(', ', $log->get('labels')),
+            'hash'    => $log->get('hash'),
             'message' => trim(
               str_replace(
                 "\n",
                 '',
-                str_replace("\t", '', substr($log->message, 0, 50))
+                str_replace("\t", '', substr($log->get('message'), 0, 50))
               )
             ),
           );
+        }
+        if (!empty($data)) {
+          $this->output()->outputRecordList($data);
         }
           break;
       case 'branches':
         $data    = $site->tips();
         $headers = array('Branch', 'Commit');
+        if (!empty($data)) {
+          $this->output()->outputRecord($data, $headers);
+        }
           break;
       case 'commit':
         $diff    = $env->diffstat();
@@ -302,7 +308,7 @@ class SiteCommand extends TerminusCommand {
         $workflow = $env->commitChanges($message);
         $workflow->wait();
         $this->workflowOutput($workflow);
-          return true;
+        $data = true;
           break;
       case 'diffstat':
         $diff = (array)$env->diffstat();
@@ -325,12 +331,12 @@ class SiteCommand extends TerminusCommand {
           }
           $data[] = array_merge(array('file' => $file), (array)$stats);
         }
+        if (!empty($data)) {
+          $this->output()->outputRecord($data, $headers);
+        }
           break;
     }
 
-    if (!empty($data)) {
-      $this->output()->outputRecord($data, $headers);
-    }
     return $data;
   }
 
@@ -628,7 +634,7 @@ class SiteCommand extends TerminusCommand {
     if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
       $this->failure('You can only deploy to the test or live environment.');
     }
-    if (!$env->hasUpstreamUpdates()) {
+    if (!$env->hasDeployableCode()) {
       $this->failure('There is nothing to deploy.');
     }
 

@@ -10,7 +10,11 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site solr disable` to disable Solr indexing. (#814)
 - Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
 - Added `Environment#getParentEnvironment()`. (#831)
+<<<<<<< aab96a52b6ea9d8113188305773ec9f0e306a797
 - Added `Commits` collection and `Commit` model. (#831)
+=======
+- Added `CodeLogs` collection and `CodeLog` model. (#831)
+>>>>>>> Re-recorded site deploy fixture, added no-changes state test
 
 ### Changed
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
@@ -35,8 +39,13 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Removed
 - `--session=<session_id>` argument has been removed from `auth login`. (#826)
+<<<<<<< aab96a52b6ea9d8113188305773ec9f0e306a797
 - `logInViaSessionToken()` as been removed from Auth. (#826)
 - `log()` has been removed from `Environment`. Use new commits property (contains Commits collection) instead. (#831)
+=======
+- `logInViaSessionToken()` has been removed from `Auth`. (#826)
+- `log()` has been removed from `Environment`. Use new code_log property (contains CodeLogs collection) instead. (#831)
+>>>>>>> Re-recorded site deploy fixture, added no-changes state test
 
 ## [0.10.1] - 2015-01-12
 ### Added

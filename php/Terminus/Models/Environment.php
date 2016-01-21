@@ -8,12 +8,18 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
+use Terminus\Models\Collections\CodeLogs;
 
 class Environment extends TerminusModel {
   /**
    * @var Backups
    */
   public $backups;
+
+  /**
+   * @var CodeLogs
+   */
+  public $code_logs;
 
   /**
    * @var Bindings
@@ -28,8 +34,10 @@ class Environment extends TerminusModel {
    */
   public function __construct($attributes, array $options = array()) {
     parent::__construct($attributes, $options);
-    $this->backups  = new Backups(array('environment' => $this));
-    $this->bindings = new Bindings(array('environment' => $this));
+    $options = ['environment' => $this];
+    $this->backups   = new Backups($options);
+    $this->bindings  = new Bindings($options);
+    $this->code_logs = new CodeLogs($options);
   }
 
   /**
@@ -384,22 +392,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Get the code log (commits)
-   *
-   * @return array
-   */
-  public function getCodeLog() {
-    $path     = sprintf('environments/%s/code-log', $this->get('id'));
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'GET'
-    );
-    return $response['data'];
-  }
-
-  /**
    * Returns the connection mode of this environment
    *
    * @return string 'git' or 'sftp'
@@ -477,9 +469,9 @@ class Environment extends TerminusModel {
    *
    * @return bool
    */
-  public function hasUpstreamUpdates() {
-    $parent_code_log   = $this->getParentEnvironment()->getCodeLog();
-    $number_of_updates = count($parent_code_log) - count($this->getCodeLog());
+  public function hasDeployableCode() {
+    $parent_code_log   = $this->getParentEnvironment()->code_logs->all();
+    $number_of_updates = count($parent_code_log) - count($this->code_logs->all());
     return (boolean)$number_of_updates;
   }
 
@@ -559,7 +551,7 @@ class Environment extends TerminusModel {
   public function isInitialized() {
     // One can determine whether an environment has been initialized
     // by checking if it has code commits. Uninitialized environments do not.
-    $commits     = $this->getCodeLog();
+    $commits     = $this->code_logs->all();
     $has_commits = (count($commits) > 0);
     return $has_commits;
   }
