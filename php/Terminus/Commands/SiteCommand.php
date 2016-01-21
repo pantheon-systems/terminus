@@ -628,6 +628,9 @@ class SiteCommand extends TerminusCommand {
     if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
       $this->failure('You can only deploy to the test or live environment.');
     }
+    if (!$env->hasUpstreamUpdates()) {
+      $this->failure('There is nothing to deploy.');
+    }
 
     $sync_content = (
       $env->get('id') == 'test'

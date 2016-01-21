@@ -455,11 +455,11 @@ class Environment extends TerminusModel {
   public function getParentEnvironment() {
     $env_id = $this->get('id');
     if ($env_id == 'dev') {
-      return null; 
+      return null;
     }
     switch ($this->get('id')) {
       case 'dev':
-        return null;
+          return null;
           break;
       case 'live':
         $parent_env_id = 'test';
@@ -470,6 +470,17 @@ class Environment extends TerminusModel {
     }
     $environment = $this->site->environments->get($parent_env_id);
     return $environment;
+  }
+
+  /**
+   * Decides if the environment has changes to deploy
+   *
+   * @return bool
+   */
+  public function hasUpstreamUpdates() {
+    $parent_code_log   = $this->getParentEnvironment()->getCodeLog();
+    $number_of_updates = count($parent_code_log) - count($this->getCodeLog());
+    return (boolean)$number_of_updates;
   }
 
   /**

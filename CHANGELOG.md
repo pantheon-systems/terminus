@@ -24,6 +24,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
 - Added machine_token to the error output blacklist. (#840)
 - Status on `workflows list` and `workflows show` now read "running", "succeeded", or "failed". (#850)
+- Renamed Environment#log() to Environment#getCodeLog(). (#831)
 - `site deploy` will exit with status 1 and the message "There is nothing to deploy." if there are no changes to deploy. (#831)
 
 ### Fixed
