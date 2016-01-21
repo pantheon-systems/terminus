@@ -58,6 +58,15 @@
 
 ---
 
+### convergeBindings
+##### Description:
+    Converges all bindings on a site
+
+##### Return:
+    [array]
+
+---
+
 ### createBranch
 ##### Description:
     Create a new branch
@@ -110,6 +119,42 @@
 
 ##### Return:
     [void]
+
+---
+
+### disableRedis
+##### Description:
+    Disables Redis caching
+
+##### Return:
+    [array]
+
+---
+
+### disableSolr
+##### Description:
+    Disables Solr indexing
+
+##### Return:
+    [array]
+
+---
+
+### enableRedis
+##### Description:
+    Enables Redis caching
+
+##### Return:
+    [array]
+
+---
+
+### enableSolr
+##### Description:
+    Enables Solr indexing
+
+##### Return:
+    [array]
 
 ---
 

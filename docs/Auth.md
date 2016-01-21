@@ -18,6 +18,15 @@
 
 ---
 
+### getOnlySavedToken
+##### Description:
+    Gets the only saved token or returns false
+
+##### Return:
+    [bool|string]
+
+---
+
 ### loggedIn
 ##### Description:
     Checks to see if the current user is logged in
@@ -32,22 +41,9 @@
     Execute the login based on a machine token
 
 ##### Parameters:
-    [string] $token Machine token to initiate login with
-
-##### Return:
-    [bool] True if login succeeded
-
-##### Throws:
-    TerminusException
-
----
-
-### logInViaSessionToken
-##### Description:
-    Execute the login based on an existing session token
-
-##### Parameters:
-    [string] $token Session token to initiate login with
+    [string[]] $args Elements as follow:
+    -string token Machine token to initiate login with
+    -string email Email address to locate token with
 
 ##### Return:
     [bool] True if login succeeded
@@ -70,6 +66,18 @@
 
 ##### Throws:
     TerminusException
+
+---
+
+### tokenExistsForEmail
+##### Description:
+    Checks to see whether the email has been set with a machine token
+
+##### Parameters:
+    [string] $email Email address to check for
+
+##### Return:
+    [bool]
 
 ---
 
