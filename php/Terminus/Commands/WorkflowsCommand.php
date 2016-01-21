@@ -196,8 +196,9 @@ class WorkflowsCommand extends TerminusCommand {
             foreach ($operations as $operation) {
               if ($operation->has('log_output')) {
                 $log_msg = sprintf(
-                  "\n------ %s ------\n%s",
+                  "\n------ %s (%s) ------\n%s",
                   $operation->description(),
+                  $operation->get('environment'),
                   $operation->get('log_output')
                 );
                 $this->log()->info($log_msg);
