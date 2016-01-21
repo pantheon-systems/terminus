@@ -261,7 +261,7 @@ class SiteCommand extends TerminusCommand {
     );
     switch ($subcommand) {
       case 'log':
-        $logs = $env->log();
+        $logs = $env->getCodeLog();
         $data = array();
         foreach ($logs as $log) {
           $data[] = array(

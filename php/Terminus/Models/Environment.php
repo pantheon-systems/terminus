@@ -384,6 +384,22 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Get the code log (commits)
+   *
+   * @return array
+   */
+  public function getCodeLog() {
+    $path     = sprintf('environments/%s/code-log', $this->get('id'));
+    $response = $this->request->request(
+      'sites',
+      $this->site->get('id'),
+      $path,
+      'GET'
+    );
+    return $response['data'];
+  }
+
+  /**
    * Returns the connection mode of this environment
    *
    * @return string 'git' or 'sftp'
@@ -507,7 +523,7 @@ class Environment extends TerminusModel {
   public function isInitialized() {
     // One can determine whether an environment has been initialized
     // by checking if it has code commits. Uninitialized environments do not.
-    $commits     = $this->log();
+    $commits     = $this->getCodeLog();
     $has_commits = (count($commits) > 0);
     return $has_commits;
   }
@@ -551,22 +567,6 @@ class Environment extends TerminusModel {
   public function lockinfo() {
     $lock = $this->get('lock');
     return $lock;
-  }
-
-  /**
-   * Get the code log (commits)
-   *
-   * @return array
-   */
-  public function log() {
-    $path     = sprintf('environments/%s/code-log', $this->get('id'));
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'GET'
-    );
-    return $response['data'];
   }
 
   /**
