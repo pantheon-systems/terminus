@@ -448,6 +448,31 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Returns the parent environment
+   *
+   * @return Environment
+   */
+  public function getParentEnvironment() {
+    $env_id = $this->get('id');
+    if ($env_id == 'dev') {
+      return null; 
+    }
+    switch ($this->get('id')) {
+      case 'dev':
+        return null;
+          break;
+      case 'live':
+        $parent_env_id = 'test';
+          break;
+      default:
+        $parent_env_id = 'dev';
+          break;
+    }
+    $environment = $this->site->environments->get($parent_env_id);
+    return $environment;
+  }
+
+  /**
    * Load site info
    *
    * @param string $key Set to retrieve a specific attribute as named
