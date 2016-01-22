@@ -20,7 +20,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - If only one saved token is present, `auth login` will use it when it has no other arguments. (#825)
 - If a `drush` or `wp` command exits with any status except for 0, Terminus now exits with that status. (#827)
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
-- Added machine_token to the error output blacklist. (#835)
+- Added machine_token to the error output blacklist. (#840)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
