@@ -8,3 +8,5 @@
 *.sw*
 .env
 .idea
+.vagrant
+Vagrantfile
