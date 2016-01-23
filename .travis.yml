@@ -39,9 +39,11 @@ before_script:
   - if [ $(git branch | sed -n -e 's/^\* \(.*\)/\1/p') == "master" ]; then ./scripts/build.sh; fi
 
 script:
+  - vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
   - ./scripts/test.sh ci
 
 after_success: 
+  - php vendor/bin/coveralls -v -c tests/config/coveralls.xml
   - ./scripts/package.sh
 
 notifications:
