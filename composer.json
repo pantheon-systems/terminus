@@ -29,6 +29,8 @@
     "php-vcr/php-vcr": "~1.2",
     "php-vcr/phpunit-testlistener-vcr": "*",
     "sebastian/phpcpd": "*",
-    "squizlabs/php_codesniffer": "2.*"
+    "squizlabs/php_codesniffer": "2.*",
+    "satooshi/php-coveralls": "dev-master",
+    "phpunit/phpcov": "2.*"
   }
 }
