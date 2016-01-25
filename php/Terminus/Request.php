@@ -26,7 +26,7 @@ class Request {
    * @var array
    * TODO: Move this logic to the logger
    */
-  protected $blacklist = array('password');
+  protected static $blacklist = array('password');
 
   /**
    * Download file from target URL
