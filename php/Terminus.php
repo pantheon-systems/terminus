@@ -161,24 +161,6 @@ class Terminus {
   }
 
   /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
-  private static function getPhpBinary() {
-    if (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } elseif (getenv('TERMINUS_PHP_USED')) {
-      $php_bin = getenv('TERMINUS_PHP_USED');
-    } elseif (getenv('TERMINUS_PHP')) {
-      $php_bin = getenv('TERMINUS_PHP');
-    } else {
-      $php_bin = 'php';
-    }
-    return $php_bin;
-  }
-
-  /**
    * Retrieves the root command from the Dispatcher
    *
    * @return \Terminus\Dispatcher\RootCommand
@@ -278,31 +260,6 @@ class Terminus {
   }
 
   /**
-   * Run a given command.
-   *
-   * @param array $args       An array of arguments for the runner
-   * @param array $assoc_args Another array of arguments for the runner
-   * @return void
-   */
-  public static function runCommand($args, $assoc_args = array()) {
-    self::getRunner()->runCommand($args, $assoc_args);
-  }
-
-  /**
-   * Sets the runner config to a class property
-   *
-   * @param string $key   Key for the config element
-   * @param mixed  $value Value for config element
-   * @return array
-   */
-  public static function setConfig($key, $value) {
-    // TODO: Runner->config is not defined.
-    self::getRunner()->config[$key] = $value;
-    $config = self::getRunner()->config;
-    return $config;
-  }
-
-  /**
    * Set the logger instance to a class property
    *
    * @param array $config Configuration options to send to the logger
@@ -333,6 +290,24 @@ class Terminus {
       new Terminus\Outputters\StreamWriter('php://stdout'),
       $formatter
     );
+  }
+
+  /**
+   * Returns location of PHP with which to run Terminus
+   *
+   * @return string
+   */
+  private static function getPhpBinary() {
+    if (defined('PHP_BINARY')) {
+      $php_bin = PHP_BINARY;
+    } elseif (getenv('TERMINUS_PHP_USED')) {
+      $php_bin = getenv('TERMINUS_PHP_USED');
+    } elseif (getenv('TERMINUS_PHP')) {
+      $php_bin = getenv('TERMINUS_PHP');
+    } else {
+      $php_bin = 'php';
+    }
+    return $php_bin;
   }
 
   /**
