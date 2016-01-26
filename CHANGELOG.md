@@ -21,6 +21,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - If a `drush` or `wp` command exits with any status except for 0, Terminus now exits with that status. (#827)
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
 - Added machine_token to the error output blacklist. (#840)
+- Status on `workflows list` and `workflows show` now read "running", "succeeded", or "failed". (#850)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)

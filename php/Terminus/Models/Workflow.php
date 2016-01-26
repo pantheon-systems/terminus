@@ -61,6 +61,22 @@ class Workflow extends TerminusModel {
   }
 
   /**
+   * Returns the status of this workflow
+   *
+   * @return string
+   */
+  public function getStatus() {
+    $status = 'running';
+    if ($this->isFinished()) {
+      $status = 'failed';
+      if ($this->isSuccessful()) {
+        $status = 'succeeded';
+      }
+    }
+    return $status;
+  }
+
+  /**
    * Detects if the workflow has finished
    *
    * @return bool True if workflow has finished
@@ -126,7 +142,7 @@ class Workflow extends TerminusModel {
       'env'            => $this->get('environment'),
       'workflow'       => $this->get('description'),
       'user'           => $user,
-      'status'         => $this->get('phase'),
+      'status'         => $this->getStatus(),
       'time'           => sprintf("%ds", $elapsed_time),
       'operations'     => $operations_data
     );
