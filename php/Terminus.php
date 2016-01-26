@@ -260,31 +260,6 @@ class Terminus {
   }
 
   /**
-   * Run a given command.
-   *
-   * @param array $args       An array of arguments for the runner
-   * @param array $assoc_args Another array of arguments for the runner
-   * @return void
-   */
-  public static function runCommand($args, $assoc_args = array()) {
-    self::getRunner()->runCommand($args, $assoc_args);
-  }
-
-  /**
-   * Sets the runner config to a class property
-   *
-   * @param string $key   Key for the config element
-   * @param mixed  $value Value for config element
-   * @return array
-   */
-  public static function setConfig($key, $value) {
-    // TODO: Runner->config is not defined.
-    self::getRunner()->config[$key] = $value;
-    $config = self::getRunner()->config;
-    return $config;
-  }
-
-  /**
    * Set the logger instance to a class property
    *
    * @param array $config Configuration options to send to the logger

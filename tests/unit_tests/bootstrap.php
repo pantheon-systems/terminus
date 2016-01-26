@@ -38,3 +38,49 @@ $ci_environment = getenv('CI');
 if ($ci_environment) {
   \VCR\VCR::configure()->setMode('none');
 }
+
+$moved_file_suffix = 'testmoved';
+
+/**
+ * Parses the loction and name of the Terminus log file
+ *
+ * @return string
+ */
+function getLogFileName() {
+  $file_name = $_SERVER['TERMINUS_LOG_DIR'] . 'log_' . date('Y-m-d') . '.txt';
+  return $file_name;
+}
+
+/**
+ * Removes the named file and replaces it with the previously moved file
+ *
+ * @param string $file_name Name of the file to remove and replace
+ * @return void
+ */
+function resetOutputDestination($file_name) {
+  static $moved_file_suffix;
+  exec("rm $file_name");
+  exec("mv $file_name.$moved_file_suffix $file_name");
+}
+
+/**
+ * Retrieves the content of the named file
+ *
+ * @param string $file_name Name of the file to retrieve the contents of
+ * @return string
+ */
+function retrieveOutput($file_name) {
+  $output = file_get_contents($file_name);
+  return $output;
+}
+
+/**
+ * Moves the file of this name and creates a new file with the same name
+ *
+ * @param string $file_name Name of the file to remove and create
+ * @return void
+ */
+function setOutputDestination($file_name) {
+  static $moved_file_suffix;
+  exec("mv $file_name $file_name.$moved_file_suffix ; touch $file_name");
+}
