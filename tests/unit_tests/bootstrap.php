@@ -6,6 +6,7 @@
 
 unset($GLOBALS['argv']);
 
+$_SERVER['TERMINUS_LOG_DIR'] = '/tmp/';
 define('CLI_ROOT', dirname(__DIR__) . '/..');
 define('TEST_DIR', dirname(__DIR__));
 define('TERMINUS_CMD', 'php ' . CLI_ROOT . '/php/boot-fs.php');
