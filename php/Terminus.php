@@ -161,24 +161,6 @@ class Terminus {
   }
 
   /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
-  private static function getPhpBinary() {
-    if (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } elseif (getenv('TERMINUS_PHP_USED')) {
-      $php_bin = getenv('TERMINUS_PHP_USED');
-    } elseif (getenv('TERMINUS_PHP')) {
-      $php_bin = getenv('TERMINUS_PHP');
-    } else {
-      $php_bin = 'php';
-    }
-    return $php_bin;
-  }
-
-  /**
    * Retrieves the root command from the Dispatcher
    *
    * @return \Terminus\Dispatcher\RootCommand
@@ -333,6 +315,24 @@ class Terminus {
       new Terminus\Outputters\StreamWriter('php://stdout'),
       $formatter
     );
+  }
+
+  /**
+   * Returns location of PHP with which to run Terminus
+   *
+   * @return string
+   */
+  private static function getPhpBinary() {
+    if (defined('PHP_BINARY')) {
+      $php_bin = PHP_BINARY;
+    } elseif (getenv('TERMINUS_PHP_USED')) {
+      $php_bin = getenv('TERMINUS_PHP_USED');
+    } elseif (getenv('TERMINUS_PHP')) {
+      $php_bin = getenv('TERMINUS_PHP');
+    } else {
+      $php_bin = 'php';
+    }
+    return $php_bin;
   }
 
   /**
