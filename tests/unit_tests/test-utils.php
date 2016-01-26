@@ -65,7 +65,7 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 
   public function testDestinationIsValid() {
     $file_name = '/tmp/test_destination';
-    exec("rm -r $file_name ; touch $file_name");
+    setOutputDestination($file_name);
     try {
       $valid_destination = Utils\destinationIsValid($file_name);
     } catch (\Exception $e) {
@@ -73,7 +73,7 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     }
     $this->assertTrue(isset($message));
 
-    exec("rm $file_name");
+    resetOutputDestination($file_name);
     // These will issue errors if invalid
     Utils\destinationIsValid($file_name);
     Utils\destinationIsValid('/tmp/');
@@ -99,11 +99,12 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testImportEnvironmentVariables() {
+    $file_name = '.env';
     $this->assertFalse(getenv('TERMINUS_TEST_VAR'));
-    exec('mv .env .env.testmove');
-    file_put_contents('.env', 'TERMINUS_TEST_VAR="ambrosia"');
+    setOutputDestination($file_name);
+    file_put_contents($file_name, 'TERMINUS_TEST_VAR="ambrosia"');
     Utils\importEnvironmentVariables();
-    exec('rm .env ; mv .env.testmove .env');
+    resetOutputDestination($file_name);
     $this->assertEquals(getenv('TERMINUS_TEST_VAR'), 'ambrosia');
   }
 
@@ -156,9 +157,9 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 
   public function testLoadFile() {
     $file_name = '/tmp/testfile';
-    exec("mv $file_name $file_name.testmoved ; touch $file_name");
+    setOutputDestination($file_name);
     Utils\loadFile($file_name);
-    exec("rm $file_name ; mv $file_name.testmoved $file_name");
+    resetOutputDestination($file_name);
     $included_files = get_included_files();
     $is_included = (
       (array_search($file_name, $included_files) !== false)
