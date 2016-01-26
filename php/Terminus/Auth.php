@@ -41,8 +41,7 @@ class Auth {
     $session = Session::instance()->getData();
     $auth    = new Auth();
     if (!$auth->loggedIn()) {
-      if ($token = $auth->getOnlySavedToken()
-      ) {
+      if ($token = $auth->getOnlySavedToken()) {
         $auth->logInViaMachineToken($token);
       } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
         && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']

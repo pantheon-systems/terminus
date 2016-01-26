@@ -620,9 +620,11 @@ class FeatureContext implements Context {
         . ' ' . $command;
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
+    echo $command . PHP_EOL;
     ob_start();
     passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
+    echo $this->_output . PHP_EOL;
     return $this->_output;
   }
 

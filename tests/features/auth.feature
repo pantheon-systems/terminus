@@ -55,13 +55,12 @@ Feature: Authorization command
     You are not logged in. Run `auth login` to authenticate or `help auth login` for more info.
     """
 
-  #Scenario: Logging in via refresh token
-    #@vcr auth_login_refresh
-    #When I run "terminus auth login --refresh=[[refresh_token]]"
-    #Then I should get:
-    #"""
-    #Logged in as [[user_uuid]]
-    #"""
+  @vcr auth_login_machine-token
+  Scenario: Logging in via machine token
+    When I run "terminus auth login --machine-token=[[machine_token]]"
+    Then I should get: "Logging in via machine token"
+    And I should get: "Saving session data"
+    And I should get: "Logged in as [[username]]."
 
   #Scenario: Failing to log in via invalid machine token
     #@vcr auth_login_machine_token_invalid
