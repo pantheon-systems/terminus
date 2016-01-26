@@ -41,8 +41,17 @@ class Auth {
     $session = Session::instance()->getData();
     $auth    = new Auth();
     if (!$auth->loggedIn()) {
-      if (isset($session->machine_token)) {
-        $auth->logInViaMachineToken();
+      if ($token = $auth->getOnlySavedToken()
+      ) {
+        $auth->logInViaMachineToken($token);
+      } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
+        && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
+      ) {
+        $auth->logInViaMachineToken(compact('token'));
+      } else if (isset($_SERVER['TERMINUS_USER'])
+        && $email = $_SERVER['TERMINUS_USER']
+      ) {
+        $auth->logInViaMachineToken(compact('email'));
       } else {
         throw new TerminusException(
           'Please login first with `terminus auth login`',
