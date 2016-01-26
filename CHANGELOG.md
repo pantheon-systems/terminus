@@ -9,6 +9,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site solr enable` to enable Solr indexing. (#814)
 - New command `site solr disable` to disable Solr indexing. (#814)
 - Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
+- Added `site new-relic enable` to enable New Relic. (#830)
 
 ### Changed
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
@@ -20,6 +21,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - If only one saved token is present, `auth login` will use it when it has no other arguments. (#825)
 - If a `drush` or `wp` command exits with any status except for 0, Terminus now exits with that status. (#827)
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
+- The command that was `site new-relic` has become `site new-relic info`. (#830)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)

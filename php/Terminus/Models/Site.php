@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus;
+use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
@@ -38,6 +39,11 @@ class Site extends TerminusModel {
    * @var Workflows
    */
   protected $workflows;
+
+  /**
+   * @var array
+   */
+  private $addons;
 
   /**
    * @var array
@@ -289,6 +295,20 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Enables New Relic
+   *
+   * @return array
+   */
+  public function enableNewRelic() {
+    $enable = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/new-relic',
+      ['method' => 'put']
+    );
+    $this->convergeBindings();
+    return (array)$deploy['data'];
+  }
+
+  /**
    * Enables Redis caching
    *
    * @return array
@@ -344,6 +364,29 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Returns the add-ons for a site
+   *
+   * @param string $addon The title of a specific add-on to check for
+   * @return string[]|string
+   */
+  public function getAddons($addon = null) {
+    if (!isset($this->addons)) {
+      $response = $this->request->simpleRequest(
+        sprintf('sites/%s/add-ons', $this->get('id'))
+      );
+      $addons = [];
+      foreach ($response['data'] as $addon) {
+        $addons[$addon->id] = (array)$addon;
+      }
+      $this->addons = $addons;
+    }
+    if (isset($this->addons[$addon])) {
+      return $this->addons[$addon];
+    }
+    return $this->addons;
+  }
+
+  /**
    * Returns a specific site feature value
    *
    * @param string $feature Feature to check
@@ -360,6 +403,18 @@ class Site extends TerminusModel {
       return $this->features[$feature];
     }
     return null;
+  }
+
+  /**
+   * Retrieve New Relic Info
+   *
+   * @return \stdClass
+   */
+  public function getNewRelicData() {
+    $response = $this->request->simpleRequest(
+      'sites/' . $this->get('id') . '/new-relic'
+    );
+    return $response['data'];
   }
 
   /**
@@ -523,18 +578,6 @@ class Site extends TerminusModel {
     } else {
       return $info;
     }
-  }
-
-  /**
-   * Retrieve New Relic Info
-   *
-   * @return \stdClass
-   */
-  public function newRelic() {
-    $response = $this->request->simpleRequest(
-      'sites/' . $this->get('id') . '/new-relic'
-    );
-    return $response['data'];
   }
 
   /**
