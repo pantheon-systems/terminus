@@ -26,6 +26,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed bug in Input#orgId. (#812)
 - Fixed error appearing in `organizations sites list` when there are no results. (#812)
 - Fixed missing-variable error in Request#request which appeared when attempting to sanitize error messages. (#835) 
+- Fixed log-in admonition if a machine token, TERMINUS_USER, or TEMRINUS_MACHINE_TOKEN are present. (#849)
 
 ### Removed
 - `--session=<session_id>` argument has been removed from `auth login`. (#826)
