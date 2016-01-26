@@ -43,11 +43,11 @@ function checkCurrentVersion() {
   $request  = new Request();
   $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
   $url     .= '?per_page=1';
-  $response = $request->simpleRequest($url, array('absolute_url' => true));
+  $response = $request->simpleRequest($url, ['absolute_url' => true]);
   $release  = array_shift($response['data']);
   Terminus::getCache()->putData(
     'latest_release',
-    array('version' => $release->name, 'check_date' => time())
+    ['version' => $release->name, 'check_date' => time()]
   );
   return $release->name;
 }
@@ -60,7 +60,7 @@ function checkCurrentVersion() {
 function checkForUpdate() {
   $cache_data = Terminus::getCache()->getData(
     'latest_release',
-    array('decode_array' => true)
+    ['decode_array' => true]
   );
   if (!$cache_data
     || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
@@ -71,7 +71,7 @@ function checkForUpdate() {
       if (version_compare($current_version, TERMINUS_VERSION, '>')) {
         $logger->info(
           'An update to Terminus is available. Please update to {version}.',
-          array('version' => $current_version)
+          ['version' => $current_version]
         );
       }
     } catch (\Exception $e) {
@@ -141,7 +141,7 @@ function destinationIsValid($destination, $make = true) {
   if (!is_dir($destination)) {
     if (!$make) {
       $make = Input::confirm(
-        array('message' => 'Directory does not exists. Create it now?')
+        ['message' => 'Directory does not exists. Create it now?']
       );
     }
     if ($make) {
@@ -171,10 +171,10 @@ function getFilenameFromUrl($url) {
  * @return array
  */
 function getVendorPaths() {
-  $vendor_paths = array(
+  $vendor_paths = [
     TERMINUS_ROOT . '/../../../vendor',
     TERMINUS_ROOT . '/vendor'
-  );
+  ];
   return $vendor_paths;
 }
 
@@ -189,17 +189,6 @@ function importEnvironmentVariables() {
     $env = new \Dotenv\Dotenv(getcwd());
     $env->load();
   }
-}
-
-/**
- * Checks given path for whether it is absolute
- *
- * @param string $path Path to check
- * @return bool True if path is absolute
- */
-function isPathAbsolute($path) {
-  $is_root = (isset($path[1]) && ($path[1] == ':') || ($path[0] == '/'));
-  return $is_root;
 }
 
 /**
@@ -327,32 +316,6 @@ function loadFile($path) {
 }
 
 /**
- * Takes a host string such as from wp-config.php and parses it into an array
- *
- * @param string $raw_host MySQL host string, as defined in wp-config.php
- * @return array $assoc_args Connection inforrmation for MySQL
- */
-function mysqlHostToCliArgs($raw_host) {
-  $assoc_args = array();
-
-  $host_parts = explode(':', $raw_host);
-  if (count($host_parts) == 2) {
-    list($assoc_args['host'], $extra) = $host_parts;
-    $extra = trim($extra);
-    if (is_numeric($extra)) {
-      $assoc_args['port']     = intval($extra);
-      $assoc_args['protocol'] = 'tcp';
-    } elseif ($extra !== '') {
-      $assoc_args['socket'] = $extra;
-    }
-  } else {
-    $assoc_args['host'] = $raw_host;
-  }
-
-  return $assoc_args;
-}
-
-/**
  * Parses a URL and returns its components
  *
  * @param string $url URL to parse
@@ -399,26 +362,16 @@ function sqlFromZip($filename) {
 /**
   * Strips sensitive data out of the JSON printed in a request string
   *
-  * @param array $request   Elements as follows:
-  *        string url     URL for the request
-  *        string method  Method for request (e.g. PUT, POST)
-  *        array  options Settings for the request
-  * @param array $blacklist Array of string keys to remove from request
+  * @param array $request_data An array of request parameters to censor
+  * @param array $blacklist    Array of string keys to remove from request
   * @return string Sensitive data-stripped version of $request_data
   */
-function stripSensitiveData($request, $blacklist = array()) {
-  //Locate the JSON in the string, turn to array
-  $regex = '~\{(.*)\}~';
-  preg_match($regex, $request, $matches);
-  if (empty($matches)) {
-    return $request;
-  }
-  $request_array = json_decode($matches[0], true);
-
-  //See if a blacklisted items are in the arrayed JSON, replace
-  foreach ($blacklist as $blacklisted_item) {
-    if (isset($request_array[$blacklisted_item])) {
-      $request_array[$blacklisted_item] = '*****';
+function stripSensitiveData($request_data, $blacklist = []) {
+  foreach ($request_data as $key => $value) {
+    if (in_array($key, $blacklist)) {
+      $request_data[$key] = '*****';
+    } else if (is_array($value)) {
+      $request_data[$key] = stripSensitiveData($value, $blacklist);
     }
   }
   return $request_data;
@@ -437,11 +390,11 @@ function twigRender($template_name, $data, $options) {
   $twig              = new \Twig_Environment($loader);
   $rendered_template = $twig->render(
     $template_name,
-    array(
+    [
       'data'          => $data,
       'template_name' => $template_name,
       'options'       => $options,
-    )
+    ]
   );
   return $rendered_template;
 }
