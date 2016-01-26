@@ -42,7 +42,7 @@ class Auth {
     $auth    = new Auth();
     if (!$auth->loggedIn()) {
       if (isset($session->machine_token)) {
-        $auth->logInViaMachineToken($session->machine_token);
+        $auth->logInViaMachineToken();
       } else {
         throw new TerminusException(
           'Please login first with `terminus auth login`',

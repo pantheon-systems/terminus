@@ -20,10 +20,12 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - If only one saved token is present, `auth login` will use it when it has no other arguments. (#825)
 - If a `drush` or `wp` command exits with any status except for 0, Terminus now exits with that status. (#827)
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
+- Added machine_token to the error output blacklist. (#840)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
 - Fixed error appearing in `organizations sites list` when there are no results. (#812)
+- Fixed missing-variable error in Request#request which appeared when attempting to sanitize error messages. (#835) 
 
 ### Removed
 - `--session=<session_id>` argument has been removed from `auth login`. (#826)
