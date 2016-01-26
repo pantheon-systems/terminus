@@ -2,7 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-class CodeLogs extends TerminusCollection {
+class Commits extends TerminusCollection {
 
   /**
    * Give the URL for collection data fetching

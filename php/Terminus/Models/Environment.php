@@ -8,7 +8,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
-use Terminus\Models\Collections\CodeLogs;
+use Terminus\Models\Collections\Commits;
 
 class Environment extends TerminusModel {
   /**
@@ -17,9 +17,9 @@ class Environment extends TerminusModel {
   public $backups;
 
   /**
-   * @var CodeLogs
+   * @var Commits
    */
-  public $code_logs;
+  public $commits;
 
   /**
    * @var Bindings
@@ -35,9 +35,9 @@ class Environment extends TerminusModel {
   public function __construct($attributes, array $options = array()) {
     parent::__construct($attributes, $options);
     $options = ['environment' => $this];
-    $this->backups   = new Backups($options);
-    $this->bindings  = new Bindings($options);
-    $this->code_logs = new CodeLogs($options);
+    $this->backups  = new Backups($options);
+    $this->bindings = new Bindings($options);
+    $this->commits  = new Commits($options);
   }
 
   /**
@@ -470,8 +470,8 @@ class Environment extends TerminusModel {
    * @return bool
    */
   public function hasDeployableCode() {
-    $parent_code_log   = $this->getParentEnvironment()->code_logs->all();
-    $number_of_updates = count($parent_code_log) - count($this->code_logs->all());
+    $parent_commits    = $this->getParentEnvironment()->commits->all();
+    $number_of_updates = count($parent_commits) - count($this->commits->all());
     return (boolean)$number_of_updates;
   }
 
@@ -551,7 +551,7 @@ class Environment extends TerminusModel {
   public function isInitialized() {
     // One can determine whether an environment has been initialized
     // by checking if it has code commits. Uninitialized environments do not.
-    $commits     = $this->code_logs->all();
+    $commits     = $this->commits->all();
     $has_commits = (count($commits) > 0);
     return $has_commits;
   }
