@@ -8,12 +8,18 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
+use Terminus\Models\Collections\Commits;
 
 class Environment extends TerminusModel {
   /**
    * @var Backups
    */
   public $backups;
+
+  /**
+   * @var Commits
+   */
+  public $commits;
 
   /**
    * @var Bindings
@@ -28,8 +34,10 @@ class Environment extends TerminusModel {
    */
   public function __construct($attributes, array $options = array()) {
     parent::__construct($attributes, $options);
-    $this->backups  = new Backups(array('environment' => $this));
-    $this->bindings = new Bindings(array('environment' => $this));
+    $options = ['environment' => $this];
+    $this->backups  = new Backups($options);
+    $this->bindings = new Bindings($options);
+    $this->commits  = new Commits($options);
   }
 
   /**
@@ -432,6 +440,42 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Returns the parent environment
+   *
+   * @return Environment
+   */
+  public function getParentEnvironment() {
+    $env_id = $this->get('id');
+    if ($env_id == 'dev') {
+      return null;
+    }
+    switch ($this->get('id')) {
+      case 'dev':
+          return null;
+          break;
+      case 'live':
+        $parent_env_id = 'test';
+          break;
+      default:
+        $parent_env_id = 'dev';
+          break;
+    }
+    $environment = $this->site->environments->get($parent_env_id);
+    return $environment;
+  }
+
+  /**
+   * Decides if the environment has changes to deploy
+   *
+   * @return bool
+   */
+  public function hasDeployableCode() {
+    $parent_commits    = $this->getParentEnvironment()->commits->all();
+    $number_of_updates = count($parent_commits) - count($this->commits->all());
+    return (boolean)$number_of_updates;
+  }
+
+  /**
    * Load site info
    *
    * @param string $key Set to retrieve a specific attribute as named
@@ -507,7 +551,7 @@ class Environment extends TerminusModel {
   public function isInitialized() {
     // One can determine whether an environment has been initialized
     // by checking if it has code commits. Uninitialized environments do not.
-    $commits     = $this->log();
+    $commits     = $this->commits->all();
     $has_commits = (count($commits) > 0);
     return $has_commits;
   }
@@ -551,22 +595,6 @@ class Environment extends TerminusModel {
   public function lockinfo() {
     $lock = $this->get('lock');
     return $lock;
-  }
-
-  /**
-   * Get the code log (commits)
-   *
-   * @return array
-   */
-  public function log() {
-    $path     = sprintf('environments/%s/code-log', $this->get('id'));
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      $path,
-      'GET'
-    );
-    return $response['data'];
   }
 
   /**

@@ -16,22 +16,10 @@ require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
 use Terminus\Session;
-
-$session_id  = '0ffec038-4410-43d0-a404-46997f672d7a%3A68486878';
-$session_id .= '-dd87-11e4-b243-bc764e1113b5%3AbQR2fyNMh5PQXN6F2Ewge';
-// Set some dummy credentials
-Session::setData(
-  json_decode(
-    '{
-      "user_uuid": "0ffec038-4410-43d0-a404-46997f672d7a",
-      "session": "' . $session_id . '",
-      "session_expire_time": 1739299351,
-      "email": "bensheldon+pantheontest@gmail.com"
-    }'
-  )
-);
+use Terminus\Auth;
 
 \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
+setDummyCredentials();
 
 // Prevent API requests from being made in CI Environment
 $ci_environment = getenv('CI');
@@ -42,6 +30,16 @@ if ($ci_environment) {
 $moved_file_suffix = 'testmoved';
 
 /**
+ * Returns the username and password for Behat fixtures
+ *
+ * @return string[]
+ */
+function getBehatCredentials() {
+  $creds = ['username' => 'devuser@pantheon.io', 'password' => 'password1'];
+  return $creds;
+}
+
+/**
  * Parses the loction and name of the Terminus log file
  *
  * @return string
@@ -49,6 +47,17 @@ $moved_file_suffix = 'testmoved';
 function getLogFileName() {
   $file_name = $_SERVER['TERMINUS_LOG_DIR'] . 'log_' . date('Y-m-d') . '.txt';
   return $file_name;
+}
+
+/**
+ * Logs in with Behad credentials to enable Behat fixture use
+ *
+ * @return void
+ */
+function logInWithBehatCredentials() {
+  $creds = getBehatCredentials();
+  $auth  = new Auth();
+  $auth->logInViaUsernameAndPassword($creds['username'], $creds['password']);
 }
 
 /**
@@ -83,4 +92,25 @@ function retrieveOutput($file_name) {
 function setOutputDestination($file_name) {
   static $moved_file_suffix;
   exec("mv $file_name $file_name.$moved_file_suffix ; touch $file_name");
+}
+
+/**
+ * Sets some dummy credentials for this test run
+ *
+ * @return void
+ */
+function setDummyCredentials() {
+  $session_id  = '0ffec038-4410-43d0-a404-46997f672d7a%3A68486878';
+  $session_id .= '-dd87-11e4-b243-bc764e1113b5%3AbQR2fyNMh5PQXN6F2Ewge';
+  // Set some dummy credentials
+  Session::setData(
+    json_decode(
+      '{
+        "user_uuid": "0ffec038-4410-43d0-a404-46997f672d7a",
+        "session": "' . $session_id . '",
+        "session_expire_time": ' . strtotime('+8 days') . ',
+        "email": "bensheldon+pantheontest@gmail.com"
+      }'
+    )
+  );
 }

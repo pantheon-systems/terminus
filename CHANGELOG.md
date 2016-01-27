@@ -9,6 +9,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site solr enable` to enable Solr indexing. (#814)
 - New command `site solr disable` to disable Solr indexing. (#814)
 - Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
+- Added `Environment#getParentEnvironment()`. (#831)
+- Added `Commits` collection and `Commit` model. (#831)
 
 ### Changed
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)
@@ -22,6 +24,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Removed "Backup URL:" label from the single-record output of `site backups get`. (#828)
 - Added machine_token to the error output blacklist. (#840)
 - Status on `workflows list` and `workflows show` now read "running", "succeeded", or "failed". (#850)
+- Renamed Environment#log() to Environment#getCodeLog(). (#831)
+- `site deploy` will exit with status 1 and the message "There is nothing to deploy." if there are no changes to deploy. (#831)
 
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
@@ -31,7 +35,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Removed
 - `--session=<session_id>` argument has been removed from `auth login`. (#826)
-- `logInViaSessionToken()` as been removed from Auth. (#826)
+- `logInViaSessionToken()` has been removed from `Auth`. (#826)
+- `log()` has been removed from `Environment`. Use new commits property (contains Commits collection) instead. (#831)
 
 ## [0.10.1] - 2015-01-12
 ### Added
