@@ -18,6 +18,15 @@
 
 ---
 
+### getMachineTokenCreationUrl
+##### Description:
+    Generates the URL string for where to create a machine token
+
+##### Return:
+    [string]
+
+---
+
 ### getOnlySavedToken
 ##### Description:
     Gets the only saved token or returns false

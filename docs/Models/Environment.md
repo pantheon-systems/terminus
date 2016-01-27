@@ -161,6 +161,24 @@
 
 ---
 
+### getParentEnvironment
+##### Description:
+    Returns the parent environment
+
+##### Return:
+    [Environment]
+
+---
+
+### hasDeployableCode
+##### Description:
+    Decides if the environment has changes to deploy
+
+##### Return:
+    [bool]
+
+---
+
 ### info
 ##### Description:
     Load site info
@@ -223,15 +241,6 @@
 
 ##### Return:
     [string]
-
----
-
-### log
-##### Description:
-    Get the code log (commits)
-
-##### Return:
-    [array]
 
 ---
 

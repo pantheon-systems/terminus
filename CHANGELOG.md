@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## Master
+## [0.10.2] - 2016-01-27
 ### Added
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)
 - New command `site redis enable` to enable Redis caching. (#813)
@@ -41,7 +41,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `logInViaSessionToken()` has been removed from `Auth`. (#826)
 - `log()` has been removed from `Environment`. Use new commits property (contains Commits collection) instead. (#831)
 
-## [0.10.1] - 2015-01-12
+## [0.10.1] - 2016-01-12
 ### Added
 - `config/constants.yml` file to contain the default constants for Terminus. (#791)
 - Added a `--name=<regex>` filter to `sites list`. Use regex to filter the sites by name. (#802)
