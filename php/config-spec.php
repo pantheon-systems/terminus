@@ -23,6 +23,6 @@ return array(
     'runtime' => '=<json|bash|silent>',
     'file'    => '=<json|bash|silent>',
     'default' => 'normal',
-    'desc'    => 'Force json output',
+    'desc'    => 'Change the output type to JSON, bash, or silent',
   ),
 );
