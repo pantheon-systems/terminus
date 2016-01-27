@@ -11,6 +11,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
 - Added `Environment#getParentEnvironment()`. (#831)
 - Added `Commits` collection and `Commit` model. (#831)
+- Added `machine-token list` and `machine-token delete` commands. (#798)
 
 ### Changed
 - `drush` and `wp` commands now issue a warning to change your connection mode to SFTP if it is in Git mode. (#807)

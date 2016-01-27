@@ -269,7 +269,7 @@ function loadCommand($name) {
   $path = sprintf(
     '%s/php/Terminus/Commands/%sCommand.php',
     TERMINUS_ROOT,
-    ucwords($name)
+    makeCamelCase($name)
   );
 
   if (is_readable($path)) {
@@ -313,6 +313,22 @@ function loadDependencies() {
  */
 function loadFile($path) {
   require $path;
+}
+
+/**
+ * Converts a word to camel case
+ *
+ * @param string $string    Word to change to camel case
+ * @param string $delimiter Character to split words up on
+ * @return string
+ */
+function makeCamelCase($string, $delimiter = '-') {
+  $words       = explode($delimiter, $string);
+  $camel_cased = '';
+  foreach ($words as $key => $word) {
+    $camel_cased .= ucwords($word);
+  }
+  return $camel_cased;
 }
 
 /**

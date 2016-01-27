@@ -168,6 +168,12 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($is_included);
   }
 
+  public function testMakeCamelCase() {
+    $string      = 'camel-case';
+    $camel_cased = Utils\makeCamelCase($string);
+    $this->assertEquals($camel_cased, 'CamelCase');
+  }
+
   public function testParseUrl() {
     $url = 'https://pantheon.io';
     $parts = Utils\parseUrl($url);

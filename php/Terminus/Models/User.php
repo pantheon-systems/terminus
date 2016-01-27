@@ -5,6 +5,7 @@ namespace Terminus\Models;
 use Terminus\Models\Collections\UserOrganizationMemberships;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
+use Terminus\Models\Collections\MachineTokens;
 use Terminus\Models\Collections\Workflows;
 use Terminus\Session;
 
@@ -18,6 +19,11 @@ class User extends TerminusModel {
    * @var Instruments
    */
   protected $instruments;
+
+  /**
+   * @var Instruments
+   */
+  protected $machine_tokens;
 
   /**
    * @var Workflows
@@ -52,6 +58,7 @@ class User extends TerminusModel {
       array('owner' => $this)
     );
     $this->instruments   = new Instruments(array('user' => $this));
+    $this->machine_tokens= new MachineTokens(array('user' => $this));
     $this->organizations = new UserOrganizationMemberships(
       array('user' => $this)
     );
