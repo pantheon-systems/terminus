@@ -8,7 +8,6 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site redis disable` to disable Redis caching. (#813)
 - New command `site solr enable` to enable Solr indexing. (#814)
 - New command `site solr disable` to disable Solr indexing. (#814)
-- Added `--email=<email>` argument to `auth login` to retireve saved machine tokens. (#825)
 - Added `Environment#getParentEnvironment()`. (#831)
 - Added `Commits` collection and `Commit` model. (#831)
 - Added `machine-token list` and `machine-token delete` commands. (#798)
