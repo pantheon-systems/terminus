@@ -15,9 +15,9 @@
     "psy/psysh": "@stable",
     "ramsey/array_column": "~1.1",
     "rmccue/requests": "^1.6",
-    "symfony/finder": "~2.8",
-    "symfony/yaml": "~2.1",
-    "twig/twig": "~1.23",
+    "symfony/finder": "~2.8|~3.0",
+    "symfony/yaml": "~2.1|~3.0",
+    "twig/twig": "1.*",
     "vlucas/phpdotenv": "~2.1"
   },
   "autoload": {
@@ -25,12 +25,12 @@
   },
   "require-dev": {
     "behat/behat": "3.0.*@stable",
-    "phpunit/phpunit": "~4.6",
+    "phpunit/phpcov": "2.*|3.*",
+    "phpunit/phpunit": "4.*|~5.0",
     "php-vcr/php-vcr": "~1.2",
     "php-vcr/phpunit-testlistener-vcr": "*",
     "sebastian/phpcpd": "*",
     "squizlabs/php_codesniffer": "2.*",
-    "satooshi/php-coveralls": "dev-master",
-    "phpunit/phpcov": "2.*"
+    "satooshi/php-coveralls": "~1.0"
   }
 }
