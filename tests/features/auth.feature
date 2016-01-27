@@ -52,7 +52,7 @@ Feature: Authorization command
     When I run "terminus sites list"
     Then I should get:
     """
-    In order to log in, you must create a machine token here:
+    You are not logged in. Run `auth login` to authenticate or `help auth login` for more info.
     """
 
   #Scenario: Logging in via refresh token
