@@ -12,4 +12,13 @@
   <listeners>
     <listener class="PHPUnit_Util_Log_VCR" file="../../vendor/php-vcr/phpunit-testlistener-vcr/PHPUnit/Util/Log/VCR.php" />
   </listeners>
+  <filter>
+    <whitelist>
+        <directory suffix=".php">../../php/</directory>
+        <directory suffix=".php">../../tests/</directory>
+        <exclude>
+            <directory suffix=".php">../../vendor/</directory>
+        </exclude>
+    </whitelist>
+  </filter>    
 </phpunit>
