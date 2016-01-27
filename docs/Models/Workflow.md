@@ -18,6 +18,15 @@
 
 ---
 
+### getStatus
+##### Description:
+    Returns the status of this workflow
+
+##### Return:
+    [string]
+
+---
+
 ### isFinished
 ##### Description:
     Detects if the workflow has finished
