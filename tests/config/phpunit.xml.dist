@@ -16,6 +16,7 @@
     <whitelist>
         <directory suffix=".php">../../php/</directory>
         <directory suffix=".php">../../tests/</directory>
+        <directory suffix=".php">../../utils/</directory>
         <exclude>
             <directory suffix=".php">../../vendor/</directory>
         </exclude>
