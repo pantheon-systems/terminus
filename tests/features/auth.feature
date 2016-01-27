@@ -46,9 +46,18 @@ Feature: Authorization command
     You are authenticated as: [[user_uuid]]
     """
 
-  #Scenario: Logging in via machine token
-    #@vcr auth_login_machine_token
-    #When I run "terminus auth login --machine-token=[[machine_token]]"
+  @vcr auth_logout
+  Scenario: Trying to use an auth-restricted command while logged out
+    Given I am not authenticated
+    When I run "terminus sites list"
+    Then I should get:
+    """
+    You are not logged in. Run `auth login` to authenticate or `help auth login` for more info.
+    """
+
+  #Scenario: Logging in via refresh token
+    #@vcr auth_login_refresh
+    #When I run "terminus auth login --refresh=[[refresh_token]]"
     #Then I should get:
     #"""
     #Logged in as [[user_uuid]]

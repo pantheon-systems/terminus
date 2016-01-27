@@ -3,6 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus;
+use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Helpers\Input;
@@ -18,7 +19,7 @@ class AuthCommand extends TerminusCommand {
    */
   public function __construct() {
     parent::__construct();
-    $this->auth = new Terminus\Auth();
+    $this->auth = new Auth();
   }
 
   /**
@@ -42,7 +43,9 @@ class AuthCommand extends TerminusCommand {
     if (!empty($args)) {
       $email = array_shift($args);
     }
-    if (isset($assoc_args['machine-token'])) {
+    if (isset($assoc_args['machine-token'])
+      && ($assoc_args['machine-token'] !== true)
+    ) {
       // Try to log in using a machine token, if provided.
       $token_data = ['token' => $assoc_args['machine-token']];
       $this->auth->logInViaMachineToken($token_data);
@@ -62,27 +65,21 @@ class AuthCommand extends TerminusCommand {
       && $only_token = $this->auth->getOnlySavedToken()
     ) {
       // Try to log in using a machine token, if there is only one saved token.
-      $this->auth->logInViaMachineToken($only_token);
+      $this->auth->logInViaMachineToken(['email' => $only_token['email']]);
+    } else if (isset($email) && isset($assoc_args['password'])) {
+      $password = $assoc_args['password'];
+      $this->auth->logInViaUsernameAndPassword(
+        $email,
+        $assoc_args['password']
+      );
     } else {
-      // Otherwise, do a normal email/password-based login.
-      if (!isset($email)) {
-        if (isset($_SERVER['TERMINUS_USER'])) {
-          $email = $_SERVER['TERMINUS_USER'];
-        } else {
-          $email = Input::prompt(['message' => 'Your email address?']);
-        }
-      }
-
-      if (isset($assoc_args['password'])) {
-        $password = $assoc_args['password'];
-      } else {
-        $password = Input::promptSecret(
-          ['message' => 'Your dashboard password (input will not be shown)']
-        );
-      }
-
-      $this->auth->logInViaUsernameAndPassword($email, $password);
+      $this->log()->info(
+        "Please visit the Dashboard to generate a machine token:\n{url}",
+        ['url' => Auth::getMachineTokenCreationUrl()]
+      );
+      exit(1);
     }
+
     $this->log()->debug(get_defined_vars());
     Terminus::launchSelf('art', array('fist'));
   }

@@ -53,14 +53,29 @@ class Auth {
       ) {
         $auth->logInViaMachineToken(compact('email'));
       } else {
-        throw new TerminusException(
-          'Please login first with `terminus auth login`',
-          [],
-          1
-        );
+        $message  = 'You are not logged in. Run `auth login` to ';
+        $message .= 'authenticate or `help auth login` for more info.';
+        $auth->logger->warning($message);
+        exit(1);
       }
     }
     return true;
+  }
+
+  /**
+   * Generates the URL string for where to create a machine token
+   *
+   * @return string
+   */
+  public static function getMachineTokenCreationUrl() {
+    $url = sprintf(
+      '%s://%s:%s/machine-token/create?client=terminus&device=%s',
+      TERMINUS_PROTOCOL,
+      TERMINUS_HOST,
+      TERMINUS_PORT,
+      gethostname()
+    );
+    return $url;
   }
 
   /**
@@ -108,6 +123,17 @@ class Auth {
       $token = $args['token'];
     } elseif (isset($args['email'])) {
       $token = $this->tokens_cache->findByEmail($args['email'])['token'];
+      if (!$token) {
+        throw new TerminusException(
+          'No machine token for "{email}" found.',
+          compact('email'),
+          1
+        );
+      }
+      $this->logger->info(
+        'Found a machine token for "{email}".',
+        ['email' => $args['email']]
+      );
     }
     $options = array(
       'headers' => array('Content-type' => 'application/json'),
