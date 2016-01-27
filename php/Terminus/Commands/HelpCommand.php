@@ -111,16 +111,18 @@ class HelpCommand extends TerminusCommand {
       $options_list = explode("\n\n", $longdesc);
       foreach ($options_list as $option) {
         $drilldown = explode("\n", $option);
-        $key       = str_replace(array('[', ']'), '', $drilldown[0]);
-        if (!in_array($key, $synopses)) {
-          continue;
+        if (count($drilldown) > 1) {
+          $key       = str_replace(array('[', ']'), '', $drilldown[0]);
+          if (!in_array($key, $synopses)) {
+            continue;
+          }
+          $value     = str_replace(
+            array(': ', "\n"),
+            array('', ' '),
+            $drilldown[1]
+          );
+          $options[$key] = $value;
         }
-        $value     = str_replace(
-          array(': ', "\n"),
-          array('', ' '),
-          $drilldown[1]
-        );
-        $options[$key] = $value;
       }
     } elseif (isset($longdesc['parameters'])) {
       foreach ($longdesc['parameters'] as $parameter) {

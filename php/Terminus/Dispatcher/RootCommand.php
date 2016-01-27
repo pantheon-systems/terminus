@@ -51,8 +51,6 @@ class RootCommand extends CompositeCommand {
         || (isset($details['hidden']))
       ) {
         continue;
-      } if ($details['runtime']) {
-        $synopsis = "--[no-]$key";
       } else {
         $synopsis = "--$key" . $details['runtime'];
       }
