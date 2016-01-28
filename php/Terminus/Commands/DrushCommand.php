@@ -5,6 +5,9 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Commands\CommandWithSSH;
 
+/**
+ * @command drush
+ */
 class DrushCommand extends CommandWithSSH {
   /**
    * {@inheritdoc}
@@ -53,5 +56,3 @@ class DrushCommand extends CommandWithSSH {
   }
 
 }
-
-Terminus::addCommand('drush', 'DrushCommand');

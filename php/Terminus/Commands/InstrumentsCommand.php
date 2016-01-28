@@ -10,6 +10,8 @@ use Terminus\Models\User;
 
 /**
  * Show information for your Pantheon instruments
+ *
+ * @command instruments
  */
 class InstrumentsCommand extends TerminusCommand {
 
@@ -45,4 +47,3 @@ class InstrumentsCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('instruments', 'InstrumentsCommand');

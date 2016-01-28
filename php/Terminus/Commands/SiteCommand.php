@@ -16,6 +16,8 @@ use Terminus\Models\Collections\Sites;
 
 /**
  * Actions to be taken on an individual site
+ *
+ * @command site
  */
 class SiteCommand extends TerminusCommand {
 
@@ -2266,4 +2268,3 @@ class SiteCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('site', 'SiteCommand');

@@ -1,5 +1,7 @@
 <?php
 
+use Terminus\Dispatcher;
+
 /**
  * Testing class for Terminus
  */
@@ -8,10 +10,6 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
   public function testConstruct() {
     $terminus = new Terminus();
     $this->assertTrue(get_class($terminus) == 'Terminus');
-  }
-
-  public function testAddCommand() {
-    Terminus::addCommand('auth', 'AuthCommand');
   }
 
   public function testGetCache() {
@@ -43,6 +41,19 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(
       strpos(get_class($root_command), 'RootCommand') !== false
     );
+
+    // Make sure the core commands have loaded
+    $commands = array('art', 'auth', 'cli', 'drush', 'help', 'machine-tokens',
+      'organizations', 'site', 'sites', 'upstreams', 'workflows', 'wp');
+    foreach ($commands as $command) {
+      $args = array($command);
+      $this->assertTrue($root_command->findSubcommand($args) !== false);
+    }
+
+    // Make sure the correct number of parameters are configured.
+    $desc = $root_command->getLongdesc();
+    $this->assertTrue(count($desc['parameters']) == 4);
+
   }
 
   public function testGetRunner() {

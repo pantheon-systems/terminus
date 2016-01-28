@@ -10,6 +10,8 @@ use Terminus\Helpers\Input;
 
 /**
  * Authenticate to Pantheon and store a local secret token.
+ *
+ * @command auth
  */
 class AuthCommand extends TerminusCommand {
   private $auth;
@@ -111,5 +113,3 @@ class AuthCommand extends TerminusCommand {
   }
 
 }
-
-Terminus::addCommand('auth', 'AuthCommand');
