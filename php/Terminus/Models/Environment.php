@@ -9,6 +9,7 @@ use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
 use Terminus\Models\Collections\Bindings;
 use Terminus\Models\Collections\Commits;
+use Terminus\Models\Collections\Hostnames;
 
 class Environment extends TerminusModel {
   /**
@@ -24,7 +25,12 @@ class Environment extends TerminusModel {
   /**
    * @var Bindings
    */
-  private $bindings;
+  public $bindings;
+
+  /**
+   * @var Hostnames
+   */
+  public $hostnames;
 
   /**
    * Object constructor
@@ -35,29 +41,10 @@ class Environment extends TerminusModel {
   public function __construct($attributes, array $options = array()) {
     parent::__construct($attributes, $options);
     $options = ['environment' => $this];
-    $this->backups  = new Backups($options);
-    $this->bindings = new Bindings($options);
-    $this->commits  = new Commits($options);
-  }
-
-  /**
-   * Add hostname to environment
-   *
-   * @param string $hostname Hostname to add to environment
-   * @return array Response data
-   */
-  public function addHostname($hostname) {
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      sprintf(
-        'environments/%s/hostnames/%s',
-        $this->get('id'),
-        rawurlencode($hostname)
-      ),
-      'PUT'
-    );
-    return $response['data'];
+    $this->backups   = new Backups($options);
+    $this->bindings  = new Bindings($options);
+    $this->commits   = new Commits($options);
+    $this->hostnames = new Hostnames($options);
   }
 
   /**
@@ -320,32 +307,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Delete hostname from environment
-   *
-   * @param string $hostname Hostname to remove from environment
-   * @return array Response data
-   */
-  public function deleteHostname($hostname) {
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      sprintf(
-        'environments/%s/hostnames/%s',
-        $this->get('id'),
-        rawurlencode($hostname)
-      ),
-      'delete'
-    );
-    return $response['data'];
-    // dead code:
-    $options  = array('environment' => $this->get('id'), 'params' => $params);
-    $workflow = $this->site->workflows->create('do_export', $options);
-    $workflow->wait();
-
-    return $workflow;
-  }
-
-  /**
    * Deploys the Test or Live environment
    *
    * @param array $params Parameters for the deploy workflow
@@ -412,21 +373,6 @@ class Environment extends TerminusModel {
       $mode = 'sftp';
     }
     return $mode;
-  }
-
-  /**
-   * List hostnames for environment
-   *
-   * @return array
-   */
-  public function getHostnames() {
-    $response = $this->request->request(
-      'sites',
-      $this->site->get('id'),
-      'environments/' . $this->get('id') . '/hostnames',
-      'GET'
-    );
-    return $response['data'];
   }
 
   /**
@@ -677,8 +623,7 @@ class Environment extends TerminusModel {
     $on_stats = function (TransferStats $stats) {
       $this->transfertime = $stats->getTransferTime();
     };
-    $hostnames   = array_keys((array)$this->getHostnames());
-    $target      = array_pop($hostnames);
+    $target      = array_pop($this->hostnames->ids());
     $healthc     = "http://$target/pantheon_healthcheck";
     $response    = $this->request->simpleRequest($healthc, compact('on_stats'));
     $return_data = array(
