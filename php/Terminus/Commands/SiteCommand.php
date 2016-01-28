@@ -789,7 +789,7 @@ class SiteCommand extends TerminusCommand {
         if (!isset($assoc_args['hostname'])) {
           $this->failure('Must specify hostname with --hostname');
         }
-        $data = $env->addHostname($assoc_args['hostname']);
+        $data = $env->hostnames->addHostname($assoc_args['hostname']);
         $this->log()->debug(json_encode($data));
         $this->log()->info(
           'Added {hostname} to {site}-{env}',
@@ -804,7 +804,8 @@ class SiteCommand extends TerminusCommand {
         if (!isset($assoc_args['hostname'])) {
           $this->failure('Must specify hostname with --hostname');
         }
-        $data = $env->deleteHostname($assoc_args['hostname']);
+        $hostname = $env->hostnames->get($assoc_args['hostname']);
+        $data     = $hostname->delete();
         $this->log()->info(
           'Deleted {hostname} from {site}-{env}',
           array(
@@ -829,7 +830,7 @@ class SiteCommand extends TerminusCommand {
           $environments = array('dev', 'test', 'live');
           foreach ($environments as $env_name) {
             $environment = $site->environments->get($env_name);
-            $hostnames   = array_keys((array)$environment->getHostnames());
+            $hostnames   = $environment->hostnames->ids();
             if (in_array($hostname, $hostnames)) {
               $data = array(
                 array(
@@ -851,15 +852,15 @@ class SiteCommand extends TerminusCommand {
           break;
       default:
       case 'list':
-        $hostnames = $env->getHostnames();
+        $hostnames = $env->hostnames->all();
         $data      = $hostnames;
         if (Terminus::getConfig('format') != 'json') {
           //If were not just dumping the JSON, then we should reformat the data.
           $data = array();
           foreach ($hostnames as $hostname => $details) {
             $data[] = array_merge(
-              array('domain' => $hostname),
-              (array)$details
+              array('domain' => $details->get('id')),
+              (array)$details->attributes
             );
           }
         }
