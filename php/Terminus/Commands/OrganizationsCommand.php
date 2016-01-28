@@ -19,9 +19,15 @@ use Terminus\Models\Collections\UserOrganizationMemberships;
  */
 class OrganizationsCommand extends TerminusCommand {
 
-  public function __construct() {
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to construct the command object
+   * @return OrganizationsCommand
+   */
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
     $this->sites = new Sites();
   }
 

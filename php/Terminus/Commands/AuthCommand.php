@@ -16,9 +16,12 @@ class AuthCommand extends TerminusCommand {
 
   /**
    * Instantiates object, sets auth property
+   *
+   * @param array $options Options to construct the command object
+   * @return AuthCommand
    */
-  public function __construct() {
-    parent::__construct();
+  public function __construct(array $options = []) {
+    parent::__construct($options);
     $this->auth = new Auth();
   }
 

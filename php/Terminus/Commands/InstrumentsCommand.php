@@ -15,10 +15,13 @@ class InstrumentsCommand extends TerminusCommand {
 
   /**
    * Instantiates object, ensures login
+   *
+   * @param array $options Options to construct the command object
+   * @returns InstrumentsCommand
    */
-  public function __construct() {
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
   }
 
   /**

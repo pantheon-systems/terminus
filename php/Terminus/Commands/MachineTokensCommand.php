@@ -16,10 +16,13 @@ class MachineTokensCommand extends TerminusCommand {
 
   /**
    * Instantiates object, ensures login
+   *
+   * @param array $options Options to construct the command object
+   * @return MachineTokensCommand
    */
-  public function __construct() {
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
   }
 
   /**

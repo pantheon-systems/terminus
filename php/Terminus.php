@@ -4,6 +4,7 @@ use Terminus\Dispatcher;
 use Terminus\DocParser;
 use Terminus\FileCache;
 use Terminus\Runner;
+use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
@@ -79,10 +80,18 @@ class Terminus {
       $command = $subcommand;
     }
 
+    $options = [
+      'cache'     => self::getCache(),
+      'logger'    => self::getLogger(),
+      'outputter' => self::getOutputter(),
+      'session'   => Session::instance(),
+    ];
+
     $leaf_command = Dispatcher\CommandFactory::create(
       $leaf_name,
       $class,
-      $command
+      $command,
+      $options
     );
 
     if (!$command->canHaveSubcommands()) {

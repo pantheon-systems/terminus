@@ -5,8 +5,6 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Auth;
 use Terminus\Endpoint;
-use Terminus\Request;
-use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Exceptions\TerminusException;
@@ -17,11 +15,10 @@ use Terminus\Loggers\Logger;
  * The base class for Terminus commands
  */
 abstract class TerminusCommand {
-  public $cache;
-  public $session;
-  public $sites;
-
-  protected $func;
+  /**
+   * @var FileCache
+   */
+  protected $cache;
 
   /**
    * @var Logger
@@ -34,20 +31,31 @@ abstract class TerminusCommand {
   protected $outputter;
 
   /**
-   * @var Request
+   * @var Session
    */
-  protected $request;
+  protected $session;
+
+  /**
+   * @var Sites
+   */
+  protected $sites;
 
   /**
    * Instantiates object, sets cache and session
+   *
+   * @param array $options Elements as follow:
+   *        FileCache cache
+   *        Logger    Logger
+   *        Outputter Outputter
+   *        Session   Session
+   * @return TerminusCommand
    */
-  public function __construct() {
-    //Load commonly used data from cache
-    $this->cache     = Terminus::getCache();
-    $this->logger    = Terminus::getLogger();
-    $this->outputter = Terminus::getOutputter();
-    $this->session   = Session::instance();
-    $this->request   = new Request();
+  public function __construct(array $options = []) {
+    $this->cache     = $options['cache'];
+    $this->logger    = $options['logger'];
+    $this->outputter = $options['outputter'];
+    $this->session   = $options['session'];
+
     if (!Terminus::isTest()) {
       Utils\checkForUpdate();
     }
