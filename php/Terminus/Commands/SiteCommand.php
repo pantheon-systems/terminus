@@ -805,7 +805,7 @@ class SiteCommand extends TerminusCommand {
           $this->failure('Must specify hostname with --hostname');
         }
         $hostname = $env->hostnames->get($assoc_args['hostname']);
-        $data     = $hostname->delete($assoc_args['hostname']);
+        $data     = $hostname->delete();
         $this->log()->info(
           'Deleted {hostname} from {site}-{env}',
           array(

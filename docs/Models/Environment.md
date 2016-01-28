@@ -10,18 +10,6 @@
 
 ---
 
-### addHostname
-##### Description:
-    Add hostname to environment
-
-##### Parameters:
-    [string] $hostname Hostname to add to environment
-
-##### Return:
-    [array] Response data
-
----
-
 ### changeConnectionMode
 ##### Description:
     Changes connection mode
@@ -92,18 +80,6 @@
 
 ---
 
-### deleteHostname
-##### Description:
-    Delete hostname from environment
-
-##### Parameters:
-    [string] $hostname Hostname to remove from environment
-
-##### Return:
-    [array] Response data
-
----
-
 ### deploy
 ##### Description:
     Deploys the Test or Live environment
@@ -140,15 +116,6 @@
 
 ##### Return:
     [string] 'git' or 'sftp'
-
----
-
-### getHostnames
-##### Description:
-    List hostnames for environment
-
-##### Return:
-    [array]
 
 ---
 
