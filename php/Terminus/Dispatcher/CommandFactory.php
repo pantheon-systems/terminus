@@ -13,12 +13,18 @@ class CommandFactory {
   /**
    * Creates a new composite command or subcommand
    *
-   * @param string           $name   Name of command to create
-   * @param string           $class  Name of class command belongs to
-   * @param CompositeCommand $parent Parent command
+   * @param string           $name    Name of command to create
+   * @param string           $class   Name of class command belongs to
+   * @param CompositeCommand $parent  Parent command
+   * @param array            $options Options to feed into the called command
    * @return CompositeCommand
    */
-  public static function create($name, $class, CompositeCommand $parent) {
+  public static function create(
+    $name,
+    $class,
+    CompositeCommand $parent,
+    $options
+  ) {
     $reflection = new \ReflectionClass($class);
 
     if ($reflection->hasMethod('__invoke')) {
@@ -26,10 +32,16 @@ class CommandFactory {
         $parent,
         $name,
         $reflection->name,
-        $reflection->getMethod('__invoke')
+        $reflection->getMethod('__invoke'),
+        $options
       );
     } else {
-      $command = self::createCompositeCommand($parent, $name, $reflection);
+      $command = self::createCompositeCommand(
+        $parent,
+        $name,
+        $reflection,
+        $options
+      );
     }
 
     return $command;
@@ -41,12 +53,14 @@ class CommandFactory {
    * @param RootCommand      $parent     Parent command
    * @param string           $name       Name of command to create
    * @param \ReflectionClass $reflection Object with name of class to call
+   * @param array            $options    Options to feed into a called command
    * @return CompositeCommand
    */
   private static function createCompositeCommand(
     RootCommand $parent,
     $name,
-    \ReflectionClass $reflection
+    \ReflectionClass $reflection,
+    $options
   ) {
     $docparser = new DocParser($reflection->getDocComment());
     $container = new CompositeCommand($parent, $name, $docparser);
@@ -59,7 +73,8 @@ class CommandFactory {
         $container,
         false,
         $reflection->name,
-        $method
+        $method,
+        $options
       );
       $subcommand_name = $subcommand->getName();
       $container->addSubcommand($subcommand_name, $subcommand);
@@ -75,13 +90,15 @@ class CommandFactory {
    * @param string            $name       Name of command to create
    * @param string            $class_name Name of class command belongs to
    * @param \ReflectionMethod $method     Name of function to invoke in class
+   * @param array             $options    Options to feed into the a command
    * @return Subcommand
    */
   private static function createSubcommand(
     CompositeCommand $parent,
     $name,
     $class_name,
-    \ReflectionMethod $method
+    \ReflectionMethod $method,
+    $options
   ) {
     $docparser = new DocParser($method->getDocComment());
     if (!$name) {
@@ -92,9 +109,13 @@ class CommandFactory {
     }
     $method_name  = $method->name;
     $when_invoked =
-      function ($args, $assoc_args) use ($class_name, $method_name) {
+      function ($args, $assoc_args) use (
+        $class_name,
+        $method_name,
+        $options
+      ) {
         call_user_func(
-          array(new $class_name, $method_name),
+          array(new $class_name($options), $method_name),
           $args,
           $assoc_args
         );

@@ -21,10 +21,13 @@ class WorkflowsCommand extends TerminusCommand {
 
   /**
    * Object constructor.
+   *
+   * @param array $options Options to construct the command object
+   * @return WorkflowsCommand
    */
-  public function __construct() {
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
     $this->sites = new Sites();
   }
 

@@ -14,8 +14,14 @@ use Terminus\Models\User;
  */
 class CliCommand extends TerminusCommand {
 
-  public function __construct() {
-    parent::__construct();
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to construct the command object
+   * @return CliCommand
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
     $this->sitesCache = new SitesCache();
   }
 

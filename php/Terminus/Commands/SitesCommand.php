@@ -23,10 +23,13 @@ class SitesCommand extends TerminusCommand {
 
   /**
    * Shows a list of your sites on Pantheon
+   *
+   * @param array $options Options to construct the command object
+   * @return SitesCommand
    */
-  public function __construct() {
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
     $this->sites = new Sites();
   }
 

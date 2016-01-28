@@ -15,15 +15,21 @@ use Terminus\Models\Workflow;
 use Terminus\Models\Collections\Sites;
 
 /**
-* Actions to be taken on an individual site
-*/
+ * Actions to be taken on an individual site
+ */
 class SiteCommand extends TerminusCommand {
 
   protected $_headers = false;
 
-  public function __construct() {
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to construct the command object
+   * @return SiteCommand
+   */
+  public function __construct(array $options = []) {
     Auth::ensureLogin();
-    parent::__construct();
+    parent::__construct($options);
     $this->sites = new Sites();
   }
 
