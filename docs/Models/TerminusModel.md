@@ -20,6 +20,9 @@
 ##### Return:
     [mixed] $this->$property
 
+##### Throws:
+    TerminusException
+
 ---
 
 ### fetch
