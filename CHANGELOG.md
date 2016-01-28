@@ -5,6 +5,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - New `Hostnames` collection and `Hostname` model. (#860)
 
+### Changed
+- When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)
+
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)
 
