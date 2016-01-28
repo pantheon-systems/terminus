@@ -94,6 +94,7 @@ class PantheonAliases {
     $user     = new User();
     $path     = 'drush_aliases';
     $method   = 'GET';
+    $logger = Terminus::getLogger();
     $response = $request->request(
       'users',
       Session::getValue('user_uuid'),
@@ -110,6 +111,10 @@ class PantheonAliases {
         $key = $site->get('name') . '.'. $environment->get('id');
         if (isset($aliases[$key])) {
           break;
+        }
+        if (!isset($environment->bindings)) {
+          $logger->error("An alias could not be created for $key");
+          continue;
         }
         try {
           $formatted_aliases .= PHP_EOL . "  \$aliases['$key'] = ";
