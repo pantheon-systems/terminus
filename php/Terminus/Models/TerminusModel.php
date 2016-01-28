@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus\Request;
+use Terminus\Exceptions\TerminusException;
 
 abstract class TerminusModel {
   protected $id;
@@ -40,6 +41,7 @@ abstract class TerminusModel {
    *
    * @param string $property Name of property being requested
    * @return mixed $this->$property
+   * @throws TerminusException
    */
   public function __get($property) {
     if (property_exists($this, $property)) {
@@ -47,14 +49,14 @@ abstract class TerminusModel {
     }
 
     $trace = debug_backtrace();
-    trigger_error(
-      sprintf(
-        'Undefined property $var->$%s in %s on line %s',
-        $property,
-        $trace[0]['file'],
-        $trace[0]['line']
-      ),
-      E_USER_NOTICE
+    throw new TerminusException(
+      'Undefined property $var->${property} in {file} on line {line}',
+      [
+        'property' => $property,
+        'file' => $trace[0]['file'],
+        'line' => $trace[0]['line']
+      ],
+      1
     );
     return null;
   }
