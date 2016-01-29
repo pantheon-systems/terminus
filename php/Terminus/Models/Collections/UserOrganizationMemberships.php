@@ -44,13 +44,21 @@ class UserOrganizationMemberships extends TerminusCollection {
    * @return UserOrganizationMembership $model
    */
   public function get($id) {
-    $orgs     = $this->getMembers();
-    $org_list = \Terminus\Helpers\Input::orgList();
-    $model    = null;
-    if (isset($orgs[$id])) {
+    $this->fetch();
+    $model = null;
+    if (isset($this->models[$id])) {
       $model = $this->models[$id];
-    } elseif (($location = array_search($id, $org_list)) !== false) {
-      $model = $this->models[$location];
+    } else {
+      foreach ($this->models as $model_candidate) {
+        if ((isset($model_candidate->profile)
+            && ($id == $model_candidate->profile->name))
+          || (isset($model_candidate->get('organization')->profile)
+            && $model_candidate->get('organization')->profile->name == $id)
+        ) {
+          $model = $model_candidate;
+          break;
+        }
+      }
     }
     return $model;
   }

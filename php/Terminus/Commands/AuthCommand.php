@@ -6,7 +6,6 @@ use Terminus;
 use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
-use Terminus\Helpers\Input;
 
 /**
  * Authenticate to Pantheon and store a local secret token.

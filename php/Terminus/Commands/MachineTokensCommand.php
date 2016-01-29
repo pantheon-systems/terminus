@@ -7,7 +7,6 @@ use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
-use Terminus\Helpers\Input;
 
 /**
  * Show information for your Pantheon machine tokens
@@ -90,7 +89,7 @@ class MachineTokensCommand extends TerminusCommand {
 
     if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
       //If the force option isn't used, we'll ask you some annoying questions
-      Input::confirm(
+      $this->input()->confirm(
         array(
           'message' => 'Are you sure you want to delete %s?',
           'context' => $name

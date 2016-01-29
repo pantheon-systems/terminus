@@ -8,7 +8,6 @@ use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Dispatcher\CompositeCommand;
 use Terminus\Dispatcher\RootCommand;
-use Terminus\Helpers\Input;
 
 /**
  * @command help
@@ -37,7 +36,7 @@ class HelpCommand extends TerminusCommand {
    *     terminus help sites list
    */
   public function __invoke($args, $assoc_args) {
-    $this->recursive = Input::optional(
+    $this->recursive = $this->input()->optional(
       array(
         'key' => 'recursive',
         'choices' => $assoc_args,

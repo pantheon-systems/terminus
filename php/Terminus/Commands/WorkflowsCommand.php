@@ -7,7 +7,6 @@ use Terminus\Auth;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\Input;
 use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 
@@ -44,7 +43,7 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function index($args, $assoc_args) {
     $site = $this->sites->get(
-      Input::siteName(array('args' => $assoc_args))
+      $this->input()->siteName(array('args' => $assoc_args))
     );
     $site->workflows->fetch(array('paged' => false));
     $workflows = $site->workflows->all();
@@ -78,7 +77,7 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand show
    */
   public function show($args, $assoc_args) {
-    $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
 
     if (isset($assoc_args['workflow_id'])) {
       $workflow_id = $assoc_args['workflow_id'];
@@ -94,7 +93,7 @@ class WorkflowsCommand extends TerminusCommand {
     } else {
       $site->workflows->fetch(array('paged' => false));
       $workflows = $site->workflows->all();
-      $workflow = Input::workflow(compact('workflows'));
+      $workflow = $this->input()->workflow(compact('workflows'));
     }
     $workflow->fetchWithLogs();
 
@@ -150,7 +149,7 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand watch
    */
   public function watch($args, $assoc_args) {
-    $site = $this->sites->get(Input::siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
 
     // Keep track of workflows that have been printed.
     // This is necessary because the local clock may drift from

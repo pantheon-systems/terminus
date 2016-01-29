@@ -3,8 +3,9 @@
 namespace Terminus\Dispatcher;
 
 use Terminus;
-use Terminus\Exceptions\TerminusException;
 use Terminus\DocParser;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Helpers\Input;
 
 /**
  * A leaf node in the command tree.
@@ -170,6 +171,7 @@ class Subcommand extends CompositeCommand {
       }
 
       // 'generic' permits arbitrary key=value (e.g. [--<field>=<value>])
+      $input = new Input();
       if ($spec_arg['type'] == 'generic') {
         list($key_token, $value_token) = explode('=', $spec_arg['token']);
 
@@ -181,7 +183,7 @@ class Subcommand extends CompositeCommand {
             $key_prompt = str_repeat(" ", strlen($current_prompt)) . $key_token;
           }
 
-          $key = Input::prompt(
+          $key = $input->prompt(
             array('message' => $key_prompt, 'default' => $default)
           );
           if ($key === false) {
@@ -193,7 +195,7 @@ class Subcommand extends CompositeCommand {
             $value_prompt     =
               str_repeat(' ', $key_prompt_count) . '=' . $value_token;
 
-            $value = Input::prompt(
+            $value = $input->prompt(
               array('message' => $value_prompt, 'default' => $default)
             );
             if (false === $value) {
@@ -216,7 +218,7 @@ class Subcommand extends CompositeCommand {
           $prompt .= ' (Y/n)';
         }
 
-        $response = Input::prompt(array('message' => $prompt, 'default' => $default));
+        $response = $input->prompt(array('message' => $prompt, 'default' => $default));
         if (false === $response) {
           return array($args, $assoc_args);
         }

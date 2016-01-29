@@ -7,41 +7,63 @@ use Terminus\Helpers\Input;
  */
 class InputHelperTest extends PHPUnit_Framework_TestCase {
 
-  function testDay() {
-    $day = Input::day(array('args' => array('day' => 'Monday')));
+  private $inputter;
+
+  public function __construct() {
+    $this->inputter = new Input();
+  }
+
+  public function testBackup() {
+  }
+
+  public function testBackupElement() {
+  }
+
+  public function testConfirm() {
+  }
+
+  public function testDay() {
+    $day = $this->inputter->day(array('args' => array('day' => 'Monday')));
     $this->assertInternalType('integer', $day);
     $this->assertEquals(1, $day);
   }
 
-  function testEnvironmentFromArgs() {
-    $env_id = Input::env(array('args' => array('env' => 'test')));
+  public function testEnv() {
+    //From args
+    $env_id = $this->inputter->env(array('args' => array('env' => 'test')));
     $this->assertInternalType('string', $env_id);
     $this->assertEquals('test', $env_id);
-  }
 
-  function testEnvironmentFromEnvironmentVariable() {
+    //From environment variable
     $_SERVER['TERMINUS_ENV'] = 'live';
-    $env_id = Input::env();
+    $env_id = $this->inputter->env();
     $this->assertInternalType('string', $env_id);
     $this->assertEquals('live', $env_id);
   }
 
-  function testMenuSingleOptionReturningValue() {
-    $only_option = Input::menu(
+  public function testGetNullInputs() {
+    $null_inputs = $this->inputter->getNullInputs();
+    $this->assertInternalType('array', $null_inputs);
+    $this->assertTrue(in_array('Null', $null_inputs));
+  }
+
+  public function testMenu() {
+    //Single option returning value
+    $only_option = $this->inputter->menu(
       array('choices' => array(5), 'return_value' => true)
     );
     $this->assertInternalType('integer', $only_option);
     $this->assertEquals(5, $only_option);
-  }
 
-  function testMenuSingleOptionReturningIndex() {
-    $only_option_index = Input::menu(array('choices' => array('Pick me!')));
+    //Single option reutrning index
+    $only_option_index = $this->inputter->menu(array('choices' => array('Pick me!')));
     $this->assertInternalType('integer', $only_option_index);
     $this->assertEquals(0, $only_option_index);
   }
 
-  function testOptionalFindsKey() {
-    $option = Input::optional(
+  public function testOptional() {
+    //Finds the key
+    $option = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('key' => 'value', 'not' => 'me'),
@@ -50,10 +72,9 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     );
     $this->assertInternalType('string', $option);
     $this->assertEquals('value', $option);
-  }
 
-  function testOptionalReturnsDefault() {
-    $default = Input::optional(
+    //Returns default
+    $default = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('not' => 'me'),
@@ -62,10 +83,9 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     );
     $this->assertInternalType('bool', $default);
     $this->assertEquals(true, $default);
-  }
 
-  function testOptionalReturnsDefaultFromFunction() {
-    $default_null = Input::optional(
+    //Returns default from function
+    $default_null = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('not' => 'me'),
@@ -77,64 +97,65 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   /**
    * @vcr input_helper_org_helpers
    */
-  function testOrgList() {
-    $org_list = Input::orgList();
-    $this->assertInternalType('array', $org_list);
-    $this->assertArrayHasKey('-', $org_list);
-    $this->assertArrayHasKey('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org_list);
-  }
+  public function testOrgId() {
+    //Accepting UUID
+    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
+    $org  = $this->inputter->orgId(compact('args'));
+    $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
 
-  /**
-   * @vcr input_helper_org_helpers
-   */
-  function testOrgNameAcceptsName() {
+    //Accepting name
     $args = array('org' => 'Terminus Testing');
-    $org  = Input::orgName(compact('args'));
-    $this->assertEquals('Terminus Testing', $org);
-  }
-
-  /**
-   * @vcr input_helper_org_helpers
-   */
-  function testOrgNameAcceptsUuid() {
-    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = Input::orgName(compact('args'));
-    $this->assertEquals('Terminus Testing', $org);
-  }
-
-  /**
-   * @vcr input_helper_org_helpers
-   */
-  function testOrgIdAcceptsUuid() {
-    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = Input::orgId(compact('args'));
+    $org  = $this->inputter->orgId(compact('args'));
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
   /**
    * @vcr input_helper_org_helpers
    */
-  function testOrgIdAcceptsName() {
+  public function testOrgName() {
+    //Accepting name
     $args = array('org' => 'Terminus Testing');
-    $org  = Input::orgId(compact('args'));
-    $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
+    $org  = $this->inputter->orgName(compact('args'));
+    $this->assertEquals('Terminus Testing', $org);
+
+    //Accepts UUID
+    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
+    $org  = $this->inputter->orgName(compact('args'));
+    $this->assertEquals('Terminus Testing', $org);
   }
 
-  function testRoleFromArgs() {
+  public function testPrompt() {
+  }
+
+  public function testPromptSecret() {
+  }
+
+  public function testRole() {
+    //From args
     $args = array('role' => 'admin');
-    $role = Input::role(compact('args'));
+    $role = $this->inputter->role(compact('args'));
     $this->assertEquals('admin', $role);
   }
 
-  function testStringReturnsString() {
+  public function testSiteName() {
+  }
+
+  public function testString() {
+    //Returning string
     $args   = array(
       'args'    => array('key' => 'value'),
       'key'     => 'key',
       'default' => false,
     );
-    $string = Input::string($args);
+    $string = $this->inputter->string($args);
     $this->assertInternalType('string', $string);
     $this->assertEquals('value', $string);
+  }
+
+  public function testUpstream() {
+  }
+
+  public function testWorkflow() {
   }
 
 }
