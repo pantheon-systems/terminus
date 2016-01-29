@@ -4,7 +4,6 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Commands\TerminusCommand;
-use Terminus\Helpers\Input;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -157,12 +156,12 @@ abstract class CommandWithSSH extends TerminusCommand {
     $this->checkCommand($command);
 
     $sites = new Sites();
-    $site  = $sites->get(Input::siteName(array('args' => $assoc_args)));
+    $site  = $sites->get($this->input()->siteName(array('args' => $assoc_args)));
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
 
-    $env_id = Input::env(array('args' => $assoc_args, 'site' => $site));
+    $env_id = $this->input()->env(array('args' => $assoc_args, 'site' => $site));
     if (!in_array($env_id, ['test', 'live'])) {
       $this->checkConnectionMode($site->environments->get($env_id));
     }

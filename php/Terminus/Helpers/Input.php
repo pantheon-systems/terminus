@@ -17,7 +17,7 @@ use Terminus\Models\Collections\Upstreams;
  * Helper class to handle inputs
  */
 class Input {
-  static $NULL_INPUTS = array('', 'false', 'None', 'Null', '0');
+  private $NULL_INPUTS = ['', 'false', 'None', 'Null', '0'];
 
   /**
    * Produces a menu to select a backup
@@ -28,11 +28,11 @@ class Input {
    * @return \stdClass An object representing the backup desired
    * @throws TerminusException
    */
-  public static function backup(array $arg_options = array()) {
-    $default_options = array(
+  public function backup(array $arg_options = []) {
+    $default_options = [
       'label'   => 'Select a backup',
-      'backups' => array(),
-    );
+      'backups' => [],
+    ];
     $options         = array_merge($default_options, $arg_options);
     $backups         = $options['backups'];
     if (empty($options['backups'])) {
@@ -44,7 +44,7 @@ class Input {
       );
     }
 
-    $choices = array();
+    $choices = [];
     foreach ($backups as $folder => $backup) {
       if ($backup->get('filename') == null) {
         unset($backups[$folder]);
@@ -52,8 +52,8 @@ class Input {
       }
       $choices[] = $backup->get('filename');
     }
-    $choice        = self::menu(
-      array('choices' => $choices, 'message' => $options['label'])
+    $choice        = $this->menu(
+      ['choices' => $choices, 'message' => $options['label']]
     );
     $backups       = array_values($backups);
     $target_backup = $backups[$choice];
@@ -72,13 +72,13 @@ class Input {
    * @return string Either the selection, its index, or the default
    * @throws TerminusException
    */
-  public static function backupElement(array $arg_options = array()) {
-    $default_options = array(
-      'args'    => array(),
+  public function backupElement(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
       'key'     => 'element',
       'label'   => 'Select backup element',
-      'choices' => array('code', 'database', 'files'),
-    );
+      'choices' => ['code', 'database', 'files'],
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     $args    = $options['args'];
@@ -93,17 +93,17 @@ class Input {
       }
       throw new TerminusException(
         '{element} is an invalid element. Please select from these: {choices}',
-        array('element' => $args[$key], 'choices' => implode(', ', $choices)),
+        ['element' => $args[$key], 'choices' => implode(', ', $choices)],
         1
       );
     }
 
-    $element = self::menu(
-      array(
+    $element = $this->menu(
+      [
         'choices' => $choices,
         'message' => $options['label'],
         'return_value' => true,
-      )
+      ]
     );
     return $element;
   }
@@ -116,15 +116,15 @@ class Input {
    *        array  $params   Elements to interpolate into the prompt text
    * @return bool True if prompt is accepted
    */
-  static function confirm(array $arg_options = array()) {
+  function confirm(array $arg_options = []) {
     if (Terminus::getConfig('yes')) {
       return true;
     }
-    $default_options = array(
+    $default_options = [
       'message' => 'Do you want to continue?',
-      'context' => array(),
+      'context' => [],
       'exit'    => true,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
     $question        = vsprintf($options['message'], $options['context']);
     fwrite(STDOUT, $question . ' [y/n] ');
@@ -149,12 +149,12 @@ class Input {
    *        [array]  choices Menu options for the user, may be a collection
    * @return int
    */
-  public static function day(array $arg_options = array()) {
-    $default_options = array(
-      'args' => array(),
+  public function day(array $arg_options = []) {
+    $default_options = [
+      'args' => [],
       'key' => 'day',
       'label' => 'Select a day',
-      'choices' => array(
+      'choices' => [
         'Sunday',
         'Monday',
         'Tuesday',
@@ -162,19 +162,19 @@ class Input {
         'Thursday',
         'Friday',
         'Saturday',
-      ),
-    );
+      ],
+    ];
     $options         = array_merge($default_options, $arg_options);
     if (isset($options['args'][$options['key']])) {
       $day        = date('l', strtotime($options['args'][$options['key']]));
       $day_number = array_search($day, $options['choices']);
     } else {
-      $day_number = self::menu(
-        array(
+      $day_number = $this->menu(
+        [
           'choices' => $options['choices'],
           'default' => 'Sunday',
           'message' => $options['label'],
-        )
+        ]
       );
     }
     return $day_number;
@@ -191,19 +191,19 @@ class Input {
    *        [Site]   site    Site object to gather environment choices from
    * @return string Either the selection, its index, or the default
    */
-  public static function env(array $arg_options = array()) {
-    $default_options = array(
-      'args'    => array(),
+  public function env(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
       'key'     => 'env',
       'label'   => 'Choose environment',
-      'choices' => array('dev', 'test', 'live'),
+      'choices' => ['dev', 'test', 'live'],
       'site'    => null,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
     }
-    if (in_array($options['key'], array('env', 'from-env'))) {
+    if (in_array($options['key'], ['env', 'from-env'])) {
       if (isset($_SERVER['TERMINUS_ENV'])) {
         return $_SERVER['TERMINUS_ENV'];
       }
@@ -213,15 +213,24 @@ class Input {
       $choices = $options['site']->environments->ids();
     }
 
-    $menu = self::menu(
-      array(
+    $menu = $this->menu(
+      [
         'choices'      => $choices,
         'default'      => 'dev',
         'message'      => $options['label'],
         'return_value' => true
-      )
+      ]
     );
     return $menu;
+  }
+
+  /**
+   * Returns the null input list
+   *
+   * @return string[]
+   */
+  public function getNullInputs() {
+    return $this->NULL_INPUTS;
   }
 
   /**
@@ -234,13 +243,13 @@ class Input {
    *        bool   return_value If true, returns selection. False, the index
    * @return string Either the selection, its index, or the default
    */
-  public static function menu(array $arg_options = array()) {
-    $default_options = array(
-      'choices'      => array(self::$NULL_INPUTS[0]),
+  public function menu(array $arg_options = []) {
+    $default_options = [
+      'choices'      => [$this->NULL_INPUTS[0]],
       'default'      => null,
       'message'      => 'Select one',
       'return_value' => false
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     if (count($options['choices']) == 1) {
@@ -267,12 +276,12 @@ class Input {
    *        mixed  default Returned if $args[$key] DNE
    * @return mixed Either $args[$key] or $default
    */
-  public static function optional(array $arg_options = array()) {
-    $default_options = array(
+  public function optional(array $arg_options = []) {
+    $default_options = [
       'key'     => 0,
-      'choices' => array(),
+      'choices' => [],
       'default' => null,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     if (isset($options['choices'][$options['key']])) {
@@ -292,18 +301,18 @@ class Input {
    * @return string ID of selected organization
    * @throws TerminusException
   */
-  public static function orgId(array $arg_options = array()) {
-    $default_options = array(
-      'args'       => array(),
+  public function orgId(array $arg_options = []) {
+    $default_options = [
+      'args'       => [],
       'key'        => 'org',
       'default'    => null,
       'allow_none' => true,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     $arguments = $options['args'];
     $key       = $options['key'];
-    $org_list  = self::orgList($options);
+    $org_list  = $this->orgList($options);
     if (isset($arguments[$key])) {
       if ($id = array_search($arguments[$key], $org_list)) {
         return $id;
@@ -324,7 +333,7 @@ class Input {
       return $org;
     }
     // Include the Org ID in the output menu
-    $org_list_with_ids = array();
+    $org_list_with_ids = [];
     if ($options['allow_none']) {
       $org_list_with_ids['-'] = 'None';
     }
@@ -332,42 +341,18 @@ class Input {
       $org_list_with_id[$id] = sprintf("%s (%s)", $name, $id);
     }
 
-    $org = self::menu(
-      array(
+    $org = $this->menu(
+      [
         'choices' => $org_list_with_id,
         'default' => false,
         'message' => 'Choose an organization',
-      )
+      ]
     );
 
     if ($org == '-') {
       return $options['default'];
     }
     return $org;
-  }
-
-  /**
-   * Returns an array listing organizaitions applicable to user
-   *
-   * @param array $arg_options Elements as follow:
-   *        bool allow_none True to allow the "none" option
-   * @return array A list of organizations
-  */
-  public static function orgList(array $arg_options = array()) {
-    $default_options = array('allow_none' => true);
-    $options         = array_merge($default_options, $arg_options);
-
-    $org_list = array();
-    if ($options['allow_none']) {
-      $org_list = array('-' => 'None');
-    }
-    $user          = Session::getUser();
-    $organizations = $user->organizations->all();
-    foreach ($organizations as $id => $org) {
-      $org_data                  = $org->get('organization');
-      $org_list[$org->get('id')] = $org_data->profile->name;
-    }
-    return $org_list;
   }
 
   /**
@@ -378,14 +363,14 @@ class Input {
    *        string key  Args key to search for
    * @return string Site name
   */
-  public static function orgName(array $arg_options = array()) {
-    $default_options = array(
-      'args' => array(),
+  public function orgName(array $arg_options = []) {
+    $default_options = [
+      'args' => [],
       'key'  => 'org',
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
-    $org_list = self::orgList();
+    $org_list = $this->orgList();
     if (isset($options['args'][$options['key']])) {
       //If org id is sent, fetch the name
       if (isset($org_list[$options['args'][$options['key']]])) {
@@ -393,12 +378,12 @@ class Input {
       }
       return $options['args'][$options['key']];
     }
-    $org = self::menu(
-      array(
+    $org = $this->menu(
+      [
         'choices' => $org_list,
         'default' => false,
         'message' => 'Choose an organization',
-      )
+      ]
     );
     return $org_list[$org];
   }
@@ -412,17 +397,17 @@ class Input {
    * @return string
    * @throws TerminusException
    */
-  public static function prompt(array $arg_options = array()) {
-    $default_options = array(
+  public function prompt(array $arg_options = []) {
+    $default_options = [
       'message' => '',
       'default' => null,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     try {
       $response = \cli\prompt($options['message']);
     } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage, array(), 1);
+      throw new TerminusException($e->getMessage, [], 1);
     }
     if (empty($response)) {
       return $options['default'];
@@ -441,11 +426,11 @@ class Input {
    * @return string
    * @throws TerminusException
    */
-  public static function promptSecret(array $arg_options = array()) {
-    $default_options = array(
+  public function promptSecret(array $arg_options = []) {
+    $default_options = [
       'message' => '',
       'default' => null,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     if (Utils\isWindows()) {
@@ -483,26 +468,26 @@ class Input {
    *        string message    Prompt to STDOUT
    * @return string Name of role
    */
-  static public function role(array $arg_options = array()) {
-    $default_options = array(
-      'args'    => array(),
+  public function role(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
       'key'     => 'role',
       'message' => 'Select a role for this member',
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
-    $roles = array('developer', 'team_member', 'admin');
+    $roles = ['developer', 'team_member', 'admin'];
     if (isset($options['args'][$options['key']])
       && in_array(strtolower($options['args'][$options['key']]), $roles)
     ) {
       return $options['args'][$options['key']];
     }
     $role = strtolower(
-      $roles[self::menu(
-        array(
+      $roles[$this->menu(
+        [
           'choices' => $roles,
           'message' => $options['message'],
-        )
+        ]
       )]
     );
     return $role;
@@ -517,12 +502,12 @@ class Input {
    *        string message Prompt for STDOUT
    * @return string Site name
   */
-  public static function siteName(array $arg_options = array()) {
-    $default_options = array(
-      'args'  => array(),
+  public function siteName(array $arg_options = []) {
+    $default_options = [
+      'args'  => [],
       'key'   => 'site',
       'message' => 'Choose site',
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     // return early if sitename is provided in args
@@ -541,11 +526,11 @@ class Input {
       }, $sites
     );
 
-    $choices = array();
+    $choices = [];
     foreach ($sitenames as $sitename) {
       $choices[$sitename] = $sitename;
     }
-    $menu = self::menu(
+    $menu = $this->menu(
       ['choices' => $choices, 'message' => $options['message']]
     );
     return $menu;
@@ -561,13 +546,13 @@ class Input {
    *        mixed  default Returns if no other choice
    * @return string Either $args[$key], $default, or string from prompt
    */
-  public static function string(array $arg_options = array()) {
-    $default_options = array(
-      'args'    => array(),
+  public function string(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
       'key'     => 0,
       'message' => 'Enter',
       'default' => null,
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     if (isset($options['args'][$options['key']])) {
@@ -576,7 +561,7 @@ class Input {
     if (Terminus::getConfig('format') != 'normal') {
       return $options['default'];
     }
-    $string = self::prompt($options);
+    $string = $this->prompt($options);
     return $string;
   }
 
@@ -590,12 +575,12 @@ class Input {
    * @return Upstream
    * @throws TerminusException
    */
-  public static function upstream(array $arg_options = array()) {
-    $default_options = array(
-      'args' => array(),
+  public function upstream(array $arg_options = []) {
+    $default_options = [
+      'args' => [],
       'key'  => 'upstream',
       'exit' => true
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     $upstreams = new Upstreams();
@@ -604,14 +589,14 @@ class Input {
       if ($upstream == null) {
         throw new TerminusException(
           'Could not find upstream: {upstream}',
-          array('upstream' => $options['args'][$options['key']]),
+          ['upstream' => $options['args'][$options['key']]],
           (integer)$options['exit']
         );
       }
     } else {
       $upstream = $upstreams->get(
-        self::menu(
-          array('choices' => $upstreams->getMemberList('id', 'longname'))
+        $this->menu(
+          ['choices' => $upstreams->getMemberList('id', 'longname')]
         )
       );
     }
@@ -628,18 +613,18 @@ class Input {
    * @return Workflow
    * @throws TerminusException
    */
-  public static function workflow(array $arg_options = array()) {
-    $default_options = array(
-      'workflows' => array(),
-      'args'      => array(),
+  public function workflow(array $arg_options = []) {
+    $default_options = [
+      'workflows' => [],
+      'args'      => [],
       'key'       => 'workflow_id'
-    );
+    ];
     $options         = array_merge($default_options, $arg_options);
 
     if (isset($options['args'][$options['key']])) {
       $workflow_id = $options['args'][$options['key']];
     } else {
-      $workflow_menu_args = array();
+      $workflow_menu_args = [];
 
       foreach ($options['workflows'] as $workflow) {
         if ($workflow->get('environment')) {
@@ -659,11 +644,11 @@ class Input {
         );
         $workflow_menu_args[$workflow->id] = $workflow_description;
       }
-      $workflow_id = self::menu(
-        array(
+      $workflow_id = $this->menu(
+        [
           'choices' => $workflow_menu_args,
           'message' => 'Choose workflow'
-        )
+        ]
       );
     }
 
@@ -684,6 +669,30 @@ class Input {
         1
       );
     }
+  }
+
+  /**
+   * Returns an array listing organizaitions applicable to user
+   *
+   * @param array $arg_options Elements as follow:
+   *        bool allow_none True to allow the "none" option
+   * @return array A list of organizations
+  */
+  private function orgList(array $arg_options = []) {
+    $default_options = ['allow_none' => true];
+    $options         = array_merge($default_options, $arg_options);
+
+    $org_list = [];
+    if ($options['allow_none']) {
+      $org_list = ['-' => 'None'];
+    }
+    $user          = Session::getUser();
+    $organizations = $user->organizations->all();
+    foreach ($organizations as $id => $org) {
+      $org_data                  = $org->get('organization');
+      $org_list[$org->get('id')] = $org_data->profile->name;
+    }
+    return $org_list;
   }
 
 }

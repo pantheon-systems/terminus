@@ -7,27 +7,33 @@ use Terminus\Helpers\Input;
  */
 class InputHelperTest extends PHPUnit_Framework_TestCase {
 
+  private $inputter;
+
+  public function __construct() {
+    $this->inputter = new Input();
+  }
+
   function testDay() {
-    $day = Input::day(array('args' => array('day' => 'Monday')));
+    $day = $this->inputter->day(array('args' => array('day' => 'Monday')));
     $this->assertInternalType('integer', $day);
     $this->assertEquals(1, $day);
   }
 
   function testEnvironmentFromArgs() {
-    $env_id = Input::env(array('args' => array('env' => 'test')));
+    $env_id = $this->inputter->env(array('args' => array('env' => 'test')));
     $this->assertInternalType('string', $env_id);
     $this->assertEquals('test', $env_id);
   }
 
   function testEnvironmentFromEnvironmentVariable() {
     $_SERVER['TERMINUS_ENV'] = 'live';
-    $env_id = Input::env();
+    $env_id = $this->inputter->env();
     $this->assertInternalType('string', $env_id);
     $this->assertEquals('live', $env_id);
   }
 
   function testMenuSingleOptionReturningValue() {
-    $only_option = Input::menu(
+    $only_option = $this->inputter->menu(
       array('choices' => array(5), 'return_value' => true)
     );
     $this->assertInternalType('integer', $only_option);
@@ -35,13 +41,13 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   }
 
   function testMenuSingleOptionReturningIndex() {
-    $only_option_index = Input::menu(array('choices' => array('Pick me!')));
+    $only_option_index = $this->inputter->menu(array('choices' => array('Pick me!')));
     $this->assertInternalType('integer', $only_option_index);
     $this->assertEquals(0, $only_option_index);
   }
 
   function testOptionalFindsKey() {
-    $option = Input::optional(
+    $option = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('key' => 'value', 'not' => 'me'),
@@ -53,7 +59,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   }
 
   function testOptionalReturnsDefault() {
-    $default = Input::optional(
+    $default = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('not' => 'me'),
@@ -65,7 +71,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   }
 
   function testOptionalReturnsDefaultFromFunction() {
-    $default_null = Input::optional(
+    $default_null = $this->inputter->optional(
       array(
         'key'     => 'key',
         'choices' => array('not' => 'me'),
@@ -78,7 +84,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    * @vcr input_helper_org_helpers
    */
   function testOrgList() {
-    $org_list = Input::orgList();
+    $org_list = $this->inputter->orgList();
     $this->assertInternalType('array', $org_list);
     $this->assertArrayHasKey('-', $org_list);
     $this->assertArrayHasKey('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org_list);
@@ -89,7 +95,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgNameAcceptsName() {
     $args = array('org' => 'Terminus Testing');
-    $org  = Input::orgName(compact('args'));
+    $org  = $this->inputter->orgName(compact('args'));
     $this->assertEquals('Terminus Testing', $org);
   }
 
@@ -98,7 +104,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgNameAcceptsUuid() {
     $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = Input::orgName(compact('args'));
+    $org  = $this->inputter->orgName(compact('args'));
     $this->assertEquals('Terminus Testing', $org);
   }
 
@@ -107,7 +113,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgIdAcceptsUuid() {
     $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = Input::orgId(compact('args'));
+    $org  = $this->inputter->orgId(compact('args'));
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
@@ -116,13 +122,13 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
    */
   function testOrgIdAcceptsName() {
     $args = array('org' => 'Terminus Testing');
-    $org  = Input::orgId(compact('args'));
+    $org  = $this->inputter->orgId(compact('args'));
     $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
   }
 
   function testRoleFromArgs() {
     $args = array('role' => 'admin');
-    $role = Input::role(compact('args'));
+    $role = $this->inputter->role(compact('args'));
     $this->assertEquals('admin', $role);
   }
 
@@ -132,7 +138,7 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
       'key'     => 'key',
       'default' => false,
     );
-    $string = Input::string($args);
+    $string = $this->inputter->string($args);
     $this->assertInternalType('string', $string);
     $this->assertEquals('value', $string);
   }

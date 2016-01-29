@@ -5,7 +5,6 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Auth;
 use Terminus\Session;
-use Terminus\Helpers\Input;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
 use Terminus\Models\Organization;
@@ -73,7 +72,7 @@ class OrganizationsCommand extends TerminusCommand {
    */
   public function sites($args, $assoc_args) {
     $action   = array_shift($args);
-    $org_id   = Input::orgId(
+    $org_id   = $this->input()->orgId(
       array(
         'args'       => $assoc_args,
         'allow_none' => false,
@@ -103,7 +102,7 @@ class OrganizationsCommand extends TerminusCommand {
           }
         } else {
           $site = $this->sites->get(
-            Input::menu(
+            $this->input()->menu(
               array(
                 'choices' => $this->getNonmemberSiteList($memberships),
                 'message' => 'Choose site'
@@ -111,7 +110,7 @@ class OrganizationsCommand extends TerminusCommand {
             )
           );
         }
-        Input::confirm(
+        $this->input()->confirm(
           array(
             'message' => 'Are you sure you want to add %s to %s ?',
             'context' => array($site->get('name'), $org_info->profile->name),
@@ -136,7 +135,7 @@ class OrganizationsCommand extends TerminusCommand {
           }
         } else {
           $site = $this->sites->get(
-            Input::menu(
+            $this->input()->menu(
               array(
                 'choices' => $this->getMemberSiteList($memberships),
                 'message' => 'Choose site',
@@ -145,7 +144,7 @@ class OrganizationsCommand extends TerminusCommand {
           );
         }
         $member = $org_model->site_memberships->get($site->get('id'));
-        Input::confirm(
+        $this->input()->confirm(
           array(
             'message' => 'Are you sure you want to remove %s from %s ?',
             'context' => array($site->get('name'), $org_info->profile->name),
@@ -211,7 +210,7 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand team
    */
   public function team($args, $assoc_args) {
-    $org_id = Input::orgId(
+    $org_id = $this->input()->orgId(
       array(
         'args'       => $assoc_args,
         'allow_none' => false,

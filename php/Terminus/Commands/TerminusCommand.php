@@ -6,6 +6,7 @@ use Terminus;
 use Terminus\Auth;
 use Terminus\Endpoint;
 use Terminus\Utils;
+use Terminus\Helpers\Input;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Workflow;
@@ -19,6 +20,11 @@ abstract class TerminusCommand {
    * @var FileCache
    */
   protected $cache;
+
+  /**
+   * @var Input
+   */
+  protected $inputter;
 
   /**
    * @var Logger
@@ -55,6 +61,7 @@ abstract class TerminusCommand {
     $this->logger    = $options['logger'];
     $this->outputter = $options['outputter'];
     $this->session   = $options['session'];
+    $this->inputter  = new Input();
 
     if (!Terminus::isTest()) {
       Utils\checkForUpdate();
@@ -76,6 +83,15 @@ abstract class TerminusCommand {
     $exit_code     = 1
   ) {
     throw new TerminusException($message, $context, $exit_code);
+  }
+
+  /**
+   * Retrieves the input helper for use
+   *
+   * @return Input
+   */
+  protected function input() {
+    return $this->inputter;
   }
 
   /**

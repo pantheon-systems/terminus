@@ -7,7 +7,6 @@ use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
-use Terminus\Helpers\Input;
 use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
@@ -50,14 +49,14 @@ class SitesCommand extends TerminusCommand {
    */
   public function aliases($args, $assoc_args) {
     $user     = Session::getUser();
-    $print    = Input::optional(
+    $print    = $this->input()->optional(
       array(
         'key'     => 'print',
         'choices' => $assoc_args,
         'default' => false,
       )
     );
-    $location = Input::optional(
+    $location = $this->input()->optional(
       array(
         'key'     => 'location',
         'choices' => $assoc_args,
@@ -123,7 +122,7 @@ class SitesCommand extends TerminusCommand {
    */
   public function create($args, $assoc_args) {
     $options  = $this->getSiteCreateOptions($assoc_args);
-    $upstream = Input::upstream(array('args' => $assoc_args));
+    $upstream = $this->input()->upstream(array('args' => $assoc_args));
     $options['upstream_id'] = $upstream->get('id');
     $this->log()->info(
       'Creating new {upstream} installation ... ',
@@ -172,7 +171,7 @@ class SitesCommand extends TerminusCommand {
   public function import($args, $assoc_args) {
     $options = SitesCommand::getSiteCreateOptions($assoc_args);
 
-    $url = Input::string(
+    $url = $this->input()->string(
       array(
         'args'    => $assoc_args,
         'key'     => 'url',
@@ -346,7 +345,7 @@ class SitesCommand extends TerminusCommand {
       $this->sites->rebuildCache();
     }
 
-    $upstream = Input::optional(
+    $upstream = $this->input()->optional(
       array(
         'key'     => 'upstream',
         'choices' => $assoc_args,
@@ -354,21 +353,21 @@ class SitesCommand extends TerminusCommand {
       )
     );
     $data     = array();
-    $report   = Input::optional(
+    $report   = $this->input()->optional(
       array(
         'key'     => 'report',
         'choices' => $assoc_args,
         'default' => false,
       )
     );
-    $confirm   = Input::optional(
+    $confirm   = $this->input()->optional(
       array(
         'key'     => 'confirm',
         'choices' => $assoc_args,
         'default' => false,
       )
     );
-    $tag       = Input::optional(
+    $tag       = $this->input()->optional(
       array(
         'key'     => 'tag',
         'choices' => $assoc_args,
@@ -378,7 +377,7 @@ class SitesCommand extends TerminusCommand {
 
     $org = '';
     if ($tag) {
-      $org = Input::orgId(array('args' => $assoc_args));
+      $org = $this->input()->orgId(array('args' => $assoc_args));
     }
     $sites = $this->sites->filterAllByTag($tag, $org);
 
@@ -423,14 +422,14 @@ class SitesCommand extends TerminusCommand {
           );
           continue;
         }
-        $updatedb = !Input::optional(
+        $updatedb = !$this->input()->optional(
           array(
             'key'     => 'updatedb',
             'choices' => $assoc_args,
             'default' => false,
           )
         );
-        $xoption  = !Input::optional(
+        $xoption  = !$this->input()->optional(
           array(
             'key'     => 'xoption',
             'choices' => $assoc_args,
@@ -440,7 +439,7 @@ class SitesCommand extends TerminusCommand {
         if (!$report) {
           $message = 'Apply upstream updates to %s ';
           $message .= '( run update.php:%s, xoption:%s ) ';
-          $confirmed = Input::confirm(
+          $confirmed = $this->input()->confirm(
             array(
               'message' => $message,
               'context' => array(
@@ -502,7 +501,7 @@ class SitesCommand extends TerminusCommand {
    */
   private function getSiteCreateOptions($assoc_args) {
     $options          = array();
-    $options['label'] = Input::string(
+    $options['label'] = $this->input()->string(
       array(
         'args'    => $assoc_args,
         'key'     => 'label',
@@ -522,7 +521,7 @@ class SitesCommand extends TerminusCommand {
       $message  = 'Machine name of the site; used as part of the default URL';
       $message .= " (if left blank will be $suggested_name)";
 
-      $options['name'] = Input::string(
+      $options['name'] = $this->input()->string(
         array(
           'args'    => $assoc_args,
           'key'     => 'site',
@@ -532,7 +531,7 @@ class SitesCommand extends TerminusCommand {
       );
     }
     if (isset($assoc_args['org'])) {
-      $options['organization_id'] = Input::orgId(
+      $options['organization_id'] = $this->input()->orgId(
         array('args' => $assoc_args, 'default' => false)
       );
     }

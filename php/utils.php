@@ -145,7 +145,8 @@ function destinationIsValid($destination, $make = true) {
 
   if (!is_dir($destination)) {
     if (!$make) {
-      $make = Input::confirm(
+      $input = new Input();
+      $make  = $input->confirm(
         ['message' => 'Directory does not exists. Create it now?']
       );
     }
