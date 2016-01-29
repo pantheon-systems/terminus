@@ -50,8 +50,10 @@ class UserOrganizationMemberships extends TerminusCollection {
       $model = $this->models[$id];
     } else {
       foreach ($this->models as $model_candidate) {
-        if (isset($model_candidate->profile)
-          && ($id == $model_candidate->profile->name)
+        if ((isset($model_candidate->profile)
+            && ($id == $model_candidate->profile->name))
+          || (isset($model_candidate->get('organization')->profile)
+            && $model_candidate->get('organization')->profile->name == $id)
         ) {
           $model = $model_candidate;
           break;
