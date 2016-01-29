@@ -16,6 +16,7 @@ use Terminus\Models\Collections\UserOrganizationMemberships;
 /**
  * Show information for your Pantheon organizations
  *
+ * @command organizations
  */
 class OrganizationsCommand extends TerminusCommand {
 
@@ -298,4 +299,3 @@ class OrganizationsCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('organizations', 'OrganizationsCommand');

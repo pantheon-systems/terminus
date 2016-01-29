@@ -15,6 +15,8 @@ define("WORKFLOWS_WATCH_INTERVAL", 5);
 
 /**
 * Actions to be taken on an individual site
+*
+* @command workflows
 */
 class WorkflowsCommand extends TerminusCommand {
   protected $_headers = false;
@@ -215,4 +217,3 @@ class WorkflowsCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('workflows', 'WorkflowsCommand');

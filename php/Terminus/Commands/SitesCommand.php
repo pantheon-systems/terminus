@@ -17,6 +17,8 @@ use Terminus\Models\Collections\Sites;
 
 /**
  * Actions on multiple sites
+ *
+ * @command sites
  */
 class SitesCommand extends TerminusCommand {
   public $sites;
@@ -539,4 +541,3 @@ class SitesCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('sites', 'SitesCommand');

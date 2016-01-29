@@ -11,6 +11,8 @@ use Terminus\Helpers\Input;
 
 /**
  * Show information for your Pantheon machine tokens
+ *
+ * @command machine-tokens
  */
 class MachineTokensCommand extends TerminusCommand {
 
@@ -114,4 +116,3 @@ class MachineTokensCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('machine-tokens', 'MachineTokensCommand');

@@ -9,6 +9,11 @@ use Terminus\Request;
 use Terminus\Helpers\Input;
 use Terminus\Iterators\Transform;
 use Terminus\Exceptions\TerminusException;
+use Terminus\DocParser;
+use Terminus\Commands\TerminusCommand;
+use Terminus\Dispatcher;
+use Terminus\Dispatcher\CompositeCommand;
+use Terminus\Session;
 
 if (!defined('JSON_PRETTY_PRINT')) {
   define('JSON_PRETTY_PRINT', 128);
@@ -213,25 +218,6 @@ function isWindows() {
 }
 
 /**
- * Includes every command file in the commands directory
- *
- * @return void
- */
-function loadAllCommands() {
-  $cmd_dir = TERMINUS_ROOT . '/php/Terminus/Commands';
-
-  $iterator = new \DirectoryIterator($cmd_dir);
-
-  foreach ($iterator as $filename) {
-    if (substr($filename, -4) != '.php') {
-      continue;
-    }
-
-    include_once "$cmd_dir/$filename";
-  }
-}
-
-/**
  * Loads a file of the given name from the assets directory.
  *
  * @param string $file Relative file path from the assets dir
@@ -257,24 +243,6 @@ function loadAsset($file) {
     );
   }
   return $asset_file;
-}
-
-/**
- * Includes a single command file
- *
- * @param string $name Of command of which the class file will be included
- * @return void
- */
-function loadCommand($name) {
-  $path = sprintf(
-    '%s/php/Terminus/Commands/%sCommand.php',
-    TERMINUS_ROOT,
-    makeCamelCase($name)
-  );
-
-  if (is_readable($path)) {
-    include_once $path;
-  }
 }
 
 /**
@@ -313,22 +281,6 @@ function loadDependencies() {
  */
 function loadFile($path) {
   require $path;
-}
-
-/**
- * Converts a word to camel case
- *
- * @param string $string    Word to change to camel case
- * @param string $delimiter Character to split words up on
- * @return string
- */
-function makeCamelCase($string, $delimiter = '-') {
-  $words       = explode($delimiter, $string);
-  $camel_cased = '';
-  foreach ($words as $key => $word) {
-    $camel_cased .= ucwords($word);
-  }
-  return $camel_cased;
 }
 
 /**

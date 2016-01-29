@@ -8,6 +8,8 @@ use Terminus\Models\Collections\Upstreams;
 
 /**
  * Show Pantheon upstream information
+ *
+ * @command upstreams
  */
 class UpstreamsCommand extends TerminusCommand {
 
@@ -50,4 +52,3 @@ class UpstreamsCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('upstreams', 'UpstreamsCommand');

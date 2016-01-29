@@ -9,6 +9,8 @@ use Terminus\Exceptions\TerminusException;
 
 /**
  * Print the Pantheon art
+ *
+ * @command art
  */
 class ArtCommand extends TerminusCommand {
 
@@ -40,5 +42,3 @@ class ArtCommand extends TerminusCommand {
   }
 
 }
-
-Terminus::addCommand('art', 'ArtCommand');

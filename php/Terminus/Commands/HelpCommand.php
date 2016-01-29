@@ -10,6 +10,9 @@ use Terminus\Dispatcher\CompositeCommand;
 use Terminus\Dispatcher\RootCommand;
 use Terminus\Helpers\Input;
 
+/**
+ * @command help
+ */
 class HelpCommand extends TerminusCommand {
   private $recursive;
 
@@ -210,4 +213,3 @@ class HelpCommand extends TerminusCommand {
 
 }
 
-Terminus::addCommand('help', 'HelpCommand');

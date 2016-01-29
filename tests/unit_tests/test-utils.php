@@ -119,13 +119,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(strpos($os, 'NT') !== false, $is_windows);
   }
 
-  public function testLoadAllCommands() {
-    $included_before = get_included_files();
-    Utils\loadAllCommands();
-    $included_after = get_included_files();
-    $this->assertTrue(count($included_before) < count($included_after));
-  }
-
   public function testLoadAsset() {
     $file = Utils\loadAsset('unicorn.txt');
     $this->assertTrue(strpos($file, 'ICAgICAg') === 0);
@@ -136,15 +129,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       $message = $e->getMessage();
     }
     $this->assertTrue(isset($message));
-  }
-
-  public function testLoadCommand() {
-    $command_name = 'auth';
-    $file_name    = TERMINUS_ROOT . '/php/Terminus/Commands/AuthCommand.php';
-    Utils\loadCommand($command_name);
-    $included_files = get_included_files();
-    $is_included = array_search($file_name, $included_files) !== false;
-    $this->assertTrue($is_included);
   }
 
   public function testLoadDependencies() {
@@ -166,12 +150,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       || (array_search("/private$file_name", $included_files) !== false)
     );
     $this->assertTrue($is_included);
-  }
-
-  public function testMakeCamelCase() {
-    $string      = 'camel-case';
-    $camel_cased = Utils\makeCamelCase($string);
-    $this->assertEquals($camel_cased, 'CamelCase');
   }
 
   public function testParseUrl() {

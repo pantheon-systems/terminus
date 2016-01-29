@@ -1,7 +1,7 @@
 <?php
 
 use Terminus\Dispatcher;
-use Terminus\DocParser;
+use Terminus\Dispatcher\CompositeCommand;
 use Terminus\FileCache;
 use Terminus\Runner;
 use Terminus\Session;
@@ -52,60 +52,6 @@ class Terminus {
   }
 
   /**
-   * Add a command to the terminus list of commands
-   *
-   * @param string $name  The name of the command that will be used in the CLI
-   * @param string $class The command implementation
-   * @return void
-   * @throws TerminusException
-   */
-  public static function addCommand($name, $class) {
-    $path      = preg_split('/\s+/', $name);
-    $leaf_name = array_pop($path);
-    $command   = self::getRootCommand();
-    $class     = "Terminus\\Commands\\$class";
-
-    while (!empty($path)) {
-      $subcommand_name = $path[0];
-      $subcommand      = $command->findSubcommand($path);
-      // Create an empty container
-      if (!$subcommand) {
-        $subcommand = new Dispatcher\CompositeCommand(
-          $command,
-          $subcommand_name,
-          new DocParser('')
-        );
-        $command->addSubcommand($subcommand_name, $subcommand);
-      }
-      $command = $subcommand;
-    }
-
-    $options = [
-      'cache'     => self::getCache(),
-      'logger'    => self::getLogger(),
-      'outputter' => self::getOutputter(),
-      'session'   => Session::instance(),
-    ];
-
-    $leaf_command = Dispatcher\CommandFactory::create(
-      $leaf_name,
-      $class,
-      $command,
-      $options
-    );
-
-    if (!$command->canHaveSubcommands()) {
-      throw new TerminusException(
-        sprintf(
-          "'%s' can't have subcommands.",
-          implode(' ', Dispatcher\getPath($command))
-        )
-      );
-    }
-    $command->addSubcommand($leaf_name, $leaf_command);
-  }
-
-  /**
    * Retrieves and returns the file cache
    *
    * @return FileCache
@@ -130,6 +76,60 @@ class Terminus {
     $cache->clean();
 
     return $cache;
+  }
+
+  /**
+   * Retrieves and returns the users local configuration directory (~/terminus)
+   *
+   * @return string
+   */
+  public static function getUserConfigDir() {
+    $terminus_config_dir = getenv('TERMINUS_CONFIG_DIR');
+
+    if (!$terminus_config_dir) {
+      $home = getenv('HOME');
+      if (!$home) {
+        // sometime in windows $HOME is not defined
+        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
+      }
+      if ($home) {
+        $terminus_config_dir = getenv('HOME') . '/terminus';
+      }
+    }
+    return $terminus_config_dir;
+  }
+
+  /**
+   * Retrieves and returns the local config directory
+   *
+   * @return string
+   */
+  public static function getUserPluginsDir() {
+    if ($config = self::getUserConfigDir()) {
+      $plugins_dir = "$config/plugins";
+      if (file_exists($plugins_dir)) {
+        return $plugins_dir;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Retrieves and returns a list of plugin's base directories
+   *
+   * @return array
+   */
+  public static function getUserPlugins() {
+    $out = array();
+    if ($plugins_dir = self::getUserPluginsDir()) {
+      $plugin_iterator = new \DirectoryIterator($plugins_dir);
+      foreach ($plugin_iterator as $dir) {
+        if (!$dir->isDot()) {
+          $out[] = $dir->getPathname();
+        }
+      }
+    }
+    return $out;
   }
 
   /**
@@ -179,9 +179,62 @@ class Terminus {
 
     if (!$root) {
       $root = new Dispatcher\RootCommand;
+      self::loadAllCommands($root);
     }
 
     return $root;
+  }
+
+  /**
+   * Includes every command file in the commands directory
+   *
+   * @param CompositeCommand $parent The parent command to add the new commands to
+   *
+   * @return void
+   */
+  private static function loadAllCommands(CompositeCommand $parent) {
+    // Create a list of directories where commands might live.
+    $directories = array();
+
+    // Add the directory of core commands first.
+    $directories[] = TERMINUS_ROOT . '/php/Terminus/Commands';
+
+    // Find the command directories from the third party plugins directory.
+    foreach (self::getUserPlugins() as $dir) {
+      $directories[] = "$dir/Commands/";
+    }
+
+    // Include all class files in the command directories.
+    foreach ($directories as $cmd_dir) {
+      if ($cmd_dir && file_exists($cmd_dir)) {
+        $iterator = new \DirectoryIterator($cmd_dir);
+        foreach ($iterator as $file) {
+          if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
+            include_once $file->getPathname();
+          }
+        }
+      }
+    }
+
+    // Find the defined command classes and add them to the given base command.
+    $classes = get_declared_classes();
+    $options = [
+      'cache'     => self::getCache(),
+      'logger'    => self::getLogger(),
+      'outputter' => self::getOutputter(),
+      'session'   => Session::instance(),
+    ];
+
+    foreach ($classes as $class) {
+      $reflection = new \ReflectionClass($class);
+      if ($reflection->isSubclassOf('Terminus\Commands\TerminusCommand')) {
+        Dispatcher\CommandFactory::create(
+          $reflection->getName(),
+          $parent,
+          $options
+        );
+      }
+    }
   }
 
   /**

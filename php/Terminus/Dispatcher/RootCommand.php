@@ -27,7 +27,6 @@ class RootCommand extends CompositeCommand {
    */
   function findSubcommand(&$args) {
     $command = array_shift($args);
-    Utils\loadCommand($command);
 
     if (!isset($this->subcommands[$command])) {
       return false;
@@ -73,7 +72,6 @@ class RootCommand extends CompositeCommand {
    * @return Subcommand[]
    */
   function getSubcommands() {
-    Utils\loadAllCommands();
     $subcommands = parent::getSubcommands();
     return $subcommands;
   }

@@ -13,57 +13,66 @@ class CommandFactory {
   /**
    * Creates a new composite command or subcommand
    *
-   * @param string           $name    Name of command to create
    * @param string           $class   Name of class command belongs to
    * @param CompositeCommand $parent  Parent command
    * @param array            $options Options to feed into the called command
    * @return CompositeCommand
    */
   public static function create(
-    $name,
     $class,
     CompositeCommand $parent,
     $options
   ) {
     $reflection = new \ReflectionClass($class);
+    $docparser = new DocParser($reflection->getDocComment());
 
-    if ($reflection->hasMethod('__invoke')) {
-      $command = self::createSubcommand(
-        $parent,
-        $name,
-        $reflection->name,
-        $reflection->getMethod('__invoke'),
-        $options
-      );
-    } else {
-      $command = self::createCompositeCommand(
-        $parent,
-        $name,
-        $reflection,
-        $options
-      );
+    if ($name = $docparser->getTag('command')) {
+      if ($reflection->hasMethod('__invoke')) {
+        $command = self::createSubcommand(
+          $parent,
+          $name,
+          $reflection->name,
+          $reflection->getMethod('__invoke'),
+          $options
+        );
+      } else {
+        $command = self::createCompositeCommand(
+          $parent,
+          $name,
+          $reflection,
+          $options
+        );
+      }
+
+      $parent->addSubcommand($name, $command);
     }
-
-    return $command;
+    // @TODO: If we are in developer mode, warn that the command was ill-formed.
   }
 
   /**
    * Creates a new composite command
    *
-   * @param RootCommand      $parent     Parent command
+   * @param CompositeCommand $parent     Parent command
    * @param string           $name       Name of command to create
    * @param \ReflectionClass $reflection Object with name of class to call
    * @param array            $options    Options to feed into a called command
    * @return CompositeCommand
    */
   private static function createCompositeCommand(
-    RootCommand $parent,
+    CompositeCommand $parent,
     $name,
     \ReflectionClass $reflection,
     $options
   ) {
     $docparser = new DocParser($reflection->getDocComment());
-    $container = new CompositeCommand($parent, $name, $docparser);
+
+    // If the composite command already exists, don't recreate it.
+    // This allows plugins to add to existing commands.
+    $args = array($name);
+    $container = $parent->findSubcommand($args);
+    if (!$container) {
+      $container = new CompositeCommand($parent, $name, $docparser);
+    }
 
     foreach ($reflection->getMethods() as $method) {
       if (!self::isGoodMethod($method)) {

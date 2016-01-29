@@ -11,6 +11,8 @@ use Terminus\Models\User;
 
 /**
  * Get information about Terminus itself.
+ *
+ * @command cli
  */
 class CliCommand extends TerminusCommand {
 
@@ -197,5 +199,3 @@ class CliCommand extends TerminusCommand {
   }
 
 }
-
-Terminus::addCommand('cli', 'CliCommand');

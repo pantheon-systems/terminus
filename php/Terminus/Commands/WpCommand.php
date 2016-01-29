@@ -5,6 +5,9 @@ namespace Terminus\Commands;
 use Terminus;
 use Terminus\Commands\CommandWithSSH;
 
+/**
+ * @command wp
+ */
 class WpCommand extends CommandWithSSH {
   /**
    * {@inheritdoc}
@@ -47,4 +50,3 @@ class WpCommand extends CommandWithSSH {
 
 }
 
-Terminus::addCommand('wp', 'WpCommand');
