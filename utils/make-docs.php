@@ -128,7 +128,10 @@ function writeDocFile($namespace, $docs) {
   return true;
 }
 
-$library_files   = getFiles(TERMINUS_ROOT . '/php/Terminus/Models');
+$library_files   = array_merge(
+  getFiles(TERMINUS_ROOT . '/php/Terminus/Models'),
+  getFiles(TERMINUS_ROOT . '/php/Terminus/Outputters')
+);
 $tokenized_files = array();
 foreach ($library_files as $filename) {
   $namespace                   = str_replace(
@@ -139,6 +142,8 @@ foreach ($library_files as $filename) {
   $tokenized_files[$namespace] = getTokens($filename);
 }
 $tokenized_files['Terminus\\Auth'] = getTokens(TERMINUS_ROOT . '/php/Terminus/Auth.php');
+$tokenized_files['Terminus\\Helpers\\Input'] =
+  getTokens(TERMINUS_ROOT . '/php/Terminus/Helpers/Input.php');
 
 $file_functions = array();
 foreach ($tokenized_files as $namespace => $tokens) {
