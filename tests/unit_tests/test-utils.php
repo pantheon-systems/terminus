@@ -75,7 +75,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
 
     resetOutputDestination($file_name);
     // These will issue errors if invalid
-    Utils\destinationIsValid($file_name);
     Utils\destinationIsValid('/tmp/');
   }
 
