@@ -53,15 +53,8 @@ class AuthTest extends PHPUnit_Framework_TestCase {
    * @vcr auth_login_machine-token
    */
   public function testLogInViaMachineToken() {
-    $file_name = '/tmp/output';
-    setOutputDestination($file_name);
-    $opts = $this->auth->logInViaMachineToken(getBehatCredentials());
-    $this->assertEquals(print_r($opts, true), 'hi');
-    $output = retrieveOutput();
-    $this->assertTrue(
-      strpos($output, 'Logging in via machine token') !== false
-    );
-    resetOutputDestination($file_name); 
+    $passed = $this->auth->logInViaMachineToken(getBehatCredentials());
+    $this->assertTrue($passed);
     setDummyCredentials();
   }
 

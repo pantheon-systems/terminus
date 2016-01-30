@@ -62,13 +62,11 @@ Feature: Authorization command
     And I should get: "Saving session data"
     And I should get: "Logged in as [[username]]."
 
-  #Scenario: Failing to log in via invalid machine token
-    #@vcr auth_login_machine_token_invalid
-    #When I run "terminus auth login --machine-token=invalid"
-    #Then I should get:
-    #"""
-    #Authorization failed
-    #"""
+  @vcr auth_login_machine-token_invalid
+  Scenario: Failing to log in via invalid machine token
+    When I run "terminus auth login --machine-token=invalid"
+    Then I should get: "Logging in via machine token"
+    And I should get: "The provided machine token is not valid."
 
   #Scenario: Logging in successfully after session has expired
     #@vcr auth_login_machine_token_expired

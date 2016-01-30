@@ -1,0 +1,34 @@
+
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize/machine-token'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 0ffec038-4410-43d0-a404-46997f672d7a%3A68486878-dd87-11e4-b243-bc764e1113b5%3AbQR2fyNMh5PQXN6F2Ewge'
+            headers: 'Bearer 0ffec038-4410-43d0-a404-46997f672d7a%3A68486878-dd87-11e4-b243-bc764e1113b5%3AbQR2fyNMh5PQXN6F2Ewge'
+            verify: ''
+            json: terminus
+            Accept: null
+        body: '{"machine_token":"invalid","client":"terminus"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Sat, 30 Jan 2016 00:12:20 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 214fe510-c6e6-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

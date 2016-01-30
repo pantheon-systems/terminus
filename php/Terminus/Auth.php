@@ -143,25 +143,23 @@ class Auth {
     );
 
     $this->logger->info('Logging in via machine token');
-    $response = $this->request->request(
-      'authorize',
-      '',
-      '',
-      'POST',
-      $options
-    );
-
-    if (!$response
-      || !isset($response['status_code'])
-      || ($response['status_code'] != '200')
-    ) {
+    try {
+      $response = $this->request->request(
+        'authorize',
+        '',
+        '',
+        'POST',
+        $options
+      );
+    } catch (\Exception $e) {
       throw new TerminusException(
         'The provided machine token is not valid.',
         [],
         1
       );
     }
-    $data                 = $response['data'];
+
+    $data = $response['data'];
     $this->setInstanceData($response['data']);
     $user = Session::getUser();
     $user->fetch();
