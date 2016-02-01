@@ -63,7 +63,6 @@ class FileCache {
     if (!$this->ensureDirExists($this->root)) {
       $this->enabled = false;
     }
-
   }
 
   /**
@@ -85,7 +84,7 @@ class FileCache {
       $expire->modify('-' . $ttl . ' seconds');
 
       $finder = $this->getFinder()->date(
-        'until ' . $expire->format('Y-m-d H:i:s')
+        'before ' . $expire->format('Y-m-d H:i:s')
       );
       foreach ($finder as $file) {
         unlink($file->getRealPath());
