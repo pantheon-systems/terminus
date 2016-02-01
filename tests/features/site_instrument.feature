@@ -22,13 +22,3 @@ Feature: Set payment instruments
     """
     [[payment_instrument_uuid]]
     """
-
-  @vcr site_set-instrument_forbidden
-  Scenario: Denying a forbidden instrument
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=XXXXX"
-    Then I should get:
-    """
-    You do not have permission to attach instrument XXXXX
-    """

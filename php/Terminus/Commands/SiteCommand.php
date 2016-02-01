@@ -1498,15 +1498,6 @@ class SiteCommand extends TerminusCommand {
       $instrument_id = $assoc_args['instrument'];
     }
 
-    if (!isset($instruments[$instrument_id])
-      && !in_array($instrument_id, $this->input()->getNullInputs())
-    ) {
-      $this->failure(
-        'You do not have permission to attach instrument {instrument_id}',
-        compact('instrument_id')
-      );
-    }
-
     $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
     if ($instrument_id == 0) {
       $workflow = $site->removeInstrument();
