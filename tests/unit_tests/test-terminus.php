@@ -13,6 +13,7 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testGetCache() {
+    setDummyCredentials();
     $cache   = Terminus::getCache();
     setDummyCredentials();
     $session = $cache->getData('session');

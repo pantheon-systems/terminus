@@ -14,6 +14,7 @@
 namespace Terminus;
 
 use Symfony\Component\Finder\Finder;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * Reads/writes to a filesystem cache
@@ -63,7 +64,6 @@ class FileCache {
     if (!$this->ensureDirExists($this->root)) {
       $this->enabled = false;
     }
-
   }
 
   /**
@@ -85,7 +85,7 @@ class FileCache {
       $expire->modify('-' . $ttl . ' seconds');
 
       $finder = $this->getFinder()->date(
-        'until ' . $expire->format('Y-m-d H:i:s')
+        'before ' . $expire->format('Y-m-d H:i:s')
       );
       foreach ($finder as $file) {
         unlink($file->getRealPath());
@@ -111,24 +111,6 @@ class FileCache {
     }
 
     return true;
-  }
-
-  /**
-   * Copies a file out of the cache
-   *
-   * @param string $key    Cache key
-   * @param string $target Target filename
-   * @param int    $ttl    Time to live
-   * @return bool True if export succeeded
-   */
-  public function export($key, $target, $ttl = null) {
-    $filename = $this->has($key, $ttl);
-
-    $export = false;
-    if ($filename) {
-      $export = copy($filename, $target);
-    }
-    return $export;
   }
 
   /**
@@ -159,7 +141,11 @@ class FileCache {
     );
     $options  = array_merge($defaults, $options);
 
-    $contents = $this->read($key, $options['ttl']);
+    try {
+      $contents = $this->read($key, $options['ttl']);
+    } catch (\Exception $e) {
+      return false;
+    }
 
     $data = false;
     if ($contents) {
@@ -216,23 +202,6 @@ class FileCache {
   }
 
   /**
-   * Copies a file into the cache
-   *
-   * @param string $key    Cache key
-   * @param string $source Source filename
-   * @return bool True if import succeeded
-   */
-  public function import($key, $source) {
-    $filename = $this->prepareWrite($key);
-
-    $import = false;
-    if ($filename) {
-      $import = (copy($source, $filename) && touch($filename));
-    }
-    return $import;
-  }
-
-  /**
    * Returns whether cache is enabled
    *
    * @return bool
@@ -255,23 +224,6 @@ class FileCache {
   }
 
   /**
-   * Reads from the cache file
-   *
-   * @param string  $key A cache key
-   * @param integer $ttl The time to live
-   * @return bool|string The file contents or false
-   */
-  public function read($key, $ttl = null) {
-    $filename = $this->has($key, $ttl);
-
-    $data = false;
-    if ($filename) {
-      $data = file_get_contents($filename);
-    }
-    return $data;
-  }
-
-  /**
    * Remove file from cache
    *
    * @param string $key Cache key
@@ -286,27 +238,9 @@ class FileCache {
 
     if (file_exists($filename)) {
       $unlinking = unlink($filename);
-      return $unlinking;
-    } else {
-      return false;
+      return (boolean)$unlinking;
     }
-  }
-
-  /**
-   * Writes to cache file
-   *
-   * @param string $key      A cache key
-   * @param string $contents The file contents
-   * @return bool True if write was successful
-   */
-  public function write($key, $contents) {
-    $filename = $this->prepareWrite($key);
-
-    $written = false;
-    if ($filename) {
-      $written = (file_put_contents($filename, $contents) && touch($filename));
-    }
-    return $written;
+    return false;
   }
 
   /**
@@ -314,12 +248,17 @@ class FileCache {
    *
    * @param string $dir Directory to ensure existence of
    * @return bool
+   * @throws TerminusException
    */
   protected function ensureDirExists($dir) {
-    $dir_exists = (
-      is_dir($dir)
-      || (!file_exists($dir) && mkdir($dir, 0777, true))
-    );
+    try {
+      $dir_exists = (
+        is_dir($dir)
+        || (!file_exists($dir) && mkdir($dir, 0777, true))
+      );
+    } catch (\Exception $e) {
+      return false;
+    }
     return $dir_exists;
   }
 
@@ -362,6 +301,23 @@ class FileCache {
   }
 
   /**
+   * Reads from the cache file
+   *
+   * @param string  $key A cache key
+   * @param integer $ttl The time to live
+   * @return bool|string The file contents or false
+   */
+  protected function read($key, $ttl = null) {
+    $filename = $this->has($key, $ttl);
+
+    $data = false;
+    if ($filename) {
+      $data = file_get_contents($filename);
+    }
+    return $data;
+  }
+
+  /**
    * Validate cache key
    *
    * @param string $key A cache key
@@ -394,6 +350,23 @@ class FileCache {
 
     $parts_string = implode('/', $parts);
     return $parts_string;
+  }
+
+  /**
+   * Writes to cache file
+   *
+   * @param string $key      A cache key
+   * @param string $contents The file contents
+   * @return bool True if write was successful
+   */
+  protected function write($key, $contents) {
+    $filename = $this->prepareWrite($key);
+
+    $written = false;
+    if ($filename) {
+      $written = (file_put_contents($filename, $contents) && touch($filename));
+    }
+    return $written;
   }
 
 }
