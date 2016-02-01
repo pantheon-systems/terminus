@@ -53,7 +53,9 @@ class AuthCommand extends TerminusCommand {
       // Try to log in using a machine token, if provided.
       $token_data = ['token' => $assoc_args['machine-token']];
       $this->auth->logInViaMachineToken($token_data);
-    } elseif (isset($email) && $this->auth->tokenExistsForEmail($email)) {
+    } elseif (isset($email) && !isset($assoc_args['password'])
+      && $this->auth->tokenExistsForEmail($email)
+    ) {
       // Try to log in using a machine token, if the account email was provided.
       $this->auth->logInViaMachineToken(compact('email'));
     } elseif (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
@@ -61,6 +63,7 @@ class AuthCommand extends TerminusCommand {
       $token_data = ['token' => $_SERVER['TERMINUS_MACHINE_TOKEN']];
       $this->auth->logInViaMachineToken($token_data);
     } elseif (isset($_SERVER['TERMINUS_USER'])
+      && !isset($assoc_args['password'])
       && $this->auth->tokenExistsForEmail($_SERVER['TERMINUS_USER'])
     ) {
       // Try to log in using a machine token, if $_SERVER provides account email.

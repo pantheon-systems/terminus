@@ -35,7 +35,11 @@ $moved_file_suffix = 'testmoved';
  * @return string[]
  */
 function getBehatCredentials() {
-  $creds = ['username' => 'devuser@pantheon.io', 'password' => 'password1'];
+  $creds = [
+    'username' => 'devuser@pantheon.io',
+    'password' => 'password1',
+    'token'    => 'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x',
+  ];
   return $creds;
 }
 
@@ -68,7 +72,7 @@ function logInWithBehatCredentials() {
  */
 function resetOutputDestination($file_name) {
   static $moved_file_suffix;
-  exec("rm $file_name");
+  exec("rm -r $file_name");
   exec("mv $file_name.$moved_file_suffix $file_name");
 }
 

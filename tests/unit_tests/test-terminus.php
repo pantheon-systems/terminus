@@ -14,6 +14,7 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
 
   public function testGetCache() {
     $cache   = Terminus::getCache();
+    setDummyCredentials();
     $session = $cache->getData('session');
     $this->assertEquals($session->user_uuid, '0ffec038-4410-43d0-a404-46997f672d7a');
   }

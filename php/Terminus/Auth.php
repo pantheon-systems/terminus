@@ -41,8 +41,7 @@ class Auth {
     $session = Session::instance()->getData();
     $auth    = new Auth();
     if (!$auth->loggedIn()) {
-      if ($token = $auth->getOnlySavedToken()
-      ) {
+      if ($token = $auth->getOnlySavedToken()) {
         $auth->logInViaMachineToken($token);
       } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
         && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
@@ -144,25 +143,23 @@ class Auth {
     );
 
     $this->logger->info('Logging in via machine token');
-    $response = $this->request->request(
-      'authorize',
-      '',
-      '',
-      'POST',
-      $options
-    );
-
-    if (!$response
-      || !isset($response['status_code'])
-      || ($response['status_code'] != '200')
-    ) {
+    try {
+      $response = $this->request->request(
+        'authorize',
+        '',
+        '',
+        'POST',
+        $options
+      );
+    } catch (\Exception $e) {
       throw new TerminusException(
         'The provided machine token is not valid.',
         [],
         1
       );
     }
-    $data                 = $response['data'];
+
+    $data = $response['data'];
     $this->setInstanceData($response['data']);
     $user = Session::getUser();
     $user->fetch();

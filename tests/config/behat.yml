@@ -21,6 +21,7 @@ default:
               machine_token_device:    'Terminus on My Laptop'
               enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
               enterprise_org_name:     'EnterpriseOrg'
+              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
     ci:
       paths: [ %paths.base%/../features ]
       contexts:
@@ -40,6 +41,7 @@ default:
               machine_token_device:    'Terminus on My Laptop'
               enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
               enterprise_org_name:     'EnterpriseOrg'
+              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
     ci:
     qa:
       paths: [ %paths.base%/../qa_features ]

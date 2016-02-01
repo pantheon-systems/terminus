@@ -62,23 +62,11 @@ class TokensCache {
   }
 
   /**
-   * Checks to see whether the email has been set with a machine token
-   *
-   * @param string $email Email address to check for
-   * @return bool
-   */
-  public function tokenExistsForEmail($email) {
-    $file_name   = $this->getCacheDir() . "/$email";
-    $file_exists = file_exists($file_name);
-    return $file_exists;
-  }
-
-  /**
    * Determines the tokens cache directory
    *
    * @return string
    */
-  private function getCacheDir() {
+  public function getCacheDir() {
     $home = getenv('HOME');
     if (!$home) {
       // Sometimes in Windows, $HOME is not defined
@@ -92,6 +80,18 @@ class TokensCache {
       mkdir($dir);
     }
     return $dir;
+  }
+
+  /**
+   * Checks to see whether the email has been set with a machine token
+   *
+   * @param string $email Email address to check for
+   * @return bool
+   */
+  public function tokenExistsForEmail($email) {
+    $file_name   = $this->getCacheDir() . "/$email";
+    $file_exists = file_exists($file_name);
+    return $file_exists;
   }
 
 }

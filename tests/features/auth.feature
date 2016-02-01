@@ -50,26 +50,20 @@ Feature: Authorization command
   Scenario: Trying to use an auth-restricted command while logged out
     Given I am not authenticated
     When I run "terminus sites list"
-    Then I should get:
-    """
-    You are not logged in. Run `auth login` to authenticate or `help auth login` for more info.
-    """
+    Then I should get one of the following: "You are not logged in., The provided machine token is not valid."
 
-  #Scenario: Logging in via refresh token
-    #@vcr auth_login_refresh
-    #When I run "terminus auth login --refresh=[[refresh_token]]"
-    #Then I should get:
-    #"""
-    #Logged in as [[user_uuid]]
-    #"""
+  @vcr auth_login_machine-token
+  Scenario: Logging in via machine token
+    When I run "terminus auth login --machine-token=[[machine_token]]"
+    Then I should get: "Logging in via machine token"
+    And I should get: "Saving session data"
+    And I should get: "Logged in as [[username]]."
 
-  #Scenario: Failing to log in via invalid machine token
-    #@vcr auth_login_machine_token_invalid
-    #When I run "terminus auth login --machine-token=invalid"
-    #Then I should get:
-    #"""
-    #Authorization failed
-    #"""
+  @vcr auth_login_machine-token_invalid
+  Scenario: Failing to log in via invalid machine token
+    When I run "terminus auth login --machine-token=invalid"
+    Then I should get: "Logging in via machine token"
+    And I should get: "The provided machine token is not valid."
 
   #Scenario: Logging in successfully after session has expired
     #@vcr auth_login_machine_token_expired
