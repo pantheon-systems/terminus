@@ -13,6 +13,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)
 
+### Fixed
+- `auth login <email> --password=<password>` will not automatically attempt to log in via machine token if a token with the given email is present. (#865)
+
 ## [0.10.2] - 2016-01-27
 ### Added
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)

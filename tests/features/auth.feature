@@ -50,10 +50,7 @@ Feature: Authorization command
   Scenario: Trying to use an auth-restricted command while logged out
     Given I am not authenticated
     When I run "terminus sites list"
-    Then I should get:
-    """
-    You are not logged in. Run `auth login` to authenticate or `help auth login` for more info.
-    """
+    Then I should get one of the following: "You are not logged in., The provided machine token is not valid."
 
   @vcr auth_login_machine-token
   Scenario: Logging in via machine token
