@@ -30,7 +30,8 @@ class CompletionsTest extends PHPUnit_Framework_TestCase {
 
   public function testRender() {
     $this->completions->render();
-    $this->expectOutputString('--format=');
+    $output = retrieveOutput();
+    $this->assertTrue(strpos($output, '--format=') !== false);
   }
 
 }
