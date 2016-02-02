@@ -20,14 +20,15 @@ class Completions {
    *
    * @param string $line Command to make completions for
    */
-  function __construct($line) {
+  public function __construct($line) {
     // TODO: properly parse single and double quotes
     $this->words = explode(' ', $line);
 
-    // first word is always `wp`
-    array_shift($this->words);
+    if ($this->words[0] == 'terminus') {
+      array_shift($this->words);
+    }
 
-    // last word is either empty or an incomplete subcommand
+    //The last word is either empty or an incomplete subcommand
     $this->cur_word = end($this->words);
 
     $r = $this->getCommand($this->words);
@@ -73,6 +74,17 @@ class Completions {
   }
 
   /**
+   * Prints out all opt elements on their own lines
+   *
+   * @return void
+   */
+  public function render() {
+    foreach ($this->opts as $opt) {
+      Terminus::getOutputter()->line($opt);
+    }
+  }
+
+  /**
    * Adds options to opts array
    *
    * @param string $opt Option to add
@@ -80,7 +92,7 @@ class Completions {
    */
   private function add($opt) {
     if ($this->cur_word !== '') {
-      if (strpos($opt, $this->cur_word) !== 0) {
+      if (strpos($opt, $this->cur_word) === 0) {
         return;
       }
     }
@@ -120,17 +132,6 @@ class Completions {
     list($command, $args) = $r;
 
     return array($command, $args, $assoc_args);
-  }
-
-  /**
-   * Prints out all opt elements on their own lines
-   *
-   * @return void
-   */
-  public function render() {
-    foreach ($this->opts as $opt) {
-      Terminus::getOutputter()->line($opt);
-    }
   }
 
 }
