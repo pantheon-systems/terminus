@@ -5,12 +5,14 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - New `Hostnames` collection and `Hostname` model. (#860)
 - Added 3rd Party plugin support (#857)
+- Output destinations can now be set via `Terminus#setOutputter` or an element of the options fed into the `Terminus` constructor. (#873)
 
 ### Changed
 - When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)
 - Input helper functions are no longer static. (#864)
 - `site set-instrument` no longer does client-side checking for personal instrument access. (#872)
 - The `--point=<int>` argument in `cli completions` is now optional. (#873)
+- `Outputter#line()` now outputs to the set writer output destination rather than STDERR. (#873)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)
