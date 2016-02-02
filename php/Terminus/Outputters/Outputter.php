@@ -64,7 +64,7 @@ class Outputter implements OutputterInterface {
    * @return void
    */
   public function line($message = '') {
-    fwrite(STDERR, $message . PHP_EOL);
+    $this->getWriter()->write($message . PHP_EOL);
   }
 
   /**

@@ -43,12 +43,13 @@ class Terminus {
       'format'   => 'json',
       'debug'    => false,
       'yes'      => false,
+      'output'   => 'php://stdout',
     );
     self::$options = $options = array_merge($default_options, $arg_options);
 
     $this->setRunner($options['runner']);
     $this->setLogger($options);
-    $this->setOutputter($options['format']);
+    $this->setOutputter($options['format'], $options['output']);
   }
 
   /**
@@ -228,10 +229,11 @@ class Terminus {
   /**
    * Set the outputter instance to a class property
    *
-   * @param string $format Type of formatter to set on outputter
+   * @param string $format      Type of formatter to set on outputter
+   * @param string $destination Where output will be written to
    * @return void
    */
-  public static function setOutputter($format) {
+  public static function setOutputter($format, $destination) {
     // Pick an output formatter
     if ($format == 'json') {
       $formatter = new Terminus\Outputters\JSONFormatter();
@@ -243,7 +245,7 @@ class Terminus {
 
     // Create an output service.
     self::$outputter = new Terminus\Outputters\Outputter(
-      new Terminus\Outputters\StreamWriter('php://stdout'),
+      new Terminus\Outputters\StreamWriter($destination),
       $formatter
     );
   }

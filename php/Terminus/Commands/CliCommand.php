@@ -64,12 +64,15 @@ class CliCommand extends TerminusCommand {
    * --line=<line>
    * : The current command line to be executed
    *
-   * --point=<point>
+   * [--point=<point>]
    * : The index to the current cursor position relative to the beginning of
    *   the command
    */
   public function completions($args, $assoc_args) {
-    $line  = substr($assoc_args['line'], 0, $assoc_args['point']);
+    $line = $assoc_args['line'];
+    if (isset($assoc_args['point'])) {
+      $line = substr($line, 0, $assoc_args['point']);
+    }
     $compl = new Terminus\Completions($line);
     $compl->render();
   }

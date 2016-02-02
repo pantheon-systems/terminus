@@ -27,7 +27,10 @@ if ($ci_environment) {
   \VCR\VCR::configure()->setMode('none');
 }
 
+$output_file_name  = '/tmp/output';
 $moved_file_suffix = 'testmoved';
+
+setTerminusOutputter($output_file_name);
 
 /**
  * Returns the username and password for Behat fixtures
@@ -82,7 +85,7 @@ function resetOutputDestination($file_name) {
  * @param string $file_name Name of the file to retrieve the contents of
  * @return string
  */
-function retrieveOutput($file_name) {
+function retrieveOutput($file_name = '/tmp/output') {
   $output = file_get_contents($file_name);
   return $output;
 }
@@ -117,4 +120,15 @@ function setDummyCredentials() {
       }'
     )
   );
+}
+
+/**
+ * Sets the Terminus outputter to a specific format and destination
+ *
+ * @param string $format      Type of formatter to set on outputter
+ * @param string $destination Where output will be written to
+ * @return void
+ */
+function setTerminusOutputter($destination = 'php://stdout', $format = null) {
+  Terminus::setOutputter($format, $destination);
 }

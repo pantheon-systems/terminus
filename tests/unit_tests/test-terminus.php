@@ -109,7 +109,7 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $formatter = Terminus::getOutputter()->getFormatter();
     $this->assertTrue(strpos(get_class($formatter), 'JSON') !== false);
 
-    Terminus::setOutputter('normal');
+    Terminus::setOutputter('normal', 'php://stdout');
     $formatter = Terminus::getOutputter()->getFormatter();
     $this->assertTrue(strpos(get_class($formatter), 'Pretty') !== false);
   }
