@@ -111,7 +111,9 @@ function colorize($string) {
  * @return void
  */
 function defineConstants() {
-  define('Terminus', true);
+  if (!defined('Terminus')) {
+    define('Terminus', true);
+  }
   $default_constants = Yaml::parse(
     file_get_contents(TERMINUS_ROOT . '/config/constants.yml')
   );
