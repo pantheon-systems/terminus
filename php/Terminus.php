@@ -190,6 +190,11 @@ class Terminus {
     return $status;
   }
 
+  /**
+   * Sets a file cache instance to a class property
+   *
+   * @return void
+   */
   public static function setCache() {
     $home = getenv('HOME');
 
