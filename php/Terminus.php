@@ -15,6 +15,10 @@ use Terminus\Outputters\OutputterInterface;
  */
 class Terminus {
   /**
+   * @var FileCache
+   */
+  private static $cache;
+  /**
    * @var Logger
    */
   private static $logger;
@@ -26,6 +30,10 @@ class Terminus {
    * @var OutputterInterface
    */
   private static $outputter;
+  /**
+   * @var RootCommand
+   */
+  private static $root_command;
   /**
    * @var Runner
    */
@@ -47,9 +55,11 @@ class Terminus {
     );
     self::$options = $options = array_merge($default_options, $arg_options);
 
+    $this->setCache();
     $this->setRunner($options['runner']);
     $this->setLogger($options);
     $this->setOutputter($options['format'], $options['output']);
+    $this->setRootCommand();
   }
 
   /**
@@ -58,25 +68,7 @@ class Terminus {
    * @return FileCache
    */
   public static function getCache() {
-    static $cache;
-
-    if (!$cache) {
-      $home = getenv('HOME');
-      if (!$home) {
-        // sometime in windows $HOME is not defined
-        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-      }
-      $dir = getenv('TERMINUS_CACHE_DIR');
-      if (!$dir) {
-        $dir = "$home/.terminus/cache";
-      }
-
-      // 6 months, 300mb
-      $cache = new FileCache($dir, 86400, 314572800);
-    }
-    $cache->clean();
-
-    return $cache;
+    return self::$cache;
   }
 
   /**
@@ -90,9 +82,10 @@ class Terminus {
     if (isset($config[$key])) {
       $config = $config[$key];
     } elseif (!is_null($key)) {
-      self::getLogger()->warning(
+      throw new TerminusException(
         'Unknown config option "{key}".',
-        compact('key')
+        compact('key'),
+        1
       );
     }
     return $config;
@@ -122,14 +115,7 @@ class Terminus {
    * @return \Terminus\Dispatcher\RootCommand
    */
   public static function getRootCommand() {
-    static $root;
-
-    if (!$root) {
-      $root = new Dispatcher\RootCommand;
-      self::loadAllCommands($root);
-    }
-
-    return $root;
+    return self::$root_command;
   }
 
   /**
@@ -188,22 +174,10 @@ class Terminus {
     $assoc_args = array(),
     $exit_on_error = true
   ) {
-    $reused_runtime_args = array(
-      'path',
-      'url',
-      'user',
-      'allow-root',
-    );
-
-    foreach ($reused_runtime_args as $key) {
-      if (array_key_exists($key, self::getRunner()->config)) {
-        $assoc_args[$key] = self::getRunner()->config[$key];
-      }
-    }
-    if (Terminus::isTest()) {
-      $script_path = __DIR__.'/boot-fs.php';
-    } else {
+    if (isset($GLOBALS['argv'])) {
       $script_path = $GLOBALS['argv'][0];
+    } else {
+      $script_path = __DIR__ . '/boot-fs.php';
     }
 
     $php_bin      = '"' . self::getPhpBinary() . '"' ;
@@ -214,6 +188,24 @@ class Terminus {
     $full_command = "$php_bin $script_path $command $args $assoc_args";
     $status       = self::launch($full_command, $exit_on_error);
     return $status;
+  }
+
+  public static function setCache() {
+    $home = getenv('HOME');
+
+    if (!$home) {
+      //Sometimes in Windows, $HOME is not defined.
+      $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
+    }
+    $dir = getenv('TERMINUS_CACHE_DIR');
+    if (!$dir) {
+      $dir = "$home/.terminus/cache";
+    }
+
+    // 6 months, 300mb
+    $cache = new FileCache($dir, 86400, 314572800);
+    $cache->clean();
+    self::$cache = $cache;
   }
 
   /**
@@ -256,12 +248,12 @@ class Terminus {
    * @return string
    */
   private static function getPhpBinary() {
-    if (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } elseif (getenv('TERMINUS_PHP_USED')) {
+    if (getenv('TERMINUS_PHP_USED')) {
       $php_bin = getenv('TERMINUS_PHP_USED');
     } elseif (getenv('TERMINUS_PHP')) {
       $php_bin = getenv('TERMINUS_PHP');
+    } elseif (defined('PHP_BINARY')) {
+      $php_bin = PHP_BINARY;
     } else {
       $php_bin = 'php';
     }
@@ -372,6 +364,16 @@ class Terminus {
         );
       }
     }
+  }
+
+  /**
+   * Set the root command instance to a class property
+   *
+   * @return void
+   */
+  private static function setRootCommand() {
+    self::$root_command = new Dispatcher\RootCommand;
+    self::loadAllCommands(self::$root_command);
   }
 
   /**
