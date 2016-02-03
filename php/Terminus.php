@@ -59,7 +59,6 @@ class Terminus {
     $this->setRunner($options['runner']);
     $this->setLogger($options);
     $this->setOutputter($options['format'], $options['output']);
-    $this->setRootCommand();
   }
 
   /**
@@ -115,6 +114,9 @@ class Terminus {
    * @return \Terminus\Dispatcher\RootCommand
    */
   public static function getRootCommand() {
+    if (!isset(self::$root_command)) {
+      self::setRootCommand();
+    }
     return self::$root_command;
   }
 
@@ -125,17 +127,6 @@ class Terminus {
    */
   public static function getRunner() {
     return self::$runner;
-  }
-
-  /**
-   * Terminus is in test mode
-   *
-   * @return bool
-   */
-  public static function isTest() {
-    $is_test = (boolean)getenv('CLI_TEST_MODE')
-      || (boolean)getenv('VCR_CASSETTE');
-    return $is_test;
   }
 
   /**
@@ -377,7 +368,7 @@ class Terminus {
    * @return void
    */
   private static function setRootCommand() {
-    self::$root_command = new Dispatcher\RootCommand;
+    self::$root_command = new Dispatcher\RootCommand();
     self::loadAllCommands(self::$root_command);
   }
 

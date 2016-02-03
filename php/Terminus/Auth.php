@@ -3,9 +3,10 @@
 namespace Terminus;
 
 use Terminus;
-use Terminus\TokensCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
+use Terminus\TokensCache;
+use Terminus\Utils;
 
 class Auth {
 
@@ -101,7 +102,7 @@ class Auth {
     $is_logged_in = (
       isset($session->session)
       && (
-        Terminus::isTest()
+        Utils\isTest()
         || ($session->session_expire_time >= time())
       )
     );

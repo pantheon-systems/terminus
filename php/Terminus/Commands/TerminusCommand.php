@@ -63,7 +63,7 @@ abstract class TerminusCommand {
     $this->session   = $options['session'];
     $this->inputter  = new Input();
 
-    if (!Terminus::isTest()) {
+    if (!Utils\isTest()) {
       Utils\checkForUpdate();
     }
   }

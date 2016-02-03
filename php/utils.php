@@ -73,6 +73,7 @@ function checkForUpdate() {
     $logger = Terminus::getLogger();
     try {
       $current_version = checkCurrentVersion();
+      echo $current_version . PHP_EOL;
       if (version_compare($current_version, TERMINUS_VERSION, '>')) {
         $logger->info(
           'An update to Terminus is available. Please update to {version}.',
@@ -198,6 +199,22 @@ function importEnvironmentVariables() {
 }
 
 /**
+ * Terminus is in test mode
+ *
+ * @return bool
+ */
+function isTest() {
+  $is_test = (
+    (boolean)getenv('CLI_TEST_MODE')
+    || (boolean)getenv('VCR_CASSETTE')
+  );
+  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
+    $is_test = !$is_test;
+  }
+  return $is_test;
+}
+
+/**
  * Checks whether email is in a valid or not
  *
  * @param string $email String to be evaluated for email address format
@@ -214,7 +231,10 @@ function isValidEmail($email) {
  * @return bool True if OS running Terminus is Windows
  */
 function isWindows() {
-  $is_windows = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN');
+  $is_windows = strtoupper(substr(PHP_OS, 0, 3)) == 'WIN';
+  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
+    $is_windows = !$is_windows;
+  }
   return $is_windows;
 }
 
