@@ -46,21 +46,6 @@ class Session {
   }
 
   /**
-   * Sets a keyed value to be part of the data property object
-   *
-   * @param string $key   Name of data property
-   * @param mixed  $value Value of property to set
-   * @return Session
-   */
-  public function set($key, $value) {
-    $this->data->$key = null;
-    if (!empty($value)) {
-      $this->data->$key = $value;
-    }
-    return $this;
-  }
-
-  /**
    * Retrieves session data
    *
    * @return object
@@ -95,24 +80,36 @@ class Session {
   }
 
   /**
+   * Sets a keyed value to be part of the data property object
+   *
+   * @param string $key   Name of data property
+   * @param mixed  $value Value of property to set
+   * @return Session
+   */
+  public function set($key, $value = null) {
+    $this->data->$key = $value;
+    return $this;
+  }
+
+  /**
    * Saves session data to cache
    *
    * @param array $data Session data to save
    * @return void|bool
-   * @todo fix return value on this.
    */
   public static function setData($data) {
+    if (empty($data)) {
+      return false;
+    }
     $cache = Terminus::getCache();
     Terminus::getLogger()->info('Saving session data');
     $cache->putData('session', $data);
     $session = self::instance();
     $session->set('data', $data);
-    if (empty($data)) {
-      return false;
-    }
     foreach ($data as $k => $v) {
       $session->set($k, $v);
     }
+    return true;
   }
 
   /**
@@ -122,7 +119,7 @@ class Session {
    */
   public static function getUser() {
     $user_uuid = Session::getValue('user_uuid');
-    $user = new User((object)array('id' => $user_uuid));
+    $user      = new User((object)array('id' => $user_uuid));
     return $user;
   }
 
