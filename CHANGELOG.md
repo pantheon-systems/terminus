@@ -20,6 +20,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - `auth login <email> --password=<password>` will not automatically attempt to log in via machine token if a token with the given email is present. (#865)
+- `site deploy` now correctly counts queued commits and will not report there is nothing to deploy erroneously. (#879)
 
 ## [0.10.2] - 2016-01-27
 ### Added

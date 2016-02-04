@@ -286,19 +286,36 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Counts the number of deployable commits
+   *
+   * @return int
+   */
+  public function countDeployableCommits() {
+    $parent_environment = $this->getParentEnvironment();
+    $parent_commits     = $parent_environment->commits->all();
+    $number_of_commits  = 0;
+    foreach ($parent_commits as $commit) {
+      $labels             = $commit->get('labels');
+      $number_of_commits += (integer)(
+        !in_array($this->get('id'), $labels)
+        && in_array($parent_environment->get('id'), $labels)
+      );
+    }
+    return $number_of_commits;
+  }
+
+  /**
    * Creates a new environment
    *
    * @param string $env_name Name of environment to create
    * @return array Response data
-   *
-   * @todo This doesn't currently work because $site_id is undefined.
    */
   public function create($env_name) {
     $path     = sprintf('environments/%s', $env_name);
     $params   = array();
     $response = $this->request->request(
       'sites',
-      $site_id,
+      $this->site->get('id'),
       $path,
       'POST',
       $params
@@ -416,9 +433,8 @@ class Environment extends TerminusModel {
    * @return bool
    */
   public function hasDeployableCode() {
-    $parent_commits    = $this->getParentEnvironment()->commits->all();
-    $number_of_updates = count($parent_commits) - count($this->commits->all());
-    return (boolean)$number_of_updates;
+    $number_of_commits = $this->countDeployableCommits();
+    return (boolean)$number_of_commits;
   }
 
   /**
