@@ -25,13 +25,12 @@ class CompletionsTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
     $this->assertObjectHasAttribute('words', $this->completions);
-    $this->assertObjectHasAttribute('opts', $this->completions);
+    $this->assertObjectHasAttribute('options', $this->completions);
   }
 
-  public function testRender() {
-    $this->completions->render();
-    $output = retrieveOutput();
-    $this->assertTrue(strpos($output, '--format=') !== false);
+  public function testGetOptions() {
+    $options = $this->completions->getOptions();
+    $this->assertTrue(in_array('--format=', $options));
   }
 
 }

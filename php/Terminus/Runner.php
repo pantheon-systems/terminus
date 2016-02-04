@@ -38,28 +38,11 @@ class Runner {
    *
    * @param array $config Extra settings for the config property
    */
-  public function __construct($config = array()) {
+  public function __construct(array $config = []) {
     $this->setConfigurator();
     $this->setConfig($config);
-    $params          = array(
-      'runner' => $this,
-    );
-    $params          = array_merge($this->config, $params);
-    $this->terminus  = new Terminus($params);
-    $this->logger    = Terminus::getLogger();
-  }
-
-  /**
-   * Retrieves properties requested
-   *
-   * @param string $key Property name to return
-   * @return mixed
-   */
-  public function __get($key) {
-    if (($key[0] == '_') || (!isset($this->$key))) {
-      return null;
-    }
-    return $this->$key;
+    $this->terminus = new Terminus($this->config);
+    $this->logger   = Terminus::getLogger();
   }
 
   /**
@@ -146,7 +129,7 @@ class Runner {
    *
    * @return void
    */
-  public function runCommand() {
+  private function runCommand() {
     $args       = $this->arguments;
     $assoc_args = $this->assoc_args;
     try {

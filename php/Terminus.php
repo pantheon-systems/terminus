@@ -3,7 +3,6 @@
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
 use Terminus\FileCache;
-use Terminus\Runner;
 use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
@@ -34,10 +33,6 @@ class Terminus {
    * @var RootCommand
    */
   private static $root_command;
-  /**
-   * @var Runner
-   */
-  private static $runner;
 
   /**
    * Object constructor. Sets properties.
@@ -56,7 +51,6 @@ class Terminus {
     self::$options = $options = array_merge($default_options, $arg_options);
 
     $this->setCache();
-    $this->setRunner($options['runner']);
     $this->setLogger($options);
     $this->setOutputter($options['format'], $options['output']);
   }
@@ -121,12 +115,24 @@ class Terminus {
   }
 
   /**
-   * Retrieves the runner, creating it if DNE
+   * Retrieves and returns the users local configuration directory (~/terminus)
    *
-   * @return \Terminus\Runner
+   * @return string
    */
-  public static function getRunner() {
-    return self::$runner;
+  public static function getUserConfigDir() {
+    $terminus_config_dir = getenv('TERMINUS_CONFIG_DIR');
+
+    if (!$terminus_config_dir) {
+      $home = getenv('HOME');
+      if (!$home) {
+        // sometime in windows $HOME is not defined
+        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
+      }
+      if ($home) {
+        $terminus_config_dir = getenv('HOME') . '/terminus';
+      }
+    }
+    return $terminus_config_dir;
   }
 
   /**
@@ -257,27 +263,6 @@ class Terminus {
   }
 
   /**
-   * Retrieves and returns the users local configuration directory (~/terminus)
-   *
-   * @return string
-   */
-  private static function getUserConfigDir() {
-    $terminus_config_dir = getenv('TERMINUS_CONFIG_DIR');
-
-    if (!$terminus_config_dir) {
-      $home = getenv('HOME');
-      if (!$home) {
-        // sometime in windows $HOME is not defined
-        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-      }
-      if ($home) {
-        $terminus_config_dir = getenv('HOME') . '/terminus';
-      }
-    }
-    return $terminus_config_dir;
-  }
-
-  /**
    * Retrieves and returns a list of plugin's base directories
    *
    * @return array
@@ -370,20 +355,6 @@ class Terminus {
   private static function setRootCommand() {
     self::$root_command = new Dispatcher\RootCommand();
     self::loadAllCommands(self::$root_command);
-  }
-
-  /**
-   * Sets the runner object
-   *
-   * @param Runner|null $runner Runner object to set
-   * @return void
-   */
-  private function setRunner($runner = null) {
-    if (!$runner instanceof Runner) {
-      self::$runner = new Runner();
-    } else {
-      self::$runner = $runner;
-    }
   }
 
 }

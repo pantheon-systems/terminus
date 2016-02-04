@@ -3,10 +3,11 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\User;
+use Terminus\Runner;
+use Terminus\Session;
 
 /**
  * Get information about Terminus itself.
@@ -72,8 +73,11 @@ class CliCommand extends TerminusCommand {
     if (isset($assoc_args['point'])) {
       $line = substr($line, 0, $assoc_args['point']);
     }
-    $compl = new Terminus\Completions($line);
-    $compl->render();
+    $completions = new Terminus\Completions($line);
+    $options     = $completions->getOptions();
+    foreach ($options as $option) {
+      $this->output()->line($option);
+    }
   }
 
   /**
@@ -111,13 +115,11 @@ class CliCommand extends TerminusCommand {
       $php_bin = PHP_BINARY;
     }
 
-    $runner = Terminus::getRunner();
-
     $info   = array(
       'php_binary_path'     => $php_bin,
       'php_version'         => PHP_VERSION,
       'php_ini'             => get_cfg_var('cfg_file_path'),
-      'project_config_path' => $runner->project_config_path,
+      'project_config_path' => Terminus::getUserConfigDir(),
       'wp_cli_dir_path'     => TERMINUS_ROOT,
       'wp_cli_version'      => TERMINUS_VERSION,
     );
@@ -139,7 +141,8 @@ class CliCommand extends TerminusCommand {
    * @subcommand param-dump
    */
   function paramDump() {
-    $spec = Terminus::getRunner()->getConfigurator()->getSpec();
+    $runner = new Runner();
+    $spec   = $runner->getConfigurator()->getSpec();
     $this->output()->outputDump($spec);
   }
 
