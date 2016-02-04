@@ -135,50 +135,34 @@ class Runner {
         }
       }
     } catch (TerminusException $e) {
-      // Do nothing. Actual error-handling will be done by _runCommand
       $this->logger->debug($e->getMessage());
     }
 
-    // First try at showing man page
-    if (($this->arguments[0] == 'help') && (isset($this->arguments[1]))) {
-      $this->_runCommand();
-    }
-
-    $this->_runCommand();
+    $this->runCommand();
   }
 
   /**
    * Runs a command
    *
-   * @param array $args       The non hyphenated (--) terms from the CL
-   * @param array $assoc_args The hyphenated terms from the CL
    * @return void
    */
-  public function runCommand($args, $assoc_args = array()) {
+  public function runCommand() {
+    $args       = $this->arguments;
+    $assoc_args = $this->assoc_args;
     try {
       /** @var \Terminus\Dispatcher\RootCommand $command */
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
       $name = implode(' ', $cmd_path);
 
       $command->invoke($final_args, $assoc_args);
-
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
         $this->logger->error($e->getMessage(), $e->getReplacements());
       } else {
         $this->logger->error($e->getMessage());
       }
-      exit(1);
+      exit($e->getCode());
     }
-  }
-
-  /**
-   * Runs a command via runCommand by supplying it with properties as args
-   *
-   * @return void
-   */
-  private function _runCommand() {
-    $this->runCommand($this->arguments, $this->assoc_args);
   }
 
   /**
