@@ -26,12 +26,18 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
    * @vcr utils#checkCurrentVersion
    */
   public function testCheckForUpdate() {
+    $log_file = getLogFileName();
+    setOutputDestination($log_file);
+    Terminus::getCache()->putData(
+      'latest_release',
+      ['check_date' => strtotime('8 days ago')]
+    );
     Utils\checkForUpdate();
-    $log_file      = $_SERVER['TERMINUS_LOG_DIR'] . 'log_' . date('Y-m-d') . '.txt';
     $file_contents = explode("\n", file_get_contents($log_file));
     $this->assertFalse(
       strpos(array_pop($file_contents), 'An update to Terminus is available.')
     );
+    resetOutputDestination($log_file);
   }
 
   public function testColorize() {
@@ -42,6 +48,14 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
   }
 
   public function testDefineConstants() {
+    unset($_SERVER['Terminus']);
+    unset($_SERVER['TERMINUS_VERSION']);
+    unset($_SERVER['TERMINUS_PROTOCOL']);
+    unset($_SERVER['TERMINUS_HOST']);
+    unset($_SERVER['TERMINUS_PORT']);
+    unset($_SERVER['TERMINUS_TIME_ZONE']);
+    unset($_SERVER['TERMINUS_SCRIPT']);
+    Utils\defineConstants();
     $this->assertTrue(Terminus);
 
     $this->assertTrue(defined('TERMINUS_VERSION'));
@@ -74,7 +88,8 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(isset($message));
 
     resetOutputDestination($file_name);
-    // These will issue errors if invalid
+    Utils\destinationIsValid($file_name);
+    resetOutputDestination($file_name);
     Utils\destinationIsValid('/tmp/');
   }
 
@@ -112,10 +127,26 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(Utils\isValidEmail('this.is.a.valid.email@ddre.ss'));
   }
 
+  public function testIsTest() {
+    $this->assertTrue(Utils\isTest());
+
+    putenv('CLI_TEST_MODE=');
+    putenv("TERMINUS_TEST_IGNORE=1");
+    putenv("VCR_CASSETTE=1");
+    $this->assertFalse(Utils\isTest());
+    putenv("TERMINUS_TEST_IGNORE=");
+    putenv('CLI_TEST_MODE=1');
+    putenv("VCR_CASSETTE=");
+  }
+
   public function testIsWindows() {
     $os         = shell_exec('uname');
     $is_windows = Utils\isWindows();
     $this->assertEquals(strpos($os, 'NT') !== false, $is_windows);
+
+    putenv("TERMINUS_TEST_IGNORE=1");
+    $this->assertTrue(Utils\isWindows());
+    putenv("TERMINUS_TEST_IGNORE=");
   }
 
   public function testLoadAsset() {

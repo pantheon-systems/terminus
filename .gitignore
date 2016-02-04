@@ -1,8 +1,7 @@
 /vendor
 /*.phar
-/phpunit.xml
-
 /builds
+/tests/logs/*
 
 .DS_Store
 *.sw*

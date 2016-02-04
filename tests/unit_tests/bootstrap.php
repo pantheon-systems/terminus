@@ -74,9 +74,13 @@ function logInWithBehatCredentials() {
  * @return void
  */
 function resetOutputDestination($file_name) {
-  static $moved_file_suffix;
-  exec("rm -r $file_name");
-  exec("mv $file_name.$moved_file_suffix $file_name");
+  $moved_file_suffix = '.testmoved';
+  if (file_exists($file_name)) {
+    exec("rm -r $file_name");
+  }
+  if (file_exists($file_name.$moved_file_suffix)) {
+    exec("mv $file_name.$moved_file_suffix $file_name");
+  }
 }
 
 /**
@@ -86,6 +90,9 @@ function resetOutputDestination($file_name) {
  * @return string
  */
 function retrieveOutput($file_name = '/tmp/output') {
+  if (!file_exists($file_name)) {
+    throw new Exception('File "{file}" does not exist.', ['file' => $file_name]);
+  }
   $output = file_get_contents($file_name);
   return $output;
 }
@@ -97,8 +104,11 @@ function retrieveOutput($file_name = '/tmp/output') {
  * @return void
  */
 function setOutputDestination($file_name) {
-  static $moved_file_suffix;
-  exec("mv $file_name $file_name.$moved_file_suffix ; touch $file_name");
+  $moved_file_suffix = '.testmoved';
+  if (file_exists($file_name)) {
+    exec("mv $file_name $file_name.$moved_file_suffix");
+  }
+  exec("touch $file_name");
 }
 
 /**
