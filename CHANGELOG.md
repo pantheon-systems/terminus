@@ -6,6 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New `Hostnames` collection and `Hostname` model. (#860)
 - Added 3rd Party plugin support (#857)
 - Output destinations can now be set via `Terminus#setOutputter` or an element of the options fed into the `Terminus` constructor. (#873)
+- HTTPS Certificates on Site Environments can be added/updated using `site set-https-certificate`
 
 ### Changed
 - When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)
@@ -50,7 +51,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - Fixed bug in Input#orgId. (#812)
 - Fixed error appearing in `organizations sites list` when there are no results. (#812)
-- Fixed missing-variable error in Request#request which appeared when attempting to sanitize error messages. (#835) 
+- Fixed missing-variable error in Request#request which appeared when attempting to sanitize error messages. (#835)
 - Fixed log-in admonition if a machine token, TERMINUS_USER, or TEMRINUS_MACHINE_TOKEN are present. (#849)
 - Fixed erroneous, old `--[no-]format` tag listing in `help`, replacing it with current `--format=<json|bash|silent>` option. (#854)
 

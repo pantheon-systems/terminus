@@ -4,9 +4,8 @@ namespace Terminus\Commands;
 
 use Terminus;
 use Terminus\Session;
-use Terminus\SitesCache;
 use Terminus\Commands\TerminusCommand;
-use Terminus\Models\Site;
+use Terminus\Models\Collections\Sites;
 use Terminus\Models\User;
 
 /**
@@ -24,7 +23,7 @@ class CliCommand extends TerminusCommand {
    */
   public function __construct(array $options = []) {
     parent::__construct($options);
-    $this->sitesCache = new SitesCache();
+    $this->sites = new Sites();
   }
 
   /**
@@ -90,9 +89,9 @@ class CliCommand extends TerminusCommand {
   public function console($args, $assoc_args) {
     $user = Session::getUser();
     if (isset($assoc_args['site'])) {
-      $sitename = $assoc_args['site'];
-      $site_id  = $this->sitesCache->findId($sitename);
-      $site     = new Site($site_id);
+      $site = $this->sites->get(
+        $this->input()->siteName(array('args' => $assoc_args))
+      );
     }
 
     eval(\Psy\sh());
