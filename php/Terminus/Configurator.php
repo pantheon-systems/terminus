@@ -13,7 +13,10 @@ class Configurator {
    *
    * @param string $path Path to configuration specification file
    */
-  public function __construct($path) {
+  public function __construct($path = null) {
+    if (is_null($path)) {
+      $path = TERMINUS_ROOT . '/config/spec.php';
+    }
     $this->spec = include $path;
 
     $defaults = array(

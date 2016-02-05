@@ -39,7 +39,7 @@ class Runner {
    * @param array $config Extra settings for the config property
    */
   public function __construct(array $config = []) {
-    $this->setConfigurator();
+    $this->configurator = new Configurator();
     $this->setConfig($config);
     $this->terminus = new Terminus($this->config);
     $this->logger   = Terminus::getLogger();
@@ -78,15 +78,6 @@ class Runner {
 
     $command_array = array($command, $args, $cmd_path);
     return $command_array;
-  }
-
-  /**
-   * Retrieves the configurator property
-   *
-   * @return Configurator
-   */
-  public function getConfigurator() {
-    return $this->configurator;
   }
 
   /**
@@ -171,22 +162,6 @@ class Runner {
     $this->configurator->mergeArray($runtime_config);
 
     $this->config = array_merge($this->configurator->toArray(), $config);
-  }
-
-  /**
-   * Sets the configurator property
-   *
-   * @param Configurator|null $configurator Configurator object to set
-   * @return void
-   */
-  private function setConfigurator(Configurator $configurator = null) {
-    if (is_null($configurator)) {
-      $this->configurator = new Configurator(
-        TERMINUS_ROOT . '/php/config-spec.php'
-      );
-    } else {
-      $this->configurator = $configurator;
-    }
   }
 
 }

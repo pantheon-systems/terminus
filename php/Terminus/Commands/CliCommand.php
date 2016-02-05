@@ -3,10 +3,10 @@
 namespace Terminus\Commands;
 
 use Terminus;
+use Terminus\Configurator;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\User;
-use Terminus\Runner;
 use Terminus\Session;
 
 /**
@@ -141,9 +141,8 @@ class CliCommand extends TerminusCommand {
    * @subcommand param-dump
    */
   function paramDump() {
-    $runner = new Runner();
-    $spec   = $runner->getConfigurator()->getSpec();
-    $this->output()->outputDump($spec);
+    $configurator = new Configurator();
+    $this->output()->outputDump($configurator->getSpec());
   }
 
   /**
