@@ -3,13 +3,14 @@
 namespace Terminus;
 
 use Terminus;
+use Terminus\Runner;
 
 class Completions {
 
   /**
    * @var array
    */
-  private $opts = array();
+  private $options = [];
   /**
    * @var array
    */
@@ -59,45 +60,43 @@ class Completions {
             continue;
           }
 
-          $opt = "--{$arg['name']}";
+          $option = "--{$arg['name']}";
 
           if ($arg['type'] == 'flag') {
-            $opt .= ' ';
+            $option .= ' ';
           } elseif (!$arg['value']['optional']) {
-            $opt .= '=';
+            $option .= '=';
           }
 
-          $this->add($opt);
+          $this->add($option);
         }
       }
     }
   }
 
   /**
-   * Prints out all opt elements on their own lines
+   * Returns the options property
    *
-   * @return void
+   * @return array
    */
-  public function render() {
-    foreach ($this->opts as $opt) {
-      Terminus::getOutputter()->line($opt);
-    }
+  public function getOptions() {
+    return $this->options;
   }
 
   /**
-   * Adds options to opts array
+   * Adds options to options array
    *
-   * @param string $opt Option to add
+   * @param string $option Option to add
    * @return void
    */
-  private function add($opt) {
+  private function add($option) {
     if ($this->cur_word !== '') {
-      if (strpos($opt, $this->cur_word) === 0) {
+      if (strpos($option, $this->cur_word) === 0) {
         return;
       }
     }
 
-    $this->opts[] = $opt;
+    $this->options[] = $option;
   }
 
   /**
@@ -120,18 +119,19 @@ class Completions {
       }
     }
 
-    $r = Terminus::getRunner()->findCommandToRun($positional_args);
-    if (!is_array($r) && array_pop($positional_args) == $this->cur_word) {
-      $r = Terminus::getRunner()->findCommandToRun($positional_args);
+    $runner             = new Runner();
+    $command_components = $runner->findCommandToRun($positional_args);
+    if (!is_array($command_components)
+      && array_pop($command_components) == $this->cur_word
+    ) {
+      $command_components = $runner->findCommandToRun($positional_args);
     }
 
-    if (!is_array($r)) {
-      return $r;
+    if (is_array($command_components)) {
+      $command_components[] = $assoc_args;
     }
 
-    list($command, $args) = $r;
-
-    return array($command, $args, $assoc_args);
+    return $command_components;
   }
 
 }

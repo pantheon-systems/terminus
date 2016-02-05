@@ -15,8 +15,9 @@ putenv('CLI_TEST_MODE=1');
 require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
-use Terminus\Session;
 use Terminus\Auth;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Session;
 
 \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
 setDummyCredentials();
@@ -91,7 +92,7 @@ function resetOutputDestination($file_name) {
  */
 function retrieveOutput($file_name = '/tmp/output') {
   if (!file_exists($file_name)) {
-    throw new Exception('File "{file}" does not exist.', ['file' => $file_name]);
+    throw new TerminusException('File "{file}" does not exist.', ['file' => $file_name]);
   }
   $output = file_get_contents($file_name);
   return $output;

@@ -3,6 +3,7 @@
 namespace Terminus\Dispatcher;
 
 use Terminus;
+use Terminus\Configurator;
 use Terminus\Utils;
 
 /**
@@ -41,8 +42,9 @@ class RootCommand extends CompositeCommand {
    * @return array
    */
   function getLongdesc() {
-    $binding = array();
-    $spec    = Terminus::getRunner()->getConfigurator()->getSpec();
+    $binding      = [];
+    $configurator = new Configurator();
+    $spec         = $configurator->getSpec();
 
     foreach ($spec as $key => $details) {
       if (($details['runtime'] === false)

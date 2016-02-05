@@ -38,28 +38,11 @@ class Runner {
    *
    * @param array $config Extra settings for the config property
    */
-  public function __construct($config = array()) {
-    $this->setConfigurator();
+  public function __construct(array $config = []) {
+    $this->configurator = new Configurator();
     $this->setConfig($config);
-    $params          = array(
-      'runner' => $this,
-    );
-    $params          = array_merge($this->config, $params);
-    $this->terminus  = new Terminus($params);
-    $this->logger    = Terminus::getLogger();
-  }
-
-  /**
-   * Retrieves properties requested
-   *
-   * @param string $key Property name to return
-   * @return mixed
-   */
-  public function __get($key) {
-    if (($key[0] == '_') || (!isset($this->$key))) {
-      return null;
-    }
-    return $this->$key;
+    $this->terminus = new Terminus($this->config);
+    $this->logger   = Terminus::getLogger();
   }
 
   /**
@@ -98,15 +81,6 @@ class Runner {
   }
 
   /**
-   * Retrieves the configurator property
-   *
-   * @return Configurator
-   */
-  public function getConfigurator() {
-    return $this->configurator;
-  }
-
-  /**
    * Runs the Terminus command
    *
    * @return void
@@ -135,50 +109,34 @@ class Runner {
         }
       }
     } catch (TerminusException $e) {
-      // Do nothing. Actual error-handling will be done by _runCommand
       $this->logger->debug($e->getMessage());
     }
 
-    // First try at showing man page
-    if (($this->arguments[0] == 'help') && (isset($this->arguments[1]))) {
-      $this->_runCommand();
-    }
-
-    $this->_runCommand();
+    $this->runCommand();
   }
 
   /**
    * Runs a command
    *
-   * @param array $args       The non hyphenated (--) terms from the CL
-   * @param array $assoc_args The hyphenated terms from the CL
    * @return void
    */
-  public function runCommand($args, $assoc_args = array()) {
+  private function runCommand() {
+    $args       = $this->arguments;
+    $assoc_args = $this->assoc_args;
     try {
       /** @var \Terminus\Dispatcher\RootCommand $command */
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
       $name = implode(' ', $cmd_path);
 
       $command->invoke($final_args, $assoc_args);
-
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
         $this->logger->error($e->getMessage(), $e->getReplacements());
       } else {
         $this->logger->error($e->getMessage());
       }
-      exit(1);
+      exit($e->getCode());
     }
-  }
-
-  /**
-   * Runs a command via runCommand by supplying it with properties as args
-   *
-   * @return void
-   */
-  private function _runCommand() {
-    $this->runCommand($this->arguments, $this->assoc_args);
   }
 
   /**
@@ -204,22 +162,6 @@ class Runner {
     $this->configurator->mergeArray($runtime_config);
 
     $this->config = array_merge($this->configurator->toArray(), $config);
-  }
-
-  /**
-   * Sets the configurator property
-   *
-   * @param Configurator|null $configurator Configurator object to set
-   * @return void
-   */
-  private function setConfigurator(Configurator $configurator = null) {
-    if (is_null($configurator)) {
-      $this->configurator = new Configurator(
-        TERMINUS_ROOT . '/php/config-spec.php'
-      );
-    } else {
-      $this->configurator = $configurator;
-    }
   }
 
 }

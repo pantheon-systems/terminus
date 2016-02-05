@@ -26,7 +26,9 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
    */
   public function testGetConfig() {
     $format = Terminus::getConfig('format');
-    $this->assertEquals($format, 'normal');
+    $this->assertTrue(
+      in_array($format, ['normal', 'json', 'silent', 'bash'])
+    );
 
     $config = Terminus::getConfig();
     $this->assertInternalType('array', $config);
@@ -76,13 +78,6 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $desc = $root_command->getLongdesc();
     $this->assertTrue(count($desc['parameters']) == 4);
 
-  }
-
-  public function testGetRunner() {
-    $runner = Terminus::getRunner();
-    $this->assertTrue(
-      strpos(get_class($runner), 'Runner') !== false
-    );
   }
 
   public function testLaunch() {
