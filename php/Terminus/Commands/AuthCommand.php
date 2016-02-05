@@ -3,7 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 
@@ -13,6 +12,10 @@ use Terminus\Commands\TerminusCommand;
  * @command auth
  */
 class AuthCommand extends TerminusCommand {
+
+  /**
+   * @var Terminus\Helpers\AuthHelper
+   */
   private $auth;
 
   /**
@@ -23,7 +26,7 @@ class AuthCommand extends TerminusCommand {
    */
   public function __construct(array $options = []) {
     parent::__construct($options);
-    $this->auth = new Auth();
+    $this->auth = $this->helpers->auth;
   }
 
   /**
@@ -82,7 +85,7 @@ class AuthCommand extends TerminusCommand {
     } else {
       $this->log()->info(
         "Please visit the Dashboard to generate a machine token:\n{url}",
-        ['url' => Auth::getMachineTokenCreationUrl()]
+        ['url' => $this->auth->getMachineTokenCreationUrl()]
       );
       exit(1);
     }

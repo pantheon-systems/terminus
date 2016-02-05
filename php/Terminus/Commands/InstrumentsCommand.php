@@ -3,7 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Auth;
 use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\User;
@@ -22,8 +21,8 @@ class InstrumentsCommand extends TerminusCommand {
    * @returns InstrumentsCommand
    */
   public function __construct(array $options = []) {
-    Auth::ensureLogin();
     parent::__construct($options);
+    $this->helpers->auth->ensureLogin();
   }
 
   /**

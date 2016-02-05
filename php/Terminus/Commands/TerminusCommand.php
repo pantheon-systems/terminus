@@ -27,6 +27,11 @@ abstract class TerminusCommand {
   protected $inputter;
 
   /**
+   * @var stdClass
+   */
+  protected $helpers;
+
+  /**
    * @var Logger
    */
   protected $logger;
@@ -61,7 +66,7 @@ abstract class TerminusCommand {
     $this->logger    = $options['logger'];
     $this->outputter = $options['outputter'];
     $this->session   = $options['session'];
-    $this->inputter  = new Input();
+    $this->loadHelpers();
 
     if (!Utils\isTest()) {
       Utils\checkForUpdate();
@@ -91,7 +96,7 @@ abstract class TerminusCommand {
    * @return Input
    */
   protected function input() {
-    return $this->inputter;
+    return $this->helpers->input;
   }
 
   /**
@@ -110,6 +115,45 @@ abstract class TerminusCommand {
    */
   protected function output() {
     return $this->outputter;
+  }
+
+  /**
+   * Loads helper classes
+   *
+   * @return void
+   */
+  protected function loadHelpers() {
+    if (isset($this->helpers)) {
+      return;
+    }
+    $helpers_dir       = __DIR__ . '/../Helpers';
+    $helpers_namespace = 'Terminus\\Helpers\\';
+
+    Utils\loadDirectory($helpers_dir);
+    $classes = get_declared_classes();
+    $helpers = array_filter(
+      $classes,
+      function ($class) use ($helpers_namespace) {
+        $reflection = new \ReflectionClass($class);
+        $is_helper  = (
+          (strpos($class, $helpers_namespace) === 0)
+          && !$reflection->isAbstract()
+        );
+        return $is_helper;
+      }
+    );
+
+    if (!empty($helpers)) {
+      $options          = ['logger' => $this->log()];
+      $helpers_property = new \stdClass();
+      foreach ($helpers as $helper) {
+        $property_name = strtolower(
+          str_replace([$helpers_namespace, 'Helper'], '', $helper)
+        );
+        $helpers_property->$property_name = new $helper($options);
+      }
+    }
+    $this->helpers = $helpers_property;
   }
 
   /**

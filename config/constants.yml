@@ -5,8 +5,8 @@
 # variable of the same name, or by adding it to a file named ".env" in the
 # directory from which you are running Terminus.
 --- 
-TERMINUS_HOST:      'dashboard.pantheon.io'
-TERMINUS_PORT:      443
-TERMINUS_PROTOCOL:  'https'
-TERMINUS_TIME_ZONE: 'UTC'
-TERMINUS_VERSION:   '0.10.2'
+TERMINUS_HOST:        'dashboard.pantheon.io'
+TERMINUS_PORT:        443
+TERMINUS_PROTOCOL:    'https'
+TERMINUS_TIME_ZONE:   'UTC'
+TERMINUS_VERSION:     '0.10.2'

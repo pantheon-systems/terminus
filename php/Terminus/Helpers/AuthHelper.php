@@ -1,19 +1,17 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Helpers;
 
 use Terminus;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Loggers\Logger;
+use Terminus\Helpers\TerminusHelper;
+use Terminus\Request;
+use Terminus\Session;
 use Terminus\TokensCache;
 use Terminus\Utils;
 
-class Auth {
+class AuthHelper extends TerminusHelper {
 
-  /**
-   * @var Logger
-   */
-  private $logger;
   /**
    * @var Request
    */
@@ -24,12 +22,15 @@ class Auth {
   private $tokens_cache;
 
   /**
-   * Object constructor. Sets the logger class property.
+   * Object constructor
+   *
+   * @param array $options Options and dependencies for this helper
+   * @return AuthHelper
    */
-  public function __construct() {
-    $this->logger       = Terminus::getLogger();
+  public function __construct(array $options = []) {
     $this->request      = new Request();
     $this->tokens_cache = new TokensCache();
+    parent::__construct($options);
   }
 
   /**
@@ -38,24 +39,23 @@ class Auth {
    * @return bool Always true
    * @throws TerminusException
    */
-  public static function ensureLogin() {
+  public function ensureLogin() {
     $session = Session::instance()->getData();
-    $auth    = new Auth();
-    if (!$auth->loggedIn()) {
-      if ($token = $auth->getOnlySavedToken()) {
-        $auth->logInViaMachineToken($token);
+    if (!$this->loggedIn()) {
+      if ($token = $this->getOnlySavedToken()) {
+        $this->logInViaMachineToken($token);
       } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
         && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
       ) {
-        $auth->logInViaMachineToken(compact('token'));
+        $this->logInViaMachineToken(compact('token'));
       } else if (isset($_SERVER['TERMINUS_USER'])
         && $email = $_SERVER['TERMINUS_USER']
       ) {
-        $auth->logInViaMachineToken(compact('email'));
+        $this->logInViaMachineToken(compact('email'));
       } else {
         $message  = 'You are not logged in. Run `auth login` to ';
         $message .= 'authenticate or `help auth login` for more info.';
-        $auth->logger->warning($message);
+        $this->log()->warning($message);
         exit(1);
       }
     }
@@ -67,7 +67,7 @@ class Auth {
    *
    * @return string
    */
-  public static function getMachineTokenCreationUrl() {
+  public function getMachineTokenCreationUrl() {
     $url = sprintf(
       '%s://%s:%s/machine-token/create?client=terminus&device=%s',
       TERMINUS_PROTOCOL,
@@ -130,7 +130,7 @@ class Auth {
           1
         );
       }
-      $this->logger->info(
+      $this->log()->info(
         'Found a machine token for "{email}".',
         ['email' => $args['email']]
       );
@@ -143,7 +143,7 @@ class Auth {
       ),
     );
 
-    $this->logger->info('Logging in via machine token');
+    $this->log()->info('Logging in via machine token');
     try {
       $response = $this->request->request(
         'authorize',
@@ -165,7 +165,7 @@ class Auth {
     $user = Session::getUser();
     $user->fetch();
     $user_data = $user->serialize();
-    $this->logger->info(
+    $this->log()->info(
       'Logged in as {email}.',
       ['email' => $user_data['email']]
     );
@@ -208,7 +208,7 @@ class Auth {
         1
       );
     }
-    $this->logger->info(
+    $this->log()->info(
       'Logged in as {uuid}.',
       array('uuid' => $response['data']->user_id)
     );

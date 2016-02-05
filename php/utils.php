@@ -296,6 +296,23 @@ function loadDependencies() {
 }
 
 /**
+ * Includes all PHP files within a directory
+ *
+ * @param string $directory Directory to include PHP files from
+ * @return void
+ */
+function loadDirectory($directory) {
+  if ($directory && file_exists($directory)) {
+    $iterator = new \DirectoryIterator($directory);
+    foreach ($iterator as $file) {
+      if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
+        include_once $file->getPathname();
+      }
+    }
+  }
+}
+
+/**
  * Using require() directly inside a class grants access to private methods
  * to the loaded code
  *

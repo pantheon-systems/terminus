@@ -1,6 +1,7 @@
 <?php
 
-use Terminus\Helpers\Input;
+use Terminus\Helpers\InputHelper;
+use Terminus\Loggers\Logger;
 
 /**
  * Testing class for Terminus\Helpers\Input
@@ -10,7 +11,8 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   private $inputter;
 
   public function __construct() {
-    $this->inputter = new Input();
+    $options    = ['logger' => getLogger()];
+    $this->inputter = new InputHelper($options);
   }
 
   public function testBackup() {

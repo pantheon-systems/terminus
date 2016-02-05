@@ -14,6 +14,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site set-instrument` no longer does client-side checking for personal instrument access. (#872)
 - The `--point=<int>` argument in `cli completions` is now optional. (#873)
 - `Outputter#line()` now outputs to the set writer output destination rather than STDERR. (#873)
+- `Terminus\Auth` now redesignated as `Terminus\Helpers\AuthHelper`. (#881)
+- Helpers are now added to the `TerminusCommand`'s `helpers` property. (#881)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)

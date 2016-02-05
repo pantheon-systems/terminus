@@ -3,7 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Auth;
 use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
@@ -29,8 +28,8 @@ class SiteCommand extends TerminusCommand {
    * @return SiteCommand
    */
   public function __construct(array $options = []) {
-    Auth::ensureLogin();
     parent::__construct($options);
+    $this->helpers->auth->ensureLogin();
     $this->sites = new Sites();
   }
 
