@@ -1,34 +1,35 @@
 <?php
 
-use Terminus\Auth;
+use Terminus\Helpers\AuthHelper;
+use Terminus\Loggers\Logger;
 use Terminus\TokensCache;
 use Terminus\Exceptions\TerminusException;
 
 /**
- * Testing class for Terminus\Auth
+ * Testing class for Terminus\Helpers\AuthHelper
  */
 class AuthTest extends PHPUnit_Framework_TestCase {
 
   /**
-   * @var Auth
+   * @var AuthHelper
    */
   private $auth;
 
   public function __construct() {
-    $this->auth = new Auth();
+    $options    = ['logger' => getLogger()];
+    $this->auth = new AuthHelper($options);
   }
 
   public function testConstruct() {
-    $auth = new Auth();
-    $this->assertTrue(strpos(get_class($auth), 'Auth') !== false);
+    $this->assertTrue(strpos(get_class($this->auth), 'AuthHelper') !== false);
   }
 
   public function testEnsureLogin() {
-    $this->assertTrue(Auth::ensureLogin());
+    $this->assertTrue($this->auth->ensureLogin());
   }
 
   public function testGetMachineTokenCreationUrl() {
-    $url = Auth::getMachineTokenCreationUrl();
+    $url = $this->auth->getMachineTokenCreationUrl();
     $this->assertInternalType('string', $url);
     $this->assertInternalType('integer', strpos($url, 'machine-token/create'));
   }

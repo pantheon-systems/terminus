@@ -3,20 +3,21 @@
 namespace Terminus\Helpers;
 
 use Terminus;
-use Terminus\Session;
-use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Helpers\TerminusHelper;
+use Terminus\Models\Collections\Sites;
+use Terminus\Models\Collections\Upstreams;
 use Terminus\Models\Site;
 use Terminus\Models\Upstream;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Collections\Upstreams;
+use Terminus\Session;
+use Terminus\Utils;
 
 /**
  * Helper class to handle inputs
  */
-class Input {
+class InputHelper extends TerminusHelper {
   private $NULL_INPUTS = ['', 'false', 'None', 'Null', '0'];
 
   /**
@@ -127,7 +128,7 @@ class Input {
     ];
     $options         = array_merge($default_options, $arg_options);
     $question        = vsprintf($options['message'], $options['context']);
-    fwrite(STDOUT, $question . ' [y/n] ');
+    $this->log()->line($question . ' [y/n]');
     $answer = trim(fgets(STDIN));
 
     if ($answer != 'y') {
@@ -452,7 +453,7 @@ class Input {
         . addslashes($options['message'])
         . "\" mypassword && echo \$mypassword'";
       $response = rtrim(shell_exec($command));
-      echo "\n";
+      $this->log()->line();
     }
     if (empty($response)) {
       return $options['default'];

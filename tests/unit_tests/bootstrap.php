@@ -15,8 +15,10 @@ putenv('CLI_TEST_MODE=1');
 require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
-use Terminus\Auth;
+
 use Terminus\Exceptions\TerminusException;
+use Terminus\Helpers\AuthHelper;
+use Terminus\Loggers\Logger;
 use Terminus\Session;
 
 \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
@@ -57,14 +59,25 @@ function getLogFileName() {
   return $file_name;
 }
 
+function getLogger() {
+  static $logger;
+  if (!isset($logger)) {
+    $logger = new Logger(
+      ['config' => ['debug' => false, 'format' => 'normal']]
+    );
+  }
+  return $logger;
+}
+
 /**
  * Logs in with Behad credentials to enable Behat fixture use
  *
  * @return void
  */
 function logInWithBehatCredentials() {
-  $creds = getBehatCredentials();
-  $auth  = new Auth();
+  $creds   = getBehatCredentials();
+  $options = ['logger' => getLogger()];
+  $auth    = new AuthHelper($options);
   $auth->logInViaUsernameAndPassword($creds['username'], $creds['password']);
 }
 

@@ -3,7 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Auth;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
@@ -27,8 +26,8 @@ class WorkflowsCommand extends TerminusCommand {
    * @return WorkflowsCommand
    */
   public function __construct(array $options = []) {
-    Auth::ensureLogin();
     parent::__construct($options);
+    $this->helpers->auth->ensureLogin();
     $this->sites = new Sites();
   }
 
