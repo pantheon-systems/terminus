@@ -43,7 +43,7 @@ class WpCommand extends CommandWithSSH {
   public function __invoke($args, $assoc_args) {
     $elements = $this->getElements($args, $assoc_args);
     $result   = $this->sendCommand($elements);
-    if (Terminus::getConfig('format') != 'normal') {
+    if ($this->log()->getOptions('logFormat') != 'normal') {
       $this->output()->outputRecordList($result);
     }
   }

@@ -73,22 +73,12 @@ class Subcommand extends CompositeCommand {
   }
 
   /**
-   * Displays the usage parameters of the command this object represents
-   *
-   * @param string $prefix Prefix for this command's usage
-   * @return void
-   */
-  public function showUsage($prefix = 'usage: ') {
-    Terminus::getOutputter()->line($this->getUsage($prefix));
-  }
-
-  /**
    * Gets the usage parameters of the command this object represents
    *
    * @param string $prefix Prefix to usage string
    * @return string
    */
-  public function getUsage($prefix) {
+  public function getUsage($prefix = 'usage: ') {
     $usage = sprintf(
       '%s%s %s',
       $prefix,
@@ -274,7 +264,7 @@ class Subcommand extends CompositeCommand {
     }
 
     if (!$validator->enoughPositionals($args)) {
-      $this->showUsage();
+      throw new TerminusException($this->getUsage());
       exit(1);
     }
     if ($this->name != 'help') {

@@ -62,9 +62,6 @@ class RootCommand extends CompositeCommand {
       );
     }
 
-    if (Terminus::getConfig('format') == 'json') {
-      return $binding;
-    }
     return $binding;
   }
 

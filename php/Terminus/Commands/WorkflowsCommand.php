@@ -97,7 +97,7 @@ class WorkflowsCommand extends TerminusCommand {
     $workflow->fetchWithLogs();
 
     $workflow_data = $workflow->serialize();
-    if (Terminus::getConfig('format') == 'normal') {
+    if ($this->log()->getOptions('logFormat') == 'normal') {
       unset($workflow_data['operations']);
       $this->output()->outputRecord($workflow_data);
 

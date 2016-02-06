@@ -136,7 +136,7 @@ class CompositeCommand {
    * @param string $prefix Prefix to usage string
    * @return string
    */
-  public function getUsage($prefix) {
+  public function parseUsage($prefix) {
     $usage = sprintf(
       '%s%s %s',
       $prefix,
@@ -151,34 +151,30 @@ class CompositeCommand {
    *
    * @param array $args       Array of command line non-params and non-flags
    * @param array $assoc_args Array of command line params and flags
-   * @return void
+   * @return string
    */
   public function invoke(array $args, array $assoc_args) {
-    $this->showUsage();
+    return $this->getUsage();
   }
 
   /**
    * Displays the usage parameters of the command this object represents
    *
-   * @return void
+   * @return string
    */
-  public function showUsage() {
-    $methods   = $this->getSubcommands();
-    $outputter = Terminus::getOutputter();
+  public function getUsage() {
+    $methods = $this->getSubcommands();
 
     if (!empty($methods)) {
       $subcommand = array_shift($methods);
-      $outputter->line($subcommand->getUsage('usage: '));
+      $outputter->line($subcommand->parseUsage('usage: '));
       foreach ($methods as $name => $subcommand) {
-        $outputter->line($subcommand->getUsage('   or: '));
+        $outputter->line($subcommand->parseUsage('   or: '));
       }
     }
-    $outputter->line();
-    $outputter->line(
-      'See "terminus help '
-      . $this->name
-      . '<command>" for more information on a specific command.'
-    );
+    $usage = PHP_EOL . 'See "terminus help '. $this->name
+      . '<command>" for more information on a specific command.';
+    return $usage;
   }
 
   /**

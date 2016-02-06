@@ -32,7 +32,7 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       'latest_release',
       ['check_date' => strtotime('8 days ago')]
     );
-    Utils\checkForUpdate();
+    Utils\checkForUpdate(getLogger());
     $file_contents = explode("\n", file_get_contents($log_file));
     $this->assertFalse(
       strpos(array_pop($file_contents), 'An update to Terminus is available.')
