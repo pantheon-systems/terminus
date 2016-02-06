@@ -46,20 +46,6 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(strpos(get_class($outputter), 'Outputter') !== false);
   }
 
-  public function testGetPhpBinary() {
-    $php_binary = PHP_BINARY;
-
-    putenv("TERMINUS_PHP_USED=$php_binary");
-    $this->testLaunchSelf();
-
-    putenv("TERMINUS_PHP_USED=");
-    putenv("TERMINUS_PHP=$php_binary");
-    $this->testLaunchSelf();
-
-    putenv("TERMINUS_PHP=");
-    $this->testLaunchSelf();
-  }
-
   public function testGetRootCommand() {
     $root_command = Terminus::getRootCommand();
     $this->assertTrue(
@@ -78,44 +64,6 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $desc = $root_command->getLongdesc();
     $this->assertTrue(count($desc['parameters']) == 4);
 
-  }
-
-  public function testLaunch() {
-    $file_name = '/tmp/output';
-    //Testing a good command
-    setOutputDestination($file_name);
-    $return = Terminus::launch("ls tests/ > $file_name");
-    $output = retrieveOutput($file_name);
-    $this->assertTrue(strpos($output, 'unit_tests') !== false);
-    $this->assertEquals($return, 0);
-    resetOutputDestination($file_name);
-
-    //Testing a bad command
-    setOutputDestination($file_name);
-    $return = Terminus::launch("exit 1 > $file_name", false);
-    $output = retrieveOutput($file_name);
-    $this->assertEquals($return, 1);
-    resetOutputDestination($file_name);
-  }
-
-  public function testLaunchSelf() {
-    $file_name = '/tmp/output';
-    //Testing the library route
-    setOutputDestination($file_name);
-    $return = Terminus::launchSelf("art unicorn > $file_name");
-    $output = retrieveOutput($file_name);
-    $this->assertTrue(strpos($output, "<.'_.''") !== false);
-    $this->assertEquals($return, 0);
-    resetOutputDestination($file_name);
-
-    //Testing the command-line route
-    setOutputDestination($file_name);
-    $GLOBALS['argv'] = [__DIR__ . '/../../php/boot-fs.php'];
-    $return = Terminus::launchSelf("art unicorn > $file_name");
-    $output = retrieveOutput($file_name);
-    $this->assertTrue(strpos($output, "<.'_.''") !== false);
-    $this->assertEquals($return, 0);
-    resetOutputDestination($file_name);
   }
 
   public function testSetCache() {

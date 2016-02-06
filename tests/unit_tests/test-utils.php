@@ -7,12 +7,6 @@ use Terminus\Utils;
  */
 class UtilsTest extends PHPUnit_Framework_TestCase {
 
-  public function testAssocArgsToStr() {
-    $assoc_args  = ['argument' => 'value', 'flag' => true];
-    $args_string = Utils\assocArgsToStr($assoc_args);
-    $this->assertEquals($args_string, " --argument='value' --flag");
-  }
-
   /**
    * @vcr utils#checkCurrentVersion
    */

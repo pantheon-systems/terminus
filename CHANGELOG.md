@@ -6,7 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New `Hostnames` collection and `Hostname` model. (#860)
 - Added 3rd Party plugin support (#857)
 - Output destinations can now be set via `Terminus#setOutputter` or an element of the options fed into the `Terminus` constructor. (#873)
-- HTTPS Certificates on Site Environments can be added/updated using `site set-https-certificate`
+- HTTPS Certificates on Site Environments can be added/updated using `site set-https-certificate` (#792)
 
 ### Changed
 - When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)
@@ -16,6 +16,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `Outputter#line()` now outputs to the set writer output destination rather than STDERR. (#873)
 - `Terminus\Auth` now redesignated as `Terminus\Helpers\AuthHelper`. (#881)
 - Helpers are now added to the `TerminusCommand`'s `helpers` property. (#881)
+- Extracted launching functions from `Terminus` (base class) and moved them into new `LaunchHelper` class. (#882)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)

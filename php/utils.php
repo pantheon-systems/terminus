@@ -20,26 +20,6 @@ if (!defined('JSON_PRETTY_PRINT')) {
 }
 
 /**
- * Composes associative arguments into a command string
- *
- * @param array $assoc_args Arguments for command line in array form
- * @return string Command string form of param
- */
-function assocArgsToStr($assoc_args) {
-  $return = '';
-
-  foreach ($assoc_args as $key => $value) {
-    if ($value === true) {
-      $return .= " --$key";
-    } else {
-      $return .= " --$key=" . escapeshellarg($value);
-    }
-  }
-
-  return $return;
-}
-
-/**
   * Retrieves current version number from repository and saves it to the cache
   *
   * @return string The version number
@@ -60,6 +40,7 @@ function checkCurrentVersion() {
 /**
   * Checks for new versions of Terminus once per week and saves to cache
   *
+  * @param Logger $logger Logger to use to report result of check
   * @return void
   */
 function checkForUpdate($logger) {

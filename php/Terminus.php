@@ -136,58 +136,6 @@ class Terminus {
   }
 
   /**
-   * Launch an external process that takes over I/O.
-   *
-   * @param string $command       Command to call
-   * @param bool   $exit_on_error True to exit if the command returns error
-   * @return int   The command exit status
-   */
-  public static function launch($command, $exit_on_error = true) {
-    if (Utils\isWindows()) {
-      $command = '"' . $command . '"';
-    }
-    $r = proc_close(proc_open($command, array(STDIN, STDOUT, STDERR), $pipes));
-
-    if ($r && $exit_on_error) {
-      exit($r);
-    }
-
-    return $r;
-  }
-
-  /**
-   * Launch another Terminus command using the runtime arguments for the
-   * current process
-   *
-   * @param string $command       Command to call
-   * @param array  $args          Positional arguments to use
-   * @param array  $assoc_args    Associative arguments to use
-   * @param bool   $exit_on_error True to exit if the command returns error
-   * @return int   The command exit status
-   */
-  public static function launchSelf(
-    $command,
-    $args = array(),
-    $assoc_args = array(),
-    $exit_on_error = true
-  ) {
-    if (isset($GLOBALS['argv'])) {
-      $script_path = $GLOBALS['argv'][0];
-    } else {
-      $script_path = __DIR__ . '/boot-fs.php';
-    }
-
-    $php_bin      = '"' . self::getPhpBinary() . '"' ;
-    $script_path  = '"' . $script_path . '"';
-    $escaped_args = array_map('escapeshellarg', $args);
-    $args         = implode(' ', $escaped_args);
-    $assoc_args   = Utils\assocArgsToStr($assoc_args);
-    $full_command = "$php_bin $script_path $command $args $assoc_args";
-    $status       = self::launch($full_command, $exit_on_error);
-    return $status;
-  }
-
-  /**
    * Sets a file cache instance to a class property
    *
    * @return void
@@ -242,24 +190,6 @@ class Terminus {
       new Terminus\Outputters\StreamWriter($destination),
       $formatter
     );
-  }
-
-  /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
-  private static function getPhpBinary() {
-    if (getenv('TERMINUS_PHP_USED')) {
-      $php_bin = getenv('TERMINUS_PHP_USED');
-    } elseif (getenv('TERMINUS_PHP')) {
-      $php_bin = getenv('TERMINUS_PHP');
-    } elseif (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } else {
-      $php_bin = 'php';
-    }
-    return $php_bin;
   }
 
   /**
