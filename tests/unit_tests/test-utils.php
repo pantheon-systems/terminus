@@ -214,10 +214,4 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($stripped_data['more']['password'] == '*****');
   }
 
-  public function testTwigRender() {
-    $template_name     = 'man.twig';
-    $rendered_template = Utils\twigRender($template_name, [], []);
-    $this->assertTrue(strpos($rendered_template, '##NAME') === 0);
-  }
-
 }

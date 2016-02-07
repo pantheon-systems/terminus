@@ -196,10 +196,12 @@ class HelpCommand extends TerminusCommand {
     if ($this->log()->getOptions('logFormat') == 'json') {
       $this->output()->outputRecord($out);
     } else {
-      $rendered_help = Utils\twigRender(
-        'man.twig',
-        $out,
-        array('recursive' => $this->recursive)
+      $rendered_help = $this->helpers->template->render(
+        [
+          'template_name' => 'man.twig',
+          'data'          => $out,
+          'options'       => ['recursive' => $this->recursive]
+         ]
       );
       if ($this->log()->getOptions('logFormat') == 'normal') {
         $exit_status = $this->passThroughPager($rendered_help);
