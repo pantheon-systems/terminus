@@ -11,7 +11,6 @@ use Terminus\Dispatcher\CompositeCommand;
 use Terminus\DocParser;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
-use Terminus\Iterators\Transform;
 use Terminus\Request;
 use Terminus\Session;
 
@@ -364,24 +363,3 @@ function stripSensitiveData($request_data, $blacklist = []) {
   return $request_data;
 }
 
-/**
- * Render PHP or other types of files using Twig templates
- *
- * @param string $template_name File name of the template to be used
- * @param array  $data          Context to pass through for template use
- * @param array  $options       Options to pass through for template use
- * @return string The rendered template
- */
-function twigRender($template_name, $data, $options) {
-  $loader            = new \Twig_Loader_Filesystem(TERMINUS_ROOT . '/templates');
-  $twig              = new \Twig_Environment($loader);
-  $rendered_template = $twig->render(
-    $template_name,
-    [
-      'data'          => $data,
-      'template_name' => $template_name,
-      'options'       => $options,
-    ]
-  );
-  return $rendered_template;
-}

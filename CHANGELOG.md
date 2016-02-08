@@ -17,6 +17,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `Terminus\Auth` now redesignated as `Terminus\Helpers\AuthHelper`. (#881)
 - Helpers are now added to the `TerminusCommand`'s `helpers` property. (#881)
 - Extracted launching functions from `Terminus` (base class) and moved them into new `LaunchHelper` class. (#882)
+- Extracted template function from `Utils` and moved it into new `TemplateHelper` class. (#884)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)

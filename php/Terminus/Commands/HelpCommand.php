@@ -172,14 +172,11 @@ class HelpCommand extends TerminusCommand {
     $fd = fopen('php://temp', 'r+;');
     fputs($fd, $out);
     rewind($fd);
+    $descriptor_spec = [$fd, STDOUT, STDERR];
 
-    $descriptorspec = array(
-      0 => $fd,
-      1 => STDOUT,
-      2 => STDERR
+    $exit_status = $this->helpers->launch->launch(
+      ['command' => 'less ', 'descriptor_spec' => $descriptor_spec,]
     );
-
-    $exit_status = proc_close(proc_open('less ', $descriptorspec, $pipes));
     return $exit_status;
   }
 
@@ -196,10 +193,12 @@ class HelpCommand extends TerminusCommand {
     if ($this->log()->getOptions('logFormat') == 'json') {
       $this->output()->outputRecord($out);
     } else {
-      $rendered_help = Utils\twigRender(
-        'man.twig',
-        $out,
-        array('recursive' => $this->recursive)
+      $rendered_help = $this->helpers->template->render(
+        [
+          'template_name' => 'man.twig',
+          'data'          => $out,
+          'options'       => ['recursive' => $this->recursive]
+         ]
       );
       if ($this->log()->getOptions('logFormat') == 'normal') {
         $exit_status = $this->passThroughPager($rendered_help);

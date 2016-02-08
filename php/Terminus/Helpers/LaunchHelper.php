@@ -11,24 +11,30 @@ class LaunchHelper extends TerminusHelper {
    * Launch an external process that takes over I/O.
    *
    * @param array $arg_options Elements as follow:
-   *        string command       Command to call
-   *        bool   exit_on_error True to exit if the command returns error
+   *        string command         Command to call
+   *        array  descriptor_spec How PHP passes descriptor to child process
+   *        bool   exit_on_error   True to exit if the command returns error
    * @return int   The command exit status
    */
   public function launch(array $arg_options = []) {
-    $default_options = ['exit_on_error' => true];
+    $default_options = [
+      'exit_on_error'   => true,
+      'descriptor_spec' => [STDIN, STDOUT, STDERR],
+    ];
     $options         = array_merge($default_options, $arg_options);
     $command         = $options['command'];
     if (Utils\isWindows()) {
       $command = '"' . $command . '"';
     }
-    $r = proc_close(proc_open($command, [STDIN, STDOUT, STDERR], $pipes));
+    $status = proc_close(
+      proc_open($command, $options['descriptor_spec'], $pipes)
+    );
 
-    if ($r && $options['exit_on_error']) {
-      exit($r);
+    if ((boolean)$status && $options['exit_on_error']) {
+      exit($status);
     }
 
-    return $r;
+    return $status;
   }
 
   /**
