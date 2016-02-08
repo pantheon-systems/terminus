@@ -3,7 +3,7 @@
 namespace Terminus\Models\Collections;
 
 use Terminus\Session;
-use Terminus\SitesCache;
+use Terminus\Caches\SitesCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\Site;

@@ -11,7 +11,7 @@
  *     Jordi Boggiano <j.boggiano@seld.be>
  */
 
-namespace Terminus;
+namespace Terminus\Caches;
 
 use Symfony\Component\Finder\Finder;
 use Terminus\Exceptions\TerminusException;

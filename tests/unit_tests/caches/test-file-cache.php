@@ -1,9 +1,9 @@
 <?php
 
-use Terminus\FileCache;
+use Terminus\Caches\FileCache;
 
 /**
- * Testing class for Terminus\FileCache
+ * Testing class for Terminus\Caches\FileCache
  */
 class FileCacheTest extends PHPUnit_Framework_TestCase {
 

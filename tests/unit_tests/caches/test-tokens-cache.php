@@ -1,9 +1,9 @@
 <?php
 
-use Terminus\TokensCache;
+use Terminus\Caches\TokensCache;
 
 /**
- * Testing class for Terminus\TokensCache
+ * Testing class for Terminus\Caches\TokensCache
  */
 class TokensCacheTest extends PHPUnit_Framework_TestCase {
 

@@ -2,7 +2,7 @@
 
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
-use Terminus\FileCache;
+use Terminus\Caches\FileCache;
 use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;

@@ -7,7 +7,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Request;
 use Terminus\Session;
-use Terminus\TokensCache;
+use Terminus\Caches\TokensCache;
 use Terminus\Utils;
 
 class AuthHelper extends TerminusHelper {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus;
+namespace Terminus\Caches;
 
 use Terminus\Exceptions\TerminusException;
 

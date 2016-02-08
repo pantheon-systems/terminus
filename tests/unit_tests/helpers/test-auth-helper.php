@@ -2,7 +2,7 @@
 
 use Terminus\Helpers\AuthHelper;
 use Terminus\Loggers\Logger;
-use Terminus\TokensCache;
+use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
 
 /**

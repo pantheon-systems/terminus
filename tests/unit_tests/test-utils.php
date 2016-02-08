@@ -82,8 +82,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(isset($message));
 
     resetOutputDestination($file_name);
-    Utils\destinationIsValid($file_name);
-    resetOutputDestination($file_name);
     Utils\destinationIsValid('/tmp/');
   }
 
