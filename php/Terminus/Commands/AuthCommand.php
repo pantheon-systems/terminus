@@ -91,7 +91,9 @@ class AuthCommand extends TerminusCommand {
     }
 
     $this->log()->debug(get_defined_vars());
-    Terminus::launchSelf('art', array('fist'));
+    $this->helpers->launch->launchSelf(
+      ['command' => 'art', 'args' => ['fist']]
+    );
   }
 
   /**

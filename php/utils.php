@@ -5,38 +5,18 @@ namespace Terminus\Utils;
 use ArrayIterator;
 use Symfony\Component\Yaml\Yaml;
 use Terminus;
-use Terminus\Request;
-use Terminus\Helpers\Input;
-use Terminus\Iterators\Transform;
-use Terminus\Exceptions\TerminusException;
-use Terminus\DocParser;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
+use Terminus\DocParser;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Helpers\Input;
+use Terminus\Iterators\Transform;
+use Terminus\Request;
 use Terminus\Session;
 
 if (!defined('JSON_PRETTY_PRINT')) {
   define('JSON_PRETTY_PRINT', 128);
-}
-
-/**
- * Composes associative arguments into a command string
- *
- * @param array $assoc_args Arguments for command line in array form
- * @return string Command string form of param
- */
-function assocArgsToStr($assoc_args) {
-  $return = '';
-
-  foreach ($assoc_args as $key => $value) {
-    if ($value === true) {
-      $return .= " --$key";
-    } else {
-      $return .= " --$key=" . escapeshellarg($value);
-    }
-  }
-
-  return $return;
 }
 
 /**
@@ -60,9 +40,10 @@ function checkCurrentVersion() {
 /**
   * Checks for new versions of Terminus once per week and saves to cache
   *
+  * @param Logger $logger Logger to use to report result of check
   * @return void
   */
-function checkForUpdate() {
+function checkForUpdate($logger) {
   $cache_data = Terminus::getCache()->getData(
     'latest_release',
     ['decode_array' => true]
@@ -70,10 +51,8 @@ function checkForUpdate() {
   if (!$cache_data
     || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
   ) {
-    $logger = Terminus::getLogger();
     try {
       $current_version = checkCurrentVersion();
-      echo $current_version . PHP_EOL;
       if (version_compare($current_version, TERMINUS_VERSION, '>')) {
         $logger->info(
           'An update to Terminus is available. Please update to {version}.',

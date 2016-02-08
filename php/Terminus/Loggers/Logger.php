@@ -77,6 +77,27 @@ class Logger extends KLogger {
   }
 
   /**
+   * Returns the option with the key given
+   *
+   * @param string $key Key to look for in options property
+   * @return mixed
+   */
+  public function getOptions($key = null) {
+    $options = $this->options;
+    if (is_null($key)) {
+      return $options;
+    }
+    if (isset($options[$key])) {
+      return $options[$key];
+    }
+    throw new TerminusException(
+      'The logger has no option named "{key}".',
+      compact('key'),
+      1
+    );
+  }
+
+  /**
     * Formats the message for logging.
     *
     * @param  string $level   The Log Level of the message

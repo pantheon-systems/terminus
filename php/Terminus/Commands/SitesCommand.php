@@ -136,10 +136,12 @@ class SitesCommand extends TerminusCommand {
     $final_task = $workflow->get('final_task');
     $this->sites->addSiteToCache($final_task->site_id);
 
-    Terminus::launchSelf(
-      'site', array('info'), array(
-      'site' => $options['name'],
-      )
+    $this->helpers->launch->launchSelf(
+      [
+        'command' => 'site',
+        'args' => ['info'],
+        'assoc_args' => ['site' => $options['name']]
+      ]
     );
 
     return true;

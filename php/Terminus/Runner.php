@@ -104,7 +104,7 @@ class Runner {
         list($command) = $r;
 
         if ($command->canHaveSubcommands()) {
-          $command->showUsage();
+          $this->logger->info($command->getUsage());
           exit;
         }
       }
@@ -128,7 +128,10 @@ class Runner {
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
       $name = implode(' ', $cmd_path);
 
-      $command->invoke($final_args, $assoc_args);
+      $return = $command->invoke($final_args, $assoc_args);
+      if (is_string($return)) {
+        $this->logger->info($return);
+      }
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
         $this->logger->error($e->getMessage(), $e->getReplacements());

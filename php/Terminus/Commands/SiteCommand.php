@@ -3,14 +3,14 @@
 namespace Terminus\Commands;
 
 use Terminus;
-use Terminus\Request;
-use Terminus\Session;
-use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
 use Terminus\Models\Collections\Sites;
+use Terminus\Request;
+use Terminus\Session;
+use Terminus\Utils;
 
 /**
  * Actions to be taken on an individual site
@@ -860,7 +860,7 @@ class SiteCommand extends TerminusCommand {
       case 'list':
         $hostnames = $env->hostnames->all();
         $data      = $hostnames;
-        if (Terminus::getConfig('format') != 'json') {
+        if ($this->log()->getOptions('logFormat') != 'json') {
           //If were not just dumping the JSON, then we should reformat the data.
           $data = array();
           foreach ($hostnames as $hostname => $details) {

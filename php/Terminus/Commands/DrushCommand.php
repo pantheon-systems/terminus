@@ -44,13 +44,13 @@ class DrushCommand extends CommandWithSSH {
     $elements = $this->getElements($args, $assoc_args);
 
     if (in_array(
-      Terminus::getConfig('format'),
+      $this->log()->getOptions('logFormat'),
       array('bash', 'json', 'silent')
     )) {
       $elements['command'] .= ' --pipe';
     }
     $result = $this->sendCommand($elements);
-    if (Terminus::getConfig('format') != 'normal') {
+    if ($this->log()->getOptions('logFormat') != 'normal') {
       $this->output()->outputRecordList($result);
     }
   }

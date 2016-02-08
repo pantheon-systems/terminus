@@ -7,12 +7,6 @@ use Terminus\Utils;
  */
 class UtilsTest extends PHPUnit_Framework_TestCase {
 
-  public function testAssocArgsToStr() {
-    $assoc_args  = ['argument' => 'value', 'flag' => true];
-    $args_string = Utils\assocArgsToStr($assoc_args);
-    $this->assertEquals($args_string, " --argument='value' --flag");
-  }
-
   /**
    * @vcr utils#checkCurrentVersion
    */
@@ -32,7 +26,7 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       'latest_release',
       ['check_date' => strtotime('8 days ago')]
     );
-    Utils\checkForUpdate();
+    Utils\checkForUpdate(getLogger());
     $file_contents = explode("\n", file_get_contents($log_file));
     $this->assertFalse(
       strpos(array_pop($file_contents), 'An update to Terminus is available.')

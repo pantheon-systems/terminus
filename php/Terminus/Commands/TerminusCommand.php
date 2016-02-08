@@ -69,7 +69,7 @@ abstract class TerminusCommand {
     $this->loadHelpers();
 
     if (!Utils\isTest()) {
-      Utils\checkForUpdate();
+      Utils\checkForUpdate($this->logger);
     }
   }
 
