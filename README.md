@@ -49,7 +49,7 @@ Or replace $HOME with the directory to which you would like to install.
 
 2. Install the Composer dependencies.
   ```bash
-  cd pantheon-cli
+  cd terminus
   composer install
   ```
 You can now run the bleeding-edge version of Terminus via:
@@ -59,11 +59,11 @@ You can now run the bleeding-edge version of Terminus via:
 
 **Optionally**, for ease of development, we suggest aliasing or setting the path to this script in your Bash configuration file. This file is located at ~/.bashrc on Linux and ~/.bash_profile on Mac.
 ```bash
-alias terminus="$HOME/pantheon-cli/bin/terminus"
+alias terminus="$HOME/terminus/bin/terminus"
 ```
 or
 ```bash
-export PATH="$PATH:$HOME/pantheon-cli/bin"
+export PATH="$PATH:$HOME/terminus/bin"
 ```
 Once you source the file or restart your terminal client, you can now make use of Terminus using
 ```bash
@@ -113,17 +113,17 @@ Here are steps to follow if you would like to contribute to Terminus:
 1. Fork the repository.
 2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   ./scripts/lint.sh
   ```
 And run your tests via:
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   ./scripts/test.sh
   ```
 Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   php utils/make-docs.php
   ```
 
