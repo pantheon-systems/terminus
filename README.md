@@ -141,3 +141,5 @@ Further Reading
 ------------
 * [Terminus' Wiki](https://github.com/pantheon-systems/cli/wiki)
 * [Usage](https://github.com/pantheon-systems/cli/wiki/Usage)
+
+If you are looking for the precursor to this project, which is now deprecated see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)
