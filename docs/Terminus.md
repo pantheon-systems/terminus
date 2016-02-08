@@ -62,7 +62,7 @@ You can access these via their owners.
 Navigate to the directory in which your script is being constructed in the
 terminal and use this command:
 
-`composer require pantheon-systems/cli`
+`composer require pantheon-systems/terminus`
 2. Include the Terminus source code. Composer handily places the code you
 called for into the `vendor` directory within the directory you are in.
 Use this to load Terminus' source to your script:

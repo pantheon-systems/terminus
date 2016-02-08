@@ -28,14 +28,14 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminal client:
 ```
-composer require pantheon-systems/cli
+composer require pantheon-systems/terminus
 ```
 
 ####Installing with cURL
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.10.2/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/terminus/releases/download/0.10.2/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
@@ -43,7 +43,7 @@ To install with Git and use Terminus HEAD, you should clone this repository and 
 1. Clone the repository. If you plan on contributing to the project, create a fork and clone the fork instead.
   ```bash
   cd $HOME
-  git clone https://github.com/pantheon-systems/cli.git pantheon-cli
+  git clone https://github.com/pantheon-systems/terminus.git terminus
   ```
 Or replace $HOME with the directory to which you would like to install.
 
@@ -84,7 +84,7 @@ Your dashboard password (input will not be shown)
 
 Tab completion
 --------------
-Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/cli/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
+Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/terminus/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
 
 ```bash
 source /FULL/PATH/TO/terminus-completion.bash
@@ -98,7 +98,7 @@ Please make ready the steps to reproduce the issue, outputs, pertinent informati
 
 **If yours is a problem with Terminus itself:**
 
-1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/cli/issues) to see whether another user has reported the same issue you are experiencing.
+1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/terminus/issues) to see whether another user has reported the same issue you are experiencing.
 2. If the problem you are experiencing is not in the issues, you can open a new issue. Please include the helpful information you have gathered.
 3. If you find your problem in an issue, feel free to add your issue information in the comments and/or subscribe to the issue's notifications.
 
@@ -136,7 +136,7 @@ Credits
 
 Further Reading
 ------------
-* [Terminus' Wiki](https://github.com/pantheon-systems/cli/wiki)
-* [Usage](https://github.com/pantheon-systems/cli/wiki/Usage)
+* [Terminus' Wiki](https://github.com/pantheon-systems/terminus/wiki)
+* [Usage](https://github.com/pantheon-systems/terminus/wiki/Usage)
 
 If you are looking for the precursor to this project, which is now deprecated see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)

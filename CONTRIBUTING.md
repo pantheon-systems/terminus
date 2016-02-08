@@ -4,7 +4,7 @@ Contribute
 Creating Issues
 ---------------
 
-Run `terminus cli version` to confirm you are [running the latest version](https://github.com/pantheon-systems/cli/wiki/Installation) before opening a new issue.
+Run `terminus cli version` to confirm you are [running the latest version](https://github.com/pantheon-systems/terminus/releases) before opening a new issue.
 
 Setting Up
 ----------
@@ -19,8 +19,8 @@ Submitting Patches
 
 Whether you want to fix a bug or implement a new feature, the process is pretty much the same:
 
-0. [Search existing issues](https://github.com/pantheon-systems/cli/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
-1. [Fork](https://github.com/pantheon-systems/cli/fork) the repository.
+0. [Search existing issues](https://github.com/pantheon-systems/terminus/issues); if you can't find anything related to what you want to work on, open a new issue so that you can get some initial feedback.
+1. [Fork](https://github.com/pantheon-systems/terminus/fork) the repository.
 2. Push the code changes from your local clone to your fork.
 3. Open a pull request.
 
@@ -62,24 +62,24 @@ Or to test a single feature:
 
 More information can be found by running `vendor/bin/behat --help`.
 
-Versioning 
+Versioning
 ----------
 
-### Versions 
+### Versions
 
-In keeping with the standards of semantic versioning, backward-incompatible fixes are targeted to "major" versions. "Minor" versions are reserved for significant feature/bug releases needed between major versions. "Patch" releases are reserved only for critical security issues and other bugs critical to stabilizing the release. 
+In keeping with the standards of semantic versioning, backward-incompatible fixes are targeted to "major" versions. "Minor" versions are reserved for significant feature/bug releases needed between major versions. "Patch" releases are reserved only for critical security issues and other bugs critical to stabilizing the release.
 
-After a new major version is released, previous major versions are actively supported for one year. 
+After a new major version is released, previous major versions are actively supported for one year.
 
 #### What qualifies as a backward-incompatible change?
 
-Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --format=json or --format=bash formatting, we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, should not be assumed to be compatible. 
+Our initial commitment will be to command compatibility and parameter compatibility. However, since on the command line STDOUT and STDERR are essentially APIs we will make a best effort to keep machine-readable output compatibility, meaning if your code interfaces with Terminus via --format=json or --format=bash formatting, we will try our best to ensure these are stable and compatible between minor release. However, changes to the STDOUT, like success and fail messages, should not be assumed to be compatible.
 
 ### Release Stability
 
-If you are using Terminus in a production environment, you should be deploying the executable for [the latest release](https://github.com/pantheon-systems/cli/releases).
+If you are using Terminus in a production environment, you should be deploying the executable for [the latest release](https://github.com/pantheon-systems/terminus/releases).
 
-Ongoing development on the next planned release will be on the master branch and should not be considered stable, as changes will be taking place on a daily basis. 
+Ongoing development on the next planned release will be on the master branch and should not be considered stable, as changes will be taking place on a daily basis.
 
 Feedback
 --------
