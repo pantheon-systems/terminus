@@ -1,13 +1,10 @@
-Pantheon CLI
+Terminus
 ============
 
-[![Build Status](https://travis-ci.org/pantheon-systems/cli.svg?branch=master)](https://travis-ci.org/pantheon-systems/cli) [![Dependency Status](https://gemnasium.com/pantheon-systems/cli.svg)](https://gemnasium.com/pantheon-systems/cli)
-[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/cli/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/cli?branch=master)
+[![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus) [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
+[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
 
-The Pantheon Command Line Interface is a successor to the "Terminus" project, which provides access to the Pantheon Platform via Drush. While Terminus has provided great value (and we're going to keep the name in the product,) we felt that it was important to have a first-class standalone CLI toolkit:
-
-- That we could distribute as an independent executable.
-- Which could "wrap" other commands that run on the platform.
+Terminus is Pantheon's Command Line Interface (CLI), providing equivalent functionality to the Pantheon Web Dashboard and easier scripting.
 
 If you would like to contribute, pull requests are welcome!
 

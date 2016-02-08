@@ -1,5 +1,5 @@
 {
-  "name": "pantheon-systems/cli",
+  "name": "pantheon-systems/terminus",
   "description": "A command line interface for Pantheon",
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "http://getpantheon.com",
