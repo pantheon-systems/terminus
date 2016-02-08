@@ -24,6 +24,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `auth login <email> --password=<password>` will not automatically attempt to log in via machine token if a token with the given email is present. (#865)
 - `site deploy` now correctly counts queued commits and will not report there is nothing to deploy erroneously. (#879)
 
+## 2016-02-08 - Change repository name
+- Renamed repository from `cli` to `terminus`. Renamed the precursor to this project `terminus-deprecated`. These changes may require updating scripts if you are manually fetching packages from GitHub. (#877)
+
 ## [0.10.2] - 2016-01-27
 ### Added
 - Added a [Drush alias-generating script](docs/examples/PantheonAliases.php) to the Terminus-as-a-library docmentation examples. (#808)
