@@ -16,7 +16,10 @@ class Subcommand extends CompositeCommand {
    * @var string
    */
   private $alias;
-
+  /**
+   * @var array
+   */
+  private $config;
   /**
    * @var callable
    */
@@ -29,16 +32,20 @@ class Subcommand extends CompositeCommand {
    * @param string           $name         Name of command to run
    * @param DocParser        $docparser    DocParser object for analysis of docs
    * @param callable         $when_invoked Indicates classes & methods to use
+   * @param array            $options      Options to be fed into command
    */
   public function __construct(
     CompositeCommand $parent,
     $name,
     DocParser $docparser,
-    callable $when_invoked
+    callable $when_invoked,
+    array $options
   ) {
     parent::__construct($parent, $name, $docparser);
     $this->when_invoked = $when_invoked;
     $this->alias        = $docparser->getTag('alias');
+    $this->config       = $options['runner']->getConfig();
+    $this->logger       = $options['runner']->logger;
     $this->synopsis     = $docparser->getSynopsis();
     if (!$this->synopsis && $this->longdesc) {
       $this->synopsis = self::extractSynopsis($this->longdesc);
@@ -257,7 +264,7 @@ class Subcommand extends CompositeCommand {
 
     $cmd_path = implode(' ', getPath($this));
     foreach ($validator->getUnknown() as $token) {
-      Terminus::getLogger()->warning(
+      $this->logger->warning(
         'The `{cmd}` command has an invalid synopsis part: {token}',
         array('cmd' => $cmd_path, 'token' => $token)
       );
@@ -287,7 +294,7 @@ class Subcommand extends CompositeCommand {
       );
     }
     list($errors, $to_unset) = $validator->validateAssoc(
-      array_merge(Terminus::getConfig(), $assoc_args)
+      array_merge($this->config, $assoc_args)
     );
     foreach ($validator->unknownAssoc($assoc_args) as $key) {
       $errors['fatal'][] = "unknown --$key parameter";
@@ -301,7 +308,7 @@ class Subcommand extends CompositeCommand {
       throw new TerminusException($out, [], 1);
     }
     foreach ($errors['warning'] as $warning) {
-      Terminus::getLogger()->warning($warning);
+      $this->logger->warning($warning);
     }
 
     return $to_unset;
