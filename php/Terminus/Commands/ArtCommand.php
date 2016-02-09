@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
@@ -30,15 +29,31 @@ class ArtCommand extends TerminusCommand {
 
     try {
       $artwork_content = Utils\loadAsset("$artwork.txt");
-      echo Utils\colorize(
-        "%g" . base64_decode($artwork_content) . "%n"
-      ) . PHP_EOL;
+      $this->output()->line(
+        $this->colorize("%g" . base64_decode($artwork_content) . "%n")
+      );
     } catch (TerminusException $e) {
       $this->failure(
         'There is no source for the requested "{artwork}" artwork.',
         compact('artwork')
       );
     }
+  }
+
+  /**
+   * Returns a colorized string
+   *
+   * @param string $string Message to colorize for output
+   * @return string
+   */
+  private function colorize($string) {
+    $colorization_setting = $this->runner->getConfig('colorize');
+    $colorize             = (
+      (($colorization_setting == 'auto') && !\cli\Shell::isPiped())
+      || (is_bool($colorization_setting) && $colorization_setting)
+    );
+    $colorized_string     = \cli\Colors::colorize($string, $colorize);
+    return $colorized_string;
   }
 
 }

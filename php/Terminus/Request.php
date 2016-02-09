@@ -2,13 +2,13 @@
 
 namespace Terminus;
 
-use Terminus;
-use Terminus\Utils;
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Runner;
+use Terminus\Utils;
 
 /**
  * Handles requests made by terminus
@@ -127,7 +127,7 @@ class Request {
     $method  = 'GET',
     $options = array()
   ) {
-    $logger = Terminus::getLogger();
+    $logger = Runner::getLogger();
     $url    = Endpoint::get(
       array(
         'realm' => $realm,
@@ -198,7 +198,7 @@ class Request {
     }
 
     try {
-      Terminus::getLogger()->debug('URL: {url}', compact('url'));
+      Runner::getLogger()->debug('URL: {url}', compact('url'));
       $response = $this->send($url, $options['method'], $options);
     } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
@@ -250,7 +250,7 @@ class Request {
     );
     unset($params['cookies']);
 
-    Terminus::getLogger()->debug(
+    Runner::getLogger()->debug(
       "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
       array(
         'params' => json_encode($params),

@@ -2,7 +2,6 @@
 
 namespace Terminus;
 
-use Terminus;
 use Terminus\Runner;
 
 class Completions {

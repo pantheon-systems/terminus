@@ -8,7 +8,7 @@ Feature: Authorization command
     When I run "terminus auth login fake@email.com --password=BAD_PASSWORD"
     Then I should not get:
     """
-    Saving session data
+    Logged in as
     """
 
   @vcr auth_login
@@ -56,7 +56,6 @@ Feature: Authorization command
   Scenario: Logging in via machine token
     When I run "terminus auth login --machine-token=[[machine_token]]"
     Then I should get: "Logging in via machine token"
-    And I should get: "Saving session data"
     And I should get: "Logged in as [[username]]."
 
   @vcr auth_login_machine-token_invalid

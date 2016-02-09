@@ -2,7 +2,6 @@
 
 namespace Terminus\Models;
 
-use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;

@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
 use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;

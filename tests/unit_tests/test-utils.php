@@ -36,13 +36,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     resetOutputDestination($log_file);
   }
 
-  public function testColorize() {
-    $string = "That's one small step for a man, one giant leap for mankind.";
-
-    $colorized = Utils\colorize($string);
-    $this->assertEquals($string, $colorized);
-  }
-
   public function testDefineConstants() {
     unset($_SERVER['Terminus']);
     unset($_SERVER['TERMINUS_VERSION']);

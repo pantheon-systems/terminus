@@ -37,6 +37,14 @@ abstract class TerminusCommand {
    * @var Sites
    */
   protected $sites;
+  /**
+   * @var Logger
+   */
+  private $logger;
+  /**
+   * @var Outputter
+   */
+  private $outputter;
 
   /**
    * Instantiates object, sets cache and session
@@ -52,6 +60,8 @@ abstract class TerminusCommand {
     $this->cache     = new FileCache();
     $this->runner    = $options['runner'];
     $this->session   = Session::instance();
+    $this->logger    = $this->runner->getLogger();
+    $this->outputter = $this->runner->getOutputter();
     $this->loadHelpers();
 
     if (!Utils\isTest()) {
@@ -65,7 +75,7 @@ abstract class TerminusCommand {
    * @return Logger
    */
   public function log() {
-    return $this->runner->logger;
+    return $this->logger;
   }
 
   /**
@@ -74,7 +84,7 @@ abstract class TerminusCommand {
    * @return OutputterInterface
    */
   public function output() {
-    return $this->runner->outputter;
+    return $this->outputter;
   }
 
   /**

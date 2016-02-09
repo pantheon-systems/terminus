@@ -2,12 +2,11 @@
 
 namespace Terminus\Helpers;
 
-use Terminus;
+use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Request;
 use Terminus\Session;
-use Terminus\Caches\TokensCache;
 use Terminus\Utils;
 
 class AuthHelper extends TerminusHelper {
@@ -186,7 +185,7 @@ class AuthHelper extends TerminusHelper {
    * @throws TerminusException
    */
   public function logInViaUsernameAndPassword($email, $password) {
-    if (!Terminus\Utils\isValidEmail($email)) {
+    if (!Utils\isValidEmail($email)) {
       throw new TerminusException(
         '{email} is not a valid email address.',
         compact('email'),

@@ -2,7 +2,6 @@
 
 namespace Terminus\Helpers;
 
-use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Models\Collections\Sites;

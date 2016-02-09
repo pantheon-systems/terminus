@@ -2,10 +2,10 @@
 
 namespace Terminus\Dispatcher;
 
-use Terminus;
 use Terminus\DocParser;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
+use Terminus\SynopsisValidator;
 
 /**
  * A leaf node in the command tree.
@@ -45,7 +45,7 @@ class Subcommand extends CompositeCommand {
     $this->when_invoked = $when_invoked;
     $this->alias        = $docparser->getTag('alias');
     $this->config       = $options['runner']->getConfig();
-    $this->logger       = $options['runner']->logger;
+    $this->logger       = $options['runner']->getLogger();
     $this->synopsis     = $docparser->getSynopsis();
     if (!$this->synopsis && $this->longdesc) {
       $this->synopsis = self::extractSynopsis($this->longdesc);
@@ -260,7 +260,7 @@ class Subcommand extends CompositeCommand {
       return array();
     }
 
-    $validator = new Terminus\SynopsisValidator($synopsis);
+    $validator = new SynopsisValidator($synopsis);
 
     $cmd_path = implode(' ', getPath($this));
     foreach ($validator->getUnknown() as $token) {

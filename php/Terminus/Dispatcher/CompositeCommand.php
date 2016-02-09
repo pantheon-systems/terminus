@@ -2,7 +2,6 @@
 
 namespace Terminus\Dispatcher;
 
-use Terminus;
 use Terminus\DocParser;
 
 /**

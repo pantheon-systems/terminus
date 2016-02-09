@@ -156,5 +156,5 @@ function setDummyCredentials() {
  * @return void
  */
 function setTerminusOutputter($destination = 'php://stdout', $format = null) {
-  Terminus::setOutputter($format, $destination);
+  Runner::setOutputter($format, $destination);
 }

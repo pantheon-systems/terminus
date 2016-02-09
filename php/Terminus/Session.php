@@ -2,7 +2,6 @@
 
 namespace Terminus;
 
-use Terminus;
 use Terminus\Caches\FileCache;
 use Terminus\Models\User;
 
@@ -100,7 +99,6 @@ class Session {
     if (empty($data)) {
       return false;
     }
-    Terminus::getLogger()->info('Saving session data');
     $cache = new FileCache();
     $cache->putData('session', $data);
     $session = self::instance();

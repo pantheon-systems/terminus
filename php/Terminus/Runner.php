@@ -2,22 +2,18 @@
 
 namespace Terminus;
 
-use Terminus;
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
+use Terminus\Outputters\BashFormatter;
+use Terminus\Outputters\JSONFormatter;
+use Terminus\Outputters\Outputter;
+use Terminus\Outputters\PrettyFormatter;
+use Terminus\Outputters\StreamWriter;
 use Terminus\Utils;
 
 class Runner {
-  /**
-   * @var Logger
-   */
-  public $logger;
-  /**
-   * @var Outputter
-   */
-  public $outputter;
   /**
    * @var array
    */
@@ -35,13 +31,17 @@ class Runner {
    */
   private $configurator;
   /**
+   * @var Logger
+   */
+  private static $logger;
+  /**
+   * @var Outputter
+   */
+  private static $outputter;
+  /**
    * @var RootCommand
    */
   private $root_command;
-  /**
-   * @var Terminus
-   */
-  private $terminus;
 
   /**
    * Constructs object. Initializes config, colorization, loger, and outputter
@@ -51,9 +51,8 @@ class Runner {
   public function __construct(array $config = []) {
     $this->configurator = new Configurator();
     $this->setConfig($config);
-    $this->terminus  = new Terminus($this->config);
-    $this->logger    = Terminus::getLogger();
-    $this->outputter = Terminus::getOutputter();
+    $this->setLogger($this->config);
+    $this->setOutputter($this->getConfig('format'), $this->getConfig('output'));
   }
 
   /**
@@ -113,6 +112,58 @@ class Runner {
   }
 
   /**
+   * Retrieves the instantiated logger
+   *
+   * @return Logger $logger
+   */
+  public static function getLogger() {
+    return self::$logger;
+  }
+
+  /**
+   * Retrieves the instantiated outputter
+   *
+   * @return OutputterInterface
+   */
+  public static function getOutputter() {
+    return self::$outputter;
+  }
+
+  /**
+   * Set the logger instance to a class property
+   *
+   * @param array $config Configuration options to send to the logger
+   * @return void
+   */
+  public static function setLogger($config) {
+    self::$logger = new Logger(compact('config'));
+  }
+
+  /**
+   * Set the outputter instance to a class property
+   *
+   * @param string $format      Type of formatter to set on outputter
+   * @param string $destination Where output will be written to
+   * @return void
+   */
+  public static function setOutputter($format, $destination) {
+    // Pick an output formatter
+    if ($format == 'json') {
+      $formatter = new JSONFormatter();
+    } elseif ($format == 'bash') {
+      $formatter = new BashFormatter();
+    } else {
+      $formatter = new PrettyFormatter();
+    }
+
+    // Create an output service.
+    self::$outputter = new Outputter(
+      new StreamWriter($destination),
+      $formatter
+    );
+  }
+
+  /**
    * Runs the Terminus command
    *
    * @return void
@@ -136,12 +187,12 @@ class Runner {
         list($command) = $r;
 
         if ($command->canHaveSubcommands()) {
-          $this->logger->info($command->getUsage());
+          self::$logger->info($command->getUsage());
           exit;
         }
       }
     } catch (TerminusException $e) {
-      $this->logger->debug($e->getMessage());
+      self::$logger->debug($e->getMessage());
     }
 
     $this->runCommand();
@@ -275,13 +326,13 @@ class Runner {
 
       $return = $command->invoke($final_args, $assoc_args);
       if (is_string($return)) {
-        $this->logger->info($return);
+        self::$logger->info($return);
       }
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
-        $this->logger->error($e->getMessage(), $e->getReplacements());
+        self::$logger->error($e->getMessage(), $e->getReplacements());
       } else {
-        $this->logger->error($e->getMessage());
+        self::$logger->error($e->getMessage());
       }
       exit($e->getCode());
     }
@@ -290,11 +341,13 @@ class Runner {
   /**
    * Initializes configurator, saves config data to it
    *
-   * @param array $config Config options to set explicitly
+   * @param array $arg_config Config options with which to override defaults
    * @return void
    */
-  private function setConfig($config = array()) {
-    $args = array('terminus', '--debug');
+  private function setConfig($arg_config = array()) {
+    $default_config = ['output' => 'php://stdout'];
+    $config         = array_merge($default_config, $arg_config);
+    $args           = array('terminus', '--debug');
     if (isset($GLOBALS['argv'])) {
       $args = $GLOBALS['argv'];
     }
@@ -323,3 +376,11 @@ class Runner {
   }
 
 }
+
+if (!defined('TERMINUS_ROOT')) {
+  define('TERMINUS_ROOT', dirname(__DIR__));
+}
+
+require_once TERMINUS_ROOT . '/php/utils.php';
+Utils\defineConstants();
+Utils\importEnvironmentVariables();

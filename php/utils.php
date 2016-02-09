@@ -4,7 +4,6 @@ namespace Terminus\Utils;
 
 use ArrayIterator;
 use Symfony\Component\Yaml\Yaml;
-use Terminus;
 use Terminus\Caches\FileCache;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Dispatcher;
@@ -66,24 +65,6 @@ function checkForUpdate($logger) {
       $logger->info('Cannot retrieve current Terminus version.');
     }
   }
-}
-
-/**
- * Returns a colorized string
- *
- * @param string $string Message to colorize for output
- * @return string
- */
-function colorize($string) {
-  $colorize = true;
-  if (Terminus::getConfig('colorize') == 'auto') {
-    $colorize = !\cli\Shell::isPiped();
-  }
-  $colorized_string = \cli\Colors::colorize(
-    $string,
-    $colorize
-  );
-  return $colorized_string;
 }
 
 /**

@@ -2,7 +2,6 @@
 
 namespace Terminus\Models;
 
-use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\WorkflowOperation;
@@ -167,11 +166,7 @@ class Workflow extends TerminusModel {
        */
       fwrite(STDERR, '.');
     }
-    /**
-     * TODO: Output this to stdout so that it doesn't get mixed with any
-     *   actual output.
-     */
-    Terminus::getOutputter()->line();
+    echo "\n";
     if ($this->isSuccessful()) {
       return $this;
     } else {
