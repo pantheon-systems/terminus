@@ -2,7 +2,7 @@
 
 namespace Terminus\Caches;
 
-use Terminus;
+use Terminus\Caches\FileCache;
 use Terminus\Request;
 use Terminus\Session;
 
@@ -46,7 +46,7 @@ class SitesCache {
    * Object constructor, saves cache to cache property
    */
   public function __construct() {
-    $this->cache    = Terminus::getCache();
+    $this->cache    = new FileCache();
     $this->cachekey = Session::instance()->get('user_uuid', '') . '_sites';
     $this->request  = new Request();
   }

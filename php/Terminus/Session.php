@@ -3,14 +3,14 @@
 namespace Terminus;
 
 use Terminus;
-use Terminus\Request;
+use Terminus\Caches\FileCache;
 use Terminus\Models\User;
 
 class Session {
   /**
    * @var Session
    */
-  static $instance;
+  public static $instance;
   /**
    * @var object
    */
@@ -20,9 +20,8 @@ class Session {
    * Instantiates object, sets session data
    */
   public function __construct() {
-    $cache   = Terminus::getCache();
-    $session = $cache->getData('session');
-
+    $cache      = new FileCache();
+    $session    = $cache->getData('session');
     $this->data = $session;
     if (empty($session)) {
       $this->data = new \stdClass();
@@ -101,8 +100,8 @@ class Session {
     if (empty($data)) {
       return false;
     }
-    $cache = Terminus::getCache();
     Terminus::getLogger()->info('Saving session data');
+    $cache = new FileCache();
     $cache->putData('session', $data);
     $session = self::instance();
     $session->set('data', $data);

@@ -18,7 +18,7 @@ class FileCacheTest extends PHPUnit_Framework_TestCase {
   private $test_file_name = 'testfile';
 
   public function __construct() {
-    $this->file_cache = Terminus::getCache();
+    $this->file_cache = new FileCache();
   }
 
   public function testClean() {
@@ -90,7 +90,7 @@ class FileCacheTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($this->file_cache->isEnabled());
 
     //Cache is disabled when the cache dir DNE
-    $file_cache = new FileCache('/invalid/dir', 0, 0);
+    $file_cache = new FileCache(['cache_dir' => '/invalid/dir']);
     $this->assertFalse($file_cache->isEnabled());
   }
 

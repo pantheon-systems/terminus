@@ -2,15 +2,11 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
-use Terminus\Auth;
-use Terminus\Endpoint;
-use Terminus\Utils;
-use Terminus\Helpers\Input;
-use Terminus\Outputters\OutputterInterface;
+use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Workflow;
 use Terminus\Loggers\Logger;
+use Terminus\Outputters\OutputterInterface;
+use Terminus\Utils;
 
 /**
  * The base class for Terminus commands
@@ -62,7 +58,7 @@ abstract class TerminusCommand {
    * @return TerminusCommand
    */
   public function __construct(array $options = []) {
-    $this->cache     = $options['cache'];
+    $this->cache     = new FileCache();
     $this->logger    = $options['logger'];
     $this->outputter = $options['outputter'];
     $this->session   = $options['session'];

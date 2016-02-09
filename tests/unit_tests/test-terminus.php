@@ -8,16 +8,8 @@ use Terminus\Dispatcher;
 class TerminusTest extends PHPUnit_Framework_TestCase {
 
   public function testConstruct() {
-    $terminus = new Terminus();
+    $terminus    = new Terminus();
     $this->assertTrue(get_class($terminus) == 'Terminus');
-  }
-
-  public function testGetCache() {
-    setDummyCredentials();
-    $cache   = Terminus::getCache();
-    setDummyCredentials();
-    $session = $cache->getData('session');
-    $this->assertEquals($session->user_uuid, '0ffec038-4410-43d0-a404-46997f672d7a');
   }
 
   /**
@@ -64,33 +56,6 @@ class TerminusTest extends PHPUnit_Framework_TestCase {
     $desc = $root_command->getLongdesc();
     $this->assertTrue(count($desc['parameters']) == 4);
 
-  }
-
-  public function testSetCache() {
-    //Default target
-    $terminus = new Terminus();
-    $root     = Terminus::getCache()->getRoot();
-    $this->assertTrue(strpos($root, getenv('HOME')) !== false);
-
-    //Giving no env var for explicitly set cache dir
-    putenv('TERMINUS_CACHE_DIR=');
-    $terminus->setCache();
-    $root = Terminus::getCache()->getRoot();
-    $this->assertTrue(strpos($root, getenv('HOME')) !== false);
-
-    //Targeting a dir the Windows way
-    exec('mkdir /tmp/out');
-    $home = getenv('HOME');
-    putenv('HOME=0');
-    putenv('HOMEDRIVE=/tmp');
-    putenv('HOMEPATH=out');
-    $terminus->setCache();
-    $root = Terminus::getCache()->getRoot();
-    $this->assertTrue(strpos($root, '/tmp/out') !== false);
-
-    //Clean-up
-    putenv("HOME=$home");
-    exec("rm -r /tmp/out");
   }
 
   public function testSetLogger() {

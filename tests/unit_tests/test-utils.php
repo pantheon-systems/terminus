@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Caches\FileCache;
 use Terminus\Utils;
 
 /**
@@ -22,7 +23,8 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
   public function testCheckForUpdate() {
     $log_file = getLogFileName();
     setOutputDestination($log_file);
-    Terminus::getCache()->putData(
+    $cache = new FileCache();
+    $cache->putData(
       'latest_release',
       ['check_date' => strtotime('8 days ago')]
     );

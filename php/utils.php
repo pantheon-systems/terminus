@@ -5,6 +5,7 @@ namespace Terminus\Utils;
 use ArrayIterator;
 use Symfony\Component\Yaml\Yaml;
 use Terminus;
+use Terminus\Caches\FileCache;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
@@ -29,7 +30,8 @@ function checkCurrentVersion() {
   $url     .= '?per_page=1';
   $response = $request->simpleRequest($url, ['absolute_url' => true]);
   $release  = array_shift($response['data']);
-  Terminus::getCache()->putData(
+  $cache    = new FileCache();
+  $cache->putData(
     'latest_release',
     ['version' => $release->name, 'check_date' => time()]
   );
@@ -43,7 +45,8 @@ function checkCurrentVersion() {
   * @return void
   */
 function checkForUpdate($logger) {
-  $cache_data = Terminus::getCache()->getData(
+  $cache      = new FileCache();
+  $cache_data = $cache->getData(
     'latest_release',
     ['decode_array' => true]
   );

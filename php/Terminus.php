@@ -2,7 +2,6 @@
 
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
-use Terminus\Caches\FileCache;
 use Terminus\Session;
 use Terminus\Utils;
 use Terminus\Exceptions\TerminusException;
@@ -13,10 +12,6 @@ use Terminus\Outputters\OutputterInterface;
  * Various utilities for Terminus commands.
  */
 class Terminus {
-  /**
-   * @var FileCache
-   */
-  private static $cache;
   /**
    * @var Logger
    */
@@ -50,18 +45,8 @@ class Terminus {
     );
     self::$options = $options = array_merge($default_options, $arg_options);
 
-    $this->setCache();
     $this->setLogger($options);
     $this->setOutputter($options['format'], $options['output']);
-  }
-
-  /**
-   * Retrieves and returns the file cache
-   *
-   * @return FileCache
-   */
-  public static function getCache() {
-    return self::$cache;
   }
 
   /**
@@ -133,29 +118,6 @@ class Terminus {
       }
     }
     return $terminus_config_dir;
-  }
-
-  /**
-   * Sets a file cache instance to a class property
-   *
-   * @return void
-   */
-  public static function setCache() {
-    $home = getenv('HOME');
-
-    if (!$home) {
-      //Sometimes in Windows, $HOME is not defined.
-      $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-    }
-    $dir = getenv('TERMINUS_CACHE_DIR');
-    if (!$dir) {
-      $dir = "$home/.terminus/cache";
-    }
-
-    // 6 months, 300mb
-    $cache = new FileCache($dir, 86400, 314572800);
-    $cache->clean();
-    self::$cache = $cache;
   }
 
   /**
@@ -259,7 +221,6 @@ class Terminus {
     // Find the defined command classes and add them to the given base command.
     $classes = get_declared_classes();
     $options = [
-      'cache'     => self::getCache(),
       'logger'    => self::getLogger(),
       'outputter' => self::getOutputter(),
       'session'   => Session::instance(),
