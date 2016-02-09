@@ -1,6 +1,8 @@
 <?php
 
+use Terminus\Commands\ArtCommand;
 use Terminus\Helpers\TemplateHelper;
+use Terminus\Runner;
 
 /**
  * Testing class for Terminus\Helpers\TemplateHelper
@@ -13,8 +15,8 @@ class TemplateHelperTest extends PHPUnit_Framework_TestCase {
   private $template_helper;
 
   public function __construct() {
-
-    $this->template_helper = new TemplateHelper(['logger' => getLogger()]);
+    $command               = new ArtCommand(['runner' => new Runner()]);
+    $this->template_helper = new TemplateHelper(compact('command'));
   }
 
   public function testTwigRender() {

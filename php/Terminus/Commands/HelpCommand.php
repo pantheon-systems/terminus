@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
 use Terminus\Dispatcher;
 use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
@@ -63,7 +62,7 @@ class HelpCommand extends TerminusCommand {
    * @return mixed
    */
   private function findSubcommand($args) {
-    $command = Terminus::getRootCommand();
+    $command = $this->runner->getRootCommand();
 
     while (!empty($args) && $command && $command->canHaveSubcommands()) {
       $command = $command->findSubcommand($args);

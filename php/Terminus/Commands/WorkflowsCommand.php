@@ -156,7 +156,7 @@ class WorkflowsCommand extends TerminusCommand {
     $started = array();
     $finished = array();
 
-    $this->logger->info('Watching workflows...');
+    $this->log()->info('Watching workflows...');
     $site->workflows->fetchWithOperations();
     while (true) {
       $last_created_at = $site->workflows->lastCreatedAt();
@@ -177,7 +177,7 @@ class WorkflowsCommand extends TerminusCommand {
             $workflow->get('description'),
             $workflow->get('environment')
           );
-          $this->logger->info($started_message);
+          $this->log()->info($started_message);
         }
 
         if (($workflow->get('finished_at') > $last_finished_at)
@@ -191,7 +191,7 @@ class WorkflowsCommand extends TerminusCommand {
             $workflow->get('description'),
             $workflow->get('environment')
           );
-          $this->logger->info($finished_message);
+          $this->log()->info($finished_message);
 
           if ($workflow->get('has_operation_log_output')) {
             $workflow->fetchWithLogs();

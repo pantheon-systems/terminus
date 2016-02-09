@@ -1,6 +1,7 @@
 <?php
 
 use Terminus\Models\Collections\Sites;
+use Terminus\Runner;
 
 /**
  * Testing class for Terminus\Models\Environment
@@ -13,7 +14,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase {
   private $sites;
 
   public function __construct() {
-    $this->sites = new Sites();
+    $this->sites = new Sites(['runner' => new Runner()]);
   }
 
   /**

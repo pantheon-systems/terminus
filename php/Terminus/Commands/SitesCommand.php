@@ -180,13 +180,13 @@ class SitesCommand extends TerminusCommand {
       )
     );
     if (!$url) {
-      $this->logger->error('Please enter a URL.');
+      $this->log()->error('Please enter a URL.');
     }
 
     try {
       //If the site does not yet exist, it will throw an error.
       $site = $this->sites->get($options['name']);
-      $this->logger->error(
+      $this->log()->error(
         sprintf('A site named %s already exists.', $options['name'])
       );
       exit;

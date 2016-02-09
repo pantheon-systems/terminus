@@ -3,11 +3,21 @@
 namespace Terminus;
 
 use Terminus;
-use Terminus\Utils;
+use Terminus\Dispatcher;
+use Terminus\Dispatcher\CompositeCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
+use Terminus\Utils;
 
 class Runner {
+  /**
+   * @var Logger
+   */
+  public $logger;
+  /**
+   * @var Outputter
+   */
+  public $outputter;
   /**
    * @var array
    */
@@ -25,9 +35,9 @@ class Runner {
    */
   private $configurator;
   /**
-   * @var Logger
+   * @var RootCommand
    */
-  private $logger;
+  private $root_command;
   /**
    * @var Terminus
    */
@@ -41,8 +51,9 @@ class Runner {
   public function __construct(array $config = []) {
     $this->configurator = new Configurator();
     $this->setConfig($config);
-    $this->terminus = new Terminus($this->config);
-    $this->logger   = Terminus::getLogger();
+    $this->terminus  = new Terminus($this->config);
+    $this->logger    = Terminus::getLogger();
+    $this->outputter = Terminus::getOutputter();
   }
 
   /**
@@ -56,7 +67,7 @@ class Runner {
    * @throws TerminusException
    */
   public function findCommandToRun($args) {
-    $command = Terminus::getRootCommand();
+    $command = $this->getRootCommand();
 
     $cmd_path = array();
     while (!empty($args) && $command->canHaveSubcommands()) {
@@ -78,6 +89,27 @@ class Runner {
 
     $command_array = array($command, $args, $cmd_path);
     return $command_array;
+  }
+
+  /**
+   * Retrieves and returns configuration options
+   *
+   * @param string $key Hash key of config option to retrieve
+   * @return mixed
+   * @throws TerminusException
+   */
+  public function getConfig($key = null) {
+    if (is_null($key)) {
+      return $this->config;
+    }
+    if (isset($this->config[$key])) {
+      return $this->config[$key];
+    }
+    throw new TerminusException(
+      'There is no configuration option set with the key {key}.',
+      compact('key'),
+      1
+    );
   }
 
   /**
@@ -113,6 +145,119 @@ class Runner {
     }
 
     $this->runCommand();
+  }
+
+  /**
+   * Retrieves the root command from the Dispatcher
+   *
+   * @return \Terminus\Dispatcher\RootCommand
+   */
+  public function getRootCommand() {
+    if (!isset($this->root_command)) {
+      $this->setRootCommand();
+    }
+    return $this->root_command;
+  }
+
+  /**
+   * Retrieves and returns the users local configuration directory (~/terminus)
+   *
+   * @return string
+   */
+  public function getUserConfigDir() {
+    $terminus_config_dir = getenv('TERMINUS_CONFIG_DIR');
+
+    if (!$terminus_config_dir) {
+      $home = getenv('HOME');
+      if (!$home) {
+        // sometime in windows $HOME is not defined
+        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
+      }
+      if ($home) {
+        $terminus_config_dir = getenv('HOME') . '/terminus';
+      }
+    }
+    return $terminus_config_dir;
+  }
+
+  /**
+   * Retrieves and returns a list of plugin's base directories
+   *
+   * @return array
+   */
+  private function getUserPlugins() {
+    $out = array();
+    if ($plugins_dir = $this->getUserPluginsDir()) {
+      $plugin_iterator = new \DirectoryIterator($plugins_dir);
+      foreach ($plugin_iterator as $dir) {
+        if (!$dir->isDot()) {
+          $out[] = $dir->getPathname();
+        }
+      }
+    }
+    return $out;
+  }
+
+  /**
+   * Retrieves and returns the local config directory
+   *
+   * @return string
+   */
+  private function getUserPluginsDir() {
+    if ($config = $this->getUserConfigDir()) {
+      $plugins_dir = "$config/plugins";
+      if (file_exists($plugins_dir)) {
+        return $plugins_dir;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Includes every command file in the commands directory
+   *
+   * @param CompositeCommand $parent The parent command to add the new commands to
+   *
+   * @return void
+   */
+  private function loadAllCommands(CompositeCommand $parent) {
+    // Create a list of directories where commands might live.
+    $directories = array();
+
+    // Add the directory of core commands first.
+    $directories[] = TERMINUS_ROOT . '/php/Terminus/Commands';
+
+    // Find the command directories from the third party plugins directory.
+    foreach ($this->getUserPlugins() as $dir) {
+      $directories[] = "$dir/Commands/";
+    }
+
+    // Include all class files in the command directories.
+    foreach ($directories as $cmd_dir) {
+      if ($cmd_dir && file_exists($cmd_dir)) {
+        $iterator = new \DirectoryIterator($cmd_dir);
+        foreach ($iterator as $file) {
+          if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
+            include_once $file->getPathname();
+          }
+        }
+      }
+    }
+
+    // Find the defined command classes and add them to the given base command.
+    $classes = get_declared_classes();
+    $options = ['runner' => $this,];
+
+    foreach ($classes as $class) {
+      $reflection = new \ReflectionClass($class);
+      if ($reflection->isSubclassOf('Terminus\Commands\TerminusCommand')) {
+        Dispatcher\CommandFactory::create(
+          $reflection->getName(),
+          $parent,
+          $options
+        );
+      }
+    }
   }
 
   /**
@@ -165,6 +310,16 @@ class Runner {
     $this->configurator->mergeArray($runtime_config);
 
     $this->config = array_merge($this->configurator->toArray(), $config);
+  }
+
+  /**
+   * Set the root command instance to a class property
+   *
+   * @return void
+   */
+  private function setRootCommand() {
+    $this->root_command = new Dispatcher\RootCommand();
+    $this->loadAllCommands($this->root_command);
   }
 
 }

@@ -1,7 +1,9 @@
 <?php
 
+use Terminus\Commands\ArtCommand;
 use Terminus\Helpers\InputHelper;
 use Terminus\Loggers\Logger;
+use Terminus\Runner;
 
 /**
  * Testing class for Terminus\Helpers\Input
@@ -11,8 +13,8 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
   private $inputter;
 
   public function __construct() {
-    $options    = ['logger' => getLogger()];
-    $this->inputter = new InputHelper($options);
+    $command        = new ArtCommand(['runner' => new Runner()]);
+    $this->inputter = new InputHelper(compact('command'));
   }
 
   public function testBackup() {

@@ -128,12 +128,6 @@ function destinationIsValid($destination, $make = true) {
   }
 
   if (!is_dir($destination)) {
-    if (!$make) {
-      $input = new Input();
-      $make  = $input->confirm(
-        ['message' => 'Directory does not exists. Create it now?']
-      );
-    }
     if ($make) {
       mkdir($destination, 0755);
     }

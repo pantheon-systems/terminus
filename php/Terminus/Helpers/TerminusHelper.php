@@ -2,12 +2,14 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Commands\TerminusCommand;
+
 abstract class TerminusHelper {
 
   /**
-   * @var Logger
+   * @var TerminusCommand
    */
-  private $logger;
+  protected $command;
 
   /**
    * TerminusHelper constructor.
@@ -16,16 +18,7 @@ abstract class TerminusHelper {
    * @return TerminusHelper $this
    */
   public function __construct(array $options = []) {
-    $this->logger = $options['logger'];
-  }
-
-  /**
-   * Returns the logger object for use
-   *
-   * @return Logger
-   */
-  protected function log() {
-    return $this->logger;
+    $this->command = $options['command'];
   }
 
 }

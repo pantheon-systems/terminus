@@ -215,7 +215,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       $result = ob_get_clean();
     }
     if ($this->log()->getOptions('logFormat') == 'silent') {
-      $this->logger->info($result);
+      $this->log()->info($result);
     }
 
     if ((boolean)$exit_code) {

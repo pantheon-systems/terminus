@@ -86,15 +86,13 @@ class MachineTokensCommand extends TerminusCommand {
     }
     $name = $machine_token->get('device_name');
 
-    if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
-      //If the force option isn't used, we'll ask you some annoying questions
-      $this->input()->confirm(
-        array(
-          'message' => 'Are you sure you want to delete %s?',
-          'context' => $name
-        )
-      );
-    }
+    $this->input()->confirm(
+      [
+        'message' => 'Are you sure you want to delete %s?',
+        'context' => $name,
+        'args'    => $assoc_args,
+      ]
+    );
     $this->log()->info(
       'Deleting {name} ...',
       array('name' => $name)
