@@ -25,7 +25,7 @@ if (!defined('JSON_PRETTY_PRINT')) {
   */
 function checkCurrentVersion() {
   $request  = new Request();
-  $url      = 'https://api.github.com/repos/pantheon-systems/cli/releases';
+  $url      = 'https://api.github.com/repos/pantheon-systems/terminus/releases';
   $url     .= '?per_page=1';
   $response = $request->simpleRequest($url, ['absolute_url' => true]);
   $release  = array_shift($response['data']);

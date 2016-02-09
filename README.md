@@ -1,13 +1,10 @@
-Pantheon CLI
+Terminus
 ============
 
-[![Build Status](https://travis-ci.org/pantheon-systems/cli.svg?branch=master)](https://travis-ci.org/pantheon-systems/cli) [![Dependency Status](https://gemnasium.com/pantheon-systems/cli.svg)](https://gemnasium.com/pantheon-systems/cli)
-[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/cli/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/cli?branch=master)
+[![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus) [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
+[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
 
-The Pantheon Command Line Interface is a successor to the "Terminus" project, which provides access to the Pantheon Platform via Drush. While Terminus has provided great value (and we're going to keep the name in the product,) we felt that it was important to have a first-class standalone CLI toolkit:
-
-- That we could distribute as an independent executable.
-- Which could "wrap" other commands that run on the platform.
+Terminus is Pantheon's Command Line Interface (CLI), providing equivalent functionality to the Pantheon Web Dashboard and easier scripting.
 
 If you would like to contribute, pull requests are welcome!
 
@@ -31,14 +28,14 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminal client:
 ```
-composer require pantheon-systems/cli
+composer require pantheon-systems/terminus
 ```
 
 ####Installing with cURL
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/cli/releases/download/0.10.2/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/terminus/releases/download/0.10.2/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
@@ -46,13 +43,13 @@ To install with Git and use Terminus HEAD, you should clone this repository and 
 1. Clone the repository. If you plan on contributing to the project, create a fork and clone the fork instead.
   ```bash
   cd $HOME
-  git clone https://github.com/pantheon-systems/cli.git pantheon-cli
+  git clone https://github.com/pantheon-systems/terminus.git terminus
   ```
 Or replace $HOME with the directory to which you would like to install.
 
 2. Install the Composer dependencies.
   ```bash
-  cd pantheon-cli
+  cd terminus
   composer install
   ```
 You can now run the bleeding-edge version of Terminus via:
@@ -62,11 +59,11 @@ You can now run the bleeding-edge version of Terminus via:
 
 **Optionally**, for ease of development, we suggest aliasing or setting the path to this script in your Bash configuration file. This file is located at ~/.bashrc on Linux and ~/.bash_profile on Mac.
 ```bash
-alias terminus="$HOME/pantheon-cli/bin/terminus"
+alias terminus="$HOME/terminus/bin/terminus"
 ```
 or
 ```bash
-export PATH="$PATH:$HOME/pantheon-cli/bin"
+export PATH="$PATH:$HOME/terminus/bin"
 ```
 Once you source the file or restart your terminal client, you can now make use of Terminus using
 ```bash
@@ -87,7 +84,7 @@ Your dashboard password (input will not be shown)
 
 Tab completion
 --------------
-Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/cli/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
+Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/terminus/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
 
 ```bash
 source /FULL/PATH/TO/terminus-completion.bash
@@ -101,7 +98,7 @@ Please make ready the steps to reproduce the issue, outputs, pertinent informati
 
 **If yours is a problem with Terminus itself:**
 
-1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/cli/issues) to see whether another user has reported the same issue you are experiencing.
+1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/terminus/issues) to see whether another user has reported the same issue you are experiencing.
 2. If the problem you are experiencing is not in the issues, you can open a new issue. Please include the helpful information you have gathered.
 3. If you find your problem in an issue, feel free to add your issue information in the comments and/or subscribe to the issue's notifications.
 
@@ -116,17 +113,17 @@ Here are steps to follow if you would like to contribute to Terminus:
 1. Fork the repository.
 2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   ./scripts/lint.sh
   ```
 And run your tests via:
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   ./scripts/test.sh
   ```
 Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
   ```bash
-  cd $HOME/pantheon-cli
+  cd $HOME/terminus
   php utils/make-docs.php
   ```
 
@@ -139,7 +136,7 @@ Credits
 
 Further Reading
 ------------
-* [Terminus' Wiki](https://github.com/pantheon-systems/cli/wiki)
-* [Usage](https://github.com/pantheon-systems/cli/wiki/Usage)
+* [Terminus' Wiki](https://github.com/pantheon-systems/terminus/wiki)
+* [Usage](https://github.com/pantheon-systems/terminus/wiki/Usage)
 
 If you are looking for the precursor to this project, which is now deprecated see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)
