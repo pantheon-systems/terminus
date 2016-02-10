@@ -22,13 +22,3 @@ Feature: Set a site's service level
     """
     Instrument required to increase service level
     """
-
-  @vcr site_set-service-level_wrong
-  Scenario: Changing to incorrect service level
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    When I run "terminus site set-service-level --site=[[test_site_name]] --level=professional"
-    Then I should get:
-    """
-    Service level "professional" is invalid.
-    """

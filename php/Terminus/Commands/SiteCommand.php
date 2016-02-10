@@ -1610,14 +1610,13 @@ class SiteCommand extends TerminusCommand {
    * : Site to check
    *
    * [--level=<value>]
-   * : new service level to set
+   * : New service level to set. Options are free, basic, pro, and business.
    *
    * @subcommand set-service-level
    */
   public function setServiceLevel($args, $assoc_args) {
     $site  = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $info  = $site->get('service_level');
-    $level = $assoc_args['level'];
+    $level = $this->input()->serviceLevel(['args' => $assoc_args]);
     $data  = $site->updateServiceLevel($level);
     $this->log()->info("Service level has been updated to '$level'");
   }

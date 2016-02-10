@@ -141,6 +141,16 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('admin', $role);
   }
 
+  public function testServiceLevel() {
+    //From args
+    $args = ['args' => ['level' => 'pro']];
+    $this->assertEquals('pro', $this->inputter->serviceLevel($args));
+
+    //Customer-name service level from args
+    $args = ['args' => ['level' => 'sandbox']];
+    $this->assertEquals('free', $this->inputter->serviceLevel($args));
+  }
+
   public function testSiteName() {
   }
 

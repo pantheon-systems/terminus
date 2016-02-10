@@ -623,17 +623,6 @@ class Site extends TerminusModel {
    * @throws TerminusException
    */
   public function updateServiceLevel($level) {
-    if (!in_array(
-      $level,
-      array('free', 'basic', 'pro', 'business', 'elite')
-    )
-    ) {
-      throw new TerminusException(
-        'Service level "{level}" is invalid.',
-        compact('level'),
-        1
-      );
-    }
     $path        = 'service-level';
     $method      = 'PUT';
     $form_params = $level;
