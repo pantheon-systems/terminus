@@ -186,9 +186,12 @@ class Sites extends TerminusCollection {
       $site = $models[$list[$id]];
     }
     if ($site == null) {
+      $message  = 'Cannot find site with the name "{id}". It may be that ';
+      $message .= 'your sites cache is out of date and must be refreshed by ';
+      $message .= 'running `{command}` in order to access new sites.';
       throw new TerminusException(
-        'Cannot find site with the name "{id}"',
-        compact('id'),
+        $message,
+        ['id' => $id, 'command' => 'terminus sites list'],
         1
       );
     }

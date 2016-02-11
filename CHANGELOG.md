@@ -18,6 +18,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Helpers are now added to the `TerminusCommand`'s `helpers` property. (#881)
 - Extracted launching functions from `Terminus` (base class) and moved them into new `LaunchHelper` class. (#882)
 - Extracted template function from `Utils` and moved it into new `TemplateHelper` class. (#884)
+- Changed the site-DNE message to instruct the user to run `sites list`. (#895)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)
