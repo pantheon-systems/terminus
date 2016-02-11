@@ -2,12 +2,11 @@
 
 namespace Terminus\Helpers;
 
-use Terminus;
+use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Request;
 use Terminus\Session;
-use Terminus\TokensCache;
 use Terminus\Utils;
 
 class AuthHelper extends TerminusHelper {
@@ -55,7 +54,7 @@ class AuthHelper extends TerminusHelper {
       } else {
         $message  = 'You are not logged in. Run `auth login` to ';
         $message .= 'authenticate or `help auth login` for more info.';
-        $this->log()->warning($message);
+        $this->command->log()->warning($message);
         exit(1);
       }
     }
@@ -130,7 +129,7 @@ class AuthHelper extends TerminusHelper {
           1
         );
       }
-      $this->log()->info(
+      $this->command->log()->info(
         'Found a machine token for "{email}".',
         ['email' => $args['email']]
       );
@@ -143,7 +142,7 @@ class AuthHelper extends TerminusHelper {
       ),
     );
 
-    $this->log()->info('Logging in via machine token');
+    $this->command->log()->info('Logging in via machine token');
     try {
       $response = $this->request->request(
         'authorize',
@@ -165,7 +164,7 @@ class AuthHelper extends TerminusHelper {
     $user = Session::getUser();
     $user->fetch();
     $user_data = $user->serialize();
-    $this->log()->info(
+    $this->command->log()->info(
       'Logged in as {email}.',
       ['email' => $user_data['email']]
     );
@@ -186,7 +185,7 @@ class AuthHelper extends TerminusHelper {
    * @throws TerminusException
    */
   public function logInViaUsernameAndPassword($email, $password) {
-    if (!Terminus\Utils\isValidEmail($email)) {
+    if (!Utils\isValidEmail($email)) {
       throw new TerminusException(
         '{email} is not a valid email address.',
         compact('email'),
@@ -208,7 +207,7 @@ class AuthHelper extends TerminusHelper {
         1
       );
     }
-    $this->log()->info(
+    $this->command->log()->info(
       'Logged in as {uuid}.',
       array('uuid' => $response['data']->user_id)
     );

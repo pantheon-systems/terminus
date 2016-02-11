@@ -11,7 +11,7 @@
  *     Jordi Boggiano <j.boggiano@seld.be>
  */
 
-namespace Terminus;
+namespace Terminus\Caches;
 
 use Symfony\Component\Finder\Finder;
 use Terminus\Exceptions\TerminusException;
@@ -45,21 +45,25 @@ class FileCache {
   /**
    * Object constructor. Sets properties.
    *
-   * @param string $cacheDir  The location of the cache
-   * @param int    $ttl       The cache file's default expiry time
-   * @param int    $maxSize   The max total cache size
-   * @param string $whitelist A list of characters that are allowed in path
+   * @param array $arg_options Elements as follow:
+   *  string cache_dir  The location of the cache
+   *  int    ttl       The cache file's default expiry time
+   *  int    maxSize   The max total cache size
+   *  string whitelist A list of characters that are allowed in path
    */
-  public function __construct(
-    $cacheDir,
-    $ttl,
-    $maxSize,
-    $whitelist = 'a-z0-9._-'
-  ) {
-    $this->root      = rtrim($cacheDir, '/\\') . '/';
-    $this->ttl       = (int)$ttl;
-    $this->maxSize   = (int)$maxSize;
-    $this->whitelist = $whitelist;
+  public function __construct(array $arg_options = []) {
+    $default_options = [
+      'cache_dir' => $this->determineCacheDir(),
+      'ttl'       => 832040,
+      'max_size'  => 267914296,
+      'whitelist' => 'a-z0-9._-',
+    ];
+    $options = array_merge($default_options, $arg_options);
+
+    $this->root      = rtrim($options['cache_dir'], '/\\') . '/';
+    $this->ttl       = (int)$options['ttl'];
+    $this->maxSize   = (int)$options['max_size'];
+    $this->whitelist = $options['whitelist'];
 
     if (!$this->ensureDirExists($this->root)) {
       $this->enabled = false;
@@ -241,6 +245,25 @@ class FileCache {
       return (boolean)$unlinking;
     }
     return false;
+  }
+
+  /**
+   * Determines the cache dir unless overridden
+   *
+   * @return string
+   */
+  protected function determineCacheDir() {
+    $home = getenv('HOME');
+
+    if (!$home) {
+      //Sometimes in Windows, $HOME is not defined.
+      $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
+    }
+    $dir = getenv('TERMINUS_CACHE_DIR');
+    if (!$dir) {
+      $dir = "$home/.terminus/cache";
+    }
+    return $dir;
   }
 
   /**

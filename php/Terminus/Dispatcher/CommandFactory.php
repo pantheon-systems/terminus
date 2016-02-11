@@ -130,7 +130,13 @@ class CommandFactory {
         );
       };
 
-    $subcommand = new Subcommand($parent, $name, $docparser, $when_invoked);
+    $subcommand = new Subcommand(
+      $parent,
+      $name,
+      $docparser,
+      $when_invoked,
+      $options
+    );
     return $subcommand;
   }
 

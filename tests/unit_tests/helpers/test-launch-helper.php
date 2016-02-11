@@ -1,6 +1,8 @@
 <?php
 
+use Terminus\Commands\ArtCommand;
 use Terminus\Helpers\LaunchHelper;
+use Terminus\Runner;
 
 /**
  * Testing class for Terminus\Helpers\LaunchHelper
@@ -13,7 +15,8 @@ class LaunchHelperTest extends PHPUnit_Framework_TestCase {
   private $launch_helper;
 
   public function __construct() {
-    $this->launch_helper = new LaunchHelper(['logger' => getLogger()]);
+    $command             = new ArtCommand(['runner' => new Runner()]);
+    $this->launch_helper = new LaunchHelper(compact('command'));
   }
 
   public function testGetPhpBinary() {

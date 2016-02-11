@@ -1,5 +1,6 @@
 <?php
 
+use Terminus\Caches\FileCache;
 use Terminus\Utils;
 
 /**
@@ -22,7 +23,8 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
   public function testCheckForUpdate() {
     $log_file = getLogFileName();
     setOutputDestination($log_file);
-    Terminus::getCache()->putData(
+    $cache = new FileCache();
+    $cache->putData(
       'latest_release',
       ['check_date' => strtotime('8 days ago')]
     );
@@ -32,13 +34,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       strpos(array_pop($file_contents), 'An update to Terminus is available.')
     );
     resetOutputDestination($log_file);
-  }
-
-  public function testColorize() {
-    $string = "That's one small step for a man, one giant leap for mankind.";
-
-    $colorized = Utils\colorize($string);
-    $this->assertEquals($string, $colorized);
   }
 
   public function testDefineConstants() {
@@ -81,8 +76,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     }
     $this->assertTrue(isset($message));
 
-    resetOutputDestination($file_name);
-    Utils\destinationIsValid($file_name);
     resetOutputDestination($file_name);
     Utils\destinationIsValid('/tmp/');
   }

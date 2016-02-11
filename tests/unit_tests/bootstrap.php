@@ -16,9 +16,11 @@ require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
 
+use Terminus\Commands\ArtCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\AuthHelper;
 use Terminus\Loggers\Logger;
+use Terminus\Runner;
 use Terminus\Session;
 
 \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
@@ -76,8 +78,8 @@ function getLogger() {
  */
 function logInWithBehatCredentials() {
   $creds   = getBehatCredentials();
-  $options = ['logger' => getLogger()];
-  $auth    = new AuthHelper($options);
+  $command = new ArtCommand(['runner' => new Runner()]);
+  $auth    = new AuthHelper(compact('command'));
   $auth->logInViaUsernameAndPassword($creds['username'], $creds['password']);
 }
 
@@ -154,5 +156,5 @@ function setDummyCredentials() {
  * @return void
  */
 function setTerminusOutputter($destination = 'php://stdout', $format = null) {
-  Terminus::setOutputter($format, $destination);
+  Runner::setOutputter($format, $destination);
 }

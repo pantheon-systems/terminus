@@ -1,9 +1,11 @@
 <?php
 
+use Terminus\Caches\TokensCache;
+use Terminus\Commands\ArtCommand;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\AuthHelper;
 use Terminus\Loggers\Logger;
-use Terminus\TokensCache;
-use Terminus\Exceptions\TerminusException;
+use Terminus\Runner;
 
 /**
  * Testing class for Terminus\Helpers\AuthHelper
@@ -16,8 +18,8 @@ class AuthTest extends PHPUnit_Framework_TestCase {
   private $auth;
 
   public function __construct() {
-    $options    = ['logger' => getLogger()];
-    $this->auth = new AuthHelper($options);
+    $command    = new ArtCommand(['runner' => new Runner()]);
+    $this->auth = new AuthHelper(compact('command'));
   }
 
   public function testConstruct() {

@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
 use Terminus\Commands\CommandWithSSH;
 
 /**

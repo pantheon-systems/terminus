@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
@@ -489,16 +488,16 @@ class SiteCommand extends TerminusCommand {
   public function delete($args, $assoc_args) {
     $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
 
-    if (!isset($assoc_args['force']) && (!Terminus::getConfig('yes'))) {
-      //If the force option isn't used, we'll ask you some annoying questions
-      $this->input()->confirm(
-        array(
-          'message' => 'Are you sure you want to delete %s?',
-          'context' => $site->get('name')
-        )
-      );
-      $this->input()->confirm(array('message' => 'Are you really sure?'));
-    }
+    $this->input()->confirm(
+      [
+        'message' => 'Are you sure you want to delete %s?',
+        'context' => $site->get('name'),
+        'args'    => $assoc_args,
+      ]
+    );
+    $this->input()->confirm(
+      ['message' => 'Are you really sure?', 'args' => $assoc_args]
+    );
     $this->log()->info(
       'Deleting {site} ...',
       array('site' => $site->get('name'))
@@ -904,7 +903,7 @@ class SiteCommand extends TerminusCommand {
       )
     );
     if (!$url) {
-      $this->logger->error('Please enter a URL.');
+      $this->log()->error('Please enter a URL.');
     }
 
     if (!isset($assoc_args['element'])) {

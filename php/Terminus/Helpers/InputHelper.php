@@ -2,7 +2,6 @@
 
 namespace Terminus\Helpers;
 
-use Terminus;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Models\Collections\Sites;
@@ -113,22 +112,33 @@ class InputHelper extends TerminusHelper {
    * Asks for confirmation before running a destructive operation.
    *
    * @param array $arg_options Elements as follow:
-   *        string $question Prompt text
-   *        array  $params   Elements to interpolate into the prompt text
+   *        string question Prompt text
+   *        array  params   Elements to interpolate into the prompt text
+   *        array  args     Arguments given via param
+   *        string key      Args key to search for
+   *        bool   exit     If true, exit when turned down
    * @return bool True if prompt is accepted
    */
   function confirm(array $arg_options = []) {
-    if (Terminus::getConfig('yes')) {
-      return true;
-    }
     $default_options = [
       'message' => 'Do you want to continue?',
       'context' => [],
       'exit'    => true,
+      'args'    => [],
+      'key'     => 'force'
     ];
     $options         = array_merge($default_options, $arg_options);
-    $question        = vsprintf($options['message'], $options['context']);
-    $this->log()->line($question . ' [y/n]');
+    if ($this->command->runner->getConfig('yes')
+      || (
+        isset($options['key'])
+        && isset($options['args'][$options['key']])
+        && (boolean)$options['args'][$options['key']]
+      )
+    ) {
+      return true;
+    }
+    $question = vsprintf($options['message'], $options['context']);
+    $this->command->output()->line($question . ' [y/n]');
     $answer = trim(fgets(STDIN));
 
     if ($answer != 'y') {
@@ -453,7 +463,7 @@ class InputHelper extends TerminusHelper {
         . addslashes($options['message'])
         . "\" mypassword && echo \$mypassword'";
       $response = rtrim(shell_exec($command));
-      $this->log()->line();
+      $this->command->output()->line();
     }
     if (empty($response)) {
       return $options['default'];
@@ -559,7 +569,7 @@ class InputHelper extends TerminusHelper {
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
     }
-    if ($this->log()->options['logFormat'] != 'normal') {
+    if ($this->command->log()->options['logFormat'] != 'normal') {
       return $options['default'];
     }
     $string = $this->prompt($options);

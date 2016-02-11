@@ -2,54 +2,49 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
-use Terminus\Auth;
-use Terminus\Endpoint;
-use Terminus\Utils;
-use Terminus\Helpers\Input;
-use Terminus\Outputters\OutputterInterface;
+use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Workflow;
 use Terminus\Loggers\Logger;
+use Terminus\Outputters\OutputterInterface;
+use Terminus\Session;
+use Terminus\Utils;
 
 /**
  * The base class for Terminus commands
  */
 abstract class TerminusCommand {
   /**
+   * @var Runner
+   */
+  public $runner;
+  /**
    * @var FileCache
    */
   protected $cache;
-
   /**
    * @var Input
    */
   protected $inputter;
-
   /**
    * @var stdClass
    */
   protected $helpers;
-
-  /**
-   * @var Logger
-   */
-  protected $logger;
-
-  /**
-   * @var OutputterInterface
-   */
-  protected $outputter;
-
   /**
    * @var Session
    */
   protected $session;
-
   /**
    * @var Sites
    */
   protected $sites;
+  /**
+   * @var Logger
+   */
+  private $logger;
+  /**
+   * @var Outputter
+   */
+  private $outputter;
 
   /**
    * Instantiates object, sets cache and session
@@ -62,15 +57,34 @@ abstract class TerminusCommand {
    * @return TerminusCommand
    */
   public function __construct(array $options = []) {
-    $this->cache     = $options['cache'];
-    $this->logger    = $options['logger'];
-    $this->outputter = $options['outputter'];
-    $this->session   = $options['session'];
+    $this->cache     = new FileCache();
+    $this->runner    = $options['runner'];
+    $this->session   = Session::instance();
+    $this->logger    = $this->runner->getLogger();
+    $this->outputter = $this->runner->getOutputter();
     $this->loadHelpers();
 
     if (!Utils\isTest()) {
-      Utils\checkForUpdate($this->logger);
+      Utils\checkForUpdate($this->log());
     }
+  }
+
+  /**
+   * Retrieves the logger for use
+   *
+   * @return Logger
+   */
+  public function log() {
+    return $this->logger;
+  }
+
+  /**
+   * Retrieves the outputter for use
+   *
+   * @return OutputterInterface
+   */
+  public function output() {
+    return $this->outputter;
   }
 
   /**
@@ -84,7 +98,7 @@ abstract class TerminusCommand {
    */
   protected function failure(
     $message       = 'Command failed',
-    array $context = array(),
+    array $context = [],
     $exit_code     = 1
   ) {
     throw new TerminusException($message, $context, $exit_code);
@@ -97,24 +111,6 @@ abstract class TerminusCommand {
    */
   protected function input() {
     return $this->helpers->input;
-  }
-
-  /**
-   * Retrieves the logger for use
-   *
-   * @return Logger
-   */
-  protected function log() {
-    return $this->logger;
-  }
-
-  /**
-   * Retrieves the outputter for use
-   *
-   * @return OutputterInterface
-   */
-  protected function output() {
-    return $this->outputter;
   }
 
   /**
@@ -144,7 +140,7 @@ abstract class TerminusCommand {
     );
 
     if (!empty($helpers)) {
-      $options          = ['logger' => $this->log()];
+      $options          = ['command' => $this];
       $helpers_property = new \stdClass();
       foreach ($helpers as $helper) {
         $property_name = strtolower(

@@ -2,7 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus;
+use Terminus\Completions;
 use Terminus\Configurator;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Sites;
@@ -52,7 +52,7 @@ class CliCommand extends TerminusCommand {
    */
   public function cmdDump() {
     $this->output()->outputDump(
-      $this->commandToArray(Terminus::getRootCommand())
+      $this->commandToArray($this->runner->getRootCommand())
     );
   }
 
@@ -73,7 +73,7 @@ class CliCommand extends TerminusCommand {
     if (isset($assoc_args['point'])) {
       $line = substr($line, 0, $assoc_args['point']);
     }
-    $completions = new Terminus\Completions($line);
+    $completions = new Completions($line);
     $options     = $completions->getOptions();
     foreach ($options as $option) {
       $this->output()->line($option);
@@ -119,7 +119,7 @@ class CliCommand extends TerminusCommand {
       'php_binary_path'     => $php_bin,
       'php_version'         => PHP_VERSION,
       'php_ini'             => get_cfg_var('cfg_file_path'),
-      'project_config_path' => Terminus::getUserConfigDir(),
+      'project_config_path' => $this->runner->getUserConfigDir(),
       'wp_cli_dir_path'     => TERMINUS_ROOT,
       'wp_cli_version'      => TERMINUS_VERSION,
     );
