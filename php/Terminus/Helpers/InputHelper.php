@@ -611,7 +611,7 @@ class InputHelper extends TerminusHelper {
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
     }
-    if ($this->command->log()->options['logFormat'] != 'normal') {
+    if ($this->log()->getOptions('logFormat') != 'normal') {
       return $options['default'];
     }
     $string = $this->prompt($options);
