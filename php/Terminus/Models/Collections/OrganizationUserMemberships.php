@@ -2,6 +2,9 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Commands\OrganizationsCommand;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Models\OrganizationUserMembership;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
 
@@ -11,20 +14,41 @@ class OrganizationUserMemberships extends TerminusCollection {
   /**
    * Adds a user to this organization
    *
-   * @param User $user User object of user to add to this organization
+   * @param string $uuid UUID of user user to add to this organization
+   * @param string $role Role to assign to the new member
    * @return Workflow $workflow
    */
-  public function addMember(User $user) {
+  public function addMember($uuid, $role) {
     $workflow = $this->organization->workflows->create(
       'add_organization_user_membership',
-      array(
-        'params'    => array(
-          'user_id' => $user->get('id'),
-          'role'    => 'team_member'
-        )
-      )
+      ['params' => ['user_email' => $uuid, 'role' => $role,]]
     );
     return $workflow;
+  }
+
+  /**
+   * Retrieves models by either user ID, email address, or full name
+   *
+   * @param string $id Either a user ID, email address, or full name
+   * @return OrganizationUserMembership
+   * @throws TerminusException
+   */
+  public function get($id) {
+    $models = $this->getMembers();
+    if (isset($models[$id])) {
+      return $models[$id];
+    }
+    foreach ($models as $model) {
+      $user_data = $model->get('user');
+      if (in_array($id, [$user_data->email, $user_data->profile->full_name])) {
+        return $model;
+      }
+    }
+    throw new TerminusException(
+      'An organization member idenfitied by "{id}" could not be found.',
+      compact('id'),
+      1
+    );
   }
 
   /**

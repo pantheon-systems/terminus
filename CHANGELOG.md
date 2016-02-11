@@ -7,6 +7,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added 3rd Party plugin support (#857)
 - Output destinations can now be set via `Terminus#setOutputter` or an element of the options fed into the `Terminus` constructor. (#873)
 - HTTPS Certificates on Site Environments can be added/updated using `site set-https-certificate` (#792)
+- New command `organizations team add-member`. (#904)
+- New command `organizations team remove-member`. (#904)
+- New command `organizations team change-role`. (#904)
 
 ### Changed
 - When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)
@@ -20,6 +23,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Extracted template function from `Utils` and moved it into new `TemplateHelper` class. (#884)
 - Changed the site-DNE message to instruct the user to run `sites list`. (#895)
 - `site set-service-level` now also accepts levels of "professional", "sandbox", and "personal". (#894)
+- `organizations team` has been changed to `organizations team list`. (#904)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)

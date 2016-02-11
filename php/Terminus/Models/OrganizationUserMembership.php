@@ -13,14 +13,23 @@ class OrganizationUserMembership extends Organization {
    * @return Workflow
    */
   public function removeMember() {
-    $user     = $this->get('user');
     $workflow = $this->organization->workflows->create(
       'remove_organization_user_membership',
-      array(
-        'params'    => array(
-          'user_id' => $user->get('id')
-        )
-      )
+      ['params' => ['user_id' => $this->get('user')->id]]
+    );
+    return $workflow;
+  }
+
+  /**
+   * Sets the user's role within this organization
+   *
+   * @param string $role Role for this user to take in the organization
+   * @return Workflow
+   */
+  public function setRole($role) {
+    $workflow = $this->organization->workflows->create(
+      'update_organization_user_membership',
+      ['params' => ['user_id' => $this->get('user')->id, 'role' => $role]]
     );
     return $workflow;
   }

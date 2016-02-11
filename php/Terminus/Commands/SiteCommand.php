@@ -1765,7 +1765,7 @@ class SiteCommand extends TerminusCommand {
    * ## OPTIONS
    *
    * <list|add-member|remove-member|change-role>
-   * : i.e. add or remove
+   * : Options are list, add-member, remove-member, and change-role.
    *
    * [--site=<site>]
    * : Site to check
@@ -1789,7 +1789,7 @@ class SiteCommand extends TerminusCommand {
     switch($action) {
       case 'add-member':
         if ((boolean)$site->getFeature('change_management')) {
-          $role = $this->input()->role(array('args' => $assoc_args));
+          $role = $this->input()->siteRole(['args' => $assoc_args]);
         } else {
           $role = 'team_member';
         }
@@ -1810,7 +1810,7 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'change-role':
         if ((boolean)$site->getFeature('change_management')) {
-          $role = $this->input()->role(array('args' => $assoc_args));
+          $role = $this->input()->siteRole(array('args' => $assoc_args));
           $user = $team->get($assoc_args['member']);
           if ($user != null) {
             $workflow = $user->setRole($role);

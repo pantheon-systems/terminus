@@ -6,6 +6,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\TerminusHelper;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\Upstreams;
+use Terminus\Models\OrganizationUserMembership;
 use Terminus\Models\Site;
 use Terminus\Models\Upstream;
 use Terminus\Models\User;
@@ -23,8 +24,8 @@ class InputHelper extends TerminusHelper {
    * Produces a menu to select a backup
    *
    * @param array $arg_options Elements as follow:
-   *        [string] label   Prompt for STDOUT
-   *        [array]  backups Array of Backup objects
+   *        string label   Prompt for STDOUT
+   *        array  backups Array of Backup objects
    * @return \stdClass An object representing the backup desired
    * @throws TerminusException
    */
@@ -65,10 +66,10 @@ class InputHelper extends TerminusHelper {
    * Produces a menu to narrow down an element selection
    *
    * @param array $arg_options Elements as follow:
-   *        [array]  args    Arguments given via param
-   *        [string] key     Args key to search for
-   *        [string] label   Prompt for STDOUT
-   *        [array]  choices Menu options for the user
+   *        array  args    Arguments given via param
+   *        string key     Args key to search for
+   *        string label   Prompt for STDOUT
+   *        array  choices Menu options for the user
    * @return string Either the selection, its index, or the default
    * @throws TerminusException
    */
@@ -154,10 +155,10 @@ class InputHelper extends TerminusHelper {
    * Facilitates the selection of a day of the week
    *
    * @param array $arg_options Elements as follow:
-   *        [array]  args    Arguments given via param
-   *        [string] key     Args key to search for
-   *        [string] label   Prompt for STDOUT
-   *        [array]  choices Menu options for the user, may be a collection
+   *        array  args    Arguments given via param
+   *        string key     Args key to search for
+   *        string label   Prompt for STDOUT
+   *        array  choices Menu options for the user, may be a collection
    * @return int
    */
   public function day(array $arg_options = []) {
@@ -195,11 +196,11 @@ class InputHelper extends TerminusHelper {
    * Produces a menu with the given attributes
    *
    * @param array $arg_options Elements as follow:
-   *        [array]  args    Arguments given via param
-   *        [string] key     Args key to search for
-   *        [string] label   Prompt for STDOUT
-   *        [array]  choices Menu options for the user, may be a collection
-   *        [Site]   site    Site object to gather environment choices from
+   *        array  args    Arguments given via param
+   *        string key     Args key to search for
+   *        string label   Prompt for STDOUT
+   *        array  choices Menu options for the user, may be a collection
+   *        Site   site    Site object to gather environment choices from
    * @return string Either the selection, its index, or the default
    */
   public function env(array $arg_options = []) {
@@ -248,23 +249,33 @@ class InputHelper extends TerminusHelper {
    * Produces a menu with the given attributes
    *
    * @param array $arg_options Elements as follow:
-   *        array  choices      Menu options for the user
-   *        mixed  default      Given as null option in the menu
-   *        string message      Prompt printed to STDOUT
-   *        bool   return_value If true, returns selection. False, the index
+   *        bool   autoselect_solo Automatically selects the only given option
+   *        array  choices         Menu options for the user
+   *        mixed  default         Given as null option in the menu
+   *        string message         Prompt printed to STDOUT
+   *        bool   return_value    If true, returns selection. False, the index
    * @return string Either the selection, its index, or the default
    */
   public function menu(array $arg_options = []) {
     $default_options = [
-      'choices'      => [$this->NULL_INPUTS[0]],
-      'default'      => null,
-      'message'      => 'Select one',
-      'return_value' => false
+      'autoselect_solo' => true,
+      'args'            => [],
+      'choices'         => [$this->NULL_INPUTS[0]],
+      'default'         => null,
+      'key'             => null,
+      'message'         => 'Select one',
+      'return_value'    => false,
     ];
     $options         = array_merge($default_options, $arg_options);
 
-    if (count($options['choices']) == 1) {
-      $index = 0;
+    if (!is_null($options['key'])
+      && isset($options['args'][$options['key']])
+    ) {
+      return $options['args'][$options['key']];
+    }
+    if (count($options['choices']) == 1 && $options['autoselect_solo']) {
+      $indices = array_keys($options['choices']);
+      $index   = array_shift($indices);
     } else {
       $index = \cli\Streams::menu(
         $options['choices'],
@@ -367,6 +378,78 @@ class InputHelper extends TerminusHelper {
   }
 
   /**
+   * Input helper to aid in selecting an organizational member
+   *
+   * @param array $arg_options Elements as follow:
+   *  array        args            The args passed in from argv
+   *  bool         autoselect_solo Automatically selects the only member
+   *  bool         can_pick_self   True allows self-selection if using org
+   *  array        choices         Args to search for key
+   *  string       key             Args key to search for
+   *  string       message         Prompt to STDOUT
+   *  Organization org             Org to generate choices from
+   * @return string|OrganizationUserMembership
+   * @throws TerminusException
+   */
+  public function orgMember(array $arg_options = []) {
+    $default_options = [
+      'args'            => [],
+      'autoselect_solo' => true,
+      'can_pick_self'   => true,
+      'choices'         => [],
+      'key'             => 'member',
+      'message'         => 'Please select a member of the organization',
+      'org'             => null,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['key']) && isset($options['args'][$options['key']])) {
+      $member = $options['args'][$options['key']];
+    } elseif (!empty($options['choices'])) {
+      $choices = $options['choices'];
+    } elseif (!is_null($options['org'])) {
+      $self    = Session::getUser();
+      $members = $options['org']->user_memberships->all();
+      $choices = [];
+      foreach ($members as $member) {
+        $user_data = $member->get('user');
+
+        if ($options['can_pick_self'] || $user_data->id != $self->get('id')) {
+          $choices[$user_data->id] = sprintf(
+            '%s <%s> (%s)',
+            $user_data->profile->full_name,
+            $user_data->email,
+            $user_data->id
+          );
+        }
+      }
+    } else {
+      $member = $this->string($options);
+    }
+    if (isset($choices)) {
+      if (empty($choices)) {
+        throw new TerminusException(
+          'There are no valid members to select.',
+          [],
+          1
+        );
+      }
+      $member = $this->menu(
+        [
+          'autoselect_solo' => $options['autoselect_solo'],
+          'choices'         => $choices,
+          'default'         => false,
+          'message'         => $options['message'],
+        ]
+      );
+    }
+    if (!is_null($options['org'])) {
+      $member = $options['org']->user_memberships->get($member);
+    }
+    return $member;
+  }
+
+  /**
    * Input helper that provides interactive menu to select org name
    *
    * @param array $arg_options Elements as follow:
@@ -397,6 +480,43 @@ class InputHelper extends TerminusHelper {
       ]
     );
     return $org_list[$org];
+  }
+
+  /**
+   * Helper function to get an organizational team role
+   *
+   * @param array $arg_options Elements as follow:
+   *        array  args Argument array passed from commands
+   *        string message    Prompt to STDOUT
+   * @return string Name of role
+   */
+  public function orgRole(array $arg_options = []) {
+    $default_options = [
+      'args'                  => [],
+      'can_change_management' => false,
+      'key'                   => 'role',
+      'message'               => 'Select a role for this member',
+    ];
+    $options         = array_merge($default_options, $arg_options);
+
+    $roles = ['unprivileged', 'admin'];
+    if ($options['can_change_management']) {
+      $roles = array_merge($roles, ['team_member', 'developer']);
+    }
+    if (isset($options['args'][$options['key']])
+      && in_array(strtolower($options['args'][$options['key']]), $roles)
+    ) {
+      return $options['args'][$options['key']];
+    }
+    $role = strtolower(
+      $roles[$this->menu(
+        [
+          'choices' => $roles,
+          'message' => $options['message'],
+        ]
+      )]
+    );
+    return $role;
   }
 
   /**
@@ -472,18 +592,18 @@ class InputHelper extends TerminusHelper {
   }
 
   /**
-   * Helper function to get role
+   * Helper function to get site team role
    *
    * @param array $arg_options Elements as follow:
    *        array  args Argument array passed from commands
    *        string message    Prompt to STDOUT
    * @return string Name of role
    */
-  public function role(array $arg_options = []) {
+  public function siteRole(array $arg_options = []) {
     $default_options = [
-      'args'    => [],
-      'key'     => 'role',
-      'message' => 'Select a role for this member',
+      'args'          => [],
+      'key'           => 'role',
+      'message'       => 'Select a role for this member',
     ];
     $options         = array_merge($default_options, $arg_options);
 
@@ -611,7 +731,7 @@ class InputHelper extends TerminusHelper {
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
     }
-    if ($this->log()->getOptions('logFormat') != 'normal') {
+    if ($this->command->log()->getOptions('logFormat') != 'normal') {
       return $options['default'];
     }
     $string = $this->prompt($options);
