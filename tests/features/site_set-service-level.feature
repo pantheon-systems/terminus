@@ -10,7 +10,7 @@ Feature: Set a site's service level
     When I run "terminus site set-service-level --site=[[test_site_name]] --level=pro"
     Then I should get:
     """
-    Service level has been updated to 'pro'
+    Changing site plan to "pro"
     """
 
   @vcr site_set-service-level_fail
@@ -20,5 +20,5 @@ Feature: Set a site's service level
     When I run "terminus site set-service-level --site=[[test_site_name]] --level=pro"
     Then I should get:
     """
-    Instrument required to increase service level
+    needs to be paid for before the service level can be changed
     """

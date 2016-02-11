@@ -27,6 +27,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - `auth login <email> --password=<password>` will not automatically attempt to log in via machine token if a token with the given email is present. (#865)
 - `site deploy` now correctly counts queued commits and will not report there is nothing to deploy erroneously. (#879)
+- `site set-service-level` now uses a workflow which will also generate an email upon level change. (#897)
 
 ## 2016-02-08 - Change repository name
 - Renamed repository from `cli` to `terminus`. Renamed the precursor to this project `terminus-deprecated`. These changes may require updating scripts if you are manually fetching packages from GitHub. (#877)
