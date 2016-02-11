@@ -475,7 +475,7 @@ class InputHelper extends TerminusHelper {
    * Helper function to get role
    *
    * @param array $arg_options Elements as follow:
-   *        array  assoc_args Argument array passed from commands
+   *        array  args Argument array passed from commands
    *        string message    Prompt to STDOUT
    * @return string Name of role
    */
@@ -502,6 +502,48 @@ class InputHelper extends TerminusHelper {
       )]
     );
     return $role;
+  }
+
+  /**
+   * Helper function to select a service level
+   *
+   * @param array $arg_options Elements as follow:
+   *        array  args    The args passed in from argv
+   *        string key     Args key to search for
+   *        string message    Prompt to STDOUT
+   * @return string
+   */
+  public function serviceLevel(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
+      'key'     => 'level',
+      'message' => 'Select a service level',
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    $levels          = ['free', 'basic', 'pro', 'business',];
+    $customer_levels = [
+      'sandbox'      => 'free',
+      'personal'     => 'basic',
+      'professional' => 'pro',
+    ];
+    if (isset($options['key']) && isset($options['args'][$options['key']])) {
+      $level_candidate = strtolower($options['args'][$options['key']]);
+      if (in_array($level_candidate, $levels)) {
+        $level = $level_candidate;
+      }
+      if (isset($customer_levels[$level_candidate])) {
+        $level = $customer_levels[$level_candidate];
+      }
+    }
+    if (!isset($level)) {
+      $level = $levels[$this->menu(
+        [
+          'choices' => $levels,
+          'message' => $options['message'],
+        ]
+      )];
+    }
+    return $level;
   }
 
   /**
