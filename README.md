@@ -92,6 +92,13 @@ source /FULL/PATH/TO/terminus-completion.bash
 
 (Don’t forget to run `source ~/.bash_profile` afterwards)
 
+Setting default user, site, environment, etc. and Dotenv
+--------------
+
+Terminus can use certain environment variables to set certain default values when invoking commands. For example, by exporting the environment variable `TERMINUS_SITE=<sitename>` Terminus will automatically dispatch all commands against that site allowing you to omit the `--site=<sitename>` in your commands. A list of available environment variables is listed in the [`.env-sample` file](https://github.com/pantheon-systems/terminus/blob/master/.env.example).
+
+Terminus also has built-in support for [PHP Dotenv](https://github.com/vlucas/phpdotenv), which provides an alternative to manually exporting environment variables. This involves defining environment variables within a `.env` file that Terminus will automatically use when invoked within that working directory.
+
 Support
 ------------
 Please make ready the steps to reproduce the issue, outputs, pertinent information about your system, and what you believe the correct reaction of the system ought to be. Reporting of issues encountered should happen in one of two ways:
