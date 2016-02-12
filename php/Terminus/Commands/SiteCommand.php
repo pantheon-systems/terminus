@@ -569,18 +569,24 @@ class SiteCommand extends TerminusCommand {
    */
   public function deleteEnv($args, $assoc_args) {
     $site          = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args])
     );
     $multidev_envs = array_diff(
       $site->environments->ids(),
-      array('dev', 'test', 'live')
+      ['dev', 'test', 'live']
     );
+    if (empty($multidev_envs)) {
+      $this->failure(
+        '{site} does not have any multidev environments to delete.',
+        ['site' => $site->get('name')]
+      );
+    }
     $env = $this->input()->env(
-      array(
+      [
         'args'    => $assoc_args,
         'label'   => 'Environment to delete',
         'choices' => $multidev_envs
-      )
+      ]
     );
     $delete_branch = false;
     if (isset($assoc_args['remove_branch'])) {
@@ -589,10 +595,10 @@ class SiteCommand extends TerminusCommand {
 
     $message = 'Are you sure you want to delete the "%s" environment from %s?';
     $this->input()->confirm(
-      array(
+      [
         'message' => $message,
-        'context' => array($env, $site->get('name')),
-      )
+        'context' => [$env, $site->get('name')],
+      ]
     );
 
     $workflow = $site->deleteEnvironment($env, $delete_branch);
