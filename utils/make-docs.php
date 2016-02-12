@@ -1,10 +1,9 @@
 <?php
 
 define('TERMINUS_ROOT', dirname(__DIR__));
-require(TERMINUS_ROOT . '/php/utils.php');
+require(TERMINUS_ROOT . '/php/Terminus/Helpers/TerminusHelper.php');
+require(TERMINUS_ROOT . '/php/Terminus/Helpers/TemplateHelper.php');
 require(TERMINUS_ROOT . '/vendor/autoload.php');
-
-use Terminus\Utils;
 
 /**
  * Accepts an array representing a tokenized PHP file and sifts out all
@@ -116,13 +115,17 @@ function parseDocs($doc_string) {
  * @return bool    True if write was successful
  */
 function writeDocFile($namespace, $docs) {
+  $template_helper = new \Terminus\Helpers\TemplateHelper(['command' => null]);
+    
   $filename    = TERMINUS_ROOT . '/docs/'
     . str_replace(array('Terminus\\', '\\'), array('', '/'), $namespace)
     . '.md';
-  $rendered_doc = Utils\twigRender(
-    'doc.twig',
-    $docs,
-    array('namespace' => $namespace)
+  $rendered_doc = $template_helper->render(
+    [
+      'template_name' => 'doc.twig',
+      'data'          => $docs,
+      'options'       => ['namespace' => $namespace,],
+    ]
   );
   file_put_contents($filename, $rendered_doc);
   return true;
@@ -130,7 +133,8 @@ function writeDocFile($namespace, $docs) {
 
 $library_files   = array_merge(
   getFiles(TERMINUS_ROOT . '/php/Terminus/Models'),
-  getFiles(TERMINUS_ROOT . '/php/Terminus/Outputters')
+  getFiles(TERMINUS_ROOT . '/php/Terminus/Outputters'),
+  getFiles(TERMINUS_ROOT . '/php/Terminus/Helpers')
 );
 $tokenized_files = array();
 foreach ($library_files as $filename) {
@@ -141,9 +145,6 @@ foreach ($library_files as $filename) {
   );
   $tokenized_files[$namespace] = getTokens($filename);
 }
-$tokenized_files['Terminus\\Auth'] = getTokens(TERMINUS_ROOT . '/php/Terminus/Auth.php');
-$tokenized_files['Terminus\\Helpers\\Input'] =
-  getTokens(TERMINUS_ROOT . '/php/Terminus/Helpers/Input.php');
 
 $file_functions = array();
 foreach ($tokenized_files as $namespace => $tokens) {

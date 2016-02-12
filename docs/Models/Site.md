@@ -224,6 +224,15 @@
 
 ---
 
+### getTips
+##### Description:
+    Just the code branches
+
+##### Return:
+    [array]
+
+---
+
 ### getUpstreamUpdates
 ##### Description:
     Get upstream updates
@@ -351,15 +360,6 @@
 
 ##### Throws:
     TerminusException
-
----
-
-### tips
-##### Description:
-    Just the code branches
-
-##### Return:
-    [\stdClass]
 
 ---
 
