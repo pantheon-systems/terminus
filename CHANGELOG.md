@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## Master
+## [0.10.3] - 2016-02-12
 ### Added
 - New `Hostnames` collection and `Hostname` model. (#860)
 - Added 3rd Party plugin support (#857)
