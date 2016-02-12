@@ -36,6 +36,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `site set-service-level` now uses a workflow which will also generate an email upon level change. (#897)
 - Commands making use of `InputHelper#string` no longer experience an inaccessable-property error. (#900)
 - Fixed `site delete-env` environment selection when there are one or fewer multidev environments present on as site. (#909)
+- `site delete-branch` now lists all branches, not just those associated with multidev environments. (#911)
 
 ## 2016-02-08 - Change repository name
 - Renamed repository from `cli` to `terminus`. Renamed the precursor to this project `terminus-deprecated`. These changes may require updating scripts if you are manually fetching packages from GitHub. (#877)
