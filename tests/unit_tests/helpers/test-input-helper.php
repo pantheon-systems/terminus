@@ -128,16 +128,23 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('Terminus Testing', $org);
   }
 
+  public function testOrgRole() {
+    //From args
+    $args = ['role' => 'admin'];
+    $role = $this->inputter->orgRole(compact('args'));
+    $this->assertEquals('admin', $role);
+  }
+
   public function testPrompt() {
   }
 
   public function testPromptSecret() {
   }
 
-  public function testRole() {
+  public function testSiteRole() {
     //From args
     $args = array('role' => 'admin');
-    $role = $this->inputter->role(compact('args'));
+    $role = $this->inputter->siteRole(compact('args'));
     $this->assertEquals('admin', $role);
   }
 

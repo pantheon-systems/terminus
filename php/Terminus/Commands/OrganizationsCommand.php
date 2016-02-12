@@ -202,12 +202,24 @@ class OrganizationsCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
+   * <list|add-member|remove-member|change-role>
+   * : Options are list, add-member, remove-member, and change-role.
+   *
    * [--org=<id|name>]
    * : Organization UUID or name
+   *
+   * [--member=<email>]
+   * : Email of the member to add. Member will receive an invite
+   *
+   * [--role=<role>]
+   * : Role for the new member to act as. Options are admin, team_member, and
+   *   developer.
    *
    * @subcommand team
    */
   public function team($args, $assoc_args) {
+    $action = array_pop($args);
+
     $org_id = $this->input()->orgId(
       array(
         'args'       => $assoc_args,
@@ -224,31 +236,100 @@ class OrganizationsCommand extends TerminusCommand {
         array('org' => $assoc_args['org'])
       );
     }
-    $org_info  = $org->get('organization');
-    $org_model = new Organization($org_info);
+    $org_info     = $org->get('organization');
+    $org_model    = new Organization($org_info);
+    $role_choices = ['unprivileged', 'admin'];
 
-    $memberships = $org->user_memberships->all();
-    $data        = array();
-    foreach ($memberships as $membership) {
-      $member = $membership->get('user');
+    switch ($action) {
+      case 'add-member':
+        $email = $this->input()->string(
+          [
+            'args'    => $assoc_args,
+            'key'     => 'member',
+            'message' => 'What is the email address of the user to be added?',
+          ]
+        );
+        $can_change_management = $org_model->getFeature('change_management');
+        var_dump($can_change_management);
+        $role     = $this->input()->orgRole(
+          [
+            'args'                  => $assoc_args,
+            'can_change_management' => $can_change_management,
+            'return_value'          => true,
+            'key'                   => 'role',
+            'message'               => 'Select a role for your new member.',
+          ]
+        );
+        $workflow = $org->user_memberships->addMember($email, $role);
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+          break;
+      case 'remove-member':
+        $member = $this->input()->orgMember(
+          [
+            'args'            => $assoc_args,
+            'autoselect_solo' => false,
+            'can_pick_self'   => false,
+            'message'         => 'Please select a member to remove',
+            'org'             => $org,
+          ]
+        );
+        $workflow = $member->removeMember();
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+          break;
+      case 'change-role':
+        $member   = $this->input()->orgMember(
+          [
+            'args'            => $assoc_args,
+            'autoselect_solo' => false,
+            'message'         => 'Please select a member to update',
+            'org'             => $org,
+          ]
+        );
+        if ($org_model->getFeature('change_management')) {
+          $role_choices[] = 'team_member';
+          $role_choices[] = 'developer';
+        }
+        $can_change_management = $org_model->getFeature('change_management');
+        $role     = $this->input()->orgRole(
+          [
+            'args'                  => $assoc_args,
+            'can_change_management' => $can_change_management,
+            'return_value'          => true,
+            'key'                   => 'role',
+            'message'               => 'Select a role for this member.',
+          ]
+        );
+        $workflow = $member->setRole($role);
+        $this->workflowOutput($workflow);
+          break;
+      case 'list':
+      default:
+        $memberships = $org->user_memberships->all();
+        $data        = [];
+        foreach ($memberships as $membership) {
+          $member = $membership->get('user');
 
-      $first_name = $last_name = null;
-      if (isset($member->profile->firstname)) {
-        $first_name = $member->profile->firstname;
-      }
-      if (isset($member->profile->lastname)) {
-        $last_name = $member->profile->lastname;
-      }
+          $first_name = $last_name = null;
+          if (isset($member->profile->firstname)) {
+            $first_name = $member->profile->firstname;
+          }
+          if (isset($member->profile->lastname)) {
+            $last_name = $member->profile->lastname;
+          }
 
-      $data[$member->id] = array(
-        'first' => $first_name,
-        'last'  => $last_name,
-        'email' => $member->email,
-        'uuid'  => $member->id,
-      );
+          $data[$member->id] = [
+            'first' => $first_name,
+            'last'  => $last_name,
+            'email' => $member->email,
+            'role'  => $membership->get('role'),
+            'uuid'  => $member->id,
+          ];
+        }
+        $this->output()->outputRecordList($data);
+          return $data;
     }
-    $this->output()->outputRecordList($data);
-    return $data;
   }
 
   /**

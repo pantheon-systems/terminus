@@ -9,6 +9,7 @@ use Terminus\Models\Collections\OrganizationUserMemberships;
 use Terminus\Models\Collections\Workflows;
 
 class Organization extends TerminusModel {
+
   /**
    * @var OrganizationSiteMemberships
    */
@@ -25,6 +26,10 @@ class Organization extends TerminusModel {
    * @var Workflows
    */
   protected $workflows;
+  /**
+   * @var array
+   */
+  private $features;
 
   /**
    * Object constructor
@@ -57,6 +62,25 @@ class Organization extends TerminusModel {
         'owner_type' => 'organization',
       )
     );
+  }
+
+  /**
+   * Returns a specific organization feature value
+   *
+   * @param string $feature Feature to check
+   * @return mixed|null Feature value, or null if not found
+   */
+  public function getFeature($feature) {
+    if (!isset($this->features)) {
+      $response       = $this->request->simpleRequest(
+        sprintf('organizations/%s/features', $this->get('id'))
+      );
+      $this->features = (array)$response['data'];
+    }
+    if (isset($this->features[$feature])) {
+      return $this->features[$feature];
+    }
+    return null;
   }
 
   /**
