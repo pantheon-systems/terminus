@@ -37,6 +37,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Commands making use of `InputHelper#string` no longer experience an inaccessable-property error. (#900)
 - Fixed `site delete-env` environment selection when there are one or fewer multidev environments present on as site. (#909)
 - `site delete-branch` now lists all branches, not just those associated with multidev environments. (#911)
+- `site connection-info` no longer errors on some sites which have Redis cache servers. (#912)
 
 ## 2016-02-08 - Change repository name
 - Renamed repository from `cli` to `terminus`. Renamed the precursor to this project `terminus-deprecated`. These changes may require updating scripts if you are manually fetching packages from GitHub. (#877)

@@ -253,8 +253,14 @@ class Environment extends TerminusModel {
     $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
     if (!empty($cacheserver_binding)) {
       do {
-        $cache_binding = array_shift($cacheserver_binding);
-      } while ($cache_binding->get('environment') != $this->get('id'));
+        $next_binding = array_shift($cacheserver_binding);
+        if (is_null($next_binding)) {
+          break;
+        }
+        $cache_binding = $next_binding;
+      } while (!is_null($cache_binding)
+        && $cache_binding->get('environment') != $this->get('id')
+      );
 
       $redis_password = $cache_binding->get('password');
       $redis_host     = $cache_binding->get('host');
