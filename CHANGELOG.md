@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `organizations team add-member`. (#904)
 - New command `organizations team remove-member`. (#904)
 - New command `organizations team change-role`. (#904)
+- Added new `role` data to the information returned by `organizations team list`. (#904)
 
 ### Changed
 - When an object cannot be found by `TerminusModel#get`, it now throws an exception rather than issuing a notice. (#861)

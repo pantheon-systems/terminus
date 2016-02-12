@@ -416,9 +416,10 @@ class InputHelper extends TerminusHelper {
 
         if ($options['can_pick_self'] || $user_data->id != $self->get('id')) {
           $choices[$user_data->id] = sprintf(
-            '%s <%s> (%s)',
+            '%s <%s> [%s] (%s)',
             $user_data->profile->full_name,
             $user_data->email,
+            $member->get('role'),
             $user_data->id
           );
         }

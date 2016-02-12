@@ -323,6 +323,7 @@ class OrganizationsCommand extends TerminusCommand {
             'first' => $first_name,
             'last'  => $last_name,
             'email' => $member->email,
+            'role'  => $membership->get('role'),
             'uuid'  => $member->id,
           ];
         }
