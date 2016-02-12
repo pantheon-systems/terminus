@@ -623,16 +623,10 @@ class Site extends TerminusModel {
    * @throws TerminusException
    */
   public function updateServiceLevel($level) {
-    $path        = 'service-level';
-    $method      = 'PUT';
-    $form_params = $level;
     try {
-      $response = $this->request->request(
-        'sites',
-        $this->get('id'),
-        $path,
-        $method,
-        compact('form_params')
+      $workflow = $this->workflows->create(
+        'change_site_service_level',
+        ['params' => ['service_level' => $level]]
       );
     } catch (\Exception $e) {
       if (strpos($e->getMessage(), '403') !== false) {
@@ -644,7 +638,7 @@ class Site extends TerminusModel {
       }
       throw $e;
     }
-    return $response['data'];
+    return $workflow;
   }
 
   /**

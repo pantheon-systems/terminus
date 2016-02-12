@@ -1615,10 +1615,13 @@ class SiteCommand extends TerminusCommand {
    * @subcommand set-service-level
    */
   public function setServiceLevel($args, $assoc_args) {
-    $site  = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site     = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
     $level = $this->input()->serviceLevel(['args' => $assoc_args]);
-    $data  = $site->updateServiceLevel($level);
-    $this->log()->info("Service level has been updated to '$level'");
+    $workflow = $site->updateServiceLevel($level);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
   }
 
   /**
