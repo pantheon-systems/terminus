@@ -220,11 +220,7 @@ class Site extends TerminusModel {
   public function deleteBranch($branch) {
     $workflow = $this->workflows->create(
       'delete_environment_branch',
-      array(
-        'params' => array(
-          'environment_id' => $branch,
-        )
-      )
+      ['params' => ['environment_id' => $branch,],]
     );
     return $workflow;
   }
@@ -398,6 +394,18 @@ class Site extends TerminusModel {
     $org  = $org_site_member->get($this->get('id'));
     $tags = $org->get('tags');
     return $tags;
+  }
+
+  /**
+   * Just the code branches
+   *
+   * @return array
+   */
+  public function getTips() {
+    $path     = 'code-tips';
+    $data     = $this->request->request('sites', $this->get('id'), $path, 'GET');
+    $branches = array_keys((array)$data['data']);
+    return $branches;
   }
 
   /**
@@ -602,17 +610,6 @@ class Site extends TerminusModel {
       )
     );
     return $workflow;
-  }
-
-  /**
-   * Just the code branches
-   *
-   * @return \stdClass
-   */
-  public function tips() {
-    $path = 'code-tips';
-    $data = $this->request->request('sites', $this->get('id'), $path, 'GET');
-    return $data['data'];
   }
 
   /**

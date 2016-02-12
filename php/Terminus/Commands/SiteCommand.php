@@ -258,18 +258,18 @@ class SiteCommand extends TerminusCommand {
   public function code($args, $assoc_args) {
     $subcommand = array_shift($args);
     $site       = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args])
     );
-    $data       = $headers = array();
-    $env        = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'site' => $site))
-    );
+    $data       = $headers = [];
     switch ($subcommand) {
       case 'log':
+        $env  = $site->environments->get(
+          $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+        );
         $logs = $env->commits->all();
-        $data = array();
+        $data = [];
         foreach ($logs as $log) {
-          $data[] = array(
+          $data[] = [
             'time'    => $log->get('datetime'),
             'author'  => $log->get('author'),
             'labels'  => implode(', ', $log->get('labels')),
@@ -281,20 +281,22 @@ class SiteCommand extends TerminusCommand {
                 str_replace("\t", '', substr($log->get('message'), 0, 50))
               )
             ),
-          );
+          ];
         }
         if (!empty($data)) {
           $this->output()->outputRecordList($data);
         }
           break;
       case 'branches':
-        $data    = $site->tips();
-        $headers = array('Branch', 'Commit');
+        $data    = $site->getTips();
         if (!empty($data)) {
-          $this->output()->outputRecord($data, $headers);
+          $this->output()->outputValueList($data);
         }
           break;
       case 'commit':
+        $env     = $site->environments->get(
+          $this->input()->env(['args' => $assoc_args, 'site' => $site])
+        );
         $diff    = $env->diffstat();
         $count   = count((array)$diff);
         $message = "Commit changes to $count files?";
@@ -303,12 +305,12 @@ class SiteCommand extends TerminusCommand {
           $this->input()->confirm(compact('message'));
         }
         $message  = $this->input()->string(
-          array(
+          [
             'args'    => $assoc_args,
             'key'     => 'message',
             'message' => 'Please enter a commit message.',
             'default' => 'Terminus commit.'
-          )
+          ]
         );
         $workflow = $env->commitChanges($message);
         $workflow->wait();
@@ -321,7 +323,7 @@ class SiteCommand extends TerminusCommand {
           $this->log()->info('No changes on server.');
           return true;
         }
-        $data   = array();
+        $data   = [];
         $filter = false;
         if (isset($assoc_args['filter'])) {
           $filter = $assoc_args['filter'];
@@ -334,7 +336,7 @@ class SiteCommand extends TerminusCommand {
               continue;
             }
           }
-          $data[] = array_merge(array('file' => $file), (array)$stats);
+          $data[] = array_merge(compact('file'), (array)$stats);
         }
         if (!empty($data)) {
           $this->output()->outputRecord($data, $headers);
@@ -522,28 +524,32 @@ class SiteCommand extends TerminusCommand {
    * @subcommand delete-branch
    */
   public function deleteBranch($args, $assoc_args) {
-    $site          = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+    $site     = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
     );
-    $multidev_envs = array_diff(
-      $site->environments->ids(),
-      array('dev', 'test', 'live')
-    );
-    $branch        = $this->input()->env(
-      array(
-        'args'    => $assoc_args,
-        'key'     => 'branch',
-        'label'   => 'Branch to delete',
-        'choices' => $multidev_envs,
-      )
+    $branches = array_diff((array)$site->getTips(), ['master']);
+    if (empty($branches)) {
+      $this->failure(
+        'The site {site} has no branches which may be deleted.',
+        ['site' => $site->get('name')]
+      );
+    }
+    $branch   = $this->input()->menu(
+      [
+        'args'            => $assoc_args,
+        'autoselect_solo' => false,
+        'key'             => 'branch',
+        'label'           => 'Select the branch to delete',
+        'choices'         => $branches,
+      ]
     );
 
     $message = 'Are you sure you want to delete the "%s" branch from %s?';
     $this->input()->confirm(
-      array(
+      [
         'message' => $message,
-        'context' => array($branch, $site->get('name')),
-      )
+        'context' => [$branch, $site->get('name')],
+      ]
     );
 
     $workflow = $site->deleteBranch($branch);

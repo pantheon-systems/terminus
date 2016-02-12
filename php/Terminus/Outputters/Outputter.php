@@ -127,7 +127,7 @@ class Outputter implements OutputterInterface {
    */
   public function outputValueList(array $values, $human_label = '') {
     $this->getWriter()->write(
-      $this->getFormatter()->formatRecord($values, $human_label)
+      $this->getFormatter()->formatRecord($values, [$human_label])
     );
   }
 
