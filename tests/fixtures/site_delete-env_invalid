@@ -9,8 +9,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:139a5e9e-d1ce-11e5-8885-bc764e10f058:ILGeEqYvIvYvSFzAsmFDg'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:139a5e9e-d1ce-11e5-8885-bc764e10f058:ILGeEqYvIvYvSFzAsmFDg'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:6e5844d6-d1ce-11e5-9299-bc764e10f058:aZ1oREzGO7yls1n0eZnff'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:6e5844d6-d1ce-11e5-9299-bc764e10f058:aZ1oREzGO7yls1n0eZnff'
             verify: ''
             json: password1
             Accept: null
@@ -22,16 +22,16 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:02 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:04 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3d0bcd80-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f138ae40-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"session":"c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq","expires_at":1457731142,"user_id":"c2653a9a-308f-4207-b3a1-36a73411c818"}'
+        body: '{"session":"c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh","expires_at":1457731444,"user_id":"c2653a9a-308f-4207-b3a1-36a73411c818"}'
 -
     request:
         method: GET
@@ -41,8 +41,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: get
             absolute_url: ''
@@ -54,11 +54,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:03 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:06 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3deabbd0-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f20e4dc0-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -74,8 +74,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: get
             absolute_url: ''
@@ -87,11 +87,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:04 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:06 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3e3c3730-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f2687bb0-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -107,8 +107,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: get
             absolute_url: ''
@@ -120,11 +120,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:04 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:07 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3e7a0380-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f2b2a410-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -140,8 +140,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: get
             absolute_url: ''
@@ -153,11 +153,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:05 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:08 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3eb89320-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f2ef10d0-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -173,8 +173,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: get
             absolute_url: ''
@@ -187,17 +187,17 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:19:06 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:09 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 3f9648f0-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f410ad70-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"SnoQ7qdZOzYla7EKZeyWfw=="'
+            ETag: 'W/"7/oR+zJhCzQFryrspzXn9w=="'
             Vary: Accept-Encoding
-        body: '{"multidev": {"environment_created": 1455311613, "dns_zone": "onebox.pantheon.io", "randseed": "6DJ69O2NULTBAJESCS6A9S79NUVJ3Y00", "target_ref": "refs/heads/multidev", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "test": {"environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "QPRH89NDXDK32CQFWGKPC7YE0DUNJ75R", "target_ref": "refs/tags/pantheon_test_3", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "live": {"environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "2MN6RJ6ET5Y761HRL6PMLU19O2ATEWFM", "lock": {"username": null, "password": null, "locked": false}, "pingdom": 0, "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": false, "environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "2LT5K6J6B1JWDGE8L9DRZSYRZXEBC3IQ", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}}'
+        body: '{"multidev": {"environment_created": 1455312130, "dns_zone": "onebox.pantheon.io", "randseed": "H3Q1HCZEY5ORREAJ04J3Z72B2E21G4U2", "target_ref": "refs/heads/multidev", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "test": {"environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "QPRH89NDXDK32CQFWGKPC7YE0DUNJ75R", "target_ref": "refs/tags/pantheon_test_3", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "live": {"environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "2MN6RJ6ET5Y761HRL6PMLU19O2ATEWFM", "lock": {"username": null, "password": null, "locked": false}, "pingdom": 0, "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": false, "environment_created": 1452811533, "dns_zone": "onebox.pantheon.io", "randseed": "2LT5K6J6B1JWDGE8L9DRZSYRZXEBC3IQ", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}}'
 -
     request:
         method: POST
@@ -208,14 +208,14 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:f13e22da-d1ce-11e5-8885-bc764e10f058:rur7ueu7iZRHHPpPdISrh'
             verify: ''
             method: post
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"delete_cloud_development_environment","params":{"environment_id":"multidev","delete_branch":false}}'
+        body: '{"type":"delete_cloud_development_environment","params":{"environment_id":"invalid","delete_branch":false}}'
     response:
         status:
             http_version: '1.1'
@@ -223,149 +223,13 @@
             message: Accepted
         headers:
             Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:20:20 GMT'
+            Date: 'Fri, 12 Feb 2016 21:24:10 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 6b928220-d1ce-11e5-90b4-bd642d89c822
+            X-Pantheon-Trace-Id: f4dc61e0-d1ce-11e5-90b4-bd642d89c822
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
-        body: '{"final_task_id": "6b99b5c2-d1ce-11e5-a881-bc764e10f058", "finished_at": 1455312020.451528, "params": {"delete_branch": false, "environment_id": "multidev"}, "reason": "", "result": "succeeded", "role": "owner", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "started_at": 1455312020.360239, "task_ids": ["6b99b5c2-d1ce-11e5-a881-bc764e10f058"], "trace_id": "6b928220-d1ce-11e5-90b4-bd642d89c822", "type": "delete_cloud_development_environment", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "waiting_for_task_id": null, "id": "6b97bb3c-d1ce-11e5-a881-bc764e10f058", "key": "1455310800", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.09128904342651367, "created_at": 1455312020.32423, "environment": null, "total_time": 0.12729811668395996, "active_description": "Deleted Multidev environment \"multidev\"", "description": "Delete a Multidev environment", "step": 1, "has_operation_log_output": false, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=6b928220-d1ce-11e5-90b4-bd642d89c822&from_iso_date=2016-02-12T21:15:20.324230Z&to_iso_date=2016-02-12T21:25:20.451528Z", "user": {"user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "created_at": 1452276194, "destination_organization_id": null, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": "multidev", "finished_at": 1455312020.436338, "fn_name": "trigger_task", "params": {"delete_branch": false, "task_type": "delete_cloud_development_environment", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "environment_id": "multidev"}, "queued_at": 1455312020.360361, "responses": [{"code": 200, "body": "Deleted the environment \"multidev\".", "error_details": "", "internal_reason": ""}], "result": "succeeded", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "started_at": 1455312020.360363, "trace_id": "6b928220-d1ce-11e5-90b4-bd642d89c822", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "workflow_id": "6b97bb3c-d1ce-11e5-a881-bc764e10f058", "id": "6b99b5c2-d1ce-11e5-a881-bc764e10f058", "key": "1455310800", "queued_time": 1.9073486328125e-06, "host": null, "phase": "finished", "created_at": 1455312020.337197, "allow_concurrent": false, "run_time": 0.07597494125366211, "total_time": 0.09914088249206543, "reason": "", "error_details": "", "internal_reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=6b928220-d1ce-11e5-90b4-bd642d89c822&from_iso_date=2016-02-12T21:15:20.337197Z&to_iso_date=2016-02-12T21:25:20.436338Z", "type": "delete_cloud_development_environment", "build_url": null, "messages": {"2016-02-12T21:20:20.466047": {"message": "Deleted the environment \"multidev\".", "level": "INFO"}}}}'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/8601d03e-e7ed-491f-b971-616b210a2cba/environments/multidev/code-log'
-        headers:
-            Host: onebox
-            Accept-Encoding: null
-            User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
-            Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            verify: ''
-            method: get
-            absolute_url: ''
-            options: get
-            Accept: null
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:20:21 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 6c8323b0-d1ce-11e5-90b4-bd642d89c822
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"361-dc84190c"'
-            Vary: Accept-Encoding
-        body: '[{"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "author": "tesladethray", "labels": ["test", "multidev", "dev"], "datetime": "2016-01-21T19:18:55", "parents": ["295b22b5501e6517e3080ac38e8564a5f0038276"], "message": "Added new.txt\n", "email": "tesladethray@gmail.com"}, {"gravitar_url": "https://secure.gravatar.com/avatar/9631f4a345eabaa121f599004f32fab2?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "295b22b5501e6517e3080ac38e8564a5f0038276", "author": "Root", "labels": ["test", "multidev", "dev"], "datetime": "2016-01-14T22:45:45", "parents": ["93d1c75f1d1025b4b42f01305f5d09c71764f247"], "message": "\"Initial Commit\"\n", "email": "root@getpantheon.com"}]'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/8601d03e-e7ed-491f-b971-616b210a2cba/environments/test/code-log'
-        headers:
-            Host: onebox
-            Accept-Encoding: null
-            User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
-            Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            verify: ''
-            method: get
-            absolute_url: ''
-            options: get
-            Accept: null
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:20:22 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 6ce14940-d1ce-11e5-90b4-bd642d89c822
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"349-30e4681f"'
-            Vary: Accept-Encoding
-        body: '[{"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "author": "tesladethray", "labels": ["test", "dev"], "datetime": "2016-01-21T19:18:55", "parents": ["295b22b5501e6517e3080ac38e8564a5f0038276"], "message": "Added new.txt\n", "email": "tesladethray@gmail.com"}, {"gravitar_url": "https://secure.gravatar.com/avatar/9631f4a345eabaa121f599004f32fab2?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "295b22b5501e6517e3080ac38e8564a5f0038276", "author": "Root", "labels": ["test", "dev"], "datetime": "2016-01-14T22:45:45", "parents": ["93d1c75f1d1025b4b42f01305f5d09c71764f247"], "message": "\"Initial Commit\"\n", "email": "root@getpantheon.com"}]'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/8601d03e-e7ed-491f-b971-616b210a2cba/environments/live/code-log'
-        headers:
-            Host: onebox
-            Accept-Encoding: null
-            User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
-            Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            verify: ''
-            method: get
-            absolute_url: ''
-            options: get
-            Accept: null
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:20:23 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 6d3d4bf0-d1ce-11e5-90b4-bd642d89c822
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"2-d4cbb29"'
-            Vary: Accept-Encoding
-        body: '[]'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/8601d03e-e7ed-491f-b971-616b210a2cba/environments/dev/code-log'
-        headers:
-            Host: onebox
-            Accept-Encoding: null
-            User-Agent: 'Terminus/0.10.2 (php_version=5.6.14&script=boot-fs.php)'
-            Content-type: application/json
-            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:3d122202-d1ce-11e5-9299-bc764e10f058:iGGxMUXtA5Rj4twsFnMcq'
-            verify: ''
-            method: get
-            absolute_url: ''
-            options: get
-            Accept: null
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Fri, 12 Feb 2016 21:20:23 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 6d9dbb70-d1ce-11e5-90b4-bd642d89c822
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            ETag: 'W/"349-30e4681f"'
-            Vary: Accept-Encoding
-        body: '[{"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "c9aa90bee29099bdaaef9b102bbed61aacb39898", "author": "tesladethray", "labels": ["test", "dev"], "datetime": "2016-01-21T19:18:55", "parents": ["295b22b5501e6517e3080ac38e8564a5f0038276"], "message": "Added new.txt\n", "email": "tesladethray@gmail.com"}, {"gravitar_url": "https://secure.gravatar.com/avatar/9631f4a345eabaa121f599004f32fab2?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "295b22b5501e6517e3080ac38e8564a5f0038276", "author": "Root", "labels": ["test", "dev"], "datetime": "2016-01-14T22:45:45", "parents": ["93d1c75f1d1025b4b42f01305f5d09c71764f247"], "message": "\"Initial Commit\"\n", "email": "root@getpantheon.com"}]'
+        body: '{"final_task_id": "f4e3cdf4-d1ce-11e5-a881-bc764e10f058", "finished_at": 1455312250.760219, "params": {"delete_branch": false, "environment_id": "invalid"}, "reason": "The environment \"invalid\" was not found.", "result": "aborted", "role": "owner", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "started_at": 1455312250.694537, "task_ids": ["f4e3cdf4-d1ce-11e5-a881-bc764e10f058"], "trace_id": "f4dc61e0-d1ce-11e5-90b4-bd642d89c822", "type": "delete_cloud_development_environment", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "waiting_for_task_id": null, "id": "f4e1a07e-d1ce-11e5-a881-bc764e10f058", "key": "1455310800", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.06568217277526855, "created_at": 1455312250.656371, "environment": null, "total_time": 0.10384798049926758, "active_description": "Deleted Multidev environment \"invalid\"", "description": "Delete a Multidev environment", "step": 1, "has_operation_log_output": false, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=f4dc61e0-d1ce-11e5-90b4-bd642d89c822&from_iso_date=2016-02-12T21:19:10.656371Z&to_iso_date=2016-02-12T21:29:10.760219Z", "user": {"user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "created_at": 1452276194, "destination_organization_id": null, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": "invalid", "finished_at": 1455312250.743699, "fn_name": "trigger_task", "has_error": true, "params": {"delete_branch": false, "task_type": "delete_cloud_development_environment", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "environment_id": "invalid"}, "queued_at": 1455312250.694669, "responses": [{"code": 404, "body": "The environment \"invalid\" was not found.", "error_details": "", "internal_reason": ""}], "result": "aborted", "site_id": "8601d03e-e7ed-491f-b971-616b210a2cba", "started_at": 1455312250.694672, "trace_id": "f4dc61e0-d1ce-11e5-90b4-bd642d89c822", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "workflow_id": "f4e1a07e-d1ce-11e5-a881-bc764e10f058", "id": "f4e3cdf4-d1ce-11e5-a881-bc764e10f058", "key": "1455310800", "queued_time": 3.0994415283203125e-06, "host": null, "phase": "finished", "created_at": 1455312250.670642, "allow_concurrent": false, "run_time": 0.0490269660949707, "total_time": 0.07305717468261719, "reason": "The environment \"invalid\" was not found.", "error_details": "The environment \"invalid\" was not found.", "internal_reason": "The environment \"invalid\" was not found.", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=f4dc61e0-d1ce-11e5-90b4-bd642d89c822&from_iso_date=2016-02-12T21:19:10.670642Z&to_iso_date=2016-02-12T21:29:10.743699Z", "type": "delete_cloud_development_environment", "build_url": null, "messages": {"2016-02-12T21:24:10.774825": {"message": "The environment \"invalid\" was not found.", "level": "ERROR"}}}}'
