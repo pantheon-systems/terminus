@@ -5,10 +5,26 @@
     Adds a user to this organization
 
 ##### Parameters:
-    [User] $user User object of user to add to this organization
+    [string] $uuid UUID of user user to add to this organization
+    [string] $role Role to assign to the new member
 
 ##### Return:
     [Workflow] $workflow
+
+---
+
+### get
+##### Description:
+    Retrieves models by either user ID, email address, or full name
+
+##### Parameters:
+    [string] $id Either a user ID, email address, or full name
+
+##### Return:
+    [OrganizationUserMembership]
+
+##### Throws:
+    TerminusException
 
 ---
 

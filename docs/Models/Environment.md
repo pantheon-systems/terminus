@@ -68,6 +68,15 @@
 
 ---
 
+### countDeployableCommits
+##### Description:
+    Counts the number of deployable commits
+
+##### Return:
+    [int]
+
+---
+
 ### create
 ##### Description:
     Creates a new environment
@@ -238,6 +247,18 @@
 
 ##### Throws:
     TerminusException
+
+---
+
+### setHttpsCertificate
+##### Description:
+    Add/Replace an HTTPS Certificate on the Environment
+
+##### Parameters:
+    [array] $options Certificate data`
+
+##### Return:
+    [$workflow]
 
 ---
 

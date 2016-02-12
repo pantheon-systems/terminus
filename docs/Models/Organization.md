@@ -10,6 +10,18 @@
 
 ---
 
+### getFeature
+##### Description:
+    Returns a specific organization feature value
+
+##### Parameters:
+    [string] $feature Feature to check
+
+##### Return:
+    [mixed|null] Feature value, or null if not found
+
+---
+
 ### getSites
 ##### Description:
     Retrieves organization sites
