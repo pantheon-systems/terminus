@@ -675,7 +675,7 @@ class SiteCommand extends TerminusCommand {
 
     $workflow = $env->deploy($params);
     $workflow->wait();
-    $this->workflowOutput($workflow);
+    $this->workflowOutput($workflow, ['failure' => 'Deployment failed.']);
   }
 
   /**

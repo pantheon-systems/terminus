@@ -25,6 +25,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Changed the site-DNE message to instruct the user to run `sites list`. (#895)
 - `site set-service-level` now also accepts levels of "professional", "sandbox", and "personal". (#894)
 - `organizations team` has been changed to `organizations team list`. (#904)
+- Changed log message on `site deploy` to not give the workflow's status but a failure message upon failure. (#896)
 
 ### Removed
 - `addHostnames`, `deleteHostnames()`, and `getHostnames()` has been removed from `Environment`. Use new hostnames property (contains Hostnames collection) instead. (#860)
