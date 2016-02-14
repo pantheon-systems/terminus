@@ -116,7 +116,7 @@ function parseDocs($doc_string) {
  */
 function writeDocFile($namespace, $docs) {
   $template_helper = new \Terminus\Helpers\TemplateHelper(['command' => null]);
-    
+
   $filename    = TERMINUS_ROOT . '/docs/'
     . str_replace(array('Terminus\\', '\\'), array('', '/'), $namespace)
     . '.md';
