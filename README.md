@@ -118,7 +118,7 @@ Contributions
 Here are steps to follow if you would like to contribute to Terminus:
 
 1. Fork the repository.
-2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running
+2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running:
   ```bash
   cd $HOME/terminus
   ./scripts/lint.sh
