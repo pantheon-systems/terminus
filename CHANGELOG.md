@@ -2,6 +2,9 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- Added new `role` data to the information returned by `site team list`. (#924)
+
 ### Changed
 - The `--set` argument in `site set-owner` has been renamed to `--member` for consistency. (#924)
 

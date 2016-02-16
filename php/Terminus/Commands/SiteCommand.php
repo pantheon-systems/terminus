@@ -1849,6 +1849,7 @@ class SiteCommand extends TerminusCommand {
             'First' => $user->profile->firstname,
             'Last'  => $user->profile->lastname,
             'Email' => $user->email,
+            'Role'  => $user_membership->get('role'),
             'UUID'  => $user->id,
           );
         }
