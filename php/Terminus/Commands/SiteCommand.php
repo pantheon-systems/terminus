@@ -1786,7 +1786,8 @@ class SiteCommand extends TerminusCommand {
    * : Email of the member to add. Member will receive an invite
    *
    * [--role=<role>]
-   * : Role for the new member to act as
+   * : Role to designate the member as. Options are developer, team_member,
+   *   and admin.
    *
    * @subcommand team
    */
