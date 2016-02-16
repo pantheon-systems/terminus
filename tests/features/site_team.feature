@@ -19,7 +19,7 @@ Feature: Managing a site's team
     Given I am authenticated
     And a site named "[[test_site_name]]"
     When I run "terminus site team change-role --site=[[test_site_name]] --member=[[other_user]] --role=admin"
-    Then I should get one of the following: "This site does not have the authority to conduct this operation, Changed a user role"
+    Then I should get one of the following: "This site does not have its change-management option enabled., Changed a user role"
 
   @vcr site_team_remove-member
   Scenario: Removing a team member

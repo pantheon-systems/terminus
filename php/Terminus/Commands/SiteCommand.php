@@ -1836,7 +1836,7 @@ class SiteCommand extends TerminusCommand {
           }
         } else {
           $this->failure(
-            'This site does not have the authority to conduct this operation.'
+            'This site does not have its change-management option enabled.'
           );
         }
           break;
