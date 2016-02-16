@@ -2,6 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
 use Terminus\Models\SiteUserMembership;
 use Terminus\Models\Workflow;
@@ -56,20 +57,19 @@ class SiteUserMemberships extends TerminusCollection {
     } else {
       foreach ($models as $model) {
         $userdata = $model->get('user');
-        if ($userdata->email == $id) {
-          $membership = $model;
-          continue;
+        if (is_object($userdata)
+          && property_exists($userdata, 'email')
+          && ($userdata->email == $id)
+        ) {
+          return $model;
         }
       }
     }
-    if ($membership == null) {
-      throw new TerminusException(
-        'Cannot find site user with the name "{id}"',
-        compact('id'),
-        1
-      );
-    }
-    return $membership;
+    throw new TerminusException(
+      'Cannot find site user with the name "{id}"',
+      compact('id'),
+      1
+    );
   }
 
   /**

@@ -1599,8 +1599,8 @@ class SiteCommand extends TerminusCommand {
    * [--site=<site>]
    * : Site to check
    *
-   * [--set=<value>]
-   * : new owner to set
+   * [--member=<email>]
+   * : The email of the user to set as the new owner
    *
    * @subcommand set-owner
    */
@@ -1608,7 +1608,7 @@ class SiteCommand extends TerminusCommand {
     $site     = $this->sites->get(
       $this->input()->siteName(array('args' => $assoc_args))
     );
-    $workflow = $site->setOwner($assoc_args['set']);
+    $workflow = $site->setOwner($assoc_args['member']);
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
