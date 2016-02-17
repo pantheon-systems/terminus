@@ -3,6 +3,9 @@
 namespace Terminus\Dispatcher;
 
 use Terminus\DocParser;
+use Terminus\Outputters\Outputter;
+use Terminus\Outputters\PrettyFormatter;
+use Terminus\Outputters\StreamWriter;
 
 /**
  * A non-leaf node in the command tree.
@@ -164,6 +167,9 @@ class CompositeCommand {
   public function getUsage() {
     $methods = $this->getSubcommands();
 
+    $writer = new StreamWriter();
+    $formatter = new PrettyFormatter();
+    $outputter = new Outputter($writer, $formatter);
     if (!empty($methods)) {
       $subcommand = array_shift($methods);
       $outputter->line($subcommand->parseUsage('usage: '));
