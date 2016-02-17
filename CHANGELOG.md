@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Changed
 - The `--set` argument in `site set-owner` has been renamed to `--member` for consistency. (#924)
+- Site and environment PHP versions are now reported with the '.' (e.g. 5.3, 5.5). (#931)
 
 ### Fixed
 - Help text when inputting an incomplete command has been repaired. (#919)
@@ -14,6 +15,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed strict standards issue occurring in `Environment#wake()`. (#928)
 - `Utils\checkForUpdate()` now appropriately interpolates error messages. (#929)
 - Changed `Symfony\Finder` versions so as to not conflict with Drupal Console. (#932)
+- Ensured that PHP version numbers appear when the API returns no value. (#931)
 
 ## [0.10.3] - 2016-02-12
 ### Added

@@ -35,30 +35,6 @@ class SiteAuthorizations extends TerminusCollection {
   }
 
   /**
-   * Retrieves the model of the given ID
-   *
-   * @param string $id ID of desired model instance
-   * @return TerminusModel $this->models[$id]
-   * @throws TerminusException
-   */
-  public function get($id, $env = null) {
-    $models = $this->getMembers();
-    if (isset($models[$id])) {
-      return $models[$id];
-    }
-    $model = explode('\\', $this->getMemberName());
-    throw new TerminusException(
-      'Could not find {model} "{id}"',
-      array(
-        'model' => strtolower(array_pop($model)),
-        'id'    => $id,
-      ),
-      1
-    );
-  }
-
-
-  /**
    * Give the URL for collection data fetching
    *
    * @return string URL to use in fetch query

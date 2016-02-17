@@ -707,7 +707,9 @@ class SiteCommand extends TerminusCommand {
    * @subcommand environment-info
    */
   public function environmentInfo($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
     $env  = $site->environments->get(
       $this->input()->env(array('args' => $assoc_args, 'site' => $site))
     );
@@ -964,7 +966,7 @@ class SiteCommand extends TerminusCommand {
       $field = $assoc_args['field'];
       $this->output()->outputValue($site->info($field));
     } else {
-      $this->output()->outputRecord($site->attributes);
+      $this->output()->outputRecord($site->info());
     }
   }
 
@@ -1611,43 +1613,6 @@ class SiteCommand extends TerminusCommand {
     $workflow = $site->setOwner($assoc_args['member']);
     $workflow->wait();
     $this->workflowOutput($workflow);
-  }
-
-  /**
-   * Set the site's PHP version
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : Site to set the PHP version of
-   *
-   * [--version=<value>]
-   * : New PHP version to set. Options are 5.3 and 5.5.
-   *
-   * @subcommand set-php-version
-   */
-  public function setPhpVersion($args, $assoc_args) {
-    $site  = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
-    );
-    if (!$site->authorizations->get('deploy_live')
-      ->get('is_user_authorized')
-    ) {
-      throw new TerminusException(
-        'You do not have permission to change the PHP version of {site}.',
-        ['site' => $site->get('name'),],
-        1
-      );
-    }
-
-    $version = $this->input()->menu(
-      [
-        'args' => $assoc_args,
-        'key' => 'version',
-        'choices' => ['5.3', '5.5'],
-      ]
-    );
-    die($version);
   }
 
   /**

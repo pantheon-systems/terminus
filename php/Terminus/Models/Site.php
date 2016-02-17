@@ -526,6 +526,11 @@ class Site extends TerminusModel {
         $info[$info_key] = $this->get($info_key);
       }
     }
+    if ($info['php_version'] == '55') {
+      $info['php_version'] = '5.5';
+    } else {
+      $info['php_version'] = '5.3';
+    }
 
     if ($key) {
       if (isset($info[$key])) {
@@ -595,7 +600,7 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Owner handler
+   * Sets the site owner to the indicated team member
    *
    * @param string $owner UUID of new owner of site
    * @return Workflow
