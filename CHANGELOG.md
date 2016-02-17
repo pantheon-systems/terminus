@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Fixed
+- Help text when inputting an incomplete command has been repaired. (#919)
+
 ## [0.10.3] - 2016-02-12
 ### Added
 - New `Hostnames` collection and `Hostname` model. (#860)

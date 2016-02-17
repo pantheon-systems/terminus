@@ -164,15 +164,16 @@ class CompositeCommand {
   public function getUsage() {
     $methods = $this->getSubcommands();
 
+    $usage = '';
     if (!empty($methods)) {
       $subcommand = array_shift($methods);
-      $outputter->line($subcommand->parseUsage('usage: '));
+      $usage = $subcommand->parseUsage('usage: ');
       foreach ($methods as $name => $subcommand) {
-        $outputter->line($subcommand->parseUsage('   or: '));
+        $usage .= PHP_EOL . $subcommand->parseUsage('   or: ');
       }
     }
-    $usage = PHP_EOL . 'See "terminus help '. $this->name
-      . '<command>" for more information on a specific command.';
+    $usage .= PHP_EOL . 'See "terminus help '. $this->name
+      . ' <command>" for more information on a specific command.';
     return $usage;
   }
 
