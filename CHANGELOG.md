@@ -12,6 +12,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Help text when inputting an incomplete command has been repaired. (#919)
 - Automatic checking for the current version will no longer err unless GitHub is down. (#925)
 - Fixed strict standards issue occurring in `Environment#wake()`. (#928)
+- `Utils\checkForUpdate()` now appropriately interpolates error messages. (#929)
 
 ## [0.10.3] - 2016-02-12
 ### Added
