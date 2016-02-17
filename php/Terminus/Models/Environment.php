@@ -677,7 +677,8 @@ class Environment extends TerminusModel {
     $on_stats = function (TransferStats $stats) {
       $this->transfertime = $stats->getTransferTime();
     };
-    $target      = array_pop($this->hostnames->ids());
+    $hostnames   = $this->hostnames->ids();
+    $target      = array_pop($hostnames);
     $healthc     = "http://$target/pantheon_healthcheck";
     $response    = $this->request->simpleRequest($healthc, compact('on_stats'));
     $return_data = array(
