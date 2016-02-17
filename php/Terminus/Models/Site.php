@@ -596,18 +596,15 @@ class Site extends TerminusModel {
    * @throws TerminusException
    */
   public function setOwner($owner = null) {
-    $new_owner = $this->user_memberships->get($owner);
-    if ($new_owner == null) {
+    try {
+      $new_owner = $this->user_memberships->get($owner);
+    } catch (TerminusException $e) {
       $message = 'The owner must be a team member. Add them with `site team`';
       throw new TerminusException($message);
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      array(
-        'params' => array(
-          'user_id' => $new_owner->get('id')
-        )
-      )
+      ['params' => ['user_id' => $new_owner->get('id'),],]
     );
     return $workflow;
   }

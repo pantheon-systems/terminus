@@ -250,8 +250,7 @@ class OrganizationsCommand extends TerminusCommand {
           ]
         );
         $can_change_management = $org_model->getFeature('change_management');
-        var_dump($can_change_management);
-        $role     = $this->input()->orgRole(
+        $role                  = $this->input()->orgRole(
           [
             'args'                  => $assoc_args,
             'can_change_management' => $can_change_management,

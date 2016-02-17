@@ -1599,8 +1599,8 @@ class SiteCommand extends TerminusCommand {
    * [--site=<site>]
    * : Site to check
    *
-   * [--set=<value>]
-   * : new owner to set
+   * [--member=<email>]
+   * : The email of the user to set as the new owner
    *
    * @subcommand set-owner
    */
@@ -1608,7 +1608,7 @@ class SiteCommand extends TerminusCommand {
     $site     = $this->sites->get(
       $this->input()->siteName(array('args' => $assoc_args))
     );
-    $workflow = $site->setOwner($assoc_args['set']);
+    $workflow = $site->setOwner($assoc_args['member']);
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
@@ -1786,7 +1786,8 @@ class SiteCommand extends TerminusCommand {
    * : Email of the member to add. Member will receive an invite
    *
    * [--role=<role>]
-   * : Role for the new member to act as
+   * : Role to designate the member as. Options are developer, team_member,
+   *   and admin.
    *
    * @subcommand team
    */
@@ -1835,7 +1836,7 @@ class SiteCommand extends TerminusCommand {
           }
         } else {
           $this->failure(
-            'This site does not have the authority to conduct this operation.'
+            'This site does not have its change-management option enabled.'
           );
         }
           break;
@@ -1848,6 +1849,7 @@ class SiteCommand extends TerminusCommand {
             'First' => $user->profile->firstname,
             'Last'  => $user->profile->lastname,
             'Email' => $user->email,
+            'Role'  => $user_membership->get('role'),
             'UUID'  => $user->id,
           );
         }
