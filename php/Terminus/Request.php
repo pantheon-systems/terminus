@@ -161,7 +161,8 @@ class Request {
     } catch (\Exception $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
-        array('msg' => $e->getMessage())
+        array('msg' => $e->getMessage(),),
+        1
       );
     }
   }
@@ -232,7 +233,9 @@ class Request {
       RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
     );
 
-    if ($session = Session::instance()->get('session', false)) {
+    if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
+      && $session = Session::instance()->get('session', false)
+    ) {
       $extra_params['headers']['Authorization'] = "Bearer $session";
     }
     $params = array_merge_recursive($extra_params, $arg_params);
