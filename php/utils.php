@@ -60,9 +60,11 @@ function checkForUpdate($logger) {
           ['version' => $current_version]
         );
       }
-    } catch (\Exception $e) {
-      $logger->info($e->getMessage());
-      $logger->info('Cannot retrieve current Terminus version.');
+    } catch (TerminusException $e) {
+      $logger->info(
+        "Cannot retrieve current Terminus version.\n{msg}",
+        $e->getReplacements()
+      );
     }
   }
 }
