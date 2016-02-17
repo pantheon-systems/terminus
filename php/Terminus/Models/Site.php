@@ -7,6 +7,7 @@ use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
+use Terminus\Models\Collections\SiteAuthorizations;
 use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\Workflows;
@@ -17,6 +18,11 @@ class Site extends TerminusModel {
    * @todo Use Bindings collection?
    */
   public $bindings;
+
+  /**
+   * @var array
+   */
+  protected $authorizations;
 
   /**
    * @var Environments
@@ -73,12 +79,12 @@ class Site extends TerminusModel {
     }
     parent::__construct($attributes, $options);
 
-    $this->environments     = new Environments(array('site' => $this));
-    $this->org_memberships  = new SiteOrganizationMemberships(
-      array('site' => $this)
-    );
-    $this->user_memberships = new SiteUserMemberships(array('site' => $this));
-    $this->workflows        = new Workflows(array('owner' => $this));
+    $params                 = ['site' => $this,];
+    $this->authorizations   = new SiteAuthorizations($params);
+    $this->environments     = new Environments($params);
+    $this->org_memberships  = new SiteOrganizationMemberships($params);
+    $this->user_memberships = new SiteUserMemberships($params);
+    $this->workflows        = new Workflows(['owner' => $this,]);
   }
 
   /**
@@ -596,15 +602,18 @@ class Site extends TerminusModel {
    * @throws TerminusException
    */
   public function setOwner($owner = null) {
-    try {
-      $new_owner = $this->user_memberships->get($owner);
-    } catch (TerminusException $e) {
+    $new_owner = $this->user_memberships->get($owner);
+    if ($new_owner == null) {
       $message = 'The owner must be a team member. Add them with `site team`';
       throw new TerminusException($message);
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      ['params' => ['user_id' => $new_owner->get('id'),],]
+      array(
+        'params' => array(
+          'user_id' => $new_owner->get('id')
+        )
+      )
     );
     return $workflow;
   }
