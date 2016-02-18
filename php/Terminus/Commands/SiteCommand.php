@@ -779,8 +779,8 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <list|add|remove|lookup>
-   * : OPTIONS are list, add, delete, and lookup
+   * <list|add|remove|lookup|get-recommendations>
+   * : Options are list, add, delete, lookup, and get-recommendations
    *
    * [--site=<site>]
    * : Site to use
@@ -865,6 +865,18 @@ class SiteCommand extends TerminusCommand {
           $this->log()->info(
             'Could not locate an environment with the hostname "{hostname}".',
             compact('hostname')
+          );
+        }
+        $this->output()->outputRecordList($data);
+          break;
+      case 'get-recommendations':
+        $env->hostnames->setHydration('recommendations');
+        $hostnames = $env->hostnames->all();
+        $data      = [];
+        foreach ($hostnames as $hostname) {
+          $data = array_merge(
+            $data,
+            array_values((array)$hostname->get('dns_recommendations'))
           );
         }
         $this->output()->outputRecordList($data);
