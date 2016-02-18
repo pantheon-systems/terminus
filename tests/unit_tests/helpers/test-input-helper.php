@@ -135,6 +135,18 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('admin', $role);
   }
 
+  public function testPhpVersion() {
+    //Accepting pretty-formatted version from args
+    $args    = ['version' => '5.3'];
+    $version = $this->inputter->phpVersion(compact('args'));
+    $this->assertEquals(53, $version);
+
+    //Accepting API-formatted version from args
+    $args    = ['version' => '55'];
+    $version = $this->inputter->phpVersion(compact('args'));
+    $this->assertEquals(55, $version);
+  }
+
   public function testPrompt() {
   }
 
