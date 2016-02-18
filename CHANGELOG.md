@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## MASTER
 ### Added
 - Added new `role` data to the information returned by `site team list`. (#924)
+- Added `site hostnames get-recommendations` to retrieve DNS recommendations. (#933)
 
 ### Changed
 - The `--set` argument in `site set-owner` has been renamed to `--member` for consistency. (#924)
