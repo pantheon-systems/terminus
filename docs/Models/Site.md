@@ -350,7 +350,7 @@
 
 ### setOwner
 ##### Description:
-    Owner handler
+    Sets the site owner to the indicated team member
 
 ##### Parameters:
     [string] $owner UUID of new owner of site
