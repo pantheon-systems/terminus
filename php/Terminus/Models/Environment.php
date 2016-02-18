@@ -458,18 +458,23 @@ class Environment extends TerminusModel {
       $path,
       'GET'
     );
-    $connection_mode = null;
-    if (isset($result['data']->on_server_development)) {
-      $connection_mode = 'git';
-      if ((boolean)$result['data']->on_server_development) {
-        $connection_mode = 'sftp';
-      }
+    $connection_mode = 'git';
+    if (property_exists($result['data'], 'on_server_development')
+      && (boolean)$result['data']->on_server_development
+    ) {
+      $connection_mode = 'sftp';
     }
-    $info = array(
+    $php_version = '5.3';
+    if (property_exists($result['data'], 'php_version')
+      && ($result['data']->php_version == '55')
+    ) {
+      $php_version = '5.5';
+    }
+    $info = [
       'id'              => $this->get('id'),
       'connection_mode' => $connection_mode,
-      'php_version'     => $this->site->info('php_version'),
-    );
+      'php_version'     => $php_version,
+    ];
 
     if ($key) {
       if (isset($info[$key])) {

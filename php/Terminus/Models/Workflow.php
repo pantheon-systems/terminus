@@ -173,7 +173,10 @@ class Workflow extends TerminusModel {
       $final_task = $this->get('final_task');
       if (($final_task != null) && !empty($final_task->messages)) {
         foreach ($final_task->messages as $data => $message) {
-          throw new TerminusException($message->message);
+          if (!is_string($message->message)) {
+            $message->message = print_r($message->message, true);
+          }
+          throw new TerminusException((string)$message->message);
         }
       }
     }

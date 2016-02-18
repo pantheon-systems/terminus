@@ -707,7 +707,9 @@ class SiteCommand extends TerminusCommand {
    * @subcommand environment-info
    */
   public function environmentInfo($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
     $env  = $site->environments->get(
       $this->input()->env(array('args' => $assoc_args, 'site' => $site))
     );
@@ -964,7 +966,7 @@ class SiteCommand extends TerminusCommand {
       $field = $assoc_args['field'];
       $this->output()->outputValue($site->info($field));
     } else {
-      $this->output()->outputRecord($site->attributes);
+      $this->output()->outputRecord($site->info());
     }
   }
 
@@ -1412,6 +1414,72 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Change connection mode between SFTP and Git
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : name of the site
+   *
+   * [--env=<env>]
+   * : site environment
+   *
+   * [--mode=<value>]
+   * : set connection to sftp or git
+   *
+   * @subcommand set-connection-mode
+   */
+  public function setConnectionMode($args, $assoc_args) {
+    if (!isset($assoc_args['mode'])
+      || !in_array($assoc_args['mode'], array('sftp', 'git'))
+    ) {
+      $this->failure('You must specify the mode as either sftp or git.');
+    }
+    $mode = strtolower($assoc_args['mode']);
+    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    // Only present dev and multidev environments; Test/Live cannot be modified
+    $environments = array_diff(
+      $site->environments->ids(),
+      array('test', 'live')
+    );
+
+    $env = $site->environments->get(
+      $this->input()->env(array('args' => $assoc_args, 'choices' => $environments))
+    );
+    if (in_array($env->get('id'), array('test', 'live'))) {
+      $this->failure(
+        'Connection mode cannot be set in Test or Live environments'
+      );
+    }
+    try {
+      $current_mode = $env->info('connection_mode');
+      if ($current_mode == $env->info('connection_mode')) {
+        $this->failure(
+          'The connection mode on {site} for {env} is already set to {mode}.',
+          array(
+            'site' => $site->get('name'),
+            'env' => $env->get('id'),
+            'mode' => $mode
+          ),
+          -1
+        );
+      }
+    } catch (TerminusException $e) {
+      $this->log()->info(
+        'Current connection info not available. Proceeding with mode change.'
+      );
+    }
+    $workflow = $env->changeConnectionMode($mode);
+    if (is_string($workflow)) {
+      $this->log()->info($workflow);
+    } else {
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+    }
+    return true;
+  }
+
+  /**
    * Add/replace an HTTPS Certificate for an environment
    *
    * ## OPTIONS
@@ -1485,72 +1553,6 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Change connection mode between SFTP and Git
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : name of the site
-   *
-   * [--env=<env>]
-   * : site environment
-   *
-   * [--mode=<value>]
-   * : set connection to sftp or git
-   *
-   * @subcommand set-connection-mode
-   */
-  public function setConnectionMode($args, $assoc_args) {
-    if (!isset($assoc_args['mode'])
-      || !in_array($assoc_args['mode'], array('sftp', 'git'))
-    ) {
-      $this->failure('You must specify the mode as either sftp or git.');
-    }
-    $mode = strtolower($assoc_args['mode']);
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    // Only present dev and multidev environments; Test/Live cannot be modified
-    $environments = array_diff(
-      $site->environments->ids(),
-      array('test', 'live')
-    );
-
-    $env = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'choices' => $environments))
-    );
-    if (in_array($env->get('id'), array('test', 'live'))) {
-      $this->failure(
-        'Connection mode cannot be set in Test or Live environments'
-      );
-    }
-    try {
-      $current_mode = $env->info('connection_mode');
-      if ($current_mode == $env->info('connection_mode')) {
-        $this->failure(
-          'The connection mode on {site} for {env} is already set to {mode}.',
-          array(
-            'site' => $site->get('name'),
-            'env' => $env->get('id'),
-            'mode' => $mode
-          ),
-          -1
-        );
-      }
-    } catch (TerminusException $e) {
-      $this->log()->info(
-        'Current connection info not available. Proceeding with mode change.'
-      );
-    }
-    $workflow = $env->changeConnectionMode($mode);
-    if (is_string($workflow)) {
-      $this->log()->info($workflow);
-    } else {
-      $workflow->wait();
-      $this->workflowOutput($workflow);
-    }
-    return true;
-  }
-
-  /**
    * Change the site payment instrument
    *
    * ## OPTIONS
@@ -1614,12 +1616,12 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get or set service level
+   * Set the site's service level
    *
    * ## OPTIONS
    *
    * [--site=<site>]
-   * : Site to check
+   * : Site to set the service level on
    *
    * [--level=<value>]
    * : New service level to set. Options are free, basic, pro, and business.
@@ -1630,7 +1632,7 @@ class SiteCommand extends TerminusCommand {
     $site     = $this->sites->get(
       $this->input()->siteName(['args' => $assoc_args])
     );
-    $level = $this->input()->serviceLevel(['args' => $assoc_args]);
+    $level    = $this->input()->serviceLevel(['args' => $assoc_args]);
     $workflow = $site->updateServiceLevel($level);
     $workflow->wait();
     $this->workflowOutput($workflow);
