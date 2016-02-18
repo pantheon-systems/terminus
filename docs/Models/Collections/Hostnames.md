@@ -12,3 +12,15 @@
 
 ---
 
+### setHydration
+##### Description:
+    Changes the value of the hydration property
+
+##### Parameters:
+    [mixed] $value Value to set the hydration property to
+
+##### Return:
+    [void]
+
+---
+

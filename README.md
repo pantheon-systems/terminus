@@ -35,7 +35,7 @@ composer require pantheon-systems/terminus
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/terminus/releases/download/0.10.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/terminus/releases/download/0.10.4/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
