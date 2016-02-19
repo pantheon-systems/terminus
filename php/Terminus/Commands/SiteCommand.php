@@ -318,6 +318,9 @@ class SiteCommand extends TerminusCommand {
         $data = true;
           break;
       case 'diffstat':
+        $env     = $site->environments->get(
+          $this->input()->env(['args' => $assoc_args, 'site' => $site])
+        );
         $diff = (array)$env->diffstat();
         if (empty($diff)) {
           $this->log()->info('No changes on server.');
