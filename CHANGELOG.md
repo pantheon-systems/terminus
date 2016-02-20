@@ -5,6 +5,12 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - Added `site set-php-version` command to set the PHP version on both sites and their environments. (#937)
 
+### Changed
+- Data returned from `site code branches` has changed to use hash keys. (#940)
+
+### Fixed
+- `site code diffstat` no longer gives a non-object error. (#939)
+
 ## [0.10.4] - 2016-02-17
 ### Added
 - Added new `role` data to the information returned by `site team list`. (#924)

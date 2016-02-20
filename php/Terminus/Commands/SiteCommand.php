@@ -288,9 +288,12 @@ class SiteCommand extends TerminusCommand {
         }
           break;
       case 'branches':
-        $data    = $site->getTips();
+        $data = $site->getTips();
+        foreach ($data as $key => $value) {
+          $data[$key] = ['title' => $value];
+        }
         if (!empty($data)) {
-          $this->output()->outputValueList($data);
+          $this->output()->outputRecordList($data);
         }
           break;
       case 'commit':
@@ -342,7 +345,7 @@ class SiteCommand extends TerminusCommand {
           $data[] = array_merge(compact('file'), (array)$stats);
         }
         if (!empty($data)) {
-          $this->output()->outputRecord($data, $headers);
+          $this->output()->outputRecordList($data);
         }
           break;
     }
