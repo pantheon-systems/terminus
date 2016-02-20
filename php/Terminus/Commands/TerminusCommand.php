@@ -73,6 +73,7 @@ abstract class TerminusCommand {
    * Retrieves the logger for use
    *
    * @return Logger
+   * @non-command
    */
   public function log() {
     return $this->logger;
@@ -82,6 +83,7 @@ abstract class TerminusCommand {
    * Retrieves the outputter for use
    *
    * @return OutputterInterface
+   * @non-command
    */
   public function output() {
     return $this->outputter;

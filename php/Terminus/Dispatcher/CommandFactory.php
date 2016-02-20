@@ -149,7 +149,8 @@ class CommandFactory {
   private static function isGoodMethod(\ReflectionMethod $method) {
     $is_good_method = $method->isPublic()
       && !$method->isConstructor()
-      && !$method->isStatic();
+      && !$method->isStatic()
+      && (strpos($method->getDocComment(), '@non-command') === false);
     return $is_good_method;
   }
 
