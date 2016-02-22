@@ -3,10 +3,12 @@ Feature: Managing site organizational memberships
   As a user
   I need to be able to add and remove those relationships.
 
-  @vcr site_organizations_add
-  Scenario: Adding a supporting organization to a site
+  Background: I am authenticated and have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_organizations_add
+  Scenario: Adding a supporting organization to a site
     When I run "terminus site organizations add --site=[[test_site_name]] --org=[[enterprise_org_name]]"
     Then I should get:
     """
@@ -15,8 +17,6 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_add_invalid
   Scenario: Failing to add an invalid organization
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site organizations add --site=[[test_site_name]] --org=badorgname"
     Then I should get:
     """
@@ -25,8 +25,6 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_add_duplicate
   Scenario: Failing to add an organizaiton which is already a member
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site organizations add --site=[[test_site_name]] --org=[[enterprise_org_name]]"
     Then I should get:
     """
@@ -35,8 +33,6 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_remove
   Scenario: Removing a supporting organization from a site
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site organizations remove --site=[[test_site_name]] --org=[[enterprise_org_name]]"
     Then I should get:
     """
@@ -45,8 +41,6 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_remove_invalid
   Scenario: Failing to remove an invalid organization
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site organizations remove --site=[[test_site_name]] --org=badorgname"
     Then I should get:
     """
@@ -55,8 +49,6 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_remove_invalid
   Scenario: Failing to remove an organization which is not a member
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site organizations remove --site=[[test_site_name]] --org=[[enterprise_org_name]]"
     Then I should get:
     """

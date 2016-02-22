@@ -3,9 +3,11 @@ Feature: Listing sites
   As a user
   I need to be able to list those sites.
 
+  Background: I am authenticated
+    Given I am authenticated
+
   @vcr sites_list_empty
   Scenario: JSON List Sites
-    Given I am authenticated
     When I run "terminus sites list --format=json"
     Then I should get:
     """
@@ -14,7 +16,6 @@ Feature: Listing sites
 
   @vcr sites_list_empty
   Scenario: List Sites
-    Given I am authenticated
     When I run "terminus sites list"
     Then I should get:
     """
@@ -23,8 +24,7 @@ Feature: Listing sites
 
   @vcr sites_list
   Scenario: List Sites
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
+    Given a site named "[[test_site_name]]"
     When I run "terminus sites list"
     Then I should get:
     """
@@ -33,8 +33,7 @@ Feature: Listing sites
 
   @vcr sites_list
   Scenario: Filter sites list by name
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
+    Given a site named "[[test_site_name]]"
     When I run "terminus sites list --name=[[test_site_name]]"
     Then I should get:
     """
@@ -43,16 +42,14 @@ Feature: Listing sites
 
   @vcr sites_list
   Scenario: Filter sites list by name, excluding the test site
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
+    Given a site named "[[test_site_name]]"
     When I run "terminus sites list --name=missing"
     Then I should not get: "[[test_site_name]]"
     And I should get: "You have no sites."
 
   @vcr sites_list
   Scenario: List Team Sites
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
+    Given a site named "[[test_site_name]]"
     When I run "terminus sites list --team"
     Then I should not get:
     """
@@ -61,8 +58,7 @@ Feature: Listing sites
 
   @vcr sites_list
   Scenario: List Organization Sites
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
+    Given a site named "[[test_site_name]]"
     When I run "terminus sites list --org=34b1ba6e-d59e-489b-9179-9121722a1bc1"
     Then I should not get:
     """

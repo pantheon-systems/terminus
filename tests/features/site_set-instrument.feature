@@ -3,10 +3,12 @@ Feature: Set payment instruments
   As a user
   I need to be able to associate a payment instrument with my site.
 
-  @vcr site_set-instrument_add
-  Scenario: Adding instruments
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_set-instrument_add
+  Scenario: Adding instruments
     When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=[[payment_instrument_uuid]]"
     Then I should get:
     """
@@ -15,8 +17,6 @@ Feature: Set payment instruments
 
   @vcr site_set-instrument_remove
   Scenario: Removing instruments
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=none"
     Then I should not get:
     """

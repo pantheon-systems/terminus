@@ -1622,10 +1622,36 @@ class SiteCommand extends TerminusCommand {
    * @subcommand set-owner
    */
   public function setOwner($args, $assoc_args) {
-    $site     = $this->sites->get(
+    $site             = $this->sites->get(
       $this->input()->siteName(array('args' => $assoc_args))
     );
-    $workflow = $site->setOwner($assoc_args['member']);
+    $user_memberships = $site->user_memberships->all();
+    if (count($user_memberships) <= 1) {
+      throw new TerminusException(
+        'The new owner must be added with "{cmd}" before promoting.',
+        ['cmd' => 'terminus site team add-member'],
+        1
+      );
+    }
+    foreach ($user_memberships as $uuid => $user_membership) {
+      $user      = $user_membership->get('user');
+      $choices[$user->email] = sprintf(
+        '%s %s <%s>',
+        $user->profile->firstname,
+        $user->profile->lastname,
+        $user->email
+      );
+    }
+    $member      = $this->input()->menu(
+      [
+        'args'            => $assoc_args,
+        'autoselect_solo' => false,
+        'choices'         => $choices,
+        'key'             => 'member',
+        'message'         => 'Enter a tag to add',
+      ]
+    );
+    $workflow = $site->setOwner($member);
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
