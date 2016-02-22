@@ -1343,8 +1343,10 @@ class SiteCommand extends TerminusCommand {
    * @subcommand owner
    */
   public function owner($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $this->output()->outputValue($site->get('owner'), 'Site Owner');
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
+    $this->output()->outputValue($site->get('owner'));
   }
 
   /**
