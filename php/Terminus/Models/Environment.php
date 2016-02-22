@@ -464,11 +464,13 @@ class Environment extends TerminusModel {
     ) {
       $connection_mode = 'sftp';
     }
-    $php_version = '5.3';
-    if (property_exists($result['data'], 'php_version')
-      && ($result['data']->php_version == '55')
-    ) {
-      $php_version = '5.5';
+    $php_version = $this->site->info()['php_version'];
+    if (property_exists($result['data'], 'php_version')) {
+      if ($result['data']->php_version == '55') {
+        $php_version = '5.5';
+      } elseif ($result['data']->php_version == '53') {
+        $php_version = '5.3';
+      }
     }
     $info = [
       'id'              => $this->get('id'),
@@ -663,6 +665,28 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Sets the PHP version number of this environment
+   *
+   * @param string $version_number The version number to set this environment to
+   *  use
+   * @return void
+   */
+  public function setPhpVersion($version_number) {
+    $options = [
+      'environment' => $this->get('id'),
+      'params'      => [
+        'key'   => 'php_version',
+        'value' => $version_number,
+      ],
+    ];
+    $workflow = $this->site->workflows->create(
+      'update_environment_setting',
+      $options
+    );
+    return $workflow;
+  }
+
+  /**
    * Disable HTTP Basic Access authentication on the web environment
    *
    * @return Workflow
@@ -670,6 +694,23 @@ class Environment extends TerminusModel {
   public function unlock() {
     $params   = array('environment' => $this->get('id'));
     $workflow = $this->site->workflows->create('unlock_environment', $params);
+    return $workflow;
+  }
+
+  /**
+   * Unsets the PHP version of this environment so it will use the site default
+   *
+   * @return void
+   */
+  public function unsetPhpVersion() {
+    $options = [
+      'environment' => $this->get('id'),
+      'params'      => ['key' => 'php_version',],
+    ];
+    $workflow = $this->site->workflows->create(
+      'delete_environment_setting',
+      $options
+    );
     return $workflow;
   }
 

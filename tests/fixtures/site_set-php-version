@@ -1,0 +1,268 @@
+
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c07d5900-d68c-11e5-a881-bc764e10f058:SRW8sIE1gPRRqDLhcJkoC'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c07d5900-d68c-11e5-a881-bc764e10f058:SRW8sIE1gPRRqDLhcJkoC'
+            verify: ''
+            json: password1
+            Accept: null
+        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:30 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c26add50-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"session":"c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv","expires_at":1458257070,"user_id":"c2653a9a-308f-4207-b3a1-36a73411c818"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/c2653a9a-308f-4207-b3a1-36a73411c818/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:32 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c38e9cd0-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"U1lejsHLhKq33zUiOqPlPg=="'
+            Vary: Accept-Encoding
+        body: '[{"archived": false, "invited_by_id": null, "role": "team_member", "id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "key": "c2653a9a-308f-4207-b3a1-36a73411c818", "site_id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "site": {"user_in_charge_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "product": {"id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "longname": "WordPress"}, "service_level": "pro", "user_in_charge": {"profile": {"utm_term": "", "tracking_first_organization_invite": 1455227708, "google_adwords_pushed_code_do_send": null, "utm_content": "", "experiments": {"welcome_video": "not_shown"}, "full_name": "Dev User", "utm_device": "", "web_services_business": null, "utm_campaign": "", "invites_sent": 13, "google_adwords_paid_for_site_do_send": null, "verify": 1, "tracking_first_code_push": 1453339165, "google_adwords_account_registered_sent": 1452276197, "invites_to_user": 13, "utm_medium": "", "job_function": "", "tracking_first_workflow_in_live": 1452816101, "google_adwords_account_registered_do_send": null, "tracking_first_team_invite": 1452276332, "firstname": "Dev", "invites_to_site": 1, "lastname": "User", "pda_campaign": null, "utm_source": "", "google_adwords_pushed_code_sent": 1453835175, "last-org-spinup": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "tracking_first_site_create": 1452728901, "guilty_of_abuse": null, "invites_to_org": 12, "tracking_first_site_upgrade": 1452723003, "google_adwords_paid_for_site_sent": 1452723155, "modified": 1452276194, "maxdevsites": 2, "lead_type": "", "organization": ""}, "id": "c2653a9a-308f-4207-b3a1-36a73411c818", "email": "devuser@pantheon.io"}, "upstream_updates_by_environment": {"remote_head": "22239d8dc2e2d99cdc10d9607063dc93f7991bb8", "ahead": 1, "remote_branch": "refs/remotes/origin/master", "dev": {"has_code": true, "is_up_to_date_with_upstream": false}, "behind": 1, "has_code": true, "has_remote_head": false, "remote_url": "https://github.com/pantheon-systems/WordPress"}, "purchased_at": 1455748314, "framework": "wordpress", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "branch": "master"}, "owner": "c2653a9a-308f-4207-b3a1-36a73411c818", "attributes": {"label": "behat-tests"}, "holder": {"profile": {"machine_name": null, "change_service_url": null, "name": "EnterpriseOrg", "email_domain": null, "org_logo_width": null, "org_logo_height": null, "base_domain": null, "billing_url": "http://tesladethray.com", "terms_of_service": null, "org_logo": null}, "id": "5cba2a5a-fe72-4cf4-b733-6058ede27332"}, "id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "preferred_zone": "onebox", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "created_by_user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "holder_id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "name": "behat-tests", "created": 1455747783, "instrument": "ad82f83d-ea58-4c23-b05a-23d0f3112232", "holder_type": "organization", "php_version": 53, "organization": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "last_code_push": {"timestamp": "2016-02-17T22:23:12", "user_uuid": null}}}]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/users/c2653a9a-308f-4207-b3a1-36a73411c818/memberships/organizations?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:32 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c40ea240-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"uev1Wg1fBkJUzUckcXad1g=="'
+            Vary: Accept-Encoding
+        body: '[{"archived": false, "invited_by_id": null, "role": "admin", "id": "c44e5de1-77b5-4151-b89f-9f548c5d909e", "key": "c2653a9a-308f-4207-b3a1-36a73411c818", "organization_id": "c44e5de1-77b5-4151-b89f-9f548c5d909e", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "admin": true, "organization": {"profile": {"machine_name": "anotherorg", "change_service_url": null, "name": "AnotherOrg", "email_domain": null, "org_logo_width": 85, "org_logo_height": 85, "base_domain": null, "billing_url": null, "terms_of_service": null, "org_logo": null}, "id": "c44e5de1-77b5-4151-b89f-9f548c5d909e"}}, {"archived": false, "invited_by_id": null, "role": "admin", "id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "key": "c2653a9a-308f-4207-b3a1-36a73411c818", "organization_id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "admin": true, "organization": {"profile": {"machine_name": "enterpriseorg", "change_service_url": null, "name": "EnterpriseOrg", "email_domain": null, "org_logo_width": 85, "org_logo_height": 85, "base_domain": null, "billing_url": "http://tesladethray.com", "terms_of_service": null, "org_logo": null}, "id": "5cba2a5a-fe72-4cf4-b733-6058ede27332"}}]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/organizations/c44e5de1-77b5-4151-b89f-9f548c5d909e/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:33 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c44ac0e0-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"2-d4cbb29"'
+            Vary: Accept-Encoding
+        body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/organizations/5cba2a5a-fe72-4cf4-b733-6058ede27332/memberships/sites?limit=100'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:33 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c4a0a910-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"esT+MjZ7oD5JOOT94h9GnA=="'
+            Vary: Accept-Encoding
+        body: '[{"archived": false, "invited_by_id": null, "role": "team_member", "id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "key": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "organization_id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "site_id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "site": {"user_in_charge_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "product": {"id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "longname": "WordPress"}, "service_level": "pro", "user_in_charge": {"profile": {"utm_term": "", "tracking_first_organization_invite": 1455227708, "google_adwords_pushed_code_do_send": null, "utm_content": "", "experiments": {"welcome_video": "not_shown"}, "full_name": "Dev User", "utm_device": "", "web_services_business": null, "utm_campaign": "", "invites_sent": 13, "google_adwords_paid_for_site_do_send": null, "verify": 1, "tracking_first_code_push": 1453339165, "google_adwords_account_registered_sent": 1452276197, "invites_to_user": 13, "utm_medium": "", "job_function": "", "tracking_first_workflow_in_live": 1452816101, "google_adwords_account_registered_do_send": null, "tracking_first_team_invite": 1452276332, "firstname": "Dev", "invites_to_site": 1, "lastname": "User", "pda_campaign": null, "utm_source": "", "google_adwords_pushed_code_sent": 1453835175, "last-org-spinup": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "tracking_first_site_create": 1452728901, "guilty_of_abuse": null, "invites_to_org": 12, "tracking_first_site_upgrade": 1452723003, "google_adwords_paid_for_site_sent": 1452723155, "modified": 1452276194, "maxdevsites": 2, "lead_type": "", "organization": ""}, "id": "c2653a9a-308f-4207-b3a1-36a73411c818", "email": "devuser@pantheon.io"}, "upstream_updates_by_environment": {"remote_head": "22239d8dc2e2d99cdc10d9607063dc93f7991bb8", "ahead": 1, "remote_branch": "refs/remotes/origin/master", "dev": {"has_code": true, "is_up_to_date_with_upstream": false}, "behind": 1, "has_code": true, "has_remote_head": false, "remote_url": "https://github.com/pantheon-systems/WordPress"}, "purchased_at": 1455748314, "framework": "wordpress", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "branch": "master"}, "owner": "c2653a9a-308f-4207-b3a1-36a73411c818", "attributes": {"label": "behat-tests"}, "holder": {"profile": {"machine_name": null, "change_service_url": null, "name": "EnterpriseOrg", "email_domain": null, "org_logo_width": null, "org_logo_height": null, "base_domain": null, "billing_url": "http://tesladethray.com", "terms_of_service": null, "org_logo": null}, "id": "5cba2a5a-fe72-4cf4-b733-6058ede27332"}, "id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "preferred_zone": "onebox", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "created_by_user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "holder_id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "name": "behat-tests", "created": 1455747783, "instrument": "ad82f83d-ea58-4c23-b05a-23d0f3112232", "holder_type": "organization", "php_version": 53, "organization": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "last_code_push": {"timestamp": "2016-02-17T22:23:12", "user_uuid": null}}, "tags": []}]'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/1cdaa6fa-9898-4f46-afb5-d372d2f6edf6/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: post
+            absolute_url: ''
+            json: ''
+            Accept: null
+        body: '{"type":"update_site_setting","params":{"key":"php_version","value":55}}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '202'
+            message: Accepted
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:35 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c5de5930-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '{"final_task_id": "c5e5c378-d696-11e5-8885-bc764e10f058", "finished_at": 1455837875.873365, "params": {"value": 55, "key": "php_version"}, "reason": "", "result": "succeeded", "role": "owner", "site_id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "started_at": 1455837875.84944, "task_ids": ["c5e5c378-d696-11e5-8885-bc764e10f058"], "trace_id": "c5de5930-d696-11e5-90b4-bd642d89c822", "type": "update_site_setting", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "waiting_for_task_id": null, "id": "c5e376a4-d696-11e5-8885-bc764e10f058", "key": "1455836400", "environment_id": null, "keep_forever": false, "phase": "finished", "queued_time": null, "run_time": 0.023924827575683594, "created_at": 1455837875.812522, "environment": null, "total_time": 0.06084299087524414, "active_description": "Updated site setting", "description": "Update site setting", "step": 1, "has_operation_log_output": false, "number_of_tasks": 1, "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c5de5930-d696-11e5-90b4-bd642d89c822&from_iso_date=2016-02-18T23:19:35.812522Z&to_iso_date=2016-02-18T23:29:35.873365Z", "user": {"user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "created_at": 1452276194, "destination_organization_id": null, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io", "final_task": {"environment": null, "finished_at": 1455837875.85735, "fn_name": "trigger_task", "params": {"task_type": "update_site_setting", "site_id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "key": "php_version", "value": 55}, "queued_at": 1455837875.849551, "responses": [{"code": 200, "body": "Set ''php_version'' to 55 on site 1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "error_details": "", "internal_reason": ""}], "result": "succeeded", "site_id": "1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "started_at": 1455837875.849553, "trace_id": "c5de5930-d696-11e5-90b4-bd642d89c822", "user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "workflow_id": "c5e376a4-d696-11e5-8885-bc764e10f058", "id": "c5e5c378-d696-11e5-8885-bc764e10f058", "key": "1455836400", "queued_time": 2.1457672119140625e-06, "host": null, "phase": "finished", "created_at": 1455837875.827596, "allow_concurrent": false, "run_time": 0.0077970027923583984, "total_time": 0.029754161834716797, "reason": "", "error_details": "", "internal_reason": "", "trace_log_url": "https://logs.onebox.getpantheon.com:9443//#/dashboard/file/Trace_Id.json?trace_id=c5de5930-d696-11e5-90b4-bd642d89c822&from_iso_date=2016-02-18T23:19:35.827596Z&to_iso_date=2016-02-18T23:29:35.857350Z", "type": "update_site_setting", "build_url": null, "messages": {"2016-02-18T23:24:35.889234": {"message": "Set ''php_version'' to 55 on site 1cdaa6fa-9898-4f46-afb5-d372d2f6edf6", "level": "INFO"}}}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/1cdaa6fa-9898-4f46-afb5-d372d2f6edf6/settings'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:24:36 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c641d5f0-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"9JxZRVWNd+hkooIoLSZJ3g=="'
+            Vary: Accept-Encoding
+        body: '{"allow_domains": true, "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "327f0b1b-b39a-4be4-8528-e20c4fe29d75", "branch": "master"}, "environment_styx_scheme": "https", "stunnel": false, "min_backups": 0, "owner": "c2653a9a-308f-4207-b3a1-36a73411c818", "secure_runtime_access": false, "pingdom": 0, "allow_indexserver": false, "created_by_user_id": "c2653a9a-308f-4207-b3a1-36a73411c818", "failover_appserver": 0, "cacheserver": 1, "instrument": "ad82f83d-ea58-4c23-b05a-23d0f3112232", "drush_version": 5, "label": "behat-tests", "appserver": 1, "number_allow_domains": 200, "allow_read_slaves": false, "indexserver": 1, "php_version": 55, "php_channel": "stable", "allow_cacheserver": false, "ssl_enabled": null, "service_level": "pro", "dedicated_ip": null, "dbserver": 1, "purchased_at": 1455748314, "framework": "wordpress", "environments": {"test": {"dedicated_ip": null, "dbserver": 1, "allow_domains": true, "environment_styx_scheme": "https", "nginx": {"sendfile": "off", "aio": "off", "worker_processes": 4, "directio": "off"}, "replica_verification_strategy": "legacy", "mysql": {"query_cache_size": 64, "innodb_buffer_pool_size": 512, "innodb_log_file_size": 50331648, "BlockIOWeight": 500, "MemoryLimit": 1024, "CPUShares": 750}, "pingdom": 0, "number_allow_domains": 200, "failover_appserver": 0, "max_backups": 7, "drush_version": null, "php-fpm": {"fpm_max_children": 8, "opcache_revalidate_freq": 2, "BlockIOWeight": 300, "MemoryLimit": 768, "apc_shm_size": 256, "php_memory_limit": 256, "CPUShares": 750}, "redis": {"MemoryLimit": 256, "maxmemory": 241172480, "CPUShares": 32, "BlockIOWeight": 100}, "appserver": 1, "min_backups": 0, "allow_read_slaves": false, "php_version": null, "php_channel": "stable", "ssl_enabled": null, "pingdom_chance": 0}, "live": {"dedicated_ip": null, "dbserver": 1, "allow_domains": true, "environment_styx_scheme": "https", "nginx": {"sendfile": "off", "aio": "off", "worker_processes": 4, "directio": "off"}, "replica_verification_strategy": "legacy", "mysql": {"query_cache_size": 64, "innodb_buffer_pool_size": 512, "innodb_log_file_size": 50331648, "BlockIOWeight": 500, "MemoryLimit": 1024, "CPUShares": 750}, "pingdom": 0, "number_allow_domains": 200, "failover_appserver": 1, "max_backups": 7, "drush_version": null, "php-fpm": {"fpm_max_children": 8, "opcache_revalidate_freq": 2, "BlockIOWeight": 300, "MemoryLimit": 768, "apc_shm_size": 256, "php_memory_limit": 256, "CPUShares": 750}, "redis": {"MemoryLimit": 256, "maxmemory": 241172480, "CPUShares": 32, "BlockIOWeight": 100}, "appserver": 1, "min_backups": 7, "allow_read_slaves": false, "php_version": null, "php_channel": "stable", "ssl_enabled": null, "pingdom_chance": 75}, "multidev": {"dedicated_ip": null, "dbserver": 1, "allow_domains": true, "environment_styx_scheme": "https", "nginx": {"sendfile": "off", "aio": "off", "worker_processes": 4, "directio": "off"}, "replica_verification_strategy": "legacy", "mysql": {"query_cache_size": 64, "innodb_buffer_pool_size": 512, "innodb_log_file_size": 50331648, "BlockIOWeight": 500, "MemoryLimit": 1024, "CPUShares": 750}, "pingdom": 0, "number_allow_domains": 200, "failover_appserver": 0, "max_backups": 7, "drush_version": null, "php-fpm": {"fpm_max_children": 8, "opcache_revalidate_freq": 0, "BlockIOWeight": 300, "MemoryLimit": 768, "apc_shm_size": 256, "php_memory_limit": 256, "CPUShares": 750}, "redis": {"MemoryLimit": 256, "maxmemory": 241172480, "CPUShares": 32, "BlockIOWeight": 100}, "appserver": 1, "min_backups": 0, "allow_read_slaves": false, "php_version": null, "php_channel": "stable", "ssl_enabled": null, "pingdom_chance": 0}, "dev": {"dedicated_ip": null, "dbserver": 1, "allow_domains": true, "environment_styx_scheme": "https", "nginx": {"sendfile": "off", "aio": "off", "worker_processes": 4, "directio": "off"}, "replica_verification_strategy": "legacy", "mysql": {"query_cache_size": 64, "innodb_buffer_pool_size": 512, "innodb_log_file_size": 50331648, "BlockIOWeight": 500, "MemoryLimit": 1024, "CPUShares": 750}, "pingdom": 0, "number_allow_domains": 200, "failover_appserver": 0, "max_backups": 7, "drush_version": null, "php-fpm": {"fpm_max_children": 8, "opcache_revalidate_freq": 0, "BlockIOWeight": 300, "MemoryLimit": 768, "apc_shm_size": 256, "php_memory_limit": 256, "CPUShares": 750}, "redis": {"MemoryLimit": 256, "maxmemory": 241172480, "CPUShares": 32, "BlockIOWeight": 100}, "appserver": 1, "min_backups": 0, "allow_read_slaves": false, "php_version": null, "php_channel": "stable", "ssl_enabled": null, "pingdom_chance": 0}}, "max_num_cdes": 10, "guilty_of_abuse": null, "preferred_zone": "onebox", "pingdom_chance": 0, "holder_id": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "name": "behat-tests", "created": 1455747783, "max_backups": 7, "holder_type": "organization", "replica_verification_strategy": "legacy", "organization": "5cba2a5a-fe72-4cf4-b733-6058ede27332", "pingdom_manually_enabled": false, "last_code_push": {"timestamp": "2016-02-17T22:23:12", "user_uuid": null}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/1cdaa6fa-9898-4f46-afb5-d372d2f6edf6/environments'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.4 (php_version=5.5.30&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            headers: 'Bearer c2653a9a-308f-4207-b3a1-36a73411c818:c270eede-d696-11e5-a1f9-bc764e10f058:xGbNOJEPNZ1XH8qUl4YZv'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Thu, 18 Feb 2016 23:25:31 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: e6fc21b0-d696-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"PC7abxLiv2R4kFx8J9fgZg=="'
+            Vary: Accept-Encoding
+        body: '{"test": {"environment_created": 1455747783, "dns_zone": "onebox.pantheon.io", "randseed": "3XJ22RHIS1UI64EQY020621C11KJ22T4", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "live": {"environment_created": 1455747783, "dns_zone": "onebox.pantheon.io", "randseed": "JC46TKP5JHIOI8M7O7BIP4QZEYNGHK3Y", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": true, "environment_created": 1455747783, "dns_zone": "onebox.pantheon.io", "randseed": "UNFRQAV5NAZZF9O38RYWI0Z72T9ZSO9B", "target_ref": "refs/heads/master", "php_version": 53, "lock": {"username": null, "password": null, "locked": false}, "target_commit": "8b4c7e6300eff4307c479aa7d580c3006a082993", "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}, "multidev": {"environment_created": 1455748377, "dns_zone": "onebox.pantheon.io", "randseed": "S4TKLZXA8KAGOELKGL3RJPQDTEZPD9QV", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox3.onebox.pantheon.io"}}'

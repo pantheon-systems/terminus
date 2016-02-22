@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- Added `site set-php-version` command to set the PHP version on both sites and their environments. (#937)
+
 ## [0.10.4] - 2016-02-17
 ### Added
 - Added new `role` data to the information returned by `site team list`. (#924)
