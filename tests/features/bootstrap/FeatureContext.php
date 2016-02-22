@@ -366,6 +366,35 @@ class FeatureContext implements Context {
 
   /**
    * Queries for info for a given site
+   * @Given /^I get info for the "([^"]*)" environment of "([^"]*)"$/
+   *
+   * @param [string]  $env         Environment to get info on
+   * @param [string]  $site        Site to get info on
+   * @param [boolean] $return_hash Returns values usable array form
+   * @return [string] Output from command run
+   */
+  public function iGetInfoForTheEnvironmentOf($env, $site, $return_hash =
+  false) {
+    $return = $this->iRun(
+      "terminus site environment-info --site=$site --env=$env --format=bash"
+    );
+    if (!$return_hash) {
+      return $return;
+    }
+
+    $return_array = array();
+    $return_lines = explode("\n", $return);
+    foreach ($return_lines as $line) {
+      $line_components = explode(" ", $line);
+      $index  = $line_components[0];
+      $values = array_splice($line_components, 1);
+      $return_array[$index] = $values;
+    }
+    return $return_array;
+  }
+
+  /**
+   * Queries for info for a given site
    * @Given /^I get info for the site "([^"]*)"$/
    *
    * @param [string]  $site        Site to get info on

@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+use Terminus\Caches\SitesCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Organization;
 use Terminus\Models\TerminusModel;
@@ -332,6 +333,19 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Re-fetches site attributes from the API
+   *
+   * @return void
+   */
+  public function fetchAttributes() {
+    $response = $this->request->simpleRequest(
+      sprintf('sites/%s/settings', $this->get('id'))
+    );
+    $this->attributes = $response['data'];
+    $this->collection->sites_cache->update((array)$response['data']);
+  }
+
+  /**
    * Returns given attribute, if present
    *
    * @param string $attribute Name of attribute requested
@@ -620,6 +634,23 @@ class Site extends TerminusModel {
         )
       )
     );
+    return $workflow;
+  }
+
+  /**
+   * Sets the PHP version number of this site
+   * Note: Once this changes, you need to refresh the data in the cache for
+   *   this site or the returned PHP version will not reflect the change.
+   *   $this->fetchAttributes() will complete this action for you.
+   *
+   * @param string $version_number The version number to set this site to use
+   * @return void
+   */
+  public function setPhpVersion($version_number) {
+    $options  = [
+      'params' => ['key' => 'php_version', 'value' => $version_number,],
+    ];
+    $workflow = $this->workflows->create('update_site_setting', $options);
     return $workflow;
   }
 

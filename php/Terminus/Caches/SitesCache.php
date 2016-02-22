@@ -3,6 +3,7 @@
 namespace Terminus\Caches;
 
 use Terminus\Caches\FileCache;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 use Terminus\Session;
 
@@ -214,6 +215,30 @@ class SitesCache {
       array('decode_array' => true)
     );
     unset($cache[$sitename]);
+    $this->cache->putData($this->cachekey, $cache);
+  }
+
+  /**
+   * Updates a record with new information
+   *
+   * @param array $data Data from the API
+   * @return void
+   * @throws TerminusException
+   */
+  public function update($data = []) {
+    if (!isset($data['name'])) {
+      throw new TerminusException(
+        'The new site data must include the name of the site.'
+      );
+    }
+    $cache     = (array)$this->cache->getData(
+      $this->cachekey,
+      array('decode_array' => true)
+    );
+    $site_name = $data['name'];
+    foreach ($data as $key => $value) {
+      $cache[$site_name][$key] = $value;
+    }
     $this->cache->putData($this->cachekey, $cache);
   }
 

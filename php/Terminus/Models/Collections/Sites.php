@@ -14,7 +14,7 @@ class Sites extends TerminusCollection {
   /**
    * @var SitesCache
    */
-  private $sites_cache;
+  public $sites_cache;
   /**
    * @var User
    */

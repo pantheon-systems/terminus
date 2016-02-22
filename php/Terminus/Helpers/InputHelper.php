@@ -487,8 +487,9 @@ class InputHelper extends TerminusHelper {
    * Helper function to get an organizational team role
    *
    * @param array $arg_options Elements as follow:
-   *        array  args Argument array passed from commands
-   *        string message    Prompt to STDOUT
+   *        array  args    Argument array passed from commands
+   *        string key     Key to look for in args
+   *        string message Prompt to STDOUT
    * @return string Name of role
    */
   public function orgRole(array $arg_options = []) {
@@ -518,6 +519,46 @@ class InputHelper extends TerminusHelper {
       )]
     );
     return $role;
+  }
+
+  /**
+   * Helps select a PHP version for sites and environments
+   *
+   * @param array $arg_options Elements as follow:
+   *   array  args    Parameters from the command line
+   *   array  choices Choices to override the built-in ones
+   *   string key     Key to look for in args
+   *   string message Prompt to STDOUT
+   * @return string PHP version
+   */
+  public function phpVersion(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
+      'choices' => [53 => '5.3', 55 => '5.5',],
+      'key'     => 'version',
+      'message' => 'Select a PHP version',
+    ];
+    $options         = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      if (in_array($options['args'][$options['key']], $options['choices'])) {
+        $index = array_search(
+          $options['args'][$options['key']],
+          $options['choices']
+        );
+        return $index;
+      }
+      if (isset($options['choices'][$options['args'][$options['key']]])) {
+        return $options['args'][$options['key']];
+      }
+    }
+    $version = $this->menu(
+      [
+        'choices' => $options['choices'],
+        'message' => $options['message'],
+      ]
+    );
+    return $version;
   }
 
   /**
