@@ -17,8 +17,6 @@ Feature: Deleting a site's branches
 
   @vcr site_delete-branch_none
   Scenario: Failing to delete branches when the site hasn't any
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site delete-branch --site=[[test_site_name]] --yes"
     Then I should get:
     """

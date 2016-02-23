@@ -3,10 +3,12 @@ Feature: Set a site's service level
   As a user
   I need to be able to change the service level on my site.
 
-  @vcr site_set-service-level
-  Scenario: Changing the service level
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_set-service-level
+  Scenario: Changing the service level
     When I run "terminus site set-service-level --site=[[test_site_name]] --level=pro"
     Then I should get:
     """
@@ -15,8 +17,6 @@ Feature: Set a site's service level
 
   @vcr site_set-service-level_fail
   Scenario: Changing service level without payment method
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site set-service-level --site=[[test_site_name]] --level=pro"
     Then I should get:
     """

@@ -3,10 +3,12 @@ Feature: Deleting a site
   As a user
   I need to be able to delete sites.
 
-  @vcr site_delete
-  Scenario: Delete Site
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_delete
+  Scenario: Delete Site
     When I run "terminus site delete --site=[[test_site_name]] --yes"
     Then I should get:
     """

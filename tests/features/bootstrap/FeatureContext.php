@@ -755,6 +755,34 @@ class FeatureContext implements Context {
   }
 
   /**
+   * Ensures that a user is not on a site's team
+   * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
+   *
+   * @param [string] $member Email address of the member on the team of
+   * @param [string] $site   Site which the member should be on the team of
+   * @return [boolean] True if $member does exists in output
+   */
+  public function isMemberOfTheTeamOn($member, $site) {
+    $this->iRun("terminus site team list --site=$site");
+    $is_member = $this->iShouldGet($member);
+    return $is_member;
+  }
+
+  /**
+   * Ensures that a user is not on a site's team
+   * @Given /^"([^"]*)" is not a member of the team on "([^"]*)"$/
+   *
+   * @param [string] $member Email address of the member not on the team
+   * @param [string] $site   Site which the member should not be on the team of
+   * @return [boolean] True if $member does not exist in output
+   */
+  public function isNotMemberOfTheTeamOn($member, $site) {
+    $this->iRun("terminus site team list --site=$site");
+    $is_not_member = $this->iShouldNotGet($member);
+    return $is_not_member;
+  }
+
+  /**
    * Ensures there is no site with the given name. Loops until this is so
    * @Given /^no site named "([^"]*)"$/
    *

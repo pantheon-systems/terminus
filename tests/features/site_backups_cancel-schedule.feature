@@ -9,7 +9,7 @@ Feature: Cancel a Backup Schedule for a Site
     And a site named "[[test_site_name]]"
 
   @vcr site_backups_cancel-schedule
-  Scenario: Set the backup schedule for an environment
+  Scenario: Cancel the backup schedule for an environment
     When I run "terminus site backups set-schedule --site=[[test_site_name]] --env=dev --day=Fri"
     And I run "terminus site backups cancel-schedule --site=[[test_site_name]] --env=dev"
     And I run "terminus site backups get-schedule --site=[[test_site_name]] --env=dev"

@@ -3,15 +3,15 @@ Feature: CLI Commands
   As a user
   I need to be able to check and clear system files.
 
-  #@vcr cli-clear-cache
-  #Scenario: Clearing Cache
-    #When I run "touch ~/.terminus/cache/testfile"
-    #And I run "terminus cli clear-cache"
-    #And I run "ls ~/.terminus/cache"
-    #Then I should not get:
-    #"""
-    #testfile
-    #"""
+  @vcr cli-clear-cache
+  Scenario: Clearing Cache
+    When I run "touch ~/.terminus/cache/testfile"
+    And I run "terminus cli cache-clear"
+    And I run "ls ~/.terminus/cache"
+    Then I should not get:
+    """
+    testfile
+    """
 
   @vcr cli_cmd-dump
   Scenario: Dumping Commands

@@ -3,10 +3,12 @@ Feature: Clearing a site's cache
   As a user
   I need to be able to clear my site's cache.
 
-  @vcr site_clear-cache
-  Scenario: Clear Caches on a Site
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_clear-cache
+  Scenario: Clear Caches on a Site
     When I run "terminus site clear-cache --site=[[test_site_name]] --env=dev"
     Then I should get "."
     Then I should get:

@@ -3,10 +3,12 @@ Feature: Cloning site content
   As a user
   I need to be able to duplicate a site.
 
-  @vcr site_clone-content
-  Scenario: Site Clone Environment
+  Background: I am authenticated and have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_clone-content
+  Scenario: Site Clone Environment
     When I run "terminus site clone-content --site=[[test_site_name]] --from-env=test --to-env=dev --yes"
     Then I should get:
     """

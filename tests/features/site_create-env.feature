@@ -3,11 +3,13 @@ Feature: Working with multidev environments
   As a user
   I need to be able to create, remove, and alter multidev environments.
 
-  @vcr site_create-env
-  Scenario: Create a multidev environment
+  Background: I am authenticated and have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
-    And the service level of "[[test_site_name]]" is "business"
+
+  @vcr site_create-env
+  Scenario: Create a multidev environment
+    Given the service level of "[[test_site_name]]" is "business"
     When I run "terminus site create-env --site=[[test_site_name]] --from-env=dev --to-env=multidev"
     Then I should get: "."
     And I should get:
@@ -17,9 +19,7 @@ Feature: Working with multidev environments
 
   @vcr site_create-env_bad_name
   Scenario: Fail to create necessary environment
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    And the service level of "[[test_site_name]]" is "business"
+    Given the service level of "[[test_site_name]]" is "business"
     When I run "terminus site create-env --site=[[test_site_name]] --from-env=dev --to-env=dev"
     Then I should get:
     """
@@ -28,9 +28,7 @@ Feature: Working with multidev environments
 
   @vcr site_create-env_duplicate
   Scenario: Fail to create extant environment
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    And the service level of "[[test_site_name]]" is "business"
+    Given the service level of "[[test_site_name]]" is "business"
     When I run "terminus site create-env --site=[[test_site_name]] --from-env=dev --to-env=multidev"
     Then I should get:
     """
@@ -39,9 +37,7 @@ Feature: Working with multidev environments
 
   @vcr site_create-env_unauthorized
   Scenario: Fail to create environment due to service level
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
-    And the service level of "[[test_site_name]]" is "basic"
+    Given the service level of "[[test_site_name]]" is "basic"
     When I run "terminus site create-env --site=[[test_site_name]] --from-env=dev --to-env=multidev"
     Then I should get:
     """

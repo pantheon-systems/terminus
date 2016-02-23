@@ -3,10 +3,12 @@ Feature: Set a site's connection mode
   As a user
   I need to be able to change my site's connection mode.
 
-  @vcr site_set-connection-mode_git
-  Scenario: Setting connection mode to git
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_set-connection-mode_git
+  Scenario: Setting connection mode to git
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=git"
     Then I should get: "."
     And I should get:
@@ -16,8 +18,6 @@ Feature: Set a site's connection mode
 
   @vcr site_set-connection-mode_sftp
   Scenario: Setting connection mode to sftp
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
     Then I should get: "."
     And I should get:
@@ -27,8 +27,6 @@ Feature: Set a site's connection mode
 
   @vcr site_set-connection-mode_git
   Scenario: Failing to set connection mode to invalid mode
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=invalid"
     Then I should get: "."
     And I should get:
@@ -38,8 +36,6 @@ Feature: Set a site's connection mode
 
   @vcr site_set-connection-mode_git
   Scenario: Failing to set the connection mode to the current mode
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=sftp"
     Then I should get:
     """

@@ -3,10 +3,12 @@ Feature: Locking and unlocking a site
   As a user
   I need to be able to lock and unlock the site.
 
-  @vcr site_lock
-  Scenario: Locking and Unlocking an environment
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_lock
+  Scenario: Locking and Unlocking an environment
     When I run "terminus site lock add --site=[[test_site_name]] --env=dev --username=pantheon --password=password"
     Then I should get:
     """
@@ -31,8 +33,6 @@ Feature: Locking and unlocking a site
 
   @vcr site_lock_info
   Scenario: Get lock info for an environment
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site lock info --site=[[test_site_name]] --env=dev"
     Then I should get:
     """

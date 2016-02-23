@@ -3,10 +3,12 @@ Feature: Initializing environments
   As a user
   I need to be able to initialize those environments.
 
-  @vcr site_init-env
-  Scenario: Initializing the test environment
+  Background: I am authenticated and I have a site named [[test_site_name]]
     Given I am authenticated
     And a site named "[[test_site_name]]"
+
+  @vcr site_init-env
+  Scenario: Initializing the test environment
     When I run "terminus site init-env --site=[[test_site_name]] --env=test"
     Then I should get "."
     Then I should get:
@@ -16,8 +18,6 @@ Feature: Initializing environments
 
   @vcr site_init-env_already-initialized
   Scenario: Should not allow re-initializing an environment
-    Given I am authenticated
-    And a site named "[[test_site_name]]"
     When I run "terminus site init-env --site=[[test_site_name]] --env=test"
     Then I should get:
     """
