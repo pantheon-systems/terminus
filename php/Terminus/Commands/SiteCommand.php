@@ -168,25 +168,25 @@ class SiteCommand extends TerminusCommand {
    */
   public function cloneContent($args, $assoc_args) {
     $site     = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args,])
     );
     $from_env = $site->environments->get(
       $this->input()->env(
-        array(
+        [
           'args'  => $assoc_args,
           'key'   => 'from-env',
           'label' => 'Choose environment you want to clone from',
           'site'  => $site,
-        )
+        ]
       )
     );
     $to_env   = $this->input()->env(
-      array(
+      [
         'args'  => $assoc_args,
         'key'   => 'to-env',
         'label' => 'Choose environment you want to clone to',
         'site'  => $site,
-      )
+      ]
     );
 
     $db    = isset($assoc_args['db-only']);
@@ -195,7 +195,7 @@ class SiteCommand extends TerminusCommand {
       $files = $db = true;
     }
 
-    $append = array();
+    $append = [];
     if ($db) {
       $append[] = 'DATABASE';
     }
@@ -204,20 +204,20 @@ class SiteCommand extends TerminusCommand {
     }
     $append  = implode(' and ', $append);
     $this->input()->confirm(
-      array(
+      [
         'message' => "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
-        'context' => array(
+        'context' => [
           strtoupper($from_env->getName()),
           strtoupper($to_env),
-          $append
-        )
-      )
+          $append,
+        ],
+      ]
     );
 
     if ($site->environments->get($to_env) == null) {
       $this->failure(
         'The {env} environment was not found.',
-        array('env' => $to_env)
+        ['env' => $to_env,]
       );
     }
 

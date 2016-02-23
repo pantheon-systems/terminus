@@ -221,7 +221,7 @@ class InputHelper extends TerminusHelper {
       }
     }
     $choices = $options['choices'];
-    if (get_class($options['site']) == 'Site') {
+    if (!is_null($options['site'])) {
       $choices = $options['site']->environments->ids();
     }
 
