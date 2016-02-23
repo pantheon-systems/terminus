@@ -674,6 +674,7 @@ class FeatureContext implements Context {
    * @Then /^I should get a valid UUID/
    * Checks the output for a valid UUID
    *
+   * @return bool
    * @throws Exception
    */
   public function iShouldGetValidUuid() {
