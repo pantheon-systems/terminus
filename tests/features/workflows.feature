@@ -17,7 +17,7 @@ Feature: View site workflow information
 
   @vcr workflows_show
   Scenario: Show a specific Workflow's Details and Operations
-    When I run "terminus workflows show --site=[[test_site_name]] --workflow_id=4b4bbbc4-4602-11e5-a354-bc764e117665"
+    When I run "terminus workflows show --site=[[test_site_name]] --workflow-id=4b4bbbc4-4602-11e5-a354-bc764e117665"
     Then I should get:
     """
     Deploy a CMS (Drupal or Wordpress)

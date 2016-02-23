@@ -65,8 +65,8 @@ class WorkflowsCommand extends TerminusCommand {
    * Show operation details for a workflow
    *
    * ## OPTIONS
-   * [--workflow_id]
-   * : Uuid of workflow to show
+   * [--workflow-id=<workflow-id>]
+   * : UUID of workflow to show
    * [--site=<site>]
    * : Site from which to list workflows
    * [--latest-with-logs]
@@ -77,8 +77,8 @@ class WorkflowsCommand extends TerminusCommand {
   public function show($args, $assoc_args) {
     $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
 
-    if (isset($assoc_args['workflow_id'])) {
-      $workflow_id = $assoc_args['workflow_id'];
+    if (isset($assoc_args['workflow-id'])) {
+      $workflow_id = $assoc_args['workflow-id'];
       $model_data = (object)array('id' => $workflow_id);
       $workflow = $site->workflows->add($model_data);
     } elseif (isset($assoc_args['latest-with-logs'])) {
