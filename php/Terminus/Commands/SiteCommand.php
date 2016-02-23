@@ -469,12 +469,15 @@ class SiteCommand extends TerminusCommand {
       $env = '#' . $env;
     }
     $url = sprintf(
-      'https://dashboard.pantheon.io/sites/%s%s',
+      'https://%s/sites/%s%s',
+      TERMINUS_HOST,
       $site->get('id'),
       $env
     );
-    if (isset($assoc_args['print'])) {
-      $this->output()->outputValue($url, 'Dashboard URL');
+    if (isset($assoc_args['print'])
+      || ($this->runner->getConfig('format') != 'normal')
+    ) {
+      $this->output()->outputValue($url);
     } else {
       $message = 'Do you want to open your dashboard link in a web browser?';
       $this->input()->confirm(compact('message'));
