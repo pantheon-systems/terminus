@@ -52,9 +52,15 @@ class Logger extends KLogger {
     * @param mixed  $level   PSR log level of message
     * @param string $message Message to give
     * @param array  $context Context of message
+    * @param array  $options Options regarding the output of the message
     * @return void
     */
-  public function log($level, $message, array $context = array()) {
+  public function log(
+    $level,
+    $message,
+    array $context = [],
+    array $options = []
+  ) {
     if (isset($this->logLevelThreshold)
       && ($this->logLevels[$this->logLevelThreshold] < $this->logLevels[$level])
     ) {
@@ -67,11 +73,11 @@ class Logger extends KLogger {
     $message = $this->interpolate($message, $context);
 
     if (isset($this->options) && $this->options['logFormat'] == 'json') {
-      $message = $this->formatJsonMessages($level, $message);
+      $message = $this->formatJsonMessages($level, $message, $options);
     } elseif (isset($this->options) && $this->options['logFormat'] == 'bash') {
-      $message = $this->formatBashMessages($level, $message);
+      $message = $this->formatBashMessages($level, $message, $options);
     } else {
-      $message = $this->formatMessage($level, $message, $context);
+      $message = $this->formatMessage($level, $message, $context, $options);
     }
     $this->write($message);
   }
@@ -100,22 +106,23 @@ class Logger extends KLogger {
   /**
     * Formats the message for logging.
     *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
-    * @param  array  $context The context
+    * @param string $level   The Log Level of the message
+    * @param string $message The message to log
+    * @param array  $context The context
+    * @param array  $options Options regarding the output of the message
     * @return string
     */
-  protected function formatMessage($level, $message, $context) {
+  protected function formatMessage($level, $message, $context, $options) {
     if (isset($this->options)
       && in_array($this->options['logFormat'], array('bash', 'json'))
     ) {
-      $parts   = $this->getMessageParts($level, $message);
+      $parts   = $this->getMessageParts($level, $message, $options);
       $message = $this->options['logFormat'];
       foreach ($parts as $part => $value) {
         $message = str_replace('{'.$part.'}', $value, $message);
       }
     } else {
-      $message = "[{$this->getTimestamp()}] [$level] $message";
+      $message = "[{$this->getTimestamp($options)}] [$level] $message";
     }
     if (isset($this->options)
       && $this->options['appendContext']
@@ -130,12 +137,13 @@ class Logger extends KLogger {
   /**
     * Formats the message for bash-type logging.
     *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
+    * @param string $level   The Log Level of the message
+    * @param string $message The message to log
+    * @param array  $options Options regarding the output of the message
     * @return string
     */
-  private function formatBashMessages($level, $message) {
-    $parts   = $this->getMessageParts($level, $message);
+  private function formatBashMessages($level, $message, $options) {
+    $parts   = $this->getMessageParts($level, $message, $options);
     $message = '';
     foreach ($parts as $key => $value) {
       $message .= "$key\t$value\n";
@@ -146,12 +154,13 @@ class Logger extends KLogger {
   /**
     * Formats the message for JSON-type logging.
     *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
+    * @param string $level   The Log Level of the message
+    * @param string $message The message to log
+    * @param array  $options Options regarding the output of the message
     * @return string
     */
-  private function formatJsonMessages($level, $message) {
-    $parts   = $this->getMessageParts($level, $message);
+  private function formatJsonMessages($level, $message, $options) {
+    $parts   = $this->getMessageParts($level, $message, $options);
     $message = json_encode($parts) . "\n";
     return $message;
   }
@@ -159,13 +168,14 @@ class Logger extends KLogger {
   /**
     * Collects and formats the log message parts
     *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
+    * @param string $level   The Log Level of the message
+    * @param string $message The message to log
+    * @param array  $options Options regarding the output of the message
     * @return array
     */
-  private function getMessageParts($level, $message) {
+  private function getMessageParts($level, $message, $options) {
     $parts = array(
-      'date'          => $this->getTimestamp(),
+      'date'          => $this->getTimestamp($options),
       'level'         => strtoupper($level),
       //'priority'      => $this->logLevels[$level],
       'message'       => $message,
@@ -177,14 +187,18 @@ class Logger extends KLogger {
   /**
    * Gets the correctly formatted Date/Time for the log entry.
    *
+   * @param array $options Options regarding the output of the message
    * @return string $date
    */
-  private function getTimestamp() {
+  private function getTimestamp($options) {
     $date_format = 'Y-m-dTH:i:s';
     if (isset($this->options)) {
       $date_format = $this->options['dateFormat'];
     }
     $date = date($date_format);
+    if (isset($options['timestamp'])) {
+      $date = date($date_format, $options['timestamp']);
+    }
     return $date;
   }
 

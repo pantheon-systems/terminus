@@ -147,50 +147,60 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand watch
    */
   public function watch($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
 
     // Keep track of workflows that have been printed.
     // This is necessary because the local clock may drift from
     // the server's clock, causing events to be printed twice.
-    $started = array();
-    $finished = array();
+    $started  = [];
+    $finished = [];
 
     $this->log()->info('Watching workflows...');
     $site->workflows->fetchWithOperations();
     while (true) {
-      $last_created_at = $site->workflows->lastCreatedAt();
+      $last_created_at  = $site->workflows->lastCreatedAt();
       $last_finished_at = $site->workflows->lastFinishedAt();
       sleep(WORKFLOWS_WATCH_INTERVAL);
       $site->workflows->fetchWithOperations();
 
       $workflows = $site->workflows->all();
       foreach ($workflows as $workflow) {
+        $context = [
+          'id'          => $workflow->get('id'),
+          'description' => $workflow->get('description'),
+          'environment' => $workflow->get('environment')
+        ];
         if (($workflow->get('created_at') > $last_created_at)
-          && !in_array($workflow->id, $started)
+          && !in_array($workflow->get('id'), $started)
         ) {
-          array_push($started, $workflow->id);
+          array_push($started, $workflow->get('id'));
 
-          $started_message = sprintf(
-            "Started %s %s (%s)",
-            $workflow->id,
-            $workflow->get('description'),
-            $workflow->get('environment')
+          $started_message = 'Started {id} {description} ({environment})';
+          $started_options = ['timestamp' => $workflow->get('started_at'),];
+          $this->log()->log(
+            'info',
+            $started_message,
+            $context,
+            $started_options
           );
-          $this->log()->info($started_message);
         }
 
         if (($workflow->get('finished_at') > $last_finished_at)
-          && !in_array($workflow->id, $finished)
+          && !in_array($workflow->get('id'), $finished)
         ) {
-          array_push($finished, $workflow->id);
+          array_push($finished, $workflow->get('id'));
 
-          $finished_message = sprintf(
-            "Finished Workflow %s %s (%s)",
-            $workflow->id,
-            $workflow->get('description'),
-            $workflow->get('environment')
+          $finished_message =
+            'Finished workflow {id} {description} ({environment})';
+          $finished_options = ['timestamp' => $workflow->get('finished_at'),];
+          $this->log()->log(
+            'info',
+            $finished_message,
+            $context,
+            $finished_options
           );
-          $this->log()->info($finished_message);
 
           if ($workflow->get('has_operation_log_output')) {
             $workflow->fetchWithLogs();

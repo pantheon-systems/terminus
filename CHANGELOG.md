@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - `site code diffstat` no longer gives a non-object error. (#939)
+- Timestamps produced in the logs by `workflows watch` now reflect the actual workflow start and finish times. (#949)
 
 ## [0.10.4] - 2016-02-17
 ### Added
