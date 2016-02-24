@@ -663,10 +663,30 @@ class FeatureContext implements Context {
    *
    * @param [string] $string Content which ought not be in the output
    * @return [boolean] $i_have_this True if $string exists in output
+   * @throws Exception
    */
   public function iShouldGet($string) {
     $i_have_this = $this->iShouldGetOneOfTheFollowing($string);
     return $i_have_this;
+  }
+
+  /**
+   * @Then /^I should get a valid UUID/
+   * Checks the output for a valid UUID
+   *
+   * @return bool
+   * @throws Exception
+   */
+  public function iShouldGetValidUuid() {
+    preg_match(
+      '/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/',
+      $this->_output,
+      $matches
+    );
+    if (empty($matches)) {
+      throw new Exception($this->_output . ' is not a valid UUID.');
+    }
+    return true;
   }
 
   /**
@@ -677,6 +697,7 @@ class FeatureContext implements Context {
    *
    * @param [array] $list_string Content which ought to be in the output
    * @return [boolean] True if a $string exists in output
+   * @throws Exception
     */
   public function iShouldGetOneOfTheFollowing($list_string) {
     $strings  = explode(',', $list_string);

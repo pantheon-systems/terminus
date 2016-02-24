@@ -469,12 +469,15 @@ class SiteCommand extends TerminusCommand {
       $env = '#' . $env;
     }
     $url = sprintf(
-      'https://dashboard.pantheon.io/sites/%s%s',
+      'https://%s/sites/%s%s',
+      TERMINUS_HOST,
       $site->get('id'),
       $env
     );
-    if (isset($assoc_args['print'])) {
-      $this->output()->outputValue($url, 'Dashboard URL');
+    if (isset($assoc_args['print'])
+      || ($this->runner->getConfig('format') != 'normal')
+    ) {
+      $this->output()->outputValue($url);
     } else {
       $message = 'Do you want to open your dashboard link in a web browser?';
       $this->input()->confirm(compact('message'));
@@ -1323,7 +1326,9 @@ class SiteCommand extends TerminusCommand {
    * @subcommand new-relic
    */
   public function newRelic($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
     $data = $site->newRelic();
     if (!empty($data->account)) {
       $this->output()->outputRecord($data->account);
@@ -1343,8 +1348,10 @@ class SiteCommand extends TerminusCommand {
    * @subcommand owner
    */
   public function owner($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $this->output()->outputValue($site->get('owner'), 'Site Owner');
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
+    $this->output()->outputValue($site->get('owner'));
   }
 
   /**
