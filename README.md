@@ -65,6 +65,10 @@ or
 ```bash
 export PATH="$PATH:$HOME/terminus/bin"
 ```
+Please note: Installing with Composer will place the script in a "$HOME/vendor/" directory. 
+```bash
+export PATH="$PATH:$HOME/vendor/bin"
+```
 Once you source the file or restart your terminal client, you can now make use of Terminus using
 ```bash
 terminus
