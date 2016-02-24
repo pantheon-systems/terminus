@@ -8,6 +8,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - Data returned from `site code branches` has changed to use hash keys. (#940)
 - `workflows show` parameter has changed from `--worklow_id` to `--workflow-id`. (#947)
+- Added workflow times to `workflows watch` output. (#951)
+- Added workflow times to `workflows watch` output. (#952)
 
 ### Fixed
 - `site code diffstat` no longer gives a non-object error. (#939)
