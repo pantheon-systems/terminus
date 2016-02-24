@@ -41,12 +41,12 @@ class WorkflowsCommand extends TerminusCommand {
    */
   public function index($args, $assoc_args) {
     $site = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args])
     );
-    $site->workflows->fetch(array('paged' => false));
+    $site->workflows->fetch(['paged' => false]);
     $workflows = $site->workflows->all();
 
-    $data = array();
+    $data = [];
     foreach ($workflows as $workflow) {
       $workflow_data = $workflow->serialize();
       unset($workflow_data['operations']);
@@ -55,7 +55,7 @@ class WorkflowsCommand extends TerminusCommand {
     if (count($data) == 0) {
       $this->log()->warning(
         'No workflows have been run on {site}.',
-        array('site' => $site->get('name'))
+        ['site' => $site->get('name')]
       );
     }
     $this->output()->outputRecordList($data);
@@ -75,23 +75,25 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand show
    */
   public function show($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
 
     if (isset($assoc_args['workflow-id'])) {
       $workflow_id = $assoc_args['workflow-id'];
-      $model_data = (object)array('id' => $workflow_id);
-      $workflow = $site->workflows->add($model_data);
+      $model_data  = (object)['id' => $workflow_id];
+      $workflow    = $site->workflows->add($model_data);
     } elseif (isset($assoc_args['latest-with-logs'])) {
-      $site->workflows->fetch(array('paged' => false));
+      $site->workflows->fetch(['paged' => false]);
       $workflow = $site->workflows->findLatestWithLogs();
       if (!$workflow) {
         $this->log()->info('No recent workflow has logs');
         return;
       }
     } else {
-      $site->workflows->fetch(array('paged' => false));
+      $site->workflows->fetch(['paged' => false]);
       $workflows = $site->workflows->all();
-      $workflow = $this->input()->workflow(compact('workflows'));
+      $workflow  = $this->input()->workflow(compact('workflows'));
     }
     $workflow->fetchWithLogs();
 
@@ -115,7 +117,7 @@ class WorkflowsCommand extends TerminusCommand {
 
         $this->output()->outputRecordList(
           $operations_data,
-          array('description' => 'Operation Description')
+          ['description' => 'Operation Description']
         );
 
         // Second output the logs
@@ -147,18 +149,20 @@ class WorkflowsCommand extends TerminusCommand {
    * @subcommand watch
    */
   public function watch($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args])
+    );
 
     // Keep track of workflows that have been printed.
     // This is necessary because the local clock may drift from
     // the server's clock, causing events to be printed twice.
-    $started = array();
-    $finished = array();
+    $started  = [];
+    $finished = [];
 
     $this->log()->info('Watching workflows...');
     $site->workflows->fetchWithOperations();
     while (true) {
-      $last_created_at = $site->workflows->lastCreatedAt();
+      $last_created_at  = $site->workflows->lastCreatedAt();
       $last_finished_at = $site->workflows->lastFinishedAt();
       sleep(WORKFLOWS_WATCH_INTERVAL);
       $site->workflows->fetchWithOperations();
@@ -166,31 +170,40 @@ class WorkflowsCommand extends TerminusCommand {
       $workflows = $site->workflows->all();
       foreach ($workflows as $workflow) {
         if (($workflow->get('created_at') > $last_created_at)
-          && !in_array($workflow->id, $started)
+          && !in_array($workflow->get('id'), $started)
         ) {
-          array_push($started, $workflow->id);
+          array_push($started, $workflow->get('id'));
 
-          $started_message = sprintf(
-            "Started %s %s (%s)",
-            $workflow->id,
-            $workflow->get('description'),
-            $workflow->get('environment')
-          );
-          $this->log()->info($started_message);
+          $started_message = 'Started {id} {description} ({env}) at {time}';
+          $started_context = [
+            'id'          => $workflow->get('id'),
+            'description' => $workflow->get('description'),
+            'env'         => $workflow->get('environment'),
+            'time'        => date(
+              TERMINUS_DATE_FORMAT,
+              $workflow->get('started_at')
+            ),
+          ];
+          $this->log()->info($started_message, $started_context);
         }
 
         if (($workflow->get('finished_at') > $last_finished_at)
-          && !in_array($workflow->id, $finished)
+          && !in_array($workflow->get('id'), $finished)
         ) {
-          array_push($finished, $workflow->id);
+          array_push($finished, $workflow->get('id'));
 
-          $finished_message = sprintf(
-            "Finished Workflow %s %s (%s)",
-            $workflow->id,
-            $workflow->get('description'),
-            $workflow->get('environment')
-          );
-          $this->log()->info($finished_message);
+          $finished_message
+            = 'Finished workflow {id} {description} ({env}) at {time}';
+          $finished_context = [
+            'id'          => $workflow->get('id'),
+            'description' => $workflow->get('description'),
+            'env'         => $workflow->get('environment'),
+            'time'        => date(
+              TERMINUS_DATE_FORMAT,
+              $workflow->get('finished_at')
+            ),
+          ];
+          $this->log()->info($finished_message, $finished_context);
 
           if ($workflow->get('has_operation_log_output')) {
             $workflow->fetchWithLogs();
@@ -213,4 +226,3 @@ class WorkflowsCommand extends TerminusCommand {
   }
 
 }
-
