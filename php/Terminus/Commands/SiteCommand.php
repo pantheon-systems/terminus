@@ -1518,31 +1518,33 @@ class SiteCommand extends TerminusCommand {
    * [--certificate=<value>]
    * : Certificate
    *
-   * [--private_key=<value>]
+   * [--private-key=<value>]
    * : RSA Private Key
    *
-   * [--intermediate_certificate=<value>]
+   * [--intermediate-certificate=<value>]
    * : (optional) CA Intermediate Certificate(s)
    *
    * @subcommand set-https-certificate
    */
   public function setHttpsCertificate($args, $assoc_args) {
-    $site        = $this->sites->get($this->input()->sitename(['args' => $assoc_args]));
+    $site        = $this->sites->get(
+      $this->input()->sitename(['args' => $assoc_args])
+    );
     $environment = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+      $this->input()->env(['args' => $assoc_args, 'site' => $site])
     );
 
     $certificate = $this->input()->string(
       [
-        'args' => $assoc_args,
-        'key' => 'certificate',
-        'message' => 'Certificate',
+        'args'     => $assoc_args,
+        'key'      => 'certificate',
+        'message'  => 'Certificate',
       ]
     );
     $private_key = $this->input()->string(
       [
-        'args' => $assoc_args,
-        'key' => 'private_key',
+        'args'    => $assoc_args,
+        'key'     => 'private-key',
         'message' => 'RSA Private Key',
       ]
     );
@@ -1551,8 +1553,8 @@ class SiteCommand extends TerminusCommand {
     if ($is_interactive) {
       $intermediate_certificate = $this->input()->string(
         [
-          'args' => $assoc_args,
-          'key' => 'intermediate_certificate',
+          'args'    => $assoc_args,
+          'key'     => 'intermediate-certificate',
           'message' => 'CA Intermediate Certificate(s) (optional)',
         ]
       );

@@ -775,11 +775,11 @@ class InputHelper extends TerminusHelper {
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
     }
-    if ($this->command->log()->getOptions('logFormat') != 'normal') {
-      return $options['default'];
-    }
     $string = $this->prompt($options);
     if ($options['required']) {
+      if (($string == '') && !is_null($options['default'])) {
+        return $options['default'];
+      }
       $options['message'] .= " (Your entry may not be blank.)";
       while ($string == '') {
         $string = $this->prompt($options);

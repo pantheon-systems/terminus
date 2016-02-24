@@ -526,7 +526,7 @@ class SitesCommand extends TerminusCommand {
         [
           'args'     => $assoc_args,
           'key'      => 'site',
-          'deafult'  => $suggested_name,
+          'default'  => $suggested_name,
           'message'  => $message,
           'required' => true,
         ]
