@@ -42,10 +42,10 @@ To install with Git and use Terminus HEAD, you should clone this repository and 
 
 1. Clone the repository. If you plan on contributing to the project, create a fork and clone the fork instead.
   ```bash
-  cd $HOME
+  cd /install/location
   git clone https://github.com/pantheon-systems/terminus.git terminus
   ```
-Or replace $HOME with the directory to which you would like to install.
+Or replace /install/location with the directory to which you would like to install.
 
 2. Install the Composer dependencies.
   ```bash
@@ -59,11 +59,11 @@ You can now run the bleeding-edge version of Terminus via:
 
 **Optionally**, for ease of development, we suggest aliasing or setting the path to this script in your Bash configuration file. This file is located at ~/.bashrc on Linux and ~/.bash_profile on Mac.
 ```bash
-alias terminus="$HOME/terminus/bin/terminus"
+alias terminus="/install/location/terminus/bin/terminus"
 ```
 or
 ```bash
-export PATH="$PATH:$HOME/terminus/bin"
+export PATH="$PATH:/install/location/terminus/bin"
 ```
 Once you source the file or restart your terminal client, you can now make use of Terminus using
 ```bash
@@ -120,17 +120,17 @@ Here are steps to follow if you would like to contribute to Terminus:
 1. Fork the repository.
 2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running:
   ```bash
-  cd $HOME/terminus
+  cd /install/location/terminus
   ./scripts/lint.sh
   ```
 And run your tests via:
   ```bash
-  cd $HOME/terminus
+  cd /install/location/terminus
   ./scripts/test.sh
   ```
 Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
   ```bash
-  cd $HOME/terminus
+  cd /install/location/terminus
   php utils/make-docs.php
   ```
 
