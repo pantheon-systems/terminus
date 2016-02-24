@@ -755,18 +755,20 @@ class InputHelper extends TerminusHelper {
    * Returns $args[key] if exists, then STDIN, then $default
    *
    * @param array $arg_options Elements as follow:
-   *        array  args    Args already input
-   *        string key     Key for searched-for argument
-   *        string message Prompt printed to STDOUT
-   *        mixed  default Returns if no other choice
+   *        array  args     Args already input
+   *        mixed  default  Returns if no other choice
+   *        string key      Key for searched-for argument
+   *        string message  Prompt printed to STDOUT
+   *        bool   required True to disallow empty strings
    * @return string Either $args[$key], $default, or string from prompt
    */
   public function string(array $arg_options = []) {
     $default_options = [
-      'args'    => [],
-      'key'     => 0,
-      'message' => 'Enter',
-      'default' => null,
+      'args'     => [],
+      'default'  => null,
+      'key'      => 0,
+      'message'  => 'Enter',
+      'required' => false,
     ];
     $options         = array_merge($default_options, $arg_options);
 
@@ -777,6 +779,12 @@ class InputHelper extends TerminusHelper {
       return $options['default'];
     }
     $string = $this->prompt($options);
+    if ($options['required']) {
+      $options['message'] .= " (Your entry may not be blank.)";
+      while ($string == '') {
+        $string = $this->prompt($options);
+      }
+    }
     return $string;
   }
 

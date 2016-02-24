@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `workflows show` parameter has changed from `--worklow_id` to `--workflow-id`. (#947)
 - Added workflow times to `workflows watch` output. (#951)
 - Added workflow times to `workflows watch` output. (#952)
+- Changed `InputHelper#string()` so that entries may be required to not be blank. (#954)
 
 ### Fixed
 - `site code diffstat` no longer gives a non-object error. (#939)
