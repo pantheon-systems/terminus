@@ -24,6 +24,8 @@ Once you have at least the requirements installed, you can install Terminus via 
 - [Composer](https://getcomposer.org/doc/00-intro.md)
 - [Git](https://help.github.com/articles/set-up-git/)
 
+> You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
+
 ####Installing with Composer
 
 The fastest and easiest way to install Terminus is via Composer. Simply run this in your terminal client:
@@ -37,6 +39,7 @@ Run this in this in your terminal client:
 ```bash
 curl https://github.com/pantheon-systems/terminus/releases/download/0.10.4/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
+
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
 
