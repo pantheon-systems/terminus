@@ -9,7 +9,7 @@ Feature: Set HTTPS Certificate
 
   @vcr site_set-https-certificate
   Scenario: Set an HTTPS Certificate
-    When I run "terminus site set-https-certificate --site=[[test_site_name]] --env=live --certificate=fake --private_key=fake"
+    When I run "terminus site set-https-certificate --site=[[test_site_name]] --env=live --certificate=fake --private-key=fake"
     Then I should get:
     """
     Converged loadbalancer

@@ -120,7 +120,7 @@ class SitesCommand extends TerminusCommand {
    */
   public function create($args, $assoc_args) {
     $options  = $this->getSiteCreateOptions($assoc_args);
-    $upstream = $this->input()->upstream(array('args' => $assoc_args));
+    $upstream = $this->input()->upstream(['args' => $assoc_args]);
     $options['upstream_id'] = $upstream->get('id');
     $this->log()->info(
       'Creating new {upstream} installation ... ',
@@ -169,7 +169,7 @@ class SitesCommand extends TerminusCommand {
    * @subcommand import
    */
   public function import($args, $assoc_args) {
-    $options = SitesCommand::getSiteCreateOptions($assoc_args);
+    $options = $this->getSiteCreateOptions($assoc_args);
 
     $url = $this->input()->string(
       array(
@@ -500,13 +500,14 @@ class SitesCommand extends TerminusCommand {
    * @return array
    */
   private function getSiteCreateOptions($assoc_args) {
-    $options          = array();
+    $options          = [];
     $options['label'] = $this->input()->string(
-      array(
-        'args'    => $assoc_args,
-        'key'     => 'label',
-        'message' => 'Human-readable label for the site',
-      )
+      [
+        'args'     => $assoc_args,
+        'key'      => 'label',
+        'message'  => 'Human-readable label for the site',
+        'required' => true,
+      ]
     );
     $suggested_name   = Utils\sanitizeName($options['label']);
 
@@ -522,17 +523,18 @@ class SitesCommand extends TerminusCommand {
       $message .= " (if left blank will be $suggested_name)";
 
       $options['name'] = $this->input()->string(
-        array(
-          'args'    => $assoc_args,
-          'key'     => 'site',
-          'message' => $message,
-          'deafult' => $suggested_name,
-        )
+        [
+          'args'     => $assoc_args,
+          'key'      => 'site',
+          'default'  => $suggested_name,
+          'message'  => $message,
+          'required' => true,
+        ]
       );
     }
     if (isset($assoc_args['org'])) {
       $options['organization_id'] = $this->input()->orgId(
-        array('args' => $assoc_args, 'default' => false)
+        ['args' => $assoc_args, 'default' => false,]
       );
     }
     return $options;

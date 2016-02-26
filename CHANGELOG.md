@@ -10,10 +10,14 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `workflows show` parameter has changed from `--worklow_id` to `--workflow-id`. (#947)
 - Added workflow times to `workflows watch` output. (#951)
 - Added workflow times to `workflows watch` output. (#952)
+- `site set-https-certificate` parameter has changed from `--private_key` to `--private-key`. (#954)
+- `site set-https-certificate` parameter has changed from `--intermediate_certificate` to `--intermediate-certificate`. (#954)
+- Changed `InputHelper#string()` so that entries may be required to not be blank. (#954)
 
 ### Fixed
 - `site code diffstat` no longer gives a non-object error. (#939)
 - `InputHelper#env` now will generate a list of all environments when fed a site object. (#950)
+- Fixed name and label entry for `sites create` such that they cannot be blank. (#954)
 
 ## [0.10.4] - 2016-02-17
 ### Added
