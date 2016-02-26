@@ -13,6 +13,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - `site code diffstat` no longer gives a non-object error. (#939)
+- `InputHelper#env` now will generate a list of all environments when fed a site object. (#950)
 
 ## [0.10.4] - 2016-02-17
 ### Added
