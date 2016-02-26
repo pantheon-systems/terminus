@@ -170,6 +170,15 @@
 
 ---
 
+### fetchAttributes
+##### Description:
+    Re-fetches site attributes from the API
+
+##### Return:
+    [void]
+
+---
+
 ### get
 ##### Description:
     Returns given attribute, if present
@@ -360,6 +369,21 @@
 
 ##### Throws:
     TerminusException
+
+---
+
+### setPhpVersion
+##### Description:
+    Sets the PHP version number of this site
+    Note: Once this changes, you need to refresh the data in the cache for
+    this site or the returned PHP version will not reflect the change.
+    $this->fetchAttributes() will complete this action for you.
+
+##### Parameters:
+    [string] $version_number The version number to set this site to use
+
+##### Return:
+    [void]
 
 ---
 
