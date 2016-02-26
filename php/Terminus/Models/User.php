@@ -117,13 +117,14 @@ class User extends TerminusModel {
    * @return \stdClass
    */
   public function getSites($organization = null) {
+    $path = sprintf('users/%s', $this->id);
     if ($organization) {
-      $path = sprintf('organizations/%s/memberships/sites', $organization);
+      $path .= sprintf('/organizations/%s/memberships/sites', $organization);
     } else {
-      $path = 'sites';
+      $path .= '/sites';
     }
-    $method   = 'GET';
-    $response = $this->request->request('users', $this->id, $path, $method);
+    $options  = ['method' => 'get',];
+    $response = $this->request->simpleRequest($path, $options);
     return $response['data'];
   }
 
@@ -156,9 +157,9 @@ class User extends TerminusModel {
    * @return void
    */
   private function setAliases() {
-    $path     = 'drush_aliases';
-    $method   = 'GET';
-    $response = $this->request->request('users', $this->id, $path, $method);
+    $path     = sprintf('users/%s/drush_aliases', $this->id);
+    $options  = ['method' => 'get',];
+    $response = $this->request->simpleRequest($path, $options);
 
     $this->aliases = $response['data']->drush_aliases;
   }

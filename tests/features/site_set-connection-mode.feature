@@ -7,7 +7,7 @@ Feature: Set a site's connection mode
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_set-connection-mode_git
+    @vcr site_set-connection-mode_git
   Scenario: Setting connection mode to git
     When I run "terminus site set-connection-mode --site=[[test_site_name]] --env=dev --mode=git"
     Then I should get: "."

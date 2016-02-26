@@ -37,7 +37,7 @@ class InputHelper extends TerminusHelper {
     $options         = array_merge($default_options, $arg_options);
     $backups         = $options['backups'];
     if (empty($options['backups'])) {
-      $command = 'terminus site backup create --site=<site> --env=<env>`';
+      $command = 'terminus site backups create --site=<site> --env=<env>`';
       throw new TerminusException(
         'No backups available. Create one with `{command}`',
         compact('command'),

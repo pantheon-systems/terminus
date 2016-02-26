@@ -170,7 +170,7 @@ class Backups extends TerminusCollection {
 
     if (empty($all_backups)) {
       $message  = 'No backups available. Please create one with ';
-      $message .= '`terminus site backup create --site={site} --env={env}`';
+      $message .= '`terminus site backups create --site={site} --env={env}`';
       throw new TerminusException(
         $message,
         [

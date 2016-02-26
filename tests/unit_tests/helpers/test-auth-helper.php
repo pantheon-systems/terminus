@@ -63,7 +63,7 @@ class AuthTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException        \Terminus\Exceptions\TerminusException
-   * @expectedExceptionMessage Authorization failed
+   * @expectedExceptionMessage Login unsuccessful
    */
   public function testLogInViaUsernameAndPassword() {
     $creds = getBehatCredentials();
