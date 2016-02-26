@@ -46,9 +46,9 @@ class Request {
 
     try {
       $client   = new Client();
-      $response = $client->request('GET', $url, array('sink' => $target));
+      $response = $client->request('GET', $url, ['sink' => $target,]);
     } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage(), array(), 1);
+      throw new TerminusException($e->getMessage(), [], 1);
     }
     return true;
   }
@@ -64,14 +64,14 @@ class Request {
    *     JSON for you.
    * @return array
    */
-  public function pagedRequest($path, array $options = array()) {
+  public function pagedRequest($path, array $options = []) {
     $limit = 100;
     if (isset($options['limit'])) {
       $limit = $options['limit'];
     }
 
     //$results is an associative array so we don't refetch
-    $results  = array();
+    $results  = [];
     $finished = false;
     $start    = null;
 
@@ -102,7 +102,7 @@ class Request {
       }
     }
 
-    $return = array('data' => array_values($results));
+    $return = ['data' => array_values($results),];
     return $return;
   }
 
@@ -119,11 +119,11 @@ class Request {
    * @return array
    * @throws TerminusException
    */
-  public function request($path, $arg_options = array()) {
-    $default_options = array(
+  public function request($path, $arg_options = []) {
+    $default_options = [
       'method'       => 'get',
       'absolute_url' => false,
-    );
+    ];
     $options = array_merge($default_options, $arg_options);
 
     $url = $path;
@@ -143,15 +143,15 @@ class Request {
     } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
-        array('msg' => $e->getMessage())
+        ['msg' => $e->getMessage(),]
       );
     }
 
-    $data = array(
+    $data = [
       'data'        => json_decode($response->getBody()->getContents()),
       'headers'     => $response->getHeaders(),
       'status_code' => $response->getStatusCode(),
-    );
+    ];
     return $data;
   }
 
@@ -163,14 +163,14 @@ class Request {
    * @param array  $arg_params Request parameters
    * @return \Psr\Http\Message\ResponseInterface
    */
-  private function send($uri, $method, array $arg_params = array()) {
-    $extra_params = array(
-      'headers'         => array(
+  private function send($uri, $method, array $arg_params = []) {
+    $extra_params = [
+      'headers'         => [
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
-      ),
+      ],
       RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
-    );
+    ];
 
     if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
       && $session = Session::instance()->get('session', false)
@@ -185,20 +185,20 @@ class Request {
     $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
-      array(
+      [
         'base_uri' => $this->getBaseUri(),
-        'cookies'  => $this->fillCookieJar($params)
-      )
+        'cookies'  => $this->fillCookieJar($params),
+      ]
     );
     unset($params['cookies']);
 
     Runner::getLogger()->debug(
       "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
-      array(
+      [
         'params' => json_encode($params),
         'uri'    => $uri,
-        'method' => $method
-      )
+        'method' => $method,
+      ]
     );
 
     //Required objects and arrays stir benign warnings.
@@ -218,7 +218,7 @@ class Request {
    */
   private function fillCookieJar(array $params) {
     $jar     = new CookieJar();
-    $cookies = array();
+    $cookies = [];
     if (isset($params['cookies'])) {
       $cookies = array_merge($cookies, $params['cookies']);
     }
