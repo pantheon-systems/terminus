@@ -9,5 +9,5 @@ TERMINUS_HOST:        'dashboard.pantheon.io'
 TERMINUS_PORT:        443
 TERMINUS_PROTOCOL:    'https'
 TERMINUS_TIME_ZONE:   'UTC'
-TERMINUS_VERSION:     '0.10.4'
+TERMINUS_VERSION:     '0.10.5'
 TERMINUS_DATE_FORMAT: 'Y-m-d H:i:s'

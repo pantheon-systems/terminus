@@ -262,12 +262,34 @@
 
 ---
 
+### setPhpVersion
+##### Description:
+    Sets the PHP version number of this environment
+
+##### Parameters:
+    [string] $version_number The version number to set this environment to
+    -use
+
+##### Return:
+    [void]
+
+---
+
 ### unlock
 ##### Description:
     Disable HTTP Basic Access authentication on the web environment
 
 ##### Return:
     [Workflow]
+
+---
+
+### unsetPhpVersion
+##### Description:
+    Unsets the PHP version of this environment so it will use the site default
+
+##### Return:
+    [void]
 
 ---
 

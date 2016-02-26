@@ -37,7 +37,7 @@ composer require pantheon-systems/terminus
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/terminus/releases/download/0.10.4/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/terminus/releases/download/0.10.5/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 
 ####Installing with Git

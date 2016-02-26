@@ -171,11 +171,28 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
-    -array  args Argument array passed from commands
-    -string message    Prompt to STDOUT
+    -array  args    Argument array passed from commands
+    -string key     Key to look for in args
+    -string message Prompt to STDOUT
 
 ##### Return:
     [string] Name of role
+
+---
+
+### phpVersion
+##### Description:
+    Helps select a PHP version for sites and environments
+
+##### Parameters:
+    [array] $arg_options Elements as follow:
+    -array  args    Parameters from the command line
+    -array  choices Choices to override the built-in ones
+    -string key     Key to look for in args
+    -string message Prompt to STDOUT
+
+##### Return:
+    [string] PHP version
 
 ---
 
@@ -265,10 +282,11 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
-    -array  args    Args already input
-    -string key     Key for searched-for argument
-    -string message Prompt printed to STDOUT
-    -mixed  default Returns if no other choice
+    -array  args     Args already input
+    -mixed  default  Returns if no other choice
+    -string key      Key for searched-for argument
+    -string message  Prompt printed to STDOUT
+    -bool   required True to disallow empty strings
 
 ##### Return:
     [string] Either $args[$key], $default, or string from prompt
