@@ -81,7 +81,7 @@ class Request {
         $paged_path .= '&start=' . $start;
       }
 
-      $resp = $this->simpleRequest($paged_path);
+      $resp = $this->request($paged_path);
 
       $data = $resp['data'];
       if (count($data) > 0) {
@@ -107,67 +107,6 @@ class Request {
   }
 
   /**
-   * Make a request to the Pantheon API
-   *
-   * @param string      $realm   Permissions realm for data request (e.g. user,
-   *   site organization, etc. Can also be "public" to simply pull read-only
-   *   data that is not privileged.
-   * @param string      $uuid    The UUID of the item in the realm to access
-   * @param string|bool $path    API path (URL)
-   * @param string      $method  HTTP method to use
-   * @param mixed       $options A native PHP data structure (e.g. int, string,
-   *   array, or stdClass) to be sent along with the request
-   * @return array
-   * @throws TerminusException
-   */
-  public function request(
-    $realm,
-    $uuid,
-    $path    = false,
-    $method  = 'GET',
-    $options = array()
-  ) {
-    $logger = Runner::getLogger();
-    $url    = Endpoint::get(
-      array(
-        'realm' => $realm,
-        'uuid'  => $uuid,
-        'path'  => $path,
-      )
-    );
-
-    $logger->debug('Request URL: ' . $url);
-    try {
-      $response = $this->send($url, $method, $options);
-
-      $data = array(
-        'data'        => json_decode($response->getBody()->getContents()),
-        'headers'     => $response->getHeaders(),
-        'status_code' => $response->getStatusCode(),
-      );
-      return $data;
-    } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-      $response = $e->getResponse();
-      throw new TerminusException($response->getBody(true));
-    } catch (\GuzzleHttp\Exception\RequestException $e) {
-      $sanitized_request = Utils\stripSensitiveData(
-        $e->getMessage(),
-        self::$blacklist
-      );
-      throw new TerminusException(
-        'API Request Error. {msg} - Request: {req}',
-        array('req' => $sanitized_request, 'msg' => $e->getMessage())
-      );
-    } catch (\Exception $e) {
-      throw new TerminusException(
-        'API Request Error: {msg}',
-        array('msg' => $e->getMessage(),),
-        1
-      );
-    }
-  }
-
-  /**
    * Simplified request method for Pantheon API
    *
    * @param string $path        API path (URL)
@@ -180,7 +119,7 @@ class Request {
    * @return array
    * @throws TerminusException
    */
-  public function simpleRequest($path, $arg_options = array()) {
+  public function request($path, $arg_options = array()) {
     $default_options = array(
       'method'       => 'get',
       'absolute_url' => false,

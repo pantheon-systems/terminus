@@ -22,7 +22,7 @@ class Hostnames extends TerminusCollection {
       $this->environment->get('id'),
       rawurlencode($hostname)
     );
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       $url,
       ['method' => 'put']
     );

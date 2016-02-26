@@ -144,7 +144,7 @@ class AuthHelper extends TerminusHelper {
 
     $this->command->log()->info('Logging in via machine token');
     try {
-      $response = $this->request->simpleRequest(
+      $response = $this->request->request(
         'authorize/machine-token',
         $options
       );
@@ -198,7 +198,7 @@ class AuthHelper extends TerminusHelper {
       'method' => 'post'
     ];
     try {
-      $response = $this->request->simpleRequest('authorize', $options);
+      $response = $this->request->request('authorize', $options);
       if ($response['status_code'] != '200') {
         throw new TerminusException();
       }

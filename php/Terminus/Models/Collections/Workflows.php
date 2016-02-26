@@ -32,7 +32,7 @@ class Workflows extends TerminusCollection {
     }
     $params = array_merge($this->getFetchArgs(), $options['params']);
 
-    $results = $this->request->simpleRequest(
+    $results = $this->request->request(
       $this->getFetchUrl(),
       array(
         'method'      => 'post',

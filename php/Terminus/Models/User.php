@@ -124,7 +124,7 @@ class User extends TerminusModel {
       $path .= '/sites';
     }
     $options  = ['method' => 'get',];
-    $response = $this->request->simpleRequest($path, $options);
+    $response = $this->request->request($path, $options);
     return $response['data'];
   }
 
@@ -159,7 +159,7 @@ class User extends TerminusModel {
   private function setAliases() {
     $path     = sprintf('users/%s/drush_aliases', $this->id);
     $options  = ['method' => 'get',];
-    $response = $this->request->simpleRequest($path, $options);
+    $response = $this->request->request($path, $options);
 
     $this->aliases = $response['data']->drush_aliases;
   }

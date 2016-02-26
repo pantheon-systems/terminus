@@ -334,7 +334,7 @@ class Environment extends TerminusModel {
       $this->get('id')
     );
     $options = ['method' => 'get',];
-    $data    = $this->request->simpleRequest($path, $options);
+    $data    = $this->request->request($path, $options);
     return $data['data'];
   }
 
@@ -412,7 +412,7 @@ class Environment extends TerminusModel {
       $this->get('id')
     );
     $options = ['method' => 'get',];
-    $result  = $this->request->simpleRequest($path, $options);
+    $result  = $this->request->request($path, $options);
     $connection_mode = 'git';
     if (property_exists($result['data'], 'on_server_development')
       && (boolean)$result['data']->on_server_development
@@ -606,7 +606,7 @@ class Environment extends TerminusModel {
       $params['intermediary'] = $options['intermediate_certificate'];
     }
 
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       sprintf(
         'sites/%s/environments/%s/add-ssl-cert',
         $this->site->get('id'),
@@ -683,7 +683,7 @@ class Environment extends TerminusModel {
     $hostnames   = $this->hostnames->ids();
     $target      = array_pop($hostnames);
     $healthc     = "http://$target/pantheon_healthcheck";
-    $response    = $this->request->simpleRequest($healthc, compact('on_stats'));
+    $response    = $this->request->request($healthc, compact('on_stats'));
     $return_data = [
       'success'  => ($response['status_code'] === 200),
       'time'     => $this->transfertime,

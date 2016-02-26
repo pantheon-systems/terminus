@@ -115,7 +115,7 @@ class Backup extends TerminusModel {
       $this->getElement()
     );
     $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
-    $response = $this->request->simpleRequest($path, $options);
+    $response = $this->request->request($path, $options);
     return $response['data']->url;
   }
 

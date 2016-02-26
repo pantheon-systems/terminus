@@ -120,7 +120,7 @@ class Site extends TerminusModel {
       );
     }
     $params    = [$tag => ['sites' => [$this->get('id'),],],];
-    $response  = $this->request->simpleRequest(
+    $response  = $this->request->request(
       sprintf('organizations/%s/tags', $org_id),
       ['method' => 'put', 'form_params' => $params,]
     );
@@ -157,7 +157,7 @@ class Site extends TerminusModel {
   public function attributes() {
     $path     = sprintf('sites/%s/attributes', $this->get('id'));
     $options  = ['method' => 'get',];
-    $response = $this->request->simpleRequest($path, $options);
+    $response = $this->request->request($path, $options);
     return $response['data'];
   }
 
@@ -167,7 +167,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function convergeBindings() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/converge',
       ['method' => 'post']
     );
@@ -189,7 +189,7 @@ class Site extends TerminusModel {
       'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
       'method'      => 'post',
     ];
-    $response = $this->request->simpleRequest($path, $options);
+    $response = $this->request->request($path, $options);
     return $response['data'];
   }
 
@@ -199,7 +199,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function delete() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id'),
       ['method' => 'delete',]
     );
@@ -256,7 +256,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function disableRedis() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
@@ -270,7 +270,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function disableSolr() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
@@ -284,7 +284,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function enableRedis() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
@@ -298,7 +298,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function enableSolr() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
@@ -313,7 +313,7 @@ class Site extends TerminusModel {
    * @return Site
    */
   public function fetch(array $options = []) {
-    $response         = $this->request->simpleRequest(
+    $response         = $this->request->request(
       sprintf('sites/%s?site_state=true', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -326,7 +326,7 @@ class Site extends TerminusModel {
    * @return void
    */
   public function fetchAttributes() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       sprintf('sites/%s/settings', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -354,7 +354,7 @@ class Site extends TerminusModel {
    */
   public function getFeature($feature) {
     if (!isset($this->features)) {
-      $response       = $this->request->simpleRequest(
+      $response       = $this->request->request(
         sprintf('sites/%s/features', $this->get('id'))
       );
       $this->features = (array)$response['data'];
@@ -412,7 +412,7 @@ class Site extends TerminusModel {
   public function getTips() {
     $path     = sprintf('sites/%s/code-tips', $this->get('id'));
     $options  = ['method' => 'get',];
-    $data     = $this->request->simpleRequest($path, $options);
+    $data     = $this->request->request($path, $options);
     $branches = array_keys((array)$data['data']);
     return $branches;
   }
@@ -423,7 +423,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function getUpstreamUpdates() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
@@ -543,7 +543,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function newRelic() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/new-relic'
     );
     return $response['data'];
@@ -581,7 +581,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function removeTag($tag, $org_id) {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
         $org_id,

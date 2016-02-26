@@ -79,7 +79,7 @@ abstract class TerminusModel {
       $fetch_args
     );
 
-    $results = $this->request->simpleRequest(
+    $results = $this->request->request(
       $this->getFetchUrl(),
       $options
     );
