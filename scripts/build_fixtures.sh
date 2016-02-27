@@ -8,9 +8,9 @@
 php php/boot-fs.php products all || echo "ERROR LINE" $LINENO
 php php/boot-fs.php sites create --name=behat-test --label=behattest --product='wordpress' --org='d59379eb-0c23-429c-a7bc-ff51e0a960c2' || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site info --site=behat-test || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site backup create --site=behat-test --env=dev --element=all || echo "ERROR LINE" $LINENO
+php php/boot-fs.php site backups create --site=behat-test --env=dev --element=all || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site environments --site=behat-test || echo "ERROR LINE" $LINENO
-php php/boot-fs.php site backup get --site=behat-test --env=dev --element=files --latest || echo "ERROR LINE" $LINENO
+php php/boot-fs.php site backups get --site=behat-test --env=dev --element=files --latest || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site code log --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev || echo "ERROR LINE" $LINENO
 php php/boot-fs.php site connection-mode --site=behat-test --env=dev --set=git || echo "ERROR LINE" $LINENO

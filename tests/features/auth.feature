@@ -16,7 +16,7 @@ Feature: Authorization command
     When I run "terminus auth login [[username]] --password=[[password]]"
     Then I should get:
     """
-    Logged in as [[user_uuid]]
+    Logged in as [[username]]
     """
 
   @vcr auth_whoami

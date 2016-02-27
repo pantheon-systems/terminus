@@ -140,7 +140,7 @@ abstract class TerminusCollection extends TerminusModel {
    * @return array
    */
   protected function getCollectionData($options = array()) {
-    $function_name = 'simpleRequest';
+    $function_name = 'request';
     if (isset($options['paged']) && $options['paged']) {
       $function_name = 'pagedRequest';
     }

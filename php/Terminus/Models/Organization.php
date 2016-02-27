@@ -72,7 +72,7 @@ class Organization extends TerminusModel {
    */
   public function getFeature($feature) {
     if (!isset($this->features)) {
-      $response       = $this->request->simpleRequest(
+      $response       = $this->request->request(
         sprintf('organizations/%s/features', $this->get('id'))
       );
       $this->features = (array)$response['data'];

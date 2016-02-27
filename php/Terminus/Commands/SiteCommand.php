@@ -107,7 +107,7 @@ class SiteCommand extends TerminusCommand {
         $data = $this->listBackups($assoc_args);
         $this->output()->outputRecordList(
           $data,
-          array('file' => 'File', 'size' => 'Size', 'date' => 'Date')
+          ['file' => 'File', 'size' => 'Size', 'date' => 'Date',]
         );
           return $data;
           break;
@@ -1456,39 +1456,28 @@ class SiteCommand extends TerminusCommand {
    */
   public function setConnectionMode($args, $assoc_args) {
     if (!isset($assoc_args['mode'])
-      || !in_array($assoc_args['mode'], array('sftp', 'git'))
+      || !in_array($assoc_args['mode'], ['sftp', 'git',])
     ) {
       $this->failure('You must specify the mode as either sftp or git.');
     }
     $mode = strtolower($assoc_args['mode']);
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
     // Only present dev and multidev environments; Test/Live cannot be modified
     $environments = array_diff(
       $site->environments->ids(),
-      array('test', 'live')
+      ['test', 'live',]
     );
 
     $env = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'choices' => $environments))
+      $this->input()->env(['args' => $assoc_args, 'choices' => $environments,])
     );
-    if (in_array($env->get('id'), array('test', 'live'))) {
+    if (in_array($env->get('id'), ['test', 'live',])) {
       $this->failure(
         'Connection mode cannot be set in Test or Live environments'
       );
     }
     try {
       $current_mode = $env->info('connection_mode');
-      if ($current_mode == $env->info('connection_mode')) {
-        $this->failure(
-          'The connection mode on {site} for {env} is already set to {mode}.',
-          array(
-            'site' => $site->get('name'),
-            'env' => $env->get('id'),
-            'mode' => $mode
-          ),
-          -1
-        );
-      }
     } catch (TerminusException $e) {
       $this->log()->info(
         'Current connection info not available. Proceeding with mode change.'
@@ -2288,41 +2277,40 @@ class SiteCommand extends TerminusCommand {
    */
   private function listBackups($assoc_args) {
     $site    = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args,])
     );
     $env     = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+      $this->input()->env(['args' => $assoc_args, 'site' => $site,])
     );
     $element = null;
     if (isset($assoc_args['element']) && ($assoc_args['element'] != 'all')) {
-      $element = $this->input()->backupElement(array('args' => $assoc_args));
+      $element = $this->input()->backupElement(['args' => $assoc_args,]);
     }
     $backups = $env->backups->getFinishedBackups($element);
     $latest  = (boolean)$this->input()->optional(
-      array(
-        'key'     => 'latest',
+      [
         'choices' => $assoc_args,
-        'default' => false
-      )
+        'default' => false,
+        'key'     => 'latest',
+      ]
     );
+    $data = [];
     if (empty($backups)) {
       $this->log()->warning('No backups found.');
     } else {
       if ($latest) {
         array_splice($backups, 1);
       }
-      $data = array();
       foreach ($backups as $id => $backup) {
-        $data[] = array(
+        $data[] = [
           'file'      => $backup->get('filename'),
           'size'      => $backup->getSizeInMb(),
           'date'      => $backup->getDate(),
           'initiator' => $backup->getInitiator(),
-        );
+        ];
       }
-
-      return $data;
     }
+    return $data;
   }
 
   /**

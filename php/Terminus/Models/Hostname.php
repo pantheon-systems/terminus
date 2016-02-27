@@ -16,7 +16,7 @@ class Hostname extends TerminusModel {
       $this->environment->get('id'),
       rawurlencode($this->get('id'))
     );
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       $url,
       ['method' => 'delete']
     );

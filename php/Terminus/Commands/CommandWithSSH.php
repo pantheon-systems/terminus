@@ -60,7 +60,7 @@ abstract class CommandWithSSH extends TerminusCommand {
    * @return void
    */
   protected function checkConnectionMode($environment) {
-    if ($environment->getConnectionMode() != 'sftp') {
+    if ($environment->info('connection_mode') != 'sftp') {
       $message  = 'Note: This environment is in read-only Git mode. If you ';
       $message .= 'want to make changes to the codebase of this site ';
       $message .= '(e.g. updating modules or plugins), you will need to ';

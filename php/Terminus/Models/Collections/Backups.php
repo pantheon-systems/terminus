@@ -24,7 +24,7 @@ class Backups extends TerminusCollection {
     );
     $params    = array('method' => 'delete');
     for ($day = 0; $day < 7; $day++) {
-      $this->request->simpleRequest("$path_root/$day", $params);
+      $this->request->request("$path_root/$day", $params);
     }
     return true;
   }
@@ -131,7 +131,7 @@ class Backups extends TerminusCollection {
       $this->environment->site->get('id'),
       $this->environment->get('id')
     );
-    $response      = $this->request->simpleRequest($path);
+    $response      = $this->request->request($path);
     $response_data = (array)$response['data'];
     $data          = array(
       'daily_backup_hour' => null,
@@ -170,7 +170,7 @@ class Backups extends TerminusCollection {
 
     if (empty($all_backups)) {
       $message  = 'No backups available. Please create one with ';
-      $message .= '`terminus site backup create --site={site} --env={env}`';
+      $message .= '`terminus site backups create --site={site} --env={env}`';
       throw new TerminusException(
         $message,
         [
@@ -233,7 +233,7 @@ class Backups extends TerminusCollection {
       'form_params' => $schedule,
     );
 
-    $this->request->simpleRequest($path, $params);
+    $this->request->request($path, $params);
     return true;
   }
 

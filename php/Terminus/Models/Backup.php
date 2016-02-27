@@ -107,20 +107,15 @@ class Backup extends TerminusModel {
    * @return string
    */
   public function getUrl() {
-    $path        = sprintf(
-      'environments/%s/backups/catalog/%s/%s/s3token',
+    $path     = sprintf(
+      'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
+      $this->environment->site->get('id'),
       $this->environment->get('id'),
       $this->getBucket(),
       $this->getElement()
     );
-    $form_params = array('method' => 'GET');
-    $response    = $this->request->request(
-      'sites',
-      $this->environment->site->get('id'),
-      $path,
-      'POST',
-      compact('form_params')
-    );
+    $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
+    $response = $this->request->request($path, $options);
     return $response['data']->url;
   }
 

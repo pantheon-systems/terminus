@@ -7,15 +7,21 @@ Feature: List Backups for a Site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_backups_get_latest
+  @vcr site_backups_get_file
   Scenario: Get the URL of the latest DB backup
-    When I run "terminus site backups get --site=[[test_site_name]] --env=dev --element=db --latest"
-    Then I should get: "https://onebox-pantheon-backups.s3.amazonaws.com/d75eacdd-20d4-40d0-8178-74e4aed0dffc/dev/1444938388_backup/behat-tests_dev_2015-10-15T19-46-28_UTC_database.sql.gz?Signature=kVefOYFJzeDDmGYofUd1THg8XNo%3D&Expires=1445907646&AWSAccessKeyId=AKIAIYWQRFTHOPSVWJ2A"
+    When I run "terminus site backups get --site=[[test_site_name]] --env=dev --element=code --latest"
+    Then I should get:
+    """
+    https://onebox-pantheon-backups.s3.amazonaws.com/aa2a29d7-dc84-42a8-9ed0-c5bc1b725c61/dev/1456526466_backup/behat-tests_dev_2016-02-26T22-41-06_UTC_code.tar.gz?Signature=G8%2BSvwSaNDwfl%2FyrJFAvTdBKQvs%3D&Expires=1456528484&AWSAccessKeyId=AKIAIYWQRFTHOPSVWJ2A
+    """
 
   @vcr site_backups_get_file
   Scenario: Get the URL of a specific backup
-    When I run "terminus site backups get --site=[[test_site_name]] --env=dev --file=behat-tests_dev_2015-10-15T19-46-28_UTC_database.sql.gz"
-    Then I should get: "https://onebox-pantheon-backups.s3.amazonaws.com/d75eacdd-20d4-40d0-8178-74e4aed0dffc/dev/1444938388_backup/behat-tests_dev_2015-10-15T19-46-28_UTC_database.sql.gz?Signature=4Rp8YChvk%2Bbgm%2FCtM501mGEZ%2Fyo%3D&Expires=1445907654&AWSAccessKeyId=AKIAIYWQRFTHOPSVWJ2A"
+    When I run "terminus site backups get --site=[[test_site_name]] --env=dev --file=behat-tests_dev_2016-02-26T22-41-06_UTC_code.tar.gz"
+    Then I should get:
+    """
+    https://onebox-pantheon-backups.s3.amazonaws.com/aa2a29d7-dc84-42a8-9ed0-c5bc1b725c61/dev/1456526466_backup/behat-tests_dev_2016-02-26T22-41-06_UTC_code.tar.gz?Signature=G8%2BSvwSaNDwfl%2FyrJFAvTdBKQvs%3D&Expires=1456528484&AWSAccessKeyId=AKIAIYWQRFTHOPSVWJ2A
+    """
 
   @vcr site_backups_get_invalid
   Scenario: Fail to get the URL of the latest backup of an invalid element
@@ -32,5 +38,5 @@ Feature: List Backups for a Site
     When I run "terminus site backups get --site=[[test_site_name]] --env=dev --element=database --latest"
     Then I should get:
     """
-    No backups available. Please create one with `terminus site backup create --site=[[test_site_name]] --env=dev`
+    No backups available. Please create one with `terminus site backups create --site=[[test_site_name]] --env=dev`
     """

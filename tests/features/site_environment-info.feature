@@ -25,5 +25,5 @@ Feature: Displaying environmental information
     When I run "terminus site environment-info --site=[[test_site_name]] --env=dev --field=invalid"
     Then I should get:
     """
-    There is no such field.
+    There is no field invalid.
     """

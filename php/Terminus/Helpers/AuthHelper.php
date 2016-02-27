@@ -131,24 +131,21 @@ class AuthHelper extends TerminusHelper {
       }
       $this->command->log()->info(
         'Found a machine token for "{email}".',
-        ['email' => $args['email']]
+        ['email' => $args['email'],]
       );
     }
-    $options = array(
-      'headers' => array('Content-type' => 'application/json'),
-      'form_params'    => array(
+    $options = [
+      'form_params' => [
         'machine_token' => $token,
         'client'        => 'terminus',
-      ),
-    );
+      ],
+      'method' => 'post',
+    ];
 
     $this->command->log()->info('Logging in via machine token');
     try {
       $response = $this->request->request(
-        'authorize',
-        '',
-        '',
-        'POST',
+        'authorize/machine-token',
         $options
       );
     } catch (\Exception $e) {
@@ -170,7 +167,7 @@ class AuthHelper extends TerminusHelper {
     );
     if (isset($args['token'])) {
       $this->tokens_cache->add(
-        ['email' => $user_data['email'], 'token' => $token]
+        ['email' => $user_data['email'], 'token' => $token,]
       );
     }
     return true;
@@ -193,23 +190,26 @@ class AuthHelper extends TerminusHelper {
       );
     }
 
-    $options  = array(
-      'form_params' => array(
-        'email' => $email,
+    $options = [
+      'form_params' => [
+        'email'    => $email,
         'password' => $password,
-      ),
-    );
-    $response = $this->request->request('login', '', '', 'POST', $options);
-    if ($response['status_code'] != '200') {
+      ],
+      'method' => 'post'
+    ];
+    try {
+      $response = $this->request->request('authorize', $options);
+      if ($response['status_code'] != '200') {
+        throw new TerminusException();
+      }
+    } catch (TerminusException $e) {
       throw new TerminusException(
-        'Login unsuccessful for {email}',
-        compact('email'),
-        1
+        'Login unsuccessful for {email}', compact('email'), 1
       );
     }
     $this->command->log()->info(
-      'Logged in as {uuid}.',
-      array('uuid' => $response['data']->user_id)
+      'Logged in as {email}.',
+      compact('email')
     );
 
     $this->setInstanceData($response['data']);
@@ -239,11 +239,11 @@ class AuthHelper extends TerminusHelper {
     } else {
       $machine_token = $data->machine_token;
     }
-    $session = array(
+    $session = [
       'user_uuid'           => $data->user_id,
       'session'             => $data->session,
       'session_expire_time' => $data->expires_at,
-    );
+    ];
     if ($machine_token && is_string($machine_token)) {
       $session['machine_token'] = $machine_token;
     }

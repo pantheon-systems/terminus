@@ -61,18 +61,18 @@ class Site extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = []) {
     if ($attributes == null) {
       $attributes = new \stdClass();
     }
-    $must_haves = array(
+    $must_haves = [
       'name',
       'id',
       'service_level',
       'framework',
       'created',
       'memberships'
-    );
+    ];
     foreach ($must_haves as $must_have) {
       if (!isset($attributes->$must_have)) {
         $attributes->$must_have = null;
@@ -95,12 +95,10 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function addInstrument($uuid) {
-    $args     = array(
+    $args     = [
       'site'   => $this->get('id'),
-      'params' => array(
-        'instrument_id' => $uuid
-      )
-    );
+      'params' => ['instrument_id' => $uuid,],
+    ];
     $workflow = $this->workflows->create('associate_site_instrument', $args);
     return $workflow;
   }
@@ -118,13 +116,13 @@ class Site extends TerminusModel {
       $message .= 'associated with the organization {org}.';
       throw new TerminusException(
         $message,
-        array('tag' => $tag, 'org' => $org_id)
+        ['tag' => $tag, 'org' => $org_id,]
       );
     }
-    $params    = array($tag => array('sites' => array($this->get('id'))));
-    $response  = $this->request->simpleRequest(
+    $params    = [$tag => ['sites' => [$this->get('id'),],],];
+    $response  = $this->request->request(
       sprintf('organizations/%s/tags', $org_id),
-      array('method' => 'put', 'form_params' => $params)
+      ['method' => 'put', 'form_params' => $params,]
     );
     return $response;
   }
@@ -142,17 +140,11 @@ class Site extends TerminusModel {
     $updatedb = true,
     $xoption = false
   ) {
-    $params = array(
-      'updatedb' => $updatedb,
-      'xoption'  => $xoption
-    );
+    $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
 
     $workflow = $this->workflows->create(
       'apply_upstream_updates',
-      array(
-        'environment' => $env_id,
-        'params' => $params
-      )
+      ['environment' => $env_id, 'params' => $params,]
     );
     return $workflow;
   }
@@ -163,15 +155,10 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function attributes() {
-    $path   = 'attributes';
-    $method = 'GET';
-    $atts   = $this->request->request(
-      'sites',
-      $this->get('id'),
-      $path,
-      $method
-    );
-    return $atts['data'];
+    $path     = sprintf('sites/%s/attributes', $this->get('id'));
+    $options  = ['method' => 'get',];
+    $response = $this->request->request($path, $options);
+    return $response['data'];
   }
 
   /**
@@ -180,7 +167,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function convergeBindings() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/converge',
       ['method' => 'post']
     );
@@ -194,14 +181,15 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function createBranch($branch) {
-    $form_params = array('refspec' => sprintf('refs/heads/%s', $branch));
-    $response    = $this->request->request(
-      'sites',
-      $this->get('id'),
-      'code-branch',
-      'POST',
-      compact('form_params')
+    $path     = sprintf(
+      'sites/%s/code-branch',
+      $this->get('id')
     );
+    $options  = [
+      'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
+      'method'      => 'post',
+    ];
+    $response = $this->request->request($path, $options);
     return $response['data'];
   }
 
@@ -211,9 +199,9 @@ class Site extends TerminusModel {
    * @return array
    */
   public function delete() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id'),
-      array('method' => 'delete')
+      ['method' => 'delete',]
     );
     return $response;
   }
@@ -242,12 +230,12 @@ class Site extends TerminusModel {
   public function deleteEnvironment($env, $delete_branch) {
     $workflow = $this->workflows->create(
       'delete_cloud_development_environment',
-      array(
-        'params' => array(
+      [
+        'params' => [
           'environment_id' => $env,
           'delete_branch'  => $delete_branch,
-        )
-      )
+        ],
+      ]
     );
     return $workflow;
   }
@@ -268,7 +256,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function disableRedis() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
@@ -282,7 +270,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function disableSolr() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
@@ -296,7 +284,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function enableRedis() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
@@ -310,7 +298,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function enableSolr() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
@@ -324,8 +312,8 @@ class Site extends TerminusModel {
    * @param array $options params to pass to url request
    * @return Site
    */
-  public function fetch(array $options = array()) {
-    $response         = $this->request->simpleRequest(
+  public function fetch(array $options = []) {
+    $response         = $this->request->request(
       sprintf('sites/%s?site_state=true', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -338,7 +326,7 @@ class Site extends TerminusModel {
    * @return void
    */
   public function fetchAttributes() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       sprintf('sites/%s/settings', $this->get('id'))
     );
     $this->attributes = $response['data'];
@@ -366,7 +354,7 @@ class Site extends TerminusModel {
    */
   public function getFeature($feature) {
     if (!isset($this->features)) {
-      $response       = $this->request->simpleRequest(
+      $response       = $this->request->request(
         sprintf('sites/%s/features', $this->get('id'))
       );
       $this->features = (array)$response['data'];
@@ -408,7 +396,7 @@ class Site extends TerminusModel {
       return $this->tags;
     }
     $org_site_member = new OrganizationSiteMemberships(
-      array('organization' => new Organization(null, array('id' => $org_id)))
+      ['organization' => new Organization(null, ['id' => $org_id,]),]
     );
     $org_site_member->fetch();
     $org  = $org_site_member->get($this->get('id'));
@@ -422,8 +410,9 @@ class Site extends TerminusModel {
    * @return array
    */
   public function getTips() {
-    $path     = 'code-tips';
-    $data     = $this->request->request('sites', $this->get('id'), $path, 'GET');
+    $path     = sprintf('sites/%s/code-tips', $this->get('id'));
+    $options  = ['method' => 'get',];
+    $data     = $this->request->request($path, $options);
     $branches = array_keys((array)$data['data']);
     return $branches;
   }
@@ -434,7 +423,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function getUpstreamUpdates() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
@@ -460,20 +449,17 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function import($url) {
-    $params = array(
+    $params = [
       'url'      => $url,
       'code'     => 1,
       'database' => 1,
       'files'    => 1,
       'updatedb' => 1,
-    );
+    ];
 
     $workflow = $this->workflows->create(
       'do_import',
-      array(
-        'environment' => 'dev',
-        'params'      => $params,
-      )
+      ['environment' => 'dev', 'params' => $params,]
     );
     return $workflow;
   }
@@ -487,10 +473,7 @@ class Site extends TerminusModel {
   public function importDatabase($url) {
     $workflow = $this->workflows->create(
       'import_database',
-      array(
-        'environment' => 'dev',
-        'params'      => array('url' => $url),
-      )
+      ['environment' => 'dev', 'params' => ['url' => $url,],]
     );
     return $workflow;
   }
@@ -504,10 +487,7 @@ class Site extends TerminusModel {
   public function importFiles($url) {
     $workflow = $this->workflows->create(
       'import_files',
-      array(
-        'environment' => 'dev',
-        'params'      => array('url' => $url),
-      )
+      ['environment' => 'dev', 'params' => ['url' => $url,],]
     );
     return $workflow;
   }
@@ -521,7 +501,7 @@ class Site extends TerminusModel {
    *   If no $key supplied, return entire info array.
    */
   public function info($key = null) {
-    $info = array(
+    $info = [
       'id'            => $this->get('id'),
       'name'          => null,
       'label'         => null,
@@ -534,7 +514,7 @@ class Site extends TerminusModel {
       'holder_type'   => null,
       'holder_id'     => null,
       'owner'         => null,
-    );
+    ];
     foreach ($info as $info_key => $datum) {
       if ($datum == null) {
         $info[$info_key] = $this->get($info_key);
@@ -563,7 +543,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function newRelic() {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       'sites/' . $this->get('id') . '/new-relic'
     );
     return $response['data'];
@@ -588,7 +568,7 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function removeInstrument() {
-    $args     = array('site'   => $this->get('id'),);
+    $args     = ['site' => $this->get('id'),];
     $workflow = $this->workflows->create('disassociate_site_instrument', $args);
     return $workflow;
   }
@@ -601,14 +581,14 @@ class Site extends TerminusModel {
    * @return array
    */
   public function removeTag($tag, $org_id) {
-    $response = $this->request->simpleRequest(
+    $response = $this->request->request(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
         $org_id,
         $tag,
         $this->get('id')
       ),
-      array('method' => 'delete')
+      ['method' => 'delete',]
     );
     return $response;
   }
@@ -628,11 +608,7 @@ class Site extends TerminusModel {
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      array(
-        'params' => array(
-          'user_id' => $new_owner->get('id')
-        )
-      )
+      ['params' => ['user_id' => $new_owner->get('id'),],]
     );
     return $workflow;
   }

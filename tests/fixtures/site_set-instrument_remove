@@ -216,3 +216,38 @@
             ETag: 'W/"26b-ebea0b6a"'
             Vary: Accept-Encoding
         body: '{"1e6080d9-489b-40d1-a159-f0c204508881": {"billing_hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f", "subscription_uuid": "314bf10b5465f48a18cafe4ae3b1ff69", "label": "Visa - 1111", "dirty": false, "organization": null, "last_confirmed": "2015-09-17T21:11:28", "user": "25069e79-eae7-4d41-8925-1f728a114cb8"}, "8558e04f-3674-481e-b448-bccff73cb430": {"billing_hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f", "subscription_uuid": "2ffda3e88b28891166b9314fcf9f45a6", "label": "Visa - 1111", "dirty": true, "organization": null, "last_confirmed": "2015-07-14T23:14:02", "user": "25069e79-eae7-4d41-8925-1f728a114cb8"}}'
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/sites/c0d03e37-068d-471a-9051-90a992ca35e6/workflows'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.5 (php_version=5.6.18&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:70956318-5e39-11e5-a354-bc764e117665:UXeAQHBoWC0vPovzi3DR9'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:70956318-5e39-11e5-a354-bc764e117665:UXeAQHBoWC0vPovzi3DR9'
+            verify: ''
+            method: post
+            absolute_url: ''
+            json: ''
+            Accept: null
+        body: '{"type":"disassociate_site_instrument","params":{}}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Fri, 26 Feb 2016 22:24:18 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: acffc1f0-dcd7-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
