@@ -27,8 +27,8 @@ class SiteCommand extends TerminusCommand {
    * @return SiteCommand
    */
   public function __construct(array $options = []) {
+    $options['require_login'] = true;
     parent::__construct($options);
-    $this->helpers->auth->ensureLogin();
     $this->sites = new Sites();
   }
 

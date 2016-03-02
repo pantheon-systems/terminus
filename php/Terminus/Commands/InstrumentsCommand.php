@@ -20,8 +20,8 @@ class InstrumentsCommand extends TerminusCommand {
    * @returns InstrumentsCommand
    */
   public function __construct(array $options = []) {
+    $options['require_login'] = true;
     parent::__construct($options);
-    $this->helpers->auth->ensureLogin();
   }
 
   /**

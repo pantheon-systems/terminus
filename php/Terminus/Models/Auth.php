@@ -1,20 +1,16 @@
 <?php
 
-namespace Terminus\Helpers;
+namespace Terminus\Models;
 
 use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\TerminusHelper;
+use Terminus\Models\TerminusModel;
 use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
 
-class AuthHelper extends TerminusHelper {
+class Auth extends TerminusModel {
 
-  /**
-   * @var Request
-   */
-  private $request;
   /**
    * @var TokensCache
    */
@@ -23,13 +19,13 @@ class AuthHelper extends TerminusHelper {
   /**
    * Object constructor
    *
-   * @param array $options Options and dependencies for this helper
-   * @return AuthHelper
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return Auth
    */
-  public function __construct(array $options = []) {
-    $this->request      = new Request();
+  public function __construct($attributes = null, array $options = array()) {
     $this->tokens_cache = new TokensCache();
-    parent::__construct($options);
+    parent::__construct($attributes, $options);
   }
 
   /**
@@ -129,10 +125,6 @@ class AuthHelper extends TerminusHelper {
           1
         );
       }
-      $this->command->log()->info(
-        'Found a machine token for "{email}".',
-        ['email' => $args['email'],]
-      );
     }
     $options = [
       'form_params' => [
@@ -142,7 +134,6 @@ class AuthHelper extends TerminusHelper {
       'method' => 'post',
     ];
 
-    $this->command->log()->info('Logging in via machine token');
     try {
       $response = $this->request->request(
         'authorize/machine-token',
@@ -161,10 +152,6 @@ class AuthHelper extends TerminusHelper {
     $user = Session::getUser();
     $user->fetch();
     $user_data = $user->serialize();
-    $this->command->log()->info(
-      'Logged in as {email}.',
-      ['email' => $user_data['email']]
-    );
     if (isset($args['token'])) {
       $this->tokens_cache->add(
         ['email' => $user_data['email'], 'token' => $token,]
@@ -207,10 +194,6 @@ class AuthHelper extends TerminusHelper {
         'Login unsuccessful for {email}', compact('email'), 1
       );
     }
-    $this->command->log()->info(
-      'Logged in as {email}.',
-      compact('email')
-    );
 
     $this->setInstanceData($response['data']);
     return true;
