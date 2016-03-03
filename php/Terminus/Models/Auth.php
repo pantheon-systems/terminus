@@ -29,35 +29,6 @@ class Auth extends TerminusModel {
   }
 
   /**
-   * Ensures the user is logged in or errs.
-   *
-   * @return bool Always true
-   * @throws TerminusException
-   */
-  public function ensureLogin() {
-    $session = Session::instance()->getData();
-    if (!$this->loggedIn()) {
-      if ($token = $this->getOnlySavedToken()) {
-        $this->logInViaMachineToken($token);
-      } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
-        && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
-      ) {
-        $this->logInViaMachineToken(compact('token'));
-      } else if (isset($_SERVER['TERMINUS_USER'])
-        && $email = $_SERVER['TERMINUS_USER']
-      ) {
-        $this->logInViaMachineToken(compact('email'));
-      } else {
-        $message  = 'You are not logged in. Run `auth login` to ';
-        $message .= 'authenticate or `help auth login` for more info.';
-        $this->command->log()->warning($message);
-        exit(1);
-      }
-    }
-    return true;
-  }
-
-  /**
    * Generates the URL string for where to create a machine token
    *
    * @return string

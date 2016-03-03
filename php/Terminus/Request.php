@@ -22,11 +22,26 @@ use Terminus\Utils;
 class Request {
 
   /**
+   * @var Logger
+   */
+  private $logger;
+
+  /**
    * A list of fields not to display values for in output
    * @var array
    * TODO: Move this logic to the logger
    */
   protected static $blacklist = ['password', 'machine_token'];
+
+  /**
+   * Object constructor. Saves the logger as a class property.
+   *
+   * @return Request
+   */
+  public function __construct() {
+    $runner       = new Runner();
+    $this->logger = $runner->getLogger();
+  }
 
   /**
    * Download file from target URL
@@ -138,7 +153,7 @@ class Request {
     }
 
     try {
-      Runner::getLogger()->debug('URL: {url}', compact('url'));
+      $this->logger->debug('URL: {url}', compact('url'));
       $response = $this->send($url, $options['method'], $options);
     } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
@@ -192,7 +207,7 @@ class Request {
     );
     unset($params['cookies']);
 
-    Runner::getLogger()->debug(
+    $this->logger->debug(
       "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
       [
         'params' => json_encode($params),
