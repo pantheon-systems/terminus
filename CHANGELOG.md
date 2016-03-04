@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - Now compatible with PHP 7.0. (#973)
+- If there no updates to apply, `site upstream-updates apply` will exit stating that there aren't any. (#974)
 
 ## [0.10.5] - 2016-02-26
 ### Added

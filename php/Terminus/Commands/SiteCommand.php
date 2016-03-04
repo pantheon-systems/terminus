@@ -1999,38 +1999,37 @@ class SiteCommand extends TerminusCommand {
       $action = array_shift($args);
     }
     $site     = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+      $this->input()->siteName(['args' => $assoc_args,])
     );
     $upstream = $site->getUpstreamUpdates();
+    if (isset($upstream->remote_url) && isset($upstream->behind)) {
+      $update_log = (array)$upstream->update_log;
+      if (!isset($upstream) || empty($update_log)) {
+        $this->log()->info("No updates to $action.");
+        exit(0);
+      }
+    } else {
+      $message  = 'There was a problem checking your upstream status.';
+      $message .= ' Please try again.';
+      $this->failure($message);
+    }
 
     switch($action) {
       default:
       case 'list':
-        $data = array();
-        if (isset($upstream->remote_url) && isset($upstream->behind)) {
-          $update_log = (array)$upstream->update_log;
-          if (!isset($upstream) || empty($update_log)) {
-            $this->log()->info('No updates to show');
-            exit(0);
+        $data = [];
+        $upstreams = (array)$upstream->update_log;
+        if (!empty($upstreams)) {
+          foreach ($upstreams as $commit) {
+            $data[] = [
+              'hash'     => $commit->hash,
+              'datetime' => $commit->datetime,
+              'message'  => $commit->message,
+              'author'   => $commit->author,
+            ];
           }
-          $upstreams = (array)$upstream->update_log;
-          if (!empty($upstreams)) {
-            $data = array();
-            foreach ($upstreams as $commit) {
-              $data[] = array(
-                'hash'     => $commit->hash,
-                'datetime' => $commit->datetime,
-                'message'  => $commit->message,
-                'author'   => $commit->author,
-              );
-            }
-          }
-          $this->output()->outputRecordList($data);
-        } else {
-          $message  = 'There was a problem checking your upstream status.';
-          $message .= ' Please try again.';
-          $this->log()->warning($message);
         }
+        $this->output()->outputRecordList($data);
           break;
       case 'apply':
         if (!empty($upstream->update_log)) {
@@ -2038,7 +2037,7 @@ class SiteCommand extends TerminusCommand {
           if (isset($assoc_args['env'])) {
             $env = $assoc_args['env'];
           }
-          if (in_array($env, array('test', 'live'))) {
+          if (in_array($env, ['test', 'live',])) {
             $this->failure(
               'Upstream updates cannot be applied to the {env} environment',
               compact('env')
