@@ -13,13 +13,13 @@ class SynopsisParser {
   static function parse($synopsis) {
     $tokens = array_filter(preg_split('/[\s\t]+/', $synopsis));
 
-    $params = array();
+    $params = [];
     foreach ($tokens as $token) {
       $param = self::classifyToken($token);
 
       // Some types of parameters shouldn't be mandatory
       if (isset($param['optional']) && !$param['optional']) {
-        if (in_array($param['type'], array('flag', 'assoc'))
+        if (in_array($param['type'], ['flag', 'assoc',])
           && $param['value']['optional']
         ) {
           $param['type'] = 'unknown';
@@ -44,7 +44,7 @@ class SynopsisParser {
    *         [boolean] repeating True if param is repeating
    */
   private static function classifyToken($token) {
-    $param = array();
+    $param = [];
 
     list($param['optional'], $token)  = self::isOptional($token);
     list($param['repeating'], $token) = self::isRepeating($token);
@@ -64,7 +64,7 @@ class SynopsisParser {
 
       $value = substr($token, strlen($matches[0]));
 
-      if (false === $value) {
+      if (strlen($matches[0]) === strlen($token)) {
         $param['type'] = 'flag';
       } else {
         $param['type'] = 'assoc';
@@ -74,7 +74,7 @@ class SynopsisParser {
         if (preg_match("/^=<$p_value>$/", $value, $matches)) {
           $param['value']['name'] = $matches[1];
         } else {
-          $param = array('type' => 'unknown');
+          $param = ['type' => 'unknown',];
         }
       }
     } else {
@@ -94,9 +94,9 @@ class SynopsisParser {
    */
   private static function isOptional($token) {
     if ((substr($token, 0, 1) == '[') && (substr($token, -1) == ']')) {
-      $array = array(true, substr($token, 1, -1));
+      $array = [true, substr($token, 1, -1),];
     } else {
-      $array = array(false, $token);
+      $array = [false, $token,];
     }
     return $array;
   }
@@ -111,9 +111,9 @@ class SynopsisParser {
    */
   private static function isRepeating($token) {
     if (substr($token, -3) == '...') {
-      $array = array(true, substr($token, 0, -3));
+      $array = [true, substr($token, 0, -3),];
     } else {
-      $array = array(false, $token);
+      $array = [false, $token,];
     }
     return $array;
   }
