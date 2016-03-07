@@ -77,18 +77,6 @@
 
 ---
 
-### create
-##### Description:
-    Creates a new environment
-
-##### Parameters:
-    [string] $env_name Name of environment to create
-
-##### Return:
-    [array] Response data
-
----
-
 ### deploy
 ##### Description:
     Deploys the Test or Live environment
@@ -116,15 +104,6 @@
 
 ##### Return:
     [string]
-
----
-
-### getConnectionMode
-##### Description:
-    Returns the connection mode of this environment
-
-##### Return:
-    [string] 'git' or 'sftp'
 
 ---
 
@@ -308,18 +287,6 @@
 
 ##### Return:
     [Workflow]
-
----
-
-### workflow
-##### Description:
-    Start a work flow
-
-##### Parameters:
-    [Workflow] $workflow String work flow "slot"
-
-##### Return:
-    [array]
 
 ---
 
