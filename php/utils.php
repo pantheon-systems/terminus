@@ -135,17 +135,6 @@ function isTest() {
 }
 
 /**
- * Checks whether email is in a valid or not
- *
- * @param string $email String to be evaluated for email address format
- * @return bool True if $email is in email address format
- */
-function isValidEmail($email) {
-  $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
-  return $is_email;
-}
-
-/**
  * Check whether Terminus is running in a Windows environment
  *
  * @return bool True if OS running Terminus is Windows

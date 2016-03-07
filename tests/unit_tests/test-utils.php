@@ -69,11 +69,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testIsValidEmail() {
-    $this->assertFalse(Utils\isValidEmail('this_is_not_an_email_address'));
-    $this->assertTrue(Utils\isValidEmail('this.is.a.valid.email@ddre.ss'));
-  }
-
   public function testIsTest() {
     $this->assertTrue(Utils\isTest());
 
