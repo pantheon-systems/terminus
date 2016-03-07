@@ -25,8 +25,8 @@ class WorkflowsCommand extends TerminusCommand {
    * @return WorkflowsCommand
    */
   public function __construct(array $options = []) {
+    $options['require_login'] = true;
     parent::__construct($options);
-    $this->helpers->auth->ensureLogin();
     $this->sites = new Sites();
   }
 

@@ -2,8 +2,9 @@
 
 namespace Terminus\Models;
 
-use Terminus\Request;
+use Terminus\Configurator;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Request;
 
 abstract class TerminusModel {
   protected $id;
@@ -23,6 +24,9 @@ abstract class TerminusModel {
    * @param array  $options    Options to set as $this->key
    */
   public function __construct($attributes = null, array $options = array()) {
+    if (!defined('Terminus')) {
+      $configurator = new Configurator();
+    }
     if ($attributes == null) {
       $attributes = new \stdClass();
     }

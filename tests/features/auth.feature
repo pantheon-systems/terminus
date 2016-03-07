@@ -61,8 +61,7 @@ Feature: Authorization command
   @vcr auth_login_machine-token_invalid
   Scenario: Failing to log in via invalid machine token
     When I run "terminus auth login --machine-token=invalid"
-    Then I should get: "Logging in via machine token"
-    And I should get: "The provided machine token is not valid."
+    Then I should get: "The provided machine token is not valid."
 
   #Scenario: Logging in successfully after session has expired
     #@vcr auth_login_machine_token_expired

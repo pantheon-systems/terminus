@@ -20,8 +20,8 @@ class MachineTokensCommand extends TerminusCommand {
    * @return MachineTokensCommand
    */
   public function __construct(array $options = []) {
+    $options['require_login'] = true;
     parent::__construct($options);
-    $this->helpers->auth->ensureLogin();
   }
 
   /**

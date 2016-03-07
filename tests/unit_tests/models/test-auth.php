@@ -1,33 +1,26 @@
 <?php
 
 use Terminus\Caches\TokensCache;
-use Terminus\Commands\ArtCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\AuthHelper;
-use Terminus\Loggers\Logger;
+use Terminus\Models\Auth;
 use Terminus\Runner;
 
 /**
- * Testing class for Terminus\Helpers\AuthHelper
+ * Testing class for Terminus\Models\Auth
  */
 class AuthTest extends PHPUnit_Framework_TestCase {
 
   /**
-   * @var AuthHelper
+   * @var Auth
    */
   private $auth;
 
   public function __construct() {
-    $command    = new ArtCommand(['runner' => new Runner()]);
-    $this->auth = new AuthHelper(compact('command'));
+    $this->auth = new Auth();
   }
 
   public function testConstruct() {
-    $this->assertTrue(strpos(get_class($this->auth), 'AuthHelper') !== false);
-  }
-
-  public function testEnsureLogin() {
-    $this->assertTrue($this->auth->ensureLogin());
+    $this->assertTrue(strpos(get_class($this->auth), 'Auth') !== false);
   }
 
   public function testGetMachineTokenCreationUrl() {

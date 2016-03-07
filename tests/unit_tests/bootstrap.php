@@ -16,10 +16,9 @@ require_once CLI_ROOT . '/vendor/autoload.php';
 require_once CLI_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
 
-use Terminus\Commands\ArtCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\AuthHelper;
 use Terminus\Loggers\Logger;
+use Terminus\Models\Auth;
 use Terminus\Runner;
 use Terminus\Session;
 
@@ -78,8 +77,7 @@ function getLogger() {
  */
 function logInWithBehatCredentials() {
   $creds   = getBehatCredentials();
-  $command = new ArtCommand(['runner' => new Runner()]);
-  $auth    = new AuthHelper(compact('command'));
+  $auth    = new Auth();
   $auth->logInViaUsernameAndPassword($creds['username'], $creds['password']);
 }
 

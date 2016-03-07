@@ -2,6 +2,9 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Changed
+- `Terminus\Helpers\AuthHelper` has become `Terminus\Models\Auth`. (#971)
+
 ### Fixed
 - Now compatible with PHP 7.0. (#973)
 

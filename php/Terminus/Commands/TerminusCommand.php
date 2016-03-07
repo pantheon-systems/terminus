@@ -5,6 +5,7 @@ namespace Terminus\Commands;
 use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
+use Terminus\Models\Auth;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Session;
 use Terminus\Utils;
@@ -49,14 +50,22 @@ abstract class TerminusCommand {
   /**
    * Instantiates object, sets cache and session
    *
-   * @param array $options Elements as follow:
+   * @param array $arg_options Elements as follow:
    *        FileCache cache
    *        Logger    Logger
    *        Outputter Outputter
    *        Session   Session
    * @return TerminusCommand
    */
-  public function __construct(array $options = []) {
+  public function __construct(array $arg_options = []) {
+    $default_options = [
+      'require_login' => false,
+      'runner'        => null,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    if ($options['require_login']) {
+      $this->ensureLogin();
+    }
     $this->cache     = new FileCache();
     $this->runner    = $options['runner'];
     $this->session   = Session::instance();
@@ -87,6 +96,34 @@ abstract class TerminusCommand {
    */
   public function output() {
     return $this->outputter;
+  }
+
+  /**
+   * Ensures the user is logged in or errs.
+   *
+   * @return bool Always true
+   * @throws TerminusException
+   */
+  public function ensureLogin() {
+    $auth = new Auth();
+    if (!$auth->loggedIn()) {
+      if ($token = $auth->getOnlySavedToken()) {
+        $auth->logInViaMachineToken($token);
+      } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
+       && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
+      ) {
+        $auth->logInViaMachineToken(compact('token'));
+      } else if (isset($_SERVER['TERMINUS_USER'])
+       && $email = $_SERVER['TERMINUS_USER']
+      ) {
+        $auth->logInViaMachineToken(compact('email'));
+      } else {
+        $message  = 'You are not logged in. Run `auth login` to ';
+        $message .= 'authenticate or `help auth login` for more info.';
+        $this->failure($message);
+      }
+    }
+    return true;
   }
 
   /**

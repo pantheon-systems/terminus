@@ -25,7 +25,7 @@ class Runner {
   /**
    * @var array
    */
-  private $config;
+  private $config = [];
   /**
    * @var Configurator
    */
@@ -376,11 +376,3 @@ class Runner {
   }
 
 }
-
-if (!defined('TERMINUS_ROOT')) {
-  define('TERMINUS_ROOT', dirname(__DIR__));
-}
-
-require_once TERMINUS_ROOT . '/php/utils.php';
-Utils\defineConstants();
-Utils\importEnvironmentVariables();
