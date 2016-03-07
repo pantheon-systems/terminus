@@ -481,3 +481,38 @@
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Vary: Accept-Encoding
         body: '"Invalid or expired session header: X-Pantheon-Session\n"'
+-
+    request:
+        method: PUT
+        url: 'https://onebox/api/sites/672ae238-dede-44f4-9243-89a591c2cc46/environments/dev/backups/schedule'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.10.5 (php_version=7.0.3&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:2304cdf4-995e-11e5-95b6-bc764e10b0ce:UgP8t98naQwCQef3FgSOr'
+            headers: 'Bearer cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:2304cdf4-995e-11e5-95b6-bc764e10b0ce:UgP8t98naQwCQef3FgSOr'
+            verify: ''
+            method: put
+            absolute_url: ''
+            json: ''
+            Accept: null
+        body: '{"0":{"hour":24,"ttl":691200},"1":{"hour":24,"ttl":691200},"2":{"hour":24,"ttl":691200},"3":{"hour":24,"ttl":691200},"4":{"hour":24,"ttl":691200},"5":{"hour":24,"ttl":2764800},"6":{"hour":24,"ttl":691200}}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Mon, 07 Mar 2016 20:25:21 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: b75e3eb0-e4a2-11e5-90b4-bd642d89c822
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
