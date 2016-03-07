@@ -11,7 +11,7 @@ Feature: Update a site with all its upstream's updates
   @vcr site_upstream-updates
   Scenario: Check for upstream updates
     When I run "terminus site upstream-updates list --site=[[test_site_name]]"
-    Then I should get one of the following: "No updates to show, Update to"
+    Then I should get one of the following: "No updates to, Update to"
 
   @vcr site_upstream-updates
   Scenario: Apply upstream updates
