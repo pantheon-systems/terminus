@@ -6,7 +6,7 @@ use Terminus\Helpers\UpdateHelper;
 use Terminus\Runner;
 
 /**
- * Testing class for Terminus\Helpers\LaunchHelper
+ * Testing class for Terminus\Helpers\UpdateHelper
  */
 class UpdateHelperTest extends PHPUnit_Framework_TestCase {
 

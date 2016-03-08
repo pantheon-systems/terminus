@@ -21,14 +21,14 @@ class ArtCommand extends TerminusCommand {
    * ## OPTIONS
    * <druplicon|fist|unicorn|wordpress>
    */
-  function __invoke($args, $assoc_args) {
+  public function __invoke($args, $assoc_args) {
     $artwork = $this->works[array_rand($this->works)];
     if (count($args) > 0) {
       $artwork = array_shift($args);
     }
 
     try {
-      $artwork_content = Utils\loadAsset("$artwork.txt");
+      $artwork_content = $this->helpers->file->loadAsset("$artwork.txt");
       $this->output()->line(
         $this->colorize("%g" . base64_decode($artwork_content) . "%n")
       );

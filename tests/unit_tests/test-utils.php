@@ -8,30 +8,6 @@ use Terminus\Utils;
  */
 class UtilsTest extends PHPUnit_Framework_TestCase {
 
-  public function testDestinationIsValid() {
-    $file_name = '/tmp/test_destination';
-    setOutputDestination($file_name);
-    try {
-      $valid_destination = Utils\destinationIsValid($file_name);
-    } catch (\Exception $e) {
-      $message = $e->getMessage();
-    }
-    $this->assertTrue(isset($message));
-
-    resetOutputDestination($file_name);
-    Utils\destinationIsValid('/tmp/');
-  }
-
-  public function testGetFilenameFromUrl() {
-    $url  = 'https://pantheon-backups.s3.amazonaws.com/';
-    $url .= 'aaa313ea-d667-4cf6-b165-31a4a03abbc0/dev/1411761319_export/';
-    $url .= 'miketestsite_dev_2014-09-26T19-55-19_UTC_database.sql.gz?';
-    $url .= 'Signature=dK%2FOf7EtMwbjCpmnuBJ8S8ApezE%3D&Expires=1414793205&';
-    $url .= 'AWSAccessKeyId=AKIAJEYKXMCPBZQYJYXQ';
-    $filename = Utils\getFilenameFromUrl($url);
-    $this->assertEquals('miketestsite_dev_2014-09-26T19-55-19_UTC_database.sql.gz', $filename);
-  }
-
   public function testIsTest() {
     $this->assertTrue(Utils\isTest());
 
@@ -54,28 +30,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     putenv("TERMINUS_TEST_IGNORE=");
   }
 
-  public function testLoadAsset() {
-    $file = Utils\loadAsset('unicorn.txt');
-    $this->assertTrue(strpos($file, 'ICAgICAg') === 0);
-
-    try {
-      $invalid_file = Utils\loadAsset('invalid');
-    } catch (\Exception $e) {
-      $message = $e->getMessage();
-    }
-    $this->assertTrue(isset($message));
-  }
-
-  public function testParseUrl() {
-    $url = 'https://pantheon.io';
-    $parts = Utils\parseUrl($url);
-    $this->assertEquals(['scheme' => 'https', 'host' => 'pantheon.io'], $parts);
-
-    $url = 'getpantheon.com';
-    $parts = Utils\parseUrl($url);
-    $this->assertEquals(['scheme' => 'http', 'host' => 'getpantheon.com'], $parts);
-  }
-
   public function testSanitizeName() {
     $name           = '~My Test Site~';
     $sanitized_name = Utils\sanitizeName($name);
@@ -84,12 +38,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $name           = "Pantheon's The Best!";
     $sanitized_name = Utils\sanitizeName($name);
     $this->assertEquals('pantheons-the-best', $sanitized_name);
-  }
-
-  public function testSqlFromZip() {
-    $target = '/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql.gz';
-    $actual = Utils\sqlFromZip($target);
-    $this->assertEquals('/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql', $actual);
   }
 
 }
