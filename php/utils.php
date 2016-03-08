@@ -2,7 +2,6 @@
 
 namespace Terminus\Utils;
 
-use ArrayIterator;
 use Terminus\Caches\FileCache;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Dispatcher;
@@ -12,10 +11,6 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Helpers\Input;
 use Terminus\Request;
 use Terminus\Session;
-
-if (!defined('JSON_PRETTY_PRINT')) {
-  define('JSON_PRETTY_PRINT', 128);
-}
 
 /**
  * Ensures that the given destination is valid
