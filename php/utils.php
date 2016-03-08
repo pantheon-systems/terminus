@@ -112,17 +112,6 @@ function loadAsset($file) {
 }
 
 /**
- * Using require() directly inside a class grants access to private methods
- * to the loaded code
- *
- * @param string $path Path to the file to be required
- * @return void
- */
-function loadFile($path) {
-  require $path;
-}
-
-/**
  * Parses a URL and returns its components
  *
  * @param string $url URL to parse

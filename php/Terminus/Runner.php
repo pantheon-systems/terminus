@@ -175,7 +175,7 @@ class Runner {
 
     if (isset($this->config['require'])) {
       foreach ($this->config['require'] as $path) {
-        Utils\loadFile($path);
+        require_once $path;
       }
     }
 

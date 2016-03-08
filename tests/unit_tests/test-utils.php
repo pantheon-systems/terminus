@@ -66,19 +66,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(isset($message));
   }
 
-  public function testLoadFile() {
-    $file_name = '/tmp/testfile';
-    setOutputDestination($file_name);
-    Utils\loadFile($file_name);
-    resetOutputDestination($file_name);
-    $included_files = get_included_files();
-    $is_included = (
-      (array_search($file_name, $included_files) !== false)
-      || (array_search("/private$file_name", $included_files) !== false)
-    );
-    $this->assertTrue($is_included);
-  }
-
   public function testParseUrl() {
     $url = 'https://pantheon.io';
     $parts = Utils\parseUrl($url);
