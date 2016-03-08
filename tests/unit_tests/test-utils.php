@@ -8,34 +8,6 @@ use Terminus\Utils;
  */
 class UtilsTest extends PHPUnit_Framework_TestCase {
 
-  /**
-   * @vcr utils#checkCurrentVersion
-   */
-  public function testCheckCurrentVersion() {
-    $current_version = Utils\checkCurrentVersion();
-    preg_match("/\d+\.\d+\.\d+/", $current_version, $matches);
-    $this->assertEquals(count($matches), 1);
-  }
-
-  /**
-   * @vcr utils#checkCurrentVersion
-   */
-  public function testCheckForUpdate() {
-    $log_file = getLogFileName();
-    setOutputDestination($log_file);
-    $cache = new FileCache();
-    $cache->putData(
-      'latest_release',
-      ['check_date' => strtotime('8 days ago')]
-    );
-    Utils\checkForUpdate(getLogger());
-    $file_contents = explode("\n", file_get_contents($log_file));
-    $this->assertFalse(
-      strpos(array_pop($file_contents), 'An update to Terminus is available.')
-    );
-    resetOutputDestination($log_file);
-  }
-
   public function testDestinationIsValid() {
     $file_name = '/tmp/test_destination';
     setOutputDestination($file_name);

@@ -18,57 +18,6 @@ if (!defined('JSON_PRETTY_PRINT')) {
 }
 
 /**
-  * Retrieves current version number from repository and saves it to the cache
-  *
-  * @return string The version number
-  */
-function checkCurrentVersion() {
-  $request  = new Request();
-  $url      = 'https://api.github.com/repos/pantheon-systems/terminus/releases';
-  $url     .= '?per_page=1';
-  $response = $request->request($url, ['absolute_url' => true]);
-  $release  = array_shift($response['data']);
-  $cache    = new FileCache();
-  $cache->putData(
-    'latest_release',
-    ['version' => $release->name, 'check_date' => time()]
-  );
-  return $release->name;
-}
-
-/**
-  * Checks for new versions of Terminus once per week and saves to cache
-  *
-  * @param Logger $logger Logger to use to report result of check
-  * @return void
-  */
-function checkForUpdate($logger) {
-  $cache      = new FileCache();
-  $cache_data = $cache->getData(
-    'latest_release',
-    ['decode_array' => true]
-  );
-  if (!$cache_data
-    || ((int)$cache_data['check_date'] < (int)strtotime('-7 days'))
-  ) {
-    try {
-      $current_version = checkCurrentVersion();
-      if (version_compare($current_version, TERMINUS_VERSION, '>')) {
-        $logger->info(
-          'An update to Terminus is available. Please update to {version}.',
-          ['version' => $current_version]
-        );
-      }
-    } catch (TerminusException $e) {
-      $logger->info(
-        "Cannot retrieve current Terminus version.\n{msg}",
-        $e->getReplacements()
-      );
-    }
-  }
-}
-
-/**
  * Ensures that the given destination is valid
  *
  * @param string $destination Location of directory to ensure viability of

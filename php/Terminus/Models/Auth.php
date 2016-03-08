@@ -142,7 +142,7 @@ class Auth extends TerminusModel {
   public function logInViaUsernameAndPassword($email, $password) {
     if (!$this->isValidEmail($email)) {
       throw new TerminusException(
-        '{email} is not a valid email address.',
+        $email . ' {email} is not a valid email address.',
         compact('email'),
         1
       );
