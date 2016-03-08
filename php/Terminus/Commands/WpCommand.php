@@ -21,10 +21,9 @@ class WpCommand extends CommandWithSSH {
   /**
    * {@inheritdoc}
    */
-  protected $unavailable_commands = array(
-    'import' => '',
-    'db'     => '',
-  );
+  protected $unavailable_commands = [
+    'db' => '',
+  ];
 
   /**
    * Invoke `wp` commands on a Pantheon development site

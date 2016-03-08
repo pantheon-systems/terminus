@@ -9,8 +9,8 @@ Feature: Running WP-CLI commands
 
   @vcr wp_unavailable
   Scenario: Running a command that is not available via Terminus
-    When I run "terminus wp 'import' --site=[[test_site_name]] --env=dev"
+    When I run "terminus wp 'db' --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    import is not available via Terminus. Please run it via WP-CLI.
+    db is not available via Terminus. Please run it via WP-CLI.
     """
