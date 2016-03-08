@@ -32,15 +32,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('miketestsite_dev_2014-09-26T19-55-19_UTC_database.sql.gz', $filename);
   }
 
-  public function testGetVendorPaths() {
-    $vendor_paths = Utils\getVendorPaths();
-    $this->assertInternalType('array', $vendor_paths);
-    foreach ($vendor_paths as $path) {
-      $this->assertTrue(strpos($path, TERMINUS_ROOT) === 0);
-      $this->assertTrue(strpos($path, '/vendor') !== false);
-    }
-  }
-
   public function testIsTest() {
     $this->assertTrue(Utils\isTest());
 
@@ -73,14 +64,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
       $message = $e->getMessage();
     }
     $this->assertTrue(isset($message));
-  }
-
-  public function testLoadDependencies() {
-    $file_name = TERMINUS_ROOT . '/vendor/autoload.php';
-    Utils\loadDependencies();
-    $included_files = get_included_files();
-    $is_included = array_search($file_name, $included_files) !== false;
-    $this->assertTrue($is_included);
   }
 
   public function testLoadFile() {

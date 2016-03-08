@@ -248,3 +248,6 @@ class Configurator {
   }
 
 }
+
+include TERMINUS_ROOT . '/php/utils.php';
+include TERMINUS_ROOT . '/php/dispatcher.php';
