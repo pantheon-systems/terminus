@@ -1,6 +1,5 @@
 <?php
 
-use Terminus\Caches\FileCache;
 use Terminus\Utils;
 
 /**
@@ -28,16 +27,6 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     putenv("TERMINUS_TEST_IGNORE=1");
     $this->assertTrue(Utils\isWindows());
     putenv("TERMINUS_TEST_IGNORE=");
-  }
-
-  public function testSanitizeName() {
-    $name           = '~My Test Site~';
-    $sanitized_name = Utils\sanitizeName($name);
-    $this->assertEquals('my-test-site', $sanitized_name);
-
-    $name           = "Pantheon's The Best!";
-    $sanitized_name = Utils\sanitizeName($name);
-    $this->assertEquals('pantheons-the-best', $sanitized_name);
   }
 
 }

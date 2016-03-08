@@ -30,20 +30,3 @@ function isWindows() {
   }
   return $is_windows;
 }
-
-/**
- * Sanitize the site name field
- *
- * @param string $string String to be sanitized
- * @return string Param string, sanitized
- */
-function sanitizeName($string) {
-  $name = $string;
-  // squash whitespace
-  $name = trim(preg_replace('#\s+#', ' ', $name));
-  // replace spacers with hyphens
-  $name = preg_replace("#[\._ ]#", "-", $name);
-  // crush everything else
-  $name = strtolower(preg_replace("#[^A-Za-z0-9-]#", "", $name));
-  return $name;
-}

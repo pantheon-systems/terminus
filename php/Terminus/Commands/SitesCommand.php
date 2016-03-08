@@ -509,7 +509,7 @@ class SitesCommand extends TerminusCommand {
         'required' => true,
       ]
     );
-    $suggested_name   = Utils\sanitizeName($options['label']);
+    $suggested_name   = $this->sanitizeName($options['label']);
 
     if (array_key_exists('name', $assoc_args)) {
       // Deprecated but kept for backwards compatibility
@@ -538,6 +538,23 @@ class SitesCommand extends TerminusCommand {
       );
     }
     return $options;
+  }
+
+  /**
+   * Sanitize the site name field
+   *
+   * @param string $string String to be sanitized
+   * @return string Param string, sanitized
+   */
+  private function sanitizeName($string) {
+    $name = $string;
+    // squash whitespace
+    $name = trim(preg_replace('#\s+#', ' ', $name));
+    // replace spacers with hyphens
+    $name = preg_replace("#[\._ ]#", "-", $name);
+    // crush everything else
+    $name = strtolower(preg_replace("#[^A-Za-z0-9-]#", "", $name));
+    return $name;
   }
 
 }
