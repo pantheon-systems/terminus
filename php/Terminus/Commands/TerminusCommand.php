@@ -164,7 +164,7 @@ abstract class TerminusCommand {
     $helpers_dir       = __DIR__ . '/../Helpers';
     $helpers_namespace = 'Terminus\\Helpers\\';
 
-    Utils\loadDirectory($helpers_dir);
+    $this->loadDirectory($helpers_dir);
     $classes = get_declared_classes();
     $helpers = array_filter(
       $classes,
@@ -235,6 +235,23 @@ abstract class TerminusCommand {
         $message = $final_task->reason;
       }
       $this->log()->error($message);
+    }
+  }
+
+  /**
+   * Includes all PHP files within a directory
+   *
+   * @param string $directory Directory to include PHP files from
+   * @return void
+   */
+  private function loadDirectory($directory) {
+    if ($directory && file_exists($directory)) {
+      $iterator = new \DirectoryIterator($directory);
+      foreach ($iterator as $file) {
+        if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
+          include_once $file->getPathname();
+        }
+      }
     }
   }
 
