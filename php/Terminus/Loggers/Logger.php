@@ -8,6 +8,12 @@ use Psr\Log\LogLevel;
 class Logger extends KLogger {
 
   /**
+   * A list of fields not to display values for in output
+   * @var array
+   */
+  private $blacklist = ['password', 'machine_token'];
+
+  /**
    * Class constructor. Feeds in output destination from env vars
    *
    * @param array  $options           Options for operation of logger
@@ -60,6 +66,7 @@ class Logger extends KLogger {
     ) {
       return;
     }
+    $context = $this->stripSensitiveData($context, $this->blacklist);
 
     // Replace the context variables into the message per PSR spec:
     // https://github.com/php-fig/fig-standards/blob/master/accepted/...
@@ -208,6 +215,24 @@ class Logger extends KLogger {
     }
     $interpolated_string = strtr($message, $replace);
     return $interpolated_string;
+  }
+
+  /**
+   * Strips sensitive data out of the JSON printed in a request string
+   *
+   * @param array $request_data An array of request parameters to censor
+   * @param array $blacklist    Array of string keys to remove from request
+   * @return string Sensitive data-stripped version of $request_data
+   */
+  private function stripSensitiveData($request_data, $blacklist = []) {
+    foreach ($request_data as $key => $value) {
+      if (in_array($key, $blacklist)) {
+        $request_data[$key] = '*****';
+      } else if (is_array($value)) {
+        $request_data[$key] = stripSensitiveData($value, $blacklist);
+      }
+    }
+    return $request_data;
   }
 
 }

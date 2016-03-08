@@ -27,13 +27,6 @@ class Request {
   private $logger;
 
   /**
-   * A list of fields not to display values for in output
-   * @var array
-   * TODO: Move this logic to the logger
-   */
-  protected static $blacklist = ['password', 'machine_token'];
-
-  /**
    * Object constructor. Saves the logger as a class property.
    *
    * @return Request

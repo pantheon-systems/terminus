@@ -149,22 +149,3 @@ function sqlFromZip($filename) {
   $file = preg_replace('#\.gz$#s', '', $filename);
   return $file;
 }
-
-/**
-  * Strips sensitive data out of the JSON printed in a request string
-  *
-  * @param array $request_data An array of request parameters to censor
-  * @param array $blacklist    Array of string keys to remove from request
-  * @return string Sensitive data-stripped version of $request_data
-  */
-function stripSensitiveData($request_data, $blacklist = []) {
-  foreach ($request_data as $key => $value) {
-    if (in_array($key, $blacklist)) {
-      $request_data[$key] = '*****';
-    } else if (is_array($value)) {
-      $request_data[$key] = stripSensitiveData($value, $blacklist);
-    }
-  }
-  return $request_data;
-}
-

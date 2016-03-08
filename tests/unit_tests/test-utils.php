@@ -92,16 +92,4 @@ class UtilsTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals('/tmp/miketestsite_dev_2014-10-30T18-59-07_UTC_database.sql', $actual);
   }
 
-  public function testStripSensitiveData() {
-    $data          = [
-      'password' => 'password',
-      'key' => 'value',
-      'more' => ['password' => 'otherpassword']
-    ];
-    $stripped_data = Utils\stripSensitiveData($data, ['password']);
-    $this->assertTrue($stripped_data['password'] == '*****');
-    $this->assertTrue($stripped_data['key'] == 'value');
-    $this->assertTrue($stripped_data['more']['password'] == '*****');
-  }
-
 }
