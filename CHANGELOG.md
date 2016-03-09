@@ -5,6 +5,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Changed
 - WP-CLI function `import` has been removed from the command blacklist. [See the documentation for more information.](https://github.com/pantheon-systems/documentation/blob/master/source/docs/guides/create-a-wordpress-site-from-the-commandline-with-terminus-and-wp-cli.md) (#979)
 
+### Fixed
+- Fixed unidentified index email warning which appeared when logging in via saved machine token by email. (#983)
+
 ## [0.10.6] - 2016-03-07
 ### Changed
 - `Terminus\Helpers\AuthHelper` has become `Terminus\Models\Auth`. (#971)
