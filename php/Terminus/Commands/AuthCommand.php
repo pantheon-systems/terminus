@@ -48,7 +48,7 @@ class AuthCommand extends TerminusCommand {
       // Try to log in using a machine token, if the account email was provided.
       $this->log()->info(
         'Found a machine token for "{email}".',
-        ['email' => $args['email'],]
+        compact('email')
       );
       $auth->logInViaMachineToken(compact('email'));
       $this->log()->info('Logging in via machine token');
