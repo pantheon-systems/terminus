@@ -1279,7 +1279,7 @@ class SiteCommand extends TerminusCommand {
       $this->failure('Must install sshfs first');
     }
 
-    $destination = Utils\destinationIsValid($assoc_args['destination']);
+    $destination = $this->helpers->file->destinationIsValid($assoc_args['destination']);
 
     $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
     $env  = $this->input()->env(array('args' => $assoc_args, 'site' => $site));
@@ -2238,7 +2238,7 @@ class SiteCommand extends TerminusCommand {
     if (isset($assoc_args['to'])) {
       $target = str_replace('~', $_SERVER['HOME'], $assoc_args['to']);
       if (is_dir($target)) {
-        $filename = Utils\getFilenameFromUrl($url);
+        $filename = $this->helpers->file->getFilenameFromUrl($url);
         $target   = sprintf('%s/%s', $target, $filename);
       }
       $this->log()->info('Downloading ... please wait ...');
@@ -2349,7 +2349,7 @@ class SiteCommand extends TerminusCommand {
     }
 
     $target = $this->getBackup($assoc_args);
-    $target = '/tmp/' . Utils\getFilenameFromUrl($target);
+    $target = '/tmp/' . $this->helpers->file->getFilenameFromUrl($target);
 
     if (!file_exists($target)) {
       $this->failure(
@@ -2362,7 +2362,7 @@ class SiteCommand extends TerminusCommand {
     exec("gunzip $target", $stdout, $exit);
 
     // trim the gz of the target
-    $target = Utils\sqlFromZip($target);
+    $target = $this->helpers->file->sqlFromZip($target);
     $target = escapeshellarg($target);
     exec(
       sprintf(

@@ -140,9 +140,9 @@ class Auth extends TerminusModel {
    * @throws TerminusException
    */
   public function logInViaUsernameAndPassword($email, $password) {
-    if (!Utils\isValidEmail($email)) {
+    if (!$this->isValidEmail($email)) {
       throw new TerminusException(
-        '{email} is not a valid email address.',
+        $email . ' {email} is not a valid email address.',
         compact('email'),
         1
       );
@@ -179,6 +179,17 @@ class Auth extends TerminusModel {
   public function tokenExistsForEmail($email) {
     $file_exists = $this->tokens_cache->tokenExistsForEmail($email);
     return $file_exists;
+  }
+
+  /**
+   * Checks whether email is in a valid or not
+   *
+   * @param string $email String to be evaluated for email address format
+   * @return bool True if $email is in email address format
+   */
+  private function isValidEmail($email) {
+    $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
+    return $is_email;
   }
 
   /**
