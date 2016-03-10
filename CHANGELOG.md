@@ -9,6 +9,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - Fixed unidentified index email warning which appeared when logging in via saved machine token by email. (#983)
 - Prevented long loop of configurator loadings. (#988)
+- Fixed auth status check before running `CommandWithSSH` descendant commands (`drush`, `wp`). (#986)
 
 ## [0.10.6] - 2016-03-07
 ### Changed

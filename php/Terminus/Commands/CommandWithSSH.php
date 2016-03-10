@@ -27,6 +27,17 @@ abstract class CommandWithSSH extends TerminusCommand {
   protected $unavailable_commands = array();
 
   /**
+   * Object constructor
+   *
+   * @param array $options Options to construct the command object
+   * @return CommandWithSSH
+   */
+  public function __construct(array $options = []) {
+    $options['require_login'] = true;
+    parent::__construct($options);
+  }
+
+  /**
    * Checks to see if the command is not available in Terminus and, if not,
    * it will refer you to an equivalent Terminus command, if such exists.
    *
