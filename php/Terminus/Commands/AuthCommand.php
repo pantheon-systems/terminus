@@ -31,7 +31,8 @@ class AuthCommand extends TerminusCommand {
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    $auth = new Auth();
+    $auth   = new Auth();
+    $tokens = $auth->getAllSavedTokenEmails();
     if (!empty($args)) {
       $email = array_shift($args);
     }
@@ -68,28 +69,35 @@ class AuthCommand extends TerminusCommand {
       );
       $auth->logInViaMachineToken(['email' => $_SERVER['TERMINUS_USER']]);
       $this->log()->info('Logging in via machine token');
-    } elseif (!isset($email)
-      && $only_token = $auth->getOnlySavedToken()
-    ) {
+    } elseif (!isset($email) && (count($tokens) === 1)) {
       // Try to log in using a machine token, if there is only one saved token.
+      $email = array_shift($tokens);
+      $auth->logInViaMachineToken(compact('email'));
       $this->log()->info(
         'Found a machine token for "{email}".',
-        ['email' => $only_token['email'],]
+        compact('email')
       );
-      $auth->logInViaMachineToken($only_token);
+      $auth->logInViaMachineToken(compact('email'));
       $this->log()->info('Logging in via machine token');
     } else if (isset($email) && isset($assoc_args['password'])) {
+      // Log in via username and password, if present.
       $password = $assoc_args['password'];
       $auth->logInViaUsernameAndPassword(
         $email,
         $assoc_args['password']
       );
     } else {
-      $this->log()->info(
-        "Please visit the Dashboard to generate a machine token:\n{url}",
-        ['url' => $auth->getMachineTokenCreationUrl()]
-      );
-      exit(1);
+      $message = "visit the dashboard to generate a machine token:\n{url}";
+      $context = ['url' => $auth->getMachineTokenCreationUrl()];
+      if (count($tokens) > 1) {
+        $msg  = "Tokens were saved for the following email addresses:\n";
+        $msg .= "{tokens}\n You may log in via `terminus auth login <email>`";
+        $message = "$msg, or you may $message";
+        $context['tokens'] = implode("\n", $tokens);
+      } else {
+        $message = "Please $message";
+      }
+      $this->failure($message, $context);
     }
     if (!isset($email)) {
       $user = Session::getUser();

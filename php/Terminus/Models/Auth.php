@@ -29,6 +29,16 @@ class Auth extends TerminusModel {
   }
 
   /**
+   * Gets all email addresses for which there are saved machine tokens
+   *
+   * @return string[]
+   */
+  public function getAllSavedTokenEmails() {
+    $emails = $this->tokens_cache->getAllSavedTokenEmails();
+    return $emails;
+  }
+
+  /**
    * Generates the URL string for where to create a machine token
    *
    * @return string
@@ -42,20 +52,6 @@ class Auth extends TerminusModel {
       gethostname()
     );
     return $url;
-  }
-
-  /**
-   * Gets the only saved token or returns false
-   *
-   * @return bool|string
-   */
-  public function getOnlySavedToken() {
-    $emails = $this->tokens_cache->getAllSavedTokenEmails();
-    if (count($emails) == 1) {
-      $email = array_shift($emails);
-      return $this->tokens_cache->findByEmail($email);
-    }
-    return false;
   }
 
   /**
