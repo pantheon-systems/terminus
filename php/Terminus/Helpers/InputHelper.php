@@ -249,6 +249,60 @@ class InputHelper extends TerminusHelper {
    * Produces a menu with the given attributes
    *
    * @param array $arg_options Elements as follow:
+   *        array  args            Arguments given via param
+   *        bool   autoselect_solo Automatically selects the only given option
+   *        array  dir             Directory from which to select options
+   *        string key             Args key to search for
+   *        string message         Prompt printed to STDOUT
+   *        string regex           Regex to match file names to
+   * @return string The name of the selected file
+   * @throws TerminusException
+   */
+  public function fileName(array $arg_options = []) {
+    $default_options = [
+      'args'            => [],
+      'autoselect_solo' => false,
+      'dir'             => null,
+      'key'             => 'file',
+      'message'         => 'Select a file',  
+      'regex'           => null,
+      'return_value'    => true,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
+    }
+
+    if (!file_exists($options['dir'])) {
+      $dir = getcwd() . '/' . $options['dir'];
+      if (!file_exists($options['dir'])) {
+        throw new TerminusException(
+          'The directory {dir} does not exist.',
+          ['dir' => $options['dir'],],
+          1
+        );
+      }
+      $options['dir'] = $dir;
+    }
+    $iterator = new \DirectoryIterator($options['dir']);
+    $choices  = [];
+    foreach ($iterator as $file) {
+      if (!$file->isDot()) {
+        preg_match($options['regex'], $file->getFilename(), $matches);
+        if (is_null($options['regex']) || !empty($matches)) {
+          $choices[] = $file->getFilename();
+        }
+      }
+    } 
+    $options['choices']      = $choices;
+    $file_name          = $options['dir'] . '/' . $this->menu($options);
+    return $file_name;
+  }
+
+  /**
+   * Produces a menu with the given attributes
+   *
+   * @param array $arg_options Elements as follow:
    *        bool   autoselect_solo Automatically selects the only given option
    *        array  choices         Menu options for the user
    *        mixed  default         Given as null option in the menu

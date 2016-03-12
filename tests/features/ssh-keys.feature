@@ -11,3 +11,8 @@ Feature: SSH Keys
   Scenario: List SSH keys
     When I run "terminus ssh-keys list"
     Then I should get one of the following: "Hex, You do not have any SSH keys saved."
+
+  @vcr ssh-keys_add
+  Scenario: Add an SSH key
+    When I run "terminus ssh-keys add --file=tests/config/dummy_key.pub"
+    Then I should get: "Added SSH key from file tests/config/dummy_key.pub"

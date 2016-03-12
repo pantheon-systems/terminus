@@ -13,6 +13,11 @@ use Terminus\Commands\TerminusCommand;
 class SshKeysCommand extends TerminusCommand {
 
   /**
+   * @var User
+   */
+  private $user;
+
+  /**
    * Instantiates object, ensures login
    *
    * @param array $options Options to construct the command object
@@ -21,16 +26,16 @@ class SshKeysCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
+    $this->user = Session::getUser();
   }
 
   /**
-   * Show a list of your instruments on Pantheon
+   * Show a list of your SSH keys on Pantheon
    *
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    $user     = Session::getUser();
-    $ssh_keys = $user->ssh_keys->all();
+    $ssh_keys = $this->user->ssh_keys->all();
     $data     = [];
     foreach ($ssh_keys as $id => $ssh_key) {
       $data[] = [
@@ -46,6 +51,25 @@ class SshKeysCommand extends TerminusCommand {
       );
     }
     $this->output()->outputRecordList($data);
+  }
+
+  /**
+   * Add a SSH key to your account
+   *
+   * [--file=<filename>]
+   * : The path specific SSH public key file to use
+   */
+  public function add($args, $assoc_args) {
+    $file = $this->input()->fileName(
+      [
+        'args'    => $assoc_args,
+        'dir'     => getenv('HOME') . '/.ssh',
+        'message' => 'Please select your public SSH key file.',
+        'regex'   => '~(.*.pub)~',
+      ]
+    ); 
+    $this->user->ssh_keys->addKey($file); 
+    $this->log()->info('Added SSH key from file {file}.', compact('file'));
   }
 
 }

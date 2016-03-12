@@ -2,7 +2,34 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Exceptions\TerminusException;
+
 class SshKeys extends TerminusCollection {
+
+  /**
+   * Adds an SSH key to the user's Pantheon account
+   *
+   * @param string $key_file Full path of the SSH key to add
+   * @return SshKey
+   * @throws TerminusException
+   */
+  public function addKey($key_file) {
+    if (!file_exists($key_file)) {
+      throw new TerminusException(
+        'The file {file} cannot be accessed by Terminus.',
+        ['file' => $key_file,],
+        1
+      );
+    }
+    $ssh_key  = file_get_contents($key_file);
+    $response = $this->request->request(
+      'users/' . $this->user->id . '/keys',
+      [
+        'form_params' => file_get_contents($key_file),
+        'method'      => 'post',
+      ]
+    );
+  }
 
   /**
    * Fetches model data from API and instantiates its model instances
