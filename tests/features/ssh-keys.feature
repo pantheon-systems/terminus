@@ -16,3 +16,8 @@ Feature: SSH Keys
   Scenario: Add an SSH key
     When I run "terminus ssh-keys add --file=tests/config/dummy_key.pub"
     Then I should get: "Added SSH key from file tests/config/dummy_key.pub"
+
+  @vcr ssh-keys_delete
+  Scenario: Delete an SSH key
+    When I run "terminus ssh-keys delete --fingerprint=a3c83331b42a397f970913505ab4cd4f"
+    Then I should get: "Deleted SSH key a3c83331b42a397f970913505ab4cd4f."

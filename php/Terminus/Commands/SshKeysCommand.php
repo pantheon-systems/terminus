@@ -39,8 +39,8 @@ class SshKeysCommand extends TerminusCommand {
     $data     = [];
     foreach ($ssh_keys as $id => $ssh_key) {
       $data[] = [
-        'id'  => $ssh_key->get('id'),
-        'hex' => $ssh_key->getHex(),
+        'fingerprint' => $ssh_key->get('id'),
+        'comment'     => $ssh_key->getComment(),
       ];
     }
 
@@ -70,6 +70,48 @@ class SshKeysCommand extends TerminusCommand {
     ); 
     $this->user->ssh_keys->addKey($file); 
     $this->log()->info('Added SSH key from file {file}.', compact('file'));
+  }
+
+  /**
+   * Remove an SSH key from your account
+   *
+   * [--fingerprint=<fingerprint>]
+   * : The fingerprint of the SSH key to remove
+   *
+   * [--all]
+   * : Use to remove all SSH keys from your account
+   */
+  public function delete($args, $assoc_args) {
+    $ssh_keys         = $this->user->ssh_keys->all();
+    $display_choices  = [];
+    $choices          = [];
+    foreach ($ssh_keys as $id => $ssh_key) {
+      $display_choices[] = $ssh_key->get('id') . ' - ' . $ssh_key->getComment();
+      $choices[]         = $ssh_key->get('id');
+    }
+    if (isset($assoc_args['fingerprint'])) {
+      $fingerprint = $assoc_args['fingerprint'];
+    } elseif (!isset($assoc_args['all'])) {
+      $fingerprint = $choices[$this->input()->menu(
+        [
+          'autoselect_solo' => false,
+          'choices'         => $display_choices,
+          'message'         => 'Select a SSH key to delete',
+        ]
+      )];
+    }
+
+    if (isset($fingerprint)) {
+      $ssh_key = $this->user->ssh_keys->get($fingerprint);
+      $ssh_key->delete();
+      $this->log()->info(
+        'Deleted SSH key {fingerprint}.',
+        compact('fingerprint')
+      );
+    } else {
+      $this->user->ssh_keys->deleteAll();
+      $this->log()->info('Deleted all SSH keys.');
+    }
   }
 
 }
