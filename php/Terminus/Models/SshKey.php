@@ -14,6 +14,7 @@ class SshKey extends TerminusModel {
       'users/' . $this->user->id . '/keys/' . $this->get('id'),
       ['method' => 'delete',]
     );
+    return (array)$response['data'];
   }
 
   /**

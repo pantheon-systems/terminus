@@ -3,9 +3,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ## MASTER
 ### Added
-- New command `ssh-keys list` added. (#9XX)
-- New command `ssh-keys add` added. (#9XX)
-- New command `ssh-keys delete` added. (#9XX)
+- New command `ssh-keys list` added. (#990)
+- New command `ssh-keys add` added. (#990)
+- New command `ssh-keys delete` added. (#990)
 
 ### Changed
 - WP-CLI function `import` has been removed from the command blacklist. [See the documentation for more information.](https://github.com/pantheon-systems/documentation/blob/master/source/docs/guides/create-a-wordpress-site-from-the-commandline-with-terminus-and-wp-cli.md) (#979)

@@ -67,8 +67,8 @@ class SshKeysCommand extends TerminusCommand {
         'message' => 'Please select your public SSH key file.',
         'regex'   => '~(.*.pub)~',
       ]
-    ); 
-    $this->user->ssh_keys->addKey($file); 
+    );
+    $this->user->ssh_keys->addKey($file);
     $this->log()->info('Added SSH key from file {file}.', compact('file'));
   }
 
@@ -82,16 +82,16 @@ class SshKeysCommand extends TerminusCommand {
    * : Use to remove all SSH keys from your account
    */
   public function delete($args, $assoc_args) {
-    $ssh_keys         = $this->user->ssh_keys->all();
-    $display_choices  = [];
-    $choices          = [];
-    foreach ($ssh_keys as $id => $ssh_key) {
-      $display_choices[] = $ssh_key->get('id') . ' - ' . $ssh_key->getComment();
-      $choices[]         = $ssh_key->get('id');
-    }
     if (isset($assoc_args['fingerprint'])) {
       $fingerprint = $assoc_args['fingerprint'];
     } elseif (!isset($assoc_args['all'])) {
+      $ssh_keys         = $this->user->ssh_keys->all();
+      $display_choices  = [];
+      $choices          = [];
+      foreach ($ssh_keys as $id => $ssh_key) {
+        $display_choices[] = $ssh_key->get('id') . ' - ' . $ssh_key->getComment();
+        $choices[]         = $ssh_key->get('id');
+      }
       $fingerprint = $choices[$this->input()->menu(
         [
           'autoselect_solo' => false,
@@ -109,6 +109,9 @@ class SshKeysCommand extends TerminusCommand {
         compact('fingerprint')
       );
     } else {
+      $this->input()->confirm(
+        ['message' => 'Are you sure you want to delete ALL of your SSH keys?',]
+      );
       $this->user->ssh_keys->deleteAll();
       $this->log()->info('Deleted all SSH keys.');
     }

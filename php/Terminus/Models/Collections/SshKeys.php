@@ -10,7 +10,7 @@ class SshKeys extends TerminusCollection {
    * Adds an SSH key to the user's Pantheon account
    *
    * @param string $key_file Full path of the SSH key to add
-   * @return SshKey
+   * @return array
    * @throws TerminusException
    */
   public function addKey($key_file) {
@@ -21,14 +21,27 @@ class SshKeys extends TerminusCollection {
         1
       );
     }
-    $ssh_key  = file_get_contents($key_file);
     $response = $this->request->request(
       'users/' . $this->user->id . '/keys',
       [
         'form_params' => file_get_contents($key_file),
-        'method'      => 'post',
+        'method'      => 'delete',
       ]
     );
+    return (array)$response['data'];
+  }
+
+  /**
+   * Deletes all SSH keys from account
+   *
+   * @return array
+   */
+  public function deleteAll() {
+    $response = $this->request->request(
+      'users/' . $this->user->id . '/keys',
+      ['method' => 'delete',]
+    );
+    return (array)$response['data'];
   }
 
   /**

@@ -264,7 +264,7 @@ class InputHelper extends TerminusHelper {
       'autoselect_solo' => false,
       'dir'             => null,
       'key'             => 'file',
-      'message'         => 'Select a file',  
+      'message'         => 'Select a file',
       'regex'           => null,
       'return_value'    => true,
     ];
@@ -293,7 +293,7 @@ class InputHelper extends TerminusHelper {
           $choices[] = $file->getFilename();
         }
       }
-    } 
+    }
     $options['choices']      = $choices;
     $file_name          = $options['dir'] . '/' . $this->menu($options);
     return $file_name;
