@@ -106,6 +106,14 @@ Support
 ------------
 Please make ready the steps to reproduce the issue, outputs, pertinent information about your system, and what you believe the correct reaction of the system ought to be. Reporting of issues encountered should happen in one of two ways:
 
+**Information that helps us help you:**
+
+If we cannot duplicate an issue, we cannot resolve it. Giving us as much information about the problem you're having as you can will help reduce the amount of time between an issue's being reported and being resolved. This is typically the most helpful information:
+
+- The result of running `terminus cli info`.
+- The output of the issue in debug mode. (Run the command with `--debug` appended to it.)
+- The name and version of the OS you're seeing the issue on.
+
 **If yours is a problem with Terminus itself:**
 
 1. Search [Terminus' issues on GitHub](https://github.com/pantheon-systems/terminus/issues) to see whether another user has reported the same issue you are experiencing.
