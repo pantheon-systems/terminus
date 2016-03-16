@@ -105,10 +105,12 @@ abstract class TerminusCommand {
    * @throws TerminusException
    */
   public function ensureLogin() {
-    $auth = new Auth();
+    $auth   = new Auth();
+    $tokens = $auth->getAllSavedTokenEmails();
     if (!$auth->loggedIn()) {
-      if ($token = $auth->getOnlySavedToken()) {
-        $auth->logInViaMachineToken($token);
+      if (count($tokens) === 1) {
+        $email = array_shift($token);
+        $auth->logInViaMachineToken(compact('email'));
       } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
        && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']
       ) {

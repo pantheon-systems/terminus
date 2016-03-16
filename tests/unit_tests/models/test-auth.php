@@ -23,22 +23,19 @@ class AuthTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(strpos(get_class($this->auth), 'Auth') !== false);
   }
 
+  public function testGetAllSavedTokenEmails() {
+    $tokens_cache = new TokensCache();
+    $tokens_dir   = $tokens_cache->getCacheDir();
+    $token_count  = count(scandir($tokens_dir)) - 2;
+    $tokens       = $this->auth->getAllSavedTokenEmails();
+    $this->assertEquals(count($tokens), $token_count);
+    $this->assertInternalType('array', $tokens);
+  }
+
   public function testGetMachineTokenCreationUrl() {
     $url = $this->auth->getMachineTokenCreationUrl();
     $this->assertInternalType('string', $url);
     $this->assertInternalType('integer', strpos($url, 'machine-token/create'));
-  }
-
-  public function testGetOnlySavedToken() {
-    $tokens_cache = new TokensCache();
-    $tokens_dir   = $tokens_cache->getCacheDir();
-    $token_count  = count(scandir($tokens_dir)) - 2;
-    $only_token   = $this->auth->getOnlySavedToken();
-    if ($token_count != 1) {
-      $this->assertFalse($only_token);
-    } else {
-      $this->assertInternalType('array', $only_token);
-    }
   }
 
   public function testLoggedIn() {
