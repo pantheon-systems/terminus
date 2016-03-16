@@ -15,7 +15,7 @@ Feature: Create a site and import its content
     Created new site "[[test_site_name]]"
     """
     Then I should get "."
-    Then I should get:
+    And I should get:
     """
     Importing database/files to "dev"
     """

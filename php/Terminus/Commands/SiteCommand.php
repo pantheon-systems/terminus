@@ -918,48 +918,63 @@ class SiteCommand extends TerminusCommand {
    * ## OPTIONS
    *
    * [--site=<site>]
-   * : Site to use
+   * : Site to import content to
+   *
+   * [--env=<env>]
+   * : Name of the environment to import to
    *
    * [--url=<url>]
    * : URL of archive to import
    *
    * [--element=<element>]
-   * : Site element to import (i.e. code or database)
+   * : Site element to import. Options are files or db.
    *
    * @subcommand import-content
    */
-  public function import($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $url  = $this->input()->string(
-      array(
+  public function importContent($args, $assoc_args) {
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    if (isset($assoc_args['env'])) {
+      $env_name = $assoc_args['env'];
+    } else {
+      $env_name = $this->input()->env(
+        [
+          'args'    => $assoc_args,
+          'choices' => array_diff($site->environments->ids(), ['test', 'live',]),
+        ]
+      );
+    }
+    $env = $site->environments->get($env_name);
+    $url = $this->input()->string(
+      [
         'args'    => $assoc_args,
         'key'     => 'url',
-        'message' => 'URL of archive to import'
-      )
+        'message' => 'URL of archive to import',
+      ]
     );
     if (!$url) {
       $this->log()->error('Please enter a URL.');
     }
 
     if (!isset($assoc_args['element'])) {
-      $element_options = array('database', 'files');
-      $element_key     = $this->input()->menu(
-        array(
-          'choices' => $element_options,
+      $element_key = $this->input()->menu(
+        [
+          'choices' => ['db', 'files',],
           'message' => 'Which element are you importing?',
-        )
+        ]
       );
-      $element         = $element_options[$element_key];
+      $element     = $element_options[$element_key];
     } else {
       $element = $assoc_args['element'];
     }
 
     switch ($element) {
       case 'database':
-        $workflow = $site->importDatabase($url);
+        $workflow = $env->importDatabase($url);
           break;
       case 'files':
-        $workflow = $site->importFiles($url);
+        $workflow = $env->importFiles($url);
           break;
     }
     $workflow->wait();

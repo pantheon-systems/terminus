@@ -558,4 +558,3 @@ class SitesCommand extends TerminusCommand {
   }
 
 }
-

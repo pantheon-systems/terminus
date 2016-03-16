@@ -399,6 +399,34 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Imports a database archive
+   *
+   * @param string $url URL to import data from
+   * @return Workflow
+   */
+  public function importDatabase($url) {
+    $workflow = $this->site->workflows->create(
+      'import_database',
+      ['environment' => $this->get('id'), 'params' => compact('url'),]
+    );
+    return $workflow;
+  }
+
+  /**
+   * Imports a file archive
+   *
+   * @param string $url URL to import data from
+   * @return Workflow
+   */
+  public function importFiles($url) {
+    $workflow = $this->site->workflows->create(
+      'import_files',
+      ['environment' => $this->get('id'), 'params' => compact('url'),]
+    );
+    return $workflow;
+  }
+
+  /**
    * Load site info
    *
    * @param string $key Set to retrieve a specific attribute as named
