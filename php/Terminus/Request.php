@@ -53,7 +53,7 @@ class Request {
     }
 
     try {
-      $client   = new Client();
+      $client   = new Client(['verify' => false,]);
       $response = $client->request('GET', $url, ['sink' => $target,]);
     } catch (\Exception $e) {
       throw new TerminusException($e->getMessage(), [], 1);
@@ -131,6 +131,7 @@ class Request {
     $default_options = [
       'method'       => 'get',
       'absolute_url' => false,
+      'verify'       => false,
     ];
     $options = array_merge($default_options, $arg_options);
 
@@ -177,7 +178,7 @@ class Request {
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
       ],
-      RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
+      RequestOptions::VERIFY => false,
     ];
 
     if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
@@ -185,12 +186,11 @@ class Request {
     ) {
       $extra_params['headers']['Authorization'] = "Bearer $session";
     }
-    $params = array_merge_recursive($extra_params, $arg_params);
+    $params = array_merge($extra_params, $arg_params);
     if (isset($params['form_params'])) {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
-    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
       [
