@@ -220,3 +220,30 @@
             ETag: 'W/"eHUC5tE6/XuFH3Y9bYf6Lw=="'
             Vary: Accept-Encoding
         body: '{"environment_id": "dev", "params": {"url": "https://s3.amazonaws.com/pantheon-infrastructure/testing/canary.tgz", "files": 1, "code": 1, "updatedb": 1, "database": 1}, "role": "owner", "site_id": "69917fa8-7ca8-413c-a246-8c2f0bbaf673", "started_at": 1442967008.090953, "task_ids": ["72ac63a8-6187-11e5-9286-bc764e1108cd", "72aed82c-6187-11e5-9286-bc764e1108cd", "72b0360e-6187-11e5-9286-bc764e1108cd", "72b14c38-6187-11e5-9286-bc764e1108cd", "72b401ee-6187-11e5-9286-bc764e1108cd", "72b52696-6187-11e5-9286-bc764e1108cd", "72b71f46-6187-11e5-9286-bc764e1108cd", "72bdea88-6187-11e5-9286-bc764e1108cd", "72c365c6-6187-11e5-9286-bc764e1108cd", "72c4ec70-6187-11e5-9286-bc764e1108cd", "72c602e0-6187-11e5-9286-bc764e1108cd", "72c8dac4-6187-11e5-9286-bc764e1108cd", "72daa628-6187-11e5-9286-bc764e1108cd", "72dc5482-6187-11e5-9286-bc764e1108cd", "72dd69e4-6187-11e5-9286-bc764e1108cd"], "trace_id": "729f2620-6187-11e5-8e85-0d70049e9359", "type": "do_import", "user_id": "cbc3d67f-f2b9-44a0-8dd6-8d63265af96e", "id": "72a532cc-6187-11e5-9286-bc764e1108cd", "key": "69917fa8-7ca8-413c-a246-8c2f0bbaf673", "waiting_for_task_id": "72ac63a8-6187-11e5-9286-bc764e1108cd", "keep_forever": false, "phase": "started", "queued_time": null, "run_time": null, "created_at": 1442967007.657646, "reason": "", "environment": "dev", "final_task_id": null, "result": "succeeded", "total_time": null, "active_description": "Importing database/files to \"dev\"", "description": "Import code, files and database to \"dev\"", "step": 1, "number_of_tasks": 15, "trace_log_url": "https://logs.getpantheon.com:443//#/dashboard/file/Trace_Id.json?trace_id=729f2620-6187-11e5-8e85-0d70049e9359&from_iso_date=2015-09-23T00:05:07.657646Z&to_iso_date=now", "user": {"created_at": 1428707345, "password": "SCRUBBED", "user_id": "cbc3d67f-f2b9-44a0-8dd6-8d63265af96e", "email": "devuser@pantheon.io", "agency_id": null}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"allow_concurrent": true, "environment": "dev", "fn_name": "queue_jenkins_task", "params": {"host": "23.253.58.250", "task_type": "deploy_dbserver_binding", "job_id": "72ac63a8-6187-11e5-9286-bc764e1108cd", "binding_id": "e5de6f80bcae4612a87350cfa6622075"}, "queued_at": 1442967008.091329, "responses": [{"code": 302, "body": "Successfully queued deploy_dbserver_binding", "error_details": "", "internal_reason": ""}], "site_id": "69917fa8-7ca8-413c-a246-8c2f0bbaf673", "trace_id": "729f2620-6187-11e5-8e85-0d70049e9359", "user_id": "pantheon", "workflow_id": "72a532cc-6187-11e5-9286-bc764e1108cd", "id": "72ac63a8-6187-11e5-9286-bc764e1108cd", "key": "1442966400", "created_at": 1442967007.704772, "queued_time": null, "run_time": null, "phase": "queued", "result": null, "total_time": null, "reason": "", "error_details": "", "internal_reason": "", "trace_log_url": "https://logs.getpantheon.com:443//#/dashboard/file/Trace_Id.json?trace_id=729f2620-6187-11e5-8e85-0d70049e9359&from_iso_date=2015-09-23T00:05:07.704772Z&to_iso_date=now", "type": "deploy_dbserver_binding", "build_url": null, "messages": {"2015-09-23T00:10:09.377106": {"message": "Successfully queued deploy_dbserver_binding", "level": "INFO"}}}}'
+-
+    request:
+        method: GET
+        url: 'https://dashboard.pantheon.io/api/sites/69917fa8-7ca8-413c-a246-8c2f0bbaf673/environments'
+        headers:
+            Host: dashboard.pantheon.io
+            Accept: null
+            User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
+            Cookie: 'X-Pantheon-Session=cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:60b72cfe-6188-11e5-b16d-bc764e102660:C6hSsDhfvxqd5KtDIabZC'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Wed, 23 Sep 2015 00:16:50 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 62f63fa0-6188-11e5-ba41-dd54dc52c0b7
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            ETag: 'W/"299-f9e7391c"'
+            Vary: Accept-Encoding
+        body: '{"test": {"environment_created": 1442966995, "dns_zone": "pantheon.io", "randseed": "SJM6R4VU4BQIR7GYE3NDXM84CHCIETP3", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-03.pantheon.io"}, "dev": {"environment_created": 1442966994, "dns_zone": "pantheon.io", "randseed": "UIOTC4NXTM04GRF205H0321YBYCFAR4I", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-01.pantheon.io"}, "live": {"environment_created": 1442966995, "dns_zone": "pantheon.io", "randseed": "23CI7JA2V82BQ0RIXV9HAUETPZPOHD1M", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-03.pantheon.io"}}'

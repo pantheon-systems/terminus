@@ -6,16 +6,21 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `ssh-keys list` added. (#990)
 - New command `ssh-keys add` added. (#990)
 - New command `ssh-keys delete` added. (#990)
+- New parameter `--env=<env>` has been added to `site import-content`. (#994)
 
 ### Changed
 - WP-CLI function `import` has been removed from the command blacklist. [See the documentation for more information.](https://github.com/pantheon-systems/documentation/blob/master/source/docs/guides/create-a-wordpress-site-from-the-commandline-with-terminus-and-wp-cli.md) (#979)
 - When running `terminus auth login` and more than one machine token is present, Terminus will now tell you how to use them instead of giving the same error message received when no tokens are present. (#987)
+- `SiteCommand#import` has been renamed to `SiteCommand#importContent`. (#994)
+- `Site#importDatabase` has been moved to `Environment#importDatabase`. (#994)
+- `Site#importFiles` has been moved to `Environment#importFiles`. (#994)
 
 ### Fixed
 - Fixed unidentified index email warning which appeared when logging in via saved machine token by email. (#983)
 - Prevented long loop of configurator loadings. (#988)
 - Fixed auth status check before running `CommandWithSSH` descendant commands (`drush`, `wp`). (#986)
 - Ensured that API and server errors exit with non-zero status. (#996)
+- Fixed error in `site import-content` documentation regarding what is importable. (#994)
 
 ## [0.10.6] - 2016-03-07
 ### Changed
