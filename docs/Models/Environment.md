@@ -134,6 +134,30 @@
 
 ---
 
+### importDatabase
+##### Description:
+    Imports a database archive
+
+##### Parameters:
+    [string] $url URL to import data from
+
+##### Return:
+    [Workflow]
+
+---
+
+### importFiles
+##### Description:
+    Imports a file archive
+
+##### Parameters:
+    [string] $url URL to import data from
+
+##### Return:
+    [Workflow]
+
+---
+
 ### info
 ##### Description:
     Load site info
