@@ -22,21 +22,6 @@ use Terminus\Utils;
 class Request {
 
   /**
-   * @var Logger
-   */
-  private $logger;
-
-  /**
-   * Object constructor. Saves the logger as a class property.
-   *
-   * @return Request
-   */
-  public function __construct() {
-    $runner       = new Runner();
-    $this->logger = $runner->getLogger();
-  }
-
-  /**
    * Download file from target URL
    *
    * @param string $url    URL to download from
@@ -146,12 +131,12 @@ class Request {
     }
 
     try {
-      $this->logger->debug('URL: {url}', compact('url'));
       $response = $this->send($url, $options['method'], $options);
     } catch (\GuzzleHttp\Exception\BadResponseException $e) {
       throw new TerminusException(
         'API Request Error: {msg}',
-        ['msg' => $e->getMessage(),]
+        ['msg' => $e->getMessage(),],
+        1
       );
     }
 
@@ -200,7 +185,7 @@ class Request {
     );
     unset($params['cookies']);
 
-    $this->logger->debug(
+    Runner::getLogger()->debug(
       "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
       [
         'params' => json_encode($params),
@@ -213,7 +198,11 @@ class Request {
     error_reporting(E_ALL ^ E_WARNING);
     $request = new HttpRequest(ucwords($method), $uri, $params);
     error_reporting(E_ALL);
-    $response = $client->send($request, $params);
+    try {
+      $response = $client->send($request, $params);
+    } catch (\Exception $e) {
+      throw new TerminusException($e->getMessage(), [], 1);
+    }
 
     return $response;
   }
