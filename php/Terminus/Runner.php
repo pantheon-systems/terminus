@@ -49,10 +49,12 @@ class Runner {
    * @param array $config Extra settings for the config property
    */
   public function __construct(array $config = []) {
-    $this->configurator = new Configurator();
-    $this->setConfig($config);
-    $this->setLogger($this->config);
-    $this->setOutputter($this->getConfig('format'), $this->getConfig('output'));
+    if (!defined('Terminus')) {
+      $this->configurator = new Configurator();
+      $this->setConfig($config);
+      $this->setLogger($this->config);
+      $this->setOutputter($this->getConfig('format'), $this->getConfig('output'));
+    }
   }
 
   /**
