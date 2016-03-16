@@ -6,6 +6,7 @@ use Terminus\Models\Collections\UserOrganizationMemberships;
 use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
 use Terminus\Models\Collections\MachineTokens;
+use Terminus\Models\Collections\SshKeys;
 use Terminus\Models\Collections\Workflows;
 use Terminus\Session;
 
@@ -24,6 +25,11 @@ class User extends TerminusModel {
    * @var Instruments
    */
   protected $machine_tokens;
+
+  /**
+   * @var SshKeys
+   */
+  protected $ssh_keys;
 
   /**
    * @var Workflows
@@ -54,14 +60,12 @@ class User extends TerminusModel {
     if (isset($attributes->profile)) {
       $this->profile = $attributes->profile;
     }
-    $this->workflows     = new Workflows(
-      array('owner' => $this)
-    );
-    $this->instruments   = new Instruments(array('user' => $this));
-    $this->machine_tokens= new MachineTokens(array('user' => $this));
-    $this->organizations = new UserOrganizationMemberships(
-      array('user' => $this)
-    );
+    $params               = ['user' => $this,];
+    $this->workflows      = new Workflows(['owner' => $this,]);
+    $this->instruments    = new Instruments($params);
+    $this->machine_tokens = new MachineTokens($params);
+    $this->ssh_keys       = new SshKeys($params);
+    $this->organizations  = new UserOrganizationMemberships($params);
   }
 
   /**

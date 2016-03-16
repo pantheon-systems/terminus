@@ -2,6 +2,11 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New command `ssh-keys list` added. (#990)
+- New command `ssh-keys add` added. (#990)
+- New command `ssh-keys delete` added. (#990)
+
 ### Changed
 - WP-CLI function `import` has been removed from the command blacklist. [See the documentation for more information.](https://github.com/pantheon-systems/documentation/blob/master/source/docs/guides/create-a-wordpress-site-from-the-commandline-with-terminus-and-wp-cli.md) (#979)
 - When running `terminus auth login` and more than one machine token is present, Terminus will now tell you how to use them instead of giving the same error message received when no tokens are present. (#987)
