@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## [0.11.0] - 2016-03-16
 ### Added
 - New command `ssh-keys list` added. (#990)
 - New command `ssh-keys add` added. (#990)

@@ -13,21 +13,21 @@
 
 ---
 
+### getAllSavedTokenEmails
+##### Description:
+    Gets all email addresses for which there are saved machine tokens
+
+##### Return:
+    [string[]]
+
+---
+
 ### getMachineTokenCreationUrl
 ##### Description:
     Generates the URL string for where to create a machine token
 
 ##### Return:
     [string]
-
----
-
-### getOnlySavedToken
-##### Description:
-    Gets the only saved token or returns false
-
-##### Return:
-    [bool|string]
 
 ---
 

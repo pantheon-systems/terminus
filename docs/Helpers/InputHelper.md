@@ -78,6 +78,27 @@
 
 ---
 
+### fileName
+##### Description:
+    Produces a menu with the given attributes
+
+##### Parameters:
+    [array] $arg_options Elements as follow:
+    -array  args            Arguments given via param
+    -bool   autoselect_solo Automatically selects the only given option
+    -array  dir             Directory from which to select options
+    -string key             Args key to search for
+    -string message         Prompt printed to STDOUT
+    -string regex           Regex to match file names to
+
+##### Return:
+    [string] The name of the selected file
+
+##### Throws:
+    TerminusException
+
+---
+
 ### menu
 ##### Description:
     Produces a menu with the given attributes

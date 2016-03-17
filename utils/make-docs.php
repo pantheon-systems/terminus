@@ -1,9 +1,24 @@
 <?php
 
 define('TERMINUS_ROOT', dirname(__DIR__));
+define('TERMINUS_DOC_ROOT', TERMINUS_ROOT . '/docs');
 require(TERMINUS_ROOT . '/php/Terminus/Helpers/TerminusHelper.php');
 require(TERMINUS_ROOT . '/php/Terminus/Helpers/TemplateHelper.php');
 require(TERMINUS_ROOT . '/vendor/autoload.php');
+
+/**
+ * Recursively ensures that the location to write a file to exists
+ *
+ * @param string $filename Name of the file to be created
+ * @return void
+ */
+function ensureDestinationExists($filename) {
+  $dir = dirname($filename);
+  if (!file_exists($dir)) {
+    ensureDestinationExists($dir);
+    mkdir($dir);
+  }
+}
 
 /**
  * Accepts an array representing a tokenized PHP file and sifts out all
@@ -117,7 +132,7 @@ function parseDocs($doc_string) {
 function writeDocFile($namespace, $docs) {
   $template_helper = new \Terminus\Helpers\TemplateHelper(['command' => null]);
 
-  $filename    = TERMINUS_ROOT . '/docs/'
+  $filename    = TERMINUS_DOC_ROOT . '/'
     . str_replace(array('Terminus\\', '\\'), array('', '/'), $namespace)
     . '.md';
   $rendered_doc = $template_helper->render(
@@ -127,6 +142,7 @@ function writeDocFile($namespace, $docs) {
       'options'       => ['namespace' => $namespace,],
     ]
   );
+  ensureDestinationExists($filename);
   file_put_contents($filename, $rendered_doc);
   return true;
 }
