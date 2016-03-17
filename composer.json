@@ -25,8 +25,8 @@
   },
   "require-dev": {
     "behat/behat": "3.0.*@stable",
-    "phpunit/phpcov": "2.*",
-    "phpunit/phpunit": "4.*",
+    "phpunit/phpcov": "3.*",
+    "phpunit/phpunit": "5.*",
     "php-vcr/php-vcr": "~1.2",
     "php-vcr/phpunit-testlistener-vcr": "*",
     "sebastian/phpcpd": "*",
