@@ -292,6 +292,19 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Converges all bindings on a site
+   *
+   * @return array
+   */
+  public function convergeBindings() {
+    $workflow = $this->site->workflows->create(
+      'converge_environment',
+      ['environment' => $this->get('id'),]
+    );
+    return $workflow;
+  }
+
+  /**
    * Counts the number of deployable commits
    *
    * @return int
@@ -351,6 +364,16 @@ class Environment extends TerminusModel {
       $this->get('dns_zone')
     );
     return $host;
+  }
+
+  /**
+   * Gets the Drush version of this environment
+   *
+   * @return int
+   */
+  public function getDrushVersion() {
+    $version = (integer)$this->getSettings('drush_version');
+    return $version;
   }
 
   /**
@@ -618,6 +641,18 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Sets the Drush version to the indicated version number
+   *
+   * @param string $version_number Version of Drush to use
+   * @return Workflow
+   */
+  public function setDrushVersion($version_number) {
+    $this->updateSetting(['drush_version' => $version_number,]);
+    $workflow = $this->convergeBindings();
+    return $workflow;
+  }
+
+  /**
    * Add/Replace an HTTPS Certificate on the Environment
    *
    * @param array $options Certificate data`
@@ -732,6 +767,43 @@ class Environment extends TerminusModel {
     $params   = ['environment' => $this->get('id'),];
     $workflow = $this->site->workflows->create('wipe', $params);
     return $workflow;
+  }
+
+  /**
+   * Retrieves the value of an environmental setting
+   *
+   * @param string $setting Name of the setting to retrieve
+   * @return mixed
+   */
+  private function getSettings($setting = null) {
+    $path   = sprintf(
+      'sites/%s/environments/%s/settings',
+      $this->site->get('id'),
+      $this->get('id')
+    );
+    $response = (array)$this->request->request($path, ['method' => 'get',]);
+    if (isset($response['data']->$setting)) {
+      return $response['data']->$setting;
+    }
+    return (array)$response['data'];
+
+  }
+
+  /**
+   * Changes the environment's settings
+   *
+   * @param array $settings Key/value pairs to set in the environment settings
+   * @return bool
+   */
+  private function updateSetting(array $settings = []) {
+    $path   = sprintf(
+      'sites/%s/environments/%s/settings',
+      $this->site->get('id'),
+      $this->get('id')
+    );
+    $params = ['form_params' => $settings, 'method' => 'put',];
+    $response = $this->request->request($path, $params);
+    return (boolean)$response['data'];
   }
 
 }
