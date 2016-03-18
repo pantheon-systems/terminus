@@ -104,7 +104,7 @@ abstract class TerminusCommand {
    * @return bool Always true
    * @throws TerminusException
    */
-  public function ensureLogin() {
+  protected function ensureLogin() {
     $auth   = new Auth();
     $tokens = $auth->getAllSavedTokenEmails();
     if (!$auth->loggedIn()) {
