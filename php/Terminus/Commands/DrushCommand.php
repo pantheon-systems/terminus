@@ -3,6 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus\Commands\CommandWithSSH;
+use Terminus\Models\Collections\Sites;
 
 /**
  * @command drush
