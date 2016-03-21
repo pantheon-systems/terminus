@@ -5,6 +5,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - New command `site drupal-version` to check the Drush version number of any or all environments. (#1001)
 - New command `site set-drupal-version` to set the Drush version number of any or all environments. (#1001)
+- New parameter `--owner` added to `sites list` to filter the list just for the sites the current user owns. (#1003)
+- New option to filter for organization sites via `sites list --org=all`. (#1003)
 
 ## [0.11.0] - 2016-03-16
 ### Added

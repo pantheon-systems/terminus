@@ -2,15 +2,15 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Session;
-use Terminus\Utils;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Models\Collections\Sites;
 use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
-use Terminus\Models\Collections\Sites;
+use Terminus\Session;
+use Terminus\Utils;
 
 /**
  * Actions on multiple sites
@@ -212,10 +212,13 @@ class SitesCommand extends TerminusCommand {
    *   and also is the basis for loading individual sites by name
    *
    * [--team]
-   * : Filter sites you are a team member of
+   * : Filter for sites you are a team member of
+   *
+   * [--owner]
+   * : Filter for sites a specific user owns. Use "me" for your own user.
    *
    * [--org=<id>]
-   * : Filter sites you can access via the organization
+   * : Filter sites you can access via the organization. Use 'all' to get all.
    *
    * [--name=<regex>]
    * : Filter sites you can access via name
@@ -233,20 +236,51 @@ class SitesCommand extends TerminusCommand {
     }
     $sites = $this->sites->all();
 
-    $rows = array();
+    if (isset($assoc_args['team'])) {
+      $sites = $this->filterByTeamMembership($sites);
+    }
+    if (isset($assoc_args['org'])) {
+      $org_id = $this->input()->orgId(
+        [
+          'allow_none' => true,
+          'args'       => $assoc_args,
+          'default'    => 'all',
+        ]
+      );
+      $sites = $this->filterByOrganizationalMembership($sites, $org_id);
+    }
+
+    if (isset($assoc_args['name'])) {
+      $sites = $this->filterByName($sites, $assoc_args['name']);
+    }
+
+    if (isset($assoc_args['owner'])) {
+      $owner_uuid = $assoc_args['owner'];
+      if ($owner_uuid == 'me') {
+        $owner_uuid = Session::getData()->user_uuid;
+      }
+      $sites = $this->filterByOwner($sites, $owner_uuid);
+    }
+
+    if (count($sites) == 0) {
+      $this->log()->warning('You have no sites.');
+    }
+
+    $rows = [];
     foreach ($sites as $site) {
-      $memberships = array();
+      $memberships = [];
       foreach ($site->get('memberships') as $membership) {
         $memberships[$membership['id']] = $membership['name'];
       }
-      $rows[$site->get('id')] = array(
-        'name' => $site->get('name'),
-        'id' => $site->get('id'),
+      $rows[$site->get('id')] = [
+        'name'          => $site->get('name'),
+        'id'            => $site->get('id'),
         'service_level' => $site->get('service_level'),
-        'framework' => $site->get('framework'),
-        'created' => date('Y-m-d H:i:s', $site->get('created')),
-        'memberships' => $memberships,
-      );
+        'framework'     => $site->get('framework'),
+        'owner'         => $site->get('owner'),
+        'created'       => date('Y-m-d H:i:s', $site->get('created')),
+        'memberships'   => $memberships,
+      ];
     }
 
     usort(
@@ -257,56 +291,15 @@ class SitesCommand extends TerminusCommand {
       }
     );
 
-    if (isset($assoc_args['team'])) {
-      $rows = array_filter(
-        $rows,
-        function($site) {
-          $is_membership = in_array('Team', $site['memberships']);
-          return $is_membership;
-        }
-      );
-    }
-
-    if (isset($assoc_args['org'])) {
-      $org_id = $assoc_args['org'];
-
-      $rows = array_filter(
-        $rows,
-        function($site) use ($org_id) {
-          $is_member = (
-            isset($org_ids[$org_id])
-            || in_array($org_id, $site['memberships'])
-          );
-          return $is_member;
-        }
-      );
-    }
-
-    if (isset($assoc_args['name'])) {
-      $search_string = $assoc_args['name'];
-
-      $rows = array_filter(
-        $rows,
-        function($site) use ($search_string) {
-          preg_match("~$search_string~", $site['name'], $matches);
-          $is_match = !empty($matches);
-          return $is_match;
-        }
-      );
-    }
-
-    if (count($rows) == 0) {
-      $this->log()->warning('You have no sites.');
-    }
-
-    $labels = array(
+    $labels = [
       'name'          => 'Name',
       'id'            => 'ID',
       'service_level' => 'Service Level',
       'framework'     => 'Framework',
+      'owner'         => 'Owner',
       'created'       => 'Created',
-      'memberships'   => 'Memberships'
-    );
+      'memberships'   => 'Memberships',
+    ];
     $this->output()->outputRecordList($rows, $labels);
   }
 
@@ -491,6 +484,90 @@ class SitesCommand extends TerminusCommand {
     } else {
       $this->log()->info('No sites in need of updating.');
     }
+  }
+
+  /**
+   * Filters an array of sites by whether the user is an organizational member
+   *
+   * @param Site[] $sites An array of sites to filter by
+   * @param string $regex Non-delimited PHP regex to filter site names by
+   * @return Site[]
+   */
+  private function filterByName($sites, $regex = '(.*)') {
+    $filtered_sites = array_filter(
+      $sites,
+      function($site) use ($regex) {
+        preg_match("~$regex~", $site->get('name'), $matches);
+        $is_match = !empty($matches);
+        return $is_match;
+      }
+    );
+    return $filtered_sites;
+  }
+
+  /**
+   * Filters an array of sites by whether the user is an organizational member
+   *
+   * @param Site[] $sites      An array of sites to filter by
+   * @param string $owner_uuid UUID of the owning user to filter by
+   * @return Site[]
+   */
+  private function filterByOwner($sites, $owner_uuid) {
+    $filtered_sites = array_filter(
+      $sites,
+      function($site) use ($owner_uuid) {
+        $is_owner = ($site->get('owner') == $owner_uuid);
+        return $is_owner;
+      }
+    );
+    return $filtered_sites;
+  }
+
+  /**
+   * Filters an array of sites by whether the user is an organizational member
+   *
+   * @param Site[] $sites  An array of sites to filter by
+   * @param string $org_id ID of the organization to filter for
+   * @return Site[]
+   */
+  private function filterByOrganizationalMembership($sites, $org_id = 'all') {
+    $filtered_sites = array_filter(
+      $sites,
+      function($site) use ($org_id) {
+        $memberships    = $site->get('memberships');
+        foreach ($memberships as $membership) {
+          if ((($org_id == 'all') && ($membership['type'] == 'organization'))
+            || ($membership['id'] === $org_id)
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
+    );
+    return $filtered_sites;
+  }
+
+  /**
+   * Filters an array of sites by whether the user is a team member
+   *
+   * @param Site[] $sites An array of sites to filter by
+   * @return Site[]
+   */
+  private function filterByTeamMembership($sites) {
+    $filtered_sites = array_filter(
+      $sites,
+      function($site) {
+        $memberships    = $site->get('memberships');
+        foreach ($memberships as $membership) {
+          if ($membership['name'] == 'Team') {
+            return true;
+          }
+        }
+        return false;
+      }
+    );
+    return $filtered_sites;
   }
 
   /**
