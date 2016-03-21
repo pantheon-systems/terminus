@@ -24,7 +24,7 @@ abstract class CommandWithSSH extends TerminusCommand {
    *   is the Drush command, and the value is the Terminus equivalent, and
    *   blank if DNE.
    */
-  protected $unavailable_commands = array();
+  protected $unavailable_commands = [];
 
   /**
    * Object constructor
@@ -41,26 +41,32 @@ abstract class CommandWithSSH extends TerminusCommand {
    * Checks to see if the command is not available in Terminus and, if not,
    * it will refer you to an equivalent Terminus command, if such exists.
    *
-   * @param string $command The command to check for availability
+   * @param string[] $args       Command-line arguments
+   * @param string[] $assoc_args Command-line parameters and flags
    * @return void
    */
-  protected function checkCommand($command) {
-    $command_array = explode(' ', $command);
+  protected function checkCommand($args, $assoc_args) {
+    $command_array = explode(' ', $args[0]);
     foreach ($command_array as $element) {
-      if (strpos($element, '--') === 0) {
+      if ((strpos($element, '--') === 0)
+        || !isset($this->unavailable_commands[$element])
+      ) {
         continue;
       }
-      if (isset($this->unavailable_commands[$element])) {
-        $error_message = "$element is not available via Terminus. "
-          . 'Please run it via ' . $this->client;
-        if (!empty($this->unavailable_commands[$element])) {
-          $error_message .= ', or you can use `terminus '
-            . $this->unavailable_commands[$element]
-            . '` to complete the same task';
-        }
-        $error_message .= '.';
-        $this->failure($error_message);
+      $alternative = $this->unavailable_commands[$element];
+      $error_message = "$element is not available via Terminus. "
+        . 'Please run it via ' . $this->client;
+      if (!empty($alternative)) {
+        $command = sprintf(
+          '%s %s%s',
+          'terminus',
+          $alternative,
+          $this->helpers->launch->assocArgsToStr($assoc_args)
+        );
+        $error_message .= ', or you can use `{command}` to the same effect';
       }
+      $error_message .= '.';
+      $this->failure($error_message, compact('command'));
     }
   }
 
@@ -111,9 +117,9 @@ abstract class CommandWithSSH extends TerminusCommand {
    */
   protected function formatOutput($string) {
     $exploded_string = explode("\n", $string);
-    $formatted_data  = array();
+    $formatted_data  = [];
     foreach ($exploded_string as $key => $value) {
-      if (!in_array($value, array('', null))) {
+      if (!in_array($value, ['', null,])) {
         $formatted_data[$key] = explode("\t", $value);
         if (count($formatted_data[$key] == 1)) {
           $formatted_data[$key] = $value;
@@ -131,14 +137,14 @@ abstract class CommandWithSSH extends TerminusCommand {
    *        [string] environment Environment name
    * @return array Connection info
    */
-  protected function getAppserverInfo(array $site_info = array()) {
+  protected function getAppserverInfo(array $site_info = []) {
     $site_id = $site_info['site'];
     $env_id  = $site_info['environment'];
-    $server  = array(
+    $server  = [
       'user' => "$env_id.$site_id",
       'host' => "appserver.$env_id.$site_id.drush.in",
-      'port' => '2222'
-    );
+      'port' => '2222',
+    ];
     if ($ssh_host = getenv('TERMINUS_SSH_HOST')) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = $ssh_host;
@@ -162,28 +168,27 @@ abstract class CommandWithSSH extends TerminusCommand {
    */
   protected function getElements($args, $assoc_args) {
     $this->ensureQuotation($args, $assoc_args);
-    $command = array_pop($args);
-    $this->checkCommand($command);
+    $this->checkCommand($args, $assoc_args);
 
     $sites = new Sites();
-    $site  = $sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site  = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
     if (!$site) {
       $this->failure('Command could not be completed. Unknown site specified.');
     }
 
-    $env_id = $this->input()->env(array('args' => $assoc_args, 'site' => $site));
-    if (!in_array($env_id, ['test', 'live'])) {
+    $env_id = $this->input()->env(['args' => $assoc_args, 'site' => $site,]);
+    if (!in_array($env_id, ['test', 'live',])) {
       $this->checkConnectionMode($site->environments->get($env_id));
     }
 
-    $elements = array(
+    $elements = [
       'site'    => $site,
       'env_id'  => $env_id,
-      'command' => $command,
+      'command' => $args[0],
       'server'  => $this->getAppserverInfo(
-        array('site' => $site->get('id'), 'environment' => $env_id)
-      )
-    );
+        ['site' => $site->get('id'), 'environment' => $env_id,]
+      ),
+    ];
     return $elements;
   }
 
@@ -197,14 +202,14 @@ abstract class CommandWithSSH extends TerminusCommand {
    *        string server  Server connection info
    * @return array
    */
-  protected function sendCommand(array $options = array()) {
+  protected function sendCommand(array $options = []) {
     $this->log()->info(
       sprintf('Running %s {cmd} on {site}-{env}', $this->command),
-      array(
+      [
         'cmd'   => $options['command'],
         'site'  => $options['site']->get('name'),
         'env'   => $options['env_id'],
-      )
+      ]
     );
     $server    = $options['server'];
     $is_normal = ($this->log()->getOptions('logFormat') == 'normal');
@@ -215,7 +220,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       );
     $this->log()->debug(
       'Command "{command}" is being run.',
-      array('command' => escapeshellarg($cmd))
+      ['command' => escapeshellarg($cmd),]
     );
     if (!$is_normal) {
       ob_start();
