@@ -8,6 +8,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New parameter `--owner` added to `sites list` to filter the list just for the sites the current user owns. (#1003)
 - New option to filter for organization sites via `sites list --org=all`. (#1003)
 
+### Fixed
+- Alternate command suggestion for `drush "sql-connect"` corrected to `site connection-info --field=mysql_command`. (#1005)
+
 ## [0.11.0] - 2016-03-16
 ### Added
 - New command `ssh-keys list` added. (#990)

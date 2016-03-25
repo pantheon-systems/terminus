@@ -22,10 +22,10 @@ class DrushCommand extends CommandWithSSH {
   /**
    * {@inheritdoc}
    */
-  protected $unavailable_commands = array(
-    'sql-connect' => 'site connection-info --field=mysql_connection',
+  protected $unavailable_commands = [
+    'sql-connect' => 'site connection-info --field=mysql_command',
     'sql-sync'    => '',
-  );
+  ];
 
   /**
    * Invoke `drush` commands on a Pantheon development site
@@ -43,10 +43,7 @@ class DrushCommand extends CommandWithSSH {
   public function __invoke($args, $assoc_args) {
     $elements = $this->getElements($args, $assoc_args);
 
-    if (in_array(
-      $this->log()->getOptions('logFormat'),
-      array('bash', 'json', 'silent')
-    )) {
+    if ($this->log()->getOptions('logFormat') != 'normal') {
       $elements['command'] .= ' --pipe';
     }
     $result = $this->sendCommand($elements);

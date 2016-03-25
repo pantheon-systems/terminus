@@ -8,6 +8,24 @@ use Terminus\Utils;
 class LaunchHelper extends TerminusHelper {
 
   /**
+   * Composes associative arguments into a command string
+   *
+   * @param array $assoc_args Arguments for command line in array form
+   * @return string Command string form of param
+   */
+  public function assocArgsToStr($assoc_args) {
+    $return = '';
+    foreach ($assoc_args as $key => $value) {
+      if ($value === true) {
+        $return .= " --$key";
+      } else {
+        $return .= " --$key=" . escapeshellarg($value);
+      }
+    }
+    return $return;
+  }
+
+  /**
    * Launch an external process that takes over I/O.
    *
    * @param array $arg_options Elements as follow:
@@ -78,24 +96,6 @@ class LaunchHelper extends TerminusHelper {
       ]
     );
     return $status;
-  }
-
-  /**
-   * Composes associative arguments into a command string
-   *
-   * @param array $assoc_args Arguments for command line in array form
-   * @return string Command string form of param
-   */
-  private function assocArgsToStr($assoc_args) {
-    $return = '';
-    foreach ($assoc_args as $key => $value) {
-      if ($value === true) {
-        $return .= " --$key";
-      } else {
-        $return .= " --$key=" . escapeshellarg($value);
-      }
-    }
-    return $return;
   }
 
   /**
