@@ -325,7 +325,7 @@
     -bool   exit If true, throw error when no value is found
 
 ##### Return:
-    [Upstream]
+    [string]
 
 ##### Throws:
     TerminusException

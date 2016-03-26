@@ -1,5 +1,17 @@
 # Terminus\Helpers\LaunchHelper
 
+### assocArgsToStr
+##### Description:
+    Composes associative arguments into a command string
+
+##### Parameters:
+    [array] $assoc_args Arguments for command line in array form
+
+##### Return:
+    [string] Command string form of param
+
+---
+
 ### launch
 ##### Description:
     Launch an external process that takes over I/O.
