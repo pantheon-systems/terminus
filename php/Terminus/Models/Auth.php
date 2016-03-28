@@ -45,7 +45,7 @@ class Auth extends TerminusModel {
    */
   public function getMachineTokenCreationUrl() {
     $url = sprintf(
-      '%s://%s:%s/machine-token/create?client=terminus&device=%s',
+      '%s://%s:%s/machine-token/create/%s',
       TERMINUS_PROTOCOL,
       TERMINUS_HOST,
       TERMINUS_PORT,
