@@ -833,10 +833,10 @@ class SiteCommand extends TerminusCommand {
     $action = array_shift($args);
     if ($action != 'lookup') {
       $site   = $this->sites->get(
-        $this->input()->siteName(array('args' => $assoc_args))
+        $this->input()->siteName(['args' => $assoc_args,])
       );
       $env    = $site->environments->get(
-        $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+        $this->input()->env(['args' => $assoc_args, 'site' => $site,])
       );
     }
 
@@ -849,11 +849,11 @@ class SiteCommand extends TerminusCommand {
         $this->log()->debug(json_encode($data));
         $this->log()->info(
           'Added {hostname} to {site}-{env}',
-          array(
+          [
             'hostname' => $assoc_args['hostname'],
-            'site' => $site->get('name'),
-            'env' => $env->get('id')
-          )
+            'site'     => $site->get('name'),
+            'env'      => $env->get('id'),
+          ]
         );
           break;
       case 'remove':
@@ -864,36 +864,36 @@ class SiteCommand extends TerminusCommand {
         $data     = $hostname->delete();
         $this->log()->info(
           'Deleted {hostname} from {site}-{env}',
-          array(
+          [
             'hostname' => $assoc_args['hostname'],
-            'site' => $site->get('name'),
-            'env' => $env->get('id')
-          )
+            'site'     => $site->get('name'),
+            'env'      => $env->get('id'),
+          ]
         );
           break;
       case 'lookup':
         $this->log()->warning('This operation may take a long time to run.');
         $hostname  = $this->input()->string(
-          array(
+          [
             'args'    => $assoc_args,
             'key'     => 'hostname',
-            'message' => 'Please enter a hostname to look up.'
-          )
+            'message' => 'Please enter a hostname to look up.',
+          ]
         );
         $sites    = $this->sites->all();
         $data     = null;
         foreach ($sites as $site_id => $site) {
-          $environments = array('dev', 'test', 'live');
+          $environments = ['dev', 'test', 'live',];
           foreach ($environments as $env_name) {
             $environment = $site->environments->get($env_name);
             $hostnames   = $environment->hostnames->ids();
             if (in_array($hostname, $hostnames)) {
-              $data = array(
-                array(
-                  'site' => $site->get('name'),
-                  'environment' => $environment->get('id')
-                )
-              );
+              $data = [
+                [
+                  'site'        => $site->get('name'),
+                  'environment' => $environment->get('id'),
+                ],
+              ];
               break 2;
             }
           }
@@ -921,16 +921,12 @@ class SiteCommand extends TerminusCommand {
       default:
       case 'list':
         $hostnames = $env->hostnames->all();
-        $data      = $hostnames;
-        if ($this->log()->getOptions('logFormat') != 'json') {
-          //If were not just dumping the JSON, then we should reformat the data.
-          $data = array();
-          foreach ($hostnames as $hostname => $details) {
-            $data[] = array_merge(
-              array('domain' => $details->get('id')),
-              (array)$details->attributes
-            );
-          }
+        $data      = [];
+        foreach ($hostnames as $hostname => $details) {
+          $data[] = array_merge(
+            ['domain' => $details->get('id'),],
+            (array)$details->attributes
+          );
         }
         $this->output()->outputRecordList($data);
           break;
