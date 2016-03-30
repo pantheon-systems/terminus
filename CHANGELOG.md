@@ -16,6 +16,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Fixed
 - Alternate command suggestion for `drush "sql-connect"` corrected to `site connection-info --field=mysql_command`. (#1005)
+- Fixed output in JSON format for `site hostnames list`. (#1011)
 
 ## [0.11.0] - 2016-03-16
 ### Added
