@@ -68,6 +68,15 @@
 
 ---
 
+### convergeBindings
+##### Description:
+    Converges all bindings on a site
+
+##### Return:
+    [array]
+
+---
+
 ### countDeployableCommits
 ##### Description:
     Counts the number of deployable commits
@@ -104,6 +113,15 @@
 
 ##### Return:
     [string]
+
+---
+
+### getDrushVersion
+##### Description:
+    Gets the Drush version of this environment
+
+##### Return:
+    [int]
 
 ---
 
@@ -250,6 +268,18 @@
 
 ##### Throws:
     TerminusException
+
+---
+
+### setDrushVersion
+##### Description:
+    Sets the Drush version to the indicated version number
+
+##### Parameters:
+    [string] $version_number Version of Drush to use
+
+##### Return:
+    [Workflow]
 
 ---
 
