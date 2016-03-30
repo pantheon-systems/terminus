@@ -138,11 +138,11 @@ class FileCache {
    *        [bool] ttl          TTL for file read
    * @return bool|string The file contents or false
    */
-  public function getData($key, array $options = array()) {
-    $defaults = array(
+  public function getData($key, array $options = []) {
+    $defaults = [
       'decode_array' => false,
-      'ttl'          => null
-    );
+      'ttl'          => null,
+    ];
     $options  = array_merge($defaults, $options);
 
     try {
@@ -151,7 +151,7 @@ class FileCache {
       return false;
     }
 
-    $data = false;
+    $data = [];
     if ($contents) {
       $data = json_decode($contents, $options['decode_array']);
     }

@@ -67,7 +67,7 @@ class FileCacheTest extends PHPUnit_Framework_TestCase {
 
     //Trying to get data when the file is not there
     $data = $this->file_cache->getData($this->test_file_name);
-    $this->assertFalse($data);
+    $this->assertInternalType('array', $data);
   }
 
   public function testGetRoot() {

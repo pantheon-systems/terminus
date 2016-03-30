@@ -72,15 +72,18 @@ class SitesCache {
    * @param array $memberships_data Memberships of use to add to cache
    * @return array
    */
-  public function add(array $memberships_data = array()) {
+  public function add(array $memberships_data = []) {
     $cache = (array)$this->cache->getData(
       $this->cachekey,
-      array('decode_array' => true)
+      ['decode_array' => true,]
     );
+    if (!$cache) {
+      $cache = [];
+    }
 
     //If a single site item is passed in, wrap it in an array
     if (isset($memberships_data['id'])) {
-      $memberships_data = array($memberships_data);
+      $memberships_data = [$memberships_data,];
     }
 
     foreach ($memberships_data as $membership_data) {
@@ -96,7 +99,7 @@ class SitesCache {
       //Then add the membership
       $cache[$site_name] = array_merge(
         $cache[$site_name],
-        array('memberships' => array($membership_id => $membership))
+        ['memberships' => [$membership_id => $membership,],]
       );
     }
 
@@ -328,7 +331,7 @@ class SitesCache {
    * @return array
    */
   private function getSiteData($response_data, $membership_data = array()) {
-    $site_data = array(
+    $site_data = [
       'id'            => null,
       'name'          => null,
       'label'         => null,
@@ -341,8 +344,8 @@ class SitesCache {
       'holder_type'   => null,
       'holder_id'     => null,
       'owner'         => null,
-      'membership'    => array(),
-    );
+      'membership'    => [],
+    ];
     foreach ($site_data as $index => $value) {
       if (($value == null) && isset($response_data[$index])) {
         $site_data[$index] = $response_data[$index];
