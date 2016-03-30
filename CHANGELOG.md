@@ -8,6 +8,12 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New parameter `--owner` added to `sites list` to filter the list just for the sites the current user owns. (#1003)
 - New option to filter for organization sites via `sites list --org=all`. (#1003)
 
+### Changed
+- `InputHelper#upstream()` now returns the UUID of the chosen upstream rather than an upstream object. (#1013)
+- `InputHelper#upstream()` will not check upstream data if it has been given a UUID in the $args[$key]. (#1013)
+- `InputHelper#orgId()` will not check organizational data if it has been given a UUID in the $args[$key]. (#1013)
+- Running `Sites#addSiteToCache` while the cache is empty will no longer trigger a full cache sync. (#1013)
+
 ### Fixed
 - Alternate command suggestion for `drush "sql-connect"` corrected to `site connection-info --field=mysql_command`. (#1005)
 

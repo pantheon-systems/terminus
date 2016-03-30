@@ -75,39 +75,34 @@ class Sites extends TerminusCollection {
    * @return Site The newly created site object
    */
   public function addSiteToCache($site_id, $org_id = null) {
-    if (count($this->models) == 0) {
-      $this->rebuildCache();
-      $site = $this->get($site_id);
-    } else {
-      $site = new Site(
-        $this->objectify(array('id' => $site_id)),
-        array('collection' => $this)
-      );
-      $site->fetch();
-      $cache_membership = $site->info();
+    $site = new Site(
+      (object)['id' => $site_id,],
+      ['collection' => $this,]
+    );
+    $site->fetch();
+    $cache_membership = $site->info();
 
-      if (!is_null($org_id)) {
-        $org = new Organization(null, array('id' => $org_id));
-        $cache_membership['membership'] = array(
-          'id' => $org_id,
-          'name' => $org->profile->name,
-          'type' => 'organization'
-        );
-      } else {
-        $user_id = Session::getValue('user_uuid');
-        $cache_membership['membership'] = array(
-          'id' => $user_id,
-          'name' => 'Team',
-          'type' => 'team'
-        );
-      }
-      $this->sites_cache->add($cache_membership);
+    if (!is_null($org_id)) {
+      $org = new Organization(null, ['id' => $org_id,]);
+      $cache_membership['membership'] = [
+        'id' => $org_id,
+        'name' => $org->profile->name,
+        'type' => 'organization',
+      ];
+    } else {
+      $user_id = Session::getValue('user_uuid');
+      $cache_membership['membership'] = [
+        'id' => $user_id,
+        'name' => 'Team',
+        'type' => 'team',
+      ];
     }
+    $this->sites_cache->add($cache_membership);
     return $site;
   }
 
   /**
-   * Removes site with given site ID from cache
+    * Removes site with given site ID from cache
    *
    * @param string $site_name Name of site to remove from cache
    * @return void
@@ -130,7 +125,7 @@ class Sites extends TerminusCollection {
         $cache = $this->sites_cache->all();
       }
       foreach ($cache as $name => $model) {
-        $this->add($this->objectify($model));
+        $this->add((object)$model);
       }
     }
     return $this;

@@ -388,6 +388,9 @@ class InputHelper extends TerminusHelper {
 
     $arguments = $options['args'];
     $key       = $options['key'];
+    if (isset($arguments[$key]) && $this->isValidUuid($arguments[$key])) {
+      return $arguments[$key];
+    }
     $org_list  = $this->orgList($options);
     if (isset($arguments[$key])) {
       if ($id = array_search($arguments[$key], $org_list)) {
@@ -849,7 +852,7 @@ class InputHelper extends TerminusHelper {
    *        array  args Args to parse value from
    *        string key  Index to search for in args
    *        bool   exit If true, throw error when no value is found
-   * @return Upstream
+   * @return string
    * @throws TerminusException
    */
   public function upstream(array $arg_options = []) {
@@ -860,9 +863,12 @@ class InputHelper extends TerminusHelper {
     ];
     $options         = array_merge($default_options, $arg_options);
 
-    $upstreams = new Upstreams();
     if (isset($options['args'][$options['key']])) {
-      $upstream = $upstreams->getByIdOrName($options['args'][$options['key']]);
+      if ($this->isValidUuid($options['args'][$options['key']])) {
+        return $options['args'][$options['key']];
+      }
+      $upstreams = new Upstreams();
+      $upstream  = $upstreams->getByIdOrName($options['args'][$options['key']]);
       if ($upstream == null) {
         throw new TerminusException(
           'Could not find upstream: {upstream}',
@@ -877,7 +883,8 @@ class InputHelper extends TerminusHelper {
         )
       );
     }
-    return $upstream;
+    $upstream_id = $upstream->get('id');
+    return $upstream_id;
   }
 
   /**
@@ -946,6 +953,20 @@ class InputHelper extends TerminusHelper {
         1
       );
     }
+  }
+
+  /**
+   * Ascertains whether the given string is properly formatted to be a UUID.
+   *
+   * @param string $uuid The string to evaluate
+   * @return bool
+   */
+  private function isValidUuid($uuid) {
+    $regex  = '~^\{?[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-';
+    $regex .= '[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}\}?$~';
+    preg_match($regex, $uuid, $matches);
+    $is_uuid = count($matches) === 1;
+    return $is_uuid;
   }
 
   /**

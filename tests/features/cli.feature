@@ -53,7 +53,7 @@ Feature: CLI Commands
     And I run "terminus cli session-dump --format=json"
     Then I should get:
     """
-    false
+    []
     """
 
   @vcr cli_session-dump

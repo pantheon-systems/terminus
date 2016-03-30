@@ -119,13 +119,11 @@ class SitesCommand extends TerminusCommand {
    *
    */
   public function create($args, $assoc_args) {
-    $options  = $this->getSiteCreateOptions($assoc_args);
-    $upstream = $this->input()->upstream(['args' => $assoc_args]);
-    $options['upstream_id'] = $upstream->get('id');
-    $this->log()->info(
-      'Creating new {upstream} installation ... ',
-      array('upstream' => $upstream->get('longname'))
+    $options                = $this->getSiteCreateOptions($assoc_args);
+    $options['upstream_id'] = $this->input()->upstream(
+      ['args' => $assoc_args,]
     );
+    $this->log()->info('Creating new site installation ... ');
 
     $workflow = $this->sites->addSite($options);
     $workflow->wait();
@@ -137,9 +135,9 @@ class SitesCommand extends TerminusCommand {
 
     $this->helpers->launch->launchSelf(
       [
-        'command' => 'site',
-        'args' => ['info'],
-        'assoc_args' => ['site' => $options['name']]
+        'command'    => 'site',
+        'args'       => ['info',],
+        'assoc_args' => ['site' => $options['name'],],
       ]
     );
 
