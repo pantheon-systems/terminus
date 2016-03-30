@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## [0.11.1] - 2016-03-30
 ### Added
 - New command `site drupal-version` to check the Drush version number of any or all environments. (#1001)
 - New command `site set-drupal-version` to set the Drush version number of any or all environments. (#1001)
