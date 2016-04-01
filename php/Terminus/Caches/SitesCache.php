@@ -334,6 +334,7 @@ class SitesCache {
     $site_data = [
       'id'            => null,
       'name'          => null,
+      'frozen'        => null,
       'label'         => null,
       'created'       => null,
       'framework'     => null,
