@@ -279,6 +279,9 @@ class SitesCommand extends TerminusCommand {
         'created'       => date('Y-m-d H:i:s', $site->get('created')),
         'memberships'   => $memberships,
       ];
+      if ($site->get('frozen')) {
+        $rows[$site->get('id')]['frozen'] = true;
+      }
     }
 
     usort(
