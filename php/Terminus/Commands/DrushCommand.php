@@ -42,14 +42,11 @@ class DrushCommand extends CommandWithSSH {
    */
   public function __invoke($args, $assoc_args) {
     $elements = $this->getElements($args, $assoc_args);
-
     if ($this->log()->getOptions('logFormat') != 'normal') {
-      $elements['command'] .= ' --pipe';
+      $elements['command']   .= ' --pipe';
     }
     $result = $this->sendCommand($elements);
-    if ($this->log()->getOptions('logFormat') != 'normal') {
-      $this->output()->outputRecordList($result);
-    }
+    $this->output()->outputDump($result);
   }
 
 }

@@ -110,26 +110,6 @@ abstract class CommandWithSSH extends TerminusCommand {
   }
 
   /**
-   * Formats command output into an array
-   *
-   * @param string $string Output string to format
-   * @return array
-   */
-  protected function formatOutput($string) {
-    $exploded_string = explode("\n", $string);
-    $formatted_data  = [];
-    foreach ($exploded_string as $key => $value) {
-      if (!in_array($value, ['', null,])) {
-        $formatted_data[$key] = explode("\t", $value);
-        if (count($formatted_data[$key] == 1)) {
-          $formatted_data[$key] = $value;
-        }
-      }
-    }
-    return $formatted_data;
-  }
-
-  /**
    * Parses server information for connections
    *
    * @param array $site_info Elements as follows:
@@ -195,11 +175,11 @@ abstract class CommandWithSSH extends TerminusCommand {
   /**
    * Sends command through SSH
    *
-   * @param array $options Elements as follows:
-   *        Site   site    Site being invoked
-   *        string env_id  Name of the environment being invoked
-   *        string command Command to run remotely
-   *        string server  Server connection info
+   * @param array $options Elements as follow:
+   *        Site   site       Site being invoked
+   *        string env_id     Name of the environment being invoked
+   *        string command    Command to run remotely
+   *        string server     Server connection info
    * @return array
    */
   protected function sendCommand(array $options = []) {
@@ -211,8 +191,8 @@ abstract class CommandWithSSH extends TerminusCommand {
         'env'   => $options['env_id'],
       ]
     );
-    $server    = $options['server'];
-    $is_normal = ($this->log()->getOptions('logFormat') == 'normal');
+    $server     = $options['server'];
+
     $cmd       = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p '
       . $server['port'] . ' -o "AddressFamily inet"' . " "
       . escapeshellarg(
@@ -222,29 +202,11 @@ abstract class CommandWithSSH extends TerminusCommand {
       'Command "{command}" is being run.',
       ['command' => escapeshellarg($cmd),]
     );
-    if (!$is_normal) {
-      ob_start();
-    }
-    passthru($cmd, $exit_code);
-    if (!$is_normal) {
-      $result = ob_get_clean();
-    }
-    if ($this->log()->getOptions('logFormat') == 'silent') {
-      $this->log()->info($result);
-    }
 
-    if ((boolean)$exit_code) {
-      $this->failure(
-        'Either we could not connect, or {client} has exited with code {code}',
-        ['client' => $this->client, 'code' => $exit_code],
-        $exit_code
-      );
-    }
-    if (!isset($result)) {
-      return true;
-    }
-    $formatted_result = $this->formatOutput($result);
-    return $formatted_result;
+    ob_start();
+    passthru($cmd, $exit_code);
+    $result = ob_get_clean();
+    return $result;
   }
 
 }
