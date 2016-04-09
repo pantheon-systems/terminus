@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## MASTER
 ### Added
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
+- New command `site lookup` to look up sites by name. (#1027)
 
 ## [0.11.1] - 2016-03-30
 ### Added
