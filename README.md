@@ -40,6 +40,20 @@ Run this in this in your terminal client:
 curl https://github.com/pantheon-systems/terminus/releases/download/0.11.1/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 
+####Installing with [Homebrew](http://brew.sh/)(for Macs)
+
+If you do not have `homebrew-php` already tapped, here are the commands for the taps:
+```bash
+brew tap homebrew/dupes
+brew tap homebrew/versions
+brew tap homebrew/php
+```
+
+And after you're all tapped out, install Terminus with this command:
+```bash
+brew install terminus
+```
+
 ####Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
 
