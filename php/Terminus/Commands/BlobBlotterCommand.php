@@ -4,7 +4,6 @@ namespace Terminus\Commands;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Sites;
 
-
 /**
  * Finds and problematic blob values from MariaDB.
  *
@@ -35,12 +34,13 @@ class BlobBlotterCommand extends TerminusCommand {
    * @return array of mysql_params
    */
   protected function _openConnection($assoc_args) {
-    $site        = $this->sites->get(
+    $site = $this->sites->get(
       $this->input()->siteName(array('args' => $assoc_args))
     );
 
-    $env_id      = $this->input()->env(
-      array('args' => $assoc_args, 'site' => $site));
+    $env_id = $this->input()->env(
+      array('args' => $assoc_args, 'site' => $site)
+    );
 
     $environment = $site->environments->get($env_id);
     $info        = $environment->connectionInfo();
@@ -64,7 +64,7 @@ class BlobBlotterCommand extends TerminusCommand {
   }
 
   /**
-   * Returns the "mediumblob", "mediumtext", "longblob", "longtext" columns from the pantheon database.
+   * Returns the mediumblob/mediumtext/longblob/longtext columns from the pantheon database.
    */
   protected function _getBlobColumns($connect) {
     $query = 'SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
@@ -109,7 +109,11 @@ class BlobBlotterCommand extends TerminusCommand {
         $query = "SELECT length($column)/1024 AS column_KB FROM $table LIMIT 1";
         if ($result = mysqli_query($connect, $query)) {
           $row = mysqli_fetch_row($result);
-          $row = empty($row[0]) ? 0 : $row[0];
+          if (!empty($row[0])) {
+            $row = $row[0];
+          } else {
+            $row = 0;
+          }
           mysqli_free_result($result);
         }
 
@@ -142,7 +146,7 @@ class BlobBlotterCommand extends TerminusCommand {
    *
    * [--env=<env>]
    * : environment for which to fetch connection info
-   * 
+   *
    * [--table=<table>]
    * : Table name with potentially large blob of data
    *
@@ -153,7 +157,7 @@ class BlobBlotterCommand extends TerminusCommand {
    */
   public function cells($args, $assoc_args) {
     $connect = $this->_openConnection($assoc_args);
-    
+
     if (empty($assoc_args['table']) || empty($assoc_args['column'])) {
       $this->log()->error('Please specify both the --column and --table parameters.');
       exit;
@@ -162,7 +166,10 @@ class BlobBlotterCommand extends TerminusCommand {
     $table  = mysqli_real_escape_string($connect, $assoc_args['table']);
     $column = mysqli_real_escape_string($connect, $assoc_args['column']);
 
-    $query = "SELECT column_name FROM information_schema.columns WHERE table_name = '$table' AND column_name != '$column'";
+    $query = "SELECT column_name 
+    FROM information_schema.columns 
+    WHERE table_name = '$table' AND column_name != '$column'";
+
     if ($result = mysqli_query($connect, $query)) {
       $cols = [];
       while ($row = mysqli_fetch_row($result)) {
@@ -173,8 +180,11 @@ class BlobBlotterCommand extends TerminusCommand {
 
     $cols = implode(',', $cols);
 
-    $query = "SELECT $cols, length($column)/1024 AS column_KB FROM $table ORDER BY column_KB DESC LIMIT 50";
-    
+    $query = "SELECT $cols, length($column)/1024 AS column_KB 
+    FROM $table 
+    ORDER BY column_KB DESC 
+    LIMIT 50";
+
     if ($result = mysqli_query($connect, $query)) {
       while ($row = mysqli_fetch_assoc($result)) {
         $return[] = $row;
@@ -185,4 +195,5 @@ class BlobBlotterCommand extends TerminusCommand {
     $this->_closeConnection($connect);
     $this->output()->outputRecordList($return);
   }
+
 }
