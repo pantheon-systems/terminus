@@ -44,12 +44,13 @@ class Auth extends TerminusModel {
    * @return string
    */
   public function getMachineTokenCreationUrl() {
-    $url = sprintf(
-      '%s://%s:%s/machine-token/create/%s',
-      TERMINUS_PROTOCOL,
-      TERMINUS_HOST,
-      TERMINUS_PORT,
-      gethostname()
+    $port = '';
+    if (TERMINUS_HOST == 'localhost') {
+      $port = ':' . TERMINUS_PORT;
+    }
+    $url = vsprintf(
+      '%s://%s%s/machine-token/create/%s',
+      [TERMINUS_PROTOCOL, TERMINUS_HOST, $port, gethostname(),]
     );
     return $url;
   }
