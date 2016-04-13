@@ -52,7 +52,7 @@ function isOs($test_os = '') {
  * @return bool True if OS running Terminus is Mac
  */
 function isMac() {
-  return $this->isOs('Mac');
+  return isOs('Mac');
 }
 
 /**
@@ -61,7 +61,7 @@ function isMac() {
  * @return bool True if OS running Terminus is Linux
  */
 function isLinux() {
-  return $this->isOs('Linux');
+  return isOs('Linux');
 }
 
 /**
@@ -70,5 +70,5 @@ function isLinux() {
  * @return bool True if OS running Terminus is Windows
  */
 function isWindows() {
-  return $this->isOs('Windows');
+  return isOs('Windows');
 }
