@@ -17,24 +17,26 @@ function isTest() {
   }
   return $is_test;
 }
+
 /**
  * Check whether Terminus is running in a certain OS environment
  *
+ * @param string $test_os The operating system to check
  * @return bool True if OS running Terminus is based on argument passed
  */
-function isOS($test_os = '') {
+function isOs($test_os = '') {
   $test_os = strtoupper($test_os);
   $os = strtoupper(substr(PHP_OS, 0, 3));
   switch ($test_os) {
     case 'MAC':
       $is_os = ($os == 'DAR');
-      break;
+        break;
     case 'LINUX':
       $is_os = ($os == 'LIN');
-      break;
+        break;
     case 'WINDOWS':
       $is_os = ($os == 'WIN');
-      break;
+        break;
     default:
       $is_os = false;
   }
@@ -50,7 +52,7 @@ function isOS($test_os = '') {
  * @return bool True if OS running Terminus is Mac
  */
 function isMac() {
-  return $this->isOS('Mac');
+  return $this->isOs('Mac');
 }
 
 /**
@@ -59,7 +61,7 @@ function isMac() {
  * @return bool True if OS running Terminus is Linux
  */
 function isLinux() {
-  return $this->isOS('Linux');
+  return $this->isOs('Linux');
 }
 
 /**
@@ -68,5 +70,5 @@ function isLinux() {
  * @return bool True if OS running Terminus is Windows
  */
 function isWindows() {
-  return $this->isOS('Windows');
+  return $this->isOs('Windows');
 }
