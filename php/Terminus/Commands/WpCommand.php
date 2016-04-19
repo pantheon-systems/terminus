@@ -40,11 +40,8 @@ class WpCommand extends CommandWithSSH {
    */
   public function __invoke($args, $assoc_args) {
     $elements = $this->getElements($args, $assoc_args);
-    $result   = $this->sendCommand($elements);
-    if ($this->log()->getOptions('logFormat') != 'normal') {
-      $this->output()->outputRecordList($result);
-    }
+    $results  = $this->sendCommand($elements);
+    $this->output()->outputDump($results);
   }
 
 }
-
