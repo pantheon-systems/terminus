@@ -6,7 +6,13 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
 - New command `site lookup` to look up sites by name. (#1027)
 
+### Changed
+- Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
+
+### Fixed
+- `wp` and `drush` commands both now use the object buffer and output the result of the operation without formatting. (#1023)
 ## [0.11.1] - 2016-03-30
+
 ### Added
 - New command `site drush-version` to check the Drush version number of any or all environments. (#1001)
 - New command `site set-drush-version` to set the Drush version number of any or all environments. (#1001)
