@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Changed
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
+- Changed the `SynopsisValidator` so that any unnamed command argument between `<` and `>` may be given any name. (#1041)
 
 ### Fixed
 - `wp` and `drush` commands both now use the object buffer and output the result of the operation without formatting. (#1023)

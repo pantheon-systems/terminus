@@ -68,10 +68,8 @@ class SynopsisValidator {
         '$1',
         $positionals[$i]['token']
       );
-      if (in_array(trim($token), array('commands', 'email'))) {
-        // We exit here because the wp and drush commands need to not have
-        // validation running since their commands are dependent on their
-        // respective code bases.
+      if (!strpos(trim($token), '|')) {
+        // We exit here because this commands is accepting free arguments.
         return false;
       }
       $regex = "#^($token)$#s";
