@@ -165,6 +165,20 @@ class Sites extends TerminusCollection {
   }
 
   /**
+   * Looks up a site's UUID by its name.
+   *
+   * @param string $name Name of the site to look up
+   * @return string
+   */
+  public function findUuidByName($name) {
+    $response = $this->request->request(
+      "site-names/$name",
+      ['method' => 'get',]
+    );
+    return $response['data'];
+  }
+
+  /**
    * Retrieves the site of the given UUID or name
    *
    * @param string $id UUID or name of desired site

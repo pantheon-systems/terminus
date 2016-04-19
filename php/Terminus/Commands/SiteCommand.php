@@ -1138,6 +1138,29 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Looks up a site name
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to look up
+   *
+   * @subcommand lookup
+   */
+  public function lookup($args, $assoc_args) {
+    $site_name = $this->input()->string(
+      [
+        'args' => $assoc_args,
+        'key'  => 'site',
+        'required' => true,
+        'message' => 'Enter the name of a site to look up',
+      ]
+    );
+    $response = (array)$this->sites->findUuidByName($site_name);
+    $this->output()->outputValueList($response);
+  }
+
+  /**
    * Merge the dev environment (i.e. master) into a multidev environment
    *
    * ## OPTIONS
