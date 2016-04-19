@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## MASTER
 ### Added
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
+- New command `site lookup` to look up sites by name. (#1027)
 
 ### Changed
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
