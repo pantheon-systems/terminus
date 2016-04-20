@@ -8,7 +8,7 @@ Terminus uses models and collections to represent concepts on the Pantheon platf
 
 #### Utilities
 To operate Terminus as a library, you will need to be authenticated.
-- [Terminus\Auth](Auth.md)
+- [Terminus\Auth](Models/Auth.md)
 
 #### Abstract Parent Classes
 Although they cannot be accessed directly, all other models and collections can use the commands herein.
