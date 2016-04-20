@@ -62,33 +62,33 @@ You can access these via their owners.
 Navigate to the directory in which your script is being constructed in the
 terminal and use this command:
 
-`composer require pantheon-systems/terminus`
+    `composer require pantheon-systems/terminus`
 
 2. Include the Terminus source code. Composer handily places the code you
 called for into the `vendor` directory within the directory you are in.
 Use this to load Terminus' source to your script:
 
-`require vendor/autoload.php`
+    `require vendor/autoload.php`
 
 3. Start the Terminus instance.
 
-`$terminus = new Terminus();`
+    `$terminus = new Terminus();`
 
 4. Use the namespaces of the top-level models or collections you are going to make use of
 
-`use Terminus\Models\Collections\Sites;`
+    `use Terminus\Models\Collections\Sites;`
 
 5. Instantiate the top-level models or collections you are using.
 
-`$sites = new Sites();`
+    `$sites = new Sites();`
 
 6. Use its properties and functions.
 
-```bash
-$my_site         = $sites->get('my_site');
-$dev_environment = $my_site->environments->get('dev');
-$connection_info = $dev_environment->connectionInfo();
-```
+    ```bash
+    $my_site         = $sites->get('my_site');
+    $dev_environment = $my_site->environments->get('dev'); 
+    $connection_info = $dev_environment->connectionInfo();
+    ```
 
 or
 
