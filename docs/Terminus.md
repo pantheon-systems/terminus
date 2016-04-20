@@ -70,19 +70,16 @@ Use this to load Terminus' source to your script:
 
     `require vendor/autoload.php`
 
-3. Start the Terminus instance.
 
-    `$terminus = new Terminus();`
-
-4. Use the namespaces of the top-level models or collections you are going to make use of
+3. Use the namespaces of the top-level models or collections you are going to make use of
 
     `use Terminus\Models\Collections\Sites;`
 
-5. Instantiate the top-level models or collections you are using.
+4. Instantiate the top-level models or collections you are using.
 
     `$sites = new Sites();`
 
-6. Use its properties and functions.
+5. Use its properties and functions.
 
     ```bash
     $my_site         = $sites->get('my_site');
