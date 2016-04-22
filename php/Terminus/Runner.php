@@ -11,25 +11,20 @@ use Terminus\Outputters\JSONFormatter;
 use Terminus\Outputters\Outputter;
 use Terminus\Outputters\PrettyFormatter;
 use Terminus\Outputters\StreamWriter;
-use Terminus\Utils;
 
 class Runner {
   /**
    * @var array
    */
-  private $arguments;
+  private static $arguments;
   /**
    * @var array
    */
-  private $assoc_args;
+  private static $assoc_args;
   /**
    * @var array
    */
-  private $config = [];
-  /**
-   * @var Configurator
-   */
-  private $configurator;
+  private static $config = [];
   /**
    * @var Logger
    */
@@ -41,7 +36,7 @@ class Runner {
   /**
    * @var RootCommand
    */
-  private $root_command;
+  private static $root_command;
 
   /**
    * Constructs object. Initializes config, colorization, loger, and outputter
@@ -50,10 +45,7 @@ class Runner {
    */
   public function __construct(array $config = []) {
     if (!defined('Terminus')) {
-      $this->configurator = new Configurator();
       $this->setConfig($config);
-      $this->setLogger($this->config);
-      $this->setOutputter($this->getConfig('format'), $this->getConfig('output'));
     }
   }
 
@@ -70,7 +62,7 @@ class Runner {
   public function findCommandToRun($args) {
     $command = $this->getRootCommand();
 
-    $cmd_path = array();
+    $cmd_path = [];
     while (!empty($args) && $command->canHaveSubcommands()) {
       $cmd_path[] = $args[0];
       $full_name  = implode(' ', $cmd_path);
@@ -80,7 +72,7 @@ class Runner {
       if (!$subcommand) {
         throw new TerminusException(
           "'{cmd}' is not a registered command. See 'terminus help'.",
-          array('cmd' => $full_name),
+          ['cmd' => $full_name,],
           1
         );
       }
@@ -88,7 +80,7 @@ class Runner {
       $command = $subcommand;
     }
 
-    $command_array = array($command, $args, $cmd_path);
+    $command_array = [$command, $args, $cmd_path,];
     return $command_array;
   }
 
@@ -99,12 +91,15 @@ class Runner {
    * @return mixed
    * @throws TerminusException
    */
-  public function getConfig($key = null) {
-    if (is_null($key)) {
-      return $this->config;
+  public static function getConfig($key = null) {
+    if (empty(self::$config)) {
+      self::setConfig();
     }
-    if (isset($this->config[$key])) {
-      return $this->config[$key];
+    if (is_null($key)) {
+      return self::$config;
+    }
+    if (isset(self::$config[$key])) {
+      return self::$config[$key];
     }
     throw new TerminusException(
       'There is no configuration option set with the key {key}.',
@@ -119,6 +114,9 @@ class Runner {
    * @return Logger $logger
    */
   public static function getLogger() {
+    if (!isset(self::$logger)) {
+      self::setLogger(self::getConfig());
+    }
     return self::$logger;
   }
 
@@ -128,6 +126,9 @@ class Runner {
    * @return OutputterInterface
    */
   public static function getOutputter() {
+    if (!isset(self::$outputter)) {
+      self::setOutputter(self::getConfig('format'), self::getConfig('output'));
+    }
     return self::$outputter;
   }
 
@@ -171,30 +172,31 @@ class Runner {
    * @return void
    */
   public function run() {
-    if (empty($this->arguments)) {
-      $this->arguments[] = 'help';
+    if (empty(self::$arguments)) {
+      self::$arguments[] = 'help';
     }
 
-    if (isset($this->config['require'])) {
-      foreach ($this->config['require'] as $path) {
+    $config = self::getConfig();
+    if (isset($config['require'])) {
+      foreach ($config['require'] as $path) {
         require_once $path;
       }
     }
 
     try {
       // Show synopsis if it's a composite command.
-      $r = $this->findCommandToRun($this->arguments);
+      $r = $this->findCommandToRun(self::$arguments);
       if (is_array($r)) {
         /** @var \Terminus\Dispatcher\RootCommand $command */
         list($command) = $r;
 
         if ($command->canHaveSubcommands()) {
-          self::$logger->info($command->getUsage());
+          self::getLogger()->info($command->getUsage());
           exit;
         }
       }
     } catch (TerminusException $e) {
-      self::$logger->debug($e->getMessage());
+      self::getLogger()->debug($e->getMessage());
     }
 
     $this->runCommand();
@@ -206,10 +208,10 @@ class Runner {
    * @return \Terminus\Dispatcher\RootCommand
    */
   public function getRootCommand() {
-    if (!isset($this->root_command)) {
+    if (!isset(self::$root_command)) {
       $this->setRootCommand();
     }
-    return $this->root_command;
+    return self::$root_command;
   }
 
   /**
@@ -239,7 +241,7 @@ class Runner {
    * @return array
    */
   private function getUserPlugins() {
-    $out = array();
+    $out = [];
     if ($plugins_dir = $this->getUserPluginsDir()) {
       $plugin_iterator = new \DirectoryIterator($plugins_dir);
       foreach ($plugin_iterator as $dir) {
@@ -275,7 +277,7 @@ class Runner {
    */
   private function loadAllCommands(CompositeCommand $parent) {
     // Create a list of directories where commands might live.
-    $directories = array();
+    $directories = [];
 
     // Add the directory of core commands first.
     $directories[] = TERMINUS_ROOT . '/php/Terminus/Commands';
@@ -319,8 +321,8 @@ class Runner {
    * @return void
    */
   private function runCommand() {
-    $args       = $this->arguments;
-    $assoc_args = $this->assoc_args;
+    $args       = self::$arguments;
+    $assoc_args = self::$assoc_args;
     try {
       /** @var \Terminus\Dispatcher\RootCommand $command */
       list($command, $final_args, $cmd_path) = $this->findCommandToRun($args);
@@ -328,43 +330,44 @@ class Runner {
 
       $return = $command->invoke($final_args, $assoc_args);
       if (is_string($return)) {
-        self::$logger->info($return);
+        self::getLogger()->info($return);
       }
     } catch (\Exception $e) {
       if (method_exists($e, 'getReplacements')) {
-        self::$logger->error($e->getMessage(), $e->getReplacements());
+        self::getLogger()->error($e->getMessage(), $e->getReplacements());
       } else {
-        self::$logger->error($e->getMessage());
+        self::getLogger()->error($e->getMessage());
       }
       exit($e->getCode());
     }
   }
 
   /**
-   * Initializes configurator, saves config data to it
+   * Uses configurator, saves config data to it
    *
    * @param array $arg_config Config options with which to override defaults
    * @return void
    */
-  private function setConfig($arg_config = array()) {
-    $default_config = ['output' => 'php://stdout'];
+  private static function setConfig($arg_config = []) {
+    $configurator   = new Configurator();
+    $default_config = ['output' => 'php://stdout',];
     $config         = array_merge($default_config, $arg_config);
-    $args           = array('terminus', '--debug');
+    $args           = ['terminus', '--debug',];
     if (isset($GLOBALS['argv'])) {
       $args = $GLOBALS['argv'];
     }
 
     // Runtime config and args
-    list($args, $assoc_args, $runtime_config) = $this->configurator->parseArgs(
+    list($args, $assoc_args, $runtime_config) = $configurator->parseArgs(
       array_slice($args, 1)
     );
 
-    $this->arguments  = $args;
-    $this->assoc_args = $assoc_args;
+    self::$arguments  = $args;
+    self::$assoc_args = $assoc_args;
 
-    $this->configurator->mergeArray($runtime_config);
+    $configurator->mergeArray($runtime_config);
 
-    $this->config = array_merge($this->configurator->toArray(), $config);
+    self::$config = array_merge($configurator->toArray(), $config);
   }
 
   /**
@@ -373,8 +376,8 @@ class Runner {
    * @return void
    */
   private function setRootCommand() {
-    $this->root_command = new Dispatcher\RootCommand();
-    $this->loadAllCommands($this->root_command);
+    self::$root_command = new Dispatcher\RootCommand();
+    $this->loadAllCommands(self::$root_command);
   }
 
 }
