@@ -863,11 +863,11 @@ class InputHelper extends TerminusHelper {
     ];
     $options         = array_merge($default_options, $arg_options);
 
+    $upstreams = new Upstreams();
     if (isset($options['args'][$options['key']])) {
       if ($this->isValidUuid($options['args'][$options['key']])) {
         return $options['args'][$options['key']];
       }
-      $upstreams = new Upstreams();
       $upstream  = $upstreams->getByIdOrName($options['args'][$options['key']]);
       if ($upstream == null) {
         throw new TerminusException(
