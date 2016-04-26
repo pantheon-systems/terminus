@@ -109,7 +109,7 @@ abstract class TerminusCommand {
     $tokens = $auth->getAllSavedTokenEmails();
     if (!$auth->loggedIn()) {
       if (count($tokens) === 1) {
-        $email = array_shift($token);
+        $email = array_shift($tokens);
         $auth->logInViaMachineToken(compact('email'));
       } else if (isset($_SERVER['TERMINUS_MACHINE_TOKEN'])
        && $token = $_SERVER['TERMINUS_MACHINE_TOKEN']

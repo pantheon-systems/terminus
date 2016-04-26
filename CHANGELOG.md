@@ -14,6 +14,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `wp` and `drush` commands both now use the object buffer and output the result of the operation without formatting. (#1023)
 - `Runner::getLogger()` will no longer return `null`. (#1049)
 - Fixed undefined-variable bug when attempting to access list of upstreams in `InputHelper::upstream()`. (#1050)
+- Fixed undefined-variable bug which appears when a user has one machine token saved but is logged out. (#1053)
 
 ## [0.11.1] - 2016-03-30
 
