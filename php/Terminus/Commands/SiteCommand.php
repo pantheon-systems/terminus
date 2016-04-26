@@ -661,7 +661,8 @@ class SiteCommand extends TerminusCommand {
       $this->failure('You can only deploy to the test or live environment.');
     }
     if (!$env->hasDeployableCode()) {
-      $this->failure('There is nothing to deploy.');
+      $this->log()->info('There is nothing to deploy.');
+      return 0;
     }
 
     $sync_content = (
