@@ -36,11 +36,11 @@ class HelpCommand extends TerminusCommand {
    */
   public function __invoke($args, $assoc_args) {
     $this->recursive = $this->input()->optional(
-      array(
-        'key' => 'recursive',
+      [
+        'key'     => 'recursive',
         'choices' => $assoc_args,
-        'default' => false
-      )
+        'default' => false,
+      ]
     );
     $command         = $this->findSubcommand($args);
 
@@ -51,7 +51,7 @@ class HelpCommand extends TerminusCommand {
 
     $this->failure(
       '"{cmd}" is not a registered command.',
-      array('cmd' => $args[0])
+      ['cmd' => $args[0],]
     );
   }
 
@@ -80,13 +80,13 @@ class HelpCommand extends TerminusCommand {
   private function getMarkdown($command) {
     $name = implode(' ', Dispatcher\getPath($command));
 
-    $binding = array(
+    $binding = [
       'name'        => $name,
       'shortdesc'   => $command->getShortdesc(),
       'synopsis'    => $command->getSynopsis(),
       'subcommands' => null,
       'options'     => $this->getOptions($command),
-    );
+    ];
 
     if ($command->canHaveSubcommands()) {
       $binding['subcommands'] =
@@ -105,22 +105,23 @@ class HelpCommand extends TerminusCommand {
     $longdesc = $command->getLongdesc();
     $synopses = explode(
       ' ',
-      str_replace(array('[', ']'), '', $command->getSynopsis())
+      str_replace(['[', ']',], '', $command->getSynopsis())
     );
-    $options  = array();
+    $options  = [];
     if (is_string($longdesc)) {
       $options_list = explode("\n\n", $longdesc);
       foreach ($options_list as $option) {
         $drilldown = explode("\n", $option);
         if (count($drilldown) > 1) {
-          $key       = str_replace(array('[', ']'), '', $drilldown[0]);
+          $key      = str_replace(['[', ']',], '', $drilldown[0]);
+          $synopsis = array_slice($drilldown, 1);
           if (!in_array($key, $synopses)) {
             continue;
           }
           $value     = str_replace(
-            array(': ', "\n"),
-            array('', ' '),
-            $drilldown[1]
+            [': ', "\n", '  ',],
+            ['', ' ', ' ',],
+            implode('', $synopsis)
           );
           $options[$key] = $value;
         }
@@ -144,7 +145,7 @@ class HelpCommand extends TerminusCommand {
    *   subcommands of the command
    */
   private function getSubcommands($command) {
-    $subcommands = array();
+    $subcommands = [];
     foreach ($command->getSubcommands() as $subcommand) {
       if ($this->recursive) {
         $subcommands[$subcommand->getName()] = $this->getMarkdown($subcommand);

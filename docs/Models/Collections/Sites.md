@@ -82,6 +82,18 @@
 
 ---
 
+### findUuidByName
+##### Description:
+    Looks up a site's UUID by its name.
+
+##### Parameters:
+    [string] $name Name of the site to look up
+
+##### Return:
+    [string]
+
+---
+
 ### get
 ##### Description:
     Retrieves the site of the given UUID or name
