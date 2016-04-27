@@ -360,13 +360,18 @@ class SiteCommand extends TerminusCommand {
    * ## OPTIONS
    *
    * [--site=<site>]
-   * : name of the site
+   * : Name of the site from which to fetch connection info
    *
    * [--env=<env>]
-   * : environment for which to fetch connection info
+   * : Name of the specific environment from which to fetch connection info
    *
    * [--field=<field>]
-   * : specific field to return
+   * : Name of a specfic field in the connection info to return
+   *   Choices are git_command, git_host, git_port, git_url, git_username,
+   *   mysql_command, mysql_database, mysql_host, mysql_password, mysql_port,
+   *   mysql_url, mysql_username, redis_command, redis_password, redis_port,
+   *   redis_url, sftp_command, sftp_host, sftp_password, sftp_url, and
+   *   sftp_username
    *
    * @subcommand connection-info
    */
