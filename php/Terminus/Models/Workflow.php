@@ -167,19 +167,7 @@ class Workflow extends TerminusModel {
       fwrite(STDERR, '.');
     }
     echo "\n";
-    if ($this->isSuccessful()) {
-      return $this;
-    } else {
-      $final_task = $this->get('final_task');
-      if (($final_task != null) && !empty($final_task->messages)) {
-        foreach ($final_task->messages as $data => $message) {
-          if (!is_string($message->message)) {
-            $message->message = print_r($message->message, true);
-          }
-          throw new TerminusException((string)$message->message);
-        }
-      }
-    }
+    return $this;
   }
 
   /**

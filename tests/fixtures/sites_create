@@ -299,3 +299,37 @@
             ETag: 'W/"2-d4cbb29"'
             Vary: Accept-Encoding
         body: '[]'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/c0d03e37-068d-471a-9051-90a992ca35e6?site_state=true'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.1 (php_version=7.0.3&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:95cecf1a-57e1-11e5-9129-bc764e117665:8UK1xP82TikVuIKE4iXZj'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:95cecf1a-57e1-11e5-9129-bc764e117665:8UK1xP82TikVuIKE4iXZj'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Thu, 28 Apr 2016 23:05:24 GMT'
+            Content-Type: application/json
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: b0abdc00-0d95-11e6-b3a2-054f1c6e46de
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

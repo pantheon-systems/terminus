@@ -216,14 +216,15 @@ abstract class TerminusCommand {
   /**
    * Outputs basic workflow success/failure messages
    *
-   * @param Workflow $workflow Workflow to output message about
-   * @param array    $messages Messages to override workflow's defaults:
+   * @param Workflow $workflow    Workflow to output message about
+   * @param array    $messages    Messages to override workflow's defaults:
    *  string success Success message to override workflow default
    *  string failure Failure message to override workflow default
+   * @param int      $exit_status Status to exit with in the event of a failure
    * @return void
    */
-  protected function workflowOutput($workflow, array $messages = []) {
-    if ($workflow->get('result') == 'succeeded') {
+  protected function workflowOutput($workflow, array $messages = [], $exit_status = null) {
+    if ($workflow->isSuccessful()) {
       $message = $workflow->get('active_description');
       if (isset($messages['success'])) {
         $message = $messages['success'];
@@ -235,6 +236,9 @@ abstract class TerminusCommand {
         $message = $messages['failure'];
       } elseif (!is_null($final_task = $workflow->get('final_task'))) {
         $message = $final_task->reason;
+      }
+      if (!is_null($exit_status)) {
+        $this->failure($message, [], $exit_status);
       }
       $this->log()->error($message);
     }
