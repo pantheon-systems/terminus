@@ -124,10 +124,18 @@ class SitesCommand extends TerminusCommand {
       ['args' => $assoc_args,]
     );
     $this->log()->info('Creating new site installation ... ');
+    $fail_msg  = 'You have reached your limit of sandbox sites. To create a ';
+    $fail_msg .= 'new site, delete an unused site or take a site live. If ';
+    $fail_msg .= "you're building sites for third parties, sign up for ";
+    $fail_msg .= "Pantheon for Agencies. If you're at an educational ";
+    $fail_msg .= "institution, sign up for Pantheon for EDU.\n\nPantheon for ";
+    $fail_msg .= 'Agencies: https://dashboard.pantheon.io/organizations/create';
+    $fail_msg .= "\nPantheon for EDU: https://dashboard.pantheon.io/";
+    $fail_msg .= 'organizations/create-edu';
 
     $workflow = $this->sites->addSite($options);
     $workflow->wait();
-    $this->workflowOutput($workflow);
+    $this->workflowOutput($workflow, ['failure' => $fail_msg,], 1);
 
     // Add Site to SitesCache
     $final_task = $workflow->get('final_task');

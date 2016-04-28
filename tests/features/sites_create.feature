@@ -13,3 +13,9 @@ Feature: Create a site
     """
     Created new site "[[test_site_name]]"
     """
+
+  @vcr sites_create_limit
+  Scenario: Failing to create a site because the user has no sandbox sites left
+    Given I have at least "2" sites
+    When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --upstream=WordPress"
+    Then I should get: "You have reached your limit of sandbox sites."
