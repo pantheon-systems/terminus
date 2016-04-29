@@ -12,9 +12,6 @@ function isTest() {
     (boolean)getenv('CLI_TEST_MODE')
     || (boolean)getenv('VCR_CASSETTE')
   );
-  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
-    $is_test = !$is_test;
-  }
   return $is_test;
 }
 
@@ -39,9 +36,6 @@ function isOs($test_os = '') {
         break;
     default:
       $is_os = false;
-  }
-  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
-    $is_os = !$is_os;
   }
   return $is_os;
 }
