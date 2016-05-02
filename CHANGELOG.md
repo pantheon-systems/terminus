@@ -10,6 +10,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
 - Changed the `SynopsisValidator` so that any unnamed command argument between `<` and `>` may be given any name. (#1041)
 - When running `site deploy` and there are no changes to deploy, Terminus will now exit with status `0` rather than `1`. (#1054)
+- Moved log-out function out of `AuthCommand` and into the `Auth` model. (#1058)
 
 ### Fixed
 - `wp` and `drush` commands both now use the object buffer and output the result of the operation without formatting. (#1023)

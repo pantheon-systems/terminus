@@ -11,6 +11,10 @@ class Session {
    */
   public static $instance;
   /**
+   * @var FileCache
+   */
+  protected static $cache;
+  /**
    * @var object
    */
   protected $data;
@@ -19,14 +23,23 @@ class Session {
    * Instantiates object, sets session data
    */
   public function __construct() {
-    $cache      = new FileCache();
-    $session    = $cache->getData('session');
-    $this->data = $session;
+    self::$cache = new FileCache();
+    $session     = self::$cache->getData('session');
+    $this->data  = $session;
     if (empty($session)) {
       $this->data = new \stdClass();
     }
 
     self::$instance = $this;
+  }
+
+  /**
+   * Removes the session from the cache
+   *
+   * @return void
+   */
+  public static function destroy() {
+    self::$cache->remove('session');
   }
 
   /**
