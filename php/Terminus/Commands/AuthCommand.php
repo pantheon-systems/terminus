@@ -12,6 +12,21 @@ use Terminus\Session;
  * @command auth
  */
 class AuthCommand extends TerminusCommand {
+  /**
+   * @var Auth
+   */
+  private $auth;
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to construct the command object
+   * @return AuthCommand
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->auth = new Auth();
+  }
 
   /**
    * Log in as a user
@@ -31,7 +46,7 @@ class AuthCommand extends TerminusCommand {
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
-    $auth   = new Auth();
+    $auth   = $this->auth;
     $tokens = $auth->getAllSavedTokenEmails();
     if (!empty($args)) {
       $email = array_shift($args);
@@ -52,11 +67,6 @@ class AuthCommand extends TerminusCommand {
         compact('email')
       );
       $auth->logInViaMachineToken(compact('email'));
-      $this->log()->info('Logging in via machine token');
-    } elseif (empty($args) && isset($_SERVER['TERMINUS_MACHINE_TOKEN'])) {
-      // Try to log in using a machine token, if it's in the $_SERVER.
-      $token_data = ['token' => $_SERVER['TERMINUS_MACHINE_TOKEN']];
-      $auth->logInViaMachineToken($token_data);
       $this->log()->info('Logging in via machine token');
     } elseif (isset($_SERVER['TERMINUS_USER'])
       && !isset($assoc_args['password'])
@@ -118,7 +128,7 @@ class AuthCommand extends TerminusCommand {
    */
   public function logout() {
     $this->log()->info('Logging out of Pantheon.');
-    $this->cache->remove('session');
+    $this->auth->logOut();
   }
 
   /**

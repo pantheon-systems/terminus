@@ -189,3 +189,73 @@
             ETag: 'W/"380-3cf12b54"'
             Vary: Accept-Encoding
         body: '{"live": {"environment_created": 1441906215, "dns_zone": "onebox.pantheon.io", "randseed": "GGJ0MN4E5CLP0YTB6SOE4BPI7A0EIW3M", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}, "test": {"environment_created": 1441906214, "dns_zone": "onebox.pantheon.io", "randseed": "I3WGOACM63DOKAAG7JL87VPE66Q3V7SH", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}, "dev": {"watchers": 1, "diffstat": {}, "on_server_development": false, "environment_created": 1441906214, "dns_zone": "onebox.pantheon.io", "randseed": "14UEBA04873MPZ4Y2XSMAYAMLP9N3DCU", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "3997e445ae7b091280639fb74c628f9fa940631d", "styx_cluster": "styx-sara-onebox1.onebox.pantheon.io"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/products'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.1 (php_version=7.0.3&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:0bde1b84-57fb-11e5-97ba-bc764e117665:hmgNxymuJZOZR9t62VCNZ'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:0bde1b84-57fb-11e5-97ba-bc764e117665:hmgNxymuJZOZR9t62VCNZ'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Mon, 02 May 2016 21:57:13 GMT'
+            Content-Type: application/json
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: d40d2aa0-10b0-11e6-b3a2-054f1c6e46de
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/da01615e-3b7b-4efc-b494-07c11a091f8f/environments'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.1 (php_version=7.0.3&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:0bde1b84-57fb-11e5-97ba-bc764e117665:hmgNxymuJZOZR9t62VCNZ'
+            headers: 'Bearer 25069e79-eae7-4d41-8925-1f728a114cb8:0bde1b84-57fb-11e5-97ba-bc764e117665:hmgNxymuJZOZR9t62VCNZ'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
+        headers:
+            Server: nginx
+            Date: 'Mon, 02 May 2016 21:57:14 GMT'
+            Content-Type: application/json
+            Content-Length: '57'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: d473dbb0-10b0-11e6-b3a2-054f1c6e46de
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+        body: '"Invalid or expired session header: X-Pantheon-Session\n"'

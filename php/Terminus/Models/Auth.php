@@ -168,6 +168,15 @@ class Auth extends TerminusModel {
   }
 
   /**
+   * Logs the current user out of their Pantheon session
+   *
+   * @return void
+   */
+  public function logOut() {
+    Session::destroy();
+  }
+
+  /**
    * Checks to see whether the email has been set with a machine token
    *
    * @param string $email Email address to check for
