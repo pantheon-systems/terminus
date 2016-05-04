@@ -83,7 +83,7 @@ class LaunchHelper extends TerminusHelper {
     $escaped_args = array_map('escapeshellarg', $options['args']);
     $full_command = sprintf(
       '"%s" "%s" %s %s %s',
-      $this->getPhpBinary(),
+      TERMINUS_PHP,
       $script_path,
       $options['command'],
       implode(' ', $escaped_args),
@@ -96,24 +96,6 @@ class LaunchHelper extends TerminusHelper {
       ]
     );
     return $status;
-  }
-
-  /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
-  private function getPhpBinary() {
-    if (getenv('TERMINUS_PHP_USED')) {
-      $php_bin = getenv('TERMINUS_PHP_USED');
-    } elseif (getenv('TERMINUS_PHP')) {
-      $php_bin = getenv('TERMINUS_PHP');
-    } elseif (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } else {
-      $php_bin = 'php';
-    }
-    return $php_bin;
   }
 
 }

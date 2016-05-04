@@ -53,7 +53,7 @@ class FileCache {
    */
   public function __construct(array $arg_options = []) {
     $default_options = [
-      'cache_dir' => $this->determineCacheDir(),
+      'cache_dir' => TERMINUS_CACHE_DIR,
       'ttl'       => 832040,
       'max_size'  => 267914296,
       'whitelist' => 'a-z0-9._-',
@@ -65,7 +65,7 @@ class FileCache {
     $this->maxSize   = (int)$options['max_size'];
     $this->whitelist = $options['whitelist'];
 
-    if (!$this->ensureDirExists($this->root)) {
+    if (!file_exists($this->root)) {
       $this->enabled = false;
     }
   }
@@ -248,44 +248,6 @@ class FileCache {
   }
 
   /**
-   * Determines the cache dir unless overridden
-   *
-   * @return string
-   */
-  protected function determineCacheDir() {
-    $home = getenv('HOME');
-
-    if (!$home) {
-      //Sometimes in Windows, $HOME is not defined.
-      $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-    }
-    $dir = getenv('TERMINUS_CACHE_DIR');
-    if (!$dir) {
-      $dir = "$home/.terminus/cache";
-    }
-    return $dir;
-  }
-
-  /**
-   * Ensures a directory exists
-   *
-   * @param string $dir Directory to ensure existence of
-   * @return bool
-   * @throws TerminusException
-   */
-  protected function ensureDirExists($dir) {
-    try {
-      $dir_exists = (
-        is_dir($dir)
-        || (!file_exists($dir) && mkdir($dir, 0777, true))
-      );
-    } catch (\Exception $e) {
-      return false;
-    }
-    return $dir_exists;
-  }
-
-  /**
    * Filename from key
    *
    * @param string $key Key to validate
@@ -304,23 +266,6 @@ class FileCache {
   protected function getFinder() {
     $finder = Finder::create()->in($this->root)->files();
     return $finder;
-  }
-
-  /**
-   * Prepare cache write
-   *
-   * @param string $key A cache key
-   * @return bool|string A filename or false
-   */
-  protected function prepareWrite($key) {
-    if (!$this->enabled) {
-      return false;
-    }
-    $filename = $this->filename($key);
-    if (!$this->ensureDirExists(dirname($this->filename($key)))) {
-      return false;
-    }
-    return $filename;
   }
 
   /**
@@ -383,7 +328,7 @@ class FileCache {
    * @return bool True if write was successful
    */
   protected function write($key, $contents) {
-    $filename = $this->prepareWrite($key);
+    $filename = TERMINUS_CACHE_DIR . "/$key";
 
     $written = false;
     if ($filename) {

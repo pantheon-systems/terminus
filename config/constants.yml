@@ -40,5 +40,6 @@ TERMINUS_VCR_MODE:     null
 
 # Set by Terminus - DO NOT USE
 # Terminus
+# TERMINUS_PHP
 # TERMINUS_ROOT
 # TERMINUS_SCRIPT

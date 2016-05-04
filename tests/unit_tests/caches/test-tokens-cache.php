@@ -18,7 +18,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
 
   public function testAdd() {
     $email     = 'fake@email.address';
-    $file_name = getenv('HOME') . "/.terminus/tokens/$email";
+    $file_name = TERMINUS_TOKENS_DIR . "/$email";
     exec("rm $file_name");
     $this->tokens_cache->add(compact('email'));
     $contents = retrieveOutput($file_name);
@@ -32,10 +32,10 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
     $contents = $this->tokens_cache->findByEmail($email);
     $this->assertEquals($contents['email'], $email);
 
-    $file_name = getenv('HOME') . "/.terminus/tokens/$email";
+    $file_name = TERMINUS_TOKENS_DIR . "/$email";
     exec("rm $file_name");
     try {
-      $this->tokens_cache->findByEmail($email);
+      $contents = $this->tokens_cache->findByEmail($email);
     } catch (\Exception $e) {
       $message = $e->getMessage();
     }
@@ -44,7 +44,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
 
   public function testGetAllSavedTokenEmails() {
     $email     = 'fake@email.address';
-    $file_name = getenv('HOME') . "/.terminus/tokens/$email";
+    $file_name = TERMINUS_TOKENS_DIR . "/$email";
     exec("rm $file_name");
     $emails = $this->tokens_cache->getAllSavedTokenEmails();
     $this->assertFalse(in_array($email, $emails));
@@ -56,7 +56,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
 
   public function testTokenExistsForEmail() {
     $email     = 'fake@email.address';
-    $file_name = getenv('HOME') . "/.terminus/tokens/$email";
+    $file_name = TERMINUS_TOKENS_DIR . "/$email";
     exec("rm $file_name");
     $this->assertFalse($this->tokens_cache->tokenExistsForEmail($email));
 

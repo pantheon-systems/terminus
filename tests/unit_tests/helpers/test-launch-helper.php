@@ -19,20 +19,6 @@ class LaunchHelperTest extends PHPUnit_Framework_TestCase {
     $this->launch_helper = new LaunchHelper(compact('command'));
   }
 
-  public function testGetPhpBinary() {
-    $php_binary = PHP_BINARY;
-
-    putenv("TERMINUS_PHP_USED=$php_binary");
-    $this->testLaunchSelf();
-
-    putenv("TERMINUS_PHP_USED=");
-    putenv("TERMINUS_PHP=$php_binary");
-    $this->testLaunchSelf();
-
-    putenv("TERMINUS_PHP=");
-    $this->testLaunchSelf();
-  }
-
   public function testLaunch() {
     $file_name = '/tmp/output';
     //Testing a good command

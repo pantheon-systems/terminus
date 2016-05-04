@@ -125,7 +125,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       'host' => "appserver.$env_id.$site_id.drush.in",
       'port' => '2222',
     ];
-    if ($ssh_host = getenv('TERMINUS_SSH_HOST')) {
+    if ($ssh_host = TERMINUS_SSH_HOST) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = $ssh_host;
     } else if (strpos(TERMINUS_HOST, 'onebox') !== false) {
