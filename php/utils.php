@@ -9,8 +9,8 @@ namespace Terminus\Utils;
  */
 function isTest() {
   $is_test = (
-    (boolean)getenv('CLI_TEST_MODE')
-    || (boolean)getenv('VCR_CASSETTE')
+    (boolean)getenv('TERMINUS_TEST_MODE')
+    || (boolean)getenv('TERMINUS_VCR_CASSETTE')
   );
   return $is_test;
 }

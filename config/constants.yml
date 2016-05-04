@@ -7,31 +7,36 @@
 ---
 
 # App
-JSON_PRETTY_PRINT:    128
-TERMINUS_VERSION:     '0.11.1'
+JSON_PRETTY_PRINT:     128
+TERMINUS_VERSION:      '0.11.1'
 
 # Connectivity
-TERMINUS_HOST:        'dashboard.pantheon.io'
-TERMINUS_PORT:        443
-TERMINUS_PROTOCOL:    'https'
-TERMINUS_SSH_HOST:    null
+TERMINUS_HOST:         'dashboard.pantheon.io'
+TERMINUS_PORT:         443
+TERMINUS_PROTOCOL:     'https'
+TERMINUS_SSH_HOST:     null
 
 # Localization
-TERMINUS_DATE_FORMAT: 'Y-m-d H:i:s'
-TERMINUS_TIME_ZONE:   'UTC'
+TERMINUS_DATE_FORMAT:  'Y-m-d H:i:s'
+TERMINUS_TIME_ZONE:    'UTC'
 
 # File Storage
-TERMINUS_CACHE_DIR:   '~/.terminus/cache'
-TERMINUS_CONFIG_DIR:  '~/terminus'
-TERMINUS_LOG_DIR:     '/tmp'
-TERMINUS_PLUGINS_DIR: '[[ TERMINUS_CONFIG_DIR ]]/plugins'
-TERMINUS_TOKENS_DIR:  '[[ TERMINUS_CACHE_DIR ]]/tokens'
+TERMINUS_CACHE_DIR:    '~/.terminus/cache'
+TERMINUS_CONFIG_DIR:   '~/terminus'
+TERMINUS_LOG_DIR:      '/tmp'
+TERMINUS_PLUGINS_DIR:  '[[ TERMINUS_CONFIG_DIR ]]/plugins'
+TERMINUS_TOKENS_DIR:   '[[ TERMINUS_CACHE_DIR ]]/tokens'
 
 # Helpers
-TERMINUS_USER:        null
-TERMINUS_SITE:        null
-TERMINUS_ENV:         null
-TERMINUS_ORG:         null
+TERMINUS_USER:         null
+TERMINUS_SITE:         null
+TERMINUS_ENV:          null
+TERMINUS_ORG:          null
+
+# Testing
+TERMINUS_TEST_MODE:    false
+TERMINUS_VCR_CASSETTE: null
+TERMINUS_VCR_MODE:     null
 
 # Set by Terminus - DO NOT USE
 # Terminus
