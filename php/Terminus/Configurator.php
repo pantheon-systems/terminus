@@ -147,10 +147,11 @@ class Configurator {
     foreach ($default_constants as $var_name => $default) {
       if (!defined($var_name)) {
         if (isset($_SERVER[$var_name]) && ($_SERVER[$var_name] != '')) {
-          define($var_name, $_SERVER[$var_name]);
+          $constant_value = $_SERVER[$var_name];
         } else if (!defined($var_name)) {
-          define($var_name, $default);
+          $constant_value = $default;
         }
+        define($var_name, $this->replacePlaceholders($constant_value));
       }
     }
     date_default_timezone_set(TERMINUS_TIME_ZONE);
@@ -209,6 +210,28 @@ class Configurator {
       $env = new \Dotenv\Dotenv(getcwd());
       $env->load();
     }
+  }
+
+  /**
+   * Exchanges values in [[ ]] in the given string with constants
+   *
+   * @param string $string The string to perform replacements on
+   * @return string $string The modified string
+   */
+  private function replacePlaceholders($string) {
+    $regex = '~\[\[(.*?)\]\]~';
+    preg_match_all($regex, $string, $matches);
+    if (!empty($matches)) {
+      foreach ($matches[1] as $id => $value) {
+        $replacement_key = trim($value);
+        if (defined($replacement_key)) {
+          $replacement = constant($replacement_key);
+          $string = str_replace($matches[0][$id], $replacement, $string);
+        }
+      }
+    }
+    $string = str_replace('~', $_SERVER['HOME'], $string);
+    return $string;
   }
 
   /**
