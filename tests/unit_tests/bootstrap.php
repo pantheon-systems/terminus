@@ -4,16 +4,15 @@
  * Bootstrap file for unit tests
  */
 
+// The CL args used to initialize these tests would change how Terminus runs.
 unset($GLOBALS['argv']);
 
-$_SERVER['TERMINUS_LOG_DIR'] = '/tmp/';
-define('CLI_ROOT', dirname(__DIR__) . '/..');
-define('TEST_DIR', dirname(__DIR__));
-define('TERMINUS_CMD', 'php ' . CLI_ROOT . '/php/boot-fs.php');
-putenv('CLI_TEST_MODE=1');
+define('TERMINUS_LOG_DIR', '/tmp/');
+define('TERMINUS_TEST_ROOT', dirname(__DIR__) . '/..');
+define('TERMINUS_TEST_MODE', 1);
 
-require_once CLI_ROOT . '/vendor/autoload.php';
-require_once CLI_ROOT . '/php/boot-fs.php';
+require_once TERMINUS_TEST_ROOT . '/vendor/autoload.php';
+require_once TERMINUS_TEST_ROOT . '/php/boot-fs.php';
 $runner = new \Terminus\Runner(array('debug' => false));
 
 use Terminus\Exceptions\TerminusException;
@@ -56,7 +55,7 @@ function getBehatCredentials() {
  * @return string
  */
 function getLogFileName() {
-  $file_name = $_SERVER['TERMINUS_LOG_DIR'] . 'log_' . date('Y-m-d') . '.txt';
+  $file_name = TERMINUS_LOG_DIR . 'log_' . date('Y-m-d') . '.txt';
   return $file_name;
 }
 

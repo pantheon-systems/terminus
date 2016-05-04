@@ -110,13 +110,8 @@ class CliCommand extends TerminusCommand {
    * : Accepted values: json
    */
   public function info($args, $assoc_args) {
-    $php_bin = getenv('TERMINUS_PHP_USED');
-    if (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    }
-
     $info   = array(
-      'php_binary_path'     => $php_bin,
+      'php_binary_path'     => TERMINUS_PHP,
       'php_version'         => PHP_VERSION,
       'php_ini'             => get_cfg_var('cfg_file_path'),
       'project_config_path' => $this->runner->getUserConfigDir(),

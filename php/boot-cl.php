@@ -11,11 +11,11 @@ loadDependencies();
 //Set a custom exception handler
 //set_exception_handler('\Terminus\Utils\handle_exception');
 
-if (isset($_SERVER['VCR_CASSETTE'])) {
+if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
   \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
-  \VCR\VCR::configure()->setMode($_SERVER['VCR_MODE']);
+  \VCR\VCR::configure()->setMode($_SERVER['TERMINUS_VCR_MODE']);
   \VCR\VCR::turnOn();
-  \VCR\VCR::insertCassette($_SERVER['VCR_CASSETTE']);
+  \VCR\VCR::insertCassette($_SERVER['TERMINUS_VCR_CASSETTE']);
 }
 
 if (isset($GLOBALS['argv'])) {
@@ -23,7 +23,7 @@ if (isset($GLOBALS['argv'])) {
   $runner->run();
 }
 
-if (isset($_SERVER['VCR_CASSETTE'])) {
+if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
   \VCR\VCR::eject();
   \VCR\VCR::turnOff();
 }

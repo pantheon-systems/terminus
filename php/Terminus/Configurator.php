@@ -17,6 +17,7 @@ class Configurator {
   public function __construct($path = null) {
     $this->importEnvironmentVariables();
     $this->defineConstants();
+    $this->ensureDirsExist();
 
     if (is_null($path)) {
       $path = TERMINUS_ROOT . '/config/spec.php';
@@ -62,6 +63,30 @@ class Configurator {
 
     $array = [$positional_args, $assoc_args,];
     return $array;
+  }
+
+  /**
+   * Returns the appropriate home directory.
+   *
+   * Adapted from Terminus Package Manager by Ed Reel
+   * @author Ed Reel <@uberhacker>
+   * @url    https://github.com/uberhacker/tpm
+   *
+   * @return string
+   */
+  public static function getHomeDir() {
+    $home = getenv('HOME');
+    if (!$home) {
+      $system = '';
+      if (getenv('MSYSTEM') !== null) {
+        $system = strtoupper(substr(getenv('MSYSTEM'), 0, 4));
+      }
+      if ($system != 'MING') {
+        $home = getenv('HOMEPATH');
+      }
+      $home = str_replace('\\', '\\\\', $home);
+    }
+    return $home;
   }
 
   /**
@@ -138,6 +163,9 @@ class Configurator {
     if (!defined('TERMINUS_ROOT')) {
       define('TERMINUS_ROOT', $this->getTerminusRoot());
     }
+    if (!defined('TERMINUS_PHP')) {
+      define('TERMINUS_PHP', $this->getPhpBinary());
+    }
     if (!defined('Terminus')) {
       define('Terminus', true);
     }
@@ -147,16 +175,67 @@ class Configurator {
     foreach ($default_constants as $var_name => $default) {
       if (!defined($var_name)) {
         if (isset($_SERVER[$var_name]) && ($_SERVER[$var_name] != '')) {
-          define($var_name, $_SERVER[$var_name]);
+          $constant_value = $_SERVER[$var_name];
         } else if (!defined($var_name)) {
-          define($var_name, $default);
+          $constant_value = $default;
         }
+        define($var_name, $this->replacePlaceholders($constant_value));
       }
     }
     date_default_timezone_set(TERMINUS_TIME_ZONE);
     if (!defined('TERMINUS_SCRIPT')) {
       define('TERMINUS_SCRIPT', $this->getTerminusScript());
     }
+  }
+
+  /**
+   * Ensures a directory exists
+   *
+   * @param string $dir Directory to ensure existence of
+   * @return bool
+   */
+  private function ensureDirExists($dir) {
+    try {
+      $dir_exists = (
+        is_dir($dir)
+        || (!file_exists($dir) && mkdir($dir, 0777, true))
+      );
+    } catch (\Exception $e) {
+      return false;
+    }
+    return $dir_exists;
+  }
+
+  /**
+   * Ensures that all directories referenced in constants exist
+   *
+   * @return void
+   */
+  private function ensureDirsExist() {
+    $constants = get_defined_constants();
+    foreach ($constants as $constant_name => $dir) {
+      if ((strpos($constant_name, 'TERMINUS_') !== false)
+        && (strpos($constant_name, '_DIR') !== false)
+      ) {
+        $this->ensureDirExists($dir);
+      }
+    }
+  }
+
+  /**
+   * Returns location of PHP with which to run Terminus
+   *
+   * @return string
+   */
+  private function getPhpBinary() {
+    if (getenv('TERMINUS_PHP')) {
+      $php_bin = getenv('TERMINUS_PHP');
+    } elseif (defined('PHP_BINARY')) {
+      $php_bin = PHP_BINARY;
+    } else {
+      $php_bin = 'php';
+    }
+    return $php_bin;
   }
 
   /**
@@ -209,6 +288,28 @@ class Configurator {
       $env = new \Dotenv\Dotenv(getcwd());
       $env->load();
     }
+  }
+
+  /**
+   * Exchanges values in [[ ]] in the given string with constants
+   *
+   * @param string $string The string to perform replacements on
+   * @return string $string The modified string
+   */
+  private function replacePlaceholders($string) {
+    $regex = '~\[\[(.*?)\]\]~';
+    preg_match_all($regex, $string, $matches);
+    if (!empty($matches)) {
+      foreach ($matches[1] as $id => $value) {
+        $replacement_key = trim($value);
+        if (defined($replacement_key)) {
+          $replacement = constant($replacement_key);
+          $string = str_replace($matches[0][$id], $replacement, $string);
+        }
+      }
+    }
+    $string = str_replace('~', self::getHomeDir(), $string);
+    return $string;
   }
 
   /**

@@ -2,8 +2,9 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Session;
 use Terminus\Commands\TerminusCommand;
+use Terminus\Configurator;
+use Terminus\Session;
 
 /**
  * Show, add, and delete SSH keys on your Pantheon account
@@ -63,7 +64,7 @@ class SshKeysCommand extends TerminusCommand {
     $file = $this->input()->fileName(
       [
         'args'    => $assoc_args,
-        'dir'     => getenv('HOME') . '/.ssh',
+        'dir'     => Configurator::getHomeDir() . '/.ssh',
         'message' => 'Please select your public SSH key file.',
         'regex'   => '~(.*.pub)~',
       ]

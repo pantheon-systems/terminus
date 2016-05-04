@@ -58,43 +58,4 @@ class RunnerTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue(count($desc['parameters']) == 4);
   }
 
-  public function testSetLogger() {
-    // This test assumes that the debug output defaults to off.
-    $file_name = getLogFileName();
-    $message   = 'The sky is the daily bread of the eyes.';
-    setOutputDestination($file_name);
-    $this->runner->getLogger()->debug($message);
-    $output = retrieveOutput($file_name);
-    $this->assertFalse(strpos($output, $message) !== false);
-    $this->runner->setLogger(['debug' => true, 'format' => 'json']);
-    $this->runner->getLogger()->debug($message);
-    $output = retrieveOutput($file_name);
-    $this->assertTrue(strpos($output, $message) !== false);
-    resetOutputDestination($file_name);
-  }
-
-  public function testSetOutputter() {
-    // This test assumes that the format defaults to JSON.
-    $formatter = $this->runner->getOutputter()->getFormatter();
-    $this->assertTrue(strpos(get_class($formatter), 'Pretty') !== false);
-
-    // This test assumes that the format defaults to Bash.
-    $this->runner->setOutputter('bash', 'php://stdout');
-    $formatter = $this->runner->getOutputter()->getFormatter();
-    $this->assertTrue(strpos(get_class($formatter), 'Bash') !== false);
-
-    $this->runner->setOutputter('json', 'php://stdout');
-    $formatter = $this->runner->getOutputter()->getFormatter();
-    $this->assertTrue(strpos(get_class($formatter), 'JSON') !== false);
-  }
-
-  public function testRunCommand() {
-    //$runner = new Runner();
-    //$this->assertInstanceOf('Terminus\Runner', $runner);
-    //$args       = ['site'];
-    //$assoc_args = ['site' => 'phpunittest'];
-    //$return = $runner->runCommand($args, $assoc_args);
-    //$this->assertNull($return);
-  }
-
 }

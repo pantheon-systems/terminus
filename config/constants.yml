@@ -4,11 +4,42 @@
 # within Terminus. They may be overridden by exporting an environmental
 # variable of the same name, or by adding it to a file named ".env" in the
 # directory from which you are running Terminus.
---- 
-TERMINUS_HOST:        'dashboard.pantheon.io'
-TERMINUS_PORT:        443
-TERMINUS_PROTOCOL:    'https'
-TERMINUS_TIME_ZONE:   'UTC'
-TERMINUS_VERSION:     '0.11.1'
-TERMINUS_DATE_FORMAT: 'Y-m-d H:i:s'
-JSON_PRETTY_PRINT:    128
+---
+
+# App
+JSON_PRETTY_PRINT:     128
+TERMINUS_VERSION:      '0.11.1'
+
+# Connectivity
+TERMINUS_HOST:         'dashboard.pantheon.io'
+TERMINUS_PORT:         443
+TERMINUS_PROTOCOL:     'https'
+TERMINUS_SSH_HOST:     null
+
+# Localization
+TERMINUS_DATE_FORMAT:  'Y-m-d H:i:s'
+TERMINUS_TIME_ZONE:    'UTC'
+
+# File Storage
+TERMINUS_CACHE_DIR:    '~/.terminus/cache'
+TERMINUS_CONFIG_DIR:   '~/terminus'
+TERMINUS_LOG_DIR:      '/tmp'
+TERMINUS_PLUGINS_DIR:  '[[ TERMINUS_CONFIG_DIR ]]/plugins'
+TERMINUS_TOKENS_DIR:   '[[ TERMINUS_CACHE_DIR ]]/tokens'
+
+# Helpers
+TERMINUS_USER:         null
+TERMINUS_SITE:         null
+TERMINUS_ENV:          null
+TERMINUS_ORG:          null
+
+# Testing
+TERMINUS_TEST_MODE:    false
+TERMINUS_VCR_CASSETTE: null
+TERMINUS_VCR_MODE:     null
+
+# Set by Terminus - DO NOT USE
+# Terminus
+# TERMINUS_PHP
+# TERMINUS_ROOT
+# TERMINUS_SCRIPT

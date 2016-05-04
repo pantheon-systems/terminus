@@ -220,19 +220,7 @@ class Runner {
    * @return string
    */
   public function getUserConfigDir() {
-    $terminus_config_dir = getenv('TERMINUS_CONFIG_DIR');
-
-    if (!$terminus_config_dir) {
-      $home = getenv('HOME');
-      if (!$home) {
-        // sometime in windows $HOME is not defined
-        $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-      }
-      if ($home) {
-        $terminus_config_dir = getenv('HOME') . '/terminus';
-      }
-    }
-    return $terminus_config_dir;
+    return TERMINUS_CONFIG_DIR;
   }
 
   /**
@@ -259,13 +247,7 @@ class Runner {
    * @return string
    */
   private function getUserPluginsDir() {
-    if ($config = $this->getUserConfigDir()) {
-      $plugins_dir = "$config/plugins";
-      if (file_exists($plugins_dir)) {
-        return $plugins_dir;
-      }
-    }
-    return false;
+    return TERMINUS_PLUGINS_DIR;
   }
 
   /**

@@ -3,6 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus\Commands\TerminusCommand;
+use Terminus\Configurator;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Organization;
 use Terminus\Models\Site;
@@ -58,7 +59,10 @@ class SitesCommand extends TerminusCommand {
       array(
         'key'     => 'location',
         'choices' => $assoc_args,
-        'default' => getenv('HOME') . '/.drush/pantheon.aliases.drushrc.php',
+        'default' => sprintf(
+          '%s/.drush/pantheon.aliases.drushrc.php',
+          Configurator::getHomeDir()
+        ),
       )
     );
 

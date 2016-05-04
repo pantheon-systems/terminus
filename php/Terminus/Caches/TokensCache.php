@@ -67,19 +67,7 @@ class TokensCache {
    * @return string
    */
   public function getCacheDir() {
-    $home = getenv('HOME');
-    if (!$home) {
-      // Sometimes in Windows, $HOME is not defined
-      $home = getenv('HOMEDRIVE') . '/' . getenv('HOMEPATH');
-    }
-    $dir = getenv('TERMINUS_TOKENS_DIR');
-    if (!$dir) {
-      $dir = "$home/.terminus/tokens";
-    }
-    if (!file_exists($dir)) {
-      mkdir($dir);
-    }
-    return $dir;
+    return TERMINUS_TOKENS_DIR;
   }
 
   /**

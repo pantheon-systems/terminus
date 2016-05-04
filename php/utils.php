@@ -8,13 +8,7 @@ namespace Terminus\Utils;
  * @return bool
  */
 function isTest() {
-  $is_test = (
-    (boolean)getenv('CLI_TEST_MODE')
-    || (boolean)getenv('VCR_CASSETTE')
-  );
-  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
-    $is_test = !$is_test;
-  }
+  $is_test = ((boolean)TERMINUS_TEST_MODE || (boolean)TERMINUS_VCR_CASSETTE);
   return $is_test;
 }
 
@@ -39,9 +33,6 @@ function isOs($test_os = '') {
         break;
     default:
       $is_os = false;
-  }
-  if ((boolean)getenv('TERMINUS_TEST_IGNORE')) {
-    $is_os = !$is_os;
   }
   return $is_os;
 }

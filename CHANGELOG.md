@@ -18,6 +18,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed undefined-variable bug when attempting to access list of upstreams in `InputHelper::upstream()`. (#1050)
 - Fixed undefined-variable bug which appears when a user has one machine token saved but is logged out. (#1053)
 - Multiline option details will now fully appear in help output. (#1055)
+- `TERMINUS_PLUGINS_DIR` now overrides the plugin directory appropriately. (#1062)
 
 ## [0.11.1] - 2016-03-30
 
