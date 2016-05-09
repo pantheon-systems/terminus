@@ -215,6 +215,7 @@ class Sites extends TerminusCollection {
         (object)['id' => $uuid,],
         ['id' => $uuid, 'collection' => $this,]
       );
+      $site->fetch();
       $this->models[$uuid] = $site;
     }
     return $site;
