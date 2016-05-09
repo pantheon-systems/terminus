@@ -49,7 +49,7 @@ class Workflow extends TerminusModel {
    */
   public function fetchWithLogs() {
     $options = array(
-      'fetch_args' => array(
+      'params' => array(
         'query' => array(
           'hydrate' => 'operations_with_logs'
         )

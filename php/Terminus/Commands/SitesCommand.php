@@ -5,11 +5,8 @@ namespace Terminus\Commands;
 use Terminus\Commands\TerminusCommand;
 use Terminus\Configurator;
 use Terminus\Models\Collections\Sites;
-use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
 use Terminus\Session;
 use Terminus\Utils;
 
@@ -133,10 +130,6 @@ class SitesCommand extends TerminusCommand {
     $workflow->wait();
     $this->workflowOutput($workflow);
 
-    // Add Site to SitesCache
-    $final_task = $workflow->get('final_task');
-    $this->sites->addSiteToCache($final_task->site_id);
-
     $this->helpers->launch->launchSelf(
       [
         'command'    => 'site',
@@ -197,9 +190,8 @@ class SitesCommand extends TerminusCommand {
       $workflow->wait();
       $this->workflowOutput($workflow);
 
-      //Add site to SitesCache
       $final_task = $workflow->get('final_task');
-      $site       = $this->sites->addSiteToCache($final_task->site_id);
+      $site       = $this->sites->get($final_task->site_id);
       sleep(10); //Avoid false site-DNE errors
     }
 
@@ -232,11 +224,8 @@ class SitesCommand extends TerminusCommand {
    * @alias show
    */
   public function index($args, $assoc_args) {
-    // Always fetch a fresh list of sites
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-    $sites = $this->sites->all();
+    $this->sites->fetch();
+    $sites = $this->sites;
 
     if (isset($assoc_args['team'])) {
       $sites = $this->filterByTeamMembership($sites);

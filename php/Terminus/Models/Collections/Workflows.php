@@ -102,7 +102,7 @@ class Workflows extends TerminusCollection {
     $options = array_merge(
       $options,
       array(
-        'fetch_args' => array(
+        'params' => array(
           'query' => array(
             'hydrate' => 'operations'
           )

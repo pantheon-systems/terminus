@@ -2,19 +2,13 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Session;
-use Terminus\Caches\SitesCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
+use Terminus\Session;
 
 class Sites extends TerminusCollection {
-  /**
-   * @var SitesCache
-   */
-  public $sites_cache;
   /**
    * @var User
    */
@@ -28,7 +22,6 @@ class Sites extends TerminusCollection {
    */
   public function __construct(array $options = array()) {
     parent::__construct($options);
-    $this->sites_cache = new SitesCache();
     $this->user        = Session::getUser();
   }
 
@@ -76,50 +69,6 @@ class Sites extends TerminusCollection {
   }
 
   /**
-   * Adds site with given site ID to cache
-   *
-   * @param string $site_id UUID of site to add to cache
-   * @param string $org_id  UUID of org to which new site belongs
-   * @return Site The newly created site object
-   */
-  public function addSiteToCache($site_id, $org_id = null) {
-    $site = new Site(
-      (object)['id' => $site_id,],
-      ['collection' => $this,]
-    );
-    $site->fetch();
-    $cache_membership = $site->info();
-
-    if (!is_null($org_id)) {
-      $org = new Organization(null, ['id' => $org_id,]);
-      $cache_membership['membership'] = [
-        'id' => $org_id,
-        'name' => $org->profile->name,
-        'type' => 'organization',
-      ];
-    } else {
-      $user_id = Session::getValue('user_uuid');
-      $cache_membership['membership'] = [
-        'id' => $user_id,
-        'name' => 'Team',
-        'type' => 'team',
-      ];
-    }
-    $this->sites_cache->add($cache_membership);
-    return $site;
-  }
-
-  /**
-    * Removes site with given site ID from cache
-   *
-   * @param string $site_name Name of site to remove from cache
-   * @return void
-   */
-  public function deleteSiteFromCache($site_name) {
-    $this->sites_cache->remove($site_name);
-  }
-
-  /**
    * Fetches model data from API and instantiates its model instances
    *
    * @param array $options params to pass to url request
@@ -127,12 +76,8 @@ class Sites extends TerminusCollection {
    */
   public function fetch(array $options = array()) {
     if (empty($this->models)) {
-      $cache = $this->sites_cache->all();
-      if (count($cache) === 0) {
-        $this->rebuildCache();
-        $cache = $this->sites_cache->all();
-      }
-      foreach ($cache as $name => $model) {
+      $sites = $this->rebuild();
+      foreach ($sites as $name => $model) {
         $this->add((object)$model);
       }
     }
@@ -222,15 +167,6 @@ class Sites extends TerminusCollection {
   }
 
   /**
-   * Clears sites cache
-   *
-   * @return void
-   */
-  public function rebuildCache() {
-    $this->sites_cache->rebuild();
-  }
-
-  /**
    * Determines whether a given site name is taken or not.
    *
    * @param string $name Name of the site to look up
@@ -255,6 +191,137 @@ class Sites extends TerminusCollection {
    */
   protected function getMembers() {
     return $this->models;
+  }
+
+  public function rebuild() {
+    $sites = $this->fetchUserSites();
+
+    // Add all sites for each of user's organizations
+    $orgs_data = $this->fetchUserOrganizations();
+
+    foreach ($orgs_data as $org_data) {
+      $sites = array_merge($this->fetchOrganizationSites($org_data), $sites);
+    }
+    
+    foreach($sites as $site) {
+      $this->add((object)$site);
+    }
+
+    return $this;
+  }
+
+  /**
+   * Fetches organizational sites from API
+   *
+   * @param array $org_data Properties below:
+   *        [string] id Organizaiton UUID
+   * @return array $memberships_data
+   */
+  private function fetchOrganizationSites($org_data) {
+    $response = $this->request->pagedRequest(
+      'organizations/' . $org_data['id'] . '/memberships/sites'
+    );
+
+    $memberships_data = array();
+    foreach ($response['data'] as $membership) {
+      $site_data          = (array)$membership->site;
+      $org_data['type']   = 'organization';
+      $memberships_data[] = $this->getSiteData($site_data, $org_data);
+    }
+
+    return $memberships_data;
+  }
+
+  /**
+   * Fetches organizational team-membership sites for user from API
+   *
+   * @return array
+   */
+  private function fetchUserSites() {
+    $user_id  = Session::getValue('user_uuid');
+    $response = $this->request->pagedRequest(
+      'users/' . $user_id . '/memberships/sites'
+    );
+
+    $memberships_data = array();
+    foreach ($response['data'] as $membership) {
+      $site        = (array)$membership->site;
+      $member_data = array(
+        'id' => $user_id,
+        'name' => 'Team',
+        'type' => 'team'
+      );
+      $memberships_data[] = $this->getSiteData($site, $member_data);
+    }
+
+    return $memberships_data;
+  }
+
+  /**
+   * Fetches organizational memberships for user
+   *
+   * @return array $data Properties below:
+   *         [string] id   UUID of membership join
+   *         [string] name Name of organization
+   *         [string] type Always "organization"
+   */
+  private function fetchUserOrganizations() {
+    $response = $this->request->pagedRequest(
+      'users/' . Session::getValue('user_uuid') . '/memberships/organizations'
+    );
+
+    $data = array();
+    foreach ($response['data'] as $membership) {
+      if ($membership->role == 'unprivileged') {
+        // Users with unprivileged role in organizations can't see organization
+        // sites, but must be added to the team
+        continue;
+      }
+
+      $data[] = array(
+        'id' => $membership->id,
+        'name' => $membership->organization->profile->name,
+        'type' => 'organization'
+      );
+    }
+
+    return $data;
+  }
+
+  /**
+   * Formats site data from response for use
+   *
+   * @param array $response_data   Data about the site from API
+   * @param array $membership_data Data about membership to this site
+   * @return array
+   */
+  private function getSiteData($response_data, $membership_data = array()) {
+    $site_data = [
+      'id'            => null,
+      'name'          => null,
+      'frozen'        => null,
+      'label'         => null,
+      'created'       => null,
+      'framework'     => null,
+      'organization'  => null,
+      'service_level' => null,
+      'upstream'      => null,
+      'php_version'   => null,
+      'holder_type'   => null,
+      'holder_id'     => null,
+      'owner'         => null,
+      'membership'    => [],
+    ];
+    foreach ($site_data as $index => $value) {
+      if (($value == null) && isset($response_data[$index])) {
+        $site_data[$index] = $response_data[$index];
+      }
+    }
+
+    if (!empty($membership_data)) {
+      $site_data['membership'] = $membership_data;
+    }
+    return $site_data;
   }
   
 }
