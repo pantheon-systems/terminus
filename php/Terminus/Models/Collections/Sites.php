@@ -58,6 +58,14 @@ class Sites extends TerminusCollection {
         'product_id' => $options['upstream_id']
       );
     }
+    
+    if ($this->nameIsTaken($data['site_name'])) {
+      throw new TerminusException(
+        'The name {site_name} is taken. Please select another name.',
+        ['site_name' => $data['site_name'],],
+        1
+      );
+    }
 
     $workflow = $this->user->workflows->create(
       'create_site',
@@ -193,16 +201,21 @@ class Sites extends TerminusCollection {
       $site = $models[$id];
     } elseif (isset($list[$id])) {
       $site = $models[$list[$id]];
-    }
-    if ($site == null) {
-      $message  = 'Cannot find site with the name "{id}". It may be that ';
-      $message .= 'your sites cache is out of date and must be refreshed by ';
-      $message .= 'running `{command}` in order to access new sites.';
-      throw new TerminusException(
-        $message,
-        ['id' => $id, 'command' => 'terminus sites list'],
-        1
+    } else {
+      try {
+        $uuid = $this->findUuidByName($id)->id;
+      } catch (\Exception $e) {
+        throw new TerminusException(
+          'Could not locate a site your user may access identified by {id}.',
+          compact('id'),
+          1
+        );
+      }
+      $site = new Site(
+        (object)['id' => $uuid,],
+        ['id' => $uuid, 'collection' => $this,]
       );
+      $this->models[$uuid] = $site;
     }
     return $site;
   }
@@ -216,4 +229,31 @@ class Sites extends TerminusCollection {
     $this->sites_cache->rebuild();
   }
 
+  /**
+   * Determines whether a given site name is taken or not.
+   *
+   * @param string $name Name of the site to look up
+   * @return boolean
+   */
+  public function nameIsTaken($name) {
+    try {
+      $this->findUuidByName($name);
+    } catch (\Exception $e) {
+      //We're using this to assign the exception to $e.
+    }
+    $name_is_taken = (
+      !isset($e) || (strpos($e->getMessage(), '404 Not Found') === false)
+    );
+    return $name_is_taken;
+  }
+
+  /**
+   * Retrieves all members of this collection
+   *
+   * @return Site[]
+   */
+  protected function getMembers() {
+    return $this->models;
+  }
+  
 }
