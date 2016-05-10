@@ -2,5 +2,5 @@
 
 namespace Terminus\Models;
 
-class Upstream extends TerminusModel {
+class Upstream extends NewModel {
 }

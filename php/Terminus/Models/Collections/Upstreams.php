@@ -2,9 +2,19 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Upstream;
-
-class Upstreams extends TerminusCollection {
+class Upstreams extends NewCollection {
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Upstream';
+  /**
+   * @var boolean
+   */
+  protected $paged = false;
+  /**
+   * @var string
+   */
+  protected $url = 'products';
 
   /**
    * Search available upstreams by UUID or name
@@ -27,22 +37,18 @@ class Upstreams extends TerminusCollection {
   /**
    * Adds a model to this collection
    *
-   * @param object $model_data Data to feed into attributes of new model
-   * @param array  $options    Data to make properties of the new model
+   * @param array $model_data  Data to feed into attributes of new model
+   * @param array $arg_options Data to make properties of the new model
    * @return void
    */
-  public function add($model_data, array $options = array()) {
-    parent::add($model_data->attributes, $options);
-  }
+  protected function add(array $model_data = [], array $arg_options = []) {
+    $default_options = ['id' => $model_data['id'], 'collection' => $this,];
+    $options         = array_merge($default_options, $arg_options);
 
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'products';
-    return $url;
+    $model_name = $this->collected_class;
+    $model      = new $model_name((array)$model_data['attributes'], $options);
+
+    $this->models[$model_data['id']] = $model;
   }
 
 }

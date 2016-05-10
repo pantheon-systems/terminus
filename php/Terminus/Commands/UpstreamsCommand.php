@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Upstreams;
 
 /**
@@ -29,22 +28,23 @@ class UpstreamsCommand extends TerminusCommand {
    * @subcommand list
    * @alias all
    */
-  public function all($args = array(), $assoc_args = array()) {
-    $upstreams      = new Upstreams();
+  public function all(array $args = [], array $assoc_args = []) {
+    $upstreams = new Upstreams();
+    $upstreams->fetch();
     $upstreams_list = $upstreams->getFilteredMemberList(
       $assoc_args,
       'id',
-      array('id', 'longname', 'category', 'type', 'framework')
+      ['id', 'longname', 'category', 'type', 'framework',]
     );
     $this->output()->outputRecordList(
       $upstreams_list,
-      array(
+      [
         'id'        => 'ID',
         'longname'  => 'Name',
         'category'  => 'Category',
         'type'      => 'Type',
-        'framework' => 'Framework'
-      )
+        'framework' => 'Framework',
+      ]
     );
     return $upstreams;
   }

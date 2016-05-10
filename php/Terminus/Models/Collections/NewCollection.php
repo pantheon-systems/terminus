@@ -17,7 +17,7 @@ abstract class NewCollection {
   /**
    * @var boolean
    */
-  protected $paged = true;
+  protected $paged = false;
   /**
    * @var Request
    */
@@ -49,10 +49,10 @@ abstract class NewCollection {
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param array $options params to pass to url request
+   * @param array $arg_options params to pass to url request
    * @return TerminusCollection $this
    */
-  public function fetch(array $options = []) {
+  public function fetch(array $arg_options = []) {
     $default_options = [
       'method' => 'get',
       'paged'  => $this->paged,
@@ -67,6 +67,7 @@ abstract class NewCollection {
     }
 
     foreach ((array)$response['data'] as $id => $model_data) {
+      $model_data = (array)$model_data;
       if (!isset($model_data['id'])) {
         $model_data['id'] = $id;
       }
@@ -83,7 +84,7 @@ abstract class NewCollection {
    * @return TerminusModel $this->models[$id]
    */
   public function get($id) {
-    if (isset($this->has($id))) {
+    if ($this->has($id)) {
       return $this->models[$id];
     }
     return null;
@@ -161,7 +162,7 @@ abstract class NewCollection {
    * @return void
    */
   protected function add(array $model_data = [], array $arg_options = []) {
-    $default_options = ['id' => $model_data->id, 'collection' => $this,];
+    $default_options = ['id' => $model_data['id'], 'collection' => $this,];
     $options         = array_merge($default_options, $arg_options);
 
     $model_name = $this->collected_class;
