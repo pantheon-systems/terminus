@@ -3,25 +3,23 @@
 namespace Terminus\Models;
 
 use Terminus\Session;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\OrganizationUserMemberships;
 use Terminus\Models\Collections\Workflows;
 
-class Organization extends TerminusModel {
-
+class Organization extends NewModel {
   /**
    * @var OrganizationSiteMemberships
    */
-  protected $site_memberships;
+  public $site_memberships;
   /**
    * @var User
    */
-  protected $user;
+  public $user;
   /**
    * @var OrganizationUserMemberships
    */
-  protected $user_memberships;
+  public $user_memberships;
   /**
    * @var Workflows
    */
@@ -34,34 +32,21 @@ class Organization extends TerminusModel {
   /**
    * Object constructor
    *
-   * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array $attributes Attributes of this model
+   * @param array $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);
     if (!isset($this->user)) {
       $this->user = Session::getUser();
     }
-    $this->site_memberships = new OrganizationSiteMemberships(
-      array(
-        'organization' => $this,
-        'owner'        => $this,
-        'owner_type'   => 'organization',
-      )
+    $params                 = ['organization' => $this,];
+    $this->site_memberships = new OrganizationSiteMemberships($params);
+    $this->user_memberships = new OrganizationUserMemberships($params);
+    $this->workflows        = new Workflows(
+      ['owner' => $this, 'owner_type' => 'organization',]
     );
-    $this->user_memberships = new OrganizationUserMemberships(
-      array(
-        'organization' => $this,
-        'owner'        => $this,
-        'owner_type'   => 'organization',
-      )
-    );
-    $this->workflows = new Workflows(
-      array(
-        'owner'      => $this,
-        'owner_type' => 'organization',
-      )
-    );
+    $this->url              = "organizations/{$this->id}/features";
   }
 
   /**
@@ -73,7 +58,7 @@ class Organization extends TerminusModel {
   public function getFeature($feature) {
     if (!isset($this->features)) {
       $response       = $this->request->request(
-        sprintf('organizations/%s/features', $this->get('id'))
+        sprintf('organizations/%s/features', $this->id)
       );
       $this->features = (array)$response['data'];
     }
@@ -86,20 +71,30 @@ class Organization extends TerminusModel {
   /**
    * Retrieves organization sites
    *
-   * @return OrganizationSiteMembership[]
+   * @return Site[]
    */
   public function getSites() {
-    $sites = $this->site_memberships->all();
+    $this->site_memberships->fetch();
+    $site_memberships = $this->site_memberships->all();
+    $sites            = [];
+    foreach ($site_memberships as $membership) {
+      $sites[$membership->site->id] = $membership->site;
+    }
     return $sites;
   }
 
   /**
    * Retrieves organization users
    *
-   * @return OrganizationUserMembership[]
+   * @return User[]
    */
   public function getUsers() {
-    $users = $this->user_memberships->all();
+    $this->user_memberships->fetch();
+    $user_memberships = $this->user_memberships->all();
+    $users            = [];
+    foreach ($user_memberships as $membership) {
+      $users[$membership->user->id] = $membership->user;
+    }
     return $users;
   }
 

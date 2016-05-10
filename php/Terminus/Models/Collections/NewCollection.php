@@ -2,14 +2,13 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\TerminusModel;
 use Terminus\Request;
 
 abstract class NewCollection {
   /**
    * @var string
    */
-  protected $collected_class = 'NewModel';
+  protected $collected_class = 'Terminus\Models\NewModel';
   /**
    * @var TerminusModel[]
    */
@@ -28,9 +27,9 @@ abstract class NewCollection {
   protected $url;
 
   /**
-   * Instantiates the collection, sets param members as properties
+   * Instantiates the collection
    *
-   * @param array $options To be set to $this->key
+   * @param array $options To be set
    */
   public function __construct(array $options = []) {
     $this->request = new Request();
@@ -130,6 +129,20 @@ abstract class NewCollection {
       }
 
     }
+    return $member_list;
+  }
+
+  /**
+   * Returns an array of data where the keys are the attribute $key and the
+   *   values are the attribute $value
+   *
+   * @param string $key   Name of attribute to make array keys
+   * @param string $value Name of attribute to make array values
+   * @return array Array rendered as requested
+   *         $this->attribute->$key = $this->attribute->$value
+   */
+  public function getMemberList($key = 'id', $value = 'name') {
+    $member_list = $this->getFilteredMemberList([], $key, $value);
     return $member_list;
   }
 

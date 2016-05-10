@@ -13,7 +13,7 @@ abstract class NewModel {
   /**
    * @var array
    */
-  protected $attributes;
+  protected $attributes = [];
   /**
    * @var Request
    */
@@ -33,7 +33,7 @@ abstract class NewModel {
     if (!defined('Terminus')) {
       $configurator = new Configurator();
     }
-    $this->attributes = $attributes;
+    $this->attributes = array_merge($this->attributes, $attributes);
     foreach ($options as $var_name => $value) {
       $this->$var_name = $value;
     }
@@ -46,7 +46,7 @@ abstract class NewModel {
    * @param array $arg_options Params to pass to url request
    * @return TerminusModel $this
    */
-  public function fetch(array $options = []) {
+  public function fetch(array $arg_options = []) {
     $default_options = [
       'method' => 'get',
       'params' => [],
@@ -92,6 +92,17 @@ abstract class NewModel {
   public function has($attribute) {
     $isset = isset($this->attributes[$attribute]);
     return $isset;
+  }
+
+  /**
+   * Retrieves attribute of given name
+   *
+   * @param string $attribute Name of the key of the desired attribute
+   * @param mixed  $value     Value of the desired attribute
+   * @return void
+   */
+  public function set($attribute, $value) {
+    $this->attributes[$attribute] = $value;
   }
 
 }

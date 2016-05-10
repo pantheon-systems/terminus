@@ -2,7 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Configurator;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Site;
@@ -28,6 +27,7 @@ class SitesCommand extends TerminusCommand {
     $options['require_login'] = true;
     parent::__construct($options);
     $this->sites = new Sites();
+    $this->user  = Session::getUser();
   }
 
   /**
@@ -44,7 +44,6 @@ class SitesCommand extends TerminusCommand {
    *   '~/.drush/pantheon.aliases.drushrc.php' will be used.
    */
   public function aliases($args, $assoc_args) {
-    $user     = Session::getUser();
     $print    = $this->input()->optional(
       array(
         'key'     => 'print',
@@ -77,7 +76,7 @@ class SitesCommand extends TerminusCommand {
       mkdir($dirname, 0700, true);
     }
 
-    $content = $user->getAliases();
+    $content = $this->user->getAliases();
     $h       = fopen($location, 'w+');
     fwrite($h, $content);
     fclose($h);
@@ -126,7 +125,14 @@ class SitesCommand extends TerminusCommand {
     );
     $this->log()->info('Creating new site installation ... ');
 
-    $workflow = $this->sites->addSite($options);
+    if ($this->sites->nameIsTaken($options['site_name'])) {
+      $this->failure(
+        'The name {site_name} is taken. Please select a different name.',
+        ['site_name' => $data['site_name'],]
+      );
+    }
+
+    $workflow = $this->sites->create($options);
     $workflow->wait();
     $this->workflowOutput($workflow);
 
@@ -224,34 +230,29 @@ class SitesCommand extends TerminusCommand {
    * @alias show
    */
   public function index($args, $assoc_args) {
-    $this->sites->fetch();
-    $sites = $this->sites;
-
-    if (isset($assoc_args['team'])) {
-      $sites = $this->filterByTeamMembership($sites);
-    }
-    if (isset($assoc_args['org'])) {
-      $org_id = $this->input()->orgId(
+    $options = [
+      'org_id'    => $this->input()->optional(
         [
-          'allow_none' => true,
-          'args'       => $assoc_args,
-          'default'    => 'all',
+          'choices' => $assoc_args,
+          'default' => null,
+          'key'     => 'org',
         ]
-      );
-      $sites = $this->filterByOrganizationalMembership($sites, $org_id);
-    }
+      ),
+      'team_only' => isset($assoc_args['team']),
+    ];
+    $this->sites->fetch($options);
 
     if (isset($assoc_args['name'])) {
-      $sites = $this->filterByName($sites, $assoc_args['name']);
+      $this->sites->filterByName($assoc_args['name']);
     }
-
     if (isset($assoc_args['owner'])) {
       $owner_uuid = $assoc_args['owner'];
       if ($owner_uuid == 'me') {
-        $owner_uuid = Session::getData()->user_uuid;
+        $owner_uuid = $this->user->id;
       }
-      $sites = $this->filterByOwner($sites, $owner_uuid);
+      $this->sites->filterByOwner($owner_uuid);
     }
+    $sites = $this->sites->all();
 
     if (count($sites) == 0) {
       $this->log()->warning('You have no sites.');
@@ -260,19 +261,24 @@ class SitesCommand extends TerminusCommand {
     $rows = [];
     foreach ($sites as $site) {
       $memberships = [];
-      foreach ($site->get('memberships') as $membership) {
-        $memberships[$membership['id']] = $membership['name'];
+      foreach ($site->memberships as $membership) {
+        if (property_exists($membership, 'user')) {
+          $memberships[] = "{$membership->user->id}: Team";
+        } elseif (property_exists($membership, 'organization')) {
+          $profile       = $membership->organization->get('profile');
+          $memberships[] = "{$membership->organization->id}: {$profile->name}";
+        }
       }
-      $rows[$site->get('id')] = [
+      $rows[$site->id] = [
         'name'          => $site->get('name'),
-        'id'            => $site->get('id'),
+        'id'            => $site->id,
         'service_level' => $site->get('service_level'),
         'framework'     => $site->get('framework'),
         'owner'         => $site->get('owner'),
         'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
-        'memberships'   => $memberships,
+        'memberships'   => implode(', ', $memberships),
       ];
-      if ((boolean)$site->get('frozen')) {
+      if (!is_null($site->get('frozen'))) {
         $rows[$site->get('id')]['frozen'] = true;
       }
     }
@@ -481,90 +487,6 @@ class SitesCommand extends TerminusCommand {
   }
 
   /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites An array of sites to filter by
-   * @param string $regex Non-delimited PHP regex to filter site names by
-   * @return Site[]
-   */
-  private function filterByName($sites, $regex = '(.*)') {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($regex) {
-        preg_match("~$regex~", $site->get('name'), $matches);
-        $is_match = !empty($matches);
-        return $is_match;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites      An array of sites to filter by
-   * @param string $owner_uuid UUID of the owning user to filter by
-   * @return Site[]
-   */
-  private function filterByOwner($sites, $owner_uuid) {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($owner_uuid) {
-        $is_owner = ($site->get('owner') == $owner_uuid);
-        return $is_owner;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites  An array of sites to filter by
-   * @param string $org_id ID of the organization to filter for
-   * @return Site[]
-   */
-  private function filterByOrganizationalMembership($sites, $org_id = 'all') {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($org_id) {
-        $memberships    = $site->get('memberships');
-        foreach ($memberships as $membership) {
-          if ((($org_id == 'all') && ($membership['type'] == 'organization'))
-            || ($membership['id'] === $org_id)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is a team member
-   *
-   * @param Site[] $sites An array of sites to filter by
-   * @return Site[]
-   */
-  private function filterByTeamMembership($sites) {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) {
-        $memberships    = $site->get('memberships');
-        foreach ($memberships as $membership) {
-          if ($membership['name'] == 'Team') {
-            return true;
-          }
-        }
-        return false;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
    * A helper function for getting/prompting for the site create options.
    *
    * @param array $assoc_args Arguments from command
@@ -628,4 +550,40 @@ class SitesCommand extends TerminusCommand {
     return $name;
   }
 
+  /**
+   * Formats site data from response for use
+   *
+   * @param array $response_data   Data about the site from API
+   * @param array $membership_data Data about membership to this site
+   * @return array
+   */
+  private function getSiteData($response_data, $membership_data = array()) {
+    $site_data = [
+      'id'            => null,
+      'name'          => null,
+      'frozen'        => null,
+      'label'         => null,
+      'created'       => null,
+      'framework'     => null,
+      'organization'  => null,
+      'service_level' => null,
+      'upstream'      => null,
+      'php_version'   => null,
+      'holder_type'   => null,
+      'holder_id'     => null,
+      'owner'         => null,
+      'membership'    => [],
+    ];
+    foreach ($site_data as $index => $value) {
+      if (($value == null) && isset($response_data[$index])) {
+        $site_data[$index] = $response_data[$index];
+      }
+    }
+
+    if (!empty($membership_data)) {
+      $site_data['membership'] = $membership_data;
+    }
+    return $site_data;
+  }
+  
 }

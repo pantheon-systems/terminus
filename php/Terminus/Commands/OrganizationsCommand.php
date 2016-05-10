@@ -27,6 +27,7 @@ class OrganizationsCommand extends TerminusCommand {
     $options['require_login'] = true;
     parent::__construct($options);
     $this->sites = new Sites();
+    $this->user  = Session::getUser();
   }
 
   /**
@@ -35,15 +36,15 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    $user          = Session::getUser();
-    $data          = array();
-    $organizations = $user->getOrganizations();
-    foreach ($organizations as $id => $org) {
-      $org_data = $org->get('organization');
-      $data[]   = array(
-        'name' => $org_data->profile->name,
-        'id' => $org->get('id'),
-      );
+    $data = [];
+    $this->user->org_memberships->fetch();
+    $org_memberships = $this->user->org_memberships->all();
+    foreach ($org_memberships as $org_membership) {
+      $org = $org_membership->organization;
+      $data[]   = [
+        'name' => $org->get('profile')->name,
+        'id'   => $org->get('id'),
+      ];
     }
 
     $this->output()->outputRecordList($data);
@@ -69,20 +70,14 @@ class OrganizationsCommand extends TerminusCommand {
    * @subcommand sites
    */
   public function sites($args, $assoc_args) {
-    $action   = array_shift($args);
-    $org_id   = $this->input()->orgId(
-      array(
-        'args'       => $assoc_args,
-        'allow_none' => false,
-      )
+    $action = array_shift($args);
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
-    // TODO: clarify that these are OrganizationMemberships, not Organization models
-    $orgs      = new UserOrganizationMemberships();
-    $org       = $orgs->get($org_id);
-    $org_info  = $org->get('organization');
-    $org_model = new Organization($org_info);
+    $this->user->org_memberships->fetch();
+    $org = $this->user->org_memberships->get($org_id)->get('organization');
 
-    $memberships = $org->site_memberships->all();
+    $memberships = $org->getSites();
 
     switch ($action) {
       case 'add':
@@ -92,7 +87,7 @@ class OrganizationsCommand extends TerminusCommand {
               '{site} is already a member of {org}',
               array(
                 'site' => $assoc_args['site'],
-                'org' => $org_info->profile->name
+                'org' => $org->get('profile')->name
               )
             );
           } else {
@@ -111,7 +106,7 @@ class OrganizationsCommand extends TerminusCommand {
         $this->input()->confirm(
           array(
             'message' => 'Are you sure you want to add %s to %s ?',
-            'context' => array($site->get('name'), $org_info->profile->name),
+            'context' => array($site->get('name'), $org->get('profile')->name),
           )
         );
         $workflow = $org_model->site_memberships->addMember($site);
@@ -125,7 +120,7 @@ class OrganizationsCommand extends TerminusCommand {
               '{site} is not a member of {org}',
               array(
                 'site' => $assoc_args['site'],
-                'org' => $org_info->profile->name
+                'org' => $org->get('profile')->name
               )
             );
           } else {
@@ -145,7 +140,7 @@ class OrganizationsCommand extends TerminusCommand {
         $this->input()->confirm(
           array(
             'message' => 'Are you sure you want to remove %s from %s ?',
-            'context' => array($site->get('name'), $org_info->profile->name),
+            'context' => array($site->get('name'), $org->get('profile')->name),
           )
         );
         $workflow = $member->removeMember();

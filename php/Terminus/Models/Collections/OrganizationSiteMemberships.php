@@ -2,11 +2,32 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
+class OrganizationSiteMemberships extends NewCollection {
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\OrganizationSiteMembership';
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
 
-class OrganizationSiteMemberships extends TerminusCollection {
-  protected $organization;
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return UserOrganizationMemberships
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->organization = $options['organization'];
+    $this->url          =
+      "organizations/{$this->organization->id}/memberships/sites";
+  }
 
   /**
    * Adds a site to this organization
@@ -17,12 +38,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
   public function addMember(Site $site) {
     $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
-      array(
-        'params'    => array(
-          'site_id' => $site->get('id'),
-          'role'    => 'team_member'
-        )
-      )
+      ['params' => ['site_id' => $site->get('id'), 'role' => 'team_member',],]
     );
     return $workflow;
   }
@@ -31,18 +47,17 @@ class OrganizationSiteMemberships extends TerminusCollection {
    * Retrieves the model with site of the given UUID or name
    *
    * @param string $id UUID or name of desired site membership instance
-   * @return Site
+   * @return OrganizationSiteMembership
    */
   public function get($id) {
-    $models = $this->getMembers();
+    $models = $this->models;
     $model  = null;
     if (isset($models[$id])) {
       $model = $models[$id];
     } else {
       foreach ($models as $key => $membership) {
-        $site = $membership->get('site');
-        if ($site->name == $id) {
-          $model = $models[$key];
+        if ($membership->site->get('name') == $id) {
+          $model = $membership;
           continue;
         }
       }
@@ -51,41 +66,20 @@ class OrganizationSiteMemberships extends TerminusCollection {
   }
 
   /**
-   * Give the URL for collection data fetching
+   * Adds a model to this collection
    *
-   * @return string URL to use in fetch query
+   * @param array $model_data  Data to feed into attributes of new model
+   * @param array $arg_options Data to make properties of the new model
+   * @return void
    */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'organizations/%s/memberships/sites',
-      $this->organization->id
-    );
-    return $url;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return OrganizationSiteMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'organization';
-    return $owner_name;
+  protected function add(array $model_data = [], array $arg_options = []) {
+    $default_options = [
+      'id'           => $model_data['id'],
+      'memberships'  => [$this,],
+      'organization' => $this->organization,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    parent::add($model_data, $options);
   }
 
 }

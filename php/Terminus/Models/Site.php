@@ -3,7 +3,6 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteAuthorizations;
@@ -11,43 +10,36 @@ use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\Workflows;
 
-class Site extends TerminusModel {
+class Site extends NewModel {
+  /**
+   * @var array
+   */
+  public $authorizations;
   /**
    * @var array
    * @todo Use Bindings collection?
    */
   public $bindings;
-
-  /**
-   * @var array
-   */
-  protected $authorizations;
-
   /**
    * @var Environments
    */
-  protected $environments;
-
+  public $environments;
   /**
    * @var SiteOrganizationMemberships
    */
-  protected $org_memberships;
-
+  public $org_memberships;
   /**
    * @var SiteUserMemberships
    */
-  protected $user_memberships;
-
+  public $user_memberships;
   /**
    * @var Workflows
    */
   protected $workflows;
-
   /**
    * @var array
    */
   private $features;
-
   /**
    * @var array
    */
@@ -59,23 +51,7 @@ class Site extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, array $options = []) {
-    if ($attributes == null) {
-      $attributes = new \stdClass();
-    }
-    $must_haves = [
-      'name',
-      'id',
-      'service_level',
-      'framework',
-      'created',
-      'memberships'
-    ];
-    foreach ($must_haves as $must_have) {
-      if (!isset($attributes->$must_have)) {
-        $attributes->$must_have = null;
-      }
-    }
+  public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);
 
     $params                 = ['site' => $this,];
@@ -84,6 +60,7 @@ class Site extends TerminusModel {
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
     $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->url              = "sites/{$this->id}?site_state=true";
   }
 
   /**
@@ -285,20 +262,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Fetches this object from Pantheon
-   *
-   * @param array $options params to pass to url request
-   * @return Site
-   */
-  public function fetch(array $options = []) {
-    $response         = $this->request->request(
-      sprintf('sites/%s?site_state=true', $this->get('id'))
-    );
-    $this->attributes = $response['data'];
-    return $this;
-  }
-
-  /**
    * Re-fetches site attributes from the API
    *
    * @return void
@@ -308,19 +271,6 @@ class Site extends TerminusModel {
       sprintf('sites/%s/settings', $this->get('id'))
     );
     $this->attributes = $response['data'];
-  }
-
-  /**
-   * Returns given attribute, if present
-   *
-   * @param string $attribute Name of attribute requested
-   * @return mixed|null Attribute value, or null if not found
-   */
-  public function get($attribute) {
-    if (isset($this->attributes->$attribute)) {
-      return $this->attributes->$attribute;
-    }
-    return null;
   }
 
   /**
@@ -345,21 +295,16 @@ class Site extends TerminusModel {
   /**
    * Returns all organization members of this site
    *
-   * @return SiteOrganizationMembership[]
+   * @return Organization[]
    */
   public function getOrganizations() {
-    $orgs = $this->org_memberships->all();
-    return $orgs;
-  }
-
-  /**
-   * Lists user memberships for this site
-   *
-   * @return SiteUserMemberships
-   */
-  public function getSiteUserMemberships() {
-    $this->user_memberships = $this->user_memberships->fetch();
-    return $this->user_memberships;
+    $this->org_memberships->fetch();
+    $org_memberships = $this->org_memberships->all();
+    $organizations = [];
+    foreach ($org_memberships as $membership) {
+      $organizations[$membership->organization->id] = $membership->organization;
+    }
+    return $organizations;
   }
 
   /**
@@ -404,6 +349,21 @@ class Site extends TerminusModel {
       'sites/' . $this->get('id') .  '/code-upstream-updates'
     );
     return $response['data'];
+  }
+
+  /**
+   * Lists user memberships for this site
+   *
+   * @return User[]
+   */
+  public function getUsers() {
+    $this->user_memberships->fetch();
+    $user_memberships = $this->user_memberships->all();
+    $users            = [];
+    foreach ($user_memberships as $membership) {
+      $users[$membership->user->id] = $membership->user;
+    }
+    return $users;
   }
 
   /**

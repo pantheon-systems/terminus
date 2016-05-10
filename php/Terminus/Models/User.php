@@ -2,46 +2,43 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\UserOrganizationMemberships;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
 use Terminus\Models\Collections\MachineTokens;
 use Terminus\Models\Collections\SshKeys;
+use Terminus\Models\Collections\UserOrganizationMemberships;
+use Terminus\Models\Collections\UserSiteMemberships;
 use Terminus\Models\Collections\Workflows;
-use Terminus\Session;
 
 class User extends TerminusModel {
   /**
    * @var UserOrganizationMemberships
    */
-  public $organizations;
-
+  public $org_memberships;
+  /**
+   * @var UserSiteMemberships
+   */
+  public $site_memberships;
   /**
    * @var Instruments
    */
   protected $instruments;
-
   /**
    * @var Instruments
    */
   protected $machine_tokens;
-
   /**
    * @var SshKeys
    */
   protected $ssh_keys;
-
   /**
    * @var Workflows
    */
   protected $workflows;
-
   /**
    * @var \stdClass
    * @todo Wrap this in a proper class.
    */
   private $aliases;
-
   /**
    * @var \stdClass
    * @todo Wrap this in a proper class.
@@ -57,15 +54,17 @@ class User extends TerminusModel {
   public function __construct($attributes = null, array $options = array()) {
     parent::__construct($attributes, $options);
 
+    $this->id = $this->get('id');
     if (isset($attributes->profile)) {
       $this->profile = $attributes->profile;
     }
-    $params               = ['user' => $this,];
-    $this->workflows      = new Workflows(['owner' => $this,]);
-    $this->instruments    = new Instruments($params);
-    $this->machine_tokens = new MachineTokens($params);
-    $this->ssh_keys       = new SshKeys($params);
-    $this->organizations  = new UserOrganizationMemberships($params);
+    $params                 = ['user' => $this,];
+    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->instruments      = new Instruments($params);
+    $this->machine_tokens   = new MachineTokens($params);
+    $this->ssh_keys         = new SshKeys($params);
+    $this->org_memberships  = new UserOrganizationMemberships($params);
+    $this->site_memberships = new UserSiteMemberships($params);
   }
 
   /**
@@ -109,27 +108,28 @@ class User extends TerminusModel {
    * @return Organization[]
    */
   public function getOrganizations() {
-    $organizations = $this->organizations->all();
+    $this->org_memberships->fetch();
+    $org_memberships = $this->org_memberships->all();
+    $organizations = [];
+    foreach ($org_memberships as $membership) {
+      $organizations[$membership->organization->id] = $membership->organization;
+    }
     return $organizations;
   }
 
   /**
    * Requests API data and returns an object of user site data
    *
-   * @param string $organization UUID of organization to requests sites from,
-   *   or null to fetch for all organizations.
-   * @return \stdClass
+   * @return Site[]
    */
-  public function getSites($organization = null) {
-    $path = sprintf('users/%s', $this->id);
-    if ($organization) {
-      $path .= sprintf('/organizations/%s/memberships/sites', $organization);
-    } else {
-      $path .= '/sites';
+  public function getSites() {
+    $this->site_memberships->fetch();
+    $site_memberships = $this->site_memberships->all();
+    $sites = [];
+    foreach ($site_memberships as $membership) {
+      $sites[$membership->site->id] = $membership->site;
     }
-    $options  = ['method' => 'get',];
-    $response = $this->request->request($path, $options);
-    return $response['data'];
+    return $sites;
   }
 
   /**

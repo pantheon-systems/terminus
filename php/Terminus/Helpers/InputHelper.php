@@ -3,13 +3,10 @@
 namespace Terminus\Helpers;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\TerminusHelper;
 use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\Upstreams;
 use Terminus\Models\OrganizationUserMembership;
 use Terminus\Models\Site;
-use Terminus\Models\Upstream;
-use Terminus\Models\User;
 use Terminus\Models\Workflow;
 use Terminus\Session;
 use Terminus\Utils;
@@ -18,7 +15,24 @@ use Terminus\Utils;
  * Helper class to handle inputs
  */
 class InputHelper extends TerminusHelper {
+  /**
+   * @var array
+   */
   private $NULL_INPUTS = ['', 'false', 'None', 'Null', '0'];
+  /**
+   * @var User
+   */
+  private $user;
+  
+  /**
+   * InputHelper constructor.
+   *
+   * @param array $options Options and dependencies for this helper
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->user = Session::getUser();
+  }
 
   /**
    * Produces a menu to select a backup
@@ -984,11 +998,9 @@ class InputHelper extends TerminusHelper {
     if ($options['allow_none']) {
       $org_list = ['-' => 'None'];
     }
-    $user          = Session::getUser();
-    $organizations = $user->organizations->all();
+    $organizations = $this->user->getOrganizations();
     foreach ($organizations as $id => $org) {
-      $org_data                  = $org->get('organization');
-      $org_list[$org->get('id')] = $org_data->profile->name;
+      $org_list[$org->get('id')] = $org->organization->get('profile')->name;
     }
     return $org_list;
   }

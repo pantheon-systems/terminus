@@ -7,7 +7,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 
 abstract class TerminusModel {
-  protected $id;
+  public $id;
   /**
    * @var Request
    */
