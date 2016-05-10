@@ -451,9 +451,9 @@ class SitesCommand extends TerminusCommand {
           if (!$confirmed) {
             continue; // User says No, go back to start.
           }
-          // Backup the DB so the client can restore if something goes wrong.
+          // Back up the site so it may be restored should something go awry
           $this->log()->info('Backing up {site}.', $context);
-          $backup = $env->createBackup(array('element'=>'all'));
+          $backup = $env->backups->create(['element' => 'all',]);
           // Only continue if the backup was successful.
           if ($backup) {
             $this->log()->info('Backup of {site} created.', $context);
