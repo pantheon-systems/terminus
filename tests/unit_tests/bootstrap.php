@@ -9,7 +9,6 @@ unset($GLOBALS['argv']);
 
 define('TERMINUS_LOG_DIR', '/tmp/');
 define('TERMINUS_TEST_ROOT', dirname(__DIR__) . '/..');
-define('TERMINUS_TEST_MODE', 1);
 
 require_once TERMINUS_TEST_ROOT . '/vendor/autoload.php';
 require_once TERMINUS_TEST_ROOT . '/php/boot-fs.php';
