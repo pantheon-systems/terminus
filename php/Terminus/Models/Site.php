@@ -299,11 +299,16 @@ class Site extends NewModel {
    */
   public function getOrganizations() {
     $this->org_memberships->fetch();
-    $org_memberships = $this->org_memberships->all();
-    $organizations = [];
-    foreach ($org_memberships as $membership) {
-      $organizations[$membership->organization->id] = $membership->organization;
-    }
+    $organizations = array_combine(
+      array_map(
+        function($membership) {return $membership->organization->id;},
+        $this->org_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->organization;},
+        $this->org_memberships->all()
+      )
+    );
     return $organizations;
   }
 
@@ -358,11 +363,16 @@ class Site extends NewModel {
    */
   public function getUsers() {
     $this->user_memberships->fetch();
-    $user_memberships = $this->user_memberships->all();
-    $users            = [];
-    foreach ($user_memberships as $membership) {
-      $users[$membership->user->id] = $membership->user;
-    }
+    $users = array_combine(
+      array_map(
+        function($membership) {return $membership->user->id;},
+        $this->user_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->user;},
+        $this->user_memberships->all()
+      )
+    );
     return $users;
   }
 
@@ -563,18 +573,6 @@ class Site extends NewModel {
       throw $e;
     }
     return $workflow;
-  }
-
-  /**
-   * Verifies if the given framework is in use
-   *
-   * @param string $framework_name Name of framework to verify
-   * @return bool
-   * @todo This function is unused; remove?
-   */
-  private function hasFramework($framework_name) {
-    $has_framework = ($framework_name == $this->get('framework'));
-    return $has_framework;
   }
 
 }

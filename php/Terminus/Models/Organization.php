@@ -75,11 +75,16 @@ class Organization extends NewModel {
    */
   public function getSites() {
     $this->site_memberships->fetch();
-    $site_memberships = $this->site_memberships->all();
-    $sites            = [];
-    foreach ($site_memberships as $membership) {
-      $sites[$membership->site->id] = $membership->site;
-    }
+    $sites = array_combine(
+      array_map(
+        function($membership) {return $membership->site->id;},
+        $this->site_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->site;},
+        $this->site_memberships->all()
+      )
+    );
     return $sites;
   }
 
@@ -90,11 +95,16 @@ class Organization extends NewModel {
    */
   public function getUsers() {
     $this->user_memberships->fetch();
-    $user_memberships = $this->user_memberships->all();
-    $users            = [];
-    foreach ($user_memberships as $membership) {
-      $users[$membership->user->id] = $membership->user;
-    }
+    $users = array_combine(
+      array_map(
+        function($membership) {return $membership->user->id;},
+        $this->user_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->user;},
+        $this->user_memberships->all()
+      )
+    );
     return $users;
   }
 

@@ -110,65 +110,54 @@ class Sites extends NewCollection {
   /**
    * Filters sites list by tag
    *
-   * @param string $tag Tag to filter by
-   * @param string $org Organization which has tagged sites
-   * @return Site[]
-   * @throws TerminusException
+   * @param string $tag    Tag to filter by
+   * @param string $org_id ID of an organization which has tagged sites
+   * @return Sites
    */
-  public function filterAllByTag($tag, $org = '') {
-    $all_sites = $this->all();
-    if (!$tag) {
-      return $all_sites;
-    }
-
-    $sites = array();
-    foreach ($all_sites as $id => $site) {
-      if ($site->organizationIsMember($org)) {
-        $tags = $site->getTags($org);
-        if (in_array($tag, $tags)) {
-          $sites[$id] = $site;
-        }
+  public function filterByTag($tag, $org_id) {
+    $this->models = array_filter(
+      $this->models,
+      function($site) use ($tag, $org_id) {
+        $has_tag = in_array($tag, $site->getTags($org_id));
+        return $has_tag;
       }
-    }
-    if (empty($sites)) {
-      throw new TerminusException(
-        'No sites associated with {org} had the tag {tag}.',
-        ['org' => $org, 'tag' => $tag,],
-        1
-      );
-    }
-    return $sites;
+    );
+    return $this;
   }
 
   /**
    * Filters an array of sites by whether the user is an organizational member
    *
    * @param string $regex Non-delimited PHP regex to filter site names by
+   * @return Sites
    */
   public function filterByName($regex = '(.*)') {
     $this->models = array_filter(
-      $this->all(),
+      $this->models,
       function($site) use ($regex) {
         preg_match("~$regex~", $site->get('name'), $matches);
         $is_match = !empty($matches);
         return $is_match;
       }
     );
+    return $this;
   }
 
   /**
    * Filters an array of sites by whether the user is an organizational member
    *
    * @param string $owner_uuid UUID of the owning user to filter by
+   * @return Sites
    */
   public function filterByOwner($owner_uuid) {
     $this->models = array_filter(
-      $this->all(),
+      $this->models,
       function($site) use ($owner_uuid) {
         $is_owner = ($site->get('owner') == $owner_uuid);
         return $is_owner;
       }
     );
+    return $this;
   }
 
   /**

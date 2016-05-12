@@ -45,21 +45,21 @@ class SitesCommand extends TerminusCommand {
    */
   public function aliases($args, $assoc_args) {
     $print    = $this->input()->optional(
-      array(
+      [
         'key'     => 'print',
         'choices' => $assoc_args,
         'default' => false,
-      )
+      ]
     );
     $location = $this->input()->optional(
-      array(
+      [
         'key'     => 'location',
         'choices' => $assoc_args,
         'default' => sprintf(
           '%s/.drush/pantheon.aliases.drushrc.php',
           Configurator::getHomeDir()
         ),
-      )
+      ]
     );
 
     if (is_dir($location)) {
@@ -77,22 +77,17 @@ class SitesCommand extends TerminusCommand {
     }
 
     $content = $this->user->getAliases();
-    $h       = fopen($location, 'w+');
-    fwrite($h, $content);
-    fclose($h);
+    file_put_contents($location, $content);
     chmod($location, 0700);
 
     $message = 'Pantheon aliases created';
     if ($file_exists) {
       $message = 'Pantheon aliases updated';
     }
-    if (strpos($content, 'array') === false) {
-      $message .= ', although you have no sites';
-    }
     $this->log()->info($message);
 
     if ($print) {
-      $aliases = str_replace(array('<?php', '?>'), '', $content);
+      $aliases = str_replace(['<?php', '?>',], '', $content);
       $this->output()->outputDump($aliases);
     }
   }
@@ -173,11 +168,11 @@ class SitesCommand extends TerminusCommand {
     $options = $this->getSiteCreateOptions($assoc_args);
 
     $url = $this->input()->string(
-      array(
+      [
         'args'    => $assoc_args,
         'key'     => 'url',
         'message' => 'URL of archive to import',
-      )
+      ]
     );
     if (!$url) {
       $this->log()->error('Please enter a URL.');
@@ -192,7 +187,7 @@ class SitesCommand extends TerminusCommand {
       exit;
     } catch (\Exception $e) {
       //Creating a new site
-      $workflow = $this->sites->addSite($options);
+      $workflow = $this->sites->create($options);
       $workflow->wait();
       $this->workflowOutput($workflow);
 
@@ -222,9 +217,6 @@ class SitesCommand extends TerminusCommand {
    *
    * [--name=<regex>]
    * : Filter sites you can access via name
-   *
-   * [--cached]
-   * : Causes the command to return cached sites list instead of retrieving anew
    *
    * @subcommand list
    * @alias show
@@ -333,46 +325,28 @@ class SitesCommand extends TerminusCommand {
    * @subcommand mass-update
    */
   public function massUpdate($args, $assoc_args) {
-    // Ensure the sitesCache is up to date
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-
+    $this->sites->fetch();
     $upstream = $this->input()->optional(
-      array(
+      [
         'key'     => 'upstream',
         'choices' => $assoc_args,
         'default' => false,
-      )
+      ]
     );
-    $data     = array();
+    $data     = [];
     $report   = $this->input()->optional(
-      array(
+      [
         'key'     => 'report',
         'choices' => $assoc_args,
         'default' => false,
-      )
-    );
-    $confirm   = $this->input()->optional(
-      array(
-        'key'     => 'confirm',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
-    );
-    $tag       = $this->input()->optional(
-      array(
-        'key'     => 'tag',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+      ]
     );
 
-    $org = '';
-    if ($tag) {
-      $org = $this->input()->orgId(array('args' => $assoc_args));
+    if (isset($assoc_args['tag'])) {
+      $org = $this->input()->orgId(['args' => $assoc_args,]);
+      $this->sites->filterByTag($assoc_args['tag'], $org);
     }
-    $sites = $this->sites->filterAllByTag($tag, $org);
+    $sites = $this->sites->all();
 
     // Start status messages.
     if ($upstream) {
@@ -383,65 +357,64 @@ class SitesCommand extends TerminusCommand {
     }
 
     foreach ($sites as $site) {
-      $context = array('site' => $site->get('name'));
-      $site->fetch();
+      $context = ['site' => $site->get('name'),];
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.
         continue;
       }
       // Check for upstream argument and site upstream URL match.
-      $siteUpstream = $site->info('upstream');
-      if ($upstream && isset($siteUpstream->url)) {
-        if ($siteUpstream->url <> $upstream) {
+      $site_upstream = $site->info('upstream');
+      if ($upstream && isset($site_upstream->url)) {
+        if ($site_upstream->url <> $upstream) {
           // Uptream doesn't match, go back to start.
           continue;
         }
       }
 
       if ($updates->behind > 0) {
-        $data[$site->get('name')] = array(
+        $data[$site->get('name')] = [
           'site'   => $site->get('name'),
-          'status' => 'Needs update'
-        );
+          'status' => 'Needs update',
+        ];
         $env = $site->environments->get('dev');
         if ($env->info('connection_mode') == 'sftp') {
           $message  = '{site} has available updates, but is in SFTP mode.';
           $message .= ' Switch to Git mode to apply updates.';
           $this->log()->warning($message, $context);
-          $data[$site->get('name')] = array(
+          $data[$site->get('name')] = [
             'site'=> $site->get('name'),
-            'status' => 'Needs update - switch to Git mode'
-          );
+            'status' => 'Needs update - switch to Git mode',
+          ];
           continue;
         }
         $updatedb = !$this->input()->optional(
-          array(
+          [
             'key'     => 'updatedb',
             'choices' => $assoc_args,
             'default' => false,
-          )
+          ]
         );
         $xoption  = !$this->input()->optional(
-          array(
+          [
             'key'     => 'xoption',
             'choices' => $assoc_args,
             'default' => 'theirs',
-          )
+          ]
         );
         if (!$report) {
           $message = 'Apply upstream updates to %s ';
           $message .= '( run update.php:%s, xoption:%s ) ';
           $confirmed = $this->input()->confirm(
-            array(
+            [
               'message' => $message,
-              'context' => array(
+              'context' => [
                 $site->get('name'),
                 var_export($updatedb, 1),
                 var_export($xoption, 1)
-              ),
+              ],
               'exit' => false,
-            )
+            ]
           );
           if (!$confirmed) {
             continue; // User says No, go back to start.
@@ -470,10 +443,10 @@ class SitesCommand extends TerminusCommand {
         }
       } else {
         if (isset($assoc_args['report'])) {
-          $data[$site->get('name')] = array(
+          $data[$site->get('name')] = [
             'site'   => $site->get('name'),
             'status' => 'Up to date'
-          );
+          ];
         }
       }
     }
@@ -550,40 +523,4 @@ class SitesCommand extends TerminusCommand {
     return $name;
   }
 
-  /**
-   * Formats site data from response for use
-   *
-   * @param array $response_data   Data about the site from API
-   * @param array $membership_data Data about membership to this site
-   * @return array
-   */
-  private function getSiteData($response_data, $membership_data = array()) {
-    $site_data = [
-      'id'            => null,
-      'name'          => null,
-      'frozen'        => null,
-      'label'         => null,
-      'created'       => null,
-      'framework'     => null,
-      'organization'  => null,
-      'service_level' => null,
-      'upstream'      => null,
-      'php_version'   => null,
-      'holder_type'   => null,
-      'holder_id'     => null,
-      'owner'         => null,
-      'membership'    => [],
-    ];
-    foreach ($site_data as $index => $value) {
-      if (($value == null) && isset($response_data[$index])) {
-        $site_data[$index] = $response_data[$index];
-      }
-    }
-
-    if (!empty($membership_data)) {
-      $site_data['membership'] = $membership_data;
-    }
-    return $site_data;
-  }
-  
 }

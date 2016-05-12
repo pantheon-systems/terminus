@@ -109,11 +109,16 @@ class User extends TerminusModel {
    */
   public function getOrganizations() {
     $this->org_memberships->fetch();
-    $org_memberships = $this->org_memberships->all();
-    $organizations = [];
-    foreach ($org_memberships as $membership) {
-      $organizations[$membership->organization->id] = $membership->organization;
-    }
+    $organizations = array_combine(
+      array_map(
+        function($membership) {return $membership->organization->id;},
+        $this->org_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->organization;},
+        $this->org_memberships->all()
+      )
+    );
     return $organizations;
   }
 
@@ -124,11 +129,16 @@ class User extends TerminusModel {
    */
   public function getSites() {
     $this->site_memberships->fetch();
-    $site_memberships = $this->site_memberships->all();
-    $sites = [];
-    foreach ($site_memberships as $membership) {
-      $sites[$membership->site->id] = $membership->site;
-    }
+    $sites = array_combine(
+      array_map(
+        function($membership) {return $membership->site->id;},
+        $this->site_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->site;},
+        $this->site_memberships->all()
+      )
+    );
     return $sites;
   }
 
