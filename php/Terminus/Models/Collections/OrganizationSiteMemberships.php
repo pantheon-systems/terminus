@@ -20,7 +20,7 @@ class OrganizationSiteMemberships extends NewCollection {
    * Instantiates the collection
    *
    * @param array $options To be set
-   * @return UserOrganizationMemberships
+   * @return OrganizationSiteMemberships
    */
   public function __construct(array $options = []) {
     parent::__construct($options);
@@ -76,7 +76,6 @@ class OrganizationSiteMemberships extends NewCollection {
     $default_options = [
       'id'           => $model_data['id'],
       'memberships'  => [$this,],
-      'organization' => $this->organization,
     ];
     $options         = array_merge($default_options, $arg_options);
     parent::add($model_data, $options);

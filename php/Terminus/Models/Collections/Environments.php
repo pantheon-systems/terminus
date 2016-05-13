@@ -3,9 +3,24 @@
 namespace Terminus\Models\Collections;
 
 use Terminus\Models\Environment;
-use Terminus\Models\Workflow;
 
-class Environments extends TerminusCollection {
+class Environments extends NewCollection {
+  /**
+   * @var Site
+   */
+  public $site;
+
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return Environments
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url  = "sites/{$this->site->id}/environments";
+  }
 
   /**
    * Creates a multidev environment
@@ -17,19 +32,19 @@ class Environments extends TerminusCollection {
   public function create($to_env_id, Environment $from_env) {
     $workflow = $this->site->workflows->create(
       'create_cloud_development_environment',
-      array(
-        'params' => array(
+      [
+        'params' => [
           'environment_id' => $to_env_id,
-          'deploy'         => array(
-            'clone_database' => array('from_environment' => $from_env->id),
-            'clone_files'    => array('from_environment' => $from_env->id),
+          'deploy'         => [
+            'clone_database' => ['from_environment' => $from_env->id,],
+            'clone_files'    => ['from_environment' => $from_env->id,],
             'annotation'     => sprintf(
               'Create the "%s" environment.',
               $to_env_id
             )
-          )
-        )
-      )
+          ],
+        ],
+      ]
     );
     return $workflow;
   }
@@ -40,12 +55,12 @@ class Environments extends TerminusCollection {
    * @return string[] $ids
    */
   public function ids() {
-    $ids = array_keys($this->getMembers());
-
     //Reorder environments to put dev/test/live first
-    $default_ids  = array('dev', 'test', 'live');
-    $multidev_ids = array_diff($ids, $default_ids);
-    $ids          = array_merge($default_ids, $multidev_ids);
+    $default_ids  = ['dev', 'test', 'live',];
+    $ids          = array_merge(
+      ['dev', 'test', 'live',],
+      array_diff(array_keys($this->models), $default_ids)
+    );
 
     return $ids;
   }
@@ -64,26 +79,6 @@ class Environments extends TerminusCollection {
       }
     );
     return $environments;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'sites/' . $this->site->get('id') . '/environments';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'site';
-    return $owner_name;
   }
 
 }

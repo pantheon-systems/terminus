@@ -25,8 +25,7 @@ class Workflows extends TerminusCollection {
    *   - params: associative array of parameters for the request
    * @return Workflow $model
    */
-  public function create($type, array $options = array()) {
-    $options = array_merge(array('params' => array()), $options);
+  public function create($type, array $options = []) {
     if (isset($options['environment'])) {
       $this->environment = $options['environment'];
     }
@@ -34,20 +33,18 @@ class Workflows extends TerminusCollection {
 
     $results = $this->request->request(
       $this->getFetchUrl(),
-      array(
+      [
         'method'      => 'post',
-        'form_params' => array(
+        'form_params' => [
           'type'   => $type,
-          'params' => (object)$params
-        )
-      )
+          'params' => (object)$params,
+        ],
+      ]
     );
 
     $model = new Workflow(
       $results['data'],
-      array(
-        'owner' => $this->owner,
-      )
+      ['owner' => $this->owner,]
     );
     $this->add($model);
     return $model;
@@ -98,16 +95,10 @@ class Workflows extends TerminusCollection {
    * @param array $options Additional information for the request
    * @return void
    */
-  public function fetchWithOperations($options = array()) {
+  public function fetchWithOperations($options = []) {
     $options = array_merge(
       $options,
-      array(
-        'params' => array(
-          'query' => array(
-            'hydrate' => 'operations'
-          )
-        )
-      )
+      ['params' => ['query' => ['hydrate' => 'operations',],],]
     );
     $this->fetch($options);
   }
@@ -239,7 +230,7 @@ class Workflows extends TerminusCollection {
     }
     $owner_name = strtolower(
       str_replace(
-        array('Terminus\\', 'Models\\', 'Collections\\'),
+        ['Terminus\\', 'Models\\', 'Collections\\',],
         '',
         get_class($this->owner)
       )
@@ -254,7 +245,7 @@ class Workflows extends TerminusCollection {
    * @param array  $options    Data to make properties of the new model
    * @return Workflow  The newly-added model
    */
-  public function add($model_data, array $options = array()) {
+  public function add($model_data, array $options = []) {
     $model = parent::add($model_data, $options);
     $model->owner = $this->owner;
     return $model;

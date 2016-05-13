@@ -4,8 +4,6 @@ namespace Terminus\Models;
 
 use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
 

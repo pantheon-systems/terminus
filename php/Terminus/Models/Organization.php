@@ -34,6 +34,7 @@ class Organization extends NewModel {
    *
    * @param array $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
+   * @return Organization
    */
   public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);

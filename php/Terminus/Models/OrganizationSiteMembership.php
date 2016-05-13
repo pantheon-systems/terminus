@@ -17,6 +17,7 @@ class OrganizationSiteMembership extends NewModel {
    *
    * @param array $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
+   * @return OrganizationSiteMembership
    */
   public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);
@@ -32,7 +33,7 @@ class OrganizationSiteMembership extends NewModel {
    *
    * @return Workflow
    */
-  public function removeMember() {
+  public function delete() {
     $workflow = $this->organization->workflows->create(
       'remove_organization_site_membership',
       ['params' => ['site_id' => $this->site->id,],]

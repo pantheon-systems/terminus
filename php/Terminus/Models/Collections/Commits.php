@@ -3,29 +3,29 @@
 namespace Terminus\Models\Collections;
 
 class Commits extends TerminusCollection {
+  /**
+   * @var Environment
+   */
+  public $environment;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Commit';
 
   /**
-   * Give the URL for collection data fetching
+   * Instantiates the collection
    *
-   * @return string URL to use in fetch query
+   * @param array $options To be set
+   * @return Commits
    */
-  protected function getFetchUrl() {
-    $url = sprintf(
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->environment = $options['environment'];
+    $this->url         = sprintf(
       'sites/%s/environments/%s/code-log',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
+      $this->environment->site->id,
+      $this->environment->id
     );
-    return $url;
   }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'environment';
-    return $owner_name;
-  }
-
+  
 }

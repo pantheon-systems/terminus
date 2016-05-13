@@ -128,8 +128,8 @@ class Session {
    * @return [user] $session user
    */
   public static function getUser() {
-    $user_uuid = Session::getValue('user_uuid');
-    $user      = new User((object)array('id' => $user_uuid));
+    $params = ['id' => Session::getValue('user_uuid'),];
+    $user   = new User($params, $params);
     return $user;
   }
 

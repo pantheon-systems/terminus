@@ -5,7 +5,6 @@ namespace Terminus\Models\Collections;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
 use Terminus\Models\User;
-use Terminus\Models\Workflow;
 use Terminus\Session;
 
 class Sites extends NewCollection {
@@ -51,9 +50,9 @@ class Sites extends NewCollection {
     }
 
     if (isset($options['upstream_id'])) {
-      $params['deploy_product'] = array(
+      $params['deploy_product'] = [
         'product_id' => $options['upstream_id']
-      );
+      ];
     }
     
     $workflow = $this->user->workflows->create(
@@ -200,7 +199,7 @@ class Sites extends NewCollection {
         );
       }
       $site = new Site(
-        (object)['id' => $uuid,],
+        ['id' => $uuid,],
         ['id' => $uuid, 'collection' => $this,]
       );
       $site->fetch();

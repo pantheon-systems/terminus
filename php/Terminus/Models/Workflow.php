@@ -3,8 +3,6 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\WorkflowOperation;
 
 class Workflow extends TerminusModel {
 
@@ -48,13 +46,7 @@ class Workflow extends TerminusModel {
    * @return Workflow
    */
   public function fetchWithLogs() {
-    $options = array(
-      'params' => array(
-        'query' => array(
-          'hydrate' => 'operations_with_logs'
-        )
-      )
-    );
+    $options = ['params' => ['query' => ['hydrate' => 'operations_with_logs']]];
     $this->fetch($options);
     return $this;
   }
@@ -101,13 +93,12 @@ class Workflow extends TerminusModel {
    * @return WorkflowOperation[]
    */
   public function operations() {
+    $operations_data = [];
     if (is_array($this->get('operations'))) {
       $operations_data = $this->get('operations');
-    } else {
-      $operations_data = array();
     }
 
-    $operations = array();
+    $operations = [];
     foreach ($operations_data as $operation_data) {
       $operations[] = new WorkflowOperation($operation_data);
     }
@@ -131,12 +122,12 @@ class Workflow extends TerminusModel {
       $elapsed_time = time() - $this->get('created_at');
     }
 
-    $operations_data = array();
+    $operations_data = [];
     foreach ($this->operations() as $operation) {
       $operations_data[] = $operation->serialize();
     }
 
-    $data = array(
+    $data = [
       'id'             => $this->id,
       'env'            => $this->get('environment'),
       'workflow'       => $this->get('description'),
@@ -144,7 +135,7 @@ class Workflow extends TerminusModel {
       'status'         => $this->getStatus(),
       'time'           => sprintf("%ds", $elapsed_time),
       'operations'     => $operations_data
-    );
+    ];
 
     return $data;
   }
@@ -190,7 +181,7 @@ class Workflow extends TerminusModel {
   protected function getOwnerName() {
     $owner_name = strtolower(
       str_replace(
-        array('Terminus\\', 'Models\\'),
+        ['Terminus\\', 'Models\\',],
         '',
         get_class($this->owner)
       )

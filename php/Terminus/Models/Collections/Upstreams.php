@@ -8,10 +8,6 @@ class Upstreams extends NewCollection {
    */
   protected $collected_class = 'Terminus\Models\Upstream';
   /**
-   * @var boolean
-   */
-  protected $paged = false;
-  /**
    * @var string
    */
   protected $url = 'products';
@@ -20,7 +16,7 @@ class Upstreams extends NewCollection {
    * Search available upstreams by UUID or name
    *
    * @param string $id_or_name UUID or name
-   * @return Upstream
+   * @return Upstreams
    */
   public function getByIdOrName($id_or_name) {
     $members   = $this->getMemberList('id', 'longname');

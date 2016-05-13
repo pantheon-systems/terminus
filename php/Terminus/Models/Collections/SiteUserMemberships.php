@@ -2,16 +2,31 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Site;
-use Terminus\Models\SiteUserMembership;
-use Terminus\Models\Workflow;
-
-class SiteUserMemberships extends TerminusCollection {
+class SiteUserMemberships extends NewCollection {
   /**
    * @var Site
    */
   protected $site;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\SiteUserMembership';
+  /**
+   * @var bool
+   */
+  protected $paged = true;
+  
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return SiteUserMemberships
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url  = "sites/{$this->site->id}/memberships/users";
+  }
 
   /**
    * Adds this user as a member to the site
@@ -20,26 +35,12 @@ class SiteUserMemberships extends TerminusCollection {
    * @param string $role  Role to assign to the new user
    * @return Workflow
    **/
-  public function addMember($email, $role) {
+  public function create($email, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_user_membership',
-      array('params' => array('user_email' => $email, 'role' => $role))
+      ['params' => ['user_email' => $email, 'role' => $role,],]
     );
     return $workflow;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return SiteUserMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-    parent::fetch($options);
-    return $this;
   }
 
   /**
@@ -47,10 +48,9 @@ class SiteUserMemberships extends TerminusCollection {
    *
    * @param string $id UUID or email of desired user
    * @return SiteUserMembership
-   * @throws TerminusException
    */
   public function get($id) {
-    $models     = $this->getMembers();
+    $models     = $this->models;
     $membership = null;
     if (isset($models[$id])) {
       $membership = $models[$id];
@@ -61,34 +61,12 @@ class SiteUserMemberships extends TerminusCollection {
           && property_exists($userdata, 'email')
           && ($userdata->email == $id)
         ) {
-          return $model;
+          $membership = $model;
+          break;
         }
       }
     }
-    throw new TerminusException(
-      'Cannot find site user with the name "{id}"',
-      compact('id'),
-      1
-    );
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'sites/' . $this->site->get('id') . '/memberships/users';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    return 'site';
+    return $membership;
   }
 
 }

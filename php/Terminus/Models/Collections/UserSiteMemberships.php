@@ -38,7 +38,6 @@ class UserSiteMemberships extends NewCollection {
     $default_options = [
       'id'          => $model_data['id'],
       'memberships' => [$this,],
-      'user'        => $this->user,
     ];
     $options         = array_merge($default_options, $arg_options);
     parent::add($model_data, $options);

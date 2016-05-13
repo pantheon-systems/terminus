@@ -2,20 +2,41 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\TerminusModel;
+class SiteUserMembership extends NewModel {
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
 
-class SiteUserMembership extends TerminusModel {
-  protected $site;
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return SiteUserMembership
+   */
+  public function __construct(array $attributes = [], array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->site = $options['collection']->site;
+    $this->user = new User(
+      (array)$attributes['user'],
+      ['id' => $attributes['user']->id,]
+    );
+  }
 
   /**
    * Remove membership, either org or user
    *
    * @return Workflow
    **/
-  public function removeMember() {
+  public function delete() {
     $workflow = $this->site->workflows->create(
       'remove_site_user_membership',
-      array('params' => array('user_id' => $this->id))
+      ['params' => ['user_id' => $this->user->id,],]
     );
     return $workflow;
   }
@@ -29,7 +50,7 @@ class SiteUserMembership extends TerminusModel {
   public function setRole($role) {
     $workflow = $this->site->workflows->create(
       'update_site_user_membership',
-      array('params' => array('user_id' => $this->id, 'role' => $role))
+      ['params' => ['user_id' => $this->user->id, 'role' => $role,],]
     );
     return $workflow;
   }

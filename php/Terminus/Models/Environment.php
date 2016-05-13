@@ -3,15 +3,12 @@
 namespace Terminus\Models;
 
 use GuzzleHttp\TransferStats as TransferStats;
-use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
-use Terminus\Models\Collections\Bindings;
 use Terminus\Models\Collections\Commits;
 use Terminus\Models\Collections\Hostnames;
 
-class Environment extends TerminusModel {
+class Environment extends NewModel {
   /**
    * @var Backups
    */
@@ -23,11 +20,6 @@ class Environment extends TerminusModel {
   public $commits;
 
   /**
-   * @var Bindings
-   */
-  public $bindings;
-
-  /**
    * @var Hostnames
    */
   public $hostnames;
@@ -37,12 +29,12 @@ class Environment extends TerminusModel {
    *
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
+   * @return Environment
    */
-  public function __construct($attributes, array $options = []) {
+  public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);
-    $options = ['environment' => $this];
+    $options         = ['environment' => $this];
     $this->backups   = new Backups($options);
-    $this->bindings  = new Bindings($options);
     $this->commits   = new Commits($options);
     $this->hostnames = new Hostnames($options);
   }
@@ -222,7 +214,8 @@ class Environment extends TerminusModel {
       $info = array_merge($info, $git_params);
     }
 
-    $dbserver_binding = (array)$this->bindings->getByType('dbserver');
+    $this->site->bindings->fetch();
+    $dbserver_binding = $this->site->bindings->getByType('dbserver');
     if (!empty($dbserver_binding)) {
       do {
         $db_binding = array_shift($dbserver_binding);
@@ -266,7 +259,7 @@ class Environment extends TerminusModel {
       $info = array_merge($info, $mysql_params);
     }
 
-    $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
+    $cacheserver_binding = $this->site->bindings->getByType('cacheserver');
     if (!empty($cacheserver_binding)) {
       do {
         $next_binding = array_shift($cacheserver_binding);
@@ -312,7 +305,7 @@ class Environment extends TerminusModel {
    *
    * @return array
    */
-  public function convergeBindings() {
+  public function convergeEnvironment() {
     $workflow = $this->site->workflows->create(
       'converge_environment',
       ['environment' => $this->get('id'),]
@@ -327,7 +320,7 @@ class Environment extends TerminusModel {
    */
   public function countDeployableCommits() {
     $parent_environment = $this->getParentEnvironment();
-    $parent_commits     = $parent_environment->commits->all();
+    $parent_commits     = $parent_environment->commits->fetch()->all();
     $number_of_commits  = 0;
     foreach ($parent_commits as $commit) {
       $labels             = $commit->get('labels');
@@ -396,7 +389,7 @@ class Environment extends TerminusModel {
   public function domain() {
     $host = sprintf(
       '%s-%s.%s',
-      $this->get('id'),
+      $this->id,
       $this->site->get('name'),
       $this->get('dns_zone')
     );
@@ -818,7 +811,7 @@ class Environment extends TerminusModel {
       $this->site->get('id'),
       $this->get('id')
     );
-    $response = (array)$this->request->request($path, ['method' => 'get',]);
+    $response = $this->request->request($path, ['method' => 'get',]);
     if (isset($response['data']->$setting)) {
       return $response['data']->$setting;
     }

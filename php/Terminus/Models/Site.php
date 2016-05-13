@@ -3,6 +3,7 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\Collections\Bindings;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteAuthorizations;
@@ -16,8 +17,7 @@ class Site extends NewModel {
    */
   public $authorizations;
   /**
-   * @var array
-   * @todo Use Bindings collection?
+   * @var Bindings
    */
   public $bindings;
   /**
@@ -50,12 +50,14 @@ class Site extends NewModel {
    *
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
+   * @return Site
    */
   public function __construct(array $attributes = [], array $options = []) {
     parent::__construct($attributes, $options);
 
     $params                 = ['site' => $this,];
     $this->authorizations   = new SiteAuthorizations($params);
+    $this->bindings         = new Bindings($params);
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
@@ -147,19 +149,6 @@ class Site extends NewModel {
   }
 
   /**
-   * Converges all bindings on a site
-   *
-   * @return array
-   */
-  public function convergeBindings() {
-    $response = $this->request->request(
-      'sites/' . $this->get('id') . '/converge',
-      ['method' => 'post']
-    );
-    return $response['data'];
-  }
-
-  /**
    * Create a new branch
    *
    * @param string $branch Name of new branch
@@ -215,7 +204,7 @@ class Site extends NewModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -229,7 +218,7 @@ class Site extends NewModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -243,7 +232,7 @@ class Site extends NewModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -257,7 +246,7 @@ class Site extends NewModel {
       'sites/' . $this->get('id') . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
