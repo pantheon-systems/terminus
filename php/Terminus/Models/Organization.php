@@ -2,7 +2,6 @@
 
 namespace Terminus\Models;
 
-use Terminus\Session;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\OrganizationUserMemberships;
 use Terminus\Models\Collections\Workflows;
@@ -12,10 +11,6 @@ class Organization extends NewModel {
    * @var OrganizationSiteMemberships
    */
   public $site_memberships;
-  /**
-   * @var User
-   */
-  public $user;
   /**
    * @var OrganizationUserMemberships
    */
@@ -32,15 +27,12 @@ class Organization extends NewModel {
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
+   * @param object $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
    * @return Organization
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
-    if (!isset($this->user)) {
-      $this->user = Session::getUser();
-    }
     $params                 = ['organization' => $this,];
     $this->site_memberships = new OrganizationSiteMemberships($params);
     $this->user_memberships = new OrganizationUserMemberships($params);

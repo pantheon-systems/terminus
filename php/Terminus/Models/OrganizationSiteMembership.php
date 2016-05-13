@@ -15,16 +15,16 @@ class OrganizationSiteMembership extends NewModel {
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
+   * @param object $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
    * @return OrganizationSiteMembership
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $this->organization = $options['collection']->organization;
     $this->site         = new Site(
-      (array)$attributes['site'],
-      ['id' => $attributes['site']->id, 'memberships' => [$this,],]
+      $attributes->site,
+      ['id' => $attributes->site->id, 'memberships' => [$this,],]
     );
   }
   

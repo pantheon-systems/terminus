@@ -15,7 +15,7 @@ class Hostname extends NewModel {
    * @param array  $options    Options to set as $this->key
    * @return Hostname
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $this->environment = $options['collection']->environment;
   }

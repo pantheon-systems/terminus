@@ -10,7 +10,7 @@ class SiteOrganizationMemberships extends NewCollection {
   /**
    * @var bool
    */
-  protected $paged = true
+  protected $paged = true;
   /**
    * @var string
    */
@@ -35,7 +35,7 @@ class SiteOrganizationMemberships extends NewCollection {
    * @param string $role Role for supporting organization to take
    * @return Workflow
    **/
-  public function addMember($name, $role) {
+  public function create($name, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_organization_membership',
       ['params' => ['organization_name' => $name, 'role' => $role,],]
@@ -44,12 +44,16 @@ class SiteOrganizationMemberships extends NewCollection {
   }
 
   /**
-   * Returns UUID of organization with given name
+   * Retrieves the model of the given ID or name
    *
-   * @param string $name A name to search for
-   * @return SiteOrganizationMembership|null
+   * @param string $id ID or name of desired model instance
+   * @return SiteOrganizationMembership
    */
-  public function findByName($name) {
+  public function get($id) {
+    $org_member = parent::get($id);
+    if (!is_null($org_member)) {
+      return $org_member;
+    }
     foreach ($this->models as $org_member) {
       if ($name == $org_member->get('profile')->name) {
         return $org_member;

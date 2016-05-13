@@ -2,6 +2,7 @@
 
 namespace Terminus\Models;
 
+//@TODO Create archives collection and change backups accordingly
 class Backup extends NewModel {
   /**
    * @var Environment
@@ -11,11 +12,11 @@ class Backup extends NewModel {
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
+   * @param object $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
    * @return Backup
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $this->environment = $options['collection']->environment;
   }

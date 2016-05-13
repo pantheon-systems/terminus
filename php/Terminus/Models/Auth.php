@@ -18,10 +18,10 @@ class Auth extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array $options    Options to set as $this->key
    * @return Auth
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = []) {
     $this->tokens_cache = new TokensCache();
     parent::__construct($attributes, $options);
   }

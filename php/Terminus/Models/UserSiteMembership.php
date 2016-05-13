@@ -3,21 +3,29 @@
 namespace Terminus\Models;
 
 class UserSiteMembership extends NewModel {
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
   
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
-   * @param array $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    * @return UserSiteMembership
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $this->site = new Site(
-      (array)$attributes['site'],
-      ['id' => $attributes['site']->id, 'memberships' => [$this,],]
+      $attributes->site,
+      ['id' => $attributes->site->id, 'memberships' => [$this,],]
     );
-    $this->user = $options['user'];
+    $this->user = $options['collection']->user;
   }
 
 }

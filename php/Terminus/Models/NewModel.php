@@ -26,14 +26,17 @@ abstract class NewModel {
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
-   * @param array $options    Options to set as $this->key
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     if (!defined('Terminus')) {
       $configurator = new Configurator();
     }
-    $this->attributes = array_merge($this->attributes, $attributes);
+    $this->attributes = $attributes;
+    if (is_null($attributes)) {
+      $this->attributes = (object)[];
+    }
     foreach ($options as $var_name => $value) {
       $this->$var_name = $value;
     }
@@ -53,8 +56,8 @@ abstract class NewModel {
     ];
     $options  = array_merge_recursive($default_options, $arg_options);
     $response = $this->request->request($this->url, $options);
-    $this->attributes = array_merge(
-      $this->attributes,
+    $this->attributes = (object)array_merge(
+      (array)$this->attributes,
       $this->parseAttributes((array)$response['data'])
     );
     return $this;
@@ -78,7 +81,7 @@ abstract class NewModel {
    */
   public function get($attribute) {
     if ($this->has($attribute)) {
-      return $this->attributes[$attribute];
+      return $this->attributes->$attribute;
     }
     return null;
   }
@@ -90,7 +93,7 @@ abstract class NewModel {
    * @return boolean True if attribute exists, false otherwise
    */
   public function has($attribute) {
-    $isset = isset($this->attributes[$attribute]);
+    $isset = isset($this->attributes->$attribute);
     return $isset;
   }
 
@@ -102,7 +105,7 @@ abstract class NewModel {
    * @return void
    */
   public function set($attribute, $value) {
-    $this->attributes[$attribute] = $value;
+    $this->attributes->$attribute = $value;
   }
 
 }

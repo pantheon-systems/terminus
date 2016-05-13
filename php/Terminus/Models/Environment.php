@@ -31,7 +31,7 @@ class Environment extends NewModel {
    * @param array  $options    Options to set as $this->key
    * @return Environment
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $options         = ['environment' => $this];
     $this->backups   = new Backups($options);

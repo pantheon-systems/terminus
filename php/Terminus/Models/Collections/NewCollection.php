@@ -30,6 +30,7 @@ abstract class NewCollection {
    * Instantiates the collection
    *
    * @param array $options To be set
+   * @return TerminusCollection
    */
   public function __construct(array $options = []) {
     $this->request = new Request();
@@ -66,9 +67,8 @@ abstract class NewCollection {
     }
 
     foreach ((array)$response['data'] as $id => $model_data) {
-      $model_data = (array)$model_data;
-      if (!isset($model_data['id'])) {
-        $model_data['id'] = $id;
+      if (!isset($model_data->id)) {
+        $model_data->id = $id;
       }
       $this->add($model_data);
     }
@@ -90,60 +90,23 @@ abstract class NewCollection {
   }
 
   /**
-   * Returns an array of data where the keys are the attribute $key and the
-   *   values are the attribute $value, filtered by the given array
+   * Filters the collection's models by the given array
    *
-   * @param array        $filters Attributes to match during filtration
-   *   e.g. array('category' => 'other')
-   * @param string       $key     Name of attribute to make array keys
-   * @param string|array $value   Name(s) of attribute to make array values
-   * @return array Array rendered as requested
-   *         $this->attribute->$key = $this->attribute->$value
+   * @param array $filters Attributes to match during filtration
+   *   e.g. ['category' => 'other', 'type' => 'normal',]
+   * @return NewCollection
    */
-  public function getFilteredMemberList(
-    array $filters = [],
-    $key   = 'id',
-    $value = 'name'
-  ) {
-    $members     = $this->models;
-    $member_list = [];
-
-    $values = $value;
-    if (!is_array($values)) {
-      $values = [$value,];
-    }
-    foreach ($members as $member) {
-      $member_list[$member->get($key)] = [];
-      foreach ($values as $item) {
-        $member_list[$member->get($key)][$item] = $member->get($item);
-      }
-      if (count($member_list[$member->get($key)]) < 2) {
-        $member_list[$member->get($key)] =
-          array_pop($member_list[$member->get($key)]);
-      }
-      foreach ($filters as $attribute => $match_value) {
-        if ($member->get($attribute) != $match_value) {
-          unset($member_list[$member->get($key)]);
-          break;
+  public function filter(array $filters = []) {
+    foreach ($filters as $attribute => $value) {
+      $this->models = array_filter(
+        $this->models,
+        function ($model) use ($attribute, $value) {
+          $is_match = $model->get($attribute) == $value;
+          return $is_match;
         }
-      }
-
+      );
     }
-    return $member_list;
-  }
-
-  /**
-   * Returns an array of data where the keys are the attribute $key and the
-   *   values are the attribute $value
-   *
-   * @param string $key   Name of attribute to make array keys
-   * @param string $value Name of attribute to make array values
-   * @return array Array rendered as requested
-   *         $this->attribute->$key = $this->attribute->$value
-   */
-  public function getMemberList($key = 'id', $value = 'name') {
-    $member_list = $this->getFilteredMemberList([], $key, $value);
-    return $member_list;
+    return $this;
   }
 
   /**
@@ -168,20 +131,54 @@ abstract class NewCollection {
   }
 
   /**
+   * Returns an array of data where the keys are the attribute $key and the
+   *   values are the attribute $value
+   *
+   * @param string $key   Name of attribute to make array keys
+   * @param mixed  $value Name(s) of attribute(s) to comprise array values
+   * @return array Array rendered as requested
+   *         $this->attribute->$key = $this->attribute->$value
+   */
+  public function list($key = 'id', $value = 'name') {
+    $members = array_combine(
+      array_map(
+        function($member) use ($key) {
+          return $member->get($key);
+        },
+        $this->models
+      ),
+      array_map(
+        function($member) use ($value) {
+          if (is_scalar($value)) {
+            return $member->get($value);
+          }
+          $list = [];
+          foreach ($value as $item) {
+            $list[$item] = $member->get($item);
+          }
+          return $list;
+        },
+        $this->models
+      )
+    );
+    return $members;
+  }
+
+  /**
    * Adds a model to this collection
    *
-   * @param array $model_data  Data to feed into attributes of new model
-   * @param array $arg_options Data to make properties of the new model
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
    * @return void
    */
-  protected function add(array $model_data = [], array $arg_options = []) {
-    $default_options = ['id' => $model_data['id'], 'collection' => $this,];
+  protected function add($model_data, array $arg_options = []) {
+    $default_options = ['id' => $model_data->id, 'collection' => $this,];
     $options         = array_merge($default_options, $arg_options);
 
     $model_name = $this->collected_class;
     $model      = new $model_name($model_data, $options);
 
-    $this->models[$model_data['id']] = $model;
+    $this->models[$model_data->id] = $model;
   }
 
 }

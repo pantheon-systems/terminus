@@ -149,13 +149,7 @@ class Sites extends NewCollection {
    * @return Sites
    */
   public function filterByOwner($owner_uuid) {
-    $this->models = array_filter(
-      $this->models,
-      function($site) use ($owner_uuid) {
-        $is_owner = ($site->get('owner') == $owner_uuid);
-        return $is_owner;
-      }
-    );
+    $this->filter(['owner' => $owner_uuid,]);
     return $this;
   }
 

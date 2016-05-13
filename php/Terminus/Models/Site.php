@@ -42,6 +42,7 @@ class Site extends NewModel {
   private $features;
   /**
    * @var array
+   * @TODO Break this out into its own collection
    */
   private $tags;
 
@@ -52,7 +53,7 @@ class Site extends NewModel {
    * @param array  $options    Options to set as $this->key
    * @return Site
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
 
     $params                 = ['site' => $this,];
@@ -257,9 +258,12 @@ class Site extends NewModel {
    */
   public function fetchAttributes() {
     $response = $this->request->request(
-      sprintf('sites/%s/settings', $this->get('id'))
+      sprintf('sites/%s/settings', $this->id)
     );
-    $this->attributes = $response['data'];
+    $this->attributes = (object)array_merge(
+      (array)$this->attributes,
+      $this->parseAttributes((array)$response['data'])
+    );
   }
 
   /**
@@ -455,7 +459,7 @@ class Site extends NewModel {
    */
   public function newRelic() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/new-relic'
+      'sites/' . $this->id . '/new-relic'
     );
     return $response['data'];
   }
@@ -467,7 +471,7 @@ class Site extends NewModel {
    * @return bool True if organization is a member of this site
    */
   public function organizationIsMember($uuid) {
-    $org_ids       = $this->org_memberships->ids();
+    $org_ids       = $this->org_memberships->fetch()->ids();
     $org_is_member = in_array($uuid, $org_ids);
     return $org_is_member;
   }
@@ -479,7 +483,7 @@ class Site extends NewModel {
    * @return Workflow
    */
   public function removeInstrument() {
-    $args     = ['site' => $this->get('id'),];
+    $args     = ['site' => $this->id,];
     $workflow = $this->workflows->create('disassociate_site_instrument', $args);
     return $workflow;
   }
@@ -512,14 +516,14 @@ class Site extends NewModel {
    * @throws TerminusException
    */
   public function setOwner($owner = null) {
-    $new_owner = $this->user_memberships->get($owner);
+    $new_owner = $this->user_memberships->fetch()->get($owner);
     if ($new_owner == null) {
       $message = 'The owner must be a team member. Add them with `site team`';
       throw new TerminusException($message);
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      ['params' => ['user_id' => $new_owner->get('id'),],]
+      ['params' => ['user_id' => $new_owner->id,],]
     );
     return $workflow;
   }

@@ -43,10 +43,10 @@ class User extends NewModel {
   /**
    * Object constructor
    *
-   * @param array $attributes Attributes of this model
+   * @param object $attributes Attributes of this model
    * @param array $options    Options to set as $this->key
    */
-  public function __construct(array $attributes = [], array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
 
     $params                 = ['user' => $this,];
@@ -55,7 +55,7 @@ class User extends NewModel {
     $this->org_memberships  = new UserOrganizationMemberships($params);
     $this->site_memberships = new UserSiteMemberships($params);
     $this->ssh_keys         = new SshKeys($params);
-    $this->url              = "users/{$this->id}"
+    $this->url              = "users/{$this->id}";
     $this->workflows        = new Workflows(['owner' => $this,]);
   }
 

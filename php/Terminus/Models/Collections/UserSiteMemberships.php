@@ -30,13 +30,13 @@ class UserSiteMemberships extends NewCollection {
   /**
    * Adds a model to this collection
    *
-   * @param array $model_data  Data to feed into attributes of new model
-   * @param array $arg_options Data to make properties of the new model
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
    * @return void
    */
-  protected function add(array $model_data = [], array $arg_options = []) {
+  protected function add($model_data = [], array $arg_options = []) {
     $default_options = [
-      'id'          => $model_data['id'],
+      'id'          => $model_data->id,
       'memberships' => [$this,],
     ];
     $options         = array_merge($default_options, $arg_options);

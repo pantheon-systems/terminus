@@ -35,7 +35,7 @@ class OrganizationSiteMemberships extends NewCollection {
    * @param Site $site Site object of site to add to this organization
    * @return Workflow
    */
-  public function addMember(Site $site) {
+  public function create(Site $site) {
     $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
       ['params' => ['site_id' => $site->get('id'), 'role' => 'team_member',],]
@@ -68,13 +68,13 @@ class OrganizationSiteMemberships extends NewCollection {
   /**
    * Adds a model to this collection
    *
-   * @param array $model_data  Data to feed into attributes of new model
-   * @param array $arg_options Data to make properties of the new model
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
    * @return void
    */
-  protected function add(array $model_data = [], array $arg_options = []) {
+  protected function add($model_data, array $arg_options = []) {
     $default_options = [
-      'id'           => $model_data['id'],
+      'id'           => $model_data->id,
       'memberships'  => [$this,],
     ];
     $options         = array_merge($default_options, $arg_options);

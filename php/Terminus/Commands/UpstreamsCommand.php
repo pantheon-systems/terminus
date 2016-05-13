@@ -29,10 +29,8 @@ class UpstreamsCommand extends TerminusCommand {
    * @alias all
    */
   public function all(array $args = [], array $assoc_args = []) {
-    $upstreams = new Upstreams();
-    $upstreams->fetch();
-    $upstreams_list = $upstreams->getFilteredMemberList(
-      $assoc_args,
+    $upstreams      = new Upstreams();
+    $upstreams_list = $upstreams->fetch()->filter($assoc_args)->list(
       'id',
       ['id', 'longname', 'category', 'type', 'framework',]
     );

@@ -13,14 +13,13 @@ class MachineTokens extends NewCollection {
   protected $collected_class = 'Terminus\Models\MachineToken';
 
   /**
-   * Object constructor
+   * Instantiates the collection
    *
-   * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array $options To be set
    * @return MachineTokens
    */
-  public function __construct(array $attributes = [], array $options = []) {
-    parent::__construct($attributes, $options);
+  public function __construct(array $options = []) {
+    parent::__construct($options);
     $this->user = $options['user'];
     $this->url  = "users/{$this->user->id}/machine_tokens";
   }
