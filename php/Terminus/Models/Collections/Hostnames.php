@@ -27,7 +27,7 @@ class Hostnames extends NewCollection {
     $this->environment = $options['environment'];
     $this->url         = sprintf(
       'sites/%s/environments/%s/hostnames?hydrate=%s',
-      $this->environment->site->id,
+      $this->environment->collection->site->id,
       $this->environment->id,
       $this->hydrate
     );

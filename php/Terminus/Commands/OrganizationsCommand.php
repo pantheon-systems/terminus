@@ -2,12 +2,8 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
 use Terminus\Models\Organization;
 use Terminus\Models\OrganizationSiteMembership;
-use Terminus\Models\Collections\Sites;
 use Terminus\Models\Collections\UserOrganizationMemberships;
 
 /**
@@ -26,8 +22,7 @@ class OrganizationsCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->sites = new Sites();
-    $this->user  = Session::getUser();
+    $this->user  = $this->sites->user;
   }
 
   /**
@@ -37,8 +32,7 @@ class OrganizationsCommand extends TerminusCommand {
    */
   public function all($args, $assoc_args) {
     $data = [];
-    $this->user->org_memberships->fetch();
-    $org_memberships = $this->user->org_memberships->all();
+    $org_memberships = $this->user->org_memberships->fetch()->all();
     foreach ($org_memberships as $org_membership) {
       $org = $org_membership->organization;
       $data[]   = [
@@ -74,8 +68,8 @@ class OrganizationsCommand extends TerminusCommand {
     $org_id = $this->input()->orgId(
       ['args' => $assoc_args, 'allow_none' => false,]
     );
-    $this->user->org_memberships->fetch();
-    $org = $this->user->org_memberships->get($org_id)->get('organization');
+    $org = $this->user->org_memberships->fetch()->get($org_id)
+      ->get('organization');
 
     $memberships = $org->getSites();
 
@@ -352,7 +346,7 @@ class OrganizationsCommand extends TerminusCommand {
    */
   private function getNonmemberSiteList($memberships) {
     $members = $this->getMemberSiteList($memberships);
-    $sites   = $this->sites->getMemberList();
+    $sites   = $this->sites->list();
     $list    = array_diff($sites, $members);
     return $list;
   }

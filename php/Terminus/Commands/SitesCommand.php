@@ -3,10 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus\Configurator;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
-use Terminus\Session;
 use Terminus\Utils;
 
 /**
@@ -15,7 +12,6 @@ use Terminus\Utils;
  * @command sites
  */
 class SitesCommand extends TerminusCommand {
-  public $sites;
 
   /**
    * Shows a list of your sites on Pantheon
@@ -26,8 +22,6 @@ class SitesCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->sites = new Sites();
-    $this->user  = Session::getUser();
   }
 
   /**

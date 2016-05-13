@@ -2,9 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Auth;
-use Terminus\Session;
 
 /**
  * Authenticate to Pantheon and store a local secret token.
@@ -110,10 +108,7 @@ class AuthCommand extends TerminusCommand {
       $this->failure($message, $context);
     }
     if (!isset($email)) {
-      $user = Session::getUser();
-      $user->fetch();
-      $user_data = $user->serialize();
-      $email     = $user_data['email'];
+      $email = $this->user->fetch()->serialize()['email'];
     }
     $this->log()->info('Logged in as {email}.', compact('email'));
 
@@ -135,11 +130,8 @@ class AuthCommand extends TerminusCommand {
    * Find out what user you are logged in as.
    */
   public function whoami() {
-    if (Session::getValue('user_uuid')) {
-      $user = Session::getUser();
-      $user->fetch();
-
-      $data = $user->serialize();
+    if (!is_null($this->user)) {
+      $data = $this->user->fetch()->serialize();
       $this->output()->outputRecord($data);
     } else {
       $this->failure('You are not logged in.');

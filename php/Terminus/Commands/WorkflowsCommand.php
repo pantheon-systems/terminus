@@ -3,12 +3,8 @@
 namespace Terminus\Commands;
 
 use Terminus\Utils;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
-use Terminus\Models\Collections\Sites;
 
-define("WORKFLOWS_WATCH_INTERVAL", 5);
+define('WORKFLOWS_WATCH_INTERVAL', 5);
 
 /**
 * Actions to be taken on an individual site
@@ -16,6 +12,9 @@ define("WORKFLOWS_WATCH_INTERVAL", 5);
 * @command workflows
 */
 class WorkflowsCommand extends TerminusCommand {
+  /**
+   * @var bool
+   */
   protected $_headers = false;
 
   /**
@@ -27,7 +26,6 @@ class WorkflowsCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->sites = new Sites();
   }
 
   /**

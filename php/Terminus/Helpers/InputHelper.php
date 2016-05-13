@@ -893,7 +893,7 @@ class InputHelper extends TerminusHelper {
     } else {
       $upstream = $upstreams->get(
         $this->menu(
-          ['choices' => $upstreams->getMemberList('id', 'longname')]
+          ['choices' => $upstreams->list('id', 'longname')]
         )
       );
     }

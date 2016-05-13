@@ -23,7 +23,7 @@ class Commits extends TerminusCollection {
     $this->environment = $options['environment'];
     $this->url         = sprintf(
       'sites/%s/environments/%s/code-log',
-      $this->environment->site->id,
+      $this->environment->collection->site->id,
       $this->environment->id
     );
   }

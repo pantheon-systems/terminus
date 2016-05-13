@@ -2,7 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Collections\Sites;
 
 /**
@@ -145,20 +145,26 @@ abstract class CommandWithSSH extends TerminusCommand {
    *         string env_id  Name of the environment being invoked
    *         string command Command to run remotely
    *         string server  Server connection info
+   * @throws TerminusException
    */
   protected function getElements($args, $assoc_args) {
     $this->ensureQuotation($args, $assoc_args);
     $this->checkCommand($args, $assoc_args);
 
-    $sites = new Sites();
-    $site  = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
-    if (!$site) {
-      $this->failure('Command could not be completed. Unknown site specified.');
+    $site  = $this->sites->get(
+      $site_name = $this->input()->siteName(['args' => $assoc_args,])
+    );
+    if (is_null($site)) {
+      throw new TerminusException (
+        'Command could not be completed. Unknown site {site} specified.',
+        ['site' => $site_name,],
+        1
+      );
     }
 
     $env_id = $this->input()->env(['args' => $assoc_args, 'site' => $site,]);
     if (!in_array($env_id, ['test', 'live',])) {
-      $this->checkConnectionMode($site->environments->get($env_id));
+      $this->checkConnectionMode($site->environments->fetch()->get($env_id));
     }
 
     $elements = [
@@ -166,7 +172,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       'env_id'  => $env_id,
       'command' => $args[0],
       'server'  => $this->getAppserverInfo(
-        ['site' => $site->get('id'), 'environment' => $env_id,]
+        ['site' => $site->id, 'environment' => $env_id,]
       ),
     ];
     return $elements;

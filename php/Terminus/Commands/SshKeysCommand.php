@@ -2,9 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Configurator;
-use Terminus\Session;
 
 /**
  * Show, add, and delete SSH keys on your Pantheon account
@@ -12,11 +10,6 @@ use Terminus\Session;
  * @command ssh-keys
  */
 class SshKeysCommand extends TerminusCommand {
-
-  /**
-   * @var User
-   */
-  private $user;
 
   /**
    * Instantiates object, ensures login
@@ -27,7 +20,6 @@ class SshKeysCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->user = Session::getUser();
   }
 
   /**

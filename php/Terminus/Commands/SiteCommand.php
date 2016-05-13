@@ -2,13 +2,9 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
 use Terminus\Models\Workflow;
-use Terminus\Models\Collections\Sites;
 use Terminus\Request;
-use Terminus\Session;
 use Terminus\Utils;
 
 /**
@@ -29,7 +25,6 @@ class SiteCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->sites = new Sites();
   }
 
   /**
@@ -736,8 +731,9 @@ class SiteCommand extends TerminusCommand {
    * @subcommand drush-version
    */
   public function drushVersion($args, $assoc_args) {
-    $sites = new Sites();
-    $site = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
     if (isset($assoc_args['env'])) {
       $environment = $site->environments->get($assoc_args['env']);
       $this->output()->outputValue($environment->getDrushVersion());
@@ -1600,8 +1596,9 @@ class SiteCommand extends TerminusCommand {
    * @subcommand set-drush-version
    */
   public function setDrushVersion($args, $assoc_args) {
-    $sites = new Sites();
-    $site = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
     if (isset($assoc_args['env'])) {
       $environments = [$site->environments->get($assoc_args['env']),];
     } else {
@@ -1704,8 +1701,7 @@ class SiteCommand extends TerminusCommand {
    *  terminus site set-instrument --site=sitename
    */
   public function setInstrument($args, $assoc_args) {
-    $user        = Session::getUser();
-    $instruments = $user->instruments->getMemberList('id', 'label');
+    $instruments = $this->user->instruments->fetch()->list('id', 'label');
     if (!isset($assoc_args['instrument'])) {
       $instrument_id = $this->input()->menu(
         array(
@@ -1744,7 +1740,7 @@ class SiteCommand extends TerminusCommand {
     $site             = $this->sites->get(
       $this->input()->siteName(array('args' => $assoc_args))
     );
-    $user_memberships = $site->user_memberships->all();
+    $user_memberships = $site->user_memberships->fetch()->all();
     if (count($user_memberships) <= 1) {
       throw new TerminusException(
         'The new owner must be added with "{cmd}" before promoting.',
@@ -1753,7 +1749,7 @@ class SiteCommand extends TerminusCommand {
       );
     }
     foreach ($user_memberships as $uuid => $user_membership) {
-      $user      = $user_membership->get('user');
+      $user                  = $user_membership->get('user');
       $choices[$user->email] = sprintf(
         '%s %s <%s>',
         $user->profile->firstname,
@@ -2383,8 +2379,7 @@ class SiteCommand extends TerminusCommand {
    * @return bool True if this organization is accessible
    */
   private function isOrgAccessible($org_id) {
-    $user  = Session::getUser();
-    $org   = $user->organizations->get($org_id);
+    $org   = $this->user->org_memberships->fetch()->get($org_id);
     $is_ok = is_object($org);
     return $is_ok;
   }

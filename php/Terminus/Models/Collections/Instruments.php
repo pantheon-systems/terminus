@@ -2,7 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
-class Instruments extends TerminusCollection {
+class Instruments extends NewCollection {
   /**
    * @var User
    */
@@ -21,7 +21,7 @@ class Instruments extends TerminusCollection {
   public function __construct(array $options = []) {
     parent::__construct($options);
     $this->user = $options['user'];
-    $this->url  = "sites/{$this->user->id}/instruments";
+    $this->url  = "users/{$this->user->id}/instruments";
   }
 
 }

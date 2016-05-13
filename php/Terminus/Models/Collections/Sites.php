@@ -9,13 +9,13 @@ use Terminus\Session;
 
 class Sites extends NewCollection {
   /**
+   * @var User
+   */
+  public $user;
+  /**
    * @var string
    */
   protected $collected_class = 'Terminus\Models\Site';
-  /**
-   * @var User
-   */
-  private $user;
 
   /**
    * Instantiates the collection
@@ -176,7 +176,7 @@ class Sites extends NewCollection {
    */
   public function get($id) {
     $models = $this->models;
-    $list   = $this->getMemberList('name', 'id');
+    $list   = $this->list('name', 'id');
     $site   = null;
     if (isset($models[$id])) {
       $site = $models[$id];

@@ -9,6 +9,10 @@ class Environments extends NewCollection {
    * @var Site
    */
   public $site;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Environment';
 
   /**
    * Instantiates the collection
@@ -50,12 +54,11 @@ class Environments extends NewCollection {
   }
 
   /**
-   * List Environment IDs, with Dev/Test/Live first
+   * List environment IDs with dev/test/live first
    *
    * @return string[] $ids
    */
   public function ids() {
-    //Reorder environments to put dev/test/live first
     $default_ids  = ['dev', 'test', 'live',];
     $ids          = array_merge(
       ['dev', 'test', 'live',],
@@ -72,7 +75,7 @@ class Environments extends NewCollection {
    */
   public function multidev() {
     $environments = array_filter(
-      $this->getMembers(),
+      $this->models,
       function($environment) {
         $is_multidev = $environment->isMultidev();
         return $is_multidev;

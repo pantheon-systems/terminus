@@ -74,7 +74,7 @@ class Site extends NewModel {
    */
   public function addInstrument($uuid) {
     $args     = [
-      'site'   => $this->get('id'),
+      'site'   => $this->id,
       'params' => ['instrument_id' => $uuid,],
     ];
     $workflow = $this->workflows->create('associate_site_instrument', $args);
@@ -97,7 +97,7 @@ class Site extends NewModel {
         ['tag' => $tag, 'org' => $org_id,]
       );
     }
-    $params    = [$tag => ['sites' => [$this->get('id'),],],];
+    $params    = [$tag => ['sites' => [$this->id,],],];
     $response  = $this->request->request(
       sprintf('organizations/%s/tags', $org_id),
       ['method' => 'put', 'form_params' => $params,]
@@ -133,7 +133,7 @@ class Site extends NewModel {
    * @return \stdClass
    */
   public function attributes() {
-    $path     = sprintf('sites/%s/attributes', $this->get('id'));
+    $path     = sprintf('sites/%s/attributes', $this->id);
     $options  = ['method' => 'get',];
     $response = $this->request->request($path, $options);
     return $response['data'];
@@ -158,7 +158,7 @@ class Site extends NewModel {
   public function createBranch($branch) {
     $path     = sprintf(
       'sites/%s/code-branch',
-      $this->get('id')
+      $this->id
     );
     $options  = [
       'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
@@ -175,7 +175,7 @@ class Site extends NewModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'sites/' . $this->get('id'),
+      'sites/' . $this->id,
       ['method' => 'delete',]
     );
     return $response;
@@ -202,7 +202,7 @@ class Site extends NewModel {
    */
   public function disableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
     $this->bindings->converge();
@@ -216,7 +216,7 @@ class Site extends NewModel {
    */
   public function disableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
     $this->bindings->converge();
@@ -230,7 +230,7 @@ class Site extends NewModel {
    */
   public function enableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
     $this->bindings->converge();
@@ -244,7 +244,7 @@ class Site extends NewModel {
    */
   public function enableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
     $this->bindings->converge();
@@ -275,7 +275,7 @@ class Site extends NewModel {
   public function getFeature($feature) {
     if (!isset($this->features)) {
       $response       = $this->request->request(
-        sprintf('sites/%s/features', $this->get('id'))
+        sprintf('sites/%s/features', $this->id)
       );
       $this->features = (array)$response['data'];
     }
@@ -319,7 +319,7 @@ class Site extends NewModel {
       ['organization' => new Organization(null, ['id' => $org_id,]),]
     );
     $org_site_member->fetch();
-    $org  = $org_site_member->get($this->get('id'));
+    $org  = $org_site_member->get($this->id);
     $tags = $org->get('tags');
     return $tags;
   }
@@ -330,7 +330,7 @@ class Site extends NewModel {
    * @return array
    */
   public function getTips() {
-    $path     = sprintf('sites/%s/code-tips', $this->get('id'));
+    $path     = sprintf('sites/%s/code-tips', $this->id);
     $options  = ['method' => 'get',];
     $data     = $this->request->request($path, $options);
     $branches = array_keys((array)$data['data']);
@@ -344,7 +344,7 @@ class Site extends NewModel {
    */
   public function getUpstreamUpdates() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') .  '/code-upstream-updates'
+      'sites/' . $this->id .  '/code-upstream-updates'
     );
     return $response['data'];
   }
@@ -414,7 +414,7 @@ class Site extends NewModel {
    */
   public function info($key = null) {
     $info = [
-      'id'            => $this->get('id'),
+      'id'            => $this->id,
       'name'          => null,
       'label'         => null,
       'created'       => null,
@@ -501,7 +501,7 @@ class Site extends NewModel {
         'organizations/%s/tags/%s/sites?entity=%s',
         $org_id,
         $tag,
-        $this->get('id')
+        $this->id
       ),
       ['method' => 'delete',]
     );

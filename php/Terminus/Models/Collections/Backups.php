@@ -27,13 +27,12 @@ class Backups extends NewCollection {
    */
   public function __construct(array $options = []) {
     parent::__construct($options);
-    $this->environment = $options['collection']->environment;
+    $this->environment = $options['environment'];
     $this->url         = sprintf(
       'sites/%s/environments/%s/backups/catalog',
-      $this->environment->site->id,
+      $this->environment->collection->site->id,
       $this->environment->id
     );
-    $this->url  = "sites/{$this->user->id}/instruments";
   }
 
   /**
@@ -113,7 +112,7 @@ class Backups extends NewCollection {
    * @throws TerminusException
    */
   public function getBackupByFileName($filename) {
-    $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
+    $matches = $this->filter(compact('filename'))->list('id', 'id');
     try {
       $backup = $this->get(array_shift($matches));
     } catch (\Exception $e) {

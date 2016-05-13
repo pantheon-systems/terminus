@@ -4,10 +4,6 @@ namespace Terminus\Commands;
 
 use Terminus\Completions;
 use Terminus\Configurator;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\User;
-use Terminus\Session;
 
 /**
  * Get information about Terminus itself.
@@ -15,35 +11,6 @@ use Terminus\Session;
  * @command cli
  */
 class CliCommand extends TerminusCommand {
-
-  /**
-   * Object constructor
-   *
-   * @param array $options Options to construct the command object
-   * @return CliCommand
-   */
-  public function __construct(array $options = []) {
-    parent::__construct($options);
-    $this->sites = new Sites();
-  }
-
-  /**
-   * Clear cached data
-   *
-   * ## OPTIONS
-   *
-   * [--cache=<cache>]
-   * : specific cache key to clear
-   *
-   * @subcommand cache-clear
-   */
-  public function cacheClear($args, $assoc_args) {
-    if (isset($assoc_args['cache'])) {
-      $this->cache->remove($assoc_args['cache']);
-    } else {
-      $this->cache->flush();
-    }
-  }
 
   /**
    * Dump the list of installed commands, as JSON.
@@ -91,7 +58,6 @@ class CliCommand extends TerminusCommand {
    * @subcommand console
    */
   public function console($args, $assoc_args) {
-    $user = Session::getUser();
     if (isset($assoc_args['site'])) {
       $site = $this->sites->get(
         $this->input()->siteName(array('args' => $assoc_args))

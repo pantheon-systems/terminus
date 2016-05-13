@@ -116,7 +116,7 @@ abstract class NewCollection {
    * @return boolean True if model exists, false otherwise
    */
   public function has($id) {
-    $isset = isset($this->model[$id]);
+    $isset = isset($this->models[$id]);
     return $isset;
   }
 
