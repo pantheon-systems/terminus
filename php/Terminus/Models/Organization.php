@@ -18,7 +18,7 @@ class Organization extends NewModel {
   /**
    * @var Workflows
    */
-  protected $workflows;
+  public $workflows;
   /**
    * @var array
    */
@@ -36,9 +36,7 @@ class Organization extends NewModel {
     $params                 = ['organization' => $this,];
     $this->site_memberships = new OrganizationSiteMemberships($params);
     $this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows        = new Workflows(
-      ['owner' => $this, 'owner_type' => 'organization',]
-    );
+    $this->workflows        = new Workflows($params);
     $this->url              = "organizations/{$this->id}/features";
   }
 

@@ -13,7 +13,7 @@ class MachineToken extends NewModel {
     $response = $this->request->request(
       sprintf(
         'users/%s/machine_tokens/%s',
-        $this->user->id,
+        $this->collection->user->id,
         $this->id
       ),
       ['method' => 'delete',]

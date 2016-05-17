@@ -62,7 +62,7 @@ class Site extends NewModel {
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
     $this->url              = "sites/{$this->id}?site_state=true";
   }
 

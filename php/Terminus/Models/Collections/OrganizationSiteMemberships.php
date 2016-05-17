@@ -35,10 +35,10 @@ class OrganizationSiteMemberships extends NewCollection {
    * @param Site $site Site object of site to add to this organization
    * @return Workflow
    */
-  public function create(Site $site) {
+  public function create($site) {
     $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
-      ['params' => ['site_id' => $site->get('id'), 'role' => 'team_member',],]
+      ['params' => ['site_id' => $site->id, 'role' => 'team_member',],]
     );
     return $workflow;
   }
@@ -63,6 +63,21 @@ class OrganizationSiteMemberships extends NewCollection {
       }
     }
     return $model;
+  }
+
+  /**
+   * Determines whether a site is a member of this collection
+   * 
+   * @param Site $site Site to determine membership of
+   * @return bool
+   */
+  public function siteIsMember($site) {
+    foreach ($this->models as $model) {
+      if ($site->id == $model->site->id) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

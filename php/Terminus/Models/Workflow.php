@@ -3,43 +3,68 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
+use Terminus\Session;
 
-class Workflow extends TerminusModel {
+class Workflow extends NewModel {
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
 
   /**
-   * Give the URL for collection data fetching
+   * Object constructor
    *
-   * @return string $url URL to use in fetch query
+   * @param object $attributes Attributes of this model
+   * @param array $options    Options to set as $this->key
+   * @return OrganizationSiteMembership
    */
-  public function getFetchUrl() {
-    $url = '';
-    switch ($this->getOwnerName()) {
-      case 'user':
-        $url = sprintf(
-          'users/%s/workflows/%s',
-          $this->owner->id,
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    switch ($this->collection->owner) {
+      case 'site':
+        $this->site = $this->collection->site;
+        $this->url  = sprintf(
+          'sites/%s/workflows/%s',
+          $this->site->id,
           $this->id
         );
           break;
-      case 'site':
-        $url = sprintf(
+      case 'environment':
+        $this->site = $this->collection->environment->site;
+        $this->url  = sprintf(
           'sites/%s/workflows/%s',
-          $this->owner->id,
+          $this->site->id,
+          $this->id
+        );
+          break;
+      case 'user':
+        $this->user = $this->collection->user;
+        $this->url  = sprintf(
+          'users/%s/workflows/%s',
+          $this->user->id,
           $this->id
         );
           break;
       case 'organization':
-        $url  = sprintf(
+        $this->organization = $this->collection->organization;
+        $this->url          = sprintf(
           'users/%s/organizations/%s/workflows/%s',
-          $this->owner->user->id,
-          $this->owner->id,
+          Session::getUser()->id,
+          $this->organization->id,
           $this->id
         );
           break;
     }
-    return $url;
   }
-
+    
   /**
    * Re-fetches workflow data hydrated with logs
    *
@@ -171,22 +196,6 @@ class Workflow extends TerminusModel {
         }
       }
     }
-  }
-
-  /**
-   * Gets name of the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = strtolower(
-      str_replace(
-        ['Terminus\\', 'Models\\',],
-        '',
-        get_class($this->owner)
-      )
-    );
-    return $owner_name;
   }
 
 }

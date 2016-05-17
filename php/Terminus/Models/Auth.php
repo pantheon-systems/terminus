@@ -7,7 +7,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Session;
 use Terminus\Utils;
 
-class Auth extends TerminusModel {
+class Auth extends NewModel {
 
   /**
    * @var TokensCache
@@ -113,7 +113,6 @@ class Auth extends TerminusModel {
       );
     }
 
-    $data = $response['data'];
     $this->setInstanceData($response['data']);
     $user = Session::getUser();
     $user->fetch();

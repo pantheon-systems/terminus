@@ -26,9 +26,20 @@ class InstrumentsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    die(print_r($this->sites, true));
-    $data = $this->sites->user->instruments->fetch()->list('label', 'id');
-    $this->output()->outputRecordList($data);
+    $instruments = array_map(
+      function ($instrument) {
+        $info = (object)[
+          'label' => $instrument->get('label'),
+          'id'    => $instrument->id,
+        ];
+        return $info;
+      },
+      $this->sites->user->instruments->fetch()->all()
+    );
+    $this->output()->outputRecordList(
+      $instruments,
+      ['label' => 'Card', 'id' => 'ID',]
+    );
   }
 
 }

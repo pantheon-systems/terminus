@@ -21,11 +21,11 @@ TERMINUS_DATE_FORMAT:  'Y-m-d H:i:s'
 TERMINUS_TIME_ZONE:    'UTC'
 
 # File Storage
-TERMINUS_CACHE_DIR:    '~/.terminus/cache'
-TERMINUS_CONFIG_DIR:   '~/terminus'
+TERMINUS_CONFIG_DIR:   '~/.terminus'
+TERMINUS_CACHE_DIR:    '[[ TERMINUS_CONFIG_DIR ]]/cache'
 TERMINUS_LOG_DIR:      '/tmp'
-TERMINUS_PLUGINS_DIR:  '[[ TERMINUS_CONFIG_DIR ]]/plugins'
-TERMINUS_TOKENS_DIR:   '[[ TERMINUS_CACHE_DIR ]]/tokens'
+TERMINUS_PLUGINS_DIR:  '~/terminus/plugins'
+TERMINUS_TOKENS_DIR:   '[[ TERMINUS_CONFIG_DIR ]]/tokens'
 
 # Helpers
 TERMINUS_USER:         null

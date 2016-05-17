@@ -35,7 +35,7 @@ class OrganizationUserMemberships extends NewCollection {
    * @param string $role Role to assign to the new member
    * @return Workflow $workflow
    */
-  public function addMember($uuid, $role) {
+  public function create($uuid, $role) {
     $workflow = $this->organization->workflows->create(
       'add_organization_user_membership',
       ['params' => ['user_email' => $uuid, 'role' => $role,]]

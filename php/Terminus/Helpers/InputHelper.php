@@ -1000,7 +1000,7 @@ class InputHelper extends TerminusHelper {
     }
     $organizations = $this->user->getOrganizations();
     foreach ($organizations as $id => $org) {
-      $org_list[$org->get('id')] = $org->organization->get('profile')->name;
+      $org_list[$org->id] = $org->get('profile')->name;
     }
     return $org_list;
   }

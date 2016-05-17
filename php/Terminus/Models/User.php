@@ -56,7 +56,7 @@ class User extends NewModel {
     $this->site_memberships = new UserSiteMemberships($params);
     $this->ssh_keys         = new SshKeys($params);
     $this->url              = "users/{$this->id}";
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**
