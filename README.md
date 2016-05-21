@@ -51,7 +51,7 @@ brew tap homebrew/php
 
 And after you're all tapped out, install Terminus with this command:
 ```bash
-brew install terminus
+brew install homebrew/php/terminus
 ```
 
 ####Installing with Git
