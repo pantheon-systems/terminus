@@ -74,6 +74,22 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Clears an environment's cache
+   *
+   * @return Workflow
+   */
+  public function clearCache() {
+    $workflow = $this->site->workflows->create(
+      'clear_cache',
+      [
+        'environment' => $this->get('id'),
+        'params'      => ['framework_cache' => true,],
+      ]
+    );
+    return $workflow;
+  }
+
+  /**
    * Clones database from this environment to another
    *
    * @param string $to_env Environment to clone into
