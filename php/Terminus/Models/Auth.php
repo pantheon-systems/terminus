@@ -157,7 +157,7 @@ class Auth extends TerminusModel {
       if ($response['status_code'] != '200') {
         throw new TerminusException();
       }
-    } catch (TerminusException $e) {
+    } catch (\Exception $e) {
       throw new TerminusException(
         'Login unsuccessful for {email}', compact('email'), 1
       );
