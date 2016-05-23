@@ -324,6 +324,27 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Delete a multidev environment
+   *
+   * @param array $arg_options Elements as follow:
+   *   bool delete_branch True to delete branch
+   * @return Workflow
+   */
+  public function delete(array $arg_options = []) {
+    $default_options = ['delete_branch' => false,];
+    $options         = array_merge($default_options, $arg_options);
+    $params          = array_merge(
+      ['environment_id' => $this->get('id'),],
+      $options
+    );
+    $workflow = $this->site->workflows->create(
+      'delete_cloud_development_environment',
+      compact('params')
+    );
+    return $workflow;
+  }
+
+  /**
    * Deploys the Test or Live environment
    *
    * @param array $params Parameters for the deploy workflow
