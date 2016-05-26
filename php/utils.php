@@ -3,13 +3,33 @@
 namespace Terminus\Utils;
 
 /**
- * Terminus is in test mode
+ * Check whether Terminus is running in a Linux environment
  *
- * @return bool
+ * @return bool True if OS running Terminus is Linux
  */
-function isTest() {
-  $is_test = ((boolean)TERMINUS_TEST_MODE || (boolean)TERMINUS_VCR_CASSETTE);
-  return $is_test;
+function isLinux() {
+  $is_linux = isOs('Linux');
+  return $is_linux;
+}
+
+/**
+ * Check whether Terminus is running in a Mac environment
+ *
+ * @return bool True if OS running Terminus is Mac
+ */
+function isMac() {
+  $is_mac = isOs('Mac');
+  return $is_mac;
+}
+
+/**
+ * Determines whether Terminus is operating on a Onebox currently
+ *
+ * @return bool True if the targeted host is a Onebox
+ */
+function isOnebox() {
+  $is_onebox = (strpos(TERMINUS_HOST, 'onebox') !== false);
+  return $is_onebox;
 }
 
 /**
@@ -20,7 +40,7 @@ function isTest() {
  */
 function isOs($test_os = '') {
   $test_os = strtoupper($test_os);
-  $os = strtoupper(substr(PHP_OS, 0, 3));
+  $os      = strtoupper(substr(PHP_OS, 0, 3));
   switch ($test_os) {
     case 'MAC':
       $is_os = ($os == 'DAR');
@@ -38,21 +58,13 @@ function isOs($test_os = '') {
 }
 
 /**
- * Check whether Terminus is running in a Mac environment
+ * Terminus is in test mode
  *
- * @return bool True if OS running Terminus is Mac
+ * @return bool
  */
-function isMac() {
-  return isOs('Mac');
-}
-
-/**
- * Check whether Terminus is running in a Linux environment
- *
- * @return bool True if OS running Terminus is Linux
- */
-function isLinux() {
-  return isOs('Linux');
+function isTest() {
+  $is_test = ((boolean)TERMINUS_TEST_MODE || (boolean)TERMINUS_VCR_CASSETTE);
+  return $is_test;
 }
 
 /**
@@ -61,5 +73,6 @@ function isLinux() {
  * @return bool True if OS running Terminus is Windows
  */
 function isWindows() {
-  return isOs('Windows');
+  $is_windows = isOs('Windows');
+  return $is_windows;
 }

@@ -37,9 +37,9 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-   * <get|load|create|list|get-schedule|set-schedule|cancel-schedule>
-   * : Function to run - get, load, create, list, get schedule, set schedule,
-   *   or cancel schedule
+   * <get|load|create|restore|list|get-schedule|set-schedule|cancel-schedule>
+   * : Function to run - get, load, create, restore, list, get schedule, set
+   *   schedule, or cancel schedule
    *
    * [--site=<site>]
    * : Site to load
@@ -55,6 +55,7 @@ class SiteCommand extends TerminusCommand {
    *
    * [--file=<filename>]
    * : Select one of the files from the list subcommand. Only used for 'get'
+   *   and 'restore'
    *
    * [--latest]
    * : If set the latest backup will be selected automatically
@@ -102,6 +103,10 @@ class SiteCommand extends TerminusCommand {
         $workflow->wait();
         $this->workflowOutput($workflow);
           break;
+      case 'restore':
+        $workflow = $this->restoreBackup($assoc_args);
+        $workflow->wait();
+        $this->workflowOutput($workflow);
       case 'list':
       default:
         $data = $this->listBackups($assoc_args);
@@ -2479,6 +2484,56 @@ class SiteCommand extends TerminusCommand {
       array('target' => $target, 'db' => $database)
     );
     return true;
+  }
+
+  /**
+   * Restores a single backup archive
+   *
+   * @param array $assoc_args Parameters and flags from the command line
+   * @return Workflow
+   */
+  private function restoreBackup($assoc_args) {
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    $env  = $site->environments->get(
+      $this->input()->env(['args' => $assoc_args, 'site' => $site,])
+    );
+    $file = $this->input()->optional(
+      [
+        'key'     => 'file',
+        'choices' => $assoc_args,
+        'default' => false,
+      ]
+    );
+    if ($file) {
+      $backup = $env->backups->getBackupByFileName($file);
+    } else {
+      $element = $this->input()->backupElement(['args' => $assoc_args,]);
+      $latest  = (boolean)$this->input()->optional(
+        [
+          'key'     => 'latest',
+          'choices' => $assoc_args,
+          'default' => false,
+        ]
+      );
+      $backups = $env->backups->getFinishedBackups($element);
+
+      if ($latest) {
+        $backup = array_shift($backups);
+      } else {
+        $context = [
+          'site' => $site->get('name'),
+          'env'  => $env->get('id'),
+        ];
+        $backup  = $this->input()->backup(
+          ['backups' => $backups, 'context' => $context,]
+        );
+      }
+    }
+
+    $workflow = $backup->restore();
+    return $workflow;
   }
 
   /**

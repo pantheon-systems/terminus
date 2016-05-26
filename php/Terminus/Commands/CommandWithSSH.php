@@ -4,6 +4,7 @@ namespace Terminus\Commands;
 
 use Terminus\Commands\TerminusCommand;
 use Terminus\Models\Collections\Sites;
+use Terminus\Utils;
 
 /**
  * Base class for Terminus commands that deal with sending SSH commands
@@ -128,7 +129,7 @@ abstract class CommandWithSSH extends TerminusCommand {
     if ($ssh_host = TERMINUS_SSH_HOST) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = $ssh_host;
-    } else if (strpos(TERMINUS_HOST, 'onebox') !== false) {
+    } else if (Utils\isOnebox()) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = TERMINUS_HOST;
     }

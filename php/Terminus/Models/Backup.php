@@ -2,6 +2,8 @@
 
 namespace Terminus\Models;
 
+use Terminus\Utils;
+
 class Backup extends TerminusModel {
 
   /**
@@ -117,6 +119,35 @@ class Backup extends TerminusModel {
     $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
     $response = $this->request->request($path, $options);
     return $response['data']->url;
+  }
+
+  /**
+   * Restores a backup archive to a site
+   *
+   * @return Workflow
+   */
+  public function restore() {
+    $params   = [
+      'environment' => $this->environment->get('id'),
+      'params' => [
+        'key' => sprintf(
+          '%s/%s/%s/%s',
+          $this->environment->site->get('id'),
+          $this->environment->get('id'),
+          $this->get('id'),
+          $this->get('filename')
+        ),
+        'bucket' => 'pantheon-backups',
+      ],
+    ];
+    if (Utils\isOnebox()) {
+      $params['bucket'] = 'onebox-pantheon-backups';
+    }
+    $workflow = $this->environment->site->workflows->create(
+      "restore_{$this->getElement()}",
+      $params
+    );
+    return $workflow;
   }
 
 }
