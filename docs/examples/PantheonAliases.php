@@ -8,6 +8,7 @@ use Terminus\Models\User;
 use Terminus\Models\Collections\Sites;
 use Terminus\Request;
 use Terminus\Session;
+use Terminus\Utils;
 
 class PantheonAliases {
 
@@ -58,7 +59,7 @@ class PantheonAliases {
     $uri        = array_shift($hostnames);
     $db_pass    = $db_binding->get('password');
     $db_port    = $db_binding->get('port');
-    if (strpos(TERMINUS_HOST, 'onebox') !== false) {
+    if (Utils\isOnebox()) {
       $remote_user = "appserver.$env_id.$site_id";
       $remote_host = TERMINUS_HOST;
       $db_url      = "mysql://pantheon:$db_pass@$remote_host:$db_port";

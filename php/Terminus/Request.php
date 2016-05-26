@@ -150,7 +150,7 @@ class Request {
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
       ],
-      RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
+      RequestOptions::VERIFY => !Utils\isOnebox(),
     ];
 
     if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
@@ -163,7 +163,6 @@ class Request {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
-    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
 
     $client = new Client(
       [
