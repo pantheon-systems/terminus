@@ -674,21 +674,24 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Add/Replace an HTTPS Certificate on the Environment
+   * Add/replace an HTTPS certificate on the environment
    *
-   * @param array $options Certificate data`
+   * @param array $certificate Certificate data elements as follow
+   *  string cert         Certificate
+   *  string key          RSA private key
+   *  string intermediary CA intermediate certificate(s)
    *
    * @return $workflow
    */
-  public function setHttpsCertificate($options = []) {
-    $params = [
-      'cert' => $options['certificate'],
-      'key'  => $options['private_key'],
-    ];
-
-    if (isset($options['intermediate_certificate'])) {
-      $params['intermediary'] = $options['intermediate_certificate'];
-    }
+  public function setHttpsCertificate($certificate = []) {
+    // Weed out nulls
+    $params = array_filter(
+      $certificate,
+      function ($param) {
+        $is_not_null = !is_null($param);
+        return $is_not_null;
+      }
+    );
 
     $response = $this->request->request(
       sprintf(
@@ -701,7 +704,7 @@ class Environment extends TerminusModel {
 
     // The response to the PUT is actually a workflow
     $workflow_data = $response['data'];
-    $workflow = new Workflow($workflow_data);
+    $workflow = new Workflow($workflow_data, ['owner' => $this->site,]);
     return $workflow;
   }
 
