@@ -162,6 +162,16 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Completes a site migration in progress
+   *
+   * @return Workflow
+   */
+  public function completeMigration() {
+    $workflow = $this->workflows->create('complete_migration');
+    return $workflow;
+  }
+
+  /**
    * Converges all bindings on a site
    *
    * @return array

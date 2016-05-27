@@ -354,6 +354,25 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Completes a site migration in progress
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site for which to complete a migration
+   *
+   * @subcommand complete-migration
+   */
+  public function completeMigration($args, $assoc_args) {
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    $workflow = $site->completeMigration();
+    $workflow->wait();
+    $this->workflowOutput($workflow);
+  }
+
+  /**
    * Retrieve connection info for a specific environment
    * e.g. git, sftp, mysql, redis
    *
