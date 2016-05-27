@@ -162,6 +162,7 @@ class OrganizationsCommand extends TerminusCommand {
             continue;
           }
           $site       = $membership->get('site');
+          var_dump($site);
           $data_array = array(
             'name'          => null,
             'id'            => null,
@@ -174,6 +175,9 @@ class OrganizationsCommand extends TerminusCommand {
             if (($value == null) && isset($site->$key)) {
               $data_array[$key] = $site->$key;
             }
+          }
+          if (isset($site->frozen) && (boolean)$site->frozen) {
+            $data_array['frozen'] = true;
           }
           $data_array['created'] = date(
             TERMINUS_DATE_FORMAT,

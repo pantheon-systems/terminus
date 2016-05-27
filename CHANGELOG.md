@@ -13,6 +13,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Changed the `SynopsisValidator` so that any unnamed command argument between `<` and `>` may be given any name. (#1041)
 - When running `site deploy` and there are no changes to deploy, Terminus will now exit with status `0` rather than `1`. (#1054)
 - Moved log-out function out of `AuthCommand` and into the `Auth` model. (#1058)
+- A site's frozen status will appear now in both the `site info` output and when running `organizations sites list`. (#1091)
 
 ### Fixed
 - `wp` and `drush` commands both now use the object buffer and output the result of the operation without formatting. (#1023)
