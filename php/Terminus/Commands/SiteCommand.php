@@ -1044,7 +1044,9 @@ class SiteCommand extends TerminusCommand {
    * : field to return
    */
   public function info($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
 
     // Fetch environment data for sftp/git connection info
     $site->environments->all();

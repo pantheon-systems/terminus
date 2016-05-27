@@ -162,7 +162,6 @@ class OrganizationsCommand extends TerminusCommand {
             continue;
           }
           $site       = $membership->get('site');
-          var_dump($site);
           $data_array = array(
             'name'          => null,
             'id'            => null,
