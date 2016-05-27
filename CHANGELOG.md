@@ -25,7 +25,8 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed bug in `delete-env` which prevented the `--remove-branch` option from working. (#1084)
 - Fixed bug in `site set-https-certificate`. (#1085)
 - Updated dependencies to fix blank-menus-in-Windows bug. (#1086)
-- `site info` now returns its date fields in the format specified by TERMINUS_DATE_FORMAT. (#1093)
+- `site info` now returns its created-date field in the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
+- The created field returned by `organizations sites list` now returns its created-date field in the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
 
 ## [0.11.1] - 2016-03-30
 
