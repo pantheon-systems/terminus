@@ -37,12 +37,8 @@ class Request {
       );
     }
 
-    try {
-      $client   = new Client();
-      $response = $client->request('GET', $url, ['sink' => $target,]);
-    } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage(), [], 1);
-    }
+    $client   = new Client();
+    $response = $client->request('GET', $url, ['sink' => $target,]);
     return true;
   }
 
@@ -130,15 +126,7 @@ class Request {
       );
     }
 
-    try {
-      $response = $this->send($url, $options['method'], $options);
-    } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-      throw new TerminusException(
-        'API Request Error: {msg}',
-        ['msg' => $e->getMessage(),],
-        1
-      );
-    }
+    $response = $this->send($url, $options['method'], $options);
 
     $data = [
       'data'        => json_decode($response->getBody()->getContents()),
@@ -198,11 +186,7 @@ class Request {
     error_reporting(E_ALL ^ E_WARNING);
     $request = new HttpRequest(ucwords($method), $uri, $params);
     error_reporting(E_ALL);
-    try {
-      $response = $client->send($request, $params);
-    } catch (\Exception $e) {
-      throw new TerminusException($e->getMessage(), [], 1);
-    }
+    $response = $client->send($request, $params);
 
     return $response;
   }

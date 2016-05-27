@@ -22,7 +22,7 @@ class UpdateHelper extends TerminusHelper {
     $cache    = new FileCache();
     $cache->putData(
       'latest_release',
-      ['version' => $release->name, 'check_date' => time()]
+      ['version' => $release->name, 'check_date' => time(),]
     );
     return $release->name;
   }
@@ -49,10 +49,10 @@ class UpdateHelper extends TerminusHelper {
             ['version' => $current_version]
           );
         }
-      } catch (TerminusException $e) {
+      } catch (\Exception $e) {
         $this->command->log()->info(
           "Cannot retrieve current Terminus version.\n{msg}",
-          $e->getReplacements()
+          ['msg' => $e->getMessage(),]
         );
       }
     }

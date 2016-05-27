@@ -21,6 +21,10 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Multiline option details will now fully appear in help output. (#1055)
 - `TERMINUS_PLUGINS_DIR` now overrides the plugin directory appropriately. (#1062)
 - Undefined method error while running `sites mass-update` has been fixed. (#1064)
+- Eliminated superfluous exception catching in `TerminusRequest` so that Github API rate limit overages will not disrupt scripts. (#1082)
+- Fixed bug in `delete-env` which prevented the `--remove-branch` option from working. (#1084)
+- Fixed bug in `site set-https-certificate`. (#1085)
+- Updated dependencies to fix blank-menus-in-Windows bug. (#1086)
 
 ## [0.11.1] - 2016-03-30
 

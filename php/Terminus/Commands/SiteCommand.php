@@ -608,39 +608,39 @@ class SiteCommand extends TerminusCommand {
    */
   public function deleteEnv($args, $assoc_args) {
     $site          = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
+      $this->input()->siteName(['args' => $assoc_args,])
     );
     $multidev_envs = array_diff(
       $site->environments->ids(),
-      ['dev', 'test', 'live']
+      ['dev', 'test', 'live',]
     );
     if (empty($multidev_envs)) {
       $this->failure(
         '{site} does not have any multidev environments to delete.',
-        ['site' => $site->get('name')]
+        ['site' => $site->get('name'),]
       );
     }
-    $env = $this->input()->env(
-      [
-        'args'    => $assoc_args,
-        'label'   => 'Environment to delete',
-        'choices' => $multidev_envs
-      ]
+    $environment = $site->environments->get(
+      $this->input()->env(
+        [
+          'args'    => $assoc_args,
+          'label'   => 'Environment to delete',
+          'choices' => $multidev_envs,
+        ]
+      )
     );
-    $delete_branch = false;
-    if (isset($assoc_args['remove_branch'])) {
-      $delete_branch = (boolean)$assoc_args['remove_branch'];
-    }
 
     $message = 'Are you sure you want to delete the "%s" environment from %s?';
     $this->input()->confirm(
       [
         'message' => $message,
-        'context' => [$env, $site->get('name')],
+        'context' => [$environment->get('id'), $site->get('name'),],
       ]
     );
 
-    $workflow = $site->deleteEnvironment($env, $delete_branch);
+    $workflow = $environment->delete(
+      ['delete_branch' => isset($assoc_args['remove-branch'])]
+    );
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
@@ -1624,77 +1624,61 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Add/replace an HTTPS Certificate for an environment
+   * Add/replace an HTTPS certificate for an environment
    *
    * ## OPTIONS
    *
    * [--site=<site>]
-   * : name of the site
+   * : Name of the site to apply the HTTPS certificate to
    *
    * [--env=<env>]
-   * : site environment
+   * : Environment of the site to apply the HTTPS certificate to
    *
    * [--certificate=<value>]
    * : Certificate
    *
    * [--private-key=<value>]
-   * : RSA Private Key
+   * : RSA private key
    *
    * [--intermediate-certificate=<value>]
-   * : (optional) CA Intermediate Certificate(s)
+   * : (optional) CA intermediate certificate(s)
    *
    * @subcommand set-https-certificate
    */
   public function setHttpsCertificate($args, $assoc_args) {
     $site        = $this->sites->get(
-      $this->input()->sitename(['args' => $assoc_args])
+      $this->input()->sitename(['args' => $assoc_args,])
     );
     $environment = $site->environments->get(
-      $this->input()->env(['args' => $assoc_args, 'site' => $site])
+      $this->input()->env(['args' => $assoc_args, 'site' => $site,])
     );
 
-    $certificate = $this->input()->string(
-      [
-        'args'     => $assoc_args,
-        'key'      => 'certificate',
-        'message'  => 'Certificate',
-      ]
-    );
-    $private_key = $this->input()->string(
-      [
-        'args'    => $assoc_args,
-        'key'     => 'private-key',
-        'message' => 'RSA Private Key',
-      ]
-    );
-
-    $is_interactive = !isset($assoc_args['certificate']);
-    if ($is_interactive) {
-      $intermediate_certificate = $this->input()->string(
-        [
-          'args'    => $assoc_args,
-          'key'     => 'intermediate-certificate',
-          'message' => 'CA Intermediate Certificate(s) (optional)',
-        ]
-      );
-    } else {
-      $intermediate_certificate = '';
-    }
-
-    $options = [
-      'certificate' => trim($certificate),
-      'private_key' => trim($private_key)
+    $https = [
+      'cert' => $this->input()->optional(
+        ['choices' => $assoc_args, 'key' => 'certificate',]
+      ),
+      'key' => $this->input()->optional(
+        ['choices' => $assoc_args, 'key' => 'private-key',]
+      ),
+      'intermediary' => $this->input()->optional(
+        ['choices' => $assoc_args, 'key' => 'intermediate-certificate',]
+      ),
     ];
-
-    $intermediate_certificate = trim($intermediate_certificate);
-    if ($intermediate_certificate != '') {
-      $options['intermediate_certificate'] = $intermediate_certificate;
+    if (is_null($https['cert'])
+      && is_null($https['intermediary'])
+      && ($this->log()->getOptions('logFormat') == 'normal')
+    ) {
+      $message  = 'No certificate was provided.';
+      $message .= ' Please provide a CA intemediate certificate.';
+      $https['intermediary'] = $this->input()->string(
+        ['message' => $message, 'required' => true,]
+      );
     }
 
-    $workflow = $environment->setHttpsCertificate($options);
+    $workflow = $environment->setHttpsCertificate($https);
+    $this->log()->info('SSL certificate updated. Converging loadbalancer.');
     $workflow->wait();
     $this->workflowOutput($workflow);
-
     return true;
   }
 

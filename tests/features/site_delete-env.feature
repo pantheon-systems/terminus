@@ -28,5 +28,5 @@ Feature: Deleting a site's multidev environments
     When I run "terminus site delete-env --site=[[test_site_name]] --env=invalid --yes"
     Then I should get:
     """
-    The environment "invalid" was not found.
+    Could not find environment "invalid"
     """

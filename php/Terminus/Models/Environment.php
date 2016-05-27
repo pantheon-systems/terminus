@@ -324,6 +324,27 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Delete a multidev environment
+   *
+   * @param array $arg_options Elements as follow:
+   *   bool delete_branch True to delete branch
+   * @return Workflow
+   */
+  public function delete(array $arg_options = []) {
+    $default_options = ['delete_branch' => false,];
+    $options         = array_merge($default_options, $arg_options);
+    $params          = array_merge(
+      ['environment_id' => $this->get('id'),],
+      $options
+    );
+    $workflow = $this->site->workflows->create(
+      'delete_cloud_development_environment',
+      compact('params')
+    );
+    return $workflow;
+  }
+
+  /**
    * Deploys the Test or Live environment
    *
    * @param array $params Parameters for the deploy workflow
@@ -653,21 +674,24 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Add/Replace an HTTPS Certificate on the Environment
+   * Add/replace an HTTPS certificate on the environment
    *
-   * @param array $options Certificate data`
+   * @param array $certificate Certificate data elements as follow
+   *  string cert         Certificate
+   *  string key          RSA private key
+   *  string intermediary CA intermediate certificate(s)
    *
    * @return $workflow
    */
-  public function setHttpsCertificate($options = []) {
-    $params = [
-      'cert' => $options['certificate'],
-      'key'  => $options['private_key'],
-    ];
-
-    if (isset($options['intermediate_certificate'])) {
-      $params['intermediary'] = $options['intermediate_certificate'];
-    }
+  public function setHttpsCertificate($certificate = []) {
+    // Weed out nulls
+    $params = array_filter(
+      $certificate,
+      function ($param) {
+        $is_not_null = !is_null($param);
+        return $is_not_null;
+      }
+    );
 
     $response = $this->request->request(
       sprintf(
@@ -680,7 +704,7 @@ class Environment extends TerminusModel {
 
     // The response to the PUT is actually a workflow
     $workflow_data = $response['data'];
-    $workflow = new Workflow($workflow_data);
+    $workflow = new Workflow($workflow_data, ['owner' => $this->site,]);
     return $workflow;
   }
 

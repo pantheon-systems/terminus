@@ -231,26 +231,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Delete a multidev environment
-   *
-   * @param string $env           Name of environment to remove
-   * @param bool   $delete_branch True to delete branch
-   * @return Workflow
-   */
-  public function deleteEnvironment($env, $delete_branch) {
-    $workflow = $this->workflows->create(
-      'delete_cloud_development_environment',
-      [
-        'params' => [
-          'environment_id' => $env,
-          'delete_branch'  => $delete_branch,
-        ],
-      ]
-    );
-    return $workflow;
-  }
-
-  /**
    * Deletes site from cache
    *
    * @return void
