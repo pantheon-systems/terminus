@@ -176,8 +176,8 @@ class OrganizationsCommand extends TerminusCommand {
             }
           }
           $data_array['created'] = date(
-            'Y-m-dTH:i:s',
-            strtotime($data_array['created'])
+            TERMINUS_DATE_FORMAT,
+            $data_array['created']
           );
           $data[] = $data_array;
         }

@@ -280,7 +280,7 @@ class SitesCommand extends TerminusCommand {
         'service_level' => $site->get('service_level'),
         'framework'     => $site->get('framework'),
         'owner'         => $site->get('owner'),
-        'created'       => date('Y-m-d H:i:s', $site->get('created')),
+        'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
         'memberships'   => $memberships,
       ];
       if ($site->get('frozen')) {
