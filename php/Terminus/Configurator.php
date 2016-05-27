@@ -6,6 +6,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class Configurator {
   private $config = [];
+  private $config_file = '[[TERMINUS_ROOT]]/config/constants.yml';
   private $spec;
   private $special_flags = ['--no-cache-clear',];
 
@@ -66,6 +67,21 @@ class Configurator {
   }
 
   /**
+   * Ensures that directory paths work in any system
+   *
+   * @param string $path A path to set the directory separators for
+   * @return string
+   */
+  public static function fixDirectorySeparators($path) {
+    $fixed_path = str_replace(
+      ['/', '\\',],
+      DIRECTORY_SEPARATOR,
+      $path
+    );
+    return $fixed_path;
+  }
+
+  /**
    * Returns the appropriate home directory.
    *
    * Adapted from Terminus Package Manager by Ed Reel
@@ -84,7 +100,6 @@ class Configurator {
       if ($system != 'MING') {
         $home = getenv('HOMEPATH');
       }
-      $home = str_replace('\\', '\\\\', $home);
     }
     return $home;
   }
@@ -308,8 +323,10 @@ class Configurator {
         }
       }
     }
-    $string = str_replace('~', self::getHomeDir(), $string);
-    return $string;
+    $fixed_string = self::fixDirectorySeparators(
+      str_replace('~', self::getHomeDir(), $string)
+    );
+    return $fixed_string;
   }
 
   /**
