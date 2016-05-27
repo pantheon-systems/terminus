@@ -917,7 +917,7 @@ class InputHelper extends TerminusHelper {
           $environment = 'None';
         }
 
-        $created_at = date('Y-m-d H:i:s', $workflow->get('created_at'));
+        $created_at = date(TERMINUS_DATE_FORMAT, $workflow->get('created_at'));
 
         $workflow_description = sprintf(
           "%s - %s - %s - %s",

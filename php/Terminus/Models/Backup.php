@@ -33,7 +33,7 @@ class Backup extends TerminusModel {
   /**
    * Returns the date the backup was completed
    *
-   * @return string Y-m-d H:i:s completion time or "Pending"
+   * @return string Timestamp completion time or "Pending"
    */
   public function getDate() {
     if ($this->get('finish_time') != null) {
@@ -43,7 +43,7 @@ class Backup extends TerminusModel {
     } else {
       return 'Pending';
     }
-    $date = date('Y-m-d H:i:s', $datetime);
+    $date = date(TERMINUS_DATE_FORMAT, $datetime);
     return $date;
   }
 

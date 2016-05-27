@@ -815,7 +815,10 @@ class SiteCommand extends TerminusCommand {
 
       $data[] = array(
         'name'        => $env->get('id'),
-        'created'     => date('Y-m-dTH:i:s', $env->get('environment_created')),
+        'created'     => date(
+          TERMINUS_DATE_FORMAT,
+          $env->get('environment_created')
+        ),
         'domain'      => $env->domain(),
         'onserverdev' => $osd,
         'locked'      => $locked,

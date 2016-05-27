@@ -28,6 +28,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - The `created` field returned by `site info` now is in the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
 - The `created` field returned by `organizations sites list` now is in the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
 - The `created` field returned by `sites list` now is in the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
+- Switched all remaining date-formatted fields to use the format specified by `TERMINUS_DATE_FORMAT`. (#1093)
 
 ## [0.11.1] - 2016-03-30
 

@@ -89,7 +89,7 @@ class FileCache {
       $expire->modify('-' . $ttl . ' seconds');
 
       $finder = $this->getFinder()->date(
-        'before ' . $expire->format('Y-m-d H:i:s')
+        'before ' . $expire->format(TERMINUS_DATE_FORMAT)
       );
       foreach ($finder as $file) {
         unlink($file->getRealPath());

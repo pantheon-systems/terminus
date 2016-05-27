@@ -28,7 +28,7 @@ class Logger extends KLogger {
   ) {
     $config = $options['config'];
     unset($options['config']);
-    $options['dateFormat'] = 'Y-m-d H:i:s';
+    $options['dateFormat'] = TERMINUS_DATE_FORMAT;
 
     if ($config['debug']) {
       $logLevelThreshold = LogLevel::DEBUG;
@@ -187,11 +187,7 @@ class Logger extends KLogger {
    * @return string $date
    */
   private function getTimestamp() {
-    $date_format = 'Y-m-dTH:i:s';
-    if (isset($this->options)) {
-      $date_format = $this->options['dateFormat'];
-    }
-    $date = date($date_format);
+    $date = date($this->options['dateFormat']);
     return $date;
   }
 
