@@ -482,6 +482,9 @@ class Site extends TerminusModel {
         $info[$info_key] = $this->get($info_key);
       }
     }
+    if (!is_null($info['created'])) {
+      $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
+    }
     if ($info['php_version'] == '55') {
       $info['php_version'] = '5.5';
     } else {
