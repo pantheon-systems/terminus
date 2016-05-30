@@ -80,7 +80,7 @@ class HelpCommand extends TerminusCommand {
   private function getMarkdown($command) {
     $name = implode(' ', Dispatcher\getPath($command));
     $alias = null;
-    if (method_exists($command, 'getAlias')) {
+    if (method_exists($command, 'getAlias') && $command->getAlias()) {
       $path = Dispatcher\getPath($command);
       array_pop($path);
       $alias = implode(' ', $path) . ' ' . $command->getAlias();
@@ -170,13 +170,13 @@ class HelpCommand extends TerminusCommand {
    * Gets the alias of a command's subcommand from internal docs
    *
    * @param CompositeCommand $command The command of which to get aliases
-   * @return string[] $subcommands An array of stringified
+   * @return string[] $aliases An array of stringified
    *   alias of the command
    */
   private function getAliases($command) {
     $aliases = array();
     foreach ($command->getSubcommands() as $subcommand) {
-      if (method_exists($subcommand, 'getAlias')) {
+      if (method_exists($subcommand, 'getAlias') && $subcommand->getAlias()) {
         $aliases[$subcommand->getName()] = $subcommand->getAlias();
       }
     }
