@@ -39,8 +39,6 @@
 {% if data.aliases %}
 {{ indent }}##ALIASES
 {% for name,alias in data.aliases %}
-{% if alias %}
 {{ indent }}    {{ name }} | {{ alias }}
-{% endif %}
 {% endfor %}
 {% endif %}
