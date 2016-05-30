@@ -79,18 +79,28 @@ class HelpCommand extends TerminusCommand {
    */
   private function getMarkdown($command) {
     $name = implode(' ', Dispatcher\getPath($command));
+    $alias = null;
+    if (method_exists($command, 'getAlias')) {
+      $path = Dispatcher\getPath($command);
+      array_pop($path);
+      $alias = implode(' ', $path) . ' ' . $command->getAlias();
+    }
 
     $binding = [
       'name'        => $name,
+      'alias'       => $alias,
       'shortdesc'   => $command->getShortdesc(),
       'synopsis'    => $command->getSynopsis(),
       'subcommands' => null,
+      'aliases'     => null,
       'options'     => $this->getOptions($command),
     ];
 
     if ($command->canHaveSubcommands()) {
       $binding['subcommands'] =
         $this->getSubcommands($command);
+      $binding['aliases'] =
+        $this->getAliases($command);
     }
     return $binding;
   }
@@ -154,6 +164,23 @@ class HelpCommand extends TerminusCommand {
       }
     }
     return $subcommands;
+  }
+
+  /**
+   * Gets the alias of a command's subcommand from internal docs
+   *
+   * @param CompositeCommand $command The command of which to get aliases
+   * @return string[] $subcommands An array of stringified
+   *   alias of the command
+   */
+  private function getAliases($command) {
+    $aliases = array();
+    foreach ($command->getSubcommands() as $subcommand) {
+      if (method_exists($subcommand, 'getAlias')) {
+        $aliases[$subcommand->getName()] = $subcommand->getAlias();
+      }
+    }
+    return $aliases;
   }
 
   /**
