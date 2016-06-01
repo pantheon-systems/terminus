@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## [0.11.2] - 2016-06-01
 ### Added
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
 - New command `site lookup` to look up sites by name. (#1027)
@@ -34,7 +34,6 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Handling of directories in Windows has been fixed. (#1094)
 
 ## [0.11.1] - 2016-03-30
-
 ### Added
 - New command `site drush-version` to check the Drush version number of any or all environments. (#1001)
 - New command `site set-drush-version` to set the Drush version number of any or all environments. (#1001)

@@ -8,7 +8,7 @@
 
 # App
 JSON_PRETTY_PRINT:     128
-TERMINUS_VERSION:      '0.11.1'
+TERMINUS_VERSION:      '0.11.2'
 
 # Connectivity
 TERMINUS_HOST:         'dashboard.pantheon.io'
