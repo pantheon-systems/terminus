@@ -58,6 +58,15 @@
 
 ---
 
+### completeMigration
+##### Description:
+    Completes a site migration in progress
+
+##### Return:
+    [Workflow]
+
+---
+
 ### convergeBindings
 ##### Description:
     Converges all bindings on a site
@@ -94,19 +103,6 @@
 
 ##### Parameters:
     [string] $branch Name of branch to remove
-
-##### Return:
-    [Workflow]
-
----
-
-### deleteEnvironment
-##### Description:
-    Delete a multidev environment
-
-##### Parameters:
-    [string] $env           Name of environment to remove
-    [bool]   $delete_branch True to delete branch
 
 ##### Return:
     [Workflow]

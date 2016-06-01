@@ -73,6 +73,15 @@
 
 ---
 
+### logOut
+##### Description:
+    Logs the current user out of their Pantheon session
+
+##### Return:
+    [void]
+
+---
+
 ### tokenExistsForEmail
 ##### Description:
     Checks to see whether the email has been set with a machine token

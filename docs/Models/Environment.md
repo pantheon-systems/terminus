@@ -86,6 +86,19 @@
 
 ---
 
+### delete
+##### Description:
+    Delete a multidev environment
+
+##### Parameters:
+    [array] $arg_options Elements as follow:
+    -bool delete_branch True to delete branch
+
+##### Return:
+    [Workflow]
+
+---
+
 ### deploy
 ##### Description:
     Deploys the Test or Live environment
@@ -285,10 +298,13 @@
 
 ### setHttpsCertificate
 ##### Description:
-    Add/Replace an HTTPS Certificate on the Environment
+    Add/replace an HTTPS certificate on the environment
 
 ##### Parameters:
-    [array] $options Certificate data`
+    [array] $certificate Certificate data elements as follow
+    -string cert         Certificate
+    -string key          RSA private key
+    -string intermediary CA intermediate certificate(s)
 
 ##### Return:
     [$workflow]

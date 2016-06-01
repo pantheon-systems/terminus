@@ -23,7 +23,7 @@
     Returns the date the backup was completed
 
 ##### Return:
-    [string] Y-m-d H:i:s completion time or "Pending"
+    [string] Timestamp completion time or "Pending"
 
 ---
 
