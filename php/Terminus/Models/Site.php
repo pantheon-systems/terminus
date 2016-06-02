@@ -485,6 +485,9 @@ class Site extends TerminusModel {
     if (!is_null($info['created'])) {
       $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
     }
+    if ((boolean)$this->get('frozen')) {
+      $info['frozen'] = true;
+    }
     if ($info['php_version'] == '55') {
       $info['php_version'] = '5.5';
     } else {

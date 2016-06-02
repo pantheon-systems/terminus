@@ -175,6 +175,9 @@ class OrganizationsCommand extends TerminusCommand {
               $data_array[$key] = $site->$key;
             }
           }
+          if (isset($site->frozen) && (boolean)$site->frozen) {
+            $data_array['frozen'] = true;
+          }
           $data_array['created'] = date(
             TERMINUS_DATE_FORMAT,
             $data_array['created']
