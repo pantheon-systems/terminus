@@ -6,6 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
 - New command `site lookup` to look up sites by name. (#1027)
 - New command `site complete-migration`. (#1077)
+- `site clear-cache` now automatically clears the framework cache as well as the Varnish cache. (#1083)
 
 ### Changed
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)

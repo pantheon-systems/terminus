@@ -126,19 +126,18 @@ class SiteCommand extends TerminusCommand {
    * : Environment to clear
    *
    * ## EXAMPLES
-   *  terminus site clear-cache --site=test
+   *  terminus site clear-cache --site=mysite --env=live
    *
    * @subcommand clear-cache
    */
   public function clearCache($args, $assoc_args) {
-    $site     = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
+    $site        = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
     );
-    $env_id   = $this->input()->env(array('args' => $assoc_args, 'site' => $site));
-    $workflow = $site->workflows->create(
-      'clear_cache',
-      array('environment' => $env_id)
+    $environment = $site->environments->get(
+      $this->input()->env(['args' => $assoc_args, 'site' => $site,])
     );
+    $workflow    = $environment->clearCache();
     $workflow->wait();
     $this->workflowOutput($workflow);
   }
