@@ -1350,6 +1350,34 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Migrate a site onto Pantheon
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to migrate this archive into
+   *
+   * [--url=<url>]
+   * : The URL to the archive file to migrate onto Pantheon
+   */
+  public function migrate($args, $assoc_args) {
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    $url = $this->input()->string(
+      [
+        'args'     => $assoc_args,
+        'key'      => 'url',
+        'message'  => 'URL of archive to import',
+        'required' => true,
+      ]
+    );
+    $workflow = $site->migrate($url);
+    $workflow->wait();
+    $this->workflowOutput($workflow);
+  }
+
+  /**
    * Mount a site with sshfs
    *
    * ## OPTIONS
