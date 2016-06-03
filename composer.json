@@ -9,29 +9,29 @@
   ],
   "require": {
     "php": ">=5.5.9",
-    "guzzlehttp/guzzle": "6.1.*@stable",
-    "katzgrau/klogger": "1.2.*@stable",
-    "psy/psysh": "@stable",
-    "ramsey/array_column": "~1.1",
+    "guzzlehttp/guzzle": "^6.1",
+    "katzgrau/klogger": "^1.2",
+    "psy/psysh": "^0.7",
+    "ramsey/array_column": "^1.1",
     "rmccue/requests": "^1.6",
-    "symfony/finder": "~2.7|~3.0",
-    "symfony/yaml": "~2.1|~3.0",
-    "twig/twig": "1.*",
-    "vlucas/phpdotenv": "~2.1",
+    "symfony/finder": "~2.7|^3.0",
+    "symfony/yaml": "~2.1|^3.0",
+    "twig/twig": "^1.0",
+    "vlucas/phpdotenv": "^2.1",
     "wp-cli/php-cli-tools": "~0.11.1"
   },
   "autoload": {
     "psr-0": { "Terminus": "php" }
   },
   "require-dev": {
-    "behat/behat": "3.0.*@stable",
-    "phpunit/phpcov": "2.*",
-    "phpunit/phpunit": "4.*",
-    "php-vcr/php-vcr": "~1.2",
-    "php-vcr/phpunit-testlistener-vcr": "*",
-    "sebastian/phpcpd": "*",
-    "squizlabs/php_codesniffer": "2.*",
-    "satooshi/php-coveralls": "~1.0"
+    "behat/behat": "^3.1",
+    "phpunit/phpcov": "^2.0",
+    "phpunit/phpunit": "^4.0",
+    "php-vcr/php-vcr": "^1.2",
+    "php-vcr/phpunit-testlistener-vcr": "@stable",
+    "sebastian/phpcpd": "^2.0",
+    "squizlabs/php_codesniffer": "^2.0",
+    "satooshi/php-coveralls": "^1.0"
   },
   "extra": {
     "branch-alias": {
