@@ -1467,12 +1467,10 @@ class SiteCommand extends TerminusCommand {
    */
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
-    if (in_array($site->info('service_level'), ['free', 'basic'])) {
-      $this->failure(
-        'You must upgrade to a business or an elite plan to use Redis.'
-      );
-    }
+    $site   = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+
     switch ($action) {
       case 'enable':
         $redis = $site->enableRedis();
@@ -1488,11 +1486,11 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'clear':
         if (isset($assoc_args['env'])) {
-          $environments = [$site->environments->get($assoc_args['env'])];
+          $environments = [$site->environments->get($assoc_args['env']),];
         } else {
           $environments = $site->environments->all();
         }
-        $commands = array();
+        $commands = [];
         foreach ($environments as $environment) {
           $connection_info = $environment->connectionInfo();
           if (!isset($connection_info['redis_host'])) {
