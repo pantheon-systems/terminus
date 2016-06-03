@@ -962,6 +962,37 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Import a site onto Pantheon
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to migrate this archive into
+   *
+   * [--url=<url>]
+   * : The URL to the archive file to migrate onto Pantheon
+   */
+  public function import($args, $assoc_args) {
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    $url = $this->input()->string(
+      [
+        'args'     => $assoc_args,
+        'key'      => 'url',
+        'message'  => 'URL of archive to import',
+        'required' => true,
+      ]
+    );
+    $workflow = $site->migrate($url);
+    $workflow->wait();
+    $this->workflowOutput(
+      $workflow,
+      ['success' => 'Imported site onto Pantheon',]
+    );
+  }
+
+  /**
    * Import a zip archive == see this article for more info:
    * http://helpdesk.getpantheon.com/customer/portal/articles/...
    *   ...1458058-importing-a-wordpress-site
