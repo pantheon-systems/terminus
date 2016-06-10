@@ -476,6 +476,7 @@ class Site extends TerminusModel {
       'holder_type'   => null,
       'holder_id'     => null,
       'owner'         => null,
+      'git_clone'     => null,
     ];
     foreach ($info as $info_key => $datum) {
       if ($datum == null) {
@@ -493,6 +494,8 @@ class Site extends TerminusModel {
     } else {
       $info['php_version'] = '5.3';
     }
+
+    $info['git_clone'] = "git clone ssh://codeserver.dev.{$info['id']}@codeserver.dev.{$info['id']}.drush.in:2222/~/repository.git {$info['name']}";
 
     if ($key) {
       if (isset($info[$key])) {
