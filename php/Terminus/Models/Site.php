@@ -495,7 +495,9 @@ class Site extends TerminusModel {
       $info['php_version'] = '5.3';
     }
 
-    $info['git_clone'] = "git clone ssh://codeserver.dev.{$info['id']}@codeserver.dev.{$info['id']}.drush.in:2222/~/repository.git {$info['name']}";
+    $info['git_clone'] = "git clone ssh://codeserver.dev.{$info['id']}" .
+      "@codeserver.dev.{$info['id']}.drush.in:2222/~/repository.git " .
+      "{$info['name']}";
 
     if ($key) {
       if (isset($info[$key])) {
