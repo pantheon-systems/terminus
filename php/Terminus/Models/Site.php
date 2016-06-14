@@ -482,10 +482,8 @@ class Site extends TerminusModel {
         $info[$info_key] = $this->get($info_key);
       }
     }
-    if (!is_null($info['created'])) {
-      if (is_numeric($info['created'])) {
-        $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
-      }
+    if (!is_null($info['created']) && is_numeric($info['created'])) {
+      $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
     }
     if ((boolean)$this->get('frozen')) {
       $info['frozen'] = true;
