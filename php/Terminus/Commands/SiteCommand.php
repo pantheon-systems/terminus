@@ -1878,6 +1878,36 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Enable or disable New Relic Pro
+   *
+   * ## OPTIONS
+   *
+   * <enable|disable>
+   * : Options are enable and disable
+   *
+   * [--site=<site>]
+   * : Site on which to change New Relic Pro
+   *
+   * @subcommand new-relic-pro
+   */
+  public function newRelicPro($args, $assoc_args) {
+    $action = array_shift($args);
+    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+    switch ($action) {
+      case 'enable':
+        $workflow = $site->enableNewRelicPro();
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+        break;
+      case 'disable':
+        $workflow = $site->disableNewRelicPro();
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+        break;
+    }
+  }
+
+  /**
    * Manage site organization tags
    *
    * ## OPTIONS

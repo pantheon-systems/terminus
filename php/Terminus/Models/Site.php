@@ -269,6 +269,17 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Disables New Relic Pro
+   */
+  public function disableNewRelicPro() {
+    $workflow = $this->workflows->create(
+      'disable_new_relic_for_site',
+      ['site' => $this->get('id'),]
+    );
+    return $workflow;
+  }
+
+  /**
    * Enables Redis caching
    *
    * @return array
@@ -294,6 +305,17 @@ class Site extends TerminusModel {
     );
     $this->convergeBindings();
     return $response['data'];
+  }
+
+  /**
+   * Enables New Relic Pro
+   */
+  public function enableNewRelicPro() {
+    $workflow = $this->workflows->create(
+      'enable_new_relic_for_site',
+      ['site' => $this->get('id'),]
+    );
+    return $workflow;
   }
 
   /**
