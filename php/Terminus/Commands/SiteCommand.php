@@ -1898,12 +1898,12 @@ class SiteCommand extends TerminusCommand {
         $workflow = $site->enableNewRelicPro();
         $workflow->wait();
         $this->workflowOutput($workflow);
-        break;
+          break;
       case 'disable':
         $workflow = $site->disableNewRelicPro();
         $workflow->wait();
         $this->workflowOutput($workflow);
-        break;
+          break;
     }
   }
 
