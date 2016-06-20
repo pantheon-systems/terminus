@@ -270,6 +270,8 @@ class Site extends TerminusModel {
 
   /**
    * Disables New Relic Pro
+   *
+   * @return Workflow
    */
   public function disableNewRelicPro() {
     $workflow = $this->workflows->create(
@@ -309,6 +311,8 @@ class Site extends TerminusModel {
 
   /**
    * Enables New Relic Pro
+   *
+   * @return Workflow
    */
   public function enableNewRelicPro() {
     $workflow = $this->workflows->create(
