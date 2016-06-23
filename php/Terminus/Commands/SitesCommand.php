@@ -116,7 +116,7 @@ class SitesCommand extends TerminusCommand {
    * : Label for the site
    *
    * [--upstream=<upstreamid>]
-   * : Specify the upstream upstream to use
+   * : Specify the upstream to use
    *
    * [--org=<id>]
    * : UUID of organization into which to add this site
@@ -490,6 +490,71 @@ class SitesCommand extends TerminusCommand {
     } else {
       $this->log()->info('No sites in need of updating.');
     }
+  }
+
+  /**
+   * Migrate a new site onto Pantheon
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to create (machine-readable)
+   *
+   * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--label=<label>]
+   * : Label for the site
+   *
+   * [--org=<id>]
+   * : UUID of organization into which to add this site
+   *
+   * [--url=<URL>]
+   * : The URL to the archive file to migrate onto Pantheon
+   *
+   */
+  public function migrate($args, $assoc_args) {
+    // Get the new site's details
+    $options = $this->getSiteCreateOptions($assoc_args);
+    $url     = $this->input()->string(
+      [
+        'args'     => $assoc_args,
+        'key'      => 'url',
+        'message'  => 'URL of archive to import',
+        'required' => true,
+      ]
+    );
+    $this->log()->info('Creating new site installation ... ');
+
+    // Create the site for migration
+    $workflow = $this->sites->addSite($options);
+    $workflow->wait();
+    $this->workflowOutput(
+      $workflow,
+      ['success' => 'Created site for migration',]
+    );
+
+    // Add Site to SitesCache
+    $site_id = $workflow->get('final_task')->site_id;
+    $this->sites->addSiteToCache($site_id);
+
+    // Migrate the site
+    $site = $this->sites->get($site_id);
+    $workflow = $site->migrate($url);
+    $workflow->wait();
+    $this->workflowOutput(
+      $workflow,
+      'Created site for migration'
+    );
+
+    // Return the new site's info
+    $this->helpers->launch->launchSelf(
+      [
+        'command'    => 'site',
+        'args'       => ['info',],
+        'assoc_args' => ['site' => $options['name'],],
+      ]
+    );
   }
 
   /**

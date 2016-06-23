@@ -511,7 +511,7 @@ class Site extends TerminusModel {
   public function migrate($url) {
     $workflow = $this->workflows->create(
       'do_migration',
-      ['params' => compact('url'),]
+      ['environment' => 'dev', 'params' => compact('url'),]
     );
     return $workflow;
   }

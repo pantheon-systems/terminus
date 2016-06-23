@@ -181,13 +181,12 @@ class Sites extends TerminusCollection {
    * @throws TerminusException
    */
   public function get($id) {
-    $models = $this->getMembers();
     $list   = $this->getMemberList('name', 'id');
     $site   = null;
-    if (isset($models[$id])) {
-      $site = $models[$id];
+    if (isset($this->models[$id])) {
+      $site = $this->models[$id];
     } elseif (isset($list[$id])) {
-      $site = $models[$list[$id]];
+      $site = $this->models[$list[$id]];
     }
     if ($site == null) {
       $message  = 'Cannot find site with the name "{id}". It may be that ';

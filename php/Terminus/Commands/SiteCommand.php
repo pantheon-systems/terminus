@@ -1374,7 +1374,10 @@ class SiteCommand extends TerminusCommand {
     );
     $workflow = $site->migrate($url);
     $workflow->wait();
-    $this->workflowOutput($workflow);
+    $this->workflowOutput(
+      $workflow,
+      ['success' => 'Migrated site onto Pantheon',]
+    );
   }
 
   /**
