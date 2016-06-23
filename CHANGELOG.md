@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New command `site lookup` to look up sites by name. (#1027)
 - New command `site complete-migration`. (#1077)
 - `site clear-cache` now automatically clears the framework cache as well as the Varnish cache. (#1083)
+- Added `5.6` and `7.0` as version options in `site set-php-version`. (#1109)
 
 ### Changed
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
