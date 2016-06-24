@@ -591,7 +591,7 @@ class InputHelper extends TerminusHelper {
   public function phpVersion(array $arg_options = []) {
     $default_options = [
       'args'    => [],
-      'choices' => [53 => '5.3', 55 => '5.5',],
+      'choices' => [53 => '5.3', 55 => '5.5', 56 => '5.6', 70 => '7.0',],
       'key'     => 'version',
       'message' => 'Select a PHP version',
     ];

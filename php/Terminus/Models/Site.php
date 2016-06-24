@@ -488,11 +488,8 @@ class Site extends TerminusModel {
     if ((boolean)$this->get('frozen')) {
       $info['frozen'] = true;
     }
-    if ($info['php_version'] == '55') {
-      $info['php_version'] = '5.5';
-    } else {
-      $info['php_version'] = '5.3';
-    }
+    $info['php_version'] = substr($info['php_version'], 0, 1)
+      . '.' . substr($info['php_version'], 1, 1);
 
     if ($key) {
       if (isset($info[$key])) {

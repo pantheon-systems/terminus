@@ -509,11 +509,8 @@ class Environment extends TerminusModel {
     }
     $php_version = $this->site->info()['php_version'];
     if (property_exists($result['data'], 'php_version')) {
-      if ($result['data']->php_version == '55') {
-        $php_version = '5.5';
-      } elseif ($result['data']->php_version == '53') {
-        $php_version = '5.3';
-      }
+      $php_version = substr($result['data']->php_version, 0, 1)
+        . '.' . substr($result['data']->php_version, 1, 1);
     }
     $info = [
       'id'              => $this->get('id'),
