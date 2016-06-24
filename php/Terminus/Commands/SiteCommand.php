@@ -1811,8 +1811,8 @@ class SiteCommand extends TerminusCommand {
    *   site's version.
    *
    * [--version=<php-version>]
-   * : The PHP version to set the site or environment to. Options are 5.3 and
-   *   5.5.
+   * : The PHP version to set the site or environment to. Options are 7.0, 5.6,
+   *   5.5, and 5.3.
    *
    * @subcommand set-php-version
    */
@@ -1822,7 +1822,13 @@ class SiteCommand extends TerminusCommand {
 
     if (isset($assoc_args['env'])) {
       $env               = $site->environments->get($assoc_args['env']);
-      $params['choices'] = ['default' => 'default', 53 => '5.3', 55 => '5.5',];
+      $params['choices'] = [
+        'default' => 'default',
+        53        => '5.3',
+        55        => '5.5',
+        56        => '5.6',
+        70        => '7.0',
+      ];
       $version           = $this->input()->phpVersion($params);
       if ($version != 'default') {
         $workflow = $env->setPhpVersion($version);
