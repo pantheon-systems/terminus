@@ -1407,24 +1407,47 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get information on New Relic
+   * Interacts with New Relic
    *
    * ## OPTIONS
    *
+   * <enable|disable|info>
+   * : Options are enable, disable, and info
+   *
    * [--site=<site>]
-   * : site for which to retreive notifications
+   * : site name
+   *
+   * ## Examples
+   *
+   *    terminus site new-relic info --site=behat-tests
+   *    terminus site new-relic enable --site=behat-tests
+   *    terminus site new-relic disable --site=behat-tests
    *
    * @subcommand new-relic
    */
   public function newRelic($args, $assoc_args) {
-    $site = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
-    );
-    $data = $site->newRelic();
-    if (!empty($data->account)) {
-      $this->output()->outputRecord($data->account);
-    } else {
-      $this->log()->warning('New Relic is not enabled.');
+    $action = array_shift($args);
+    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+    switch ($action) {
+      case 'enable':
+        $workflow = $site->enableNewRelicPro();
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+          break;
+      case 'disable':
+        $workflow = $site->disableNewRelicPro();
+        $workflow->wait();
+        $this->workflowOutput($workflow);
+          break;
+      case 'info':
+      default:
+        $data = $site->newRelic();
+        if (!empty($data->{'primary admin'})) {
+          $this->output()->outputRecord($data->{'primary admin'});
+        } else {
+          $this->log()->warning('New Relic is not enabled.');
+        }
+          break;
     }
   }
 
@@ -1873,36 +1896,6 @@ class SiteCommand extends TerminusCommand {
         if ($solr) {
           $this->log()->info('Solr disabled. Converging bindings...');
         }
-          break;
-    }
-  }
-
-  /**
-   * Enable or disable New Relic Pro
-   *
-   * ## OPTIONS
-   *
-   * <enable|disable>
-   * : Options are enable and disable
-   *
-   * [--site=<site>]
-   * : Site on which to change New Relic Pro
-   *
-   * @subcommand new-relic-pro
-   */
-  public function newRelicPro($args, $assoc_args) {
-    $action = array_shift($args);
-    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
-    switch ($action) {
-      case 'enable':
-        $workflow = $site->enableNewRelicPro();
-        $workflow->wait();
-        $this->workflowOutput($workflow);
-          break;
-      case 'disable':
-        $workflow = $site->disableNewRelicPro();
-        $workflow->wait();
-        $this->workflowOutput($workflow);
           break;
     }
   }
