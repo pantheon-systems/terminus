@@ -8,8 +8,6 @@ if ((PHP_SAPI == 'cli') && isset($argv)) {
 
 loadDependencies();
 
-//Set a custom exception handler
-//set_exception_handler('\Terminus\Utils\handle_exception');
 
 if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
   \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
