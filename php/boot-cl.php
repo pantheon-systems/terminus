@@ -8,7 +8,7 @@ if (( PHP_SAPI == 'cli') && isset($argv)) {
 
 loadDependencies();
 
-\Terminus\Helpers\RequirementsHelper::validateEnvironment();
+\Terminus\Helpers\CliHelper::validateEnvironment();
 
 if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
     \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
