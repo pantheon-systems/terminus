@@ -25,7 +25,7 @@ class SshKeys extends TerminusCollection {
       'users/' . $this->user->id . '/keys',
       [
         'form_params' => file_get_contents($key_file),
-        'method'      => 'delete',
+        'method'      => 'post',
       ]
     );
     return (array)$response['data'];
