@@ -2,12 +2,36 @@
 
 namespace Terminus\Models\Collections;
 
-class Hostnames extends TerminusCollection {
-
+class Hostnames extends NewCollection {
+  /**
+   * @var Environment
+   */
+  public $environment;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Hostname';
   /**
    * @var bool Use to hydrate the data with additional information
    */
   protected $hydrate = false;
+
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return Hostnames
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->environment = $options['environment'];
+    $this->url         = sprintf(
+      'sites/%s/environments/%s/hostnames?hydrate=%s',
+      $this->environment->collection->site->id,
+      $this->environment->id,
+      $this->hydrate
+    );
+  }
 
   /**
    * Add hostname to environment
@@ -15,7 +39,7 @@ class Hostnames extends TerminusCollection {
    * @param string $hostname Hostname to add to environment
    * @return array
    */
-  public function addHostname($hostname) {
+  public function create($hostname) {
     $url = sprintf(
       'sites/%s/environments/%s/hostnames/%s',
       $this->environment->site->get('id'),
@@ -37,31 +61,6 @@ class Hostnames extends TerminusCollection {
    */
   public function setHydration($value) {
     $this->hydrate = $value;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'sites/%s/environments/%s/hostnames?hydrate=%s',
-      $this->environment->site->get('id'),
-      $this->environment->get('id'),
-      $this->hydrate
-    );
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'environment';
-    return $owner_name;
   }
 
 }

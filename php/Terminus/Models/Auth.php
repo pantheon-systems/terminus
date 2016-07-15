@@ -4,12 +4,10 @@ namespace Terminus\Models;
 
 use Terminus\Caches\TokensCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
 
-class Auth extends TerminusModel {
+class Auth extends NewModel {
 
   /**
    * @var TokensCache
@@ -20,10 +18,10 @@ class Auth extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array $options    Options to set as $this->key
    * @return Auth
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = []) {
     $this->tokens_cache = new TokensCache();
     parent::__construct($attributes, $options);
   }
@@ -115,7 +113,6 @@ class Auth extends TerminusModel {
       );
     }
 
-    $data = $response['data'];
     $this->setInstanceData($response['data']);
     $user = Session::getUser();
     $user->fetch();

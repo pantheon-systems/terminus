@@ -3,48 +3,49 @@
 namespace Terminus\Models;
 
 use GuzzleHttp\TransferStats as TransferStats;
-use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Backups;
-use Terminus\Models\Collections\Bindings;
 use Terminus\Models\Collections\Commits;
 use Terminus\Models\Collections\Hostnames;
+use Terminus\Models\Collections\Workflows;
 
-class Environment extends TerminusModel {
+class Environment extends NewModel {
   /**
    * @var Backups
    */
   public $backups;
-
   /**
    * @var Commits
    */
   public $commits;
-
-  /**
-   * @var Bindings
-   */
-  public $bindings;
-
   /**
    * @var Hostnames
    */
   public $hostnames;
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var Workflows
+   */
+  public $workflows;
 
   /**
    * Object constructor
    *
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
+   * @return Environment
    */
-  public function __construct($attributes, array $options = []) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
-    $options = ['environment' => $this];
-    $this->backups   = new Backups($options);
-    $this->bindings  = new Bindings($options);
-    $this->commits   = new Commits($options);
-    $this->hostnames = new Hostnames($options);
+    $params          = ['environment' => $this,];
+    $this->backups   = new Backups($params);
+    $this->commits   = new Commits($params);
+    $this->hostnames = new Hostnames($params);
+    $this->workflows = new Workflows($params);
+    $this->site      = $options['collection']->site;
   }
 
   /**
@@ -68,8 +69,8 @@ class Environment extends TerminusModel {
           break;
     }
 
-    $params   = ['environment' => $this->get('id'),];
-    $workflow = $this->site->workflows->create($workflow_name, $params);
+    $params   = ['environment' => $this->id,];
+    $workflow = $this->workflows->create($workflow_name, $params);
     return $workflow;
   }
 
@@ -100,7 +101,7 @@ class Environment extends TerminusModel {
       'environment' => $to_env,
       'params'      => ['from_environment' => $this->getName(),],
     ];
-    $workflow = $this->site->workflows->create('clone_database', $params);
+    $workflow = $this->workflows->create('clone_database', $params);
     return $workflow;
   }
 
@@ -115,7 +116,7 @@ class Environment extends TerminusModel {
       'environment' => $to_env,
       'params'      => ['from_environment' => $this->getName(),],
     ];
-    $workflow = $this->site->workflows->create('clone_files', $params);
+    $workflow = $this->workflows->create('clone_files', $params);
     return $workflow;
   }
 
@@ -135,14 +136,14 @@ class Environment extends TerminusModel {
     $git_user = ob_get_clean();
 
     $params   = [
-      'environment' => $this->get('id'),
+      'environment' => $this->id,
       'params'      => [
         'message'         => $commit,
         'committer_name'  => $git_user,
         'committer_email' => $git_email,
       ],
     ];
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'commit_and_push_on_server_changes',
       $params
     );
@@ -159,14 +160,14 @@ class Environment extends TerminusModel {
 
     $sftp_username = sprintf(
       '%s.%s',
-      $this->get('id'),
-      $this->site->get('id')
+      $this->id,
+      $this->site->id
     );
     $sftp_password = 'Use your account password';
     $sftp_host     = sprintf(
       'appserver.%s.%s.drush.in',
-      $this->get('id'),
-      $this->site->get('id')
+      $this->id,
+      $this->site->id
     );
     $sftp_port     = 2222;
     $sftp_url      = sprintf(
@@ -191,14 +192,14 @@ class Environment extends TerminusModel {
     $info = array_merge($info, $sftp_params);
 
     // Can only Use Git on dev/multidev environments
-    if (!in_array($this->get('id'), ['test', 'live',])) {
+    if (!in_array($this->id, ['test', 'live',])) {
       $git_username = sprintf(
         'codeserver.dev.%s',
-        $this->site->get('id')
+        $this->site->id
       );
       $git_host     = sprintf(
         'codeserver.dev.%s.drush.in',
-        $this->site->get('id')
+        $this->site->id
       );
       $git_port     = 2222;
       $git_url      = sprintf(
@@ -222,18 +223,19 @@ class Environment extends TerminusModel {
       $info = array_merge($info, $git_params);
     }
 
-    $dbserver_binding = (array)$this->bindings->getByType('dbserver');
+    $this->site->bindings->fetch();
+    $dbserver_binding = $this->site->bindings->getByType('dbserver');
     if (!empty($dbserver_binding)) {
       do {
         $db_binding = array_shift($dbserver_binding);
-      } while ($db_binding->get('environment') != $this->get('id'));
+      } while ($db_binding->get('environment') != $this->id);
 
       $mysql_username = 'pantheon';
       $mysql_password = $db_binding->get('password');
       $mysql_host     = sprintf(
         'dbserver.%s.%s.drush.in',
-        $this->get('id'),
-        $this->site->get('id')
+        $this->id,
+        $this->site->id
       );
       $mysql_port     = $db_binding->get('port');
       $mysql_database = 'pantheon';
@@ -266,7 +268,7 @@ class Environment extends TerminusModel {
       $info = array_merge($info, $mysql_params);
     }
 
-    $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
+    $cacheserver_binding = $this->site->bindings->getByType('cacheserver');
     if (!empty($cacheserver_binding)) {
       do {
         $next_binding = array_shift($cacheserver_binding);
@@ -275,7 +277,7 @@ class Environment extends TerminusModel {
         }
         $cache_binding = $next_binding;
       } while (!is_null($cache_binding)
-        && $cache_binding->get('environment') != $this->get('id')
+        && $cache_binding->get('environment') != $this->id
       );
 
       $redis_password = $cache_binding->get('password');
@@ -312,10 +314,10 @@ class Environment extends TerminusModel {
    *
    * @return array
    */
-  public function convergeBindings() {
-    $workflow = $this->site->workflows->create(
+  public function convergeEnvironment() {
+    $workflow = $this->workflows->create(
       'converge_environment',
-      ['environment' => $this->get('id'),]
+      ['environment' => $this->id,]
     );
     return $workflow;
   }
@@ -327,13 +329,13 @@ class Environment extends TerminusModel {
    */
   public function countDeployableCommits() {
     $parent_environment = $this->getParentEnvironment();
-    $parent_commits     = $parent_environment->commits->all();
+    $parent_commits     = $parent_environment->commits->fetch()->all();
     $number_of_commits  = 0;
     foreach ($parent_commits as $commit) {
       $labels             = $commit->get('labels');
       $number_of_commits += (integer)(
-        !in_array($this->get('id'), $labels)
-        && in_array($parent_environment->get('id'), $labels)
+        !in_array($this->id, $labels)
+        && in_array($parent_environment->id, $labels)
       );
     }
     return $number_of_commits;
@@ -367,8 +369,8 @@ class Environment extends TerminusModel {
    * @return Workflow
    */
   public function deploy($params) {
-    $params   = ['environment' => $this->get('id'), 'params' => $params,];
-    $workflow = $this->site->workflows->create('deploy', $params);
+    $params   = ['environment' => $this->id, 'params' => $params,];
+    $workflow = $this->workflows->create('deploy', $params);
     return $workflow;
   }
 
@@ -380,8 +382,8 @@ class Environment extends TerminusModel {
   public function diffstat() {
     $path    = sprintf(
       'sites/%s/environments/%s/on-server-development/diffstat',
-      $this->site->get('id'),
-      $this->get('id')
+      $this->site->id,
+      $this->id
     );
     $options = ['method' => 'get',];
     $data    = $this->request->request($path, $options);
@@ -396,7 +398,7 @@ class Environment extends TerminusModel {
   public function domain() {
     $host = sprintf(
       '%s-%s.%s',
-      $this->get('id'),
+      $this->id,
       $this->site->get('name'),
       $this->get('dns_zone')
     );
@@ -419,7 +421,7 @@ class Environment extends TerminusModel {
    * @return string
    */
   public function getName() {
-    $name = $this->get('id');
+    $name = $this->id;
     return $name;
   }
 
@@ -429,11 +431,11 @@ class Environment extends TerminusModel {
    * @return Environment
    */
   public function getParentEnvironment() {
-    $env_id = $this->get('id');
+    $env_id = $this->id;
     if ($env_id == 'dev') {
       return null;
     }
-    switch ($this->get('id')) {
+    switch ($this->id) {
       case 'dev':
           return null;
           break;
@@ -465,9 +467,9 @@ class Environment extends TerminusModel {
    * @return Workflow
    */
   public function importDatabase($url) {
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'import_database',
-      ['environment' => $this->get('id'), 'params' => compact('url'),]
+      ['environment' => $this->id, 'params' => compact('url'),]
     );
     return $workflow;
   }
@@ -479,9 +481,9 @@ class Environment extends TerminusModel {
    * @return Workflow
    */
   public function importFiles($url) {
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'import_files',
-      ['environment' => $this->get('id'), 'params' => compact('url'),]
+      ['environment' => $this->id, 'params' => compact('url'),]
     );
     return $workflow;
   }
@@ -496,8 +498,8 @@ class Environment extends TerminusModel {
   public function info($key = null) {
     $path    = sprintf(
       'sites/%s/environments/%s',
-      $this->site->get('id'),
-      $this->get('id')
+      $this->site->id,
+      $this->id
     );
     $options = ['method' => 'get',];
     $result  = $this->request->request($path, $options);
@@ -513,7 +515,7 @@ class Environment extends TerminusModel {
         . '.' . substr($result['data']->php_version, 1, 1);
     }
     $info = [
-      'id'              => $this->get('id'),
+      'id'              => $this->id,
       'connection_mode' => $connection_mode,
       'php_version'     => $php_version,
     ];
@@ -541,24 +543,24 @@ class Environment extends TerminusModel {
    * @return Workflow In-progress workflow
    */
   public function initializeBindings() {
-    if ($this->get('id') == 'test') {
+    if ($this->id == 'test') {
       $from_env_id = 'dev';
-    } elseif ($this->get('id') == 'live') {
+    } elseif ($this->id == 'live') {
       $from_env_id = 'test';
     }
 
     $params   = [
-      'environment' => $this->get('id'),
+      'environment' => $this->id,
       'params'      => [
         'annotation'     => sprintf(
           'Create the %s environment',
-          $this->get('id')
+          $this->id
         ),
         'clone_database' => ['from_environment' => $from_env_id,],
         'clone_files'    => ['from_environment' => $from_env_id,],
       ]
     ];
-    $workflow = $this->site->workflows->create('create_environment', $params);
+    $workflow = $this->workflows->create('create_environment', $params);
     return $workflow;
   }
 
@@ -581,7 +583,7 @@ class Environment extends TerminusModel {
    * @return bool True if ths environment is a multidev environment
    */
   public function isMultidev() {
-    $is_multidev = !in_array($this->get('id'), ['dev', 'test', 'live']);
+    $is_multidev = !in_array($this->id, ['dev', 'test', 'live']);
     return $is_multidev;
   }
 
@@ -596,13 +598,13 @@ class Environment extends TerminusModel {
     $password = $options['password'];
 
     $params   = [
-      'environment' => $this->get('id'),
+      'environment' => $this->id,
       'params' => [
         'username' => $username,
         'password' => $password
       ],
     ];
-    $workflow = $this->site->workflows->create('lock_environment', $params);
+    $workflow = $this->workflows->create('lock_environment', $params);
     return $workflow;
   }
 
@@ -627,15 +629,15 @@ class Environment extends TerminusModel {
     if (!$this->isMultidev()) {
       throw new TerminusException(
         'The {env} environment is not a multidev environment',
-        ['env' => $this->get('id')],
+        ['env' => $this->id],
         1
       );
     }
     $default_params = ['updatedb' => false,];
 
     $params   = array_merge($default_params, $options);
-    $settings = ['environment' => $this->get('id'), 'params' => $params,];
-    $workflow = $this->site->workflows->create(
+    $settings = ['environment' => $this->id, 'params' => $params,];
+    $workflow = $this->workflows->create(
       'merge_dev_into_cloud_development_environment',
       $settings
     );
@@ -654,7 +656,7 @@ class Environment extends TerminusModel {
     if (!$this->isMultidev()) {
       throw new TerminusException(
         'The {env} environment is not a multidev environment',
-        ['env' => $this->get('id'),],
+        ['env' => $this->id,],
         1
       );
     }
@@ -664,9 +666,9 @@ class Environment extends TerminusModel {
 
     // This function is a little odd because we invoke it on a
     // multidev environment, but it applies a workflow to the 'dev' environment
-    $params['from_environment'] = $this->get('id');
+    $params['from_environment'] = $this->id;
     $settings = ['environment' => 'dev', 'params' => $params,];
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'merge_cloud_development_environment_into_dev',
       $settings
     );
@@ -709,8 +711,8 @@ class Environment extends TerminusModel {
     $response = $this->request->request(
       sprintf(
         'sites/%s/environments/%s/add-ssl-cert',
-        $this->site->get('id'),
-        $this->get('id')
+        $this->site->id,
+        $this->id
       ),
       ['method' => 'post', 'form_params' => $params,]
     );
@@ -730,13 +732,13 @@ class Environment extends TerminusModel {
    */
   public function setPhpVersion($version_number) {
     $options = [
-      'environment' => $this->get('id'),
+      'environment' => $this->id,
       'params'      => [
         'key'   => 'php_version',
         'value' => $version_number,
       ],
     ];
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'update_environment_setting',
       $options
     );
@@ -749,8 +751,8 @@ class Environment extends TerminusModel {
    * @return Workflow
    */
   public function unlock() {
-    $params   = ['environment' => $this->get('id'),];
-    $workflow = $this->site->workflows->create('unlock_environment', $params);
+    $params   = ['environment' => $this->id,];
+    $workflow = $this->workflows->create('unlock_environment', $params);
     return $workflow;
   }
 
@@ -761,10 +763,10 @@ class Environment extends TerminusModel {
    */
   public function unsetPhpVersion() {
     $options = [
-      'environment' => $this->get('id'),
+      'environment' => $this->id,
       'params'      => ['key' => 'php_version',],
     ];
-    $workflow = $this->site->workflows->create(
+    $workflow = $this->workflows->create(
       'delete_environment_setting',
       $options
     );
@@ -801,8 +803,8 @@ class Environment extends TerminusModel {
    * @return Workflow
    */
   public function wipe() {
-    $params   = ['environment' => $this->get('id'),];
-    $workflow = $this->site->workflows->create('wipe', $params);
+    $params   = ['environment' => $this->id,];
+    $workflow = $this->workflows->create('wipe', $params);
     return $workflow;
   }
 
@@ -815,10 +817,10 @@ class Environment extends TerminusModel {
   private function getSettings($setting = null) {
     $path   = sprintf(
       'sites/%s/environments/%s/settings',
-      $this->site->get('id'),
-      $this->get('id')
+      $this->site->id,
+      $this->id
     );
-    $response = (array)$this->request->request($path, ['method' => 'get',]);
+    $response = $this->request->request($path, ['method' => 'get',]);
     if (isset($response['data']->$setting)) {
       return $response['data']->$setting;
     }
@@ -835,8 +837,8 @@ class Environment extends TerminusModel {
   private function updateSetting(array $settings = []) {
     $path   = sprintf(
       'sites/%s/environments/%s/settings',
-      $this->site->get('id'),
-      $this->get('id')
+      $this->site->id,
+      $this->id
     );
     $params = ['form_params' => $settings, 'method' => 'put',];
     $response = $this->request->request($path, $params);

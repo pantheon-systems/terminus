@@ -2,26 +2,26 @@
 
 namespace Terminus\Models\Collections;
 
-class Instruments extends TerminusCollection {
+class Instruments extends NewCollection {
+  /**
+   * @var User
+   */
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Instrument';
 
   /**
-   * Give the URL for collection data fetching
+   * Instantiates the collection
    *
-   * @return string URL to use in fetch query
+   * @param array $options To be set
+   * @return Instruments
    */
-  protected function getFetchUrl() {
-    $url = 'users/' . $this->user->id . '/instruments';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'user';
-    return $owner_name;
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->user = $options['user'];
+    $this->url  = "users/{$this->user->id}/instruments";
   }
 
 }

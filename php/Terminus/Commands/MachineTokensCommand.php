@@ -2,10 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
-
 /**
  * Show information for your Pantheon machine tokens
  *
@@ -31,9 +27,7 @@ class MachineTokensCommand extends TerminusCommand {
    * @alias show
    */
   public function index($args, $assoc_args) {
-    $user        = Session::getUser();
-
-    $machine_tokens = $user->machine_tokens->all();
+    $machine_tokens = $this->user->machine_tokens->fetch()->all();
     $data        = array();
     foreach ($machine_tokens as $id => $machine_token) {
       $data[] = array(
@@ -66,8 +60,6 @@ class MachineTokensCommand extends TerminusCommand {
    * : to skip the confirmations
    */
   public function delete($args, $assoc_args) {
-    $user        = Session::getUser();
-
     $id = $assoc_args['machine-token-id'];
     if (empty($id)) {
       $this->failure(
@@ -76,7 +68,9 @@ class MachineTokensCommand extends TerminusCommand {
     }
 
     // Find the token
-    $machine_token = $user->machine_tokens->get($assoc_args['machine-token-id']);
+    $machine_token = $this->user->machine_tokens->fetch()->get(
+      $assoc_args['machine-token-id']
+    );
     if (empty($machine_token)) {
       $this->failure(
         'There are no machine tokens with the id {id}.',

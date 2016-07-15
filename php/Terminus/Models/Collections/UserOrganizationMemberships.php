@@ -2,39 +2,30 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
-use Terminus\Session;
-use Terminus\Models\User;
-use Terminus\Models\UserOrganizationMembership;
-
-class UserOrganizationMemberships extends TerminusCollection {
-  protected $user;
-
+class UserOrganizationMemberships extends NewCollection {
   /**
-   * Object constructor
-   *
-   * @param array $options Options to set as $this->key
+   * @var User
    */
-  public function __construct($options = array()) {
-    parent::__construct($options);
-    if (!isset($this->user)) {
-      $this->user = Session::getUser();
-    }
-  }
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\UserOrganizationMembership';
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
 
   /**
-   * Fetches model data from API and instantiates its model instances
+   * Instantiates the collection
    *
-   * @param array $options params to pass to url request
+   * @param array $options To be set
    * @return UserOrganizationMemberships
    */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->user = $options['user'];
+    $this->url  = "users/{$this->user->id}/memberships/organizations";
   }
 
   /**
@@ -44,7 +35,6 @@ class UserOrganizationMemberships extends TerminusCollection {
    * @return UserOrganizationMembership $model
    */
   public function get($id) {
-    $this->fetch();
     $model = null;
     if (isset($this->models[$id])) {
       $model = $this->models[$id];
@@ -61,26 +51,6 @@ class UserOrganizationMemberships extends TerminusCollection {
       }
     }
     return $model;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf('users/%s/memberships/organizations', $this->user->id);
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'user';
-    return $owner_name;
   }
 
 }

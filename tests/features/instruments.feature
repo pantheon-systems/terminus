@@ -5,7 +5,6 @@ Feature: Instruments command
 
   Background: I am logged in and have a site named [[test_site_name]]
     Given I am authenticated
-    And a site named "[[test_site_name]]"
 
   @vcr instruments_list
   Scenario: List instruments

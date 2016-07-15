@@ -2,7 +2,7 @@
 
 namespace Terminus\Models;
 
-class MachineToken extends TerminusModel {
+class MachineToken extends NewModel {
 
   /**
    * Deletes machine token
@@ -11,8 +11,12 @@ class MachineToken extends TerminusModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'users/' . $this->user->id . '/machine_tokens/' . $this->get('id'),
-      array('method' => 'delete')
+      sprintf(
+        'users/%s/machine_tokens/%s',
+        $this->collection->user->id,
+        $this->id
+      ),
+      ['method' => 'delete',]
     );
     return $response;
   }

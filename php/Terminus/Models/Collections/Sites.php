@@ -2,40 +2,36 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Session;
-use Terminus\Caches\SitesCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\User;
-use Terminus\Models\Workflow;
+use Terminus\Session;
 
-class Sites extends TerminusCollection {
-  /**
-   * @var SitesCache
-   */
-  public $sites_cache;
+class Sites extends NewCollection {
   /**
    * @var User
    */
-  private $user;
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Site';
 
   /**
-   * Instantiates the collection, sets param members as properties
+   * Instantiates the collection
    *
-   * @param array $options To be set to $this->key
+   * @param array $options To be set
    * @return Sites
    */
-  public function __construct(array $options = array()) {
+  public function __construct(array $options = []) {
+    $this->user = Session::getUser();
     parent::__construct($options);
-    $this->sites_cache = new SitesCache();
-    $this->user        = Session::getUser();
   }
 
   /**
    * Creates a new site
    *
-   * @param string[] $options Information to run workflow, with the following
+   * @param string[] $options Parameters to run workflow, with the following
    *   keys:
    *   - label
    *   - name
@@ -43,89 +39,68 @@ class Sites extends TerminusCollection {
    *   - upstream_id
    * @return Workflow
    */
-  public function addSite($options = array()) {
-    $data = array(
+  public function create($options = []) {
+    $params = [
       'label'     => $options['label'],
       'site_name' => $options['name']
-    );
+    ];
 
     if (isset($options['organization_id'])) {
-      $data['organization_id'] = $options['organization_id'];
+      $params['organization_id'] = $options['organization_id'];
     }
 
     if (isset($options['upstream_id'])) {
-      $data['deploy_product'] = array(
+      $params['deploy_product'] = [
         'product_id' => $options['upstream_id']
-      );
+      ];
     }
-
+    
     $workflow = $this->user->workflows->create(
       'create_site',
-      array('params' => $data)
+      compact('params')
     );
 
     return $workflow;
   }
 
   /**
-   * Adds site with given site ID to cache
-   *
-   * @param string $site_id UUID of site to add to cache
-   * @param string $org_id  UUID of org to which new site belongs
-   * @return Site The newly created site object
-   */
-  public function addSiteToCache($site_id, $org_id = null) {
-    $site = new Site(
-      (object)['id' => $site_id,],
-      ['collection' => $this,]
-    );
-    $site->fetch();
-    $cache_membership = $site->info();
-
-    if (!is_null($org_id)) {
-      $org = new Organization(null, ['id' => $org_id,]);
-      $cache_membership['membership'] = [
-        'id' => $org_id,
-        'name' => $org->profile->name,
-        'type' => 'organization',
-      ];
-    } else {
-      $user_id = Session::getValue('user_uuid');
-      $cache_membership['membership'] = [
-        'id' => $user_id,
-        'name' => 'Team',
-        'type' => 'team',
-      ];
-    }
-    $this->sites_cache->add($cache_membership);
-    return $site;
-  }
-
-  /**
-    * Removes site with given site ID from cache
-   *
-   * @param string $site_name Name of site to remove from cache
-   * @return void
-   */
-  public function deleteSiteFromCache($site_name) {
-    $this->sites_cache->remove($site_name);
-  }
-
-  /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param array $options params to pass to url request
+   * @param array $arg_options Parameters for the fetch request
+   *        string  org_id    UUID for organization to fetch sites for
+   *        boolean team_only True to only fetch team sites, not organizational
    * @return Sites
    */
-  public function fetch(array $options = array()) {
-    if (empty($this->models)) {
-      $cache = $this->sites_cache->all();
-      if (count($cache) === 0) {
-        $this->rebuildCache();
-        $cache = $this->sites_cache->all();
+  public function fetch(array $arg_options = []) {
+    $default_options = [
+      'org_id'    => null,
+      'team_only' => false,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    
+    if (is_null($options['org_id'])) {
+      $sites = $this->user->getSites();
+      if (!$options['team_only']) {
+        $organizations = $this->user->getOrganizations();
+        foreach ($organizations as $organization) {
+          $sites =
+            array_merge($sites, $organization->getSites());
+        }
       }
-      foreach ($cache as $name => $model) {
-        $this->add((object)$model);
+    } else {
+      $this->user->org_memberships->fetch();
+      $sites = $this->user->org_memberships->get($options['org_id'])
+        ->organization->getSites();
+    }
+    foreach ($sites as $site) {
+      if (!isset($this->models[$site->id])) {
+        $site->collection        = $this;
+        $this->models[$site->id] = $site;
+      } else {
+        $this->models[$site->id]->memberships[] = array_merge(
+          $this->models[$site->id]->memberships,
+          $site->memberships
+        );
       }
     }
     return $this;
@@ -134,34 +109,48 @@ class Sites extends TerminusCollection {
   /**
    * Filters sites list by tag
    *
-   * @param string $tag Tag to filter by
-   * @param string $org Organization which has tagged sites
-   * @return Site[]
-   * @throws TerminusException
+   * @param string $tag    Tag to filter by
+   * @param string $org_id ID of an organization which has tagged sites
+   * @return Sites
    */
-  public function filterAllByTag($tag, $org = '') {
-    $all_sites = $this->all();
-    if (!$tag) {
-      return $all_sites;
-    }
-
-    $sites = array();
-    foreach ($all_sites as $id => $site) {
-      if ($site->organizationIsMember($org)) {
-        $tags = $site->getTags($org);
-        if (in_array($tag, $tags)) {
-          $sites[$id] = $site;
-        }
+  public function filterByTag($tag, $org_id) {
+    $this->models = array_filter(
+      $this->models,
+      function($site) use ($tag, $org_id) {
+        $has_tag = in_array($tag, $site->getTags($org_id));
+        return $has_tag;
       }
-    }
-    if (empty($sites)) {
-      throw new TerminusException(
-        'No sites associated with {org} had the tag {tag}.',
-        array('org' => $org, 'tag' => $tag),
-        1
-      );
-    }
-    return $sites;
+    );
+    return $this;
+  }
+
+  /**
+   * Filters an array of sites by whether the user is an organizational member
+   *
+   * @param string $regex Non-delimited PHP regex to filter site names by
+   * @return Sites
+   */
+  public function filterByName($regex = '(.*)') {
+    $this->models = array_filter(
+      $this->models,
+      function($site) use ($regex) {
+        preg_match("~$regex~", $site->get('name'), $matches);
+        $is_match = !empty($matches);
+        return $is_match;
+      }
+    );
+    return $this;
+  }
+
+  /**
+   * Filters an array of sites by whether the user is an organizational member
+   *
+   * @param string $owner_uuid UUID of the owning user to filter by
+   * @return Sites
+   */
+  public function filterByOwner($owner_uuid) {
+    $this->filter(['owner' => $owner_uuid,]);
+    return $this;
   }
 
   /**
@@ -186,34 +175,49 @@ class Sites extends TerminusCollection {
    * @throws TerminusException
    */
   public function get($id) {
-    $models = $this->getMembers();
-    $list   = $this->getMemberList('name', 'id');
+    $models = $this->models;
+    $list   = $this->list('name', 'id');
     $site   = null;
     if (isset($models[$id])) {
       $site = $models[$id];
     } elseif (isset($list[$id])) {
       $site = $models[$list[$id]];
-    }
-    if ($site == null) {
-      $message  = 'Cannot find site with the name "{id}". It may be that ';
-      $message .= 'your sites cache is out of date and must be refreshed by ';
-      $message .= 'running `{command}` in order to access new sites.';
-      throw new TerminusException(
-        $message,
-        ['id' => $id, 'command' => 'terminus sites list'],
-        1
+    } else {
+      try {
+        $uuid = $this->findUuidByName($id)->id;
+      } catch (\Exception $e) {
+        throw new TerminusException(
+          'Could not locate a site your user may access identified by {id}.',
+          compact('id'),
+          1
+        );
+      }
+      $site = new Site(
+        ['id' => $uuid,],
+        ['id' => $uuid, 'collection' => $this,]
       );
+      $site->fetch();
+      $this->models[$uuid] = $site;
     }
     return $site;
   }
 
   /**
-   * Clears sites cache
+   * Determines whether a given site name is taken or not.
    *
-   * @return void
+   * @param string $name Name of the site to look up
+   * @return boolean
    */
-  public function rebuildCache() {
-    $this->sites_cache->rebuild();
+  public function nameIsTaken($name) {
+    try {
+      $this->findUuidByName($name);
+    } catch (\Exception $e) {
+      //We're using this to assign the exception to $e.
+    }
+    $name_is_taken = (
+      !isset($e) || (strpos($e->getMessage(), '404 Not Found') === false)
+    );
+    return $name_is_taken;
   }
 
 }

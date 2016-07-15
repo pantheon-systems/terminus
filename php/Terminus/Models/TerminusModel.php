@@ -7,7 +7,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 
 abstract class TerminusModel {
-  protected $id;
+  public $id;
   /**
    * @var Request
    */
@@ -28,7 +28,7 @@ abstract class TerminusModel {
       $configurator = new Configurator();
     }
     if ($attributes == null) {
-      $attributes = new \stdClass();
+      $attributes = (object)[];
     }
     if (isset($attributes->id)) {
       $this->id = $attributes->id;

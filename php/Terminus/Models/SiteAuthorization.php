@@ -2,5 +2,5 @@
 
 namespace Terminus\Models;
 
-class SiteAuthorization extends TerminusModel {
+class SiteAuthorization extends NewModel {
 }

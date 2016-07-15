@@ -3,58 +3,75 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\WorkflowOperation;
+use Terminus\Session;
 
-class Workflow extends TerminusModel {
+class Workflow extends NewModel {
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
 
   /**
-   * Give the URL for collection data fetching
+   * Object constructor
    *
-   * @return string $url URL to use in fetch query
+   * @param object $attributes Attributes of this model
+   * @param array $options    Options to set as $this->key
+   * @return OrganizationSiteMembership
    */
-  public function getFetchUrl() {
-    $url = '';
-    switch ($this->getOwnerName()) {
-      case 'user':
-        $url = sprintf(
-          'users/%s/workflows/%s',
-          $this->owner->id,
-          $this->get('id')
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    switch ($this->collection->owner) {
+      case 'site':
+        $this->site = $this->collection->site;
+        $this->url  = sprintf(
+          'sites/%s/workflows/%s',
+          $this->site->id,
+          $this->id
         );
           break;
-      case 'site':
-        $url = sprintf(
+      case 'environment':
+        $this->site = $this->collection->environment->site;
+        $this->url  = sprintf(
           'sites/%s/workflows/%s',
-          $this->owner->get('id'),
-          $this->get('id')
+          $this->site->id,
+          $this->id
+        );
+          break;
+      case 'user':
+        $this->user = $this->collection->user;
+        $this->url  = sprintf(
+          'users/%s/workflows/%s',
+          $this->user->id,
+          $this->id
         );
           break;
       case 'organization':
-        $url  = sprintf(
+        $this->organization = $this->collection->organization;
+        $this->url          = sprintf(
           'users/%s/organizations/%s/workflows/%s',
-          $this->owner->user->id,
-          $this->owner->get('id'),
-          $this->get('id')
+          Session::getUser()->id,
+          $this->organization->id,
+          $this->id
         );
           break;
     }
-    return $url;
   }
-
+    
   /**
    * Re-fetches workflow data hydrated with logs
    *
    * @return Workflow
    */
   public function fetchWithLogs() {
-    $options = array(
-      'fetch_args' => array(
-        'query' => array(
-          'hydrate' => 'operations_with_logs'
-        )
-      )
-    );
+    $options = ['params' => ['query' => ['hydrate' => 'operations_with_logs']]];
     $this->fetch($options);
     return $this;
   }
@@ -101,13 +118,12 @@ class Workflow extends TerminusModel {
    * @return WorkflowOperation[]
    */
   public function operations() {
+    $operations_data = [];
     if (is_array($this->get('operations'))) {
       $operations_data = $this->get('operations');
-    } else {
-      $operations_data = array();
     }
 
-    $operations = array();
+    $operations = [];
     foreach ($operations_data as $operation_data) {
       $operations[] = new WorkflowOperation($operation_data);
     }
@@ -131,12 +147,12 @@ class Workflow extends TerminusModel {
       $elapsed_time = time() - $this->get('created_at');
     }
 
-    $operations_data = array();
+    $operations_data = [];
     foreach ($this->operations() as $operation) {
       $operations_data[] = $operation->serialize();
     }
 
-    $data = array(
+    $data = [
       'id'             => $this->id,
       'env'            => $this->get('environment'),
       'workflow'       => $this->get('description'),
@@ -144,7 +160,7 @@ class Workflow extends TerminusModel {
       'status'         => $this->getStatus(),
       'time'           => sprintf("%ds", $elapsed_time),
       'operations'     => $operations_data
-    );
+    ];
 
     return $data;
   }
@@ -180,22 +196,6 @@ class Workflow extends TerminusModel {
         }
       }
     }
-  }
-
-  /**
-   * Gets name of the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = strtolower(
-      str_replace(
-        array('Terminus\\', 'Models\\'),
-        '',
-        get_class($this->owner)
-      )
-    );
-    return $owner_name;
   }
 
 }

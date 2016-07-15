@@ -2,15 +2,8 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Configurator;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Organization;
-use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
-use Terminus\Session;
 use Terminus\Utils;
 
 /**
@@ -19,7 +12,6 @@ use Terminus\Utils;
  * @command sites
  */
 class SitesCommand extends TerminusCommand {
-  public $sites;
 
   /**
    * Shows a list of your sites on Pantheon
@@ -30,7 +22,6 @@ class SitesCommand extends TerminusCommand {
   public function __construct(array $options = []) {
     $options['require_login'] = true;
     parent::__construct($options);
-    $this->sites = new Sites();
   }
 
   /**
@@ -47,23 +38,22 @@ class SitesCommand extends TerminusCommand {
    *   '~/.drush/pantheon.aliases.drushrc.php' will be used.
    */
   public function aliases($args, $assoc_args) {
-    $user     = Session::getUser();
     $print    = $this->input()->optional(
-      array(
+      [
         'key'     => 'print',
         'choices' => $assoc_args,
         'default' => false,
-      )
+      ]
     );
     $location = $this->input()->optional(
-      array(
+      [
         'key'     => 'location',
         'choices' => $assoc_args,
         'default' => sprintf(
           '%s/.drush/pantheon.aliases.drushrc.php',
           Configurator::getHomeDir()
         ),
-      )
+      ]
     );
 
     if (is_dir($location)) {
@@ -80,23 +70,18 @@ class SitesCommand extends TerminusCommand {
       mkdir($dirname, 0700, true);
     }
 
-    $content = $user->getAliases();
-    $h       = fopen($location, 'w+');
-    fwrite($h, $content);
-    fclose($h);
+    $content = $this->user->getAliases();
+    file_put_contents($location, $content);
     chmod($location, 0700);
 
     $message = 'Pantheon aliases created';
     if ($file_exists) {
       $message = 'Pantheon aliases updated';
     }
-    if (strpos($content, 'array') === false) {
-      $message .= ', although you have no sites';
-    }
     $this->log()->info($message);
 
     if ($print) {
-      $aliases = str_replace(array('<?php', '?>'), '', $content);
+      $aliases = str_replace(['<?php', '?>',], '', $content);
       $this->output()->outputDump($aliases);
     }
   }
@@ -129,13 +114,16 @@ class SitesCommand extends TerminusCommand {
     );
     $this->log()->info('Creating new site installation ... ');
 
-    $workflow = $this->sites->addSite($options);
+    if ($this->sites->nameIsTaken($options['site_name'])) {
+      $this->failure(
+        'The name {site_name} is taken. Please select a different name.',
+        ['site_name' => $data['site_name'],]
+      );
+    }
+
+    $workflow = $this->sites->create($options);
     $workflow->wait();
     $this->workflowOutput($workflow);
-
-    // Add Site to SitesCache
-    $final_task = $workflow->get('final_task');
-    $this->sites->addSiteToCache($final_task->site_id);
 
     $this->helpers->launch->launchSelf(
       [
@@ -174,11 +162,11 @@ class SitesCommand extends TerminusCommand {
     $options = $this->getSiteCreateOptions($assoc_args);
 
     $url = $this->input()->string(
-      array(
+      [
         'args'    => $assoc_args,
         'key'     => 'url',
         'message' => 'URL of archive to import',
-      )
+      ]
     );
     if (!$url) {
       $this->log()->error('Please enter a URL.');
@@ -193,13 +181,12 @@ class SitesCommand extends TerminusCommand {
       exit;
     } catch (\Exception $e) {
       //Creating a new site
-      $workflow = $this->sites->addSite($options);
+      $workflow = $this->sites->create($options);
       $workflow->wait();
       $this->workflowOutput($workflow);
 
-      //Add site to SitesCache
       $final_task = $workflow->get('final_task');
-      $site       = $this->sites->addSiteToCache($final_task->site_id);
+      $site       = $this->sites->get($final_task->site_id);
       sleep(10); //Avoid false site-DNE errors
     }
 
@@ -225,44 +212,33 @@ class SitesCommand extends TerminusCommand {
    * [--name=<regex>]
    * : Filter sites you can access via name
    *
-   * [--cached]
-   * : Causes the command to return cached sites list instead of retrieving anew
-   *
    * @subcommand list
    * @alias show
    */
   public function index($args, $assoc_args) {
-    // Always fetch a fresh list of sites
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-    $sites = $this->sites->all();
-
-    if (isset($assoc_args['team'])) {
-      $sites = $this->filterByTeamMembership($sites);
-    }
-    if (isset($assoc_args['org'])) {
-      $org_id = $this->input()->orgId(
+    $options = [
+      'org_id'    => $this->input()->optional(
         [
-          'allow_none' => true,
-          'args'       => $assoc_args,
-          'default'    => 'all',
+          'choices' => $assoc_args,
+          'default' => null,
+          'key'     => 'org',
         ]
-      );
-      $sites = $this->filterByOrganizationalMembership($sites, $org_id);
-    }
+      ),
+      'team_only' => isset($assoc_args['team']),
+    ];
+    $this->sites->fetch($options);
 
     if (isset($assoc_args['name'])) {
-      $sites = $this->filterByName($sites, $assoc_args['name']);
+      $this->sites->filterByName($assoc_args['name']);
     }
-
     if (isset($assoc_args['owner'])) {
       $owner_uuid = $assoc_args['owner'];
       if ($owner_uuid == 'me') {
-        $owner_uuid = Session::getData()->user_uuid;
+        $owner_uuid = $this->user->id;
       }
-      $sites = $this->filterByOwner($sites, $owner_uuid);
+      $this->sites->filterByOwner($owner_uuid);
     }
+    $sites = $this->sites->all();
 
     if (count($sites) == 0) {
       $this->log()->warning('You have no sites.');
@@ -271,19 +247,24 @@ class SitesCommand extends TerminusCommand {
     $rows = [];
     foreach ($sites as $site) {
       $memberships = [];
-      foreach ($site->get('memberships') as $membership) {
-        $memberships[$membership['id']] = $membership['name'];
+      foreach ($site->memberships as $membership) {
+        if (property_exists($membership, 'user')) {
+          $memberships[] = "{$membership->user->id}: Team";
+        } elseif (property_exists($membership, 'organization')) {
+          $profile       = $membership->organization->get('profile');
+          $memberships[] = "{$membership->organization->id}: {$profile->name}";
+        }
       }
-      $rows[$site->get('id')] = [
+      $rows[$site->id] = [
         'name'          => $site->get('name'),
-        'id'            => $site->get('id'),
+        'id'            => $site->id,
         'service_level' => $site->get('service_level'),
         'framework'     => $site->get('framework'),
         'owner'         => $site->get('owner'),
         'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
-        'memberships'   => $memberships,
+        'memberships'   => implode(', ', $memberships),
       ];
-      if ((boolean)$site->get('frozen')) {
+      if (!is_null($site->get('frozen'))) {
         $rows[$site->get('id')]['frozen'] = true;
       }
     }
@@ -338,46 +319,28 @@ class SitesCommand extends TerminusCommand {
    * @subcommand mass-update
    */
   public function massUpdate($args, $assoc_args) {
-    // Ensure the sitesCache is up to date
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-
+    $this->sites->fetch();
     $upstream = $this->input()->optional(
-      array(
+      [
         'key'     => 'upstream',
         'choices' => $assoc_args,
         'default' => false,
-      )
+      ]
     );
-    $data     = array();
+    $data     = [];
     $report   = $this->input()->optional(
-      array(
+      [
         'key'     => 'report',
         'choices' => $assoc_args,
         'default' => false,
-      )
-    );
-    $confirm   = $this->input()->optional(
-      array(
-        'key'     => 'confirm',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
-    );
-    $tag       = $this->input()->optional(
-      array(
-        'key'     => 'tag',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+      ]
     );
 
-    $org = '';
-    if ($tag) {
-      $org = $this->input()->orgId(array('args' => $assoc_args));
+    if (isset($assoc_args['tag'])) {
+      $org = $this->input()->orgId(['args' => $assoc_args,]);
+      $this->sites->filterByTag($assoc_args['tag'], $org);
     }
-    $sites = $this->sites->filterAllByTag($tag, $org);
+    $sites = $this->sites->all();
 
     // Start status messages.
     if ($upstream) {
@@ -388,65 +351,64 @@ class SitesCommand extends TerminusCommand {
     }
 
     foreach ($sites as $site) {
-      $context = array('site' => $site->get('name'));
-      $site->fetch();
+      $context = ['site' => $site->get('name'),];
       $updates = $site->getUpstreamUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.
         continue;
       }
       // Check for upstream argument and site upstream URL match.
-      $siteUpstream = $site->info('upstream');
-      if ($upstream && isset($siteUpstream->url)) {
-        if ($siteUpstream->url <> $upstream) {
+      $site_upstream = $site->info('upstream');
+      if ($upstream && isset($site_upstream->url)) {
+        if ($site_upstream->url <> $upstream) {
           // Uptream doesn't match, go back to start.
           continue;
         }
       }
 
       if ($updates->behind > 0) {
-        $data[$site->get('name')] = array(
+        $data[$site->get('name')] = [
           'site'   => $site->get('name'),
-          'status' => 'Needs update'
-        );
+          'status' => 'Needs update',
+        ];
         $env = $site->environments->get('dev');
         if ($env->info('connection_mode') == 'sftp') {
           $message  = '{site} has available updates, but is in SFTP mode.';
           $message .= ' Switch to Git mode to apply updates.';
           $this->log()->warning($message, $context);
-          $data[$site->get('name')] = array(
+          $data[$site->get('name')] = [
             'site'=> $site->get('name'),
-            'status' => 'Needs update - switch to Git mode'
-          );
+            'status' => 'Needs update - switch to Git mode',
+          ];
           continue;
         }
         $updatedb = !$this->input()->optional(
-          array(
+          [
             'key'     => 'updatedb',
             'choices' => $assoc_args,
             'default' => false,
-          )
+          ]
         );
         $xoption  = !$this->input()->optional(
-          array(
+          [
             'key'     => 'xoption',
             'choices' => $assoc_args,
             'default' => 'theirs',
-          )
+          ]
         );
         if (!$report) {
           $message = 'Apply upstream updates to %s ';
           $message .= '( run update.php:%s, xoption:%s ) ';
           $confirmed = $this->input()->confirm(
-            array(
+            [
               'message' => $message,
-              'context' => array(
+              'context' => [
                 $site->get('name'),
                 var_export($updatedb, 1),
                 var_export($xoption, 1)
-              ),
+              ],
               'exit' => false,
-            )
+            ]
           );
           if (!$confirmed) {
             continue; // User says No, go back to start.
@@ -475,10 +437,10 @@ class SitesCommand extends TerminusCommand {
         }
       } else {
         if (isset($assoc_args['report'])) {
-          $data[$site->get('name')] = array(
+          $data[$site->get('name')] = [
             'site'   => $site->get('name'),
             'status' => 'Up to date'
-          );
+          ];
         }
       }
     }
@@ -489,90 +451,6 @@ class SitesCommand extends TerminusCommand {
     } else {
       $this->log()->info('No sites in need of updating.');
     }
-  }
-
-  /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites An array of sites to filter by
-   * @param string $regex Non-delimited PHP regex to filter site names by
-   * @return Site[]
-   */
-  private function filterByName($sites, $regex = '(.*)') {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($regex) {
-        preg_match("~$regex~", $site->get('name'), $matches);
-        $is_match = !empty($matches);
-        return $is_match;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites      An array of sites to filter by
-   * @param string $owner_uuid UUID of the owning user to filter by
-   * @return Site[]
-   */
-  private function filterByOwner($sites, $owner_uuid) {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($owner_uuid) {
-        $is_owner = ($site->get('owner') == $owner_uuid);
-        return $is_owner;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is an organizational member
-   *
-   * @param Site[] $sites  An array of sites to filter by
-   * @param string $org_id ID of the organization to filter for
-   * @return Site[]
-   */
-  private function filterByOrganizationalMembership($sites, $org_id = 'all') {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) use ($org_id) {
-        $memberships    = $site->get('memberships');
-        foreach ($memberships as $membership) {
-          if ((($org_id == 'all') && ($membership['type'] == 'organization'))
-            || ($membership['id'] === $org_id)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      }
-    );
-    return $filtered_sites;
-  }
-
-  /**
-   * Filters an array of sites by whether the user is a team member
-   *
-   * @param Site[] $sites An array of sites to filter by
-   * @return Site[]
-   */
-  private function filterByTeamMembership($sites) {
-    $filtered_sites = array_filter(
-      $sites,
-      function($site) {
-        $memberships    = $site->get('memberships');
-        foreach ($memberships as $membership) {
-          if ($membership['name'] == 'Team') {
-            return true;
-          }
-        }
-        return false;
-      }
-    );
-    return $filtered_sites;
   }
 
   /**

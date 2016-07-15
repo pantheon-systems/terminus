@@ -146,8 +146,8 @@ abstract class TerminusCollection extends TerminusModel {
     }
 
     $fetch_args = array();
-    if (isset($options['fetch_args'])) {
-      $fetch_args = $options['fetch_args'];
+    if (isset($options['params'])) {
+      $fetch_args = $options['params'];
     }
     $options = array_merge(
       array('options' => array('method' => 'get')),

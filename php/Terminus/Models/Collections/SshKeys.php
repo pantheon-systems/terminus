@@ -4,7 +4,27 @@ namespace Terminus\Models\Collections;
 
 use Terminus\Exceptions\TerminusException;
 
-class SshKeys extends TerminusCollection {
+class SshKeys extends NewCollection {
+  /**
+   * @var User
+   */
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\SshKey';
+
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return SshKeys
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->user = $options['user'];
+    $this->url  = "sites/{$this->user->id}/keys";
+  }
 
   /**
    * Adds an SSH key to the user's Pantheon account
@@ -13,7 +33,7 @@ class SshKeys extends TerminusCollection {
    * @return array
    * @throws TerminusException
    */
-  public function addKey($key_file) {
+  public function create($key_file) {
     if (!file_exists($key_file)) {
       throw new TerminusException(
         'The file {file} cannot be accessed by Terminus.',
@@ -42,44 +62,6 @@ class SshKeys extends TerminusCollection {
       ['method' => 'delete',]
     );
     return (array)$response['data'];
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return SshKeys $this
-   */
-  public function fetch(array $options = array()) {
-    $results = $this->getCollectionData($options);
-    $data    = $this->objectify($results['data']);
-
-    foreach (get_object_vars($data) as $uuid => $ssh_key) {
-      $model_data = (object)['id' => $uuid, 'key' => $ssh_key,];
-      $this->add($model_data);
-    }
-
-    return $this;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'users/' . $this->user->id . '/keys';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'user';
-    return $owner_name;
   }
 
 }

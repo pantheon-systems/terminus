@@ -4,7 +4,40 @@ namespace Terminus\Models\Collections;
 
 use Terminus\Models\Binding;
 
-class Bindings extends TerminusCollection {
+class Bindings extends NewCollection {
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Binding';
+
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return Bindings
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url  = "sites/{$this->site->id}/bindings";
+  }
+
+  /**
+   * Converges all bindings on a site
+   *
+   * @return array
+   */
+  public function converge() {
+    $response = $this->request->request(
+      "sites/{$this->site->id}/converge",
+      ['method' => 'post']
+    );
+    return $response['data'];
+  }
 
   /**
    * Get bindings by type
@@ -13,7 +46,7 @@ class Bindings extends TerminusCollection {
    * @return Binding[]
    */
   public function getByType($type) {
-    $models = array_filter(
+    $bindings = array_filter(
       $this->all(),
       function(Binding $binding) use ($type) {
         $is_valid = (
@@ -24,29 +57,7 @@ class Bindings extends TerminusCollection {
         return $is_valid;
       }
     );
-
-    $bindings = array_values($models);
     return $bindings;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf('sites/%s/bindings', $this->environment->site->get('id'));
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection.
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'environment';
-    return $owner_name;
   }
 
 }

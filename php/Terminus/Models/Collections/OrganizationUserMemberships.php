@@ -2,14 +2,31 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Commands\OrganizationsCommand;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\OrganizationUserMembership;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
+class OrganizationUserMemberships extends NewCollection {
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\OrganizationUserMembership';
+  /**
+   * @var bool
+   */
+  protected $paged = true;
 
-class OrganizationUserMemberships extends TerminusCollection {
-  protected $organization;
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return OrganizationUserMemberships
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->organization = $options['organization'];
+    $this->url          = "sites/{$this->organization->id}/memberships/users";
+  }
 
   /**
    * Adds a user to this organization
@@ -18,7 +35,7 @@ class OrganizationUserMemberships extends TerminusCollection {
    * @param string $role Role to assign to the new member
    * @return Workflow $workflow
    */
-  public function addMember($uuid, $role) {
+  public function create($uuid, $role) {
     $workflow = $this->organization->workflows->create(
       'add_organization_user_membership',
       ['params' => ['user_email' => $uuid, 'role' => $role,]]
@@ -34,13 +51,16 @@ class OrganizationUserMemberships extends TerminusCollection {
    * @throws TerminusException
    */
   public function get($id) {
-    $models = $this->getMembers();
+    $models = $this->models;
     if (isset($models[$id])) {
       return $models[$id];
     }
     foreach ($models as $model) {
-      $user_data = $model->get('user');
-      if (in_array($id, [$user_data->email, $user_data->profile->full_name])) {
+      $user = $model->user;
+      if (in_array(
+        $id,
+        [$user->get('email'), $user->get('profile')->full_name,]
+      )) {
         return $model;
       }
     }
@@ -49,44 +69,6 @@ class OrganizationUserMemberships extends TerminusCollection {
       compact('id'),
       1
     );
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'organizations/%s/memberships/users',
-      $this->organization->id
-    );
-    return $url;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return OrganizationUserMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'organization';
-    return $owner_name;
   }
 
 }

@@ -3,17 +3,68 @@
 namespace Terminus\Models\Collections;
 
 use Terminus\Models\Workflow;
+use Terminus\Session;
 
-class Workflows extends TerminusCollection {
+class Workflows extends NewCollection {
+  /**
+   * @var Environment
+   */
+  public $environment;
+  /**
+   * @var Organization
+   */
+  public $organization;
   /**
    * @var string
    */
-  protected $environment;
+  public $owner;
   /**
-   * @var object
-   * @todo Find specific type for this
+   * @var Site
    */
-  protected $owner;
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Workflow';
+  
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return Workflows
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    if (isset($options['site'])) {
+      $this->site  = $options['site'];
+      $this->url   = "sites/{$this->site->id}/workflows";
+      $this->owner = 'site';
+    } elseif (isset($options['environment'])) {
+      $this->environment = $options['environment'];
+      $this->url         = sprintf(
+        'sites/%s/environments/%s/workflows',
+        $this->environment->site->id,
+        $this->environment->id
+      );
+      $this->owner       = 'environment';
+    } elseif (isset($options['user'])) {
+      $this->user  = $options['user'];
+      $this->url   = "users/{$this->user->id}/workflows";
+      $this->owner = 'user';
+    } elseif (isset($options['organization'])) {
+      $this->organization = $options['organization'];
+      $this->url          = sprintf(
+        'users/%s/organizations/%s/workflows',
+        Session::getUser()->id,
+        $this->organization->id
+      );
+      $this->owner        = 'organization'; 
+    }
+  }
 
   /**
    * Creates a new workflow and adds its data to the collection
@@ -25,71 +76,21 @@ class Workflows extends TerminusCollection {
    *   - params: associative array of parameters for the request
    * @return Workflow $model
    */
-  public function create($type, array $options = array()) {
-    $options = array_merge(array('params' => array()), $options);
-    if (isset($options['environment'])) {
-      $this->environment = $options['environment'];
-    }
-    $params = array_merge($this->getFetchArgs(), $options['params']);
-
+  public function create($type, array $options = []) {
     $results = $this->request->request(
-      $this->getFetchUrl(),
-      array(
+      $this->url,
+      [
         'method'      => 'post',
-        'form_params' => array(
+        'form_params' => [
           'type'   => $type,
-          'params' => (object)$params
-        )
-      )
+          'params' => (object)$options['params'],
+        ],
+      ]
     );
 
-    $model = new Workflow(
-      $results['data'],
-      array(
-        'owner' => $this->owner,
-      )
-    );
+    $model = new Workflow($results['data'], ['collection' => $this,]);
     $this->add($model);
     return $model;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = '';
-    switch ($this->getOwnerName()) {
-      case 'user':
-        $url = sprintf(
-          'users/%s/workflows',
-          $this->owner->id
-        );
-          break;
-      case 'site':
-        $replacement = $this->owner->get('id');
-        if (isset($this->environment)) {
-          $replacement = sprintf(
-            '%s/environments/%s',
-            $this->owner->get('id'),
-            $this->environment
-          );
-        }
-        $url = sprintf(
-          'sites/%s/workflows',
-          $replacement
-        );
-          break;
-      case 'organization':
-        $url = sprintf(
-          'users/%s/organizations/%s/workflows',
-          $this->owner->user->id,
-          $this->owner->get('id')
-        );
-          break;
-    }
-    return $url;
   }
 
   /**
@@ -98,16 +99,10 @@ class Workflows extends TerminusCollection {
    * @param array $options Additional information for the request
    * @return void
    */
-  public function fetchWithOperations($options = array()) {
+  public function fetchWithOperations($options = []) {
     $options = array_merge(
       $options,
-      array(
-        'fetch_args' => array(
-          'query' => array(
-            'hydrate' => 'operations'
-          )
-        )
-      )
+      ['params' => ['query' => ['hydrate' => 'operations',],],]
     );
     $this->fetch($options);
   }
@@ -226,38 +221,6 @@ class Workflows extends TerminusCollection {
       $workflow = null;
     }
     return $workflow;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    if (isset($this->owner_type)) {
-      return $this->owner_type;
-    }
-    $owner_name = strtolower(
-      str_replace(
-        array('Terminus\\', 'Models\\', 'Collections\\'),
-        '',
-        get_class($this->owner)
-      )
-    );
-    return $owner_name;
-  }
-
-  /**
-   * Adds a model to this collection
-   *
-   * @param object $model_data Data to feed into attributes of new model
-   * @param array  $options    Data to make properties of the new model
-   * @return Workflow  The newly-added model
-   */
-  public function add($model_data, array $options = array()) {
-    $model = parent::add($model_data, $options);
-    $model->owner = $this->owner;
-    return $model;
   }
 
 }

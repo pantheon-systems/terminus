@@ -2,10 +2,8 @@
 
 namespace Terminus\Models;
 
-use Terminus\Caches\SitesCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Organization;
-use Terminus\Models\TerminusModel;
+use Terminus\Models\Collections\Bindings;
 use Terminus\Models\Collections\Environments;
 use Terminus\Models\Collections\OrganizationSiteMemberships;
 use Terminus\Models\Collections\SiteAuthorizations;
@@ -13,45 +11,38 @@ use Terminus\Models\Collections\SiteOrganizationMemberships;
 use Terminus\Models\Collections\SiteUserMemberships;
 use Terminus\Models\Collections\Workflows;
 
-class Site extends TerminusModel {
+class Site extends NewModel {
   /**
    * @var array
-   * @todo Use Bindings collection?
+   */
+  public $authorizations;
+  /**
+   * @var Bindings
    */
   public $bindings;
-
-  /**
-   * @var array
-   */
-  protected $authorizations;
-
   /**
    * @var Environments
    */
-  protected $environments;
-
+  public $environments;
   /**
    * @var SiteOrganizationMemberships
    */
-  protected $org_memberships;
-
+  public $org_memberships;
   /**
    * @var SiteUserMemberships
    */
-  protected $user_memberships;
-
+  public $user_memberships;
   /**
    * @var Workflows
    */
   protected $workflows;
-
   /**
    * @var array
    */
   private $features;
-
   /**
    * @var array
+   * @TODO Break this out into its own collection
    */
   private $tags;
 
@@ -60,32 +51,19 @@ class Site extends TerminusModel {
    *
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
+   * @return Site
    */
   public function __construct($attributes = null, array $options = []) {
-    if ($attributes == null) {
-      $attributes = new \stdClass();
-    }
-    $must_haves = [
-      'name',
-      'id',
-      'service_level',
-      'framework',
-      'created',
-      'memberships'
-    ];
-    foreach ($must_haves as $must_have) {
-      if (!isset($attributes->$must_have)) {
-        $attributes->$must_have = null;
-      }
-    }
     parent::__construct($attributes, $options);
 
     $params                 = ['site' => $this,];
     $this->authorizations   = new SiteAuthorizations($params);
+    $this->bindings         = new Bindings($params);
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
+    $this->url              = "sites/{$this->id}?site_state=true";
   }
 
   /**
@@ -96,7 +74,7 @@ class Site extends TerminusModel {
    */
   public function addInstrument($uuid) {
     $args     = [
-      'site'   => $this->get('id'),
+      'site'   => $this->id,
       'params' => ['instrument_id' => $uuid,],
     ];
     $workflow = $this->workflows->create('associate_site_instrument', $args);
@@ -119,7 +97,7 @@ class Site extends TerminusModel {
         ['tag' => $tag, 'org' => $org_id,]
       );
     }
-    $params    = [$tag => ['sites' => [$this->get('id'),],],];
+    $params    = [$tag => ['sites' => [$this->id,],],];
     $response  = $this->request->request(
       sprintf('organizations/%s/tags', $org_id),
       ['method' => 'put', 'form_params' => $params,]
@@ -155,7 +133,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function attributes() {
-    $path     = sprintf('sites/%s/attributes', $this->get('id'));
+    $path     = sprintf('sites/%s/attributes', $this->id);
     $options  = ['method' => 'get',];
     $response = $this->request->request($path, $options);
     return $response['data'];
@@ -172,19 +150,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Converges all bindings on a site
-   *
-   * @return array
-   */
-  public function convergeBindings() {
-    $response = $this->request->request(
-      'sites/' . $this->get('id') . '/converge',
-      ['method' => 'post']
-    );
-    return $response['data'];
-  }
-
-  /**
    * Create a new branch
    *
    * @param string $branch Name of new branch
@@ -193,7 +158,7 @@ class Site extends TerminusModel {
   public function createBranch($branch) {
     $path     = sprintf(
       'sites/%s/code-branch',
-      $this->get('id')
+      $this->id
     );
     $options  = [
       'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
@@ -210,7 +175,7 @@ class Site extends TerminusModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'sites/' . $this->get('id'),
+      'sites/' . $this->id,
       ['method' => 'delete',]
     );
     return $response;
@@ -231,26 +196,16 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Deletes site from cache
-   *
-   * @return void
-   */
-  public function deleteFromCache() {
-    // TODO: $this->collection is not defined.
-    $this->collection->deleteSiteFromCache($this->get('name'));
-  }
-
-  /**
    * Disables Redis caching
    *
    * @return array
    */
   public function disableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -261,10 +216,10 @@ class Site extends TerminusModel {
    */
   public function disableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -275,10 +230,10 @@ class Site extends TerminusModel {
    */
   public function enableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
   }
 
@@ -289,25 +244,11 @@ class Site extends TerminusModel {
    */
   public function enableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
-    $this->convergeBindings();
+    $this->bindings->converge();
     return $response['data'];
-  }
-
-  /**
-   * Fetches this object from Pantheon
-   *
-   * @param array $options params to pass to url request
-   * @return Site
-   */
-  public function fetch(array $options = []) {
-    $response         = $this->request->request(
-      sprintf('sites/%s?site_state=true', $this->get('id'))
-    );
-    $this->attributes = $response['data'];
-    return $this;
   }
 
   /**
@@ -317,23 +258,12 @@ class Site extends TerminusModel {
    */
   public function fetchAttributes() {
     $response = $this->request->request(
-      sprintf('sites/%s/settings', $this->get('id'))
+      sprintf('sites/%s/settings', $this->id)
     );
-    $this->attributes = $response['data'];
-    $this->collection->sites_cache->update((array)$response['data']);
-  }
-
-  /**
-   * Returns given attribute, if present
-   *
-   * @param string $attribute Name of attribute requested
-   * @return mixed|null Attribute value, or null if not found
-   */
-  public function get($attribute) {
-    if (isset($this->attributes->$attribute)) {
-      return $this->attributes->$attribute;
-    }
-    return null;
+    $this->attributes = (object)array_merge(
+      (array)$this->attributes,
+      $this->parseAttributes((array)$response['data'])
+    );
   }
 
   /**
@@ -345,7 +275,7 @@ class Site extends TerminusModel {
   public function getFeature($feature) {
     if (!isset($this->features)) {
       $response       = $this->request->request(
-        sprintf('sites/%s/features', $this->get('id'))
+        sprintf('sites/%s/features', $this->id)
       );
       $this->features = (array)$response['data'];
     }
@@ -358,21 +288,21 @@ class Site extends TerminusModel {
   /**
    * Returns all organization members of this site
    *
-   * @return SiteOrganizationMembership[]
+   * @return Organization[]
    */
   public function getOrganizations() {
-    $orgs = $this->org_memberships->all();
-    return $orgs;
-  }
-
-  /**
-   * Lists user memberships for this site
-   *
-   * @return SiteUserMemberships
-   */
-  public function getSiteUserMemberships() {
-    $this->user_memberships = $this->user_memberships->fetch();
-    return $this->user_memberships;
+    $this->org_memberships->fetch();
+    $organizations = array_combine(
+      array_map(
+        function($membership) {return $membership->organization->id;},
+        $this->org_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->organization;},
+        $this->org_memberships->all()
+      )
+    );
+    return $organizations;
   }
 
   /**
@@ -389,7 +319,7 @@ class Site extends TerminusModel {
       ['organization' => new Organization(null, ['id' => $org_id,]),]
     );
     $org_site_member->fetch();
-    $org  = $org_site_member->get($this->get('id'));
+    $org  = $org_site_member->get($this->id);
     $tags = $org->get('tags');
     return $tags;
   }
@@ -400,7 +330,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function getTips() {
-    $path     = sprintf('sites/%s/code-tips', $this->get('id'));
+    $path     = sprintf('sites/%s/code-tips', $this->id);
     $options  = ['method' => 'get',];
     $data     = $this->request->request($path, $options);
     $branches = array_keys((array)$data['data']);
@@ -414,9 +344,29 @@ class Site extends TerminusModel {
    */
   public function getUpstreamUpdates() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') .  '/code-upstream-updates'
+      'sites/' . $this->id .  '/code-upstream-updates'
     );
     return $response['data'];
+  }
+
+  /**
+   * Lists user memberships for this site
+   *
+   * @return User[]
+   */
+  public function getUsers() {
+    $this->user_memberships->fetch();
+    $users = array_combine(
+      array_map(
+        function($membership) {return $membership->user->id;},
+        $this->user_memberships->all()
+      ),
+      array_map(
+        function($membership) {return $membership->user;},
+        $this->user_memberships->all()
+      )
+    );
+    return $users;
   }
 
   /**
@@ -464,7 +414,7 @@ class Site extends TerminusModel {
    */
   public function info($key = null) {
     $info = [
-      'id'            => $this->get('id'),
+      'id'            => $this->id,
       'name'          => null,
       'label'         => null,
       'created'       => null,
@@ -509,7 +459,7 @@ class Site extends TerminusModel {
    */
   public function newRelic() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/new-relic'
+      'sites/' . $this->id . '/new-relic'
     );
     return $response['data'];
   }
@@ -521,7 +471,7 @@ class Site extends TerminusModel {
    * @return bool True if organization is a member of this site
    */
   public function organizationIsMember($uuid) {
-    $org_ids       = $this->org_memberships->ids();
+    $org_ids       = $this->org_memberships->fetch()->ids();
     $org_is_member = in_array($uuid, $org_ids);
     return $org_is_member;
   }
@@ -533,7 +483,7 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function removeInstrument() {
-    $args     = ['site' => $this->get('id'),];
+    $args     = ['site' => $this->id,];
     $workflow = $this->workflows->create('disassociate_site_instrument', $args);
     return $workflow;
   }
@@ -551,7 +501,7 @@ class Site extends TerminusModel {
         'organizations/%s/tags/%s/sites?entity=%s',
         $org_id,
         $tag,
-        $this->get('id')
+        $this->id
       ),
       ['method' => 'delete',]
     );
@@ -566,23 +516,20 @@ class Site extends TerminusModel {
    * @throws TerminusException
    */
   public function setOwner($owner = null) {
-    $new_owner = $this->user_memberships->get($owner);
+    $new_owner = $this->user_memberships->fetch()->get($owner);
     if ($new_owner == null) {
       $message = 'The owner must be a team member. Add them with `site team`';
       throw new TerminusException($message);
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      ['params' => ['user_id' => $new_owner->get('id'),],]
+      ['params' => ['user_id' => $new_owner->id,],]
     );
     return $workflow;
   }
 
   /**
    * Sets the PHP version number of this site
-   * Note: Once this changes, you need to refresh the data in the cache for
-   *   this site or the returned PHP version will not reflect the change.
-   *   $this->fetchAttributes() will complete this action for you.
    *
    * @param string $version_number The version number to set this site to use
    * @return void
@@ -619,18 +566,6 @@ class Site extends TerminusModel {
       throw $e;
     }
     return $workflow;
-  }
-
-  /**
-   * Verifies if the given framework is in use
-   *
-   * @param string $framework_name Name of framework to verify
-   * @return bool
-   * @todo This function is unused; remove?
-   */
-  private function hasFramework($framework_name) {
-    $has_framework = ($framework_name == $this->get('framework'));
-    return $has_framework;
   }
 
 }

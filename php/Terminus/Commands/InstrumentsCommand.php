@@ -2,10 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
-
 /**
  * Show information for your Pantheon instruments
  *
@@ -30,17 +26,20 @@ class InstrumentsCommand extends TerminusCommand {
    * @subcommand list
    */
   public function all($args, $assoc_args) {
-    $user        = Session::getUser();
-    $instruments = $user->instruments->all();
-    $data        = array();
-    foreach ($instruments as $id => $instrument) {
-      $data[] = array(
-        'label' => $instrument->get('label'),
-        'id'    => $instrument->get('id'),
-      );
-    }
-
-    $this->output()->outputRecordList($data);
+    $instruments = array_map(
+      function ($instrument) {
+        $info = (object)[
+          'label' => $instrument->get('label'),
+          'id'    => $instrument->id,
+        ];
+        return $info;
+      },
+      $this->sites->user->instruments->fetch()->all()
+    );
+    $this->output()->outputRecordList(
+      $instruments,
+      ['label' => 'Card', 'id' => 'ID',]
+    );
   }
 
 }

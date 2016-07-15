@@ -2,5 +2,5 @@
 
 namespace Terminus\Models;
 
-class Instrument extends TerminusModel {
+class Instrument extends NewModel {
 }

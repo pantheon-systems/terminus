@@ -6,6 +6,7 @@ use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
 use Terminus\Models\Auth;
+use Terminus\Models\Collections\Sites;
 use Terminus\Outputters\OutputterInterface;
 use Terminus\Session;
 use Terminus\Utils;
@@ -39,6 +40,10 @@ abstract class TerminusCommand {
    */
   protected $sites;
   /**
+   * @var User
+   */
+  protected $user;
+  /**
    * @var Logger
    */
   private $logger;
@@ -71,6 +76,8 @@ abstract class TerminusCommand {
     $this->session   = Session::instance();
     $this->logger    = $this->runner->getLogger();
     $this->outputter = $this->runner->getOutputter();
+    $this->sites     = new Sites();
+    $this->user      = $this->sites->user;
     $this->loadHelpers();
 
     if (!Utils\isTest()) {
