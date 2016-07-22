@@ -1438,7 +1438,7 @@ class SiteCommand extends TerminusCommand {
    *
    *    terminus site newrelic enable --site=behat-tests
    *    terminus site newrelic disable --site=behat-tests
-   *    terminus site newrelic status --site=behat-tests --env=live
+   *    terminus site newrelic status --site=behat-tests
    */
   public function newrelic($args, $assoc_args) {
     $action = array_shift($args);
@@ -1459,7 +1459,13 @@ class SiteCommand extends TerminusCommand {
       case 'status':
         $newrelic = $site->newRelic();
         if ($newrelic) {
-          $this->log()->info('New Relic enabled.');
+          $data = [
+            'name' => $newrelic->name,
+            'status' => $newrelic->status,
+            'subscribed' => $newrelic->subscription->starts_on,
+            'state' => $newrelic->{'primary admin'}->state,
+          ];
+          $this->output()->outputRecord($data);
         } else {
           $this->log()->info('New Relic disabled.');
         }
