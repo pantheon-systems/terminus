@@ -11,7 +11,3 @@ Feature: New Relic
   Scenario: Accessing New Relic status
     When I run "terminus site newrelic status --site=[[test_site_name]]"
     Then I should get: "New Relic is disabled."
-
-  Scenario: Setting New Relic status
-    When I run "terminus site newrelic enable --site=[[test_site_name]]"
-    Then I should get: "New Relic is enabled."
