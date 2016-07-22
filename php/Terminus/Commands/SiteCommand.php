@@ -1472,7 +1472,7 @@ class SiteCommand extends TerminusCommand {
    *
    * ## OPTIONS
    *
-    <enable|disable|clear>
+   * <enable|disable|clear>
    * : Options are enable, disable, and clear.
    *
    * [--site=<site>]
