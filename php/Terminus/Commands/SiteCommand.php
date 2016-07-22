@@ -1407,28 +1407,6 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get information on New Relic
-   *
-   * ## OPTIONS
-   *
-   * [--site=<site>]
-   * : site for which to retreive notifications
-   *
-   * @subcommand new-relic
-   */
-  public function newRelic($args, $assoc_args) {
-    $site = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
-    );
-    $data = $site->newRelic();
-    if (!empty($data->account)) {
-      $this->output()->outputRecord($data->account);
-    } else {
-      $this->log()->warning('New Relic is not enabled.');
-    }
-  }
-
-  /**
    * Get the site owner
    *
    * ## OPTIONS
@@ -1446,11 +1424,55 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Interacts with New Relic
+   *
+   * ## OPTIONS
+   *
+   * <enable|disable|status>
+   * : Options are enable, disable and status.
+   *
+   * [--site=<site>]
+   * : site name
+   *
+   * ## Examples
+   *
+   *    terminus site newrelic enable --site=behat-tests
+   *    terminus site newrelic disable --site=behat-tests
+   *    terminus site newrelic status --site=behat-tests --env=live
+   */
+  public function newrelic($args, $assoc_args) {
+    $action = array_shift($args);
+    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+    switch ($action) {
+      case 'enable':
+        $newrelic = $site->enableNewRelic($site);
+        if ($newrelic) {
+          $this->log()->info('New Relic enabled.');
+        }
+          break;
+      case 'disable':
+        $newrelic = $site->disableNewRelic($site);
+        if ($newrelic) {
+          $this->log()->info('New Relic disabled.');
+        }
+          break;
+      case 'status':
+        $newrelic = $site->newRelic();
+        if ($newrelic) {
+          $this->log()->info('New Relic enabled.');
+        } else {
+          $this->log()->info('New Relic disabled.');
+        }
+          break;
+    }
+  }
+
+  /**
    * Interacts with redis
    *
    * ## OPTIONS
    *
-   * <enable|disable|clear>
+    <enable|disable|clear>
    * : Options are enable, disable, and clear.
    *
    * [--site=<site>]
