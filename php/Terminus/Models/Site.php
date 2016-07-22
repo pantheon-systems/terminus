@@ -290,7 +290,7 @@ class Site extends TerminusModel {
    * Enables New Relic
    *
    * @param object $site The site object
-   * @return object
+   * @return bool
    */
   public function enableNewRelic($site) {
     if ($workflow = $site->workflows->create(
