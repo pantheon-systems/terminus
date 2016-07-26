@@ -1436,9 +1436,9 @@ class SiteCommand extends TerminusCommand {
    *
    * ## Examples
    *
-   *    terminus site newrelic enable --site=behat-tests
-   *    terminus site newrelic disable --site=behat-tests
-   *    terminus site newrelic status --site=behat-tests
+   *    terminus site new-relic enable --site=behat-tests
+   *    terminus site new-relic disable --site=behat-tests
+   *    terminus site new-relic status --site=behat-tests
    */
   public function newrelic($args, $assoc_args) {
     $action = array_shift($args);
