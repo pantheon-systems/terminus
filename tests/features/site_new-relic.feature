@@ -9,5 +9,5 @@ Feature: New Relic
 
   @vcr site_new-relic
   Scenario: Accessing New Relic data
-    When I run "terminus site new-relic --site=[[test_site_name]]"
+    When I run "terminus site new-relic status --site=[[test_site_name]]"
     Then I should get: "New Relic is not enabled."
