@@ -1,14 +1,17 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## [0.11.3] - 2016-08-03
+### Added
+- Added `5.6` and `7.0` as version options in `site set-php-version`. (#1109)
+- New command `site import` to import site archives. (#1099)
+
 ## [0.11.2] - 2016-06-01
 ### Added
 - New field `frozen` appears in `sites list` when a site belonging to your user has been frozen. (#1015)
 - New command `site lookup` to look up sites by name. (#1027)
 - New command `site complete-migration`. (#1077)
 - `site clear-cache` now automatically clears the framework cache as well as the Varnish cache. (#1083)
-- Added `5.6` and `7.0` as version options in `site set-php-version`. (#1109)
-- New command `site import` to import site archives. (#1099)
 
 ### Changed
 - Removed the port number from the create-a-machine token URL seen when using `auth login` except for when the host is localhost. (#1034)
