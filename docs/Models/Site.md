@@ -286,6 +286,18 @@
 
 ---
 
+### migrate
+##### Description:
+    Migrates a site archive onto Pantheon
+
+##### Parameters:
+    [string] $url URL of the archive to import
+
+##### Return:
+    [Workflow]
+
+---
+
 ### newRelic
 ##### Description:
     Retrieve New Relic Info

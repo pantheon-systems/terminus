@@ -22,6 +22,15 @@
 
 ---
 
+### clearCache
+##### Description:
+    Clears an environment's cache
+
+##### Return:
+    [Workflow]
+
+---
+
 ### cloneDatabase
 ##### Description:
     Clones database from this environment to another
