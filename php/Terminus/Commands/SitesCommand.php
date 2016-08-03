@@ -116,7 +116,7 @@ class SitesCommand extends TerminusCommand {
    * : Label for the site
    *
    * [--upstream=<upstreamid>]
-   * : Specify the upstream upstream to use
+   * : Specify the upstream to use
    *
    * [--org=<id>]
    * : UUID of organization into which to add this site
@@ -186,13 +186,14 @@ class SitesCommand extends TerminusCommand {
 
     try {
       //If the site does not yet exist, it will throw an error.
-      $site = $this->sites->get($options['name']);
+      $site = $this->sites->get($options['site_name']);
       $this->log()->error(
-        sprintf('A site named %s already exists.', $options['name'])
+        sprintf('A site named %s already exists.', $options['site_name'])
       );
       exit;
     } catch (\Exception $e) {
       //Creating a new site
+      $options['type'] = 'create_site';
       $workflow = $this->sites->addSite($options);
       $workflow->wait();
       $this->workflowOutput($workflow);
@@ -492,6 +493,71 @@ class SitesCommand extends TerminusCommand {
   }
 
   /**
+   * Migrate a new site onto Pantheon
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Name of the site to create (machine-readable)
+   *
+   * [--name=<name>]
+   * : (deprecated) use --site instead
+   *
+   * [--label=<label>]
+   * : Label for the site
+   *
+   * [--org=<id>]
+   * : UUID of organization into which to add this site
+   *
+   * [--url=<URL>]
+   * : The URL to the archive file to migrate onto Pantheon
+   *
+   */
+  public function migrate($args, $assoc_args) {
+    // Get the new site's details
+    $options = $this->getSiteCreateOptions($assoc_args);
+    $url     = $this->input()->string(
+      [
+        'args'     => $assoc_args,
+        'key'      => 'url',
+        'message'  => 'URL of archive to import',
+        'required' => true,
+      ]
+    );
+    $this->log()->info('Creating new site installation ... ');
+
+    // Create the site for migration
+    $workflow = $this->sites->addSite($options);
+    $workflow->wait();
+    $this->workflowOutput(
+      $workflow,
+      ['success' => 'Created site for migration',]
+    );
+
+    // Add Site to SitesCache
+    $site_id = $workflow->get('final_task')->site_id;
+    $this->sites->addSiteToCache($site_id);
+
+    // Migrate the site
+    $site = $this->sites->get($site_id);
+    $workflow = $site->migrate($url);
+    $workflow->wait();
+    $this->workflowOutput(
+      $workflow,
+      'Created site for migration'
+    );
+
+    // Return the new site's info
+    $this->helpers->launch->launchSelf(
+      [
+        'command'    => 'site',
+        'args'       => ['info',],
+        'assoc_args' => ['site' => $options['name'],],
+      ]
+    );
+  }
+
+  /**
    * Filters an array of sites by whether the user is an organizational member
    *
    * @param Site[] $sites An array of sites to filter by
@@ -595,16 +661,16 @@ class SitesCommand extends TerminusCommand {
 
     if (array_key_exists('name', $assoc_args)) {
       // Deprecated but kept for backwards compatibility
-      $options['name'] = $assoc_args['name'];
+      $options['site_name'] = $assoc_args['name'];
     } elseif (array_key_exists('site', $assoc_args)) {
-      $options['name'] = $assoc_args['site'];
+      $options['site_name'] = $assoc_args['site'];
     } elseif (isset($_SERVER['TERMINUS_SITE'])) {
-      $options['name'] = $_SERVER['TERMINUS_SITE'];
+      $options['site_name'] = $_SERVER['TERMINUS_SITE'];
     } else {
       $message  = 'Machine name of the site; used as part of the default URL';
       $message .= " (if left blank will be $suggested_name)";
 
-      $options['name'] = $this->input()->string(
+      $options['site_name'] = $this->input()->string(
         [
           'args'     => $assoc_args,
           'key'      => 'site',

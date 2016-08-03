@@ -503,6 +503,20 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Migrates a site archive onto Pantheon
+   *
+   * @param string $url URL of the archive to import
+   * @return Workflow
+   */
+  public function migrate($url) {
+    $workflow = $this->workflows->create(
+      'do_migration',
+      ['environment' => 'dev', 'params' => compact('url'),]
+    );
+    return $workflow;
+  }
+
+  /**
    * Retrieve New Relic Info
    *
    * @return \stdClass
