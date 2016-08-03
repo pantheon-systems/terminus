@@ -35,35 +35,30 @@ class Sites extends TerminusCollection {
   /**
    * Creates a new site
    *
-   * @param string[] $options Information to run workflow, with the following
-   *   keys:
-   *   - label
-   *   - name
-   *   - organization_id
-   *   - upstream_id
+   * @param string[] $params Options for the new site, elements as follow:
+   *   string label The site's human-friendly name
+   *   string site_name The site's name
+   *   string organization_id Organization to which this site belongs' UUID
+   *   string type Workflow type for imports
+   *   string upstream_id If the upstream's UUID absent, the site is migratory.
    * @return Workflow
    */
-  public function addSite($options = array()) {
-    $data = array(
-      'label'     => $options['label'],
-      'site_name' => $options['name']
-    );
-
-    if (isset($options['organization_id'])) {
-      $data['organization_id'] = $options['organization_id'];
+  public function addSite($params = []) {
+    if (isset($params['upstream_id'])) {
+      $params['deploy_product'] = ['product_id' => $params['upstream_id'],];
+      unset($params['upstream_id']);
+      $type = 'create_site';
+    } else {
+      $type = 'create_site_for_migration';
     }
 
-    if (isset($options['upstream_id'])) {
-      $data['deploy_product'] = array(
-        'product_id' => $options['upstream_id']
-      );
+    // TODO: Remove this after sites import is removed
+    if (isset($params['type'])) {
+      $type = $params['type'];
+      unset($params['type']);
     }
 
-    $workflow = $this->user->workflows->create(
-      'create_site',
-      array('params' => $data)
-    );
-
+    $workflow = $this->user->workflows->create($type, compact('params'));
     return $workflow;
   }
 

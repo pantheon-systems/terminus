@@ -186,13 +186,14 @@ class SitesCommand extends TerminusCommand {
 
     try {
       //If the site does not yet exist, it will throw an error.
-      $site = $this->sites->get($options['name']);
+      $site = $this->sites->get($options['site_name']);
       $this->log()->error(
-        sprintf('A site named %s already exists.', $options['name'])
+        sprintf('A site named %s already exists.', $options['site_name'])
       );
       exit;
     } catch (\Exception $e) {
       //Creating a new site
+      $options['type'] = 'create_site';
       $workflow = $this->sites->addSite($options);
       $workflow->wait();
       $this->workflowOutput($workflow);
@@ -595,16 +596,16 @@ class SitesCommand extends TerminusCommand {
 
     if (array_key_exists('name', $assoc_args)) {
       // Deprecated but kept for backwards compatibility
-      $options['name'] = $assoc_args['name'];
+      $options['site_name'] = $assoc_args['name'];
     } elseif (array_key_exists('site', $assoc_args)) {
-      $options['name'] = $assoc_args['site'];
+      $options['site_name'] = $assoc_args['site'];
     } elseif (isset($_SERVER['TERMINUS_SITE'])) {
-      $options['name'] = $_SERVER['TERMINUS_SITE'];
+      $options['site_name'] = $_SERVER['TERMINUS_SITE'];
     } else {
       $message  = 'Machine name of the site; used as part of the default URL';
       $message .= " (if left blank will be $suggested_name)";
 
-      $options['name'] = $this->input()->string(
+      $options['site_name'] = $this->input()->string(
         [
           'args'     => $assoc_args,
           'key'      => 'site',
