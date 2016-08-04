@@ -9,7 +9,7 @@ Feature: Import a site onto Pantheon
 
   @vcr site_import
   Scenario: Importing a site archive onto Pantheon
-    When I run "terminus site import --site=[[test_site_name]] --url=https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz"
+    When I run "terminus site import --site=[[test_site_name]] --url=https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz --yes"
     Then I should get "."
     Then I should get:
     """

@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## Master
+### Removed
+- Removed `sites import` command. Please create new sites with `sites create` and then import via `site import` instead. (#1132)
+
 ## [0.11.3] - 2016-08-03
 ### Added
 - Added `5.6` and `7.0` as version options in `site set-php-version`. (#1109)
