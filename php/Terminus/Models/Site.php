@@ -433,23 +433,15 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Imports a full-site archive
+   * Imports a site archive onto Pantheon
    *
-   * @param string $url URL to import data from
+   * @param string $url URL of the archive to import
    * @return Workflow
    */
   public function import($url) {
-    $params = [
-      'url'      => $url,
-      'code'     => 1,
-      'database' => 1,
-      'files'    => 1,
-      'updatedb' => 1,
-    ];
-
     $workflow = $this->workflows->create(
-      'do_import',
-      ['environment' => 'dev', 'params' => $params,]
+      'do_migration',
+      ['environment' => 'dev', 'params' => compact('url'),]
     );
     return $workflow;
   }
@@ -500,20 +492,6 @@ class Site extends TerminusModel {
     } else {
       return $info;
     }
-  }
-
-  /**
-   * Migrates a site archive onto Pantheon
-   *
-   * @param string $url URL of the archive to import
-   * @return Workflow
-   */
-  public function migrate($url) {
-    $workflow = $this->workflows->create(
-      'do_migration',
-      ['environment' => 'dev', 'params' => compact('url'),]
-    );
-    return $workflow;
   }
 
   /**

@@ -967,10 +967,10 @@ class SiteCommand extends TerminusCommand {
    * ## OPTIONS
    *
    * [--site=<site>]
-   * : Name of the site to migrate this archive into
+   * : Name of the site to migrate import archive into
    *
    * [--url=<url>]
-   * : The URL to the archive file to migrate onto Pantheon
+   * : The URL to the archive file to import onto Pantheon
    */
   public function import($args, $assoc_args) {
     $site = $this->sites->get(
@@ -984,7 +984,16 @@ class SiteCommand extends TerminusCommand {
         'required' => true,
       ]
     );
-    $workflow = $site->migrate($url);
+    $message  = 'Are you sure you want to import this archive?';
+    $message .= ' The current site will be overwritten.';
+    $this->input()->confirm(
+      [
+        'message' => $message,
+        'context' => $site->get('name'),
+        'args'    => $assoc_args,
+      ]
+    );
+    $workflow = $site->import($url);
     $workflow->wait();
     $this->workflowOutput(
       $workflow,

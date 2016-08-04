@@ -149,67 +149,6 @@ class SitesCommand extends TerminusCommand {
   }
 
   /**
-   * Import a new site
-   *
-   * ## OPTIONS
-   *
-   * [--url=<url>]
-   * : URL of archive to import
-   *
-   * [--name=<name>]
-   * : (deprecated) use --site instead
-   *
-   * [--site=<site>]
-   * : Name of the site to create (machine-readable)
-   *
-   * [--label=<label>]
-   * : Label for the site
-   *
-   * [--org=<id>]
-   * : UUID of organization into which to add this site
-   *
-   * @subcommand import
-   */
-  public function import($args, $assoc_args) {
-    $options = $this->getSiteCreateOptions($assoc_args);
-
-    $url = $this->input()->string(
-      array(
-        'args'    => $assoc_args,
-        'key'     => 'url',
-        'message' => 'URL of archive to import',
-      )
-    );
-    if (!$url) {
-      $this->log()->error('Please enter a URL.');
-    }
-
-    try {
-      //If the site does not yet exist, it will throw an error.
-      $site = $this->sites->get($options['site_name']);
-      $this->log()->error(
-        sprintf('A site named %s already exists.', $options['site_name'])
-      );
-      exit;
-    } catch (\Exception $e) {
-      //Creating a new site
-      $options['type'] = 'create_site';
-      $workflow = $this->sites->addSite($options);
-      $workflow->wait();
-      $this->workflowOutput($workflow);
-
-      //Add site to SitesCache
-      $final_task = $workflow->get('final_task');
-      $site       = $this->sites->addSiteToCache($final_task->site_id);
-      sleep(10); //Avoid false site-DNE errors
-    }
-
-    $workflow = $site->import($url);
-    $workflow->wait();
-    $this->workflowOutput($workflow);
-  }
-
-  /**
    * Show all sites user has access to
    * Note: because of the size of this call, it is cached
    *   and also is the basis for loading individual sites by name
