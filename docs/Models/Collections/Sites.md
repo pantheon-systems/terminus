@@ -17,12 +17,12 @@
     Creates a new site
 
 ##### Parameters:
-    [string[]] $options Information to run workflow, with the following
-    -keys:
-    -- label
-    -- name
-    -- organization_id
-    -- upstream_id
+    [string[]] $params Options for the new site, elements as follow:
+    -string label The site's human-friendly name
+    -string site_name The site's name
+    -string organization_id Organization to which this site belongs' UUID
+    -string type Workflow type for imports
+    -string upstream_id If the upstream's UUID absent, the site is migratory.
 
 ##### Return:
     [Workflow]
