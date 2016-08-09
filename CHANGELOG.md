@@ -11,6 +11,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - The command which was `new-relic` command has become `new-relic status`. (#1141)
 
 ### Fixed
+- `site import-content` has been fixed such that either 'db' or 'database' can be used as an element. (#1138)
 - Fixed type error in `site hostnames lookup` which appears when there are no results. (#1139)
 
 ### Removed
