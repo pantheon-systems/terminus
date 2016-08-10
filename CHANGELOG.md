@@ -13,6 +13,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Fixed
 - `site import-content` has been fixed such that either 'db' or 'database' can be used as an element. (#1138)
 - Fixed type error in `site hostnames lookup` which appears when there are no results. (#1139)
+- Fixed branch selection in `site delete-branch`. (#1143)
 
 ### Removed
 - Removed `sites import` command. Please create new sites with `sites create` and then import via `site import` instead. (#1132)
