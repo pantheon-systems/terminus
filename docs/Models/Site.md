@@ -262,10 +262,10 @@
 
 ### import
 ##### Description:
-    Imports a full-site archive
+    Imports a site archive onto Pantheon
 
 ##### Parameters:
-    [string] $url URL to import data from
+    [string] $url URL of the archive to import
 
 ##### Return:
     [Workflow]
@@ -283,18 +283,6 @@
     [array|null|mixed]
     -If $key is supplied, return named bit of info, or null if not found.
     -If no $key supplied, return entire info array.
-
----
-
-### migrate
-##### Description:
-    Migrates a site archive onto Pantheon
-
-##### Parameters:
-    [string] $url URL of the archive to import
-
-##### Return:
-    [Workflow]
 
 ---
 
