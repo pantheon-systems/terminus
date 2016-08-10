@@ -1061,6 +1061,7 @@ class SiteCommand extends TerminusCommand {
     }
 
     switch ($element) {
+      case 'db':
       case 'database':
         $workflow = $env->importDatabase($url);
           break;
