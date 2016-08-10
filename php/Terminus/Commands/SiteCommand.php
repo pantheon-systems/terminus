@@ -985,7 +985,7 @@ class SiteCommand extends TerminusCommand {
       ]
     );
     $message  = 'Are you sure you want to import this archive?';
-    $message .= ' The current site will be overwritten.';
+    $message .= ' The dev environment of %s will be overwritten.';
     $this->input()->confirm(
       [
         'message' => $message,
