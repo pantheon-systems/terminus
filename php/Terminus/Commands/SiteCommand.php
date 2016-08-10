@@ -1447,24 +1447,54 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Get information on New Relic
+   * Interacts with New Relic
    *
    * ## OPTIONS
    *
+   * <enable|disable|status>
+   * : Options are enable, disable and status.
+   *
    * [--site=<site>]
-   * : site for which to retreive notifications
+   * : site name
+   *
+   * ## Examples
+   *
+   *    terminus site new-relic enable --site=behat-tests
+   *    terminus site new-relic disable --site=behat-tests
+   *    terminus site new-relic status --site=behat-tests
    *
    * @subcommand new-relic
    */
   public function newRelic($args, $assoc_args) {
-    $site = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
-    );
-    $data = $site->newRelic();
-    if (!empty($data->account)) {
-      $this->output()->outputRecord($data->account);
-    } else {
-      $this->log()->warning('New Relic is not enabled.');
+    $action = array_shift($args);
+    $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+    switch ($action) {
+      case 'enable':
+        $newrelic = $site->enableNewRelic($site);
+        if ($newrelic) {
+          $this->log()->info('New Relic enabled.');
+        }
+          break;
+      case 'disable':
+        $newrelic = $site->disableNewRelic($site);
+        if ($newrelic) {
+          $this->log()->info('New Relic disabled.');
+        }
+          break;
+      case 'status':
+        $newrelic = $site->newRelic();
+        if ($newrelic) {
+          $data = [
+            'name' => $newrelic->name,
+            'status' => $newrelic->status,
+            'subscribed' => $newrelic->subscription->starts_on,
+            'state' => $newrelic->{'primary admin'}->state,
+          ];
+          $this->output()->outputRecord($data);
+        } else {
+          $this->log()->info('New Relic disabled.');
+        }
+          break;
     }
   }
 
