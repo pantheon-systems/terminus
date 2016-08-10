@@ -1524,10 +1524,10 @@ class SiteCommand extends TerminusCommand {
    * : Options are enable, disable, and clear.
    *
    * [--site=<site>]
-   * : site name
+   * : Name of the site to use Redis on
    *
    * [--env=<env>]
-   * : environment
+   * : Name of the environment to clear Redis on (Only works for clear)
    *
    * ## Examples
    *
