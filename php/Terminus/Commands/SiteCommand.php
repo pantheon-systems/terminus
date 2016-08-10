@@ -1539,11 +1539,6 @@ class SiteCommand extends TerminusCommand {
   public function redis($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
-    if (in_array($site->info('service_level'), ['free', 'basic'])) {
-      $this->failure(
-        'You must upgrade to a business or an elite plan to use Redis.'
-      );
-    }
     switch ($action) {
       case 'enable':
         $redis = $site->enableRedis();
@@ -1933,11 +1928,6 @@ class SiteCommand extends TerminusCommand {
   public function solr($args, $assoc_args) {
     $action = array_shift($args);
     $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
-    if (in_array($site->info('service_level'), ['free', 'basic'])) {
-      $this->failure(
-        'You must upgrade to a business or an elite plan to use Solr.'
-      );
-    }
     switch ($action) {
       case 'enable':
         $solr = $site->enableSolr();

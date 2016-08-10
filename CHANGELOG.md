@@ -16,6 +16,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 
 ### Removed
 - Removed `sites import` command. Please create new sites with `sites create` and then import via `site import` instead. (#1132)
+- Removed checks for service level on `site redis enable` and `site solr enable`. (#1142)
 
 ## [0.11.3] - 2016-08-03
 ### Added

@@ -7,15 +7,6 @@ Feature: Using Redis
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[enterprise_org_uuid]]"
 
-  @vcr site_redis_invalid_service_level
-  Scenario: Being rejected from Redis functions due to service level
-    Given the service level of "[[test_site_name]]" is "free"
-    When I run "terminus site redis enable --site=[[test_site_name]]"
-    Then I should get:
-    """
-    You must upgrade to a business or an elite plan to use Redis.
-    """
-
   @vcr site_redis_enable_pro
   Scenario: Enabling Redis
     Given the service level of "[[test_site_name]]" is "pro"
