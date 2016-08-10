@@ -557,13 +557,16 @@ class SiteCommand extends TerminusCommand {
    */
   public function deleteBranch($args, $assoc_args) {
     $site     = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args])
+      $this->input()->siteName(['args' => $assoc_args,])
     );
-    $branches = array_diff((array)$site->getTips(), ['master']);
+    $branches = array_diff(
+      (array)$site->getTips(),
+      ['master', 'live', 'test',]
+    );
     if (empty($branches)) {
       $this->failure(
         'The site {site} has no branches which may be deleted.',
-        ['site' => $site->get('name')]
+        ['site' => $site->get('name'),]
       );
     }
     $branch   = $this->input()->menu(
@@ -573,6 +576,7 @@ class SiteCommand extends TerminusCommand {
         'key'             => 'branch',
         'label'           => 'Select the branch to delete',
         'choices'         => $branches,
+        'return_value'    => true,
       ]
     );
 
@@ -580,7 +584,7 @@ class SiteCommand extends TerminusCommand {
     $this->input()->confirm(
       [
         'message' => $message,
-        'context' => [$branch, $site->get('name')],
+        'context' => [$branch, $site->get('name'),],
       ]
     );
 
