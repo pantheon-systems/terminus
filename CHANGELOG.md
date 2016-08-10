@@ -2,6 +2,13 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## Master
+### Added
+- Added `new-relic enable` command. (#1141)
+- Added `new-relic disable` command. (#1141)
+
+### Changed
+- The command which was `new-relic` command has become `new-relic status`. (#1141)
+
 ### Removed
 - Removed `sites import` command. Please create new sites with `sites create` and then import via `site import` instead. (#1132)
 
