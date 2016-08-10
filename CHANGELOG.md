@@ -7,6 +7,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Added `new-relic disable` command. (#1141)
 
 ### Changed
+- Added a confirmation to `site import`. To bypass, add `--yes` to your commands. (#1132)
 - The command which was `new-relic` command has become `new-relic status`. (#1141)
 
 ### Fixed
