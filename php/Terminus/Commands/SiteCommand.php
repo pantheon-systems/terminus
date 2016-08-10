@@ -908,7 +908,7 @@ class SiteCommand extends TerminusCommand {
           ]
         );
         $sites    = $this->sites->all();
-        $data     = null;
+        $data     = [];
         foreach ($sites as $site_id => $site) {
           $environments = ['dev', 'test', 'live',];
           foreach ($environments as $env_name) {
@@ -925,7 +925,7 @@ class SiteCommand extends TerminusCommand {
             }
           }
         }
-        if (is_null($data)) {
+        if (empty($data)) {
           $this->log()->info(
             'Could not locate an environment with the hostname "{hostname}".',
             compact('hostname')
