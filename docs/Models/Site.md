@@ -118,6 +118,18 @@
 
 ---
 
+### disableNewRelic
+##### Description:
+    Disables New Relic
+
+##### Parameters:
+    [object] $site The site object
+
+##### Return:
+    [bool]
+
+---
+
 ### disableRedis
 ##### Description:
     Disables Redis caching
@@ -133,6 +145,18 @@
 
 ##### Return:
     [array]
+
+---
+
+### enableNewRelic
+##### Description:
+    Enables New Relic
+
+##### Parameters:
+    [object] $site The site object
+
+##### Return:
+    [bool]
 
 ---
 
