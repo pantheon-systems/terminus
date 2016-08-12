@@ -1,10 +1,6 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
-### Removed
-- The command `site set-php-version` has been removed. Please set your PHP version by your pantheon.yml file. (See: https://pantheon.io/docs/php-versions/) (#1121)
-
 ## [0.11.4] - 2016-08-10
 ### Added
 - Added `new-relic enable` command. (#1141)
