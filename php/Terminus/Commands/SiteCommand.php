@@ -1846,6 +1846,54 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
+   * Set the site's or environment's PHP version
+   *
+   * ## OPTIONS
+   *
+   * [--site=<site>]
+   * : Site to set the PHP version on.
+   *
+   * [--env=<env>]
+   * : Environment to set the PHP version on. Leave this out to set only the
+   *   site's version.
+   *
+   * [--version=<php-version>]
+   * : The PHP version to set the site or environment to. Options are 7.0, 5.6,
+   *   5.5, and 5.3.
+   *
+   * @subcommand set-php-version
+   */
+  public function setPhpVersion($args, $assoc_args) {
+    $params  = ['args' => $assoc_args,];
+    $site    = $this->sites->get($this->input()->siteName($params));
+
+    if (isset($assoc_args['env'])) {
+      $env               = $site->environments->get($assoc_args['env']);
+      $params['choices'] = [
+        'default' => 'default',
+        53        => '5.3',
+        55        => '5.5',
+        56        => '5.6',
+        70        => '7.0',
+      ];
+      $version           = $this->input()->phpVersion($params);
+      if ($version != 'default') {
+        $workflow = $env->setPhpVersion($version);
+      } else {
+        $workflow = $env->unsetPhpVersion();
+      }
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+    } else {
+      $version  = $this->input()->phpVersion($params);
+      $workflow = $site->setPhpVersion($version);
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+      $site->fetchAttributes();
+    }
+  }
+
+  /**
    * Set the site's service level
    *
    * ## OPTIONS
