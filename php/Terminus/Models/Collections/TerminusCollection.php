@@ -8,9 +8,17 @@ use Terminus\Models\TerminusModel;
 
 abstract class TerminusCollection extends TerminusModel {
   /**
+   * @var array
+   */
+  protected $args = [];
+  /**
    * @var TerminusModel[]
    */
-  protected $models = array();
+  protected $models = [];
+  /**
+   * @var boolean
+   */
+  protected $paged = false;
 
   /**
    * Instantiates the collection, sets param members as properties
@@ -25,7 +33,43 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
+   * Adds a model to this collection
+   *
+   * @param object $model_data Data to feed into attributes of new model
+   * @param array  $options    Data to make properties of the new model
+   * @return TerminusModel
+   */
+  public function add($model_data, array $options = array()) {
+    $model   = $this->getMemberName();
+    $owner   = $this->getOwnerName();
+    $options = array_merge(
+      array(
+        'id'         => $model_data->id,
+        'collection' => $this,
+      ),
+      $options
+    );
+
+    if ($owner) {
+      if (isset($this->$owner)) {
+        $options[$owner] = $this->$owner;
+      } else {
+        $options[$owner] = $this->owner;
+      }
+    }
+
+    $model = new $model(
+      $model_data,
+      $options
+    );
+
+    $this->models[$model_data->id] = $model;
+    return $model;
+  }
+
+  /**
    * Retrieves all models
+   * TODO: Remove automatic fetching and make fetches explicit
    *
    * @return TerminusModel[]
    */
@@ -89,38 +133,37 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
-   * Adds a model to this collection
+   * Returns an array of data where the keys are the attribute $key and the
+   *   values are the attribute $value
    *
-   * @param object $model_data Data to feed into attributes of new model
-   * @param array  $options    Data to make properties of the new model
-   * @return TerminusModel
+   * @param string $key   Name of attribute to make array keys
+   * @param mixed  $value Name(s) of attribute(s) to comprise array values
+   * @return array Array rendered as requested
+   *         $this->attribute->$key = $this->attribute->$value
    */
-  public function add($model_data, array $options = array()) {
-    $model   = $this->getMemberName();
-    $owner   = $this->getOwnerName();
-    $options = array_merge(
-      array(
-        'id'         => $model_data->id,
-        'collection' => $this,
+  public function listing($key = 'id', $value = 'name') {
+    $members = array_combine(
+      array_map(
+        function($member) use ($key) {
+          return $member->get($key);
+        },
+        $this->models
       ),
-      $options
+      array_map(
+        function($member) use ($value) {
+          if (is_scalar($value)) {
+            return $member->get($value);
+          }
+          $list = [];
+          foreach ($value as $item) {
+            $list[$item] = $member->get($item);
+          }
+          return $list;
+        },
+        $this->models
+      )
     );
-
-    if ($owner) {
-      if (isset($this->$owner)) {
-        $options[$owner] = $this->$owner;
-      } else {
-        $options[$owner] = $this->owner;
-      }
-    }
-
-    $model = new $model(
-      $model_data,
-      $options
-    );
-
-    $this->models[$model_data->id] = $model;
-    return $model;
+    return $members;
   }
 
   /**
@@ -139,25 +182,23 @@ abstract class TerminusCollection extends TerminusModel {
    * @param array $options params to pass to url request
    * @return array
    */
-  protected function getCollectionData($options = array()) {
-    $function_name = 'request';
-    if (isset($options['paged']) && $options['paged']) {
-      $function_name = 'pagedRequest';
+  protected function getCollectionData($options = []) {
+    $args = array_merge(['options' => ['method' => 'get',],], $this->args);
+    if (isset($options['fetch_args'])) {
+      $args = array_merge($args, $options['fetch_args']);
+    }
+    if (isset($this->url)) {
+      $url = $this->url;
+    } else {
+      $url = $this->getFetchUrl();
     }
 
-    $fetch_args = array();
-    if (isset($options['fetch_args'])) {
-      $fetch_args = $options['fetch_args'];
+    if ($this->paged || (isset($options['paged']) && $options['paged'])) {
+      $results = $this->request->pagedRequest($url, $args);
+    } else {
+      $results = $this->request->request($url, $args);
     }
-    $options = array_merge(
-      array('options' => array('method' => 'get')),
-      $this->getFetchArgs(),
-      $fetch_args
-    );
-    $results = $this->request->$function_name(
-      $this->getFetchUrl(),
-      $options
-    );
+
     return $results;
   }
 

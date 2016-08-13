@@ -25,7 +25,7 @@ Feature: Set a site's owner
     """
 
   @vcr site_set-owner_solo
-  Scenario: Failing to change the site owner to the current owner
+  Scenario: Failing to change the site owner when there is only one team member
     Given "[[other_user]]" is not a member of the team on "[[test_site_name]]"
     When I run "terminus site set-owner --site=[[test_site_name]] --member=[[username]]"
     Then I should get:

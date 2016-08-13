@@ -23,10 +23,3 @@ Feature: Deleting a site's multidev environments
     [[test_site_name]] does not have any multidev environments to delete.
     """
 
-  @vcr site_delete-env_invalid
-  Scenario: Failing to delete a multidev environment when a nonexistant one is asked for
-    When I run "terminus site delete-env --site=[[test_site_name]] --env=invalid --yes"
-    Then I should get:
-    """
-    Could not find environment "invalid"
-    """

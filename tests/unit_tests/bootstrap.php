@@ -43,7 +43,7 @@ function getBehatCredentials() {
   $creds = [
     'username' => 'devuser@pantheon.io',
     'password' => 'password1',
-    'token'    => 'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x',
+    'token'    => '111111111111111111111111111111111111111111111',
   ];
   return $creds;
 }
@@ -76,7 +76,7 @@ function getLogger() {
 function logInWithBehatCredentials() {
   $creds   = getBehatCredentials();
   $auth    = new Auth();
-  $auth->logInViaUsernameAndPassword($creds['username'], $creds['password']);
+  $auth->logInViaMachineToken($creds);
 }
 
 /**

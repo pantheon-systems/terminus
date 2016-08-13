@@ -63,9 +63,7 @@ class FeatureContext implements Context {
   public function aSiteNamed($site) {
     $output = $this->iGetInfoForTheSite($site);
     if (!$this->_checkResult('created', $output)) {
-      $this->iCreateSiteNamed('Drupal 7', $site);
-      $recurse = $this->aSiteNamed($site);
-      return $recurse;
+      throw new Exception("Your user does not have a site named $site.");
     }
     return true;
   }
@@ -186,7 +184,6 @@ class FeatureContext implements Context {
    */
   public function iAmAuthenticated() {
     $this->iLogIn();
-    $this->iRun("terminus sites list");
   }
 
   /**
@@ -263,16 +260,6 @@ class FeatureContext implements Context {
       "terminus site clone-content --site=$site
       --from-env=$from_env --to-env=$to_env --yes"
     );
-  }
-
-  /**
-   * Clears the Terminus Sites Cache
-   * @Then /^I clear the Terminus cache$/
-   *
-   * @return [void]
-   */
-  public function iRebuildTheTerminusCache() {
-    $this->iRun("terminus sites cache --rebuild");
   }
 
   /**
@@ -535,31 +522,32 @@ class FeatureContext implements Context {
 
   /**
    * Logs in user
+   * @When /^I log in via machine token "([^"]*)"$/
+   * @When /^I log in via machine token$/
+   * @When /^I log in$/
+   *
+   * @param [string] $token A Pantheon machine token
+   * @return [void]
+   */
+  public function iLogIn(
+      $token = '[[machine_token]]'
+  ) {
+    $this->iRun("terminus auth login --machine-token=$token");
+  }
+
+  /**
+   * Logs in user
    * @When /^I log in as "([^"]*)" with password "([^"]*)"$/
    *
    * @param [string] $username Pantheon username for login
    * @param [string] $password Password for username
    * @return [void]
    */
-  public function iLogIn(
+  public function iLogInViaUsernameAndPassword(
       $username = '[[username]]',
       $password = '[[password]]'
   ) {
     $this->iRun("terminus auth login $username --password=$password");
-  }
-
-  /**
-   * Logs in user
-   * @When /^I log in via machine token "([^"]*)"$/
-   * @When /^I log in via machine token$/
-   *
-   * @param [string] $token A Pantheon machine token
-   * @return [void]
-   */
-  public function iLogInViaMachineToken(
-      $token = '[[machine_token]]'
-  ) {
-    $this->iRun("terminus auth login --machine-token=$token");
   }
 
   /**
@@ -649,9 +637,11 @@ class FeatureContext implements Context {
         . ' ' . $command;
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
+    //echo $command . PHP_EOL;
     ob_start();
     passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
+    //echo $this->_output . PHP_EOL;
     return $this->_output;
   }
 
@@ -683,7 +673,9 @@ class FeatureContext implements Context {
       $this->_output,
       $matches
     );
-    if (empty($matches)) {
+    if (empty($matches)
+      && ($this->_output != '11111111-1111-1111-1111-111111111111')
+    ) {
       throw new Exception($this->_output . ' is not a valid UUID.');
     }
     return true;

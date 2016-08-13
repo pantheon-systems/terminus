@@ -12,19 +12,19 @@ Feature: View site workflow information
     When I run "terminus workflows list --site=[[test_site_name]]"
     Then I should get:
     """
-    Converge "dev"
+    Sync code on "dev"
     """
 
   @vcr workflows_show
   Scenario: Show a specific Workflow's Details and Operations
-    When I run "terminus workflows show --site=[[test_site_name]] --workflow-id=4b4bbbc4-4602-11e5-a354-bc764e117665"
+    When I run "terminus workflows show --site=[[test_site_name]] --workflow-id=13035982-63fe-11e6-a412-bc764e1022a9"
     Then I should get:
     """
     Deploy a CMS (Drupal or Wordpress)
     """
     And I should get:
     """
-    quicksilver	my_script
+    Take Screenshot
     """
 
   @vcr workflows_show
@@ -32,5 +32,5 @@ Feature: View site workflow information
     When I run "terminus workflows show --site=[[test_site_name]] --latest-with-logs"
     Then I should get:
     """
-    lorem log ipsum delor
+    No recent workflow has logs
     """

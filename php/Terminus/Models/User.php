@@ -2,51 +2,43 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\UserOrganizationMemberships;
-use Terminus\Models\TerminusModel;
 use Terminus\Models\Collections\Instruments;
 use Terminus\Models\Collections\MachineTokens;
 use Terminus\Models\Collections\SshKeys;
+use Terminus\Models\Collections\UserOrganizationMemberships;
+use Terminus\Models\Collections\UserSiteMemberships;
 use Terminus\Models\Collections\Workflows;
-use Terminus\Session;
 
 class User extends TerminusModel {
   /**
+   * @var \stdClass
+   * @todo Wrap this in a proper class.
+   */
+  public $aliases;
+  /**
+   * @var Instruments
+   */
+  public $instruments;
+  /**
+   * @var Instruments
+   */
+  public $machine_tokens;
+  /**
    * @var UserOrganizationMemberships
    */
-  public $organizations;
-
+  public $org_memberships;
   /**
-   * @var Instruments
+   * @var UserSiteMemberships
    */
-  protected $instruments;
-
-  /**
-   * @var Instruments
-   */
-  protected $machine_tokens;
-
+  public $site_memberships;
   /**
    * @var SshKeys
    */
-  protected $ssh_keys;
-
+  public $ssh_keys;
   /**
    * @var Workflows
    */
-  protected $workflows;
-
-  /**
-   * @var \stdClass
-   * @todo Wrap this in a proper class.
-   */
-  private $aliases;
-
-  /**
-   * @var \stdClass
-   * @todo Wrap this in a proper class.
-   */
-  private $profile;
+  public $workflows;
 
   /**
    * Object constructor
@@ -54,45 +46,21 @@ class User extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
+    $this->url = "users/{$this->id}";
 
-    if (isset($attributes->profile)) {
-      $this->profile = $attributes->profile;
-    }
-    $params               = ['user' => $this,];
-    $this->workflows      = new Workflows(['owner' => $this,]);
-    $this->instruments    = new Instruments($params);
-    $this->machine_tokens = new MachineTokens($params);
-    $this->ssh_keys       = new SshKeys($params);
-    $this->organizations  = new UserOrganizationMemberships($params);
+    $params                 = ['user' => $this,];
+    $this->instruments      = new Instruments($params);
+    $this->machine_tokens   = new MachineTokens($params);
+    $this->org_memberships  = new UserOrganizationMemberships($params);
+    $this->site_memberships = new UserSiteMemberships($params);
+    $this->ssh_keys         = new SshKeys($params);
+    $this->workflows        = new Workflows(['owner' => $this,]);
   }
 
   /**
-   * Give the URL for collection data fetching
-   *
-   * @return [string] $url URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf('users/%s', $this->id);
-    return $url;
-  }
-
-  /**
-   * Modify response data between fetch and assignment
-   *
-   * @param [object] $data attributes received from API response
-   * @return [object] $data
-   */
-  public function parseAttributes($data) {
-    if (isset($data->profile)) {
-      $this->profile = $data->profile;
-    }
-    return $data;
-  }
-
-  /**
-   * Retrieves drush aliases for this user
+   * Retrieves Drush aliases for this user
    *
    * @return \stdClass
    */
@@ -109,49 +77,66 @@ class User extends TerminusModel {
    * @return Organization[]
    */
   public function getOrganizations() {
-    $organizations = $this->organizations->all();
+    $organizations = array_combine(
+      array_map(
+        function($membership) {
+          return $membership->organization->id;
+        },
+        $this->org_memberships->all()
+      ),
+      array_map(
+        function($membership) {
+          return $membership->organization;
+        },
+        $this->org_memberships->all()
+      )
+    );
     return $organizations;
   }
 
   /**
    * Requests API data and returns an object of user site data
    *
-   * @param string $organization UUID of organization to requests sites from,
-   *   or null to fetch for all organizations.
-   * @return \stdClass
+   * @return Site[]
    */
-  public function getSites($organization = null) {
-    $path = sprintf('users/%s', $this->id);
-    if ($organization) {
-      $path .= sprintf('/organizations/%s/memberships/sites', $organization);
-    } else {
-      $path .= '/sites';
-    }
-    $options  = ['method' => 'get',];
-    $response = $this->request->request($path, $options);
-    return $response['data'];
+  public function getSites() {
+    $sites = array_combine(
+      array_map(
+        function($membership) {
+          return $membership->site->id;
+        },
+        $this->site_memberships->all()
+      ),
+      array_map(
+        function($membership) {
+          return $membership->site;
+        },
+        $this->site_memberships->all()
+      )
+    );
+    return $sites;
   }
 
   /**
    * Formats User object into an associative array for output
    *
-   * @return [array] $data associative array of data for output
+   * @return array $data associative array of data for output
    */
   public function serialize() {
     $first_name = $last_name = null;
-    if (isset($this->profile->firstname)) {
-      $first_name = $this->profile->firstname;
+    if (isset($this->get('profile')->firstname)) {
+      $first_name = $this->get('profile')->firstname;
     }
-    if (isset($this->profile->lastname)) {
-      $last_name = $this->profile->lastname;
+    if (isset($this->get('profile')->lastname)) {
+      $last_name = $this->get('profile')->lastname;
     }
 
-    $data = array(
+    $data = [
       'firstname' => $first_name,
       'lastname'  => $last_name,
       'email' => $this->get('email'),
       'id'  => $this->id,
-    );
+    ];
     return $data;
   }
 

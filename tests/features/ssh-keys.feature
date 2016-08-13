@@ -5,7 +5,6 @@ Feature: SSH Keys
 
   Background: I am logged in and have a site named [[test_site_name]]
     Given I am authenticated
-    And a site named "[[test_site_name]]"
 
   @vcr ssh-keys_list
   Scenario: List SSH keys

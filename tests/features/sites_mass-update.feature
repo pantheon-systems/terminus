@@ -10,11 +10,3 @@ Feature: Update sites with all their upstream's updates
   Scenario: Mass-Update Sites
     When I run "terminus sites mass-update --yes"
     Then I should get one of the following: "Backing up, Needs update, No sites in need of updating."
-
-  @vcr sites_mass-update_filtered
-  Scenario: Filtering mass-update list by tag
-    When I run "terminus sites mass-update --tag=tag --org=[[enterprise_org_name]] --yes"
-    Then I should get:
-    """
-    No sites in need of updating.
-    """

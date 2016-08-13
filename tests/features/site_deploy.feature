@@ -17,12 +17,6 @@ Feature: Site Deployment
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
     """
 
-  @vcr site_deploy_failure
-  Scenario: Deploy dev to test
-    Then I should get "."
-    And I should get "."
-    And I should get "Deployment failed."
-
   @vcr site_deploy_no_changes
   Scenario: Failing to deploy dev to test because there are no changes to deploy
     Then I should get: "There is nothing to deploy."

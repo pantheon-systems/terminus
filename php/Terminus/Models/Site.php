@@ -62,9 +62,6 @@ class Site extends TerminusModel {
    * @param array  $options    Options to set as $this->key
    */
   public function __construct($attributes = null, array $options = []) {
-    if ($attributes == null) {
-      $attributes = new \stdClass();
-    }
     $must_haves = [
       'name',
       'id',
@@ -231,16 +228,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Deletes site from cache
-   *
-   * @return void
-   */
-  public function deleteFromCache() {
-    // TODO: $this->collection is not defined.
-    $this->collection->deleteSiteFromCache($this->get('name'));
-  }
-
-  /**
    * Disables New Relic
    *
    * @param object $site The site object
@@ -356,7 +343,6 @@ class Site extends TerminusModel {
       sprintf('sites/%s/settings', $this->get('id'))
     );
     $this->attributes = $response['data'];
-    $this->collection->sites_cache->update((array)$response['data']);
   }
 
   /**
@@ -516,8 +502,11 @@ class Site extends TerminusModel {
     if ((boolean)$this->get('frozen')) {
       $info['frozen'] = true;
     }
-    $info['php_version'] = substr($info['php_version'], 0, 1)
-      . '.' . substr($info['php_version'], 1, 1);
+    if (!is_null($info['php_version'])) {
+      $info['php_version'] = substr($info['php_version'], 0, 1)
+        . '.' . substr($info['php_version'], 1, 1);
+    }
+    $info['upstream'] = (array)$info['upstream'];
 
     if ($key) {
       if (isset($info[$key])) {
@@ -608,9 +597,6 @@ class Site extends TerminusModel {
 
   /**
    * Sets the PHP version number of this site
-   * Note: Once this changes, you need to refresh the data in the cache for
-   *   this site or the returned PHP version will not reflect the change.
-   *   $this->fetchAttributes() will complete this action for you.
    *
    * @param string $version_number The version number to set this site to use
    * @return void

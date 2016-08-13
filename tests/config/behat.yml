@@ -7,42 +7,38 @@ default:
         - FeatureContext:
             parameters:
               username:                'devuser@pantheon.io'
-              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
-              password:                'password1'
-              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
+              user_uuid:               '11111111-1111-1111-1111-111111111111'
+              password:                'SCRUBBED'
               host:                    'onebox'
-              vcr_mode:                'new_episodes'
+              vcr_mode:                'none'
               test_site_name:          'behat-tests'
-              test_site_hostname:      'dev-behat-tests.onebox.pantheon.io'
-              other_user:              'sara@getpantheon.com'
-              php_site_domain:         'onebox.pantheon.io'
-              payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
-              machine_token_id:        'dcr_NVvFVvHaPrQRfMZX'
-              machine_token_device:    'Terminus on My Laptop'
-              enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
-              enterprise_org_name:     'EnterpriseOrg'
-              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
-    ci:
+              other_user:              'otheruser@pantheon.io'
+              php_site_domain:         'pantheonsite.io'
+              instrument_label:        'Visa - 1111'
+              instrument_uuid:         '11111111-1111-1111-1111-111111111111'
+              organization_name:       '"Organization Name"'
+              machine_token:           '111111111111111111111111111111111111111111111'
+              machine_token_device:    'Behat Testing Token'
+              machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
+    testing:
       paths: [ %paths.base%/../features ]
       contexts:
         - FeatureContext:
             parameters:
               username:                'devuser@pantheon.io'
-              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
+              user_uuid:               '11111111-1111-1111-1111-111111111111'
               password:                'password1'
               host:                    'onebox'
-              vcr_mode:                'once'
+              vcr_mode:                'none'
               test_site_name:          'behat-tests'
-              test_site_hostname:      'dev-behat-tests.onebox.pantheon.io'
-              other_user:              'sara@getpantheon.com'
-              php_site_domain:         'onebox.pantheon.io'
-              payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
-              machine_token_id:        'dcr_NVvFVvHaPrQRfMZX'
-              machine_token_device:    'Terminus on My Laptop'
-              enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
-              enterprise_org_name:     'EnterpriseOrg'
-              machine_token:           'EAJ08XqjxTbXD125qU9L5HSqlDdl9UnWHqpdB1nmt5f1x'
-    ci:
+              other_user:              'otheruser@pantheon.io'
+              php_site_domain:         'pantheonsite.io'
+              instrument_uuid:         '11111111-1111-1111-1111-111111111111'
+              instrument_label:        'Visa - 1111'
+              organization_name:       '"Organization Name"'
+              machine_token:           '111111111111111111111111111111111111111111111'
+              machine_token_device:    'Behat Testing Token'
+              machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
     qa:
       paths: [ %paths.base%/../qa_features ]
       contexts:
@@ -59,7 +55,6 @@ default:
               payment_instrument_uuid: '8558e04f-3674-481e-b448-bccff73cb430'
               enterprise_org_uuid:     'bf200cbe-8995-4891-b5d4-1a8bdc292905'
               enterprise_org_name:     'EnterpriseOrg'
-    ci:
       formatter:
         name: HtmlFormatter
         output_path: /tmp/terminus_qa_report.html

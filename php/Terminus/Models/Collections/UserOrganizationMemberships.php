@@ -2,75 +2,64 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Collections\TerminusCollection;
-use Terminus\Session;
-use Terminus\Models\User;
-use Terminus\Models\UserOrganizationMembership;
+use Terminus\Exceptions\TerminusException;
 
 class UserOrganizationMemberships extends TerminusCollection {
-  protected $user;
+  /**
+   * @var User
+   */
+  public $user;
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
 
   /**
    * Object constructor
    *
    * @param array $options Options to set as $this->key
    */
-  public function __construct($options = array()) {
+  public function __construct($options = []) {
     parent::__construct($options);
-    if (!isset($this->user)) {
-      $this->user = Session::getUser();
-    }
+    $this->user = $options['user'];
+    $this->url  = "users/{$this->user->id}/memberships/organizations";
   }
 
   /**
-   * Fetches model data from API and instantiates its model instances
+   * Adds a model to this collection
    *
-   * @param array $options params to pass to url request
-   * @return UserOrganizationMemberships
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
+   * @return void
    */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
+  public function add($model_data = [], array $arg_options = []) {
+    $default_options = [
+      'id'         => $model_data->id,
+      'collection' => $this,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    parent::add($model_data, $options);
   }
 
   /**
-   * Retrieves the model of the given ID
+   * Retrieves the matching organization from model members
    *
-   * @param string $id ID or name of desired organization
-   * @return UserOrganizationMembership $model
+   * @param string $org ID or name of desired organization
+   * @return Organization $organization
+   * @throws TerminusException
    */
-  public function get($id) {
-    $this->fetch();
-    $model = null;
-    if (isset($this->models[$id])) {
-      $model = $this->models[$id];
-    } else {
-      foreach ($this->models as $model_candidate) {
-        if ((isset($model_candidate->profile)
-            && ($id == $model_candidate->profile->name))
-          || (isset($model_candidate->get('organization')->profile)
-            && $model_candidate->get('organization')->profile->name == $id)
-        ) {
-          $model = $model_candidate;
-          break;
-        }
+  public function getOrganization($org) {
+    $memberships = $this->all();
+    foreach ($memberships as $membership) {
+      $organization = $membership->organization;
+      if (in_array($org, [$organization->id, $organization->get('name'),])) {
+        return $organization;
       }
     }
-    return $model;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf('users/%s/memberships/organizations', $this->user->id);
-    return $url;
+    throw new TerminusException(
+      'This user is not a member of an organizaiton identified by {org}.',
+      compact('org')
+    );
   }
 
   /**

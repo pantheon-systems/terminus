@@ -12,5 +12,5 @@ Feature: Complete site migration
     When I run "terminus site complete-migration --site=[[test_site_name]]"
     Then I should get:
     """
-    Completed site migration
+    Completed migration
     """

@@ -13,7 +13,7 @@ Feature: Set a site's connection mode
     Then I should get: "."
     And I should get:
     """
-    Enable git push mode for "dev"
+    Enabling git push mode for "dev"
     """
 
   @vcr site_set-connection-mode_sftp

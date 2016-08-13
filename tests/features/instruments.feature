@@ -3,14 +3,10 @@ Feature: Instruments command
   As a user
   I need to be able to view and use my payment instruments.
 
-  Background: I am logged in and have a site named [[test_site_name]]
+  Background: I am logged in
     Given I am authenticated
-    And a site named "[[test_site_name]]"
 
   @vcr instruments_list
-  Scenario: List instruments
+  Scenario: Listing a user's payment instruments
     When I run "terminus instruments list"
-    Then I should get:
-    """
-    [[payment_instrument_uuid]]
-    """
+    Then I should get: "[[instrument_label]]"

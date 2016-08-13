@@ -2,25 +2,41 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Organization;
+class OrganizationSiteMembership extends TerminusModel {
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var Site
+   */
+  public $site;
 
-// TODO: this should inherit from TerminusModel, with an `organization` property
-class OrganizationSiteMembership extends Organization {
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return OrganizationSiteMembership
+   */
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->organization = $options['collection']->organization;
+    $this->site         = new Site(
+      $attributes->site,
+      ['id' => $attributes->site->id, 'memberships' => [$this,],]
+    );
+  }
 
   /**
    * Removes a site from this organization
    *
    * @return Workflow
    */
-  public function removeMember() {
-    $site     = $this->get('site');
+  public function delete() {
     $workflow = $this->organization->workflows->create(
       'remove_organization_site_membership',
-      array(
-        'params'    => array(
-          'site_id' => $site->id
-        )
-      )
+      ['params' => ['site_id' => $this->site->id,],]
     );
     return $workflow;
   }

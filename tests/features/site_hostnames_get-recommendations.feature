@@ -12,5 +12,5 @@ Feature: Environment DNS lookup
     When I run "terminus site hostnames get-recommendations --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    [[test_site_hostname]]
+    dev-[[test_site_name]].[[php_site_domain]]
     """

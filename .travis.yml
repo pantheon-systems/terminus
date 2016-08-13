@@ -41,7 +41,7 @@ before_script:
 
 script:
   - TERMINUS_TEST_MODE=1 vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
-  - TERMINUS_TEST_MODE=1 ./scripts/test.sh ci
+  - TERMINUS_TEST_MODE=1 ./scripts/test.sh
 
 after_success: 
   - php vendor/bin/coveralls -v -c tests/config/coveralls.xml

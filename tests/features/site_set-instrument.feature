@@ -9,7 +9,7 @@ Feature: Set payment instruments
 
   @vcr site_set-instrument_add
   Scenario: Adding instruments
-    When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=[[payment_instrument_uuid]]"
+    When I run "terminus site set-instrument --site=[[test_site_name]] --instrument=[[instrument_uuid]]"
     Then I should get:
     """
     Associated a payment method to the site

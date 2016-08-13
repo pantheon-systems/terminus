@@ -10,4 +10,4 @@ Feature: Listing site branches
   @vcr site_code_branches
   Scenario: Listing the branches of a site
     When I run "terminus site code branches --site=[[test_site_name]]"
-    Then I should get: "Title"
+    Then I should get: "master"

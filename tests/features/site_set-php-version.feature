@@ -15,12 +15,12 @@ Feature: Managing the PHP version of sites and environments
 
   @vcr site_set-php-version_environment
   Scenario: Setting an environment's PHP version
-    When I run "terminus site set-php-version --site=[[test_site_name]] --env=dev --version=5.3"
+    When I run "terminus site set-php-version --site=[[test_site_name]] --env=dev --version=7.0"
     And I get info for the "dev" environment of "[[test_site_name]]"
-    Then I should get: "5.3"
+    Then I should get one of the following: "5.3, 5.5, 5.6, 7.0"
 
   @vcr site_set-php-version_environment_unset
   Scenario: Setting an environment's PHP version to the site default
     When I run "terminus site set-php-version --site=[[test_site_name]] --env=dev --version=default"
     And I get info for the "dev" environment of "[[test_site_name]]"
-    Then I should get one of the following: "5.3, 5.5"
+    Then I should get one of the following: "5.3, 5.5, 5.6, 7.0"

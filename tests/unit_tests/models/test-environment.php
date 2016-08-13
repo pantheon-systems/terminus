@@ -24,7 +24,7 @@ class EnvironmentTest extends PHPUnit_Framework_TestCase {
     logInWithBehatCredentials();
     $site     = $this->sites->get('behat-tests');
     $test_env = $site->environments->get('test');
-    $this->assertEquals(1, $test_env->countDeployableCommits());
+    $this->assertEquals(4, $test_env->countDeployableCommits());
     setDummyCredentials();
   }
 

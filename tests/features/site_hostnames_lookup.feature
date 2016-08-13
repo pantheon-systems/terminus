@@ -9,7 +9,7 @@ Feature: Site hostname lookup
 
   @vcr site_hostnames_lookup
   Scenario: Looking up a hostname belonging to [[test_site_name]]
-    When I run "terminus site hostnames lookup --hostname=[[test_site_hostname]]"
+    When I run "terminus site hostnames lookup --hostname=dev-[[test_site_name]].[[php_site_domain]]"
     Then I should get:
     """
     [[test_site_name]]

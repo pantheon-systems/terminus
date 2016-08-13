@@ -2,6 +2,7 @@
 
 namespace Terminus\Models\Collections;
 
+use Terminus\Session;
 use Terminus\Models\Workflow;
 
 class Workflows extends TerminusCollection {
@@ -30,7 +31,7 @@ class Workflows extends TerminusCollection {
     if (isset($options['environment'])) {
       $this->environment = $options['environment'];
     }
-    $params = array_merge($this->getFetchArgs(), $options['params']);
+    $params = array_merge($this->args, $options['params']);
 
     $results = $this->request->request(
       $this->getFetchUrl(),
@@ -82,9 +83,10 @@ class Workflows extends TerminusCollection {
         );
           break;
       case 'organization':
+        $user = Session::getUser();
         $url = sprintf(
           'users/%s/organizations/%s/workflows',
-          $this->owner->user->id,
+          $user->id,
           $this->owner->get('id')
         );
           break;

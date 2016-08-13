@@ -13,7 +13,3 @@ Feature: Update a site with all its upstream's updates
     When I run "terminus site upstream-updates list --site=[[test_site_name]]"
     Then I should get one of the following: "No updates to, Update to"
 
-  @vcr site_upstream-updates
-  Scenario: Apply upstream updates
-    When I run "terminus site upstream-updates apply --site=[[test_site_name]] --yes"
-    Then I should get one of the following: "Updates applied, Apply upstream updates"

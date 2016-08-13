@@ -28,24 +28,6 @@ class CliCommand extends TerminusCommand {
   }
 
   /**
-   * Clear cached data
-   *
-   * ## OPTIONS
-   *
-   * [--cache=<cache>]
-   * : specific cache key to clear
-   *
-   * @subcommand cache-clear
-   */
-  public function cacheClear($args, $assoc_args) {
-    if (isset($assoc_args['cache'])) {
-      $this->cache->remove($assoc_args['cache']);
-    } else {
-      $this->cache->flush();
-    }
-  }
-
-  /**
    * Dump the list of installed commands, as JSON.
    *
    * @subcommand cmd-dump

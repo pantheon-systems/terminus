@@ -9,7 +9,8 @@ Feature: Create a site
   @vcr sites_create
   Scenario: Create Site
     When I run "terminus sites create --site=[[test_site_name]] --label=[[test_site_name]] --upstream=WordPress"
+    Then I should get: "Creating new site installation ..."
     Then I should get:
     """
-    Created new site "[[test_site_name]]"
+    Creating new site "[[test_site_name]]"
     """
