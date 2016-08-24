@@ -4,6 +4,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## MASTER
 ### Removed
 - `cli cache-clear` command. (#1152)
+- The command `site set-php-version` has been removed. Please set your PHP version by your pantheon.yml file. (See: https://pantheon.io/docs/php-versions) (#1121)
 
 ## [0.11.4] - 2016-08-10
 ### Added
