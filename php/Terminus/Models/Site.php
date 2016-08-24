@@ -596,20 +596,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Sets the PHP version number of this site
-   *
-   * @param string $version_number The version number to set this site to use
-   * @return void
-   */
-  public function setPhpVersion($version_number) {
-    $options  = [
-      'params' => ['key' => 'php_version', 'value' => $version_number,],
-    ];
-    $workflow = $this->workflows->create('update_site_setting', $options);
-    return $workflow;
-  }
-
-  /**
    * Update service level
    *
    * @param string $level Level to set service on site to
