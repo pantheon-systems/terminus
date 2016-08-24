@@ -11,5 +11,5 @@ Feature: Listing one's organizational memberships
     When I run "terminus organizations list"
     Then I should get:
     """
-    [[enterprise_org_name]]
+    [[organization_name]]
     """

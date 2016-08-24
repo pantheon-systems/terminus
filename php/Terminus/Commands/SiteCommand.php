@@ -537,7 +537,6 @@ class SiteCommand extends TerminusCommand {
       array('site' => $site->get('name'))
     );
     $response = $site->delete();
-    $site->deleteFromCache();
 
     $this->log()->info('Deleted {site}!', array('site' => $site->get('name')));
   }
@@ -911,8 +910,8 @@ class SiteCommand extends TerminusCommand {
             'message' => 'Please enter a hostname to look up.',
           ]
         );
-        $sites    = $this->sites->all();
-        $data     = [];
+        $sites = $this->sites->fetch()->all();
+        $data = [];
         foreach ($sites as $site_id => $site) {
           $environments = ['dev', 'test', 'live',];
           foreach ($environments as $env_name) {
@@ -1345,26 +1344,16 @@ class SiteCommand extends TerminusCommand {
           )
         );
         $org  = $this->input()->orgName(array('args' => $assoc_args));
-        if (!$this->isOrgAccessible($org)) {
-          $this->failure(
-            "Organization is either invalid or you are not a member."
-          );
-        }
         $workflow = $site->org_memberships->addMember($org, $role);
         $workflow->wait();
           break;
       case 'remove':
         $org = $this->input()->orgId(array('args' => $assoc_args));
-        if (!$this->isOrgAccessible($org)) {
-          $this->failure(
-            "Organization is either invalid or you are not a member."
-          );
-        }
         $member = $site->org_memberships->get($org);
         if ($member == null) {
           $this->failure(
             '{org} is not a member of {site}',
-            array('org' => $org, 'site' => $site->get('name'))
+            ['org' => $org, 'site' => $site->get('name'),]
           );
         }
         $workflow = $member->removeMember('organization', $org);
@@ -2439,19 +2428,6 @@ class SiteCommand extends TerminusCommand {
       }
     }
     return $url;
-  }
-
-  /**
-   * Checks to ensure user can access the given organization
-   *
-   * @param string $org_id Organization name or UUID
-   * @return bool True if this organization is accessible
-   */
-  private function isOrgAccessible($org_id) {
-    $user  = Session::getUser();
-    $org   = $user->organizations->get($org_id);
-    $is_ok = is_object($org);
-    return $is_ok;
   }
 
   /**

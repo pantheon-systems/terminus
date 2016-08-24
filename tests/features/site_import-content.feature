@@ -13,7 +13,7 @@ Feature: Import site content
     Then I should get "."
     Then I should get:
     """
-    Import files to "dev"
+    Importing files to "dev"
     """
 
   @vcr site_import-content_database

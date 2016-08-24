@@ -9,10 +9,10 @@ Feature: Deleting a site's branches
 
   @vcr site_delete-branch
   Scenario: Deleting a branch
-    When I run "terminus site delete-branch --site=[[test_site_name]] --branch=multidev --yes"
+    When I run "terminus site delete-branch --site=[[test_site_name]] --branch=new_branch --yes"
     Then I should get:
     """
-    Deleted Multidev environment branch "multidev"
+    Deleted Multidev environment branch "new_branch"
     """
 
   @vcr site_delete-branch_none

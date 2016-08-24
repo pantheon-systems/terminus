@@ -2,14 +2,21 @@
 -
     request:
         method: POST
-        url: 'https://onebox/api/authorize'
+        url: 'https://onebox/api/authorize/machine-token'
         headers:
             Host: onebox
             Expect: null
-            Accept: null
-            User-Agent: 'Terminus/1.0.0 (php_version=5.5.26&script=boot-fs.php)'
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
-        body: '{"email":"devuser@pantheon.io","password":"password1"}'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:fd7bfc10-6400-11e6-b354-bc764e105ecb:aH3JMFfAtps3s4Di5rVx9'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:fd7bfc10-6400-11e6-b354-bc764e105ecb:aH3JMFfAtps3s4Di5rVx9'
+            verify: '1'
+            method: post
+            absolute_url: ''
+            json: terminus
+            Accept: null
+        body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
         status:
             http_version: '1.1'
@@ -17,51 +24,52 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Mon, 13 Jul 2015 19:28:13 GMT'
+            Date: 'Tue, 16 Aug 2016 22:51:26 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 4d90f680-2995-11e5-a1e1-0d64ef38b19d
+            X-Pantheon-Trace-Id: f535ebd0-6403-11e6-9844-1524ed28772c
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
             Vary: Accept-Encoding
-        body: '{"session":"25069e79-eae7-4d41-8925-1f728a114cb8:4d95b5bc-2995-11e5-ab54-bc764e117665:2l7HvMjzXABeFkkMKddpI","expires_at":1439234893,"user_id":"25069e79-eae7-4d41-8925-1f728a114cb8"}'
+            Strict-Transport-Security: max-age=31536000
+        body: '{"session":"11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37","expires_at":1473807086,"user_id":"11111111-1111-1111-1111-111111111111"}'
 -
     request:
         method: GET
-        url: 'https://api.github.com/repos/pantheon-systems/terminus/releases?per_page=1'
+        url: 'https://onebox/api/users/11111111-1111-1111-1111-111111111111'
         headers:
-            Host: api.github.com
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
             Accept: null
-            User-Agent: 'Terminus/0.8.0 (php_version=5.5.27&script=boot-fs.php)'
     response:
         status:
             http_version: '1.1'
             code: '200'
             message: OK
         headers:
-            Server: GitHub.com
-            Date: 'Wed, 23 Sep 2015 03:24:47 GMT'
-            Content-Type: 'application/json; charset=utf-8'
-            Content-Length: '4584'
-            Status: '200 OK'
-            X-RateLimit-Limit: '60'
-            X-RateLimit-Remaining: '59'
-            X-RateLimit-Reset: '1442982287'
-            Cache-Control: 'public, max-age=60, s-maxage=60'
-            ETag: '"a038f77d0863b28ff2d75101c04b5945"'
-            Vary: Accept-Encoding
-            X-GitHub-Media-Type: 'github.v3; format=json'
-            Link: '<https://api.github.com/repositories/17075662/releases?per_page=1&page=2>; rel="next", <https://api.github.com/repositories/17075662/releases?per_page=1&page=24>; rel="last"'
-            X-XSS-Protection: '1; mode=block'
+            Server: nginx
+            Date: 'Tue, 16 Aug 2016 22:51:26 GMT'
+            Content-Type: application/json
+            Content-Length: '3327'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: f68d3e70-6403-11e6-9844-1524ed28772c
             X-Frame-Options: deny
-            Content-Security-Policy: 'default-src ''none'''
-            Access-Control-Allow-Credentials: 'true'
-            Access-Control-Expose-Headers: 'ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval'
-            Access-Control-Allow-Origin: '*'
-            X-GitHub-Request-Id: '49AAA7AF:10753:4C9769:56021B7F'
-            Strict-Transport-Security: 'max-age=31536000; includeSubdomains; preload'
-            X-Content-Type-Options: nosniff
-            X-Served-By: 474556b853193c38f1b14328ce2d1b7d
-        body: '[{"url":"https://api.github.com/repos/pantheon-systems/terminus/releases/1819936","assets_url":"https://api.github.com/repos/pantheon-systems/terminus/releases/1819936/assets","upload_url":"https://uploads.github.com/repos/pantheon-systems/terminus/releases/1819936/assets{?name,label}","html_url":"https://github.com/pantheon-systems/terminus/releases/tag/0.8.0","id":1819936,"tag_name":"0.8.0","target_commitish":"master","name":"0.8.0","draft":false,"author":{"login":"TeslaDethray","id":868204,"avatar_url":"https://avatars.githubusercontent.com/u/868204?v=3","gravatar_id":"","url":"https://api.github.com/users/TeslaDethray","html_url":"https://github.com/TeslaDethray","followers_url":"https://api.github.com/users/TeslaDethray/followers","following_url":"https://api.github.com/users/TeslaDethray/following{/other_user}","gists_url":"https://api.github.com/users/TeslaDethray/gists{/gist_id}","starred_url":"https://api.github.com/users/TeslaDethray/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TeslaDethray/subscriptions","organizations_url":"https://api.github.com/users/TeslaDethray/orgs","repos_url":"https://api.github.com/users/TeslaDethray/repos","events_url":"https://api.github.com/users/TeslaDethray/events{/privacy}","received_events_url":"https://api.github.com/users/TeslaDethray/received_events","type":"User","site_admin":false},"prerelease":false,"created_at":"2015-09-16T06:48:59Z","published_at":"2015-09-16T06:49:14Z","assets":[{"url":"https://api.github.com/repos/pantheon-systems/terminus/releases/assets/868232","id":868232,"name":"terminus","label":null,"uploader":{"login":"TeslaDethray","id":868204,"avatar_url":"https://avatars.githubusercontent.com/u/868204?v=3","gravatar_id":"","url":"https://api.github.com/users/TeslaDethray","html_url":"https://github.com/TeslaDethray","followers_url":"https://api.github.com/users/TeslaDethray/followers","following_url":"https://api.github.com/users/TeslaDethray/following{/other_user}","gists_url":"https://api.github.com/users/TeslaDethray/gists{/gist_id}","starred_url":"https://api.github.com/users/TeslaDethray/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TeslaDethray/subscriptions","organizations_url":"https://api.github.com/users/TeslaDethray/orgs","repos_url":"https://api.github.com/users/TeslaDethray/repos","events_url":"https://api.github.com/users/TeslaDethray/events{/privacy}","received_events_url":"https://api.github.com/users/TeslaDethray/received_events","type":"User","site_admin":false},"content_type":"application/octet-stream","state":"uploaded","size":12279818,"download_count":0,"created_at":"2015-09-16T06:40:00Z","updated_at":"2015-09-16T06:40:18Z","browser_download_url":"https://github.com/pantheon-systems/terminus/releases/download/0.8.0/terminus"},{"url":"https://api.github.com/repos/pantheon-systems/terminus/releases/assets/868231","id":868231,"name":"terminus.phar","label":null,"uploader":{"login":"TeslaDethray","id":868204,"avatar_url":"https://avatars.githubusercontent.com/u/868204?v=3","gravatar_id":"","url":"https://api.github.com/users/TeslaDethray","html_url":"https://github.com/TeslaDethray","followers_url":"https://api.github.com/users/TeslaDethray/followers","following_url":"https://api.github.com/users/TeslaDethray/following{/other_user}","gists_url":"https://api.github.com/users/TeslaDethray/gists{/gist_id}","starred_url":"https://api.github.com/users/TeslaDethray/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/TeslaDethray/subscriptions","organizations_url":"https://api.github.com/users/TeslaDethray/orgs","repos_url":"https://api.github.com/users/TeslaDethray/repos","events_url":"https://api.github.com/users/TeslaDethray/events{/privacy}","received_events_url":"https://api.github.com/users/TeslaDethray/received_events","type":"User","site_admin":false},"content_type":"application/octet-stream","state":"uploaded","size":12279818,"download_count":195,"created_at":"2015-09-16T06:40:00Z","updated_at":"2015-09-16T06:40:10Z","browser_download_url":"https://github.com/pantheon-systems/terminus/releases/download/0.8.0/terminus.phar"}],"tarball_url":"https://api.github.com/repos/pantheon-systems/terminus/tarball/0.8.0","zipball_url":"https://api.github.com/repos/pantheon-systems/terminus/zipball/0.8.0","body":"Added:\r\n- Environment variable TERMINUS_LOG_DIR will save all logs to file in the given directory. (#487)\r\n\r\nFixed:\r\n- Undefined property \"framework\" error when running SitesCache functions (#433)\r\n- Split Terminus logger between KLogger and Outputter, fixed JSON and bash outputs"}]'
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"profile": {"utm_term": "", "invites_to_nonuser": 4, "seen_first_time_user_popover": true, "utm_content": "/", "experiments": {"welcome_video": "shown"}, "full_name": "Dev User", "pullFromLive": false, "utm_device": "", "initial_identity_strategy": null, "utm_campaign": "pantheon.io (organic)", "tracking_first_site_create": 1428723370, "verify": "037eadb020d51ccddba9e06a64908c98", "tracking_first_code_push": 1428811227, "google_adwords_account_registered_sent": 1428707350, "invites_to_user": 8, "utm_medium": "", "job_function": "developer", "tracking_first_workflow_in_live": 1428811293, "tracking_first_team_invite": 1436464837, "firstname": "Dev", "invites_to_site": 12, "lastname": "User", "pda_campaign": null, "utm_source": "https://www.bing.com/search?setmkt=en-US&q=pantheon+san+francisco", "google_adwords_pushed_code_sent": 1428811242, "last-org-spinup": "none", "web_services_business": null, "initial_identity_name": null, "guilty_of_abuse": null, "invites_sent": 12, "tracking_first_site_upgrade": 1437784612, "google_adwords_paid_for_site_sent": 1438018300, "modified": 1458174494, "maxdevsites": 2, "lead_type": "", "organization": " Pantheon Systems, Inc"}, "feature_flags": [{"name": "Experimental Products", "default": false, "enabled": false, "visible": false, "optional": false, "id": "experimental-products"}, {"name": "annotate git tags", "default": false, "enabled": false, "visible": false, "optional": false, "id": "annotate_git_tags"}, {"name": "Cacheserver Add-on", "default": false, "enabled": false, "visible": false, "optional": false, "id": "cacheserver-addon"}, {"name": "Apollo Spinup", "default": true, "enabled": true, "visible": false, "optional": false, "id": "apollo-spinup"}, {"name": "Pantheon One", "default": false, "enabled": false, "visible": false, "optional": false, "id": "one"}, {"name": "Unified User Account Screen ", "default": false, "enabled": false, "visible": true, "optional": false, "id": "apollo-user"}, {"name": "Indexserver Add-on", "default": false, "enabled": false, "visible": true, "optional": false, "id": "indexserver-addon"}, {"name": "Wordpress", "default": false, "enabled": false, "visible": false, "optional": false, "id": "wordpress"}, {"name": "Apollo Self-Service Toggle", "default": true, "enabled": true, "visible": false, "optional": false, "id": "apollo-toggle"}, {"name": "Site Audit Checks", "default": false, "enabled": false, "visible": false, "optional": false, "id": "site_audit_checks"}, {"description": "Enables the new Desk API 2.0 Interface", "default": false, "enabled": true, "visible": true, "percentage": 100, "optional": false, "id": "desk", "name": "desk"}, {"name": "org tags", "default": false, "enabled": false, "visible": true, "optional": false, "id": "org-tags"}, {"name": "Apollo Dashboard", "default": true, "enabled": true, "visible": false, "optional": false, "id": "apollo"}, {"name": "Org Upstream Updates", "default": false, "enabled": false, "visible": false, "optional": false, "id": "org-has-code"}], "user_id": "11111111-1111-1111-1111-111111111111", "created_at": 1428707345, "dev_sites_count": 2, "id": "11111111-1111-1111-1111-111111111111", "destination_organization_id": null, "is_registered": true, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}'

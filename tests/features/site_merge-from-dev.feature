@@ -8,11 +8,11 @@ Feature: Merging into an environment from dev
     And a site named "[[test_site_name]]"
 
   @vcr site_merge-from-dev
-  Scenario: Merge the Dev Environment into a Multidev Environment
-    When I run "terminus site merge-from-dev --site=[[test_site_name]] --env=stuff"
+  Scenario: Merge the dev environment into a multidev environment
+    When I run "terminus site merge-from-dev --site=[[test_site_name]] --env=multidev"
     Then I should get: "."
     Then I should get: "."
     Then I should get:
     """
-    Merge code from master into "stuff"
+    Merge code from master into "multidev"
     """

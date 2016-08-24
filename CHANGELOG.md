@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Removed
+- `cli cache-clear` command. (#1152)
+
 ## [0.11.4] - 2016-08-10
 ### Added
 - Added `new-relic enable` command. (#1141)

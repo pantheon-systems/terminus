@@ -2,14 +2,46 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Commands\OrganizationsCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\OrganizationUserMembership;
-use Terminus\Models\User;
 use Terminus\Models\Workflow;
 
 class OrganizationUserMemberships extends TerminusCollection {
-  protected $organization;
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
+
+  /**
+   * Instantiates the collection, sets param members as properties
+   *
+   * @param array $options To be set to $this->key
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->organization = $options['organization'];
+    $this->url = "organizations/{$this->organization->id}/memberships/users";
+  }
+
+  /**
+   * Adds a model to this collection
+   *
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
+   * @return void
+   */
+  public function add($model_data, array $arg_options = []) {
+    $default_options = [
+      'id'         => $model_data->id,
+      'collection' => $this,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    parent::add($model_data, $options);
+  }
 
   /**
    * Adds a user to this organization
@@ -18,7 +50,7 @@ class OrganizationUserMemberships extends TerminusCollection {
    * @param string $role Role to assign to the new member
    * @return Workflow $workflow
    */
-  public function addMember($uuid, $role) {
+  public function create($uuid, $role) {
     $workflow = $this->organization->workflows->create(
       'add_organization_user_membership',
       ['params' => ['user_email' => $uuid, 'role' => $role,]]
@@ -49,34 +81,6 @@ class OrganizationUserMemberships extends TerminusCollection {
       compact('id'),
       1
     );
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'organizations/%s/memberships/users',
-      $this->organization->id
-    );
-    return $url;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return OrganizationUserMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
   }
 
   /**

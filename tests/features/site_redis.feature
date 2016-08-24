@@ -9,7 +9,6 @@ Feature: Using Redis
 
   @vcr site_redis_enable_pro
   Scenario: Enabling Redis
-    Given the service level of "[[test_site_name]]" is "pro"
     When I run "terminus site redis enable --site=[[test_site_name]]"
     Then I should get:
     """
@@ -18,7 +17,6 @@ Feature: Using Redis
 
   @vcr site_redis_disable_pro
   Scenario: Disabling Redis
-    Given the service level of "[[test_site_name]]" is "pro"
     When I run "terminus site redis disable --site=[[test_site_name]]"
     Then I should get:
     """
@@ -27,7 +25,6 @@ Feature: Using Redis
 
   @vcr site_redis_enable_business
   Scenario: Enabling Redis
-    Given the service level of "[[test_site_name]]" is "business"
     When I run "terminus site redis enable --site=[[test_site_name]]"
     Then I should get:
     """
@@ -36,7 +33,6 @@ Feature: Using Redis
 
   @vcr site_redis_disable_business
   Scenario: Disabling Redis
-    Given the service level of "[[test_site_name]]" is "business"
     When I run "terminus site redis disable --site=[[test_site_name]]"
     Then I should get:
     """

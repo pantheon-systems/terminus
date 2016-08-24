@@ -43,7 +43,7 @@ class AuthTest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * @vcr auth_login_machine-token
+   * @vcr auth_login
    */
   public function testLogInViaMachineToken() {
     $passed = $this->auth->logInViaMachineToken(getBehatCredentials());

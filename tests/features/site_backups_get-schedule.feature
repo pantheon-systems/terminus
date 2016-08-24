@@ -13,7 +13,7 @@ Feature: List Backup Schedule for a Site
     When I run "terminus site backups get-schedule --site=[[test_site_name]] --env=dev"
     Then I should get:
     """
-    Sunday
+    Friday
     """
 
   @vcr site_backups_get-schedule_none

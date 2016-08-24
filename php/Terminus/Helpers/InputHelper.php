@@ -769,43 +769,50 @@ class InputHelper extends TerminusHelper {
    * Input helper that provides interactive site list
    *
    * @param array $arg_options Elements as follow:
-   *        array  args    The args passed in from argv
-   *        string key     Args key to search for
-   *        string message Prompt for STDOUT
+   *        array   args          The args passed in from argv
+   *        Site[]  choices       An array of sites to use as options
+   *        string  key           Args key to search for
+   *        string  message       Prompt for STDOUT
    * @return string Site name
   */
   public function siteName(array $arg_options = []) {
     $default_options = [
-      'args'  => [],
-      'key'   => 'site',
+      'args'    => [],
+      'choices' => [],
+      'key'     => 'site',
       'message' => 'Choose site',
     ];
     $options         = array_merge($default_options, $arg_options);
+    $sites           = new Sites();
 
-    // return early if sitename is provided in args
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
-    }
-    if (isset($_SERVER['TERMINUS_SITE'])) {
+    } else if (isset($_SERVER['TERMINUS_SITE'])) {
       return $_SERVER['TERMINUS_SITE'];
+    } else if (!empty($options['choices'])) {
+      $choices = $options['choices'];
+    } else {
+      $sites     = $sites->all();
+      $choices = array_combine(
+        array_map(
+          function(Site $site) {
+            $site_name = $site->get('name');
+            return $site_name;
+          },
+          $sites
+        ),
+        $sites
+      );
     }
-    $sites     = new Sites();
-    $sites     = $sites->all();
-    $sitenames = array_map(
-      function(Site $site) {
-        $site_name = $site->get('name');
-        return $site_name;
-      }, $sites
-    );
 
-    $choices = [];
-    foreach ($sitenames as $sitename) {
-      $choices[$sitename] = $sitename;
-    }
-    $menu = $this->menu(
-      ['choices' => $choices, 'message' => $options['message']]
+    $site = $this->menu(
+      [
+        'choices'      => $choices,
+        'message'      => $options['message'],
+        'return_value' => $options['return_object'],
+      ]
     );
-    return $menu;
+    return $site;
   }
 
   /**
@@ -985,10 +992,9 @@ class InputHelper extends TerminusHelper {
       $org_list = ['-' => 'None'];
     }
     $user          = Session::getUser();
-    $organizations = $user->organizations->all();
-    foreach ($organizations as $id => $org) {
-      $org_data                  = $org->get('organization');
-      $org_list[$org->get('id')] = $org_data->profile->name;
+    $organizations = $user->getOrganizations();
+    foreach ($organizations as $org) {
+      $org_list[$org->get('id')] = $org->get('profile')->name;
     }
     return $org_list;
   }

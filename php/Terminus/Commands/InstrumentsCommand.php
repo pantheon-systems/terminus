@@ -39,7 +39,9 @@ class InstrumentsCommand extends TerminusCommand {
         'id'    => $instrument->get('id'),
       );
     }
-
+    if (empty($data)) {
+      $this->log()->info('There are no instruments attached to this account.');
+    }
     $this->output()->outputRecordList($data);
   }
 

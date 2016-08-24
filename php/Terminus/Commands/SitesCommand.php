@@ -2,16 +2,11 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
 use Terminus\Configurator;
 use Terminus\Models\Collections\Sites;
-use Terminus\Models\Organization;
 use Terminus\Models\Site;
 use Terminus\Models\Upstreams;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
 use Terminus\Session;
-use Terminus\Utils;
 
 /**
  * Actions on multiple sites
@@ -123,19 +118,18 @@ class SitesCommand extends TerminusCommand {
    *
    */
   public function create($args, $assoc_args) {
-    $options                = $this->getSiteCreateOptions($assoc_args);
+    $options = $this->getSiteCreateOptions($assoc_args);
     $options['upstream_id'] = $this->input()->upstream(
       ['args' => $assoc_args,]
     );
     $this->log()->info('Creating new site installation ... ');
 
-    $workflow = $this->sites->addSite($options);
+    $workflow = $this->sites->create($options);
     $workflow->wait();
     $this->workflowOutput($workflow);
 
     // Add Site to SitesCache
     $final_task = $workflow->get('final_task');
-    $this->sites->addSiteToCache($final_task->site_id);
 
     $this->helpers->launch->launchSelf(
       [
@@ -150,8 +144,6 @@ class SitesCommand extends TerminusCommand {
 
   /**
    * Show all sites user has access to
-   * Note: because of the size of this call, it is cached
-   *   and also is the basis for loading individual sites by name
    *
    * [--team]
    * : Filter for sites you are a team member of
@@ -165,44 +157,33 @@ class SitesCommand extends TerminusCommand {
    * [--name=<regex>]
    * : Filter sites you can access via name
    *
-   * [--cached]
-   * : Causes the command to return cached sites list instead of retrieving anew
-   *
    * @subcommand list
    * @alias show
    */
   public function index($args, $assoc_args) {
-    // Always fetch a fresh list of sites
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-    $sites = $this->sites->all();
-
-    if (isset($assoc_args['team'])) {
-      $sites = $this->filterByTeamMembership($sites);
-    }
-    if (isset($assoc_args['org'])) {
-      $org_id = $this->input()->orgId(
+    $options = [
+      'org_id'    => $this->input()->optional(
         [
-          'allow_none' => true,
-          'args'       => $assoc_args,
-          'default'    => 'all',
+          'choices' => $assoc_args,
+          'default' => null,
+          'key'     => 'org',
         ]
-      );
-      $sites = $this->filterByOrganizationalMembership($sites, $org_id);
-    }
+      ),
+      'team_only' => isset($assoc_args['team']),
+    ];
+    $this->sites->fetch($options);
 
     if (isset($assoc_args['name'])) {
-      $sites = $this->filterByName($sites, $assoc_args['name']);
+      $this->sites->filterByName($assoc_args['name']);
     }
-
     if (isset($assoc_args['owner'])) {
       $owner_uuid = $assoc_args['owner'];
       if ($owner_uuid == 'me') {
-        $owner_uuid = Session::getData()->user_uuid;
+        $owner_uuid = $this->user->id;
       }
-      $sites = $this->filterByOwner($sites, $owner_uuid);
+      $this->sites->filterByOwner($owner_uuid);
     }
+    $sites = $this->sites->all();
 
     if (count($sites) == 0) {
       $this->log()->warning('You have no sites.');
@@ -211,19 +192,24 @@ class SitesCommand extends TerminusCommand {
     $rows = [];
     foreach ($sites as $site) {
       $memberships = [];
-      foreach ($site->get('memberships') as $membership) {
-        $memberships[$membership['id']] = $membership['name'];
+      foreach ($site->memberships as $membership) {
+        if (property_exists($membership, 'user')) {
+          $memberships[] = "{$membership->user->id}: Team";
+        } elseif (property_exists($membership, 'organization')) {
+          $profile       = $membership->organization->get('profile');
+          $memberships[] = "{$membership->organization->id}: {$profile->name}";
+        }
       }
-      $rows[$site->get('id')] = [
+      $rows[$site->id] = [
         'name'          => $site->get('name'),
-        'id'            => $site->get('id'),
+        'id'            => $site->id,
         'service_level' => $site->get('service_level'),
         'framework'     => $site->get('framework'),
         'owner'         => $site->get('owner'),
         'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
-        'memberships'   => $memberships,
+        'memberships'   => implode(', ', $memberships),
       ];
-      if ((boolean)$site->get('frozen')) {
+      if (!is_null($site->get('frozen'))) {
         $rows[$site->get('id')]['frozen'] = true;
       }
     }
@@ -272,52 +258,31 @@ class SitesCommand extends TerminusCommand {
    * [--org=<id>]
    * : Only necessary if using --tag. Organization which has tagged the site
    *
-   * [--cached]
-   * : Set to prevent rebuilding of sites cache
-   *
    * @subcommand mass-update
    */
   public function massUpdate($args, $assoc_args) {
-    // Ensure the sitesCache is up to date
-    if (!isset($assoc_args['cached'])) {
-      $this->sites->rebuildCache();
-    }
-
     $upstream = $this->input()->optional(
-      array(
-        'key'     => 'upstream',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+      ['key' => 'upstream', 'choices' => $assoc_args, 'default' => false,]
     );
-    $data     = array();
-    $report   = $this->input()->optional(
-      array(
-        'key'     => 'report',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+    $report = $this->input()->optional(
+      ['key' => 'report', 'choices' => $assoc_args, 'default' => false,]
     );
-    $confirm   = $this->input()->optional(
-      array(
-        'key'     => 'confirm',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+    $confirm = $this->input()->optional(
+      ['key' => 'confirm', 'choices' => $assoc_args, 'default' => false,]
     );
-    $tag       = $this->input()->optional(
-      array(
-        'key'     => 'tag',
-        'choices' => $assoc_args,
-        'default' => false,
-      )
+    $tag = $this->input()->optional(
+      ['key' => 'tag', 'choices' => $assoc_args, 'default' => false,]
     );
 
     $org = '';
     if ($tag) {
-      $org = $this->input()->orgId(array('args' => $assoc_args));
+      $org = $this->input()->orgId(['args' => $assoc_args,]);
     }
-    $sites = $this->sites->filterAllByTag($tag, $org);
+    $this->sites->fetch();
+    if ($tag !== false) {
+      $this->sites->filterByTag($tag, $org);
+    }
+    $sites = $this->sites->all();
 
     // Start status messages.
     if ($upstream) {
@@ -327,6 +292,7 @@ class SitesCommand extends TerminusCommand {
       );
     }
 
+    $data = [];
     foreach ($sites as $site) {
       $context = array('site' => $site->get('name'));
       $site->fetch();

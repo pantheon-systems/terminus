@@ -2,11 +2,43 @@
 
 namespace Terminus\Models\Collections;
 
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
-
 class OrganizationSiteMemberships extends TerminusCollection {
-  protected $organization;
+  /**
+   * @var Organization
+   */
+  public $organization;
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
+
+  /**
+   * Instantiates the collection
+   *
+   * @param array $options To be set
+   * @return OrganizationSiteMemberships
+   */
+  public function __construct(array $options = []) {
+    parent::__construct($options);
+    $this->organization = $options['organization'];
+    $this->url = "organizations/{$this->organization->id}/memberships/sites";
+  }
+
+  /**
+   * Adds a model to this collection
+   *
+   * @param object $model_data  Data to feed into attributes of new model
+   * @param array  $arg_options Data to make properties of the new model
+   * @return void
+   */
+  public function add($model_data, array $arg_options = []) {
+    $default_options = [
+      'id'           => $model_data->id,
+      'collection'   => $this,
+    ];
+    $options         = array_merge($default_options, $arg_options);
+    parent::add($model_data, $options);
+  }
 
   /**
    * Adds a site to this organization
@@ -14,15 +46,10 @@ class OrganizationSiteMemberships extends TerminusCollection {
    * @param Site $site Site object of site to add to this organization
    * @return Workflow
    */
-  public function addMember(Site $site) {
+  public function create($site) {
     $workflow = $this->organization->workflows->create(
       'add_organization_site_membership',
-      array(
-        'params'    => array(
-          'site_id' => $site->get('id'),
-          'role'    => 'team_member'
-        )
-      )
+      ['params' => ['site_id' => $site->id, 'role' => 'team_member',],]
     );
     return $workflow;
   }
@@ -31,18 +58,17 @@ class OrganizationSiteMemberships extends TerminusCollection {
    * Retrieves the model with site of the given UUID or name
    *
    * @param string $id UUID or name of desired site membership instance
-   * @return Site
+   * @return OrganizationSiteMembership
    */
   public function get($id) {
-    $models = $this->getMembers();
+    $models = $this->models;
     $model  = null;
     if (isset($models[$id])) {
       $model = $models[$id];
     } else {
       foreach ($models as $key => $membership) {
-        $site = $membership->get('site');
-        if ($site->name == $id) {
-          $model = $models[$key];
+        if ($membership->site->get('name') == $id) {
+          $model = $membership;
           continue;
         }
       }
@@ -51,31 +77,39 @@ class OrganizationSiteMemberships extends TerminusCollection {
   }
 
   /**
-   * Give the URL for collection data fetching
+   * Retrieves the matching site from model members
    *
-   * @return string URL to use in fetch query
+   * @param string $site_id ID or name of desired site
+   * @return Site $site
+   * @throws TerminusException
    */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'organizations/%s/memberships/sites',
-      $this->organization->id
+  public function getSite($site_id) {
+    $memberships = $this->all();
+    foreach ($memberships as $membership) {
+      $site = $membership->site;
+      if (in_array($site_id, [$site->id, $site->get('name'),])) {
+        return $site;
+      }
+    }
+    throw new TerminusException(
+      'This user does is not a member of an organizaiton identified by {id}.',
+      ['id' => $site_id,]
     );
-    return $url;
   }
 
   /**
-   * Fetches model data from API and instantiates its model instances
+   * Determines whether a site is a member of this collection
    *
-   * @param array $options params to pass to url request
-   * @return OrganizationSiteMemberships
+   * @param Site $site Site to determine membership of
+   * @return bool
    */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
+  public function siteIsMember($site) {
+    try {
+      $this->getSite($site);
+      return true;
+    } catch (TerminusException $e) {
+      return false;
     }
-
-    parent::fetch($options);
-    return $this;
   }
 
   /**

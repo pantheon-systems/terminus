@@ -10,4 +10,4 @@ Feature: Displaying the Drush versions of sites and environments
   @vcr site_drush-version
   Scenario: Retrieving the environment's Drush version
     When I run "terminus site drush-version --site=[[test_site_name]] --env=dev"
-    Then I should get: "8"
+    Then I should get one of the following: "5, 6, 7, 8"

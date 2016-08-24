@@ -9,5 +9,5 @@ Feature: Managing the Drush versions of sites and environments
 
   @vcr site_set-drush-version
   Scenario: Setting the environment's Drush version
-    When I run "terminus site set-drush-version --site=[[test_site_name]] --env=dev --version=5"
-    Then I should get: "Set dev's Drush version to 5"
+    When I run "terminus site set-drush-version --site=[[test_site_name]] --env=dev --version=8"
+    Then I should get: "Set dev's Drush version to 8"

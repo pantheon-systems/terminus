@@ -98,36 +98,6 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
     $this->assertEquals(null, $default_null);
   }
 
-  /**
-   * @vcr input_helper_org_helpers
-   */
-  public function testOrgId() {
-    //Accepting UUID
-    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = $this->inputter->orgId(compact('args'));
-    $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
-
-    //Accepting name
-    $args = array('org' => 'Terminus Testing');
-    $org  = $this->inputter->orgId(compact('args'));
-    $this->assertEquals('d59379eb-0c23-429c-a7bc-ff51e0a960c2', $org);
-  }
-
-  /**
-   * @vcr input_helper_org_helpers
-   */
-  public function testOrgName() {
-    //Accepting name
-    $args = array('org' => 'Terminus Testing');
-    $org  = $this->inputter->orgName(compact('args'));
-    $this->assertEquals('Terminus Testing', $org);
-
-    //Accepts UUID
-    $args = array('org' => 'd59379eb-0c23-429c-a7bc-ff51e0a960c2');
-    $org  = $this->inputter->orgName(compact('args'));
-    $this->assertEquals('Terminus Testing', $org);
-  }
-
   public function testOrgRole() {
     //From args
     $args = ['role' => 'admin'];
