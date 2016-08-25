@@ -2,7 +2,7 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
-### Removed
+### [0.12.0] - 2016-08-24
 - `cli cache-clear` command. (#1152)
 - The command `site set-php-version` has been removed. Please set your PHP version by your pantheon.yml file. (See: https://pantheon.io/docs/php-versions) (#1121)
 
