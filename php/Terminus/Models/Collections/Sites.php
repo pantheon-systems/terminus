@@ -72,19 +72,19 @@ class Sites extends TerminusCollection {
     ];
     $options         = array_merge($default_options, $arg_options);
 
+    $sites = [];
     if (is_null($options['org_id'])) {
       $sites = $this->user->getSites();
-      if (!$options['team_only']) {
-        $organizations = $this->user->getOrganizations();
-        foreach ($organizations as $organization) {
-          $sites = array_merge($sites, $organization->getSites());
+    }
+    if (!$options['team_only']) {
+      $memberships = $this->user->org_memberships->fetch()->all();
+      foreach ($memberships as $membership) {
+        if ($membership->get('role') != 'unprivileged') {
+          $sites = array_merge($sites, $membership->organization->getSites());
         }
       }
-    } else {
-      $this->user->org_memberships->fetch();
-      $sites = $this->user->org_memberships->get($options['org_id'])
-          ->organization->getSites();
     }
+
     foreach ($sites as $site) {
       if (!isset($this->models[$site->id])) {
         $site->collection        = $this;

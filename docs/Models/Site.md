@@ -109,15 +109,6 @@
 
 ---
 
-### deleteFromCache
-##### Description:
-    Deletes site from cache
-
-##### Return:
-    [void]
-
----
-
 ### disableNewRelic
 ##### Description:
     Disables New Relic
@@ -365,21 +356,6 @@
 
 ##### Throws:
     TerminusException
-
----
-
-### setPhpVersion
-##### Description:
-    Sets the PHP version number of this site
-    Note: Once this changes, you need to refresh the data in the cache for
-    this site or the returned PHP version will not reflect the change.
-    $this->fetchAttributes() will complete this action for you.
-
-##### Parameters:
-    [string] $version_number The version number to set this site to use
-
-##### Return:
-    [void]
 
 ---
 

@@ -7,7 +7,7 @@
 ---
 
 # App
-TERMINUS_VERSION:      '0.11.4'
+TERMINUS_VERSION:      '0.12.0'
 
 # Connectivity
 TERMINUS_HOST:         'dashboard.pantheon.io'
@@ -25,7 +25,7 @@ TERMINUS_CONFIG_DIR:   '~/terminus'
 TERMINUS_LOG_DIR:      '/tmp'
 TERMINUS_PLUGINS_DIR:  '[[ TERMINUS_CONFIG_DIR ]]/plugins'
 TERMINUS_TOKENS_DIR:   '[[ TERMINUS_CACHE_DIR ]]/tokens'
-TERMINUS_ASSETS_DIR:   '[[ TERMINUS_ROOT ]]/app/assets'
+TERMINUS_ASSETS_DIR:   '[[ TERMINUS_ROOT ]]/php/assets'
 
 # Helpers
 TERMINUS_USER:         null

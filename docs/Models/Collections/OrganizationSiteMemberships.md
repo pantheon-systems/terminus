@@ -1,6 +1,31 @@
 # Terminus\Models\Collections\OrganizationSiteMemberships
 
-### addMember
+### __construct
+##### Description:
+    Instantiates the collection
+
+##### Parameters:
+    [array] $options To be set
+
+##### Return:
+    [OrganizationSiteMemberships]
+
+---
+
+### add
+##### Description:
+    Adds a model to this collection
+
+##### Parameters:
+    [object] $model_data  Data to feed into attributes of new model
+    [array]  $arg_options Data to make properties of the new model
+
+##### Return:
+    [void]
+
+---
+
+### create
 ##### Description:
     Adds a site to this organization
 
@@ -20,19 +45,34 @@
     [string] $id UUID or name of desired site membership instance
 
 ##### Return:
-    [Site]
+    [OrganizationSiteMembership]
 
 ---
 
-### fetch
+### getSite
 ##### Description:
-    Fetches model data from API and instantiates its model instances
+    Retrieves the matching site from model members
 
 ##### Parameters:
-    [array] $options params to pass to url request
+    [string] $site_id ID or name of desired site
 
 ##### Return:
-    [OrganizationSiteMemberships]
+    [Site] $site
+
+##### Throws:
+    TerminusException
+
+---
+
+### siteIsMember
+##### Description:
+    Determines whether a site is a member of this collection
+
+##### Parameters:
+    [Site] $site Site to determine membership of
+
+##### Return:
+    [bool]
 
 ---
 

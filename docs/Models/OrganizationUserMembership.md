@@ -1,6 +1,19 @@
 # Terminus\Models\OrganizationUserMembership
 
-### removeMember
+### __construct
+##### Description:
+    Object constructor
+
+##### Parameters:
+    [object] $attributes Attributes of this model
+    [array]  $options    Options to set as $this->key
+
+##### Return:
+    [OrganizationSiteMembership]
+
+---
+
+### delete
 ##### Description:
     Removes a user from this organization
 
