@@ -1,4 +1,4 @@
-# Terminus\Models\OrganizationSiteMembership
+# Terminus\Models\UserOrganizationMembership
 
 ### __construct
 ##### Description:
@@ -9,16 +9,7 @@
     [array]  $options    Options to set as $this->key
 
 ##### Return:
-    [OrganizationSiteMembership]
-
----
-
-### delete
-##### Description:
-    Removes a site from this organization
-
-##### Return:
-    [Workflow]
+    [UserSiteMembership]
 
 ---
 

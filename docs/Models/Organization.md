@@ -8,6 +8,9 @@
     [object] $attributes Attributes of this model
     [array]  $options    Options to set as $this->key
 
+##### Return:
+    [Organization]
+
 ---
 
 ### getFeature
@@ -27,7 +30,7 @@
     Retrieves organization sites
 
 ##### Return:
-    [OrganizationSiteMembership[]]
+    [Site[]]
 
 ---
 
@@ -36,7 +39,7 @@
     Retrieves organization users
 
 ##### Return:
-    [OrganizationUserMembership[]]
+    [User[]]
 
 ---
 

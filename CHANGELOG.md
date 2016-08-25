@@ -1,8 +1,17 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
 ### [0.12.0] - 2016-08-24
+### Added
+- Added `choices` property to `InputHelper::siteName` parameter object. (#1152)
+
+### Changed
+- Renamed `Sites::addSite` to `Sites::create`. (#1152)
+- Renamed `OrganizationUserMemberships::addMember` to `OrganizationUserMemberships::create`. (#1152)
+- When using the sites collection to gather all sites, you now must use `Sites::fetch()` to retrieve the relevant objects. (#1152)
+- Renamed `OrganizationSiteMembership::removeMember` to `OrganizationSiteMembership::delete`. (#1152)
+
+### Removed
 - `cli cache-clear` command. (#1152)
 - The command `site set-php-version` has been removed. Please set your PHP version by your pantheon.yml file. (See: https://pantheon.io/docs/php-versions) (#1121)
 

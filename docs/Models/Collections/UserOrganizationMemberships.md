@@ -9,27 +9,31 @@
 
 ---
 
-### fetch
+### add
 ##### Description:
-    Fetches model data from API and instantiates its model instances
+    Adds a model to this collection
 
 ##### Parameters:
-    [array] $options params to pass to url request
+    [object] $model_data  Data to feed into attributes of new model
+    [array]  $arg_options Data to make properties of the new model
 
 ##### Return:
-    [UserOrganizationMemberships]
+    [void]
 
 ---
 
-### get
+### getOrganization
 ##### Description:
-    Retrieves the model of the given ID
+    Retrieves the matching organization from model members
 
 ##### Parameters:
-    [string] $id ID or name of desired organization
+    [string] $org ID or name of desired organization
 
 ##### Return:
-    [UserOrganizationMembership] $model
+    [Organization] $organization
+
+##### Throws:
+    TerminusException
 
 ---
 

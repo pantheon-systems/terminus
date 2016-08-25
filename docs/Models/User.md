@@ -10,21 +10,9 @@
 
 ---
 
-### parseAttributes
-##### Description:
-    Modify response data between fetch and assignment
-
-##### Parameters:
-    [object] $data attributes received from API response
-
-##### Return:
-    [object] $data
-
----
-
 ### getAliases
 ##### Description:
-    Retrieves drush aliases for this user
+    Retrieves Drush aliases for this user
 
 ##### Return:
     [\stdClass]
@@ -44,12 +32,8 @@
 ##### Description:
     Requests API data and returns an object of user site data
 
-##### Parameters:
-    [string] $organization UUID of organization to requests sites from,
-    -or null to fetch for all organizations.
-
 ##### Return:
-    [\stdClass]
+    [Site[]]
 
 ---
 

@@ -288,9 +288,10 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
-    -array  args    The args passed in from argv
-    -string key     Args key to search for
-    -string message Prompt for STDOUT
+    -array   args          The args passed in from argv
+    -Site[]  choices       An array of sites to use as options
+    -string  key           Args key to search for
+    -string  message       Prompt for STDOUT
 
 ##### Return:
     [string] Site name
