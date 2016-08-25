@@ -9,9 +9,23 @@
 
 ---
 
+### add
+##### Description:
+    Adds a model to this collection
+
+##### Parameters:
+    [object] $model_data Data to feed into attributes of new model
+    [array]  $options    Data to make properties of the new model
+
+##### Return:
+    [TerminusModel]
+
+---
+
 ### all
 ##### Description:
     Retrieves all models
+    TODO: Remove automatic fetching and make fetches explicit
 
 ##### Return:
     [TerminusModel[]]
@@ -54,16 +68,18 @@
 
 ---
 
-### add
+### listing
 ##### Description:
-    Adds a model to this collection
+    Returns an array of data where the keys are the attribute $key and the
+    values are the attribute $value
 
 ##### Parameters:
-    [object] $model_data Data to feed into attributes of new model
-    [array]  $options    Data to make properties of the new model
+    [string] $key   Name of attribute to make array keys
+    [mixed]  $value Name(s) of attribute(s) to comprise array values
 
 ##### Return:
-    [TerminusModel]
+    [array] Array rendered as requested
+    -$this->attribute->$key = $this->attribute->$value
 
 ---
 

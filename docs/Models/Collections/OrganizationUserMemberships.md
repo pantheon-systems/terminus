@@ -1,6 +1,28 @@
 # Terminus\Models\Collections\OrganizationUserMemberships
 
-### addMember
+### __construct
+##### Description:
+    Instantiates the collection, sets param members as properties
+
+##### Parameters:
+    [array] $options To be set to $this->key
+
+---
+
+### add
+##### Description:
+    Adds a model to this collection
+
+##### Parameters:
+    [object] $model_data  Data to feed into attributes of new model
+    [array]  $arg_options Data to make properties of the new model
+
+##### Return:
+    [void]
+
+---
+
+### create
 ##### Description:
     Adds a user to this organization
 
@@ -25,18 +47,6 @@
 
 ##### Throws:
     TerminusException
-
----
-
-### fetch
-##### Description:
-    Fetches model data from API and instantiates its model instances
-
-##### Parameters:
-    [array] $options params to pass to url request
-
-##### Return:
-    [OrganizationUserMemberships]
 
 ---
 

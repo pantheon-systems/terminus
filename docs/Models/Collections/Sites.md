@@ -12,7 +12,16 @@
 
 ---
 
-### addSite
+### all
+##### Description:
+    Retrieves all sites
+
+##### Return:
+    [Site[]]
+
+---
+
+### create
 ##### Description:
     Creates a new site
 
@@ -29,56 +38,52 @@
 
 ---
 
-### addSiteToCache
-##### Description:
-    Adds site with given site ID to cache
-
-##### Parameters:
-    [string] $site_id UUID of site to add to cache
-    [string] $org_id  UUID of org to which new site belongs
-
-##### Return:
-    [Site] The newly created site object
-
----
-
-### deleteSiteFromCache
-##### Description:
-    Removes site with given site ID from cache
-
-##### Parameters:
-    [string] $site_name Name of site to remove from cache
-
-##### Return:
-    [void]
-
----
-
 ### fetch
 ##### Description:
     Fetches model data from API and instantiates its model instances
 
 ##### Parameters:
-    [array] $options params to pass to url request
+    [array] $arg_options params to pass to url request
 
 ##### Return:
     [Sites]
 
 ---
 
-### filterAllByTag
+### filterByTag
 ##### Description:
     Filters sites list by tag
 
 ##### Parameters:
-    [string] $tag Tag to filter by
-    [string] $org Organization which has tagged sites
+    [string] $tag    Tag to filter by
+    [string] $org_id ID of an organization which has tagged sites
 
 ##### Return:
-    [Site[]]
+    [Sites]
 
-##### Throws:
-    TerminusException
+---
+
+### filterByName
+##### Description:
+    Filters an array of sites by whether the user is an organizational member
+
+##### Parameters:
+    [string] $regex Non-delimited PHP regex to filter site names by
+
+##### Return:
+    [Sites]
+
+---
+
+### filterByOwner
+##### Description:
+    Filters an array of sites by whether the user is an organizational member
+
+##### Parameters:
+    [string] $owner_uuid UUID of the owning user to filter by
+
+##### Return:
+    [Sites]
 
 ---
 
@@ -109,12 +114,15 @@
 
 ---
 
-### rebuildCache
+### nameIsTaken
 ##### Description:
-    Clears sites cache
+    Determines whether a given site name is taken or not.
+
+##### Parameters:
+    [string] $name Name of the site to look up
 
 ##### Return:
-    [void]
+    [boolean]
 
 ---
 

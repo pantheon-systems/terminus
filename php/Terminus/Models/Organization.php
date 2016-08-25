@@ -64,18 +64,19 @@ class Organization extends TerminusModel {
    * @return Site[]
    */
   public function getSites() {
+    $site_memberships = $this->site_memberships->all();
     $sites = array_combine(
       array_map(
         function($membership) {
           return $membership->site->id;
         },
-        $this->site_memberships->all()
+        $site_memberships
       ),
       array_map(
         function($membership) {
           return $membership->site;
         },
-        $this->site_memberships->all()
+        $site_memberships
       )
     );
     return $sites;

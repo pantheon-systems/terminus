@@ -1,9 +1,27 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+### [0.12.0] - 2016-08-24
+### Added
+- Added `choices` property to `InputHelper::siteName` parameter object. (#1152)
+- Added `TerminusCollection::listing` to create a list of models therein. (#1152)
+- Added `UserSiteMemberships` collection and `UserSiteMembership` model. (#1152)
+- Added `UserOrganizationMemberships` collection and `UserOrganizationMembership` model. (#1152)
+
+### Changed
+- Renamed `Sites::addSite` to `Sites::create`. (#1152)
+- Renamed `OrganizationUserMemberships::addMember` to `OrganizationUserMemberships::create`. (#1152)
+- Renamed `OrganizationSiteMemberships::addMember` to `OrganizationSiteMemberships::create`. (#1152)
+- When using the sites collection to gather all sites, you now must use `Sites::fetch()` to retrieve the relevant objects. (#1152)
+- Renamed `OrganizationSiteMembership::removeMember` to `OrganizationSiteMembership::delete`. (#1152)
+- Renamed `OrganizationUserMembership::removeMember` to `OrganizationUserMembership::delete`. (#1152)
+- Remamed `Sites::filterAllByTag` to `Sites::filterByTag`. (#1152)
+- Renamed `UserOrganizationMemberships::get` to `UserOrganizationMemberships::getOrganization`. (#1152)
+- `Sites::get` no longer fetches all sites to find the named site. (#1152)
+
 ### Removed
 - `cli cache-clear` command. (#1152)
+- The `SitesCache` class and all site cache-relevant functions have been removed. (#1152)
 - The command `site set-php-version` has been removed. Please set your PHP version by your pantheon.yml file. (See: https://pantheon.io/docs/php-versions) (#1121)
 
 ## [0.11.4] - 2016-08-10
