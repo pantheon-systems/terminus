@@ -213,7 +213,7 @@ class Configurator {
     try {
       $dir_exists = (
         is_dir($dir)
-        || (!file_exists($dir) && mkdir($dir, 0777, true))
+        || (!file_exists($dir) && @mkdir($dir, 0777, true))
       );
     } catch (\Exception $e) {
       return false;

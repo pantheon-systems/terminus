@@ -25,7 +25,7 @@ class MachineTokensCommand extends TerminusCommand {
   }
 
   /**
-   * Show a list of your macnine tokens on Pantheon
+   * Show a list of your machine tokens on Pantheon
    *
    * @subcommand list
    * @alias show

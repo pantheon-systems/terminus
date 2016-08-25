@@ -48,7 +48,7 @@ Feature: Authorization command
     [[user_uuid]]
     """
 
-  Scenario: Checking my user should not give any useful result when I am logged out.
+  Scenario: Checking my user should not get any useful result when I am logged out.
     When I am not authenticated
     And I run "terminus auth whoami"
     Then I should not get:
