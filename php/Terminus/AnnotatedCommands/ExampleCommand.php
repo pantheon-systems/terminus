@@ -32,23 +32,24 @@ class ExampleCommand implements InputAwareInterface, OutputAwareInterface
      * @usage try:formatters --fields=first,third
      * @usage try:formatters --fields=III,II
      */
-    public function exampleTable($options = ['format' => 'table', 'fields' => ''])
-    {
-        $outputData = [
-            [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
-            [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei'  ],
-            [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
-            [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
-        ];
-        // Note that we can also simply return the output data array here.
-        return ResultData::message(new RowsOfFields($outputData));
-    }
+  public function exampleTable($options = ['format' => 'table', 'fields' => '']) {
+
+    $outputData = [
+        [ 'first' => 'One',  'second' => 'Two',  'third' => 'Three' ],
+        [ 'first' => 'Eins', 'second' => 'Zwei', 'third' => 'Drei'  ],
+        [ 'first' => 'Ichi', 'second' => 'Ni',   'third' => 'San'   ],
+        [ 'first' => 'Uno',  'second' => 'Dos',  'third' => 'Tres'  ],
+    ];
+    // Note that we can also simply return the output data array here.
+    return ResultData::message(new RowsOfFields($outputData));
+  }
 
     /**
      * Demonstrate direct use of an output object via OutputAwareTrait
      */
-    public function hello($who)
-    {
-        $this->output()->writeln("Hello, $who");
-    }
+  public function hello($who) {
+
+    $this->output()->writeln("Hello, $who");
+  }
+
 }
