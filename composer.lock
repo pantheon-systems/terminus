@@ -159,12 +159,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation-org/Robo.git",
-                "reference": "560cec46dfe909f3011c0a8574f8d96f042cee34"
+                "reference": "62e75dabb874f2d169f288811e816f8f248a1459"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/Robo/zipball/560cec46dfe909f3011c0a8574f8d96f042cee34",
-                "reference": "560cec46dfe909f3011c0a8574f8d96f042cee34",
+                "url": "https://api.github.com/repos/consolidation-org/Robo/zipball/62e75dabb874f2d169f288811e816f8f248a1459",
+                "reference": "62e75dabb874f2d169f288811e816f8f248a1459",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-08-21 17:22:25"
+            "time": "2016-08-25 19:17:19"
         },
         {
             "name": "container-interop/container-interop",

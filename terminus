@@ -19,5 +19,5 @@ $discovery = new \Consolidation\AnnotatedCommand\CommandFileDiscovery();
 $discovery->setSearchPattern('*Command.php');
 $commandClasses = $discovery->discover('php/Terminus/AnnotatedCommands', '\Terminus\AnnotatedCommands');
 $runner = new \Robo\Runner($commandClasses);
-$statusCode = $runner->execute($_SERVER['argv']);
+$statusCode = $runner->execute($_SERVER['argv'], null, 'Terminus', '0.0.0-alpha0');
 exit($statusCode);
