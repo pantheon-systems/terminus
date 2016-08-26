@@ -13,7 +13,7 @@ use Terminus\Exceptions\TerminusException;
  */
 class ArtCommand extends TerminusCommand {
 
-  private $works = array('druplicon', 'fist', 'unicorn', 'wordpress');
+  private $works = ['druplicon', 'fist', 'rocket', 'unicorn', 'wordpress',];
 
   /**
    * View Pantheon ASCII artwork

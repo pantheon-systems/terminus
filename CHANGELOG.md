@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- New rocket art available using `art rocket`. (#1148)
+
 ### [0.12.0] - 2016-08-24
 ### Added
 - Added `choices` property to `InputHelper::siteName` parameter object. (#1152)
