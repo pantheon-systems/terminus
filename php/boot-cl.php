@@ -1,31 +1,30 @@
 <?php
 
-if ((PHP_SAPI == 'cli') && isset($argv)) {
-  $source = explode('/', $argv[0]);
-  $source = end($source);
-  define('TERMINUS_SCRIPT', $source);
+if (( PHP_SAPI == 'cli') && isset($argv)) {
+    $source = explode('/', $argv[0]);
+    $source = end($source);
+    define('TERMINUS_SCRIPT', $source);
 }
 
 loadDependencies();
 
-//Set a custom exception handler
-//set_exception_handler('\Terminus\Utils\handle_exception');
+\Terminus\Helpers\CliHelper::validateEnvironment();
 
 if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
-  \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
-  \VCR\VCR::configure()->setMode($_SERVER['TERMINUS_VCR_MODE']);
-  \VCR\VCR::turnOn();
-  \VCR\VCR::insertCassette($_SERVER['TERMINUS_VCR_CASSETTE']);
+    \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
+    \VCR\VCR::configure()->setMode($_SERVER['TERMINUS_VCR_MODE']);
+    \VCR\VCR::turnOn();
+    \VCR\VCR::insertCassette($_SERVER['TERMINUS_VCR_CASSETTE']);
 }
 
 if (isset($GLOBALS['argv'])) {
-  $runner = new \Terminus\Runner();
-  $runner->run();
+    $runner = new \Terminus\Runner();
+    $runner->run();
 }
 
 if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
-  \VCR\VCR::eject();
-  \VCR\VCR::turnOff();
+    \VCR\VCR::eject();
+    \VCR\VCR::turnOff();
 }
 
 /**
@@ -34,11 +33,11 @@ if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
  * @return array
  */
 function getVendorPaths() {
-  $vendor_paths = [
-    TERMINUS_ROOT . '/../../../vendor',
-    TERMINUS_ROOT . '/vendor'
-  ];
-  return $vendor_paths;
+    $vendor_paths = [
+        TERMINUS_ROOT . '/../../../vendor',
+        TERMINUS_ROOT . '/vendor'
+    ];
+    return $vendor_paths;
 }
 
 /**
@@ -52,7 +51,7 @@ function loadDependencies() {
     return;
   }
 
-  $has_autoload = false;
+    $has_autoload = false;
 
   foreach (getVendorPaths() as $vendor_path) {
     if (file_exists($vendor_path . '/autoload.php')) {
