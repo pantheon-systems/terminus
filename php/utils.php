@@ -2,13 +2,19 @@
 
 namespace Terminus\Utils;
 
+use Terminus\Config;
+
 /**
  * Terminus is in test mode
  *
  * @return bool
  */
 function isTest() {
-  $is_test = ((boolean)TERMINUS_TEST_MODE || (boolean)TERMINUS_VCR_CASSETTE);
+
+  $is_test = (
+    (boolean)Config::get('test_mode')
+    || (boolean)TERMINUS_VCR_CASSETTE
+  );
   return $is_test;
 }
 

@@ -3,13 +3,11 @@
 namespace Terminus\Models;
 
 use GuzzleHttp\TransferStats as TransferStats;
-use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\Collections\Backups;
-use Terminus\Models\Collections\Bindings;
-use Terminus\Models\Collections\Commits;
-use Terminus\Models\Collections\Hostnames;
+use Terminus\Collections\Backups;
+use Terminus\Collections\Bindings;
+use Terminus\Collections\Commits;
+use Terminus\Collections\Hostnames;
 
 class Environment extends TerminusModel {
   /**

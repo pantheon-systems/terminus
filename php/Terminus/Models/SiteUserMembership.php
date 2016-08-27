@@ -2,8 +2,6 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\TerminusModel;
-
 class SiteUserMembership extends TerminusModel {
   protected $site;
 

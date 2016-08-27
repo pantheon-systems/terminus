@@ -2,8 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
-use Terminus\Configurator;
+use Terminus\Config;
 use Terminus\Session;
 
 /**
@@ -64,7 +63,7 @@ class SshKeysCommand extends TerminusCommand {
     $file = $this->input()->fileName(
       [
         'args'    => $assoc_args,
-        'dir'     => Configurator::getHomeDir() . '/.ssh',
+        'dir'     => Config::getHomeDir() . '/.ssh',
         'message' => 'Please select your public SSH key file.',
         'regex'   => '~(.*.pub)~',
       ]

@@ -1,8 +1,8 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
-class Commits extends TerminusCollection {
+class Instruments extends TerminusCollection {
 
   /**
    * Give the URL for collection data fetching
@@ -10,11 +10,7 @@ class Commits extends TerminusCollection {
    * @return string URL to use in fetch query
    */
   protected function getFetchUrl() {
-    $url = sprintf(
-      'sites/%s/environments/%s/code-log',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
-    );
+    $url = 'users/' . $this->user->id . '/instruments';
     return $url;
   }
 
@@ -24,7 +20,7 @@ class Commits extends TerminusCollection {
    * @return string
    */
   protected function getOwnerName() {
-    $owner_name = 'environment';
+    $owner_name = 'user';
     return $owner_name;
   }
 

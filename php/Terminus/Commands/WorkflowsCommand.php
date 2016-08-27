@@ -2,11 +2,8 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Utils;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
-use Terminus\Models\Collections\Sites;
+use Terminus\Collections\Sites;
+use Terminus\Config;
 
 define("WORKFLOWS_WATCH_INTERVAL", 5);
 
@@ -180,7 +177,7 @@ class WorkflowsCommand extends TerminusCommand {
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
             'time'        => date(
-              TERMINUS_DATE_FORMAT,
+              Config::get('date_format'),
               $workflow->get('started_at')
             ),
           ];
@@ -199,7 +196,7 @@ class WorkflowsCommand extends TerminusCommand {
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
             'time'        => date(
-              TERMINUS_DATE_FORMAT,
+              Config::get('date_format'),
               $workflow->get('finished_at')
             ),
           ];

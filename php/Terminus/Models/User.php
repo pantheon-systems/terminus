@@ -2,12 +2,12 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\Instruments;
-use Terminus\Models\Collections\MachineTokens;
-use Terminus\Models\Collections\SshKeys;
-use Terminus\Models\Collections\UserOrganizationMemberships;
-use Terminus\Models\Collections\UserSiteMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\Instruments;
+use Terminus\Collections\MachineTokens;
+use Terminus\Collections\SshKeys;
+use Terminus\Collections\UserOrganizationMemberships;
+use Terminus\Collections\UserSiteMemberships;
+use Terminus\Collections\Workflows;
 
 class User extends TerminusModel {
   /**

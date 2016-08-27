@@ -1,12 +1,12 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
-use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Site;
 use Terminus\Models\User;
 use Terminus\Models\Workflow;
+use Terminus\Session;
 
 class Sites extends TerminusCollection {
   /**

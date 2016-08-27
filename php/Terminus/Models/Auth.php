@@ -3,9 +3,8 @@
 namespace Terminus\Models;
 
 use Terminus\Caches\TokensCache;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
 
@@ -44,13 +43,14 @@ class Auth extends TerminusModel {
    * @return string
    */
   public function getMachineTokenCreationUrl() {
+    $config = Config::getAll();
     $port = '';
-    if (TERMINUS_HOST == 'localhost') {
-      $port = ':' . TERMINUS_PORT;
+    if ($config['host'] == 'localhost') {
+      $port = ':' . $config['port'];
     }
     $url = vsprintf(
       '%s://%s%s/machine-token/create/%s',
-      [TERMINUS_PROTOCOL, TERMINUS_HOST, $port, gethostname(),]
+      [$config['protocol'], $config['host'], $port, gethostname(),]
     );
     return $url;
   }

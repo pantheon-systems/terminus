@@ -3,8 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
 
 /**
  * Show information for your Pantheon machine tokens

@@ -2,6 +2,7 @@
 
 namespace Terminus;
 
+use Terminus\Config;
 use Terminus\Dispatcher;
 use Terminus\Dispatcher\CompositeCommand;
 use Terminus\Exceptions\TerminusException;
@@ -220,7 +221,7 @@ class Runner {
    * @return string
    */
   public function getUserConfigDir() {
-    return TERMINUS_CONFIG_DIR;
+    return Config::get('config_dir');
   }
 
   /**
@@ -247,7 +248,7 @@ class Runner {
    * @return string
    */
   private function getUserPluginsDir() {
-    return TERMINUS_PLUGINS_DIR;
+    return Config::get('plugins_dir');
   }
 
   /**
@@ -262,7 +263,7 @@ class Runner {
     $directories = [];
 
     // Add the directory of core commands first.
-    $directories[] = TERMINUS_ROOT . '/php/Terminus/Commands';
+    $directories[] = Config::get('root') . '/php/Terminus/Commands';
 
     // Find the command directories from the third party plugins directory.
     foreach ($this->getUserPlugins() as $dir) {

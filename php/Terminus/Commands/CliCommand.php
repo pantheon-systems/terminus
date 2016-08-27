@@ -3,10 +3,9 @@
 namespace Terminus\Commands;
 
 use Terminus\Completions;
+use Terminus\Config;
 use Terminus\Configurator;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\User;
+use Terminus\Collections\Sites;
 use Terminus\Session;
 
 /**
@@ -92,22 +91,23 @@ class CliCommand extends TerminusCommand {
    * : Accepted values: json
    */
   public function info($args, $assoc_args) {
-    $info   = array(
-      'php_binary_path'     => TERMINUS_PHP,
+    $config = Config::getAll();
+    $info   = [
+      'php_binary_path'     => $config['php'],
       'php_version'         => PHP_VERSION,
       'php_ini'             => get_cfg_var('cfg_file_path'),
       'project_config_path' => $this->runner->getUserConfigDir(),
-      'wp_cli_dir_path'     => TERMINUS_ROOT,
-      'wp_cli_version'      => TERMINUS_VERSION,
-    );
-    $labels = array(
+      'terminus_path'       => $config['root'],
+      'terminus_version'    => $config['version'],
+    ];
+    $labels = [
       'php_binary_path'     => 'PHP binary',
       'php_version'         => 'PHP version',
       'php_ini'             => 'php.ini used',
       'project_config_path' => 'Terminus project config',
-      'wp_cli_dir_path'     => 'Terminus root dir',
-      'wp_cli_version'      => 'Terminus version',
-    );
+      'terminus_dir_path'   => 'Terminus root dir',
+      'terminus_version'    => 'Terminus version',
+    ];
     $this->output()->outputRecord($info, $labels);
 
   }
@@ -145,12 +145,13 @@ class CliCommand extends TerminusCommand {
    * Print Terminus version.
    */
   public function version() {
-    $labels = array(
+    $labels = [
       'version' => 'Terminus version',
-      'script'  => 'Terminus script'
-    );
+      'script'  => 'Terminus script',
+    ];
+    $config = Config::getAll();
     $this->output()->outputRecord(
-      array('version' => TERMINUS_VERSION, 'script' => TERMINUS_SCRIPT),
+      ['version' => $config['version'], 'script' => $config['script'],],
       $labels
     );
   }

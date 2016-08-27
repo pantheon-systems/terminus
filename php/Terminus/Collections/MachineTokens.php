@@ -1,8 +1,6 @@
 <?php
 
-namespace Terminus\Models\Collections;
-
-use Terminus\Models\MachineToken;
+namespace Terminus\Collections;
 
 class MachineTokens extends TerminusCollection {
   protected $user;

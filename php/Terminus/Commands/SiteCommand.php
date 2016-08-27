@@ -2,14 +2,12 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
+use Terminus\Collections\Sites;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
 use Terminus\Models\Workflow;
-use Terminus\Models\Collections\Sites;
 use Terminus\Request;
 use Terminus\Session;
-use Terminus\Utils;
 
 /**
  * Actions to be taken on an individual site
@@ -493,7 +491,7 @@ class SiteCommand extends TerminusCommand {
     }
     $url = sprintf(
       'https://%s/sites/%s%s',
-      TERMINUS_HOST,
+      Config::get('host'),
       $site->get('id'),
       $env
     );
@@ -818,7 +816,7 @@ class SiteCommand extends TerminusCommand {
       $data[] = array(
         'name'        => $env->get('id'),
         'created'     => date(
-          TERMINUS_DATE_FORMAT,
+          Config::get('date_format'),
           $env->get('environment_created')
         ),
         'domain'      => $env->domain(),

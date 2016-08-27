@@ -2,16 +2,14 @@
 
 namespace Terminus\Models;
 
-use Terminus\Caches\SitesCache;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Organization;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\Collections\Environments;
-use Terminus\Models\Collections\OrganizationSiteMemberships;
-use Terminus\Models\Collections\SiteAuthorizations;
-use Terminus\Models\Collections\SiteOrganizationMemberships;
-use Terminus\Models\Collections\SiteUserMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\Environments;
+use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Collections\SiteAuthorizations;
+use Terminus\Collections\SiteOrganizationMemberships;
+use Terminus\Collections\SiteUserMemberships;
+use Terminus\Collections\Workflows;
 
 class Site extends TerminusModel {
   /**
@@ -497,7 +495,7 @@ class Site extends TerminusModel {
       }
     }
     if (!is_null($info['created']) && is_numeric($info['created'])) {
-      $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
+      $info['created'] = date(Config::get('date_format'), $info['created']);
     }
     if ((boolean)$this->get('frozen')) {
       $info['frozen'] = true;

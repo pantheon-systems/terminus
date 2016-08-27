@@ -2,9 +2,6 @@
 
 namespace Terminus\Models;
 
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-
 class WorkflowOperation extends TerminusModel {
 
   /**

@@ -3,8 +3,6 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\WorkflowOperation;
 
 class Workflow extends TerminusModel {
 

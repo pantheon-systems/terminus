@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 class Hostnames extends TerminusCollection {
 

@@ -14,7 +14,7 @@
 namespace Terminus\Caches;
 
 use Symfony\Component\Finder\Finder;
-use Terminus\Exceptions\TerminusException;
+use Terminus\Config;
 
 /**
  * Reads/writes to a filesystem cache
@@ -53,7 +53,7 @@ class FileCache {
    */
   public function __construct(array $arg_options = []) {
     $default_options = [
-      'cache_dir' => TERMINUS_CACHE_DIR,
+      'cache_dir' => Config::get('cache_dir'),
       'ttl'       => 832040,
       'max_size'  => 267914296,
       'whitelist' => 'a-z0-9._-',
@@ -89,7 +89,7 @@ class FileCache {
       $expire->modify('-' . $ttl . ' seconds');
 
       $finder = $this->getFinder()->date(
-        'before ' . $expire->format(TERMINUS_DATE_FORMAT)
+        'before ' . $expire->format(Config::get('date_format'))
       );
       foreach ($finder as $file) {
         unlink($file->getRealPath());
@@ -328,7 +328,7 @@ class FileCache {
    * @return bool True if write was successful
    */
   protected function write($key, $contents) {
-    $filename = TERMINUS_CACHE_DIR . "/$key";
+    $filename = Config::get('cache_dir') . "/$key";
 
     $written = false;
     if ($filename) {

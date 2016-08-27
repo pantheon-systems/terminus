@@ -1,10 +1,10 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
-use Terminus\Request;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\TerminusModel;
+use Terminus\Request;
 
 abstract class TerminusCollection extends TerminusModel {
   /**

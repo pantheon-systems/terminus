@@ -2,13 +2,9 @@
 
 namespace Terminus\Commands;
 
+use Terminus\Collections\Sites;
+use Terminus\Config;
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
-use Terminus\Models\Organization;
-use Terminus\Models\OrganizationSiteMembership;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Collections\UserOrganizationMemberships;
 
 /**
  * Show information for your Pantheon organizations
@@ -244,7 +240,10 @@ class OrganizationsCommand extends TerminusCommand {
           'id'            => $site->id,
           'service_level' => $site->get('service_level'),
           'framework'     => $site->get('framework'),
-          'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
+          'created'       => date(
+            Config::get('date_format'),
+            $site->get('created')
+          ),
           'tags'          => $membership->get('tags'),
         ];
         if ((boolean)$site->get('frozen')) {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Models\Environment;
 use Terminus\Models\Workflow;

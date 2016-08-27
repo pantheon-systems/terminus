@@ -2,8 +2,8 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\Collections\Sites;
+use Terminus\Collections\Sites;
+use Terminus\Config;
 
 /**
  * Base class for Terminus commands that deal with sending SSH commands
@@ -118,6 +118,7 @@ abstract class CommandWithSSH extends TerminusCommand {
    * @return array Connection info
    */
   protected function getAppserverInfo(array $site_info = []) {
+    $config = Config::getAll();
     $site_id = $site_info['site'];
     $env_id  = $site_info['environment'];
     $server  = [
@@ -125,12 +126,12 @@ abstract class CommandWithSSH extends TerminusCommand {
       'host' => "appserver.$env_id.$site_id.drush.in",
       'port' => '2222',
     ];
-    if ($ssh_host = TERMINUS_SSH_HOST) {
+    if (!is_null($ssh_host = $config['ssh_host'])) {
       $server['user'] = "appserver.$env_id.$site_id";
       $server['host'] = $ssh_host;
-    } else if (strpos(TERMINUS_HOST, 'onebox') !== false) {
+    } else if (strpos($config['host'], 'onebox') !== false) {
       $server['user'] = "appserver.$env_id.$site_id";
-      $server['host'] = TERMINUS_HOST;
+      $server['host'] = $config['host'];
     }
     return $server;
   }

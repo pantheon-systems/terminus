@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Session;
 use Terminus\Models\Workflow;
@@ -241,7 +241,7 @@ class Workflows extends TerminusCollection {
     }
     $owner_name = strtolower(
       str_replace(
-        array('Terminus\\', 'Models\\', 'Collections\\'),
+        ['Terminus\\', 'Collections\\',],
         '',
         get_class($this->owner)
       )

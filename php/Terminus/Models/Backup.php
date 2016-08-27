@@ -2,6 +2,8 @@
 
 namespace Terminus\Models;
 
+use Terminus\Config;
+
 class Backup extends TerminusModel {
 
   /**
@@ -43,7 +45,7 @@ class Backup extends TerminusModel {
     } else {
       return 'Pending';
     }
-    $date = date(TERMINUS_DATE_FORMAT, $datetime);
+    $date = date(Config::get('date_format'), $datetime);
     return $date;
   }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Workflow;

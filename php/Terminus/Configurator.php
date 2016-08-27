@@ -2,11 +2,10 @@
 
 namespace Terminus;
 
-use Symfony\Component\Yaml\Yaml;
+use Terminus\Config;
 
 class Configurator {
   private $config = [];
-  private $config_file = '[[TERMINUS_ROOT]]/config/constants.yml';
   private $spec;
   private $special_flags = ['--no-cache-clear',];
 
@@ -16,12 +15,8 @@ class Configurator {
    * @param string $path Path to configuration specification file
    */
   public function __construct($path = null) {
-    $this->importEnvironmentVariables();
-    $this->defineConstants();
-    $this->ensureDirsExist();
-
     if (is_null($path)) {
-      $path = TERMINUS_ROOT . '/config/spec.php';
+      $path = Config::get('root') . '/config/spec.php';
     }
     $this->spec = include $path;
 
@@ -64,44 +59,6 @@ class Configurator {
 
     $array = [$positional_args, $assoc_args,];
     return $array;
-  }
-
-  /**
-   * Ensures that directory paths work in any system
-   *
-   * @param string $path A path to set the directory separators for
-   * @return string
-   */
-  public static function fixDirectorySeparators($path) {
-    $fixed_path = str_replace(
-      ['/', '\\',],
-      DIRECTORY_SEPARATOR,
-      $path
-    );
-    return $fixed_path;
-  }
-
-  /**
-   * Returns the appropriate home directory.
-   *
-   * Adapted from Terminus Package Manager by Ed Reel
-   * @author Ed Reel <@uberhacker>
-   * @url    https://github.com/uberhacker/tpm
-   *
-   * @return string
-   */
-  public static function getHomeDir() {
-    $home = getenv('HOME');
-    if (!$home) {
-      $system = '';
-      if (getenv('MSYSTEM') !== null) {
-        $system = strtoupper(substr(getenv('MSYSTEM'), 0, 4));
-      }
-      if ($system != 'MING') {
-        $home = getenv('HOMEPATH');
-      }
-    }
-    return $home;
   }
 
   /**
@@ -170,166 +127,6 @@ class Configurator {
   }
 
   /**
-   * Sets constants necessary for the proper functioning of Terminus
-   *
-   * @return void
-   */
-  private function defineConstants() {
-    if (!defined('TERMINUS_ROOT')) {
-      define('TERMINUS_ROOT', $this->getTerminusRoot());
-    }
-    if (!defined('TERMINUS_PHP')) {
-      define('TERMINUS_PHP', $this->getPhpBinary());
-    }
-    if (!defined('Terminus')) {
-      define('Terminus', true);
-    }
-    $default_constants = Yaml::parse(
-      file_get_contents(TERMINUS_ROOT . '/config/constants.yml')
-    );
-    foreach ($default_constants as $var_name => $default) {
-      if (!defined($var_name)) {
-        if (isset($_SERVER[$var_name]) && ($_SERVER[$var_name] != '')) {
-          $constant_value = $_SERVER[$var_name];
-        } else if (!defined($var_name)) {
-          $constant_value = $default;
-        }
-        define($var_name, $this->replacePlaceholders($constant_value));
-      }
-    }
-    date_default_timezone_set(TERMINUS_TIME_ZONE);
-    if (!defined('TERMINUS_SCRIPT')) {
-      define('TERMINUS_SCRIPT', $this->getTerminusScript());
-    }
-  }
-
-  /**
-   * Ensures a directory exists
-   *
-   * @param string $dir Directory to ensure existence of
-   * @return bool
-   */
-  private function ensureDirExists($dir) {
-    try {
-      $dir_exists = (
-        is_dir($dir)
-        || (!file_exists($dir) && @mkdir($dir, 0777, true))
-      );
-    } catch (\Exception $e) {
-      return false;
-    }
-    return $dir_exists;
-  }
-
-  /**
-   * Ensures that all directories referenced in constants exist
-   *
-   * @return void
-   */
-  private function ensureDirsExist() {
-    $constants = get_defined_constants();
-    foreach ($constants as $constant_name => $dir) {
-      if ((strpos($constant_name, 'TERMINUS_') !== false)
-        && (strpos($constant_name, '_DIR') !== false)
-      ) {
-        $this->ensureDirExists($dir);
-      }
-    }
-  }
-
-  /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
-  private function getPhpBinary() {
-    if (getenv('TERMINUS_PHP')) {
-      $php_bin = getenv('TERMINUS_PHP');
-    } elseif (defined('PHP_BINARY')) {
-      $php_bin = PHP_BINARY;
-    } else {
-      $php_bin = 'php';
-    }
-    return $php_bin;
-  }
-
-  /**
-   * Finds and returns the root directory of Terminus
-   *
-   * @param string $current_dir Directory to start searching at
-   * @return string
-   */
-  private function getTerminusRoot($current_dir = null) {
-    if (is_null($current_dir)) {
-      $current_dir = dirname(__DIR__);
-    }
-    if (file_exists("$current_dir/composer.json")) {
-      return $current_dir;
-    }
-    $dir = explode('/', $current_dir);
-    array_pop($dir);
-    if (empty($dir)) {
-      throw new TerminusError("Could not locate root to set TERMINUS_ROOT.");
-    }
-    $dir = implode('/', $dir);
-    $root_dir = $this->getTerminusRoot($dir);
-    return $root_dir;
-  }
-
-  /**
-   * Finds and returns the name of the script running Terminus functions
-   *
-   * @return string
-   */
-  private function getTerminusScript() {
-    $debug           = debug_backtrace();
-    $script_location = array_pop($debug);
-    $script_name     = str_replace(
-      TERMINUS_ROOT . '/',
-      '',
-      $script_location['file']
-    );
-    return $script_name;
-  }
-
-  /**
-   * Imports environment variables
-   *
-   * @return void
-   */
-  private function importEnvironmentVariables() {
-    //Load environment variables from __DIR__/.env
-    if (file_exists(getcwd() . '/.env')) {
-      $env = new \Dotenv\Dotenv(getcwd());
-      $env->load();
-    }
-  }
-
-  /**
-   * Exchanges values in [[ ]] in the given string with constants
-   *
-   * @param string $string The string to perform replacements on
-   * @return string $string The modified string
-   */
-  private function replacePlaceholders($string) {
-    $regex = '~\[\[(.*?)\]\]~';
-    preg_match_all($regex, $string, $matches);
-    if (!empty($matches)) {
-      foreach ($matches[1] as $id => $value) {
-        $replacement_key = trim($value);
-        if (defined($replacement_key)) {
-          $replacement = constant($replacement_key);
-          $string = str_replace($matches[0][$id], $replacement, $string);
-        }
-      }
-    }
-    $fixed_string = self::fixDirectorySeparators(
-      str_replace('~', self::getHomeDir(), $string)
-    );
-    return $fixed_string;
-  }
-
-  /**
    * Separates assoc_args from runtime configuration
    *
    * @param array $mixed_args A mixture of runtime args and command args
@@ -367,5 +164,5 @@ class Configurator {
 
 }
 
-include TERMINUS_ROOT . '/php/utils.php';
-include TERMINUS_ROOT . '/php/dispatcher.php';
+include Config::get('root') . '/php/utils.php';
+include Config::get('root') . '/php/dispatcher.php';

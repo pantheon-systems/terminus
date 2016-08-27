@@ -2,9 +2,9 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\OrganizationSiteMemberships;
-use Terminus\Models\Collections\OrganizationUserMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Collections\OrganizationUserMemberships;
+use Terminus\Collections\Workflows;
 
 class Organization extends TerminusModel {
   /**

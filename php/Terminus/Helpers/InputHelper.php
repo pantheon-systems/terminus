@@ -2,14 +2,12 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Collections\Sites;
+use Terminus\Collections\Upstreams;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\TerminusHelper;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Collections\Upstreams;
 use Terminus\Models\OrganizationUserMembership;
 use Terminus\Models\Site;
-use Terminus\Models\Upstream;
-use Terminus\Models\User;
 use Terminus\Models\Workflow;
 use Terminus\Session;
 use Terminus\Utils;
@@ -216,8 +214,8 @@ class InputHelper extends TerminusHelper {
       return $options['args'][$options['key']];
     }
     if (in_array($options['key'], ['env', 'from-env'])) {
-      if (isset($_SERVER['TERMINUS_ENV'])) {
-        return $_SERVER['TERMINUS_ENV'];
+      if (!is_null($env = Config::get('env'))) {
+        return $env;
       }
     }
     $choices = $options['choices'];
@@ -397,8 +395,8 @@ class InputHelper extends TerminusHelper {
         return $id;
       }
       return $arguments[$key];
-    } else if (isset($_SERVER['TERMINUS_ORG'])) {
-      return $_SERVER['TERMINUS_ORG'];
+    } else if (!is_null($org = Config::get('org'))) {
+      return $org;
     }
     if (count($org_list) == 0) {
       if ($options['allow_none']) {
@@ -787,8 +785,8 @@ class InputHelper extends TerminusHelper {
 
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
-    } else if (isset($_SERVER['TERMINUS_SITE'])) {
-      return $_SERVER['TERMINUS_SITE'];
+    } else if (!is_null($site = Config::get('site'))) {
+      return $site;
     } else if (!empty($options['choices'])) {
       $choices = $options['choices'];
     } else {
@@ -924,7 +922,10 @@ class InputHelper extends TerminusHelper {
           $environment = 'None';
         }
 
-        $created_at = date(TERMINUS_DATE_FORMAT, $workflow->get('created_at'));
+        $created_at = date(
+          Config::get('date_format'),
+          $workflow->get('created_at')
+        );
 
         $workflow_description = sprintf(
           "%s - %s - %s - %s",
