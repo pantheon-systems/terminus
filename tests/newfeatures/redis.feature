@@ -9,7 +9,7 @@ Feature: Using Redis
 
   @vcr site_redis_enable
   Scenario: Enabling Redis
-    When I run "terminus site redis enable --site=[[test_site_name]]"
+    When I run "terminus redis:enable --site=[[test_site_name]]"
     Then I should get:
     """
     Redis enabled. Converging bindings...
@@ -17,7 +17,7 @@ Feature: Using Redis
 
   @vcr site_redis_disable
   Scenario: Disabling Redis
-    When I run "terminus site redis disable --site=[[test_site_name]]"
+    When I run "terminus redis:disable --site=[[test_site_name]]"
     Then I should get:
     """
     Redis disabled. Converging bindings...
