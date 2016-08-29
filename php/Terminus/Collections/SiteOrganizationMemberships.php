@@ -2,19 +2,30 @@
 
 namespace Terminus\Collections;
 
-use Terminus\Models\Site;
-use Terminus\Models\SiteOrganizationMembership;
-use Terminus\Models\Workflow;
-
 class SiteOrganizationMemberships extends TerminusCollection {
   /**
    * @var Site
    */
-  protected $site;
+  public $site;
   /**
-   * @var Workflows
+   * @var string
    */
-  protected $workflows;
+  protected $collected_class = 'Terminus\Models\SiteOrganizationMembership';
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url = "sites/{$this->site->id}/memberships/organizations";
+  }
 
   /**
    * Adds this org as a member to the site
@@ -26,24 +37,9 @@ class SiteOrganizationMemberships extends TerminusCollection {
   public function addMember($name, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_organization_membership',
-      array('params' => array('organization_name' => $name, 'role' => $role))
+      ['params' => ['organization_name' => $name, 'role' => $role,],]
     );
     return $workflow;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return SiteOrganizationMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-
-    parent::fetch($options);
-    return $this;
   }
 
   /**
@@ -60,26 +56,6 @@ class SiteOrganizationMemberships extends TerminusCollection {
       }
     }
     return null;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'site';
-    return $owner_name;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'sites/' . $this->site->get('id') . '/memberships/organizations';
-    return $url;
   }
 
 }

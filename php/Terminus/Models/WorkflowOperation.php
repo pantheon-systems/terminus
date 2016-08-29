@@ -10,13 +10,13 @@ class WorkflowOperation extends TerminusModel {
    * @return array
    */
   public function serialize() {
-    $data = array(
+    $data = [
       'id'          => $this->id,
       'type'        => $this->get('type'),
       'description' => $this->get('description'),
       'result'      => $this->get('result'),
       'duration'    => $this->duration(),
-    );
+    ];
 
     if ($this->has('log_output')) {
       $data['log_output'] = $this->get('log_output');

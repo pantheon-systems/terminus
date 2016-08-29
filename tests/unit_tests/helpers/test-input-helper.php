@@ -2,7 +2,6 @@
 
 use Terminus\Commands\ArtCommand;
 use Terminus\Helpers\InputHelper;
-use Terminus\Loggers\Logger;
 use Terminus\Runner;
 
 /**
@@ -34,15 +33,9 @@ class InputHelperTest extends PHPUnit_Framework_TestCase {
 
   public function testEnv() {
     //From args
-    $env_id = $this->inputter->env(array('args' => array('env' => 'test')));
+    $env_id = $this->inputter->env(['args' => ['env' => 'test',],]);
     $this->assertInternalType('string', $env_id);
     $this->assertEquals('test', $env_id);
-
-    //From environment variable
-    $_SERVER['TERMINUS_ENV'] = 'live';
-    $env_id = $this->inputter->env();
-    $this->assertInternalType('string', $env_id);
-    $this->assertEquals('live', $env_id);
   }
 
   public function testGetNullInputs() {

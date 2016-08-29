@@ -3,13 +3,34 @@
 namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Workflow;
-use Terminus\Models\Backup;
 
 define('DAILY_BACKUP_TTL', 691200);
 define('WEEKLY_BACKUP_TTL', 2764800);
 
 class Backups extends TerminusCollection {
+  /**
+   * @var Environment
+   */
+  public $environment;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Backup';
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->environment = $options['environment'];
+    $this->url = sprintf(
+      'sites/%s/environments/%s/backups/catalog',
+      $this->environment->site->id,
+      $this->environment->id
+    );
+  }
 
   /**
    * Cancels an environment's regular backup schedule
@@ -22,7 +43,7 @@ class Backups extends TerminusCollection {
       $this->environment->site->get('id'),
       $this->environment->get('id')
     );
-    $params    = array('method' => 'delete');
+    $params = ['method' => 'delete',];
     for ($day = 0; $day < 7; $day++) {
       $this->request->request("$path_root/$day", $params);
     }
@@ -39,14 +60,14 @@ class Backups extends TerminusCollection {
    *   - element: string: Which aspect of the arg to back up
    * @return Workflow
    */
-  public function create(array $arg_params) {
-    $default_params = array(
+  public function create(array $arg_params = []) {
+    $default_params = [
       'code'       => false,
       'database'   => false,
       'files'      => false,
       'ttl'        => 31556736,
       'entry_type' => 'backup',
-    );
+    ];
     $params = array_merge($default_params, $arg_params);
 
     if (isset($params[$params['element']])) {
@@ -54,7 +75,7 @@ class Backups extends TerminusCollection {
     } else {
       $params = array_merge(
         $params,
-        array('code' => true, 'database' => true, 'files' => true,)
+        ['code' => true, 'database' => true, 'files' => true,]
       );
     }
     unset($params['element']);
@@ -69,13 +90,9 @@ class Backups extends TerminusCollection {
       unset($params['type']);
     }
 
-    $options  = array(
-      'environment' => $this->environment->get('id'),
-      'params' => $params
-    );
-    $workflow = $this->environment->site->workflows->create(
+    $workflow = $this->environment->workflows->create(
       'do_export',
-      $options
+      compact('params')
     );
     return $workflow;
   }
@@ -133,14 +150,14 @@ class Backups extends TerminusCollection {
     );
     $response      = $this->request->request($path);
     $response_data = (array)$response['data'];
-    $data          = array(
+    $data          = [
       'daily_backup_hour' => null,
       'weekly_backup_day' => null,
-    );
+    ];
 
     $schedule_sample = array_shift($response_data);
     if (!is_null($schedule_sample)) {
-      $schedule = array();
+      $schedule = [];
       foreach ((array)$response['data'] as $day_number => $info) {
         $schedule[$day_number] = $info->ttl;
       }
@@ -187,12 +204,12 @@ class Backups extends TerminusCollection {
         return $backup->backupIsFinished();
       }
     );
-    $ordered_backups  = array();
+    $ordered_backups  = [];
     foreach ($finished_backups as $id => $backup) {
       $ordered_backups[$id] = $backup->get('start_time');
     }
     arsort($ordered_backups);
-    $backups = array();
+    $backups = [];
     foreach ($ordered_backups as $id => $start_time) {
       $backups[] = $finished_backups[$id];
     }
@@ -210,12 +227,12 @@ class Backups extends TerminusCollection {
     $daily_ttl   = 691200;
     $weekly_ttl  = 2764800;
     $backup_hour = rand(1, 24);
-    $schedule    = array();
+    $schedule    = [];
     for ($day = 0; $day < 7; $day++) {
-      $schedule[$day] = (object)array(
+      $schedule[$day] = (object)[
         'hour' => $backup_hour,
         'ttl'  => $daily_ttl,
-      );
+      ];
       if ($day == $day_number) {
         $schedule[$day]->ttl = $weekly_ttl;
       }
@@ -224,41 +241,17 @@ class Backups extends TerminusCollection {
 
     $path = sprintf(
       'sites/%s/environments/%s/backups/schedule',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
+      $this->environment->site->id,
+      $this->environment->id
     );
 
-    $params = array(
+    $params = [
       'method'      => 'put',
       'form_params' => $schedule,
-    );
+    ];
 
     $this->request->request($path, $params);
     return true;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf(
-      'sites/%s/environments/%s/backups/catalog',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
-    );
-    return $url;
-  }
-
-  /**
-   * Gets the name of the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'environment';
-    return $owner_name;
   }
 
 }

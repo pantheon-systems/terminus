@@ -3,8 +3,6 @@
 namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\OrganizationUserMembership;
-use Terminus\Models\Workflow;
 
 class OrganizationUserMemberships extends TerminusCollection {
   /**
@@ -12,8 +10,12 @@ class OrganizationUserMemberships extends TerminusCollection {
    */
   public $organization;
   /**
-   * @var boolean
+   * @var string
    */
+  protected $collected_class = 'Terminus\Models\OrganizationUserMembership';
+   /**
+    * @var boolean
+    */
   protected $paged = true;
 
   /**
@@ -25,22 +27,6 @@ class OrganizationUserMemberships extends TerminusCollection {
     parent::__construct($options);
     $this->organization = $options['organization'];
     $this->url = "organizations/{$this->organization->id}/memberships/users";
-  }
-
-  /**
-   * Adds a model to this collection
-   *
-   * @param object $model_data  Data to feed into attributes of new model
-   * @param array  $arg_options Data to make properties of the new model
-   * @return void
-   */
-  public function add($model_data, array $arg_options = []) {
-    $default_options = [
-      'id'         => $model_data->id,
-      'collection' => $this,
-    ];
-    $options         = array_merge($default_options, $arg_options);
-    parent::add($model_data, $options);
   }
 
   /**
@@ -81,16 +67,6 @@ class OrganizationUserMemberships extends TerminusCollection {
       compact('id'),
       1
     );
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'organization';
-    return $owner_name;
   }
 
 }

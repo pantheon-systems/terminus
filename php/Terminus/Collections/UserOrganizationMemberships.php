@@ -10,6 +10,10 @@ class UserOrganizationMemberships extends TerminusCollection {
    */
   public $user;
   /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\UserOrganizationMembership';
+  /**
    * @var boolean
    */
   protected $paged = true;
@@ -23,22 +27,6 @@ class UserOrganizationMemberships extends TerminusCollection {
     parent::__construct($options);
     $this->user = $options['user'];
     $this->url  = "users/{$this->user->id}/memberships/organizations";
-  }
-
-  /**
-   * Adds a model to this collection
-   *
-   * @param object $model_data  Data to feed into attributes of new model
-   * @param array  $arg_options Data to make properties of the new model
-   * @return void
-   */
-  public function add($model_data = [], array $arg_options = []) {
-    $default_options = [
-      'id'         => $model_data->id,
-      'collection' => $this,
-    ];
-    $options         = array_merge($default_options, $arg_options);
-    parent::add($model_data, $options);
   }
 
   /**
@@ -60,16 +48,6 @@ class UserOrganizationMemberships extends TerminusCollection {
       'This user is not a member of an organizaiton identified by {org}.',
       compact('org')
     );
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'user';
-    return $owner_name;
   }
 
 }

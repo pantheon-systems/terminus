@@ -5,6 +5,21 @@ namespace Terminus\Models;
 use Terminus\Config;
 
 class Backup extends TerminusModel {
+  /**
+   * @var environment
+   */
+  public $environment;
+
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   */
+  public function __construct($attributes, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->environment = $options['collection']->environment;
+  }
 
   /**
    * Determines whether the backup has been completed or not

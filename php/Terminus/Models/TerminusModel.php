@@ -2,10 +2,13 @@
 
 namespace Terminus\Models;
 
-use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 
 abstract class TerminusModel {
+  /**
+   * @var string
+   */
+  public $id;
   /**
    * @var array Arguments for fetching this model's information
    */
@@ -13,11 +16,7 @@ abstract class TerminusModel {
   /**
    * @var object
    */
-  protected $attributes;
-  /**
-   * @var string
-   */
-  protected $id;
+  public $attributes;
   /**
    * @var Request
    */
@@ -33,70 +32,29 @@ abstract class TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options to set as $this->key
    */
-  public function __construct($attributes = null, array $options = array()) {
-    if ($attributes == null) {
-      $attributes = new \stdClass();
+  public function __construct($attributes = null, array $options = []) {
+    if (is_object($attributes)) {
+      $this->attributes = $attributes;
+    } else {
+      $this->attributes = (object)[];
     }
-    if (isset($attributes->id)) {
-      $this->id = $attributes->id;
-    }
-    foreach ($options as $var_name => $value) {
-      $this->$var_name = $value;
-    }
-    $this->attributes = $attributes;
-    $this->request    = new Request();
-  }
-
-  /**
-   * Handles requests for inaccessible properties
-   *
-   * @param string $property Name of property being requested
-   * @return mixed $this->$property
-   * @throws TerminusException
-   */
-  public function __get($property) {
-    if (property_exists($this, $property)) {
-      return $this->$property;
-    }
-
-    $trace = debug_backtrace();
-    throw new TerminusException(
-      'Undefined property $var->${property} in {file} on line {line}',
-      [
-        'property' => $property,
-        'file' => $trace[0]['file'],
-        'line' => $trace[0]['line']
-      ],
-      1
-    );
-    return null;
+    $this->id = $this->attributes->id;
+    $this->request = new Request();
   }
 
   /**
    * Fetches this object from Pantheon
    *
-   * @param array $options Params to pass to url request
+   * @param array $args Params to pass to request
    * @return TerminusModel $this
    */
-  public function fetch(array $options = array()) {
-    $fetch_args = array();
-    if (isset($options['fetch_args'])) {
-      $fetch_args = $options['fetch_args'];
-    }
-
+  public function fetch(array $args = []) {
     $options = array_merge(
-      array('options' => array('method' => 'get')),
+      ['options' => ['method' => 'get',],],
       $this->args,
-      $fetch_args
+      $args
     );
-
-    if (isset($this->url)) {
-      $fetch_url = $this->url;
-    } else {
-      $fetch_url = $this->getFetchUrl();
-    }
-    $results = $this->request->request($fetch_url, $options);
-
+    $results = $this->request->request($this->url, $options);
     $data = $results['data'];
     $data = $this->parseAttributes($data);
     $this->attributes = $data;
@@ -136,15 +94,6 @@ abstract class TerminusModel {
   public function has($attribute) {
     $isset = isset($this->attributes->$attribute);
     return $isset;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    return '';
   }
 
 }

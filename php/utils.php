@@ -10,11 +10,7 @@ use Terminus\Config;
  * @return bool
  */
 function isTest() {
-
-  $is_test = (
-    (boolean)Config::get('test_mode')
-    || (boolean)TERMINUS_VCR_CASSETTE
-  );
+  $is_test = (boolean)Config::get('test_mode');
   return $is_test;
 }
 

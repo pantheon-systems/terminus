@@ -3,26 +3,24 @@
 namespace Terminus\Collections;
 
 class MachineTokens extends TerminusCollection {
-  protected $user;
+  /**
+   * @var User
+   */
+  public $user;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\MachineToken';
 
   /**
-   * Give the URL for collection data fetching
+   * Object constructor
    *
-   * @return string URL to use in fetch query
+   * @param array $options Options to set as $this->key
    */
-  protected function getFetchUrl() {
-    $url = 'users/' . $this->user->id . '/machine_tokens';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'user';
-    return $owner_name;
+  public function __construct ($options = []) {
+    parent::__construct($options);
+    $this->user = $options['user'];
+    $this->url = "users/{$this->user->id}/machine_tokens";
   }
 
 }

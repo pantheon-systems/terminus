@@ -2,6 +2,7 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 
 class FileHelper extends TerminusHelper {

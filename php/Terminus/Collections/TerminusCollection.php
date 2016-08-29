@@ -3,14 +3,17 @@
 namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
 use Terminus\Request;
 
-abstract class TerminusCollection extends TerminusModel {
+abstract class TerminusCollection {
   /**
    * @var array
    */
   protected $args = [];
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\TerminusModel';
   /**
    * @var TerminusModel[]
    */
@@ -25,11 +28,33 @@ abstract class TerminusCollection extends TerminusModel {
    *
    * @param array $options To be set to $this->key
    */
-  public function __construct(array $options = array()) {
-    foreach ($options as $key => $option) {
-      $this->$key = $option;
-    }
+  public function __construct(array $options = []) {
     $this->request = new Request();
+  }
+
+  /**
+   * Handles requests for inaccessible properties
+   *
+   * @param string $property Name of property being requested
+   * @return mixed $this->$property
+   * @throws TerminusException
+   */
+  public function __get($property) {
+    if (property_exists($this, $property)) {
+      return $this->$property;
+    }
+
+    $trace = debug_backtrace();
+    throw new TerminusException(
+      'Undefined property $var->${property} in {file} on line {line}',
+      [
+        'property' => $property,
+        'file' => $trace[0]['file'],
+        'line' => $trace[0]['line']
+      ],
+      1
+    );
+    return null;
   }
 
   /**
@@ -39,30 +64,12 @@ abstract class TerminusCollection extends TerminusModel {
    * @param array  $options    Data to make properties of the new model
    * @return TerminusModel
    */
-  public function add($model_data, array $options = array()) {
-    $model   = $this->getMemberName();
-    $owner   = $this->getOwnerName();
+  public function add($model_data, array $options = []) {
     $options = array_merge(
-      array(
-        'id'         => $model_data->id,
-        'collection' => $this,
-      ),
+      ['id' => $model_data->id, 'collection' => $this,],
       $options
     );
-
-    if ($owner) {
-      if (isset($this->$owner)) {
-        $options[$owner] = $this->$owner;
-      } else {
-        $options[$owner] = $this->owner;
-      }
-    }
-
-    $model = new $model(
-      $model_data,
-      $options
-    );
-
+    $model = new $this->collected_class($model_data, $options);
     $this->models[$model_data->id] = $model;
     return $model;
   }
@@ -84,11 +91,10 @@ abstract class TerminusCollection extends TerminusModel {
    * @param array $options params to pass to url request
    * @return TerminusCollection $this
    */
-  public function fetch(array $options = array()) {
+  public function fetch(array $options = []) {
     $results = $this->getCollectionData($options);
-    $data    = $this->objectify($results['data']);
 
-    foreach (get_object_vars($data) as $id => $model_data) {
+    foreach ($results['data'] as $id => $model_data) {
       if (!isset($model_data->id)) {
         $model_data->id = $id;
       }
@@ -110,13 +116,9 @@ abstract class TerminusCollection extends TerminusModel {
     if (isset($models[$id])) {
       return $models[$id];
     }
-    $model = explode('\\', $this->getMemberName());
     throw new TerminusException(
       'Could not find {model} "{id}"',
-      array(
-        'model' => strtolower(array_pop($model)),
-        'id'    => $id,
-      ),
+      ['model' => $this->collected_class, 'id' => $id,],
       1
     );
   }
@@ -167,16 +169,6 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
-   * Gives the name of this class
-   *
-   * @return string
-   */
-  protected function getClassName() {
-    $class_name = get_class($this);
-    return $class_name;
-  }
-
-  /**
    * Retrieves collection data from the API
    *
    * @param array $options params to pass to url request
@@ -187,16 +179,11 @@ abstract class TerminusCollection extends TerminusModel {
     if (isset($options['fetch_args'])) {
       $args = array_merge($args, $options['fetch_args']);
     }
-    if (isset($this->url)) {
-      $url = $this->url;
-    } else {
-      $url = $this->getFetchUrl();
-    }
 
-    if ($this->paged || (isset($options['paged']) && $options['paged'])) {
-      $results = $this->request->pagedRequest($url, $args);
+    if ($this->paged) {
+      $results = $this->request->pagedRequest($this->url, $args);
     } else {
-      $results = $this->request->request($url, $args);
+      $results = $this->request->request($this->url, $args);
     }
 
     return $results;
@@ -219,14 +206,14 @@ abstract class TerminusCollection extends TerminusModel {
     $value = 'name'
   ) {
     $members     = $this->getMembers();
-    $member_list = array();
+    $member_list = [];
 
     $values = $value;
     if (!is_array($values)) {
-      $values = array($value);
+      $values = [$value,];
     }
     foreach ($members as $member) {
-      $member_list[$member->get($key)] = array();
+      $member_list[$member->get($key)] = [];
       foreach ($values as $item) {
         $member_list[$member->get($key)][$item] = $member->get($item);
       }
@@ -246,15 +233,6 @@ abstract class TerminusCollection extends TerminusModel {
   }
 
   /**
-   * Names the model-owner of this collection, false if DNE
-   *
-   * @return string|bool
-   */
-  protected function getOwnerName() {
-    return false;
-  }
-
-  /**
    * Returns an array of data where the keys are the attribute $key and the
    *   values are the attribute $value
    *
@@ -264,21 +242,8 @@ abstract class TerminusCollection extends TerminusModel {
    *         $this->attribute->$key = $this->attribute->$value
    */
   public function getMemberList($key = 'id', $value = 'name') {
-    $member_list = $this->getFilteredMemberList(array(), $key, $value);
+    $member_list = $this->getFilteredMemberList([], $key, $value);
     return $member_list;
-  }
-
-  /**
-   * Returns class name of the model collected by this collection.
-   *
-   * @return string Name of model
-   */
-  protected function getMemberName() {
-    $name_array = explode('\\', get_class($this));
-    $model_name = $name_array[0]
-      . '\\' . $name_array[1]
-      . '\\' . substr(array_pop($name_array), 0, -1);
-    return $model_name;
   }
 
   /**
@@ -291,23 +256,6 @@ abstract class TerminusCollection extends TerminusModel {
       $this->fetch();
     }
     return $this->models;
-  }
-
-  /**
-   * Turns an associative array into a stdClass object
-   *
-   * @param mixed $array Array to turn into object
-   * @return \stdClass
-   */
-  protected function objectify($array = array()) {
-    if (is_array($array)) {
-      $object = new \stdClass();
-      foreach ($array as $key => $value) {
-        $object->$key = $value;
-      }
-      return $object;
-    }
-    return $array;
   }
 
 }

@@ -4,13 +4,29 @@ namespace Terminus\Models;
 
 class SiteOrganizationMembership extends TerminusModel {
   /**
-   * @var Site
-   */
-  protected $site;
-  /**
    * @var Organization
    */
-  protected $organization;
+  public $organization;
+  /**
+   * @var Site
+   */
+  public $site;
+
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return SiteUserMembership
+   */
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->site = $options['collection']->site;
+    $this->organization = new Organization(
+      $attributes->organization,
+      ['id' => $attributes->organization->id, 'memberships' => [$this,],]
+    );
+  }
 
   /**
    * Returns organization object within SiteOrganizationMembership object

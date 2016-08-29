@@ -17,37 +17,30 @@ class Site extends TerminusModel {
    * @todo Use Bindings collection?
    */
   public $bindings;
-
   /**
-   * @var array
+   * @var SiteAuthorizations
    */
-  protected $authorizations;
-
+  public $authorizations;
   /**
    * @var Environments
    */
-  protected $environments;
-
+  public $environments;
   /**
    * @var SiteOrganizationMemberships
    */
-  protected $org_memberships;
-
+  public $org_memberships;
   /**
    * @var SiteUserMemberships
    */
-  protected $user_memberships;
-
+  public $user_memberships;
   /**
    * @var Workflows
    */
-  protected $workflows;
-
+  public $workflows;
   /**
    * @var array
    */
   private $features;
-
   /**
    * @var array
    */
@@ -80,7 +73,7 @@ class Site extends TerminusModel {
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**
@@ -101,22 +94,22 @@ class Site extends TerminusModel {
   /**
    * Adds a tag to the site
    *
-   * @param string $tag    Name of tag to apply
-   * @param string $org_id Organization to add the tag association to
+   * @param string       $tag Name of tag to apply
+   * @param Organization $org Organization to add the tag association to
    * @return array
    */
-  public function addTag($tag, $org_id) {
-    if ($this->hasTag($tag, $org_id)) {
+  public function addTag($tag, $org) {
+    if ($this->hasTag($tag, $org)) {
       $message  = 'This site already has the tag {tag} ';
       $message .= 'associated with the organization {org}.';
       throw new TerminusException(
         $message,
-        ['tag' => $tag, 'org' => $org_id,]
+        ['tag' => $tag, 'org' => $org->id,]
       );
     }
     $params    = [$tag => ['sites' => [$this->get('id'),],],];
     $response  = $this->request->request(
-      sprintf('organizations/%s/tags', $org_id),
+      sprintf('organizations/%s/tags', $org->id),
       ['method' => 'put', 'form_params' => $params,]
     );
     return $response;
@@ -397,16 +390,17 @@ class Site extends TerminusModel {
 
   /**
    * Returns tags from the site/org join
+   * TODO: Move these into tags model/collection
    *
-   * @param string $org_id UUID of organization site belongs to
+   * @param Organization $org UUID of organization site belongs to
    * @return string[]
    */
-  public function getTags($org_id) {
+  public function getTags($org) {
     if (isset($this->tags)) {
       return $this->tags;
     }
     $org_site_member = new OrganizationSiteMemberships(
-      ['organization' => new Organization(null, ['id' => $org_id,]),]
+      ['organization' => $org,]
     );
     $org_site_member->fetch();
     $org  = $org_site_member->get($this->get('id'));
@@ -450,20 +444,6 @@ class Site extends TerminusModel {
     $tags    = $this->getTags($org_id);
     $has_tag = in_array($tag, $tags);
     return $has_tag;
-  }
-
-  /**
-   * Imports a site archive onto Pantheon
-   *
-   * @param string $url URL of the archive to import
-   * @return Workflow
-   */
-  public function import($url) {
-    $workflow = $this->workflows->create(
-      'do_migration',
-      ['environment' => 'dev', 'params' => compact('url'),]
-    );
-    return $workflow;
   }
 
   /**
@@ -556,17 +536,17 @@ class Site extends TerminusModel {
   /**
    * Removes a tag to the site
    *
-   * @param string $tag    Tag to remove
-   * @param string $org_id Organization to remove the tag association from
+   * @param string       $tag Tag to remove
+   * @param Organization $org Organization to remove the tag association from
    * @return array
    */
-  public function removeTag($tag, $org_id) {
+  public function removeTag($tag, $org) {
     $response = $this->request->request(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
-        $org_id,
+        $org->id,
         $tag,
-        $this->get('id')
+        $this->id
       ),
       ['method' => 'delete',]
     );

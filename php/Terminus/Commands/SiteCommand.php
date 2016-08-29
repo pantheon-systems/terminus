@@ -5,7 +5,7 @@ namespace Terminus\Commands;
 use Terminus\Collections\Sites;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Workflow;
+use Terminus\Models\Organization;
 use Terminus\Request;
 use Terminus\Session;
 
@@ -167,23 +167,23 @@ class SiteCommand extends TerminusCommand {
     $site     = $this->sites->get(
       $this->input()->siteName(['args' => $assoc_args,])
     );
-    $from_env = $site->environments->get(
+    $from_env = $this->input()->env(
+      [
+        'args'  => $assoc_args,
+        'key'   => 'from-env',
+        'label' => 'Choose environment you want to clone from',
+        'site'  => $site,
+      ]
+    );
+    $to_env = $site->environments->get(
       $this->input()->env(
         [
           'args'  => $assoc_args,
-          'key'   => 'from-env',
-          'label' => 'Choose environment you want to clone from',
+          'key'   => 'to-env',
+          'label' => 'Choose environment you want to clone to',
           'site'  => $site,
         ]
       )
-    );
-    $to_env   = $this->input()->env(
-      [
-        'args'  => $assoc_args,
-        'key'   => 'to-env',
-        'label' => 'Choose environment you want to clone to',
-        'site'  => $site,
-      ]
     );
 
     $db    = isset($assoc_args['db-only']);
@@ -204,29 +204,22 @@ class SiteCommand extends TerminusCommand {
       [
         'message' => "Are you sure?\n\tClone from %s to %s\n\tInclude: %s\n",
         'context' => [
-          strtoupper($from_env->getName()),
-          strtoupper($to_env),
+          strtoupper($from_env),
+          strtoupper($to_env->id),
           $append,
         ],
       ]
     );
 
-    if ($site->environments->get($to_env) == null) {
-      $this->failure(
-        'The {env} environment was not found.',
-        ['env' => $to_env,]
-      );
-    }
-
     if ($db) {
       $this->log()->info('Cloning database ... ');
-      $workflow = $from_env->cloneDatabase($to_env);
+      $workflow = $to_env->cloneDatabase($from_env);
       $workflow->wait();
     }
 
     if ($files) {
       $this->log()->info('Cloning files ... ');
-      $workflow = $from_env->cloneFiles($to_env);
+      $workflow = $to_env->cloneFiles($from_env);
       $workflow->wait();
     }
     if (isset($workflow)) {
@@ -670,18 +663,18 @@ class SiteCommand extends TerminusCommand {
    *
    */
   public function deploy($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
     $env  = $site->environments->get(
       $this->input()->env(
-        array(
+        [
           'args' => $assoc_args,
           'label' => 'Choose environment to deploy to',
-          'choices' => array('test', 'live'),
-        )
+          'choices' => ['test', 'live',],
+        ]
       )
     );
 
-    if (!$env || !in_array($env->get('id'), array('test', 'live'))) {
+    if (!$env || !in_array($env->id, ['test', 'live',])) {
       $this->failure('You can only deploy to the test or live environment.');
     }
     if (!$env->hasDeployableCode()) {
@@ -694,34 +687,32 @@ class SiteCommand extends TerminusCommand {
       && isset($assoc_args['sync-content'])
     );
 
-    if (!isset($assoc_args['note'])) {
-      $annotation = $this->input()->prompt(
-        array(
-          'message' => 'Custom note for the deploy log',
-          'default' => 'Deploy from Terminus 2.0',
-        )
-      );
-    } else {
-      $annotation = $assoc_args['note'];
-    }
+    $annotation = $this->input()->prompt(
+      [
+        'args' => $assoc_args,
+        'key' => 'note',
+        'message' => 'Custom note for the deploy log',
+        'default' => 'Deploy from Terminus 2.0',
+      ]
+    );
 
     $cc       = (integer)array_key_exists('cc', $assoc_args);
     $updatedb = (integer)array_key_exists('updatedb', $assoc_args);
 
-    $params = array(
-      'updatedb'       => $updatedb,
-      'clear_cache'    => $cc,
-      'annotation'     => $annotation,
-    );
+    $params = [
+      'updatedb' => $updatedb,
+      'clear_cache' => $cc,
+      'annotation' => $annotation,
+    ];
 
     if ($sync_content) {
-      $params['clone_database'] = array('from_environment' => 'live');
-      $params['clone_files']    = array('from_environment' => 'live');
+      $params['clone_database'] = ['from_environment' => 'live',];
+      $params['clone_files'] = ['from_environment' => 'live',];
     }
 
     $workflow = $env->deploy($params);
     $workflow->wait();
-    $this->workflowOutput($workflow, ['failure' => 'Deployment failed.']);
+    $this->workflowOutput($workflow, ['failure' => 'Deployment failed.',]);
   }
 
   /**
@@ -948,14 +939,13 @@ class SiteCommand extends TerminusCommand {
           break;
       default:
       case 'list':
-        $hostnames = $env->hostnames->all();
-        $data      = [];
-        foreach ($hostnames as $hostname => $details) {
-          $data[] = array_merge(
-            ['domain' => $details->get('id'),],
-            (array)$details->attributes
-          );
-        }
+        $data = array_map(
+          function ($hostname) {
+            $info = $hostname->serialize();
+            return $info;
+          },
+          $env->hostnames->all()
+        );
         $this->output()->outputRecordList($data);
           break;
     }
@@ -994,7 +984,7 @@ class SiteCommand extends TerminusCommand {
         'args'    => $assoc_args,
       ]
     );
-    $workflow = $site->import($url);
+    $workflow = $site->environments->get('dev')->import($url);
     $workflow->wait();
     $this->workflowOutput(
       $workflow,
@@ -1159,9 +1149,9 @@ class SiteCommand extends TerminusCommand {
    */
   public function lock($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $env    = $site->environments->get(
-      $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+    $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
+    $env = $site->environments->get(
+      $this->input()->env(['args' => $assoc_args, 'site' => $site,])
     );
     switch ($action) {
       case 'info':
@@ -1171,33 +1161,32 @@ class SiteCommand extends TerminusCommand {
       case 'add':
         $this->log()->info(
           'Creating new lock on {site}-{env}',
-          array('site' => $site->get('name'), 'env' => $env->get('id'))
+          ['site' => $site->get('name'), 'env' => $env->id,]
         );
-        if (!isset($assoc_args['username'])) {
-          $username = $this->input()->prompt(array('message' => 'Username for the lock'));
-        } else {
-          $username = $assoc_args['username'];
-        }
-        if (!isset($assoc_args['password'])) {
-          $password = $this->input()->promptSecret(
-            array('message' => 'Password for the lock')
-          );
-        } else {
-          $password = $assoc_args['password'];
-        }
-
-        $workflow = $env->lock(
-          array(
-          'username' => $username,
-          'password' => $password
+        $params = [
+          'username' => $this->input()->prompt(
+            [
+              'args' => $assoc_args,
+              'key' => 'username',
+              'message' => 'Username for the lock',
+            ]
+          ),
+          'password' => $this->input()->promptSecret(
+            [
+              'args' => $assoc_args,
+              'key' => 'username',
+              'message' => 'Password for the lock',
+            ]
           )
-        );
+        ];
+
+        $workflow = $env->lock($params);
         $workflow->wait();
           break;
       case 'remove':
         $this->log()->info(
           'Removing lock from {site}-{env}',
-          array('site' => $site->get('name'), 'env' => $env->get('id'))
+          ['site' => $site->get('name'), 'env' => $env->id,]
         );
         $workflow = $env->unlock();
         $workflow->wait();
@@ -1283,30 +1272,28 @@ class SiteCommand extends TerminusCommand {
    * @subcommand merge-to-dev
    */
   public function mergeToDev($args, $assoc_args) {
-    $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+    $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
 
     $multidev_ids = array_map(
       function($env) {
-        $env_id = $env->get('id');
-        return $env_id;
+        return $env->id;
       },
       $site->environments->multidev()
     );
     $multidev_id = $this->input()->env(
-      array(
+      [
         'args' => $assoc_args,
         'label' => 'Multidev environment to merge into dev environment',
-        'choices' => $multidev_ids
-      )
+        'choices' => $multidev_ids,
+      ]
     );
-    $environment = $site->environments->get($multidev_id);
 
-    $workflow = $environment->mergeToDev();
+    $workflow = $site->environments->get('dev')->mergeToDev();
     $workflow->wait();
 
     $this->log()->info(
       'Merged the {env} environment into dev',
-      array('env' => $environment->get('id'))
+      ['env' => $environment->id,]
     );
   }
 
@@ -1908,80 +1895,96 @@ class SiteCommand extends TerminusCommand {
    */
   public function tags($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $org    = $this->input()->orgId(array('args' => $assoc_args));
+    $org = new Organization(
+      (object)['id' => $this->input()->orgId(['args' => $assoc_args,]),]
+    );
+    $org_sites = $org->getSites();
+    $org_site_list = array_combine(
+      array_map(
+        function ($site) {
+          return $site->id;
+        },
+        $org_sites
+      ),
+      array_map(
+        function ($site) {
+          $site_name = $site->get('name');
+          return $site_name;
+        },
+        $org_sites
+      )
+    );
+    $site = $this->sites->get(
+      $this->input()->siteName(
+        ['args' => $assoc_args, 'choices' => $org_site_list,]
+      )
+    );
 
-    if ($site->organizationIsMember($org)) {
-      switch ($action) {
-        case 'add':
-          $tag      = $this->input()->string(
-            [
-              'args'    => $assoc_args,
-              'key'     => 'tag',
-              'message' => 'Enter a tag to add',
-            ]
-          );
-          $response = $site->addTag($tag, $org);
+    switch ($action) {
+      case 'add':
+        $tag      = $this->input()->string(
+          [
+            'args'    => $assoc_args,
+            'key'     => 'tag',
+            'message' => 'Enter a tag to add',
+          ]
+        );
+        $response = $site->addTag($tag, $org);
 
-          $context = array(
-            'tag'  => $tag,
-            'site' => $site->get('name')
+        $context = array(
+          'tag'  => $tag,
+          'site' => $site->get('name')
+        );
+        if ($response['status_code'] == 200) {
+          $this->log()->info(
+            'Tag "{tag}" has been added to {site}',
+            $context
           );
-          if ($response['status_code'] == 200) {
-            $this->log()->info(
-              'Tag "{tag}" has been added to {site}',
-              $context
-            );
-          } else {
-            $this->failure(
-              'Tag "{tag}" could not be added to {site}',
-              $context
-            );
-          }
-            break;
-        case 'remove':
-          $tags = $site->getTags($org);
-          if (count($tags) === 0) {
-            $message  = 'This organization does not have any tags associated';
-            $message .= ' with this site.';
-            $this->failure($message);
-          } elseif (!isset($assoc_args['tag'])
-            || !in_array($assoc_args['tag'], $tags)
-          ) {
-            $tag = $tags[$this->input()->menu(
-              array('choices' => $tags, 'message' => 'Select a tag to delete')
-            )];
-          } else {
-            $tag = $assoc_args['tag'];
-          }
-          $response = $site->removeTag($tag, $org);
+        } else {
+          $this->failure(
+            'Tag "{tag}" could not be added to {site}',
+            $context
+          );
+        }
+          break;
+      case 'remove':
+        $tags = $site->getTags($org);
+        if (count($tags) === 0) {
+          $message  = 'This organization does not have any tags associated';
+          $message .= ' with this site.';
+          $this->failure($message);
+        } elseif (!isset($assoc_args['tag'])
+          || !in_array($assoc_args['tag'], $tags)
+        ) {
+          $tag = $tags[$this->input()->menu(
+            ['choices' => $tags, 'message' => 'Select a tag to delete',]
+          )];
+        } else {
+          $tag = $assoc_args['tag'];
+        }
+        $response = $site->removeTag($tag, $org);
 
-          $context = array(
-            'tag'  => $tag,
-            'site' => $site->get('name')
+        $context = [
+          'tag'  => $tag,
+          'site' => $site->get('name'),
+        ];
+        if ($response['status_code'] == 200) {
+          $this->log()->info(
+            'Tag "{tag}" has been removed from {site}',
+            $context
           );
-          if ($response['status_code'] == 200) {
-            $this->log()->info(
-              'Tag "{tag}" has been removed from {site}',
-              $context
-            );
-          } else {
-            $this->failure(
-              'Tag "{tag}" could not be removed from {site}',
-              $context
-            );
-          }
-            break;
-        case 'list':
-        default:
-          $tags = $site->getTags($org);
-          $this->output()->outputRecord(compact('tags'));
-            break;
-      }
-    } else {
-      $message  = '{site} is not a member of an organization,';
-      $message .= ' which is necessary to associate a tag with a site.';
-      $this->failure($message, array('site' => $site->get('name')));
+        } else {
+          $this->failure(
+            'Tag "{tag}" could not be removed from {site}',
+            $context
+          );
+        }
+          break;
+      case 'list':
+      default:
+        $tags = $site->getTags($org);
+        $this->output()->outputRecord(compact('tags'));
+          break;
     }
   }
 

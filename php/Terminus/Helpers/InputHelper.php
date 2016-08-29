@@ -7,8 +7,6 @@ use Terminus\Collections\Upstreams;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\OrganizationUserMembership;
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
 use Terminus\Session;
 use Terminus\Utils;
 
@@ -214,7 +212,7 @@ class InputHelper extends TerminusHelper {
       return $options['args'][$options['key']];
     }
     if (in_array($options['key'], ['env', 'from-env'])) {
-      if (!is_null($env = Config::get('env'))) {
+      if (!empty($env = Config::get('env'))) {
         return $env;
       }
     }
@@ -395,7 +393,7 @@ class InputHelper extends TerminusHelper {
         return $id;
       }
       return $arguments[$key];
-    } else if (!is_null($org = Config::get('org'))) {
+    } else if (!empty($org = Config::get('org'))) {
       return $org;
     }
     if (count($org_list) == 0) {
@@ -620,6 +618,8 @@ class InputHelper extends TerminusHelper {
    * Prompt the user for input
    *
    * @param array $arg_options Elements as follow:
+   *        array  args    Parameters from the command line
+   *        string key     Key to look for in args
    *        string message Message to give at prompt
    *        mixed  default Returned if user does not select a valid option
    * @return string
@@ -627,10 +627,16 @@ class InputHelper extends TerminusHelper {
    */
   public function prompt(array $arg_options = []) {
     $default_options = [
+      'args' => [],
+      'key' => null,
       'message' => '',
       'default' => null,
     ];
-    $options         = array_merge($default_options, $arg_options);
+    $options = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
+    }
 
     try {
       $response = \cli\prompt($options['message']);
@@ -649,6 +655,8 @@ class InputHelper extends TerminusHelper {
    * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
    * @param array $arg_options Elements as follow:
+   *        array  args    Parameters from the command line
+   *        string key     Key to look for in args
    *        string message Message to give at prompt
    *        mixed  default Returned if user does not select a valid option
    * @return string
@@ -656,10 +664,16 @@ class InputHelper extends TerminusHelper {
    */
   public function promptSecret(array $arg_options = []) {
     $default_options = [
+      'args' => [],
+      'key' => null,
       'message' => '',
       'default' => null,
     ];
-    $options         = array_merge($default_options, $arg_options);
+    $options = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
+    }
 
     if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
@@ -785,29 +799,19 @@ class InputHelper extends TerminusHelper {
 
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
-    } else if (!is_null($site = Config::get('site'))) {
+    } else if (!empty($site = Config::get('site'))) {
       return $site;
     } else if (!empty($options['choices'])) {
       $choices = $options['choices'];
     } else {
-      $sites     = $sites->all();
-      $choices = array_combine(
-        array_map(
-          function(Site $site) {
-            $site_name = $site->get('name');
-            return $site_name;
-          },
-          $sites
-        ),
-        $sites
-      );
+      $choices = $sites->fetch()->listing('id', 'name');
     }
 
     $site = $this->menu(
       [
         'choices'      => $choices,
         'message'      => $options['message'],
-        'return_value' => $options['return_object'],
+        'return_value' => true,
       ]
     );
     return $site;

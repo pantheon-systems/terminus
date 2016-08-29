@@ -36,7 +36,7 @@ class Organization extends TerminusModel {
     $params                 = ['organization' => $this,];
     $this->site_memberships = new OrganizationSiteMemberships($params);
     $this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**

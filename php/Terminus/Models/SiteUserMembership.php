@@ -3,7 +3,30 @@
 namespace Terminus\Models;
 
 class SiteUserMembership extends TerminusModel {
-  protected $site;
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var User
+   */
+  public $user;
+
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return SiteUserMembership
+   */
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->site = $options['collection']->site;
+    $this->user = new User(
+      $attributes->user,
+      ['id' => $attributes->user->id, 'memberships' => [$this,],]
+    );
+  }
 
   /**
    * Remove membership, either org or user

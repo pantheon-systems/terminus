@@ -69,7 +69,7 @@ class AuthCommand extends TerminusCommand {
       );
       $auth->logInViaMachineToken(compact('email'));
       $this->log()->info('Logging in via machine token');
-    } elseif (!is_null($config['user'])
+    } elseif (!empty($config['user'])
       && !isset($assoc_args['password'])
       && $auth->tokenExistsForEmail($config['user'])
     ) {

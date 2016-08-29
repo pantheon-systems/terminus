@@ -56,7 +56,7 @@ class User extends TerminusModel {
     $this->org_memberships  = new UserOrganizationMemberships($params);
     $this->site_memberships = new UserSiteMemberships($params);
     $this->ssh_keys         = new SshKeys($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**

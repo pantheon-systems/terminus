@@ -28,9 +28,8 @@ class Logger extends KLogger {
     $logLevelThreshold = LogLevel::INFO
   ) {
     $config = $options['config'];
-    $app_config = Config::getAll();
     unset($options['config']);
-    $options['dateFormat'] = $app_config['date_format'];
+    $options['dateFormat'] = Config::get('date_format');
 
     if ($config['debug']) {
       $logLevelThreshold = LogLevel::DEBUG;
@@ -40,15 +39,8 @@ class Logger extends KLogger {
       $options['logFormat'] = $config['format'];
     }
 
-    if (!is_null($app_config['log_dir'])) {
-      $logDirectory = $app_config['log_dir'];
-    } elseif ($config['format'] == 'silent') {
-      $logDirectory = ini_get('error_log');
-      if ($logDirectory == '') {
-        $message  = 'You must either set error_log in your php.ini, or define ';
-        $message .= ' TERMINUS_LOG_DIR to use silent mode.' . PHP_EOL;
-        die($message);
-      }
+    if ($config['format'] == 'silent') {
+      $logDirectory = Config::get('log_dir');
     }
 
     parent::__construct($logDirectory, $logLevelThreshold, $options);
