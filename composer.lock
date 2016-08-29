@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4f0d2a1c6a045c42dba9d4a51408f728",
-    "content-hash": "68e82c614e57c01e15f6e43b7e5c6b66",
+    "hash": "31d9590bbbf708ba9fb2ddf7434e72ba",
+    "content-hash": "26df25d5b62a040d8e8cc988d2d7483e",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -155,16 +155,16 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "dev-master",
+            "version": "1.0.0-RC2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation-org/Robo.git",
-                "reference": "62e75dabb874f2d169f288811e816f8f248a1459"
+                "reference": "abdae8e8e6d0872df9b02031c6d2f1b7364f3113"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/Robo/zipball/62e75dabb874f2d169f288811e816f8f248a1459",
-                "reference": "62e75dabb874f2d169f288811e816f8f248a1459",
+                "url": "https://api.github.com/repos/consolidation-org/Robo/zipball/abdae8e8e6d0872df9b02031c6d2f1b7364f3113",
+                "reference": "abdae8e8e6d0872df9b02031c6d2f1b7364f3113",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-08-25 19:17:19"
+            "time": "2016-08-29 20:03:54"
         },
         {
             "name": "container-interop/container-interop",
@@ -3629,7 +3629,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "consolidation/robo": 20,
+        "consolidation/robo": 5,
         "php-vcr/phpunit-testlistener-vcr": 0
     },
     "prefer-stable": false,

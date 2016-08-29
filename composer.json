@@ -9,7 +9,7 @@
   ],
   "require": {
     "php": ">=5.5.9",
-    "consolidation/Robo": "dev-master",
+    "consolidation/Robo": "~1.0.0-RC2",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
