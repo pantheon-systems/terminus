@@ -467,7 +467,7 @@ class InputHelper extends TerminusHelper {
       foreach ($members as $member) {
         $user_data = $member->get('user');
 
-        if ($options['can_pick_self'] || $user_data->id != $self->get('id')) {
+        if ($options['can_pick_self'] || $user_data->id != $self->id) {
           $choices[$user_data->id] = sprintf(
             '%s <%s> [%s] (%s)',
             $user_data->profile->full_name,
@@ -892,7 +892,7 @@ class InputHelper extends TerminusHelper {
         )
       );
     }
-    $upstream_id = $upstream->get('id');
+    $upstream_id = $upstream->id;
     return $upstream_id;
   }
 
@@ -999,7 +999,7 @@ class InputHelper extends TerminusHelper {
     $user          = Session::getUser();
     $organizations = $user->getOrganizations();
     foreach ($organizations as $org) {
-      $org_list[$org->get('id')] = $org->get('profile')->name;
+      $org_list[$org->id] = $org->get('profile')->name;
     }
     return $org_list;
   }

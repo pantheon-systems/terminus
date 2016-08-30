@@ -29,26 +29,14 @@ class SiteOrganizationMembership extends TerminusModel {
   }
 
   /**
-   * Returns organization object within SiteOrganizationMembership object
-   *
-   * @return Organization
-   */
-  public function getOrganization() {
-    if (!isset($this->organization)) {
-      $this->organization = new Organization($this->id);
-    }
-    return $this->organization;
-  }
-
-  /**
    * Remove membership of organization
    *
    * @return Workflow
    **/
-  public function removeMember() {
+  public function delete() {
     $workflow = $this->site->workflows->create(
       'remove_site_organization_membership',
-      array('params' => array('organization_id' => $this->id))
+      ['params' => ['organization_id' => $this->id,],]
     );
     return $workflow;
   }
@@ -62,7 +50,7 @@ class SiteOrganizationMembership extends TerminusModel {
   public function setRole($role) {
     $workflow = $this->site->workflows->create(
       'update_site_organization_membership',
-      array('params' => array('organization_id' => $this->id, 'role' => $role))
+      ['params' => ['organization_id' => $this->id, 'role' => $role,],]
     );
     return $workflow;
   }

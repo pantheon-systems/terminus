@@ -216,22 +216,13 @@ class Runner {
   }
 
   /**
-   * Retrieves and returns the users local configuration directory (~/terminus)
-   *
-   * @return string
-   */
-  public function getUserConfigDir() {
-    return Config::get('config_dir');
-  }
-
-  /**
    * Retrieves and returns a list of plugin's base directories
    *
    * @return array
    */
   private function getUserPlugins() {
     $out = [];
-    if ($plugins_dir = $this->getUserPluginsDir()) {
+    if ($plugins_dir = Config::get('plugins_dir')) {
       $plugin_iterator = new \DirectoryIterator($plugins_dir);
       foreach ($plugin_iterator as $dir) {
         if (!$dir->isDot()) {
@@ -240,15 +231,6 @@ class Runner {
       }
     }
     return $out;
-  }
-
-  /**
-   * Retrieves and returns the local config directory
-   *
-   * @return string
-   */
-  private function getUserPluginsDir() {
-    return Config::get('plugins_dir');
   }
 
   /**

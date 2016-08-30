@@ -36,7 +36,7 @@ class InstrumentsCommand extends TerminusCommand {
     foreach ($instruments as $id => $instrument) {
       $data[] = array(
         'label' => $instrument->get('label'),
-        'id'    => $instrument->get('id'),
+        'id'    => $instrument->id,
       );
     }
     if (empty($data)) {

@@ -30,7 +30,7 @@ abstract class TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     if (is_object($attributes)) {

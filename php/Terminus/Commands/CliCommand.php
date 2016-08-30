@@ -96,7 +96,7 @@ class CliCommand extends TerminusCommand {
       'php_binary_path'     => $config['php'],
       'php_version'         => PHP_VERSION,
       'php_ini'             => get_cfg_var('cfg_file_path'),
-      'project_config_path' => $this->runner->getUserConfigDir(),
+      'project_config_path' => $config['config_dir'],
       'terminus_path'       => $config['root'],
       'terminus_version'    => $config['version'],
     ];

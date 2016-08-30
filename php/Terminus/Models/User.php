@@ -44,7 +44,7 @@ class User extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
@@ -146,7 +146,7 @@ class User extends TerminusModel {
    * @return void
    */
   private function setAliases() {
-    $path     = sprintf('users/%s/drush_aliases', $this->id);
+    $path     = "users/{$this->id}/drush_aliases";
     $options  = ['method' => 'get',];
     $response = $this->request->request($path, $options);
 

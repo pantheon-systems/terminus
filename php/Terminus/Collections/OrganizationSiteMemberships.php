@@ -51,10 +51,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
    * @return OrganizationSiteMembership
    */
   public function get($id) {
-    if (empty($this->models)) {
-      $this->fetch();
-    }
-    $models = $this->models;
+    $models = $this->getMembers();
     if (isset($models[$id])) {
       return $models[$id];
     } else {
@@ -77,7 +74,7 @@ class OrganizationSiteMemberships extends TerminusCollection {
   public function getSite($site_id) {
     if (is_null($membership = $this->get($site_id))) {
       throw new TerminusException(
-        'This user does is not a member of an organization identified by {id}.',
+        'This user is not a member of an organization identified by {id}.',
         ['id' => $site_id,]
       );
     }

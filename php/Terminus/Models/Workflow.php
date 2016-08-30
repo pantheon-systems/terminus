@@ -27,7 +27,7 @@ class Workflow extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    * @return Workflow
    */
   public function __construct($attributes = null, array $options = []) {

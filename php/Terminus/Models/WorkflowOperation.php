@@ -32,7 +32,7 @@ class WorkflowOperation extends TerminusModel {
    */
   public function description() {
     $description = sprintf(
-      "Operation: %s finished in %s",
+      'Operation: %s finished in %s',
       $this->get('description'),
       $this->duration()
     );

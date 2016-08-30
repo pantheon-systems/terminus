@@ -167,7 +167,7 @@ abstract class CommandWithSSH extends TerminusCommand {
       'env_id'  => $env_id,
       'command' => $args[0],
       'server'  => $this->getAppserverInfo(
-        ['site' => $site->get('id'), 'environment' => $env_id,]
+        ['site' => $site->id, 'environment' => $env_id,]
       ),
     ];
     return $elements;

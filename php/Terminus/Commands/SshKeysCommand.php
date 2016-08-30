@@ -39,7 +39,7 @@ class SshKeysCommand extends TerminusCommand {
     $data     = [];
     foreach ($ssh_keys as $id => $ssh_key) {
       $data[] = [
-        'fingerprint' => $ssh_key->get('id'),
+        'fingerprint' => $ssh_key->id,
         'comment'     => $ssh_key->getComment(),
       ];
     }
@@ -89,8 +89,8 @@ class SshKeysCommand extends TerminusCommand {
       $display_choices  = [];
       $choices          = [];
       foreach ($ssh_keys as $id => $ssh_key) {
-        $display_choices[] = $ssh_key->get('id') . ' - ' . $ssh_key->getComment();
-        $choices[]         = $ssh_key->get('id');
+        $display_choices[] = $ssh_key->id . ' - ' . $ssh_key->getComment();
+        $choices[]         = $ssh_key->id;
       }
       $fingerprint = $choices[$this->input()->menu(
         [

@@ -34,7 +34,7 @@ class SiteOrganizationMemberships extends TerminusCollection {
    * @param string $role Role for supporting organization to take
    * @return Workflow
    **/
-  public function addMember($name, $role) {
+  public function create($name, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_organization_membership',
       ['params' => ['organization_name' => $name, 'role' => $role,],]

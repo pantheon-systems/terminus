@@ -29,7 +29,7 @@ class Workflows extends TerminusCollection {
   /**
    * Instantiates the collection, sets param members as properties
    *
-   * @param array $options To be set to $this->key
+   * @param array $options Options with which to configure this collection
    */
   public function __construct(array $options = []) {
     parent::__construct($options);

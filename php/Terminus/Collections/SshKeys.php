@@ -69,9 +69,7 @@ class SshKeys extends TerminusCollection {
    */
   public function fetch(array $options = []) {
     $results = $this->getCollectionData($options);
-    $data    = (object)$results['data'];
-
-    foreach (get_object_vars($data) as $uuid => $ssh_key) {
+    foreach ($results['data'] as $uuid => $ssh_key) {
       $model_data = (object)['id' => $uuid, 'key' => $ssh_key,];
       $this->add($model_data);
     }

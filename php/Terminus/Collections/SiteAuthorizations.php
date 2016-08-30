@@ -10,7 +10,7 @@ class SiteAuthorizations extends TerminusCollection {
   /**
    * @var string
    */
-  protected $collected_class = 'Terminus\Models\SiteAuthorizations';
+  protected $collected_class = 'Terminus\Models\SiteAuthorization';
 
   /**
    * Object constructor

@@ -36,7 +36,7 @@ class SiteUserMemberships extends TerminusCollection {
    * @param string $role  Role to assign to the new user
    * @return Workflow
    **/
-  public function addMember($email, $role) {
+  public function create($email, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_user_membership',
       ['params' => ['user_email' => $email, 'role' => $role,],]

@@ -485,7 +485,7 @@ class SiteCommand extends TerminusCommand {
     $url = sprintf(
       'https://%s/sites/%s%s',
       Config::get('host'),
-      $site->get('id'),
+      $site->id,
       $env
     );
     if (isset($assoc_args['print'])
@@ -627,7 +627,7 @@ class SiteCommand extends TerminusCommand {
     $this->input()->confirm(
       [
         'message' => $message,
-        'context' => [$environment->get('id'), $site->get('name'),],
+        'context' => [$environment->id, $site->get('name'),],
       ]
     );
 
@@ -683,7 +683,7 @@ class SiteCommand extends TerminusCommand {
     }
 
     $sync_content = (
-      $env->get('id') == 'test'
+      $env->id == 'test'
       && isset($assoc_args['sync-content'])
     );
 
@@ -737,7 +737,7 @@ class SiteCommand extends TerminusCommand {
       $environments = $site->environments->all();
       $versions = [];
       foreach ($environments as $environment) {
-        $versions[$environment->get('id')] = $environment->getDrushVersion();
+        $versions[$environment->id] = $environment->getDrushVersion();
       }
       $this->output()->outputValueList($versions);
     }
@@ -805,7 +805,7 @@ class SiteCommand extends TerminusCommand {
       }
 
       $data[] = array(
-        'name'        => $env->get('id'),
+        'name'        => $env->id,
         'created'     => date(
           Config::get('date_format'),
           $env->get('environment_created')
@@ -871,7 +871,7 @@ class SiteCommand extends TerminusCommand {
           [
             'hostname' => $assoc_args['hostname'],
             'site'     => $site->get('name'),
-            'env'      => $env->get('id'),
+            'env'      => $env->id,
           ]
         );
           break;
@@ -886,7 +886,7 @@ class SiteCommand extends TerminusCommand {
           [
             'hostname' => $assoc_args['hostname'],
             'site'     => $site->get('name'),
-            'env'      => $env->get('id'),
+            'env'      => $env->id,
           ]
         );
           break;
@@ -910,7 +910,7 @@ class SiteCommand extends TerminusCommand {
               $data = [
                 [
                   'site'        => $site->get('name'),
-                  'environment' => $environment->get('id'),
+                  'environment' => $environment->id,
                 ],
               ];
               break 2;
@@ -1115,7 +1115,7 @@ class SiteCommand extends TerminusCommand {
     if ($env->isInitialized()) {
       $this->log()->warning(
         'The {env} environment has already been initialized',
-        array('env' => $env->get('id'))
+        array('env' => $env->id)
       );
       return;
     }
@@ -1174,7 +1174,7 @@ class SiteCommand extends TerminusCommand {
           'password' => $this->input()->promptSecret(
             [
               'args' => $assoc_args,
-              'key' => 'username',
+              'key' => 'password',
               'message' => 'Password for the lock',
             ]
           )
@@ -1238,7 +1238,7 @@ class SiteCommand extends TerminusCommand {
 
     $multidev_ids = array_map(
       function($env) {
-        $env_id = $env->get('id');
+        $env_id = $env->id;
         return $env_id;
       },
       $site->environments->multidev()
@@ -1280,7 +1280,7 @@ class SiteCommand extends TerminusCommand {
       },
       $site->environments->multidev()
     );
-    $multidev_id = $this->input()->env(
+    $params['from_environment'] = $this->input()->env(
       [
         'args' => $assoc_args,
         'label' => 'Multidev environment to merge into dev environment',
@@ -1288,12 +1288,12 @@ class SiteCommand extends TerminusCommand {
       ]
     );
 
-    $workflow = $site->environments->get('dev')->mergeToDev();
+    $workflow = $site->environments->get('dev')->mergeToDev($params);
     $workflow->wait();
 
     $this->log()->info(
       'Merged the {env} environment into dev',
-      ['env' => $environment->id,]
+      ['env' => $params['from_environment'],]
     );
   }
 
@@ -1317,8 +1317,10 @@ class SiteCommand extends TerminusCommand {
    */
   public function organizations($args, $assoc_args) {
     $action = array_shift($args);
-    $site   = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
-    $data   = array();
+    $site = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    );
+    $data = [];
     switch ($action) {
       case 'add':
         $role = $this->input()->optional(
@@ -1328,12 +1330,12 @@ class SiteCommand extends TerminusCommand {
             'default' => 'team_member'
           )
         );
-        $org  = $this->input()->orgName(array('args' => $assoc_args));
-        $workflow = $site->org_memberships->addMember($org, $role);
+        $org  = $this->input()->orgName(['args' => $assoc_args,]);
+        $workflow = $site->org_memberships->create($org, $role);
         $workflow->wait();
           break;
       case 'remove':
-        $org = $this->input()->orgId(array('args' => $assoc_args));
+        $org = $this->input()->orgId(['args' => $assoc_args,]);
         $member = $site->org_memberships->get($org);
         if ($member == null) {
           $this->failure(
@@ -1341,24 +1343,23 @@ class SiteCommand extends TerminusCommand {
             ['org' => $org, 'site' => $site->get('name'),]
           );
         }
-        $workflow = $member->removeMember('organization', $org);
+        $workflow = $member->delete('organization', $org);
         $workflow->wait();
           break;
       case 'list':
       default:
-        $orgs = $site->org_memberships->all();
+        $orgs = $site->getOrganizations();
         if (empty($orgs)) {
           $this->log()->warning('No organizations');
         }
 
         foreach ($orgs as $org) {
-          $org_data = $org->get('organization');
-          $data[]   = array(
-            'label' => $org_data->profile->name,
-            'name'  => $org_data->profile->machine_name,
+          $data[]   = [
+            'label' => $org->get('profile')->name,
+            'name'  => $org->get('profile')->machine_name,
             'role'  => $org->get('role'),
             'id'    => $org->get('organization_id'),
-          );
+          ];
         }
         $this->output()->outputRecordList($data);
           break;
@@ -1402,11 +1403,11 @@ class SiteCommand extends TerminusCommand {
     ) {
       $darwin = '-o defer_permissions ';
     }
-    $user = $env . '.' . $site->get('id');
+    $user = $env . '.' . $site->id;
     $host = sprintf(
       'appserver.%s.%s.drush.in',
       $env,
-      $site->get('id')
+      $site->id
     );
     $cmd  = sprintf(
       'sshfs %s -p 2222 %s@%s:./ %s',
@@ -1543,10 +1544,10 @@ class SiteCommand extends TerminusCommand {
             $this->failure('Redis cache is not enabled.');
           }
           $args = [
-            $environment->get('id'),
-            $site->get('id'),
-            $environment->get('id'),
-            $site->get('id'),
+            $environment->id,
+            $site->id,
+            $environment->id,
+            $site->id,
             $connection_info['redis_host'],
             $connection_info['redis_port'],
             $connection_info['redis_password'],
@@ -1560,7 +1561,7 @@ class SiteCommand extends TerminusCommand {
           );
           $command  = 'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in';
           $command .= ' "redis-cli -h %s -p %s -a %s flushall" 2> /dev/null';
-          $commands[$environment->get('id')] = vsprintf($command, $args);
+          $commands[$environment->id] = vsprintf($command, $args);
         }
         foreach ($commands as $env => $command) {
           $this->log()->info('Clearing Redis on {env}.', compact('env'));
@@ -1606,7 +1607,7 @@ class SiteCommand extends TerminusCommand {
     $env = $site->environments->get(
       $this->input()->env(['args' => $assoc_args, 'choices' => $environments,])
     );
-    if (in_array($env->get('id'), ['test', 'live',])) {
+    if (in_array($env->id, ['test', 'live',])) {
       $this->failure(
         'Connection mode cannot be set in Test or Live environments'
       );
@@ -1665,7 +1666,7 @@ class SiteCommand extends TerminusCommand {
       $workflow = $environment->setDrushVersion((integer)$version);
       $this->log()->info(
         "Set {environment}'s Drush version to {version}, converging bindings.'",
-        ['environment' => $environment->get('id'), 'version' => $version,]
+        ['environment' => $environment->id, 'version' => $version,]
       );
       $workflow->wait();
     }
@@ -2023,13 +2024,13 @@ class SiteCommand extends TerminusCommand {
         } else {
           $role = 'team_member';
         }
-        $workflow = $team->addMember($assoc_args['member'], $role);
+        $workflow = $team->create($assoc_args['member'], $role);
         $this->workflowOutput($workflow);
           break;
       case 'remove-member':
         $user = $team->get($assoc_args['member']);
         if ($user != null) {
-          $workflow = $user->removeMember($assoc_args['member']);
+          $workflow = $user->delete($assoc_args['member']);
           $this->workflowOutput($workflow);
         } else {
           $this->failure(
@@ -2261,7 +2262,7 @@ class SiteCommand extends TerminusCommand {
     $this->input()->confirm(
       array(
         'message' => 'Are you sure you want to wipe %s-%s?',
-        'context' => array($site->get('name'), $env->get('id')),
+        'context' => array($site->get('name'), $env->id),
       )
     );
 
@@ -2271,7 +2272,7 @@ class SiteCommand extends TerminusCommand {
       'Successfully wiped {site}-{env}',
       array(
         'site' => $site->get('name'),
-        'env' => $env->get('id')
+        'env' => $env->id
       )
     );
   }
@@ -2356,7 +2357,7 @@ class SiteCommand extends TerminusCommand {
       } else {
         $context = array(
           'site' => $site->get('name'),
-          'env' => $env->get('id')
+          'env' => $env->id
         );
         $backup  = $this->input()->backup(
           array('backups' => $backups, 'context' => $context)

@@ -40,7 +40,7 @@ class Environment extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes, array $options = []) {
     parent::__construct($attributes, $options);
@@ -408,8 +408,7 @@ class Environment extends TerminusModel {
    * @return string
    */
   public function getName() {
-    $name = $this->id;
-    return $name;
+    return $this->id;
   }
 
   /**
@@ -418,17 +417,13 @@ class Environment extends TerminusModel {
    * @return Environment
    */
   public function getParentEnvironment() {
-    $env_id = $this->id;
-    if ($env_id == 'dev') {
-      return null;
-    }
     switch ($this->id) {
       case 'dev':
           return null;
-          break;
       case 'live':
         $parent_env_id = 'test';
           break;
+      case 'test':
       default:
         $parent_env_id = 'dev';
           break;
@@ -644,8 +639,8 @@ class Environment extends TerminusModel {
    * Merge code from a multidev environment into the dev environment
    *
    * @param array $options Parameters to override defaults
-   *        boolean updatedb True to update DB with merge
-   *        string  env      Name of the multidev environment to merge
+   *        string  from_environment Name of the multidev environment to merge
+   *        boolean updatedb         True to update DB with merge
    * @return Workflow
    * @throws TerminusException
    */
@@ -658,10 +653,7 @@ class Environment extends TerminusModel {
       );
     }
 
-    $default_params = [
-      'from_environment' => $options['env'],
-      'updatedb' => false,
-    ];
+    $default_params = ['updatedb' => false, 'from_environment' => null,];
     $params = array_merge($default_params, $options);
 
     $workflow = $this->workflows->create(

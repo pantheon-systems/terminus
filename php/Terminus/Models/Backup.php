@@ -14,7 +14,7 @@ class Backup extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes, array $options = []) {
     parent::__construct($attributes, $options);
@@ -43,7 +43,7 @@ class Backup extends TerminusModel {
    * @return string
    */
   public function getBucket() {
-    $bucket = str_replace('_' . $this->getElement(), '', $this->get('id'));
+    $bucket = str_replace('_' . $this->getElement(), '', $this->id);
     return $bucket;
   }
 
@@ -126,8 +126,8 @@ class Backup extends TerminusModel {
   public function getUrl() {
     $path     = sprintf(
       'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
-      $this->environment->site->get('id'),
-      $this->environment->get('id'),
+      $this->environment->site->id,
+      $this->environment->id,
       $this->getBucket(),
       $this->getElement()
     );

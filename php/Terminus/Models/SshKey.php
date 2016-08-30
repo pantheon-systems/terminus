@@ -26,7 +26,7 @@ class SshKey extends TerminusModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'users/' . $this->user->id . '/keys/' . $this->get('id'),
+      'users/' . $this->user->id . '/keys/' . $this->id,
       ['method' => 'delete',]
     );
     return (array)$response['data'];
@@ -49,7 +49,7 @@ class SshKey extends TerminusModel {
    * @return string
    */
   public function getHex() {
-    $hex = implode(':', str_split($this->get('id'), 2));
+    $hex = implode(':', str_split($this->id, 2));
     return $hex;
   }
 

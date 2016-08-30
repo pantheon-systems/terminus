@@ -212,7 +212,7 @@ class SitesCommand extends TerminusCommand {
         'memberships'   => implode(', ', $memberships),
       ];
       if (!is_null($site->get('frozen'))) {
-        $rows[$site->get('id')]['frozen'] = true;
+        $rows[$site->id]['frozen'] = true;
       }
     }
 
@@ -367,7 +367,7 @@ class SitesCommand extends TerminusCommand {
             $this->log()->info('Backup of {site} created.', $context);
             $this->log()->info('Updating {site}.', $context);
             $response = $site->applyUpstreamUpdates(
-              $env->get('id'),
+              $env->id,
               $updatedb,
               $xoption
             );

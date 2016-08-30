@@ -40,8 +40,8 @@ class Backups extends TerminusCollection {
   public function cancelBackupSchedule() {
     $path_root = sprintf(
       'sites/%s/environments/%s/backups/schedule',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
+      $this->environment->site->id,
+      $this->environment->id
     );
     $params = ['method' => 'delete',];
     for ($day = 0; $day < 7; $day++) {
@@ -145,8 +145,8 @@ class Backups extends TerminusCollection {
   public function getBackupSchedule() {
     $path     = sprintf(
       'sites/%s/environments/%s/backups/schedule',
-      $this->environment->site->get('id'),
-      $this->environment->get('id')
+      $this->environment->site->id,
+      $this->environment->id
     );
     $response      = $this->request->request($path);
     $response_data = (array)$response['data'];
@@ -192,7 +192,7 @@ class Backups extends TerminusCollection {
         $message,
         [
           'site' => $this->environment->site->get('name'),
-          'env'  => $this->environment->get('id')
+          'env'  => $this->environment->id
         ],
         1
       );

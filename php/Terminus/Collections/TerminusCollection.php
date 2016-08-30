@@ -26,35 +26,10 @@ abstract class TerminusCollection {
   /**
    * Instantiates the collection, sets param members as properties
    *
-   * @param array $options To be set to $this->key
+   * @param array $options Options with which to configure this collection
    */
   public function __construct(array $options = []) {
     $this->request = new Request();
-  }
-
-  /**
-   * Handles requests for inaccessible properties
-   *
-   * @param string $property Name of property being requested
-   * @return mixed $this->$property
-   * @throws TerminusException
-   */
-  public function __get($property) {
-    if (property_exists($this, $property)) {
-      return $this->$property;
-    }
-
-    $trace = debug_backtrace();
-    throw new TerminusException(
-      'Undefined property $var->${property} in {file} on line {line}',
-      [
-        'property' => $property,
-        'file' => $trace[0]['file'],
-        'line' => $trace[0]['line']
-      ],
-      1
-    );
-    return null;
   }
 
   /**
