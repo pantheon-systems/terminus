@@ -20,21 +20,20 @@ default:
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
-    testing:
-      paths: [ %paths.base%/../features ]
+    default_10:
+      paths: [ %paths.base%/../newfeatures ]
       contexts:
         - FeatureContext:
-            parameters:
               username:                'devuser@pantheon.io'
               user_uuid:               '11111111-1111-1111-1111-111111111111'
-              password:                'password1'
+              password:                'SCRUBBED'
               host:                    'onebox'
               vcr_mode:                'none'
               test_site_name:          'behat-tests'
               other_user:              'otheruser@pantheon.io'
               php_site_domain:         'pantheonsite.io'
-              instrument_uuid:         '11111111-1111-1111-1111-111111111111'
               instrument_label:        'Visa - 1111'
+              instrument_uuid:         '11111111-1111-1111-1111-111111111111'
               organization_name:       '"Organization Name"'
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'
