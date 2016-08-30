@@ -9,7 +9,7 @@ Feature: Using Solr
 
   @vcr site_solr_enable
   Scenario: Enabling Solr
-    When I run "terminus site solr enable --site=[[test_site_name]]"
+    When I run "terminus solr:enable --site=[[test_site_name]]"
     Then I should get:
     """
     Solr enabled. Converging bindings...
@@ -17,8 +17,9 @@ Feature: Using Solr
 
   @vcr site_solr_disable
   Scenario: Disabling Solr
-    When I run "terminus site solr disable --site=[[test_site_name]]"
+    When I run "terminus solr:disable --site=[[test_site_name]]"
     Then I should get:
     """
     Solr disabled. Converging bindings...
     """
+
