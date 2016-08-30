@@ -533,6 +533,7 @@ class FeatureContext implements Context {
       $token = '[[machine_token]]'
   ) {
     $this->iRun("terminus auth login --machine-token=$token");
+    $this->iShouldNotGet('The provided machine token is not valid.');
   }
 
   /**

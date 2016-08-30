@@ -7,7 +7,7 @@ Feature: Environment DNS lookup
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_hostnames_dns-recommendations
+  @vcr site_hostnames_get-recommendations
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
     When I run "terminus site hostnames get-recommendations --site=[[test_site_name]] --env=dev"
     Then I should get:

@@ -8,8 +8,8 @@ Feature: View site workflow information
     And a site named "[[test_site_name]]"
 
   @vcr workflows_list
-  Scenario: List Workflows
-    When I run "terminus workflows list --site=[[test_site_name]]"
+  Scenario: List workflows
+    When I run "terminus workflow:list --site=[[test_site_name]]"
     Then I should get:
     """
     Sync code on "dev"
@@ -17,7 +17,7 @@ Feature: View site workflow information
 
   @vcr workflows_show
   Scenario: Show a specific Workflow's Details and Operations
-    When I run "terminus workflows show --site=[[test_site_name]] --workflow-id=11111111-1111-1111-1111-111111111111"
+    When I run "terminus workflow:info 11111111-1111-1111-1111-111111111111 --site=[[test_site_name]]"
     Then I should get:
     """
     Deploy a CMS (Drupal or Wordpress)
@@ -29,7 +29,7 @@ Feature: View site workflow information
 
   @vcr workflows_show
   Scenario: Show the most recent set of logs for a workflow that has logs
-    When I run "terminus workflows show --site=[[test_site_name]] --latest-with-logs"
+    When I run "terminus workflow:info --site=[[test_site_name]] --with-logs"
     Then I should get:
     """
     No recent workflow has logs
