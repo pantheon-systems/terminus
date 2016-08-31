@@ -1,10 +1,29 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Models\Binding;
 
 class Bindings extends TerminusCollection {
+  /**
+   * @var Environment
+   */
+  public $environment;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Binding';
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->environment = $options['environment'];
+    $this->url = "sites/{$this->environment->site->id}/bindings";
+  }
 
   /**
    * Get bindings by type
@@ -27,26 +46,6 @@ class Bindings extends TerminusCollection {
 
     $bindings = array_values($models);
     return $bindings;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = sprintf('sites/%s/bindings', $this->environment->site->get('id'));
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection.
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'environment';
-    return $owner_name;
   }
 
 }

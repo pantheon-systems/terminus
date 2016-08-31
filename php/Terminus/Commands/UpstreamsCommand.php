@@ -2,8 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\Collections\Upstreams;
+use Terminus\Collections\Upstreams;
 
 /**
  * Show Pantheon upstream information

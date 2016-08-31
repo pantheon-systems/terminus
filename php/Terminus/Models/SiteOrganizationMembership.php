@@ -4,24 +4,28 @@ namespace Terminus\Models;
 
 class SiteOrganizationMembership extends TerminusModel {
   /**
-   * @var Site
-   */
-  protected $site;
-  /**
    * @var Organization
    */
-  protected $organization;
+  public $organization;
+  /**
+   * @var Site
+   */
+  public $site;
 
   /**
-   * Returns organization object within SiteOrganizationMembership object
+   * Object constructor
    *
-   * @return Organization
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to set as $this->key
+   * @return SiteUserMembership
    */
-  public function getOrganization() {
-    if (!isset($this->organization)) {
-      $this->organization = new Organization($this->id);
-    }
-    return $this->organization;
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->site = $options['collection']->site;
+    $this->organization = new Organization(
+      $attributes->organization,
+      ['id' => $attributes->organization->id, 'memberships' => [$this,],]
+    );
   }
 
   /**
@@ -29,10 +33,10 @@ class SiteOrganizationMembership extends TerminusModel {
    *
    * @return Workflow
    **/
-  public function removeMember() {
+  public function delete() {
     $workflow = $this->site->workflows->create(
       'remove_site_organization_membership',
-      array('params' => array('organization_id' => $this->id))
+      ['params' => ['organization_id' => $this->id,],]
     );
     return $workflow;
   }
@@ -46,7 +50,7 @@ class SiteOrganizationMembership extends TerminusModel {
   public function setRole($role) {
     $workflow = $this->site->workflows->create(
       'update_site_organization_membership',
-      array('params' => array('organization_id' => $this->id, 'role' => $role))
+      ['params' => ['organization_id' => $this->id, 'role' => $role,],]
     );
     return $workflow;
   }

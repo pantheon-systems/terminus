@@ -16,12 +16,11 @@ class UserOrganizationMembership extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
-   * @return UserSiteMembership
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
-    $this->user         = $options['user'];
+    $this->user = $options['collection']->user;
     $this->organization = new Organization(
       $attributes->organization,
       ['id' => $attributes->organization->id, 'memberships' => [$this,],]

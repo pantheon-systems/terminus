@@ -2,7 +2,7 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\TerminusCommand;
+use Terminus\Config;
 use Terminus\Models\Auth;
 use Terminus\Session;
 
@@ -46,6 +46,7 @@ class AuthCommand extends TerminusCommand {
    * : dump call information when logging in.
    */
   public function login($args, $assoc_args) {
+    $config = Config::getAll();
     $auth   = $this->auth;
     $tokens = $auth->getAllSavedTokenEmails();
     if (!empty($args)) {
@@ -68,16 +69,16 @@ class AuthCommand extends TerminusCommand {
       );
       $auth->logInViaMachineToken(compact('email'));
       $this->log()->info('Logging in via machine token');
-    } elseif (isset($_SERVER['TERMINUS_USER'])
+    } elseif (!empty($config['user'])
       && !isset($assoc_args['password'])
-      && $auth->tokenExistsForEmail($_SERVER['TERMINUS_USER'])
+      && $auth->tokenExistsForEmail($config['user'])
     ) {
       // Try to log in using a machine token, if $_SERVER provides account email.
       $this->log()->info(
         'Found a machine token for "{email}".',
-        ['email' => $_SERVER['TERMINUS_USER'],]
+        ['email' => $config['user'],]
       );
-      $auth->logInViaMachineToken(['email' => $_SERVER['TERMINUS_USER']]);
+      $auth->logInViaMachineToken(['email' => $config['user']]);
       $this->log()->info('Logging in via machine token');
     } elseif (!isset($email) && (count($tokens) === 1)) {
       // Try to log in using a machine token, if there is only one saved token.

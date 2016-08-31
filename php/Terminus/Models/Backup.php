@@ -2,7 +2,24 @@
 
 namespace Terminus\Models;
 
+use Terminus\Config;
+
 class Backup extends TerminusModel {
+  /**
+   * @var environment
+   */
+  public $environment;
+
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options with which to configure this model
+   */
+  public function __construct($attributes, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->environment = $options['collection']->environment;
+  }
 
   /**
    * Determines whether the backup has been completed or not
@@ -26,7 +43,7 @@ class Backup extends TerminusModel {
    * @return string
    */
   public function getBucket() {
-    $bucket = str_replace('_' . $this->getElement(), '', $this->get('id'));
+    $bucket = str_replace('_' . $this->getElement(), '', $this->id);
     return $bucket;
   }
 
@@ -43,7 +60,7 @@ class Backup extends TerminusModel {
     } else {
       return 'Pending';
     }
-    $date = date(TERMINUS_DATE_FORMAT, $datetime);
+    $date = date(Config::get('date_format'), $datetime);
     return $date;
   }
 
@@ -109,8 +126,8 @@ class Backup extends TerminusModel {
   public function getUrl() {
     $path     = sprintf(
       'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
-      $this->environment->site->get('id'),
-      $this->environment->get('id'),
+      $this->environment->site->id,
+      $this->environment->id,
       $this->getBucket(),
       $this->getElement()
     );

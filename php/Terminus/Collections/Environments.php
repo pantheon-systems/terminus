@@ -1,11 +1,29 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Models\Environment;
-use Terminus\Models\Workflow;
 
 class Environments extends TerminusCollection {
+  /**
+   * @var Site
+   */
+  public $site;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Environment';
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url = "sites/{$this->site->id}/environments";
+  }
 
   /**
    * Creates a multidev environment
@@ -17,19 +35,19 @@ class Environments extends TerminusCollection {
   public function create($to_env_id, Environment $from_env) {
     $workflow = $this->site->workflows->create(
       'create_cloud_development_environment',
-      array(
-        'params' => array(
+      [
+        'params' => [
           'environment_id' => $to_env_id,
-          'deploy'         => array(
-            'clone_database' => array('from_environment' => $from_env->id),
-            'clone_files'    => array('from_environment' => $from_env->id),
+          'deploy'         => [
+            'clone_database' => ['from_environment' => $from_env->id,],
+            'clone_files'    => ['from_environment' => $from_env->id,],
             'annotation'     => sprintf(
               'Create the "%s" environment.',
               $to_env_id
-            )
-          )
-        )
-      )
+            ),
+          ],
+        ],
+      ]
     );
     return $workflow;
   }
@@ -64,26 +82,6 @@ class Environments extends TerminusCollection {
       }
     );
     return $environments;
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'sites/' . $this->site->get('id') . '/environments';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = 'site';
-    return $owner_name;
   }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Config;
+
 /**
  * Class TemplateHelper
  * Render PHP or other types of files using Twig templates
@@ -23,7 +25,7 @@ class TemplateHelper extends TerminusHelper {
    */
   public function __construct(array $options = []) {
     parent::__construct($options);
-    $this->template_root = TERMINUS_ROOT . '/templates';
+    $this->template_root = Config::get('templates_dir');
   }
 
   /**

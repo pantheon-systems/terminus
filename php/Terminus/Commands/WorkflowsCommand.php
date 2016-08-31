@@ -2,13 +2,10 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Utils;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
-use Terminus\Models\Collections\Sites;
+use Terminus\Collections\Sites;
+use Terminus\Config;
 
-define("WORKFLOWS_WATCH_INTERVAL", 5);
+define('WORKFLOWS_WATCH_INTERVAL', 5);
 
 /**
 * Actions to be taken on an individual site
@@ -170,17 +167,17 @@ class WorkflowsCommand extends TerminusCommand {
       $workflows = $site->workflows->all();
       foreach ($workflows as $workflow) {
         if (($workflow->get('created_at') > $last_created_at)
-          && !in_array($workflow->get('id'), $started)
+          && !in_array($workflow->id, $started)
         ) {
-          array_push($started, $workflow->get('id'));
+          array_push($started, $workflow->id);
 
           $started_message = 'Started {id} {description} ({env}) at {time}';
           $started_context = [
-            'id'          => $workflow->get('id'),
+            'id'          => $workflow->id,
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
             'time'        => date(
-              TERMINUS_DATE_FORMAT,
+              Config::get('date_format'),
               $workflow->get('started_at')
             ),
           ];
@@ -188,18 +185,18 @@ class WorkflowsCommand extends TerminusCommand {
         }
 
         if (($workflow->get('finished_at') > $last_finished_at)
-          && !in_array($workflow->get('id'), $finished)
+          && !in_array($workflow->id, $finished)
         ) {
-          array_push($finished, $workflow->get('id'));
+          array_push($finished, $workflow->id);
 
           $finished_message
             = 'Finished workflow {id} {description} ({env}) at {time}';
           $finished_context = [
-            'id'          => $workflow->get('id'),
+            'id'          => $workflow->id,
             'description' => $workflow->get('description'),
             'env'         => $workflow->get('environment'),
             'time'        => date(
-              TERMINUS_DATE_FORMAT,
+              Config::get('date_format'),
               $workflow->get('finished_at')
             ),
           ];

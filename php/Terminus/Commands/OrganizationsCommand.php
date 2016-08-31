@@ -2,13 +2,9 @@
 
 namespace Terminus\Commands;
 
+use Terminus\Collections\Sites;
+use Terminus\Config;
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
-use Terminus\Models\Organization;
-use Terminus\Models\OrganizationSiteMembership;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Collections\UserOrganizationMemberships;
 
 /**
  * Show information for your Pantheon organizations
@@ -41,7 +37,7 @@ class OrganizationsCommand extends TerminusCommand {
     foreach ($organizations as $id => $org) {
       $data[] = [
         'name' => $org->get('profile')->name,
-        'id' => $org->get('id'),
+        'id' => $org->id,
       ];
     }
 
@@ -125,9 +121,10 @@ class OrganizationsCommand extends TerminusCommand {
   }
 
   private function addMemberToTeam($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
 
     $email = $this->input()->string(
       [
@@ -152,9 +149,10 @@ class OrganizationsCommand extends TerminusCommand {
   }
 
   private function removeMemberFromTeam($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
 
     $member = $this->input()->orgMember(
       [
@@ -177,19 +175,20 @@ class OrganizationsCommand extends TerminusCommand {
    * @return void
    */
   private function addSiteToOrganization($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
-    $site_memberships = $this->user->site_memberships->all();
+    $org = $this->user->getOrganizations()[$org_id];
+    $sites = $this->user->getSites();
     $choices = array_combine(
       array_map(
-        function ($membership) {
-          $site_name = $membership->site->get('name');
+        function ($site) {
+          $site_name = $site->get('name');
           return $site_name;
         },
-        $site_memberships
+        $sites
       ),
-      $site_memberships
+      $sites
     );
     $site = $this->sites->get(
       $this->input()->siteName(
@@ -218,9 +217,10 @@ class OrganizationsCommand extends TerminusCommand {
    * @return array $data Data to display about sites in the organization
    */
   private function listOrganizationalSites($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
 
     $tag = $this->input()->optional(
       ['key' => 'tag', 'choices' => $assoc_args,]
@@ -244,7 +244,10 @@ class OrganizationsCommand extends TerminusCommand {
           'id'            => $site->id,
           'service_level' => $site->get('service_level'),
           'framework'     => $site->get('framework'),
-          'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
+          'created'       => date(
+            Config::get('date_format'),
+            $site->get('created')
+          ),
           'tags'          => $membership->get('tags'),
         ];
         if ((boolean)$site->get('frozen')) {
@@ -277,9 +280,10 @@ class OrganizationsCommand extends TerminusCommand {
    * @return void
    */
   private function removeSiteFromOrganization($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
     $site_memberships = $org->site_memberships->all();
     $choices = array_combine(
       array_map(
@@ -326,9 +330,10 @@ class OrganizationsCommand extends TerminusCommand {
    * @return array $data Data to display about sites in the organization
    */
   private function listOrganizationTeam($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
 
     $data = array_map(
       function ($membership) {
@@ -357,9 +362,10 @@ class OrganizationsCommand extends TerminusCommand {
    * @return void
    */
   private function setMemberRole($assoc_args) {
-    $org = $this->user->org_memberships->getOrganization(
-      $this->input()->orgId(['args' => $assoc_args, 'allow_none' => false,])
+    $org_id = $this->input()->orgId(
+      ['args' => $assoc_args, 'allow_none' => false,]
     );
+    $org = $this->user->getOrganizations()[$org_id];
     $role_choices = ['unprivileged', 'admin'];
 
     $member = $this->input()->orgMember(

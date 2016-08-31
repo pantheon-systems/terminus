@@ -1,24 +1,29 @@
 <?php
 
 use Terminus\Caches\TokensCache;
+use Terminus\Config;
 
 /**
  * Testing class for Terminus\Caches\TokensCache
  */
 class TokensCacheTest extends PHPUnit_Framework_TestCase {
-
   /**
    * @var TokensCache
    */
   private $tokens_cache;
+  /**
+   * @var string
+   */
+  private $tokens_path;
 
   public function __construct() {
     $this->tokens_cache = new TokensCache();
+    $this->tokens_path = Config::get('tokens_dir');
   }
 
   public function testAdd() {
     $email     = 'fake@email.address';
-    $file_name = TERMINUS_TOKENS_DIR . "/$email";
+    $file_name = $this->tokens_path . "/$email";
     exec("rm $file_name");
     $this->tokens_cache->add(compact('email'));
     $contents = retrieveOutput($file_name);
@@ -32,7 +37,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
     $contents = $this->tokens_cache->findByEmail($email);
     $this->assertEquals($contents['email'], $email);
 
-    $file_name = TERMINUS_TOKENS_DIR . "/$email";
+    $file_name = $this->tokens_path . "/$email";
     exec("rm $file_name");
     try {
       $contents = $this->tokens_cache->findByEmail($email);
@@ -44,7 +49,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
 
   public function testGetAllSavedTokenEmails() {
     $email     = 'fake@email.address';
-    $file_name = TERMINUS_TOKENS_DIR . "/$email";
+    $file_name = $this->tokens_path . "/$email";
     exec("rm $file_name");
     $emails = $this->tokens_cache->getAllSavedTokenEmails();
     $this->assertFalse(in_array($email, $emails));
@@ -56,7 +61,7 @@ class TokensCacheTest extends PHPUnit_Framework_TestCase {
 
   public function testTokenExistsForEmail() {
     $email     = 'fake@email.address';
-    $file_name = TERMINUS_TOKENS_DIR . "/$email";
+    $file_name = $this->tokens_path . "/$email";
     exec("rm $file_name");
     $this->assertFalse($this->tokens_cache->tokenExistsForEmail($email));
 

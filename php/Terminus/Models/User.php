@@ -2,12 +2,12 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\Instruments;
-use Terminus\Models\Collections\MachineTokens;
-use Terminus\Models\Collections\SshKeys;
-use Terminus\Models\Collections\UserOrganizationMemberships;
-use Terminus\Models\Collections\UserSiteMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\Instruments;
+use Terminus\Collections\MachineTokens;
+use Terminus\Collections\SshKeys;
+use Terminus\Collections\UserOrganizationMemberships;
+use Terminus\Collections\UserSiteMemberships;
+use Terminus\Collections\Workflows;
 
 class User extends TerminusModel {
   /**
@@ -44,7 +44,7 @@ class User extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
@@ -56,7 +56,7 @@ class User extends TerminusModel {
     $this->org_memberships  = new UserOrganizationMemberships($params);
     $this->site_memberships = new UserSiteMemberships($params);
     $this->ssh_keys         = new SshKeys($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**
@@ -146,7 +146,7 @@ class User extends TerminusModel {
    * @return void
    */
   private function setAliases() {
-    $path     = sprintf('users/%s/drush_aliases', $this->id);
+    $path     = "users/{$this->id}/drush_aliases";
     $options  = ['method' => 'get',];
     $response = $this->request->request($path, $options);
 

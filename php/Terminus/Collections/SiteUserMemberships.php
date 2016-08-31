@@ -1,17 +1,33 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Site;
-use Terminus\Models\SiteUserMembership;
-use Terminus\Models\Workflow;
 
 class SiteUserMemberships extends TerminusCollection {
   /**
    * @var Site
    */
-  protected $site;
+  public $site;
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\SiteUserMembership';
+  /**
+   * @var boolean
+   */
+  protected $paged = true;
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->site = $options['site'];
+    $this->url = "sites/{$this->site->id}/memberships/users";
+  }
 
   /**
    * Adds this user as a member to the site
@@ -20,26 +36,12 @@ class SiteUserMemberships extends TerminusCollection {
    * @param string $role  Role to assign to the new user
    * @return Workflow
    **/
-  public function addMember($email, $role) {
+  public function create($email, $role) {
     $workflow = $this->site->workflows->create(
       'add_site_user_membership',
-      array('params' => array('user_email' => $email, 'role' => $role))
+      ['params' => ['user_email' => $email, 'role' => $role,],]
     );
     return $workflow;
-  }
-
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return SiteUserMemberships
-   */
-  public function fetch(array $options = array()) {
-    if (!isset($options['paged'])) {
-      $options['paged'] = true;
-    }
-    parent::fetch($options);
-    return $this;
   }
 
   /**
@@ -70,25 +72,6 @@ class SiteUserMemberships extends TerminusCollection {
       compact('id'),
       1
     );
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'sites/' . $this->site->get('id') . '/memberships/users';
-    return $url;
-  }
-
-  /**
-   * Names the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    return 'site';
   }
 
 }

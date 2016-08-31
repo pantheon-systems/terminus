@@ -3,6 +3,21 @@
 namespace Terminus\Models;
 
 class SshKey extends TerminusModel {
+  /**
+   * @var User
+   */
+  public $user;
+
+  /**
+   * Object constructor
+   *
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options to configure this model
+   */
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $this->user = $options['collection']->user;
+  }
 
   /**
    * Deletes a specific SSH key
@@ -11,7 +26,7 @@ class SshKey extends TerminusModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'users/' . $this->user->id . '/keys/' . $this->get('id'),
+      'users/' . $this->user->id . '/keys/' . $this->id,
       ['method' => 'delete',]
     );
     return (array)$response['data'];
@@ -34,7 +49,7 @@ class SshKey extends TerminusModel {
    * @return string
    */
   public function getHex() {
-    $hex = implode(':', str_split($this->get('id'), 2));
+    $hex = implode(':', str_split($this->id, 2));
     return $hex;
   }
 

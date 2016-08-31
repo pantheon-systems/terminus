@@ -1,10 +1,28 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
-use Terminus\Models\Upstream;
+use Terminus\Session;
 
 class Upstreams extends TerminusCollection {
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Upstream';
+  /**
+   * @var string
+   */
+  protected $url = 'products';
+
+  /**
+   * Object constructor
+   *
+   * @param array $options Options to set as $this->key
+   */
+  public function __construct($options = []) {
+    parent::__construct($options);
+    $this->user = Session::getUser();
+  }
 
   /**
    * Search available upstreams by UUID or name
@@ -31,18 +49,8 @@ class Upstreams extends TerminusCollection {
    * @param array  $options    Data to make properties of the new model
    * @return void
    */
-  public function add($model_data, array $options = array()) {
+  public function add($model_data, array $options = []) {
     parent::add($model_data->attributes, $options);
-  }
-
-  /**
-   * Give the URL for collection data fetching
-   *
-   * @return string URL to use in fetch query
-   */
-  protected function getFetchUrl() {
-    $url = 'products';
-    return $url;
   }
 
 }

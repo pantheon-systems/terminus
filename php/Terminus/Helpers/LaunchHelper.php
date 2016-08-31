@@ -2,7 +2,7 @@
 
 namespace Terminus\Helpers;
 
-use Terminus\Helpers\TerminusHelper;
+use Terminus\Config;
 use Terminus\Utils;
 
 class LaunchHelper extends TerminusHelper {
@@ -83,7 +83,7 @@ class LaunchHelper extends TerminusHelper {
     $escaped_args = array_map('escapeshellarg', $options['args']);
     $full_command = sprintf(
       '"%s" "%s" %s %s %s',
-      TERMINUS_PHP,
+      Config::get('php'),
       $script_path,
       $options['command'],
       implode(' ', $escaped_args),

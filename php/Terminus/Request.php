@@ -6,9 +6,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Runner;
-use Terminus\Utils;
 
 /**
  * Handles requests made by terminus
@@ -109,6 +108,7 @@ class Request {
    * @throws TerminusException
    */
   public function request($path, $arg_options = []) {
+    $config = Config::getAll();
     $default_options = [
       'method'       => 'get',
       'absolute_url' => false,
@@ -119,9 +119,9 @@ class Request {
     if ((strpos($path, 'http') !== 0) && !$options['absolute_url']) {
       $url = sprintf(
         '%s://%s:%s/api/%s',
-        TERMINUS_PROTOCOL,
-        TERMINUS_HOST,
-        TERMINUS_PORT,
+        $config['protocol'],
+        $config['host'],
+        $config['port'],
         $path
       );
     }
@@ -145,12 +145,13 @@ class Request {
    * @return \Psr\Http\Message\ResponseInterface
    */
   private function send($uri, $method, array $arg_params = []) {
+    $host = Config::get('host');
     $extra_params = [
       'headers'         => [
         'User-Agent'    => $this->userAgent(),
         'Content-type'  => 'application/json',
       ],
-      RequestOptions::VERIFY => (strpos(TERMINUS_HOST, 'onebox') === false),
+      RequestOptions::VERIFY => (strpos($host, 'onebox') === false),
     ];
 
     if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
@@ -163,7 +164,7 @@ class Request {
       $params['json'] = $params['form_params'];
       unset($params['form_params']);
     }
-    $params[RequestOptions::VERIFY] = (strpos(TERMINUS_HOST, 'onebox') === false);
+    $params[RequestOptions::VERIFY] = (strpos($host, 'onebox') === false);
 
     $client = new Client(
       [
@@ -213,11 +214,12 @@ class Request {
    * @return string
    */
   private function getBaseUri() {
+    $config = Config::getAll();
     $base_uri = sprintf(
       '%s://%s:%s',
-      TERMINUS_PROTOCOL,
-      TERMINUS_HOST,
-      TERMINUS_PORT
+      $config['protocol'],
+      $config['host'],
+      $config['port']
     );
     return $base_uri;
   }
@@ -228,11 +230,12 @@ class Request {
    * @return string
    */
   private function userAgent() {
+    $config = Config::getAll();
     $agent = sprintf(
       'Terminus/%s (php_version=%s&script=%s)',
-      constant('TERMINUS_VERSION'),
+      $config['version'],
       phpversion(),
-      constant('TERMINUS_SCRIPT')
+      $config['script']
     );
     return $agent;
   }
