@@ -9,7 +9,8 @@
   ],
   "require": {
     "php": ">=5.5.9",
-    "consolidation/robo": "dev-master",
+    "symfony/console": "^3.1",
+    "consolidation/annotated-command": "^1.2",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
@@ -26,13 +27,14 @@
   },
   "require-dev": {
     "behat/behat": "^3.1",
-    "phpunit/phpcov": "^2.0",
-    "phpunit/phpunit": "^4.0",
+    "phpunit/phpcov": "^3.1",
+    "phpunit/phpunit": "^5.0",
     "php-vcr/php-vcr": "^1.2",
     "php-vcr/phpunit-testlistener-vcr": "@stable",
     "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.0",
-    "satooshi/php-coveralls": "^1.0"
+    "satooshi/php-coveralls": "^1.0",
+    "consolidation/robo": "^0.7.2"
   },
   "extra": {
     "branch-alias": {
