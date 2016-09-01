@@ -2,6 +2,7 @@
 // src/Terminus.php
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputOption;
 use Terminus\Config;
 
 class Terminus extends Application
