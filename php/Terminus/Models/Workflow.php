@@ -3,43 +3,83 @@
 namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\WorkflowOperation;
+use Terminus\Session;
 
 class Workflow extends TerminusModel {
+  /**
+   * @var Environment
+   */
+  private $environment;
+  /**
+   * @var Organization
+   */
+  private $organization;
+  /**
+   * @var Site
+   */
+  private $site;
+  /**
+   * @var User
+   */
+  private $user;
 
   /**
-   * Give the URL for collection data fetching
+   * Object constructor
    *
-   * @return string $url URL to use in fetch query
+   * @param object $attributes Attributes of this model
+   * @param array  $options    Options with which to configure this model
+   * @return Workflow
    */
-  public function getFetchUrl() {
-    $url = '';
-    switch ($this->getOwnerName()) {
-      case 'user':
-        $url = sprintf(
-          'users/%s/workflows/%s',
-          $this->owner->id,
-          $this->get('id')
-        );
-          break;
-      case 'site':
-        $url = sprintf(
+  public function __construct($attributes = null, array $options = []) {
+    parent::__construct($attributes, $options);
+    $owner = null;
+    if (isset($options['collection'])) {
+      $owner = $options['collection']->getOwnerObject();
+    } else if (isset($options['environment'])) {
+      $owner = $options['environment'];
+    } else if (isset($options['organization'])) {
+      $owner = $options['organization'];
+    } else if (isset($options['site'])) {
+      $owner = $options['site'];
+    } else if (isset($options['user'])) {
+      $owner = $options['user'];
+    }
+
+    switch (get_class($owner)) {
+      case 'Terminus\Models\Environment':
+        $this->environment = $owner;
+        $this->url = sprintf(
           'sites/%s/workflows/%s',
-          $this->owner->get('id'),
-          $this->get('id')
+          $this->environment->site->id,
+          $this->id
         );
           break;
-      case 'organization':
-        $url  = sprintf(
+      case 'Terminus\Models\Organization':
+        $this->organization = $owner;
+        $this->url  = sprintf(
           'users/%s/organizations/%s/workflows/%s',
-          $this->owner->user->id,
-          $this->owner->get('id'),
-          $this->get('id')
+          Session::getUser()->id,
+          $this->organization->id,
+          $this->id
+        );
+          break;
+      case 'Terminus\Models\Site':
+        $this->site = $owner;
+        $this->url = sprintf(
+          'sites/%s/workflows/%s',
+          $this->site->id,
+          $this->id
+        );
+          break;
+      case 'Terminus\Models\User':
+        $this->user = $owner;
+        $this->url = sprintf(
+          'users/%s/workflows/%s',
+          $this->user->id,
+          $this->id
         );
           break;
     }
-    return $url;
   }
 
   /**
@@ -48,13 +88,7 @@ class Workflow extends TerminusModel {
    * @return Workflow
    */
   public function fetchWithLogs() {
-    $options = array(
-      'fetch_args' => array(
-        'query' => array(
-          'hydrate' => 'operations_with_logs'
-        )
-      )
-    );
+    $options = ['query' => ['hydrate' => 'operations_with_logs',],];
     $this->fetch($options);
     return $this;
   }
@@ -104,10 +138,10 @@ class Workflow extends TerminusModel {
     if (is_array($this->get('operations'))) {
       $operations_data = $this->get('operations');
     } else {
-      $operations_data = array();
+      $operations_data = [];
     }
 
-    $operations = array();
+    $operations = [];
     foreach ($operations_data as $operation_data) {
       $operations[] = new WorkflowOperation($operation_data);
     }
@@ -131,20 +165,20 @@ class Workflow extends TerminusModel {
       $elapsed_time = time() - $this->get('created_at');
     }
 
-    $operations_data = array();
+    $operations_data = [];
     foreach ($this->operations() as $operation) {
       $operations_data[] = $operation->serialize();
     }
 
-    $data = array(
+    $data = [
       'id'             => $this->id,
       'env'            => $this->get('environment'),
       'workflow'       => $this->get('description'),
       'user'           => $user,
       'status'         => $this->getStatus(),
       'time'           => sprintf("%ds", $elapsed_time),
-      'operations'     => $operations_data
-    );
+      'operations'     => $operations_data,
+    ];
 
     return $data;
   }
@@ -180,22 +214,6 @@ class Workflow extends TerminusModel {
         }
       }
     }
-  }
-
-  /**
-   * Gets name of the model-owner of this collection
-   *
-   * @return string
-   */
-  protected function getOwnerName() {
-    $owner_name = strtolower(
-      str_replace(
-        array('Terminus\\', 'Models\\'),
-        '',
-        get_class($this->owner)
-      )
-    );
-    return $owner_name;
   }
 
 }

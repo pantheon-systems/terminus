@@ -3,14 +3,17 @@
 namespace Terminus\Models;
 
 use Terminus\Caches\TokensCache;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\TerminusModel;
 use Terminus\Request;
 use Terminus\Session;
 use Terminus\Utils;
 
 class Auth extends TerminusModel {
-
+  /**
+   * @var Request
+   */
+  protected $request;
   /**
    * @var TokensCache
    */
@@ -20,12 +23,12 @@ class Auth extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
-   * @return Auth
+   * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes = null, array $options = array()) {
+  public function __construct($attributes = null, array $options = []) {
     $this->tokens_cache = new TokensCache();
-    parent::__construct($attributes, $options);
+    $this->attributes = $attributes;
+    $this->request = new Request();
   }
 
   /**
@@ -44,13 +47,14 @@ class Auth extends TerminusModel {
    * @return string
    */
   public function getMachineTokenCreationUrl() {
+    $config = Config::getAll();
     $port = '';
-    if (TERMINUS_HOST == 'localhost') {
-      $port = ':' . TERMINUS_PORT;
+    if ($config['host'] == 'localhost') {
+      $port = ':' . $config['port'];
     }
     $url = vsprintf(
       '%s://%s%s/machine-token/create/%s',
-      [TERMINUS_PROTOCOL, TERMINUS_HOST, $port, gethostname(),]
+      [$config['protocol'], $config['host'], $port, gethostname(),]
     );
     return $url;
   }

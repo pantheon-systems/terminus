@@ -2,8 +2,8 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\TerminusHelper;
 
 class FileHelper extends TerminusHelper {
 
@@ -52,7 +52,7 @@ class FileHelper extends TerminusHelper {
    * @throws TerminusException
    */
   public function loadAsset($file) {
-    $asset_location = sprintf('%s/assets/%s', TERMINUS_ROOT, $file);
+    $asset_location = sprintf('%s/assets/%s', Config::get('root'), $file);
     /**
     * The warning reporting is disabled because missing files will both issue
     * warnings and return false, and we cannot just catch the warning such as

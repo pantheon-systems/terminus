@@ -3,6 +3,7 @@
 namespace Terminus\Commands;
 
 use Terminus\Caches\FileCache;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Loggers\Logger;
 use Terminus\Models\Auth;
@@ -111,8 +112,8 @@ abstract class TerminusCommand {
       if (count($tokens) === 1) {
         $email = array_shift($tokens);
         $auth->logInViaMachineToken(compact('email'));
-      } else if (isset($_SERVER['TERMINUS_USER'])
-       && $email = $_SERVER['TERMINUS_USER']
+      } else if (!is_null(Config::get('user'))
+       && $email = Config::get('user')
       ) {
         $auth->logInViaMachineToken(compact('email'));
       } else {

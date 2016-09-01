@@ -3,7 +3,7 @@
 namespace Terminus\Helpers;
 
 use Terminus\Caches\FileCache;
-use Terminus\Helpers\TerminusHelper;
+use Terminus\Config;
 use Terminus\Request;
 
 class UpdateHelper extends TerminusHelper {
@@ -43,7 +43,7 @@ class UpdateHelper extends TerminusHelper {
     ) {
       try {
         $current_version = $this->getCurrentVersion();
-        if (version_compare($current_version, TERMINUS_VERSION, '>')) {
+        if (version_compare($current_version, Config::get('version'), '>')) {
           $this->command->log()->info(
             'An update to Terminus is available. Please update to {version}.',
             ['version' => $current_version]

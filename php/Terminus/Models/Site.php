@@ -2,16 +2,14 @@
 
 namespace Terminus\Models;
 
-use Terminus\Caches\SitesCache;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Organization;
-use Terminus\Models\TerminusModel;
-use Terminus\Models\Collections\Environments;
-use Terminus\Models\Collections\OrganizationSiteMemberships;
-use Terminus\Models\Collections\SiteAuthorizations;
-use Terminus\Models\Collections\SiteOrganizationMemberships;
-use Terminus\Models\Collections\SiteUserMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\Environments;
+use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Collections\SiteAuthorizations;
+use Terminus\Collections\SiteOrganizationMemberships;
+use Terminus\Collections\SiteUserMemberships;
+use Terminus\Collections\Workflows;
 
 class Site extends TerminusModel {
   /**
@@ -19,37 +17,30 @@ class Site extends TerminusModel {
    * @todo Use Bindings collection?
    */
   public $bindings;
-
   /**
-   * @var array
+   * @var SiteAuthorizations
    */
-  protected $authorizations;
-
+  public $authorizations;
   /**
    * @var Environments
    */
-  protected $environments;
-
+  public $environments;
   /**
    * @var SiteOrganizationMemberships
    */
-  protected $org_memberships;
-
+  public $org_memberships;
   /**
    * @var SiteUserMemberships
    */
-  protected $user_memberships;
-
+  public $user_memberships;
   /**
    * @var Workflows
    */
-  protected $workflows;
-
+  public $workflows;
   /**
    * @var array
    */
   private $features;
-
   /**
    * @var array
    */
@@ -59,7 +50,7 @@ class Site extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     $must_haves = [
@@ -82,7 +73,7 @@ class Site extends TerminusModel {
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**
@@ -93,7 +84,7 @@ class Site extends TerminusModel {
    */
   public function addInstrument($uuid) {
     $args     = [
-      'site'   => $this->get('id'),
+      'site'   => $this->id,
       'params' => ['instrument_id' => $uuid,],
     ];
     $workflow = $this->workflows->create('associate_site_instrument', $args);
@@ -103,22 +94,22 @@ class Site extends TerminusModel {
   /**
    * Adds a tag to the site
    *
-   * @param string $tag    Name of tag to apply
-   * @param string $org_id Organization to add the tag association to
+   * @param string       $tag Name of tag to apply
+   * @param Organization $org Organization to add the tag association to
    * @return array
    */
-  public function addTag($tag, $org_id) {
-    if ($this->hasTag($tag, $org_id)) {
+  public function addTag($tag, $org) {
+    if ($this->hasTag($tag, $org)) {
       $message  = 'This site already has the tag {tag} ';
       $message .= 'associated with the organization {org}.';
       throw new TerminusException(
         $message,
-        ['tag' => $tag, 'org' => $org_id,]
+        ['tag' => $tag, 'org' => $org->id,]
       );
     }
-    $params    = [$tag => ['sites' => [$this->get('id'),],],];
+    $params    = [$tag => ['sites' => [$this->id,],],];
     $response  = $this->request->request(
-      sprintf('organizations/%s/tags', $org_id),
+      sprintf('organizations/%s/tags', $org->id),
       ['method' => 'put', 'form_params' => $params,]
     );
     return $response;
@@ -152,7 +143,7 @@ class Site extends TerminusModel {
    * @return \stdClass
    */
   public function attributes() {
-    $path     = sprintf('sites/%s/attributes', $this->get('id'));
+    $path     = sprintf('sites/%s/attributes', $this->id);
     $options  = ['method' => 'get',];
     $response = $this->request->request($path, $options);
     return $response['data'];
@@ -175,7 +166,7 @@ class Site extends TerminusModel {
    */
   public function convergeBindings() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/converge',
+      'sites/' . $this->id . '/converge',
       ['method' => 'post']
     );
     return $response['data'];
@@ -190,7 +181,7 @@ class Site extends TerminusModel {
   public function createBranch($branch) {
     $path     = sprintf(
       'sites/%s/code-branch',
-      $this->get('id')
+      $this->id
     );
     $options  = [
       'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
@@ -207,7 +198,7 @@ class Site extends TerminusModel {
    */
   public function delete() {
     $response = $this->request->request(
-      'sites/' . $this->get('id'),
+      'sites/' . $this->id,
       ['method' => 'delete',]
     );
     return $response;
@@ -236,7 +227,7 @@ class Site extends TerminusModel {
   public function disableNewRelic($site) {
     if ($workflow = $site->workflows->create(
       'disable_new_relic_for_site',
-      ['site' => $site->get('id'),]
+      ['site' => $site->id,]
     )) {
       $workflow->wait();
       return true;
@@ -252,7 +243,7 @@ class Site extends TerminusModel {
    */
   public function disableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
     );
     $this->convergeBindings();
@@ -266,7 +257,7 @@ class Site extends TerminusModel {
    */
   public function disableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
     );
     $this->convergeBindings();
@@ -282,7 +273,7 @@ class Site extends TerminusModel {
   public function enableNewRelic($site) {
     if ($workflow = $site->workflows->create(
       'enable_new_relic_for_site',
-      ['site' => $site->get('id'),]
+      ['site' => $site->id,]
     )) {
       $workflow->wait();
       return true;
@@ -298,7 +289,7 @@ class Site extends TerminusModel {
    */
   public function enableRedis() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
     );
     $this->convergeBindings();
@@ -312,7 +303,7 @@ class Site extends TerminusModel {
    */
   public function enableSolr() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/settings',
+      'sites/' . $this->id . '/settings',
       ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
     );
     $this->convergeBindings();
@@ -327,7 +318,7 @@ class Site extends TerminusModel {
    */
   public function fetch(array $options = []) {
     $response         = $this->request->request(
-      sprintf('sites/%s?site_state=true', $this->get('id'))
+      sprintf('sites/%s?site_state=true', $this->id)
     );
     $this->attributes = $response['data'];
     return $this;
@@ -340,7 +331,7 @@ class Site extends TerminusModel {
    */
   public function fetchAttributes() {
     $response = $this->request->request(
-      sprintf('sites/%s/settings', $this->get('id'))
+      sprintf('sites/%s/settings', $this->id)
     );
     $this->attributes = $response['data'];
   }
@@ -367,7 +358,7 @@ class Site extends TerminusModel {
   public function getFeature($feature) {
     if (!isset($this->features)) {
       $response       = $this->request->request(
-        sprintf('sites/%s/features', $this->get('id'))
+        sprintf('sites/%s/features', $this->id)
       );
       $this->features = (array)$response['data'];
     }
@@ -383,7 +374,21 @@ class Site extends TerminusModel {
    * @return SiteOrganizationMembership[]
    */
   public function getOrganizations() {
-    $orgs = $this->org_memberships->all();
+    $memberships = $this->org_memberships->all();
+    $users = array_combine(
+      array_map(
+        function($membership) {
+          return $membership->organization->id;
+        },
+        $memberships
+      ),
+      array_map(
+        function($membership) {
+          return $membership->organization;
+        },
+        $memberships
+      )
+    );
     return $orgs;
   }
 
@@ -399,19 +404,20 @@ class Site extends TerminusModel {
 
   /**
    * Returns tags from the site/org join
+   * TODO: Move these into tags model/collection
    *
-   * @param string $org_id UUID of organization site belongs to
+   * @param Organization $org UUID of organization site belongs to
    * @return string[]
    */
-  public function getTags($org_id) {
+  public function getTags($org) {
     if (isset($this->tags)) {
       return $this->tags;
     }
     $org_site_member = new OrganizationSiteMemberships(
-      ['organization' => new Organization(null, ['id' => $org_id,]),]
+      ['organization' => $org,]
     );
     $org_site_member->fetch();
-    $org  = $org_site_member->get($this->get('id'));
+    $org  = $org_site_member->get($this->id);
     $tags = $org->get('tags');
     return $tags;
   }
@@ -422,7 +428,7 @@ class Site extends TerminusModel {
    * @return array
    */
   public function getTips() {
-    $path     = sprintf('sites/%s/code-tips', $this->get('id'));
+    $path     = sprintf('sites/%s/code-tips', $this->id);
     $options  = ['method' => 'get',];
     $data     = $this->request->request($path, $options);
     $branches = array_keys((array)$data['data']);
@@ -436,7 +442,7 @@ class Site extends TerminusModel {
    */
   public function getUpstreamUpdates() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') .  '/code-upstream-updates'
+      'sites/' . $this->id .  '/code-upstream-updates'
     );
     return $response['data'];
   }
@@ -455,20 +461,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Imports a site archive onto Pantheon
-   *
-   * @param string $url URL of the archive to import
-   * @return Workflow
-   */
-  public function import($url) {
-    $workflow = $this->workflows->create(
-      'do_migration',
-      ['environment' => 'dev', 'params' => compact('url'),]
-    );
-    return $workflow;
-  }
-
-  /**
    * Load site info
    *
    * @param string $key Set to retrieve a specific attribute as named
@@ -478,7 +470,7 @@ class Site extends TerminusModel {
    */
   public function info($key = null) {
     $info = [
-      'id'            => $this->get('id'),
+      'id'            => $this->id,
       'name'          => null,
       'label'         => null,
       'created'       => null,
@@ -497,7 +489,7 @@ class Site extends TerminusModel {
       }
     }
     if (!is_null($info['created']) && is_numeric($info['created'])) {
-      $info['created'] = date(TERMINUS_DATE_FORMAT, $info['created']);
+      $info['created'] = date(Config::get('date_format'), $info['created']);
     }
     if ((boolean)$this->get('frozen')) {
       $info['frozen'] = true;
@@ -526,7 +518,7 @@ class Site extends TerminusModel {
    */
   public function newRelic() {
     $response = $this->request->request(
-      'sites/' . $this->get('id') . '/new-relic'
+      'sites/' . $this->id . '/new-relic'
     );
     return $response['data'];
   }
@@ -550,7 +542,7 @@ class Site extends TerminusModel {
    * @return Workflow
    */
   public function removeInstrument() {
-    $args     = ['site' => $this->get('id'),];
+    $args     = ['site' => $this->id,];
     $workflow = $this->workflows->create('disassociate_site_instrument', $args);
     return $workflow;
   }
@@ -558,17 +550,17 @@ class Site extends TerminusModel {
   /**
    * Removes a tag to the site
    *
-   * @param string $tag    Tag to remove
-   * @param string $org_id Organization to remove the tag association from
+   * @param string       $tag Tag to remove
+   * @param Organization $org Organization to remove the tag association from
    * @return array
    */
-  public function removeTag($tag, $org_id) {
+  public function removeTag($tag, $org) {
     $response = $this->request->request(
       sprintf(
         'organizations/%s/tags/%s/sites?entity=%s',
-        $org_id,
+        $org->id,
         $tag,
-        $this->get('id')
+        $this->id
       ),
       ['method' => 'delete',]
     );
@@ -590,7 +582,7 @@ class Site extends TerminusModel {
     }
     $workflow = $this->workflows->create(
       'promote_site_user_to_owner',
-      ['params' => ['user_id' => $new_owner->get('id'),],]
+      ['params' => ['user_id' => $new_owner->id,],]
     );
     return $workflow;
   }

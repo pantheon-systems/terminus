@@ -3,8 +3,6 @@
 namespace Terminus\Commands;
 
 use Terminus\Session;
-use Terminus\Commands\TerminusCommand;
-use Terminus\Models\User;
 
 /**
  * Show information for your Pantheon machine tokens
@@ -37,7 +35,7 @@ class MachineTokensCommand extends TerminusCommand {
     $data        = array();
     foreach ($machine_tokens as $id => $machine_token) {
       $data[] = array(
-        'id'          => $machine_token->get('id'),
+        'id'          => $machine_token->id,
         'device_name' => $machine_token->get('device_name'),
       );
     }

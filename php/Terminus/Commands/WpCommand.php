@@ -2,8 +2,6 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Commands\CommandWithSSH;
-
 /**
  * @command wp
  */

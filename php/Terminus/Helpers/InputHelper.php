@@ -2,15 +2,11 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Collections\Sites;
+use Terminus\Collections\Upstreams;
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Helpers\TerminusHelper;
-use Terminus\Models\Collections\Sites;
-use Terminus\Models\Collections\Upstreams;
 use Terminus\Models\OrganizationUserMembership;
-use Terminus\Models\Site;
-use Terminus\Models\Upstream;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
 use Terminus\Session;
 use Terminus\Utils;
 
@@ -216,8 +212,8 @@ class InputHelper extends TerminusHelper {
       return $options['args'][$options['key']];
     }
     if (in_array($options['key'], ['env', 'from-env'])) {
-      if (isset($_SERVER['TERMINUS_ENV'])) {
-        return $_SERVER['TERMINUS_ENV'];
+      if (!empty($env = Config::get('env'))) {
+        return $env;
       }
     }
     $choices = $options['choices'];
@@ -397,8 +393,8 @@ class InputHelper extends TerminusHelper {
         return $id;
       }
       return $arguments[$key];
-    } else if (isset($_SERVER['TERMINUS_ORG'])) {
-      return $_SERVER['TERMINUS_ORG'];
+    } else if (!empty($org = Config::get('org'))) {
+      return $org;
     }
     if (count($org_list) == 0) {
       if ($options['allow_none']) {
@@ -471,7 +467,7 @@ class InputHelper extends TerminusHelper {
       foreach ($members as $member) {
         $user_data = $member->get('user');
 
-        if ($options['can_pick_self'] || $user_data->id != $self->get('id')) {
+        if ($options['can_pick_self'] || $user_data->id != $self->id) {
           $choices[$user_data->id] = sprintf(
             '%s <%s> [%s] (%s)',
             $user_data->profile->full_name,
@@ -622,6 +618,8 @@ class InputHelper extends TerminusHelper {
    * Prompt the user for input
    *
    * @param array $arg_options Elements as follow:
+   *        array  args    Parameters from the command line
+   *        string key     Key to look for in args
    *        string message Message to give at prompt
    *        mixed  default Returned if user does not select a valid option
    * @return string
@@ -629,10 +627,16 @@ class InputHelper extends TerminusHelper {
    */
   public function prompt(array $arg_options = []) {
     $default_options = [
+      'args' => [],
+      'key' => null,
       'message' => '',
       'default' => null,
     ];
-    $options         = array_merge($default_options, $arg_options);
+    $options = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
+    }
 
     try {
       $response = \cli\prompt($options['message']);
@@ -651,6 +655,8 @@ class InputHelper extends TerminusHelper {
    * From: http://www.sitepoint.com/interactive-cli-password-prompt-in-php/
    *
    * @param array $arg_options Elements as follow:
+   *        array  args    Parameters from the command line
+   *        string key     Key to look for in args
    *        string message Message to give at prompt
    *        mixed  default Returned if user does not select a valid option
    * @return string
@@ -658,10 +664,16 @@ class InputHelper extends TerminusHelper {
    */
   public function promptSecret(array $arg_options = []) {
     $default_options = [
+      'args' => [],
+      'key' => null,
       'message' => '',
       'default' => null,
     ];
-    $options         = array_merge($default_options, $arg_options);
+    $options = array_merge($default_options, $arg_options);
+
+    if (isset($options['args'][$options['key']])) {
+      return $options['args'][$options['key']];
+    }
 
     if (Utils\isWindows()) {
       $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
@@ -787,29 +799,19 @@ class InputHelper extends TerminusHelper {
 
     if (isset($options['args'][$options['key']])) {
       return $options['args'][$options['key']];
-    } else if (isset($_SERVER['TERMINUS_SITE'])) {
-      return $_SERVER['TERMINUS_SITE'];
+    } else if (!empty($site = Config::get('site'))) {
+      return $site;
     } else if (!empty($options['choices'])) {
       $choices = $options['choices'];
     } else {
-      $sites     = $sites->all();
-      $choices = array_combine(
-        array_map(
-          function(Site $site) {
-            $site_name = $site->get('name');
-            return $site_name;
-          },
-          $sites
-        ),
-        $sites
-      );
+      $choices = $sites->fetch()->listing('id', 'name');
     }
 
     $site = $this->menu(
       [
         'choices'      => $choices,
         'message'      => $options['message'],
-        'return_value' => $options['return_object'],
+        'return_value' => true,
       ]
     );
     return $site;
@@ -890,7 +892,7 @@ class InputHelper extends TerminusHelper {
         )
       );
     }
-    $upstream_id = $upstream->get('id');
+    $upstream_id = $upstream->id;
     return $upstream_id;
   }
 
@@ -924,7 +926,10 @@ class InputHelper extends TerminusHelper {
           $environment = 'None';
         }
 
-        $created_at = date(TERMINUS_DATE_FORMAT, $workflow->get('created_at'));
+        $created_at = date(
+          Config::get('date_format'),
+          $workflow->get('created_at')
+        );
 
         $workflow_description = sprintf(
           "%s - %s - %s - %s",
@@ -994,7 +999,7 @@ class InputHelper extends TerminusHelper {
     $user          = Session::getUser();
     $organizations = $user->getOrganizations();
     foreach ($organizations as $org) {
-      $org_list[$org->get('id')] = $org->get('profile')->name;
+      $org_list[$org->id] = $org->get('profile')->name;
     }
     return $org_list;
   }

@@ -4,6 +4,7 @@ namespace Terminus\Loggers;
 
 use Katzgrau\KLogger\Logger as KLogger;
 use Psr\Log\LogLevel;
+use Terminus\Config;
 
 class Logger extends KLogger {
 
@@ -28,7 +29,7 @@ class Logger extends KLogger {
   ) {
     $config = $options['config'];
     unset($options['config']);
-    $options['dateFormat'] = TERMINUS_DATE_FORMAT;
+    $options['dateFormat'] = Config::get('date_format');
 
     if ($config['debug']) {
       $logLevelThreshold = LogLevel::DEBUG;
@@ -38,15 +39,8 @@ class Logger extends KLogger {
       $options['logFormat'] = $config['format'];
     }
 
-    if (isset($_SERVER['TERMINUS_LOG_DIR'])) {
-      $logDirectory = $_SERVER['TERMINUS_LOG_DIR'];
-    } elseif ($config['format'] == 'silent') {
-      $logDirectory = ini_get('error_log');
-      if ($logDirectory == '') {
-        $message  = 'You must either set error_log in your php.ini, or define ';
-        $message .= ' TERMINUS_LOG_DIR to use silent mode.' . PHP_EOL;
-        die($message);
-      }
+    if ($config['format'] == 'silent') {
+      $logDirectory = Config::get('log_dir');
     }
 
     parent::__construct($logDirectory, $logLevelThreshold, $options);

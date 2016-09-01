@@ -1,14 +1,15 @@
 <?php
 
-namespace Terminus\Models\Collections;
+namespace Terminus\Collections;
 
-use Terminus\Session;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Site;
-use Terminus\Models\User;
-use Terminus\Models\Workflow;
+use Terminus\Session;
 
 class Sites extends TerminusCollection {
+  /**
+   * @var string
+   */
+  protected $collected_class = 'Terminus\Models\Site';
   /**
    * @var User
    */
@@ -185,7 +186,7 @@ class Sites extends TerminusCollection {
           1
         );
       }
-      $site = new Site(
+      $site = new $this->collected_class(
         (object)['id' => $uuid,],
         ['id' => $uuid, 'collection' => $this,]
       );

@@ -1,6 +1,6 @@
 <?php
 
-use Terminus\Models\Collections\Sites;
+use Terminus\Collections\Sites;
 use Terminus\Runner;
 
 /**

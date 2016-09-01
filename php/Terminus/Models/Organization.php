@@ -2,9 +2,9 @@
 
 namespace Terminus\Models;
 
-use Terminus\Models\Collections\OrganizationSiteMemberships;
-use Terminus\Models\Collections\OrganizationUserMemberships;
-use Terminus\Models\Collections\Workflows;
+use Terminus\Collections\OrganizationSiteMemberships;
+use Terminus\Collections\OrganizationUserMemberships;
+use Terminus\Collections\Workflows;
 
 class Organization extends TerminusModel {
   /**
@@ -28,15 +28,14 @@ class Organization extends TerminusModel {
    * Object constructor
    *
    * @param object $attributes Attributes of this model
-   * @param array  $options    Options to set as $this->key
-   * @return Organization
+   * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
     parent::__construct($attributes, $options);
     $params                 = ['organization' => $this,];
     $this->site_memberships = new OrganizationSiteMemberships($params);
     $this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows        = new Workflows(['owner' => $this,]);
+    $this->workflows        = new Workflows($params);
   }
 
   /**

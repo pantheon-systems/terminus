@@ -2,6 +2,7 @@
 
 namespace Terminus\Caches;
 
+use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -67,7 +68,8 @@ class TokensCache {
    * @return string
    */
   public function getCacheDir() {
-    return TERMINUS_TOKENS_DIR;
+    $tokens_dir = Config::get('tokens_dir');
+    return $tokens_dir;
   }
 
   /**

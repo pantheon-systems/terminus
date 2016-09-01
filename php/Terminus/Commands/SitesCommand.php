@@ -2,10 +2,9 @@
 
 namespace Terminus\Commands;
 
-use Terminus\Configurator;
-use Terminus\Models\Collections\Sites;
+use Terminus\Config;
+use Terminus\Collections\Sites;
 use Terminus\Models\Site;
-use Terminus\Models\Upstreams;
 use Terminus\Session;
 
 /**
@@ -56,7 +55,7 @@ class SitesCommand extends TerminusCommand {
         'choices' => $assoc_args,
         'default' => sprintf(
           '%s/.drush/pantheon.aliases.drushrc.php',
-          Configurator::getHomeDir()
+          Config::getHomeDir()
         ),
       )
     );
@@ -206,11 +205,14 @@ class SitesCommand extends TerminusCommand {
         'service_level' => $site->get('service_level'),
         'framework'     => $site->get('framework'),
         'owner'         => $site->get('owner'),
-        'created'       => date(TERMINUS_DATE_FORMAT, $site->get('created')),
+        'created'       => date(
+          Config::get('date_format'),
+          $site->get('created')
+        ),
         'memberships'   => implode(', ', $memberships),
       ];
       if (!is_null($site->get('frozen'))) {
-        $rows[$site->get('id')]['frozen'] = true;
+        $rows[$site->id]['frozen'] = true;
       }
     }
 
@@ -365,7 +367,7 @@ class SitesCommand extends TerminusCommand {
             $this->log()->info('Backup of {site} created.', $context);
             $this->log()->info('Updating {site}.', $context);
             $response = $site->applyUpstreamUpdates(
-              $env->get('id'),
+              $env->id,
               $updatedb,
               $xoption
             );
@@ -504,8 +506,8 @@ class SitesCommand extends TerminusCommand {
       $options['site_name'] = $assoc_args['name'];
     } elseif (array_key_exists('site', $assoc_args)) {
       $options['site_name'] = $assoc_args['site'];
-    } elseif (isset($_SERVER['TERMINUS_SITE'])) {
-      $options['site_name'] = $_SERVER['TERMINUS_SITE'];
+    } elseif (!is_null(Config::get('site'))) {
+      $options['site_name'] = Config::get('site');
     } else {
       $message  = 'Machine name of the site; used as part of the default URL';
       $message .= " (if left blank will be $suggested_name)";
