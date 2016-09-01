@@ -73,6 +73,9 @@ class Request {
 
       $data = $resp['data'];
       if (count($data) > 0) {
+        if (count($data) < $limit) {
+          $finished = true;
+        }
         $start = end($data)->id;
 
         //If the last item of the results has previously been received,
