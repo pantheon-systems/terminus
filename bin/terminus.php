@@ -1,12 +1,11 @@
 #!/usr/bin/env php
 <?php
-// bin/terminus.php
 
 require __DIR__ . '/../vendor/autoload.php';
 
 use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Pantheon\Terminus;
+use Pantheon\Terminus\Terminus;
 
 $terminus = new Terminus();
 $command_factory = new AnnotatedCommandFactory();

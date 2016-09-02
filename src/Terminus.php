@@ -1,11 +1,9 @@
 <?php
-// src/Terminus.php
-
-namespace Pantheon;
+namespace Pantheon\Terminus;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
-use Terminus\Config;
+use Pantheon\Terminus\Config;
 
 class Terminus extends Application
 {

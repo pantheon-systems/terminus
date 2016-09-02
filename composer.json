@@ -24,7 +24,6 @@
   "autoload": {
     "psr-4": {
       "Terminus\\": ["php/", "php/Terminus/"],
-      "Pantheon\\": "src/",
       "Pantheon\\Terminus\\": "src/"
     }
   },
