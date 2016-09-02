@@ -1,12 +1,10 @@
 <phpunit
-  bootstrap="../unit_tests/bootstrap.php"
+  bootstrap="../new_unit_tests/bootstrap.php"
   colors="true"
   >
   <testsuites>
     <testsuite>
-      <file>tests/unit_tests/test-session.php</file>
-      <directory prefix="spec-" suffix=".php">../unit_tests/</directory>
-      <directory prefix="test-" suffix=".php">../unit_tests/</directory>
+      <directory suffix="Test.php">../new_unit_tests/</directory>
     </testsuite>
   </testsuites>
   <listeners>
@@ -14,8 +12,7 @@
   </listeners>
   <filter>
     <whitelist>
-        <directory suffix=".php">../../php/</directory>
-        <directory suffix=".php">../../utils/</directory>
+        <directory suffix=".php">../../src/</directory>
         <exclude>
             <directory suffix=".php">../../vendor/</directory>
         </exclude>

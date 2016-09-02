@@ -20,26 +20,12 @@ class Config {
   private static $constant_prefix = 'TERMINUS_';
 
   /**
-   * Returns the appropriate home directory.
+   * Constructor for Config
    *
-   * Adapted from Terminus Package Manager by Ed Reel
-   * @author Ed Reel <@uberhacker>
-   * @url    https://github.com/uberhacker/tpm
-   *
-   * @return string
+   * @param array $options Options with which to configure this object
    */
-  public static function getHomeDir() {
-    $home = getenv('HOME');
-    if (!$home) {
-      $system = '';
-      if (getenv('MSYSTEM') !== null) {
-        $system = strtoupper(substr(getenv('MSYSTEM'), 0, 4));
-      }
-      if ($system != 'MING') {
-        $home = getenv('HOMEPATH');
-      }
-    }
-    return $home;
+  public function __construct(array $options = []) {
+    self::$config = $options;
   }
 
   /**
@@ -63,6 +49,29 @@ class Config {
       self::configure();
     }
     return self::$config;
+  }
+
+  /**
+   * Returns the appropriate home directory.
+   *
+   * Adapted from Terminus Package Manager by Ed Reel
+   * @author Ed Reel <@uberhacker>
+   * @url    https://github.com/uberhacker/tpm
+   *
+   * @return string
+   */
+  public static function getHomeDir() {
+    $home = getenv('HOME');
+    if (!$home) {
+      $system = '';
+      if (getenv('MSYSTEM') !== null) {
+        $system = strtoupper(substr(getenv('MSYSTEM'), 0, 4));
+      }
+      if ($system != 'MING') {
+        $home = getenv('HOMEPATH');
+      }
+    }
+    return $home;
   }
 
   /**
@@ -95,7 +104,10 @@ class Config {
       file_get_contents(self::$config['root'] . self::$config_path)
     );
     foreach ($file_config as $name => $setting) {
-      if (defined($name)) {
+      $key = self::getKeyFromConstant($name);
+      if (isset(self::$config[$key])) {
+        continue;
+      } else if (defined($name)) {
         $setting = constant($name);
       } else if (isset($_SERVER[$name]) && ($_SERVER[$name] != '')) {
         $setting = $_SERVER[$name];
@@ -104,7 +116,6 @@ class Config {
       }
       $value = self::replacePlaceholders($setting);
       self::ensureDirExists($name, $value);
-      $key = self::getKeyFromConstant($name);
       self::$config[$key] = $value;
     }
     date_default_timezone_set(self::get('time_zone'));
@@ -139,6 +150,9 @@ class Config {
    * @return string
    */
   private static function getPhpBinary() {
+    if (isset(self::$config['php'])) {
+      return self::$config['php'];
+    }
     if (getenv('TERMINUS_PHP')) {
       $php_bin = getenv('TERMINUS_PHP');
     } elseif (defined('PHP_BINARY')) {
@@ -156,6 +170,9 @@ class Config {
    * @return string
    */
   private static function getTerminusRoot($current_dir = null) {
+    if (isset(self::$config['root'])) {
+      return self::$config['root'];
+    }
     if (defined('TERMINUS_ROOT')) {
       return TERMINUS_ROOT;
     }
@@ -182,6 +199,9 @@ class Config {
    * @return string
    */
   private static function getTerminusScript() {
+    if (isset(self::$config['script'])) {
+      return self::$config['script'];
+    }
     if (defined('TERMINUS_SCRIPT')) {
       return TERMINUS_SCRIPT;
     }

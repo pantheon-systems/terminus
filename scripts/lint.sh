@@ -20,3 +20,14 @@ eval $cmd
 phpcs="vendor/bin/phpcs --standard=tests/config/context_standards.xml --extensions=php --warning-severity=6 --error-severity=1"
 cmd=$phpcs+" tests/features/bootstrap/FeatureContext.php tests/features/bootstrap/10FeatureContext.php"
 eval $cmd
+
+#Enforce PSR2 on 1.x
+phpcs="vendor/bin/phpcs --standard=PSR2 --extensions=php"
+cmd=$phpcs+" tests/new_unit_tests/*"
+eval $cmd
+
+cmd=$phpcs+" bin/terminus.php"
+eval $cmd
+
+cmd=$phpcs+" src/*"
+eval $cmd

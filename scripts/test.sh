@@ -21,5 +21,6 @@ fi
 if [ -z $2 ]; then
   # Run the unit tests if we are not targeting a feature
   vendor/bin/phpunit -c tests/config/phpunit.xml.dist --debug
+  vendor/bin/phpunit -c tests/config/phpunit-10.xml.dist --debug
 fi
 eval $behat_cmd

@@ -22,7 +22,11 @@
     "wp-cli/php-cli-tools": "~0.11.1"
   },
   "autoload": {
-    "psr-0": { "Terminus": "php" }
+    "psr-4": {
+      "Terminus\\": ["php/", "php/Terminus/"],
+      "Pantheon\\": "src/",
+      "Pantheon\\Terminus\\": "src/"
+    }
   },
   "require-dev": {
     "behat/behat": "^3.1",
