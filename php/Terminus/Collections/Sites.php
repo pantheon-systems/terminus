@@ -43,20 +43,25 @@ class Sites extends TerminusCollection {
    *   string label The site's human-friendly name
    *   string site_name The site's name
    *   string organization_id Organization to which this site belongs' UUID
-   *   string type Workflow type for imports
-   *   string upstream_id If the upstream's UUID absent, the site is migratory.
    * @return Workflow
    */
   public function create($params = []) {
-    if (isset($params['upstream_id'])) {
-      $params['deploy_product'] = ['product_id' => $params['upstream_id'],];
-      unset($params['upstream_id']);
-      $type = 'create_site';
-    } else {
-      $type = 'create_site_for_migration';
-    }
+    $workflow = $this->user->workflows->create('create_site', compact('params'));
+    return $workflow;
+  }
 
-    $workflow = $this->user->workflows->create($type, compact('params'));
+  /**
+   * Creates a new site for migration
+   *
+   * @param string[] $params Options for the new site, elements as follow:
+   *   string label The site's human-friendly name
+   *   string site_name The site's name
+   *   string organization_id Organization to which this site belongs' UUID
+   *   string type Workflow type for imports
+   * @return Workflow
+   */
+  public function createForMigration($params = []) {
+    $workflow = $this->user->workflows->create('create_site_for_migration', compact('params'));
     return $workflow;
   }
 

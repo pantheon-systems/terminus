@@ -150,6 +150,20 @@ class Site extends TerminusModel {
   }
 
   /**
+   * Creates a new site for migration
+   *
+   * @param string[] $product_id The uuid for the product to deploy.
+   * @return Workflow
+   */
+  public function deployProduct($product_id) {
+    $workflow = $this->workflows->create(
+      'deploy_product',
+      ['params' => ['product_id' => $product_id,],]
+    );
+    return $workflow;
+  }
+
+  /**
    * Completes a site migration in progress
    *
    * @return Workflow
