@@ -118,23 +118,31 @@ class SitesCommand extends TerminusCommand {
    */
   public function create($args, $assoc_args) {
     $options = $this->getSiteCreateOptions($assoc_args);
-    $options['upstream_id'] = $this->input()->upstream(
+    $upstream_id = $this->input()->upstream(
       ['args' => $assoc_args,]
     );
-    $this->log()->info('Creating new site installation ... ');
+    $this->log()->info('Creating new site ... ');
 
+    // Create the site
     $workflow = $this->sites->create($options);
     $workflow->wait();
     $this->workflowOutput($workflow);
 
-    // Add Site to SitesCache
+    // Deploy the specified upstream
     $final_task = $workflow->get('final_task');
+    $site = $this->sites->get($options['site_name']);
+    if ($site) {
+      $this->log()->info('Deploying CMS ... ');
+      $workflow = $site->deployProduct($upstream_id);
+      $workflow->wait();
+      $this->workflowOutput($workflow);
+    }
 
     $this->helpers->launch->launchSelf(
       [
         'command'    => 'site',
         'args'       => ['info',],
-        'assoc_args' => ['site' => $options['name'],],
+        'assoc_args' => ['site' => $options['site_name'],],
       ]
     );
 
