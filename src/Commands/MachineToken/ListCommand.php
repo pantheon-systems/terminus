@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\MachineToken;
 
+use Pantheon\Terminus\Commands\TerminusCommand;
+
 class ListCommand extends TerminusCommand
 {
     /**
@@ -12,10 +14,13 @@ class ListCommand extends TerminusCommand
     /**
      * Lists the IDs and labels of machine tokens belonging to the logged-in user
      *
+     * @name machine-token:list
+     * @aliases machine-tokens mt:list mts
+     *
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
      */
-    public function machineTokenList() {
+    public function list() {
 
     }
 

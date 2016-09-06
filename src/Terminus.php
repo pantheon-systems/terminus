@@ -1,29 +1,25 @@
 <?php
+
 namespace Pantheon\Terminus;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
-use Pantheon\Terminus\Config;
 
 class Terminus extends Application
 {
-  /**
-   * @var Config
-   */
-    private $config;
 
-  /**
-   * @inheritdoc
-   */
+    /**
+     * @inheritdoc
+     */
     public function __construct()
     {
-        $this->config = new Config();
-        parent::__construct('Terminus', $this->config->get('version'));
+        $config = new Config();
+        parent::__construct('Terminus', $config->get('version'));
     }
 
-  /**
-   * @inheritdoc
-   */
+    /**
+     * @inheritdoc
+     */
     protected function getDefaultHelperSet()
     {
         $helper_set = parent::getDefaultHelperSet();
@@ -31,9 +27,9 @@ class Terminus extends Application
         return $helper_set;
     }
 
-  /**
-   * @inheritdoc
-   */
+    /**
+     * @inheritdoc
+     */
     protected function getDefaultInputDefinition()
     {
         $definition = parent::getDefaultInputDefinition();

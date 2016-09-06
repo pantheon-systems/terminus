@@ -27,13 +27,19 @@ abstract class TerminusCommand implements InputAwareInterface, OutputAwareInterf
      *
      * @param Config $config Terminus configuration object
      */
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->config = $config;
-        if ($authorized) {
+        if ($this->authorized) {
             $this->ensureLogin();
         }
     }
 
+    /**
+     * Logs the user in or errs
+     *
+     * @return void
+     */
     private function ensureLogin() {
         $auth   = new Auth();
         $tokens = $auth->getAllSavedTokenEmails();
@@ -52,7 +58,5 @@ abstract class TerminusCommand implements InputAwareInterface, OutputAwareInterf
             }
         }
         return true;
-
     }
-
 }

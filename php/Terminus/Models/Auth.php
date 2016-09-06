@@ -7,7 +7,6 @@ use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 use Terminus\Session;
-use Terminus\Utils;
 
 class Auth extends TerminusModel {
   /**
@@ -69,7 +68,7 @@ class Auth extends TerminusModel {
     $is_logged_in = (
       isset($session->session)
       && (
-        Utils\isTest()
+        (boolean)Config::get('test_mode')
         || ($session->session_expire_time >= time())
       )
     );
