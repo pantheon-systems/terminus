@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus;
 
 use Dotenv\Dotenv;
@@ -6,46 +7,46 @@ use Symfony\Component\Yaml\Yaml;
 
 class Config
 {
-  /**
-   * @var string[]
-   */
+    /**
+     * @var string[]
+     */
     private static $config = [];
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     private static $config_path = '/config/constants.yml';
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     private static $constant_prefix = 'TERMINUS_';
 
-  /**
-   * Constructor for Config
-   *
-   * @param array $options Options with which to configure this object
-   */
+    /**
+     * Constructor for Config
+     *
+     * @param array $options Options with which to configure this object
+     */
     public function __construct(array $options = [])
     {
         self::$config = $options;
     }
 
-  /**
-   * Returns a configuration setting
-   *
-   * @param string $key The key of the config setting to return
-   * @return string self::$config[$property]
-   */
+    /**
+     * Returns a configuration setting
+     *
+     * @param string $key The key of the config setting to return
+     * @return string self::$config[$property]
+     */
     public static function get($key)
     {
         $config = self::getAll();
         return $config[$key];
     }
 
-  /**
-   * Returns all configuration settings
-   *
-   * @return string[] self::$config
-   */
+    /**
+     * Returns all configuration settings
+     *
+     * @return string[] self::$config
+     */
     public static function getAll()
     {
         if (empty(self::$config)) {
@@ -54,15 +55,15 @@ class Config
         return self::$config;
     }
 
-  /**
-   * Returns the appropriate home directory.
-   *
-   * Adapted from Terminus Package Manager by Ed Reel
-   * @author Ed Reel <@uberhacker>
-   * @url    https://github.com/uberhacker/tpm
-   *
-   * @return string
-   */
+    /**
+     * Returns the appropriate home directory.
+     *
+     * Adapted from Terminus Package Manager by Ed Reel
+     * @author Ed Reel <@uberhacker>
+     * @url    https://github.com/uberhacker/tpm
+     *
+     * @return string
+     */
     public static function getHomeDir()
     {
         $home = getenv('HOME');
@@ -78,12 +79,12 @@ class Config
         return $home;
     }
 
-  /**
-   * Ensures that directory paths work in any system
-   *
-   * @param string $path A path to set the directory separators for
-   * @return string
-   */
+    /**
+     * Ensures that directory paths work in any system
+     *
+     * @param string $path A path to set the directory separators for
+     * @return string
+     */
     public static function fixDirectorySeparators($path)
     {
         $fixed_path = str_replace(
@@ -94,11 +95,11 @@ class Config
         return $fixed_path;
     }
 
-  /**
-   * Sets constants necessary for the proper functioning of Terminus
-   *
-   * @return void
-   */
+    /**
+     * Sets constants necessary for the proper functioning of Terminus
+     *
+     * @return void
+     */
     private static function configure()
     {
         self::importEnvironmentVariables();
@@ -127,13 +128,13 @@ class Config
         date_default_timezone_set(self::get('time_zone'));
     }
 
-  /**
-   * Ensures a directory exists
-   *
-   * @param string $name  The name of the config var
-   * @param string $value The value of the named config var
-   * @return bool
-   */
+    /**
+     * Ensures a directory exists
+     *
+     * @param string $name  The name of the config var
+     * @param string $value The value of the named config var
+     * @return bool
+     */
     private static function ensureDirExists($name, $value)
     {
         if ((strpos($name, 'TERMINUS_') !== false)
@@ -151,11 +152,11 @@ class Config
         return null;
     }
 
-  /**
-   * Returns location of PHP with which to run Terminus
-   *
-   * @return string
-   */
+    /**
+     * Returns location of PHP with which to run Terminus
+     *
+     * @return string
+     */
     private static function getPhpBinary()
     {
         if (isset(self::$config['php'])) {
@@ -171,12 +172,12 @@ class Config
         return $php_bin;
     }
 
-  /**
-   * Finds and returns the root directory of Terminus
-   *
-   * @param string $current_dir Directory to start searching at
-   * @return string
-   */
+    /**
+     * Finds and returns the root directory of Terminus
+     *
+     * @param string $current_dir Directory to start searching at
+     * @return string
+     */
     private static function getTerminusRoot($current_dir = null)
     {
         if (isset(self::$config['root'])) {
@@ -202,11 +203,11 @@ class Config
         return $root_dir;
     }
 
-  /**
-   * Finds and returns the name of the script running Terminus functions
-   *
-   * @return string
-   */
+    /**
+     * Finds and returns the name of the script running Terminus functions
+     *
+     * @return string
+     */
     private static function getTerminusScript()
     {
         if (isset(self::$config['script'])) {
@@ -226,11 +227,11 @@ class Config
         return $script_name;
     }
 
-  /**
-   * Imports environment variables
-   *
-   * @return void
-   */
+    /**
+     * Imports environment variables
+     *
+     * @return void
+     */
     private static function importEnvironmentVariables()
     {
         //Load environment variables from __DIR__/.env
@@ -240,12 +241,12 @@ class Config
         }
     }
 
-  /**
-   * Exchanges values in [[ ]] in the given string with constants
-   *
-   * @param string $string The string to perform replacements on
-   * @return string $string The modified string
-   */
+    /**
+     * Exchanges values in [[ ]] in the given string with constants
+     *
+     * @param string $string The string to perform replacements on
+     * @return string $string The modified string
+     */
     private static function replacePlaceholders($string)
     {
         $regex = '~\[\[(.*?)\]\]~';
@@ -265,12 +266,12 @@ class Config
         return $fixed_string;
     }
 
-  /**
-   * Reflects a key name given a Terminus constant name
-   *
-   * @param string $constant_name The name of a constant to get a key for
-   * @return string
-   */
+    /**
+     * Reflects a key name given a Terminus constant name
+     *
+     * @param string $constant_name The name of a constant to get a key for
+     * @return string
+     */
     private static function getKeyFromConstant($constant_name)
     {
         $key = strtolower(str_replace(self::$constant_prefix, '', $constant_name));
