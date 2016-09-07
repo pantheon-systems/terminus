@@ -14,7 +14,7 @@ class Runner
     /**
      * @var string
      */
-    private $commands_directory = __DIR__ . '/Commands';
+    private $commands_directory;
     /**
      * @var string
      */
@@ -27,6 +27,7 @@ class Runner
      */
     public function __construct(array $options = [])
     {
+        $this->commands_directory = __DIR__ . '/Commands';
         $this->application = new Terminus();
         $this->configureApplication(new Config($options));
     }
