@@ -2,37 +2,50 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Pantheon\Terminus\Config;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputAwareInterface;
 use Robo\Contract\OutputAwareInterface;
 use Robo\Common\OutputAwareTrait;
 use Robo\Common\InputAwareTrait;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements InputAwareInterface, OutputAwareInterface
+abstract class TerminusCommand implements InputAwareInterface, LoggerAwareInterface, OutputAwareInterface
 {
     use InputAwareTrait;
+    use LoggerAwareTrait;
     use OutputAwareTrait;
 
-    /**
-     * @var Config
-     */
-    protected $config;
     /**
      * @var boolean True if the command requires the user to be logged in
      */
     protected $authorized = false;
+    /**
+     * @var Config
+     */
+    protected $config;
 
     /**
      * TerminusCommand constructor
-     *
-     * @param Config $config Terminus configuration object
      */
-    public function __construct($config)
+    public function __construct()
     {
-        $this->config = $config;
+        $this->config = new Config();
         if ($this->authorized) {
             $this->ensureLogin();
         }
+    }
+
+    /**
+     * Returns a logger object for use
+     *
+     * @return LoggerInterface
+     */
+    protected function log()
+    {
+        return $this->logger;
     }
 
     /**
@@ -47,14 +60,12 @@ abstract class TerminusCommand implements InputAwareInterface, OutputAwareInterf
             if (count($tokens) === 1) {
                 $email = array_shift($tokens);
                 $auth->logInViaMachineToken(compact('email'));
-            } else if (!is_null($this->config->get('user'))
-              && $email = $this->config->get('user')
-            ) {
+            } else if (!is_null($this->config->get('user')) && $email = $this->config->get('user')) {
                 $auth->logInViaMachineToken(compact('email'));
             } else {
-                $message  = 'You are not logged in. Run `auth login` to ';
-                $message .= 'authenticate or `help auth login` for more info.';
-                $this->log()->error($message);
+                $this->log()->error(
+                  'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
+                );
             }
         }
         return true;

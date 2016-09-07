@@ -2,87 +2,95 @@
 
 namespace Pantheon\Terminus;
 
-use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use Symfony\Component\Console\Application;
+use Robo\Runner as RoboRunner;
 
 class Runner
 {
     /**
-     * @var Terminus
+     * @var Application
      */
     private $application;
     /**
-     * @var string
+     * @var \Robo\Runner
      */
-    private $commands_directory;
-    /**
-     * @var string
-     */
-    private $top_namespace = 'Pantheon\Terminus\Commands';
+    private $runner;
 
     /**
-     * Runner constructor
+     * Object constructor
      *
-     * @param array $options Options to configure the runner
+     * @param array $options Elements as follow:
+     *        Application application An instance of a Symfony Console Application
+     *        Config      config      A Terminus config instance
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = ['application' => null, 'config' => null,])
     {
-        $this->commands_directory = __DIR__ . '/Commands';
-        $this->application = new Terminus();
-        $this->configureApplication(new Config($options));
+        $this->application = $options['application'];
+        $this->config = $options['config'];
+
+        $commands_directory = __DIR__ . '/Commands';
+        $top_namespace = 'Pantheon\Terminus\Commands';
+        $commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        $this->runner = new RoboRunner($commands);
     }
 
     /**
      * Runs the instantiated Terminus application
+     *
+     * @param string[] $arguments Argv from the command line
+     * @return integer The exiting status code of the application
      */
-    public function run()
+    public function run(array $arguments = [])
     {
-        $this->application->run();
+        $status_code = $this->runner->execute($arguments, null, 'Terminus', $this->config->get('version'));
+        return $status_code;
     }
 
     /**
-     * Adds command files to the application
+     * Discovers command classes using CommandFileDiscovery
      *
-     * @param Config $config A Terminus configuration object
-     * @return void
+     * @param string[] $options Elements as follow
+     *        string path      The full path to the directory to search for commands
+     *        string namespace The full namespace associated with given the command directory
+     * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    private function configureApplication(Config $config)
+    private function getCommands(array $options = ['path' => null, 'namespace' => null,])
     {
-        $command_factory = new AnnotatedCommandFactory();
         $discovery = new CommandFileDiscovery();
-        $discovery->setSearchPattern('*Command.php');
-        $subdirectories = array_merge(
-            $this->locateSubdirectories($this->commands_directory, $this->top_namespace),
-            $this->locateSubdirectories($config->get('plugins_dir'))
-        );
-        foreach ($subdirectories as $subdirectory) {
-            $command_files = $discovery->discover($subdirectory['path'], $subdirectory['namespace']);
-            foreach ($command_files as $command_class) {
-                $reflection_class = new \ReflectionClass($command_class);
-                if (!$reflection_class->isAbstract()) {
-                    $command_list = $command_factory->createCommandsFromClass(new $command_class($config));
-                    foreach ($command_list as $command) {
-                        $this->application->add($command);
-                    }
-                }
-            }
-        }
+        $discovery->setSearchPattern('*Command.php')->setSearchLocations(['.']);
+        $commands = $this->fixCommands($discovery->discover($options['path'], $options['namespace']));
+        return $commands;
     }
 
     /**
-     * Recursively discovers all directories underneath a given directory
+     * Removes extraneous /. and \. from the file and class nammes
      *
-     * @param $directory Directory to start search from
-     * @param $namespace Namespace for the given directory
+     * @param string[] $command_info A hash of command file names and paths
+     * @return TerminusCommand[] A fixed and pruned hash of file names and paths
      */
-    private function locateSubdirectories($directory, $namespace = '\\')
+    private function fixCommands($command_info)
     {
-        $subdirectories = [['path' => $directory, 'namespace' => $namespace,]];
-        $dirs = array_filter(glob("$directory/*"), 'is_dir');
-        foreach ($dirs as $dir) {
-            $next_namespace = $namespace.'\\'.str_replace("$directory/", '', $dir);
-            $subdirectories = array_merge($subdirectories, $this->locateSubdirectories($dir, $next_namespace));
-        }
-        return $subdirectories;
+        $commands = array_filter(
+            array_combine(
+                array_map(
+                    function ($file_name) {
+                        return str_replace('/./', '/', $file_name);
+                    },
+                    array_keys($command_info)
+                ),
+                array_map(
+                    function ($class_name) {
+                        return str_replace('\\.\\', '\\', $class_name);
+                    },
+                    $command_info
+                )
+            ),
+            function ($class_name) {
+                $reflection_class = new \ReflectionClass($class_name);
+                return !$reflection_class->isAbstract();
+            }
+        );
+        return $commands;
     }
 }
