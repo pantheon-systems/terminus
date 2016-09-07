@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus;
 
 use Dotenv\Dotenv;
