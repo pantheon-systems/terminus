@@ -47,13 +47,9 @@ class Auth extends TerminusModel {
    */
   public function getMachineTokenCreationUrl() {
     $config = Config::getAll();
-    $port = '';
-    if ($config['host'] == 'localhost') {
-      $port = ':' . $config['port'];
-    }
     $url = vsprintf(
-      '%s://%s%s/machine-token/create/%s',
-      [$config['protocol'], $config['host'], $port, gethostname(),]
+      '%s://%s/machine-token/create/%s',
+      [$config['dashboard_protocol'], $config['dashboard_host'], gethostname(),]
     );
     return $url;
   }

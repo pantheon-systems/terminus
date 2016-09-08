@@ -5,6 +5,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Added
 - New rocket art available using `art rocket`. (#1148)
 
+## Changed
+- Makes API calls to host 'terminus.pantheon.io' instead of 'dashboard.pantheon.io' (#1180)
+
 ### [0.12.0] - 2016-08-24
 ### Added
 - Added `choices` property to `InputHelper::siteName` parameter object. (#1152)

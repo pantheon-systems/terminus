@@ -289,9 +289,9 @@
 -
     request:
         method: POST
-        url: 'https://dashboard.pantheon.io/api/authorize/machine-token'
+        url: 'https://terminus.pantheon.io/api/authorize/machine-token'
         headers:
-            Host: dashboard.pantheon.io
+            Host: terminus.pantheon.io
             Expect: null
             Accept-Encoding: null
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
@@ -324,4 +324,3 @@
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
         body: '{"session":"cbc3d67f-f2b9-44a0-8dd6-8d63265af96e:24b3af2c-6649-11e6-b51c-bc764e11bdd3:0eJa9qAWPQiGlvc9Cny56","expires_at":1474056701,"user_id":"cbc3d67f-f2b9-44a0-8dd6-8d63265af96e"}'
-

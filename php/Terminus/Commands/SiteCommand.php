@@ -483,8 +483,9 @@ class SiteCommand extends TerminusCommand {
       $env = '#' . $env;
     }
     $url = sprintf(
-      'https://%s/sites/%s%s',
-      Config::get('host'),
+      '%s://%s/sites/%s%s',
+      Config::get('dashboard_protocol'),
+      Config::get('dashboard_host'),
       $site->id,
       $env
     );
