@@ -11,10 +11,10 @@ class Terminus extends Application
     /**
      * @inheritdoc
      */
-    public function __construct()
+    public function __construct(Config $config)
     {
-        $config = new Config();
-        parent::__construct('Terminus', $config->get('version'));
+        $this->config = $config;
+        parent::__construct('Terminus', $this->config->get('version'));
     }
 
     /**

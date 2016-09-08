@@ -24,11 +24,12 @@ class Runner
      * Runner constructor
      *
      * @param array $options Options to configure the runner
+     * @param \Pantheon\Terminus\Terminus $application
      */
-    public function __construct(array $options = [])
+    public function __construct(array $options = [], Terminus $application = null)
     {
         $this->commands_directory = __DIR__ . '/Commands';
-        $this->application = new Terminus();
+        $this->application = $application;
         $this->configureApplication(new Config($options));
     }
 
