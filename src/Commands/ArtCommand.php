@@ -14,8 +14,7 @@ class ArtCommand extends TerminusCommand
      * @usage terminus art rocket
      *   Displays the rocket artwork
      */
-    public function art($name) {
-
+    public function art($name)
+    {
     }
-
 }
