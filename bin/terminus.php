@@ -16,8 +16,13 @@ use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Terminus;
 
+$container = new \League\Container\Container();
+$input = new \Symfony\Component\Console\Input\ArgvInput($_SERVER['argv']);
+$output = new \Symfony\Component\Console\Output\ConsoleOutput();
+\Robo\Robo::configureContainer($container, $input, $output, $app);
+
 $config = new Config();
 $terminus = new Terminus('Terminus', $config->get('version'), $config);
-$runner = new Runner(['application' => $terminus, 'config' => $config,]);
-$status_code = $runner->run($_SERVER['argv']);
+$runner = new Runner(['application' => $terminus, 'config' => $config, 'container' => $container]);
+$status_code = $runner->run($input, $output);
 exit($status_code);

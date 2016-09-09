@@ -23,8 +23,9 @@ class Runner
      * @param array $options Elements as follow:
      *        Application application An instance of a Symfony Console Application
      *        Config      config      A Terminus config instance
+     *        Container   container   The Dependency Injection Container
      */
-    public function __construct(array $options = ['application' => null, 'config' => null,])
+    public function __construct(array $options = ['application' => null, 'config' => null, 'container' => null])
     {
         $this->application = $options['application'];
         $this->config = $options['config'];
@@ -32,7 +33,7 @@ class Runner
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
         $commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->runner = new RoboRunner($commands);
+        $this->runner = new RoboRunner($commands, null, $options['container']);
     }
 
     /**
@@ -41,9 +42,10 @@ class Runner
      * @param string[] $arguments Argv from the command line
      * @return integer The exiting status code of the application
      */
-    public function run(array $arguments = [])
+    public function run($input, $output)
     {
-        $status_code = $this->runner->execute($arguments, null, 'Terminus', $this->config->get('version'));
+        $this->runner->init($input, $output);
+        $status_code = $this->runner->run($input, $output);
         return $status_code;
     }
 
@@ -58,39 +60,7 @@ class Runner
     private function getCommands(array $options = ['path' => null, 'namespace' => null,])
     {
         $discovery = new CommandFileDiscovery();
-        $discovery->setSearchPattern('*Command.php')->setSearchLocations(['.']);
-        $commands = $this->fixCommands($discovery->discover($options['path'], $options['namespace']));
-        return $commands;
-    }
-
-    /**
-     * Removes extraneous /. and \. from the file and class nammes
-     *
-     * @param string[] $command_info A hash of command file names and paths
-     * @return TerminusCommand[] A fixed and pruned hash of file names and paths
-     */
-    private function fixCommands($command_info)
-    {
-        $commands = array_filter(
-            array_combine(
-                array_map(
-                    function ($file_name) {
-                        return str_replace('/./', '/', $file_name);
-                    },
-                    array_keys($command_info)
-                ),
-                array_map(
-                    function ($class_name) {
-                        return str_replace('\\.\\', '\\', $class_name);
-                    },
-                    $command_info
-                )
-            ),
-            function ($class_name) {
-                $reflection_class = new \ReflectionClass($class_name);
-                return !$reflection_class->isAbstract();
-            }
-        );
-        return $commands;
+        $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
+        return $discovery->discover($options['path'], $options['namespace']);
     }
 }

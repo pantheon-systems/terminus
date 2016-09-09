@@ -6,17 +6,14 @@ use Pantheon\Terminus\Config;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Input\InputAwareInterface;
-use Robo\Contract\OutputAwareInterface;
-use Robo\Common\OutputAwareTrait;
-use Robo\Common\InputAwareTrait;
+use Robo\Contract\IOAwareInterface;
+use Robo\Common\IO;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements InputAwareInterface, LoggerAwareInterface, OutputAwareInterface
+abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface
 {
-    use InputAwareTrait;
     use LoggerAwareTrait;
-    use OutputAwareTrait;
+    use IO;
 
     /**
      * @var boolean True if the command requires the user to be logged in
