@@ -40,14 +40,15 @@ abstract class TerminusCommand implements InputAwareInterface, OutputAwareInterf
      *
      * @return void
      */
-    private function ensureLogin() {
+    private function ensureLogin()
+    {
         $auth   = new Auth();
         $tokens = $auth->getAllSavedTokenEmails();
         if (!$auth->loggedIn()) {
             if (count($tokens) === 1) {
                 $email = array_shift($tokens);
                 $auth->logInViaMachineToken(compact('email'));
-            } else if (!is_null($this->config->get('user'))
+            } elseif (!is_null($this->config->get('user'))
               && $email = $this->config->get('user')
             ) {
                 $auth->logInViaMachineToken(compact('email'));

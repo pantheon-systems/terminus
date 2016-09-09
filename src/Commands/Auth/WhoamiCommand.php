@@ -18,8 +18,7 @@ class WhoamiCommand extends TerminusCommand
      * @usage terminus auth:whoami -vvv
      *   Responds with the current session and user's data
      */
-    public function whoami() {
-
+    public function whoami()
+    {
     }
-
 }

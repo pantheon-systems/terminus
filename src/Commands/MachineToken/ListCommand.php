@@ -20,8 +20,7 @@ class ListCommand extends TerminusCommand
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
      */
-    public function listTokens() {
-
+    public function listTokens()
+    {
     }
-
 }

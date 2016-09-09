@@ -19,8 +19,7 @@ class LoginCommand extends TerminusCommand
      * @usage terminus auth:login
      *   Logs in your user with a previously saved machine token
      */
-    public function logIn(array $options = []) {
-
+    public function logIn(array $options = [])
+    {
     }
-
 }
