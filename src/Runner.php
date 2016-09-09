@@ -14,6 +14,10 @@ class Runner
      * @var \Robo\Runner
      */
     private $runner;
+    /**
+     * @var string[]
+     */
+    private $commands = [];
 
     /**
      * Object constructor
@@ -24,8 +28,9 @@ class Runner
     {
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
-        $commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->runner = new RoboRunner($commands, null, $container);
+        $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        $this->runner = new RoboRunner();
+        $this->runner->setContainer($container);
     }
 
     /**
@@ -37,8 +42,7 @@ class Runner
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
-        $this->runner->init($input, $output);
-        $status_code = $this->runner->run($input, $output);
+        $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
         return $status_code;
     }
 
