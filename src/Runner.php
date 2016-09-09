@@ -3,15 +3,13 @@
 namespace Pantheon\Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Symfony\Component\Console\Application;
+use League\Container\Container;
 use Robo\Runner as RoboRunner;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Runner
 {
-    /**
-     * @var Application
-     */
-    private $application;
     /**
      * @var \Robo\Runner
      */
@@ -20,29 +18,24 @@ class Runner
     /**
      * Object constructor
      *
-     * @param array $options Elements as follow:
-     *        Application application An instance of a Symfony Console Application
-     *        Config      config      A Terminus config instance
-     *        Container   container   The Dependency Injection Container
+     * @param Container $container Container The dependency injection container
      */
-    public function __construct(array $options = ['application' => null, 'config' => null, 'container' => null])
+    public function __construct(Container $container = null)
     {
-        $this->application = $options['application'];
-        $this->config = $options['config'];
-
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
         $commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->runner = new RoboRunner($commands, null, $options['container']);
+        $this->runner = new RoboRunner($commands, null, $container);
     }
 
     /**
      * Runs the instantiated Terminus application
      *
-     * @param string[] $arguments Argv from the command line
-     * @return integer The exiting status code of the application
+     * @param InputInterface  $input  An input object to run the application with
+     * @param OutputInterface $output An output object to run the application with
+     * @return integer $status_code The exiting status code of the application
      */
-    public function run($input, $output)
+    public function run(InputInterface $input, OutputInterface $output)
     {
         $this->runner->init($input, $output);
         $status_code = $this->runner->run($input, $output);

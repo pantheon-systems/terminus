@@ -12,17 +12,25 @@ if ($phar_path) {
     }
 }
 
+use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Terminus;
+use Robo\Robo;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
-$container = new \League\Container\Container();
-$input = new \Symfony\Component\Console\Input\ArgvInput($_SERVER['argv']);
-$output = new \Symfony\Component\Console\Output\ConsoleOutput();
-\Robo\Robo::configureContainer($container, $input, $output, $app);
-
+// Initializing the Terminus application
 $config = new Config();
-$terminus = new Terminus('Terminus', $config->get('version'), $config);
-$runner = new Runner(['application' => $terminus, 'config' => $config, 'container' => $container]);
+$application = new Terminus('Terminus', $config->get('version'), $config);
+
+// Configuring the dependency-injection container
+$container = new Container();
+$input = new ArgvInput($_SERVER['argv']);
+$output = new ConsoleOutput();
+Robo::configureContainer($container, $input, $output, $application);
+
+// Running Terminus
+$runner = new Runner($container);
 $status_code = $runner->run($input, $output);
 exit($status_code);

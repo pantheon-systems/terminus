@@ -576,7 +576,7 @@ class FeatureContext implements Context {
   public function iRun($command) {
     $command      = $this->_replacePlaceholders($command);
     $regex        = '/(?<!\.)terminus/';
-    $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
+    $terminus_cmd = sprintf('bin/terminus.php', $this->cliroot);
     if ($this->_cassette_name) {
       $command = 'TERMINUS_VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
     }
