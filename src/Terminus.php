@@ -2,19 +2,30 @@
 
 namespace Pantheon\Terminus;
 
-use Symfony\Component\Console\Application;
+use Robo\Application;
 use Symfony\Component\Console\Input\InputOption;
 
 class Terminus extends Application
 {
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
-     * @inheritdoc
+     * Constructor.
+     *
+     * @param string $name    The name of the application
+     * @param string $version The version of the application
+     * @param Config $config  A Terminus configuration object
      */
-    public function __construct()
+    public function __construct($name = 'Terminus', $version = null, Config $config = null)
     {
-        $config = new Config();
-        parent::__construct('Terminus', $config->get('version'));
+        $this->config = $config;
+        parent::__construct($name, $version);
+        $this->getDefinition()->addOption(
+            new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer yes to all prompts')
+        );
     }
 
     /**
@@ -25,24 +36,5 @@ class Terminus extends Application
         $helper_set = parent::getDefaultHelperSet();
         //$helper_set->set(new Pantheon\Terminus\Helpers\FileHelper());
         return $helper_set;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getDefaultInputDefinition()
-    {
-        $definition = parent::getDefaultInputDefinition();
-        $definition->addOptions(
-            [
-            new InputOption(
-                '--yes',
-                '-y',
-                InputOption::VALUE_NONE,
-                'Answer yes to all prompts'
-            ),
-            ]
-        );
-        return $definition;
     }
 }

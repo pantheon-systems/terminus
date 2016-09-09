@@ -2,87 +2,58 @@
 
 namespace Pantheon\Terminus;
 
-use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use League\Container\Container;
+use Robo\Runner as RoboRunner;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Runner
 {
     /**
-     * @var Terminus
+     * @var \Robo\Runner
      */
-    private $application;
-    /**
-     * @var string
-     */
-    private $commands_directory;
-    /**
-     * @var string
-     */
-    private $top_namespace = 'Pantheon\Terminus\Commands';
+    private $runner;
 
     /**
-     * Runner constructor
+     * Object constructor
      *
-     * @param array $options Options to configure the runner
+     * @param Container $container Container The dependency injection container
      */
-    public function __construct(array $options = [])
+    public function __construct(Container $container = null)
     {
-        $this->commands_directory = __DIR__ . '/Commands';
-        $this->application = new Terminus();
-        $this->configureApplication(new Config($options));
+        $commands_directory = __DIR__ . '/Commands';
+        $top_namespace = 'Pantheon\Terminus\Commands';
+        $commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        $this->runner = new RoboRunner($commands, null, $container);
     }
 
     /**
      * Runs the instantiated Terminus application
+     *
+     * @param InputInterface  $input  An input object to run the application with
+     * @param OutputInterface $output An output object to run the application with
+     * @return integer $status_code The exiting status code of the application
      */
-    public function run()
+    public function run(InputInterface $input, OutputInterface $output)
     {
-        $this->application->run();
+        $this->runner->init($input, $output);
+        $status_code = $this->runner->run($input, $output);
+        return $status_code;
     }
 
     /**
-     * Adds command files to the application
+     * Discovers command classes using CommandFileDiscovery
      *
-     * @param Config $config A Terminus configuration object
-     * @return void
+     * @param string[] $options Elements as follow
+     *        string path      The full path to the directory to search for commands
+     *        string namespace The full namespace associated with given the command directory
+     * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    private function configureApplication(Config $config)
+    private function getCommands(array $options = ['path' => null, 'namespace' => null,])
     {
-        $command_factory = new AnnotatedCommandFactory();
         $discovery = new CommandFileDiscovery();
-        $discovery->setSearchPattern('*Command.php');
-        $subdirectories = array_merge(
-            $this->locateSubdirectories($this->commands_directory, $this->top_namespace),
-            $this->locateSubdirectories($config->get('plugins_dir'))
-        );
-        foreach ($subdirectories as $subdirectory) {
-            $command_files = $discovery->discover($subdirectory['path'], $subdirectory['namespace']);
-            foreach ($command_files as $command_class) {
-                $reflection_class = new \ReflectionClass($command_class);
-                if (!$reflection_class->isAbstract()) {
-                    $command_list = $command_factory->createCommandsFromClass(new $command_class($config));
-                    foreach ($command_list as $command) {
-                        $this->application->add($command);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Recursively discovers all directories underneath a given directory
-     *
-     * @param $directory Directory to start search from
-     * @param $namespace Namespace for the given directory
-     */
-    private function locateSubdirectories($directory, $namespace = '\\')
-    {
-        $subdirectories = [['path' => $directory, 'namespace' => $namespace,]];
-        $dirs = array_filter(glob("$directory/*"), 'is_dir');
-        foreach ($dirs as $dir) {
-            $next_namespace = $namespace.'\\'.str_replace("$directory/", '', $dir);
-            $subdirectories = array_merge($subdirectories, $this->locateSubdirectories($dir, $next_namespace));
-        }
-        return $subdirectories;
+        $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
+        return $discovery->discover($options['path'], $options['namespace']);
     }
 }

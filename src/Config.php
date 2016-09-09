@@ -4,6 +4,7 @@ namespace Pantheon\Terminus;
 
 use Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
+use Terminus\Exceptions\TerminusException;
 
 class Config
 {
@@ -35,11 +36,16 @@ class Config
      *
      * @param string $key The key of the config setting to return
      * @return string self::$config[$property]
+     * @throws TerminusException
      */
     public static function get($key)
     {
         $config = self::getAll();
-        return $config[$key];
+        try {
+            return $config[$key];
+        } catch (\Exception $e) {
+            throw new TerminusException('No configuration setting for {key} found.', compact('key'));
+        }
     }
 
     /**
@@ -77,22 +83,6 @@ class Config
             }
         }
         return $home;
-    }
-
-    /**
-     * Ensures that directory paths work in any system
-     *
-     * @param string $path A path to set the directory separators for
-     * @return string
-     */
-    public static function fixDirectorySeparators($path)
-    {
-        $fixed_path = str_replace(
-            ['/', '\\',],
-            DIRECTORY_SEPARATOR,
-            $path
-        );
-        return $fixed_path;
     }
 
     /**
@@ -225,6 +215,22 @@ class Config
             $script_location['file']
         );
         return $script_name;
+    }
+
+    /**
+     * Ensures that directory paths work in any system
+     *
+     * @param string $path A path to set the directory separators for
+     * @return string
+     */
+    private static function fixDirectorySeparators($path)
+    {
+        $fixed_path = str_replace(
+            ['/', '\\',],
+            DIRECTORY_SEPARATOR,
+            $path
+        );
+        return $fixed_path;
     }
 
     /**

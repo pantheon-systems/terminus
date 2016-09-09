@@ -1,9 +1,36 @@
 #!/usr/bin/env php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+$phar_path = \Phar::running(true);
+if ($phar_path) {
+    include_once "$phar_path/vendor/autoload.php";
+} else {
+    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+        include_once __DIR__ . '/../vendor/autoload.php';
+    } elseif (file_exists(__DIR__ . '/../../autoload.php')) {
+        include_once __DIR__ . '/../../autoload.php';
+    }
+}
 
+use League\Container\Container;
+use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
+use Pantheon\Terminus\Terminus;
+use Robo\Robo;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
-$runner = new Runner();
-$runner->run();
+// Initializing the Terminus application
+$config = new Config();
+$application = new Terminus('Terminus', $config->get('version'), $config);
+
+// Configuring the dependency-injection container
+$container = new Container();
+$input = new ArgvInput($_SERVER['argv']);
+$output = new ConsoleOutput();
+Robo::configureContainer($container, $input, $output, $application);
+
+// Running Terminus
+$runner = new Runner($container);
+$status_code = $runner->run($input, $output);
+exit($status_code);
