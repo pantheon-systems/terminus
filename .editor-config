@@ -1,0 +1,13 @@
+# http://editorconfig.org/
+
+root = true
+
+[*]
+trim_trailing_whitespace = true
+end_of_line = lf
+insert_final_newline = true
+
+[*.php]
+charset = utf-8
+indent_style = space
+indent_size = 4
