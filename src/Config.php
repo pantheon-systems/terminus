@@ -6,59 +6,56 @@ use Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
 use Terminus\Exceptions\TerminusException;
 
-class Config
+class Config extends \Robo\Config
 {
     /**
-     * @var string[]
+     * @var boolean
      */
-    private static $config = [];
+    private $configured = false;
+
     /**
      * @var string
      */
-    private static $config_path = '/config/constants.yml';
+    private $config_path = '/config/constants.yml';
     /**
      * @var string
      */
-    private static $constant_prefix = 'TERMINUS_';
+    private $constant_prefix = 'TERMINUS_';
 
     /**
      * Constructor for Config
-     *
-     * @param array $options Options with which to configure this object
      */
-    public function __construct(array $options = [])
+    public function __construct()
     {
-        self::$config = $options;
     }
 
     /**
-     * Returns a configuration setting
-     *
-     * @param string $key The key of the config setting to return
-     * @return string self::$config[$property]
+     * @inheritdoc
+     */
+    public function getGlobalOptionDefaultValues()
+    {
+        // We deliberately do not want to return any of the values from
+        // the parent function here.  Any global CLI options that Terminus
+        // adds should be defined here in an associative array that
+        // returns the key => default value of the global options.
+        return [];
+    }
+
+    /**
+     * @inheritdoc
      * @throws TerminusException
      */
-    public static function get($key)
+    public function get($key, $defaultOverride = null)
     {
-        $config = self::getAll();
-        try {
-            return $config[$key];
-        } catch (\Exception $e) {
+        if (!$this->configured) {
+            $this->configure();
+            $this->configured = true;
+        }
+        if (!isset($this->config[$key])) {
             throw new TerminusException('No configuration setting for {key} found.', compact('key'));
         }
-    }
 
-    /**
-     * Returns all configuration settings
-     *
-     * @return string[] self::$config
-     */
-    public static function getAll()
-    {
-        if (empty(self::$config)) {
-            self::configure();
-        }
-        return self::$config;
+        return parent::get($key);
     }
 
     /**
@@ -70,7 +67,7 @@ class Config
      *
      * @return string
      */
-    public static function getHomeDir()
+    public function getHomeDir()
     {
         $home = getenv('HOME');
         if (!$home) {
@@ -90,19 +87,19 @@ class Config
      *
      * @return void
      */
-    private static function configure()
+    private function configure()
     {
-        self::importEnvironmentVariables();
-        self::$config['root'] = self::getTerminusRoot();
-        self::$config['php'] = self::getPhpBinary();
-        self::$config['script'] = self::getTerminusScript();
+        $this->importEnvironmentVariables();
+        $this->config['root'] = $this->getTerminusRoot();
+        $this->config['php'] = $this->getPhpBinary();
+        $this->config['script'] = $this->getTerminusScript();
 
         $file_config = Yaml::parse(
-            file_get_contents(self::$config['root'] . self::$config_path)
+            file_get_contents($this->config['root'] . $this->config_path)
         );
         foreach ($file_config as $name => $setting) {
-            $key = self::getKeyFromConstant($name);
-            if (isset(self::$config[$key])) {
+            $key = $this->getKeyFromConstant($name);
+            if (isset($this->config[$key])) {
                 continue;
             } elseif (defined($name)) {
                 $setting = constant($name);
@@ -111,11 +108,13 @@ class Config
             } elseif (getenv($name)) {
                 $setting = getenv($name);
             }
-            $value = self::replacePlaceholders($setting);
-            self::ensureDirExists($name, $value);
-            self::$config[$key] = $value;
+            $value = $this->replacePlaceholders($setting);
+            $this->ensureDirExists($name, $value);
+            $this->config[$key] = $value;
         }
-        date_default_timezone_set(self::get('time_zone'));
+        // TODO: revisit this: it seems that Terminus configuration
+        // should not override the timezone set in php.ini.
+        // date_default_timezone_set($this->get('time_zone'));
     }
 
     /**
@@ -125,7 +124,7 @@ class Config
      * @param string $value The value of the named config var
      * @return bool
      */
-    private static function ensureDirExists($name, $value)
+    private function ensureDirExists($name, $value)
     {
         if ((strpos($name, 'TERMINUS_') !== false)
         && (strpos($name, '_DIR') !== false)
@@ -147,10 +146,10 @@ class Config
      *
      * @return string
      */
-    private static function getPhpBinary()
+    private function getPhpBinary()
     {
-        if (isset(self::$config['php'])) {
-            return self::$config['php'];
+        if (isset($this->config['php'])) {
+            return $this->config['php'];
         }
         if (getenv('TERMINUS_PHP')) {
             $php_bin = getenv('TERMINUS_PHP');
@@ -168,10 +167,10 @@ class Config
      * @param string $current_dir Directory to start searching at
      * @return string
      */
-    private static function getTerminusRoot($current_dir = null)
+    private function getTerminusRoot($current_dir = null)
     {
-        if (isset(self::$config['root'])) {
-            return self::$config['root'];
+        if (isset($this->config['root'])) {
+            return $this->config['root'];
         }
         if (defined('TERMINUS_ROOT')) {
             return TERMINUS_ROOT;
@@ -189,7 +188,7 @@ class Config
             throw new TerminusError('Could not locate root to set TERMINUS_ROOT.');
         }
         $dir = implode('/', $dir);
-        $root_dir = self::getTerminusRoot($dir);
+        $root_dir = $this->getTerminusRoot($dir);
         return $root_dir;
     }
 
@@ -198,10 +197,10 @@ class Config
      *
      * @return string
      */
-    private static function getTerminusScript()
+    private function getTerminusScript()
     {
-        if (isset(self::$config['script'])) {
-            return self::$config['script'];
+        if (isset($this->config['script'])) {
+            return $this->config['script'];
         }
         if (defined('TERMINUS_SCRIPT')) {
             return TERMINUS_SCRIPT;
@@ -210,7 +209,7 @@ class Config
         $debug           = debug_backtrace();
         $script_location = array_pop($debug);
         $script_name     = str_replace(
-            self::$config['root'] . '/',
+            $this->config['root'] . '/',
             '',
             $script_location['file']
         );
@@ -223,7 +222,7 @@ class Config
      * @param string $path A path to set the directory separators for
      * @return string
      */
-    private static function fixDirectorySeparators($path)
+    private function fixDirectorySeparators($path)
     {
         $fixed_path = str_replace(
             ['/', '\\',],
@@ -238,7 +237,7 @@ class Config
      *
      * @return void
      */
-    private static function importEnvironmentVariables()
+    private function importEnvironmentVariables()
     {
         //Load environment variables from __DIR__/.env
         if (file_exists(getcwd() . '/.env')) {
@@ -253,21 +252,21 @@ class Config
      * @param string $string The string to perform replacements on
      * @return string $string The modified string
      */
-    private static function replacePlaceholders($string)
+    private function replacePlaceholders($string)
     {
         $regex = '~\[\[(.*?)\]\]~';
         preg_match_all($regex, $string, $matches);
         if (!empty($matches)) {
             foreach ($matches[1] as $id => $value) {
-                $replacement_key = self::getKeyFromConstant(trim($value));
-                if (isset(self::$config[$replacement_key])) {
-                    $replacement = self::$config[$replacement_key];
+                $replacement_key = $this->getKeyFromConstant(trim($value));
+                if (isset($this->config[$replacement_key])) {
+                    $replacement = $this->config[$replacement_key];
                     $string = str_replace($matches[0][$id], $replacement, $string);
                 }
             }
         }
-        $fixed_string = self::fixDirectorySeparators(
-            str_replace('~', self::getHomeDir(), $string)
+        $fixed_string = $this->fixDirectorySeparators(
+            str_replace('~', $this->getHomeDir(), $string)
         );
         return $fixed_string;
     }
@@ -278,9 +277,9 @@ class Config
      * @param string $constant_name The name of a constant to get a key for
      * @return string
      */
-    private static function getKeyFromConstant($constant_name)
+    private function getKeyFromConstant($constant_name)
     {
-        $key = strtolower(str_replace(self::$constant_prefix, '', $constant_name));
+        $key = strtolower(str_replace($this->constant_prefix, '', $constant_name));
         return $key;
     }
 }
