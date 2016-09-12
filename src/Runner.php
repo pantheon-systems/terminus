@@ -4,6 +4,7 @@ namespace Pantheon\Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\Container;
+use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +30,8 @@ class Runner
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
         $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->runner = new RoboRunner(null, null, $container);
+        $this->runner = new RoboRunner();
+        $this->runner->setContainer($container);
     }
 
     /**
