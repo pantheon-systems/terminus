@@ -43,7 +43,7 @@ class Runner
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
-        $status_code = $this->runner->run($input, $output);
+        $status_code = $this->runner->run($input, $output, null, $this->commands);
         return $status_code;
     }
 

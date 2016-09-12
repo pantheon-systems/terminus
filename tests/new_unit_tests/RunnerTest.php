@@ -51,7 +51,8 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $this->container = new Container();
         $input = new ArgvInput($_SERVER['argv']);
         $this->output = new ConsoleOutput();
-        Robo::configureContainer($this->container, $input, $this->output, $this->application);
+        $roboConfig = new \Robo\Config(); // TODO: make Terminus Config extend \Robo\Config and use $config here
+        Robo::configureContainer($this->container, $roboConfig, $input, $this->output, $this->application);
 
         // Instantiating the Runner
         $this->runner = new Runner($this->container);
