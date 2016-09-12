@@ -10,10 +10,14 @@
 TERMINUS_VERSION:       '0.12.0'
 
 # Connectivity
-TERMINUS_HOST:          'dashboard.pantheon.io'
+TERMINUS_HOST:          'terminus.pantheon.io'
 TERMINUS_PORT:          443
 TERMINUS_PROTOCOL:      'https'
 TERMINUS_SSH_HOST:      null
+
+# User Prompts
+DASHBOARD_HOST:         'dashboard.pantheon.io'
+DASHBOARD_PROTOCOL:     'https'
 
 # Localization
 TERMINUS_DATE_FORMAT:   'Y-m-d H:i:s'

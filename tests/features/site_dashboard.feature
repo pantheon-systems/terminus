@@ -10,4 +10,4 @@ Feature: Accessing the site dashboard
   @vcr site_dashboard
   Scenario: Printing out the Dashboard URL
     When I run "terminus site dashboard --site=[[test_site_name]] --print"
-    Then I should get: "https://[[host]]/sites/"
+    Then I should get: "https://[[dashboard_host]]/sites/[[test_site_uuid]]"
