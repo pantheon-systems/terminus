@@ -29,8 +29,7 @@ class Runner
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
         $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->runner = new RoboRunner();
-        $this->runner->setContainer($container);
+        $this->runner = new RoboRunner(null, null, $container);
     }
 
     /**
@@ -42,7 +41,7 @@ class Runner
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
-        $status_code = $this->runner->run($input, $output, $this->application, $this->commands);
+        $status_code = $this->runner->run($input, $output);
         return $status_code;
     }
 
