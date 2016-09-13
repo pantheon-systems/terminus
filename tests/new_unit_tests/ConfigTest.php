@@ -36,17 +36,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the getAll function
-     */
-    public function testGetAll()
-    {
-        $config = $this->config->getAll();
-        $this->assertNotEmpty($config);
-        $this->assertArrayHasKey('root', $config);
-        $this->assertAttributeEquals($config, 'config', $this->config);
-    }
-
-    /**
      * Tests the getHomeDir function
      */
     public function testGetHomeDir()
