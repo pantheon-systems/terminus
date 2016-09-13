@@ -1631,49 +1631,6 @@ class SiteCommand extends TerminusCommand {
   }
 
   /**
-   * Set the version of Drush to be used on a specific environment or site
-   *
-   * [--site=<site>]
-   * : The name of your site on Pantheon
-   *
-   * [--env=<environment>]
-   * : The Pantheon environment to change the Drush version of.
-   *   Note: Leaving this blank will change the versions on all environments.
-   *
-   * [--version=<version>]
-   * : Drush version to use. Options are 5, 7, and 8.
-   *
-   * @subcommand set-drush-version
-   */
-  public function setDrushVersion($args, $assoc_args) {
-    $sites = new Sites();
-    $site = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
-    if (isset($assoc_args['env'])) {
-      $environments = [$site->environments->get($assoc_args['env']),];
-    } else {
-      $environments = $site->environments->all();
-    }
-    $version = $this->input()->menu(
-      [
-        'args'         => $assoc_args,
-        'choices'      => [5, 7, 8,],
-        'key'          => 'version',
-        'message'      => 'Select which Drush version to use',
-        'required'     => true,
-        'return_value' => true,
-      ]
-    );
-    foreach ($environments as $environment) {
-      $workflow = $environment->setDrushVersion((integer)$version);
-      $this->log()->info(
-        "Set {environment}'s Drush version to {version}, converging bindings.'",
-        ['environment' => $environment->id, 'version' => $version,]
-      );
-      $workflow->wait();
-    }
-  }
-
-  /**
    * Add/replace an HTTPS certificate for an environment
    *
    * ## OPTIONS

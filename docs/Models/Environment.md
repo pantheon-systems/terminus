@@ -293,18 +293,6 @@
 
 ---
 
-### setDrushVersion
-##### Description:
-    Sets the Drush version to the indicated version number
-
-##### Parameters:
-    [string] $version_number Version of Drush to use
-
-##### Return:
-    [Workflow]
-
----
-
 ### setHttpsCertificate
 ##### Description:
     Add/replace an HTTPS certificate on the environment
