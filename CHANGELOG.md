@@ -8,6 +8,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## Changed
 - Makes API calls to host 'terminus.pantheon.io' instead of 'dashboard.pantheon.io' (#1180)
 
+## Removed
+- The command `site set-drush-version` has been removed. Please set your Drush version in your pantheon.yml file. (See: https://pantheon.io/docs/drush-versions) (#1190)
+
 ### [0.12.0] - 2016-08-24
 ### Added
 - Added `choices` property to `InputHelper::siteName` parameter object. (#1152)

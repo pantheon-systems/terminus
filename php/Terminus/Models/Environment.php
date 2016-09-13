@@ -665,18 +665,6 @@ class Environment extends TerminusModel {
   }
 
   /**
-   * Sets the Drush version to the indicated version number
-   *
-   * @param string $version_number Version of Drush to use
-   * @return Workflow
-   */
-  public function setDrushVersion($version_number) {
-    $this->updateSetting(['drush_version' => $version_number,]);
-    $workflow = $this->convergeBindings();
-    return $workflow;
-  }
-
-  /**
    * Add/replace an HTTPS certificate on the environment
    *
    * @param array $certificate Certificate data elements as follow
@@ -773,23 +761,6 @@ class Environment extends TerminusModel {
     }
     return (array)$response['data'];
 
-  }
-
-  /**
-   * Changes the environment's settings
-   *
-   * @param array $settings Key/value pairs to set in the environment settings
-   * @return bool
-   */
-  private function updateSetting(array $settings = []) {
-    $path   = sprintf(
-      'sites/%s/environments/%s/settings',
-      $this->site->id,
-      $this->id
-    );
-    $params = ['form_params' => $settings, 'method' => 'put',];
-    $response = $this->request->request($path, $params);
-    return (boolean)$response['data'];
   }
 
 }
