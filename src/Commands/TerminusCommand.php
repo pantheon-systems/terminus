@@ -7,32 +7,31 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Robo\Contract\IOAwareInterface;
+use Robo\Contract\ConfigAwareInterface;
+use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface
+abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface
 {
     use LoggerAwareTrait;
+    use ConfigAwareTrait;
     use IO;
 
     /**
      * @var boolean True if the command requires the user to be logged in
      */
     protected $authorized = false;
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * TerminusCommand constructor
      */
     public function __construct()
     {
-        $this->config = new Config();
-        if ($this->authorized) {
-            $this->ensureLogin();
-        }
+        // TODO: Cannot log in until our dependencies are inflected
+        //if ($this->authorized) {
+        //    $this->ensureLogin();
+        //}
     }
 
     /**

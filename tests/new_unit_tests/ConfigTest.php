@@ -24,15 +24,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the Config constructor
-     */
-    public function testConstruct()
-    {
-        $this->assertAttributeNotEmpty('config', new Config(['key' => 'value',]));
-        $this->assertAttributeEmpty('config', new Config());
-    }
-
-    /**
      * Tests the get function
      *
      * @expectedException \Terminus\Exceptions\TerminusException
@@ -42,17 +33,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue((boolean)$this->config->get('test_mode'));
         $this->config->get('DNE');
-    }
-
-    /**
-     * Tests the getAll function
-     */
-    public function testGetAll()
-    {
-        $config = $this->config->getAll();
-        $this->assertNotEmpty($config);
-        $this->assertArrayHasKey('root', $config);
-        $this->assertAttributeEquals($config, 'config', $this->config);
     }
 
     /**
