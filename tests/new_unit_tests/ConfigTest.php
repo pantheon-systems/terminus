@@ -24,15 +24,6 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the Config constructor
-     */
-    public function testConstruct()
-    {
-        $this->assertAttributeNotEmpty('config', new Config(['key' => 'value',]));
-        $this->assertAttributeEmpty('config', new Config());
-    }
-
-    /**
      * Tests the get function
      *
      * @expectedException \Terminus\Exceptions\TerminusException
