@@ -28,8 +28,7 @@ $application = new Terminus('Terminus', $config->get('version'), $config);
 $container = new Container();
 $input = new ArgvInput($_SERVER['argv']);
 $output = new ConsoleOutput();
-$roboConfig = new \Robo\Config(); // TODO: make Terminus Config extend \Robo\Config and use $config here
-Robo::configureContainer($container, $roboConfig, $input, $output, $application);
+Robo::configureContainer($container, $config, $input, $output, $application);
 
 // Running Terminus
 $runner = new Runner($container);
