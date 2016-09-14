@@ -27,6 +27,11 @@
       "Pantheon\\Terminus\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Pantheon\\Terminus\\UnitTests\\": "tests/new_unit_tests/"
+    }
+  },
   "require-dev": {
     "behat/behat": "^3.1",
     "phpunit/phpcov": "^2.0",
