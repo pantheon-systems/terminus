@@ -3,16 +3,17 @@
 namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
-use VCR\VCR;
 
 /**
  * Features context for Behat feature testing
  */
-class FeatureContext implements Context
+class FeatureContext implements Context, SnippetAcceptingContext
 {
     public $cliroot = '';
     private $cache_file_name;
+    private $cache_token_dir;
     private $parameters;
     private $output;
     private $start_time;
@@ -29,10 +30,9 @@ class FeatureContext implements Context
         $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
         $this->parameters      = $parameters;
         $this->start_time      = time();
-        $this->cache_file_name = $SERVER['HOME'] . '/.terminus/cache/session';
-        $this->connection_info = array(
-        'host'     => $parameters['host']
-        );
+        $this->cache_file_name = $_SERVER['HOME'] . '/.terminus/cache/session';
+        $this->cache_token_dir = $_SERVER['HOME'] . '/.terminus/cache/tokens';
+        $this->connection_info = ['host' => $parameters['host'], 'machine_token' => $parameters['machine_token'],];
     }
 
     /**
@@ -389,6 +389,43 @@ class FeatureContext implements Context
     }
 
     /**
+     * Removes all machine tokens from the running machine
+     * @Given I have no saved machine tokens
+     *
+     * @return boolean
+     */
+    public function iHaveNoSavedMachineTokens()
+    {
+        $this->iRun("rm {$this->cache_token_dir}/*");
+        return true;
+    }
+
+    /**
+     * Ensures at least X machine tokens exist in the tokens directory
+     * @Given I have at least :num_tokens saved machine tokens
+     *
+     * @param integer $num_tokens Number of tokens to ensure exist
+     * @return boolean
+     */
+    public function iHaveSavedMachineTokens($num_tokens)
+    {
+        switch ($num_tokens) {
+            case 0:
+                break;
+            case 1:
+                $this->iLogIn();
+                break;
+            default:
+                $this->iLogIn();
+                for ($i = 1; $i <= $num_tokens; $i++) {
+                    $this->iRun("cp {$this->cache_token_dir}/[[username]]$i");
+                }
+                break;
+        }
+        return true;
+    }
+
+    /**
      * Checks which user Terminus is operating as
      * @Given /^I have "([^"]*)" site$/
      * @Given /^I have "([^"]*)" sites$/
@@ -503,10 +540,21 @@ class FeatureContext implements Context
      * @param [string] $token A Pantheon machine token
      * @return [void]
      */
-    public function iLogIn(
-        $token = '[[machine_token]]'
-    ) {
+    public function iLogIn($token = '[[machine_token]]')
+    {
         $this->iRun("terminus auth:login --machine-token=$token");
+    }
+
+    /**
+     * Logs in a user with a locally saved machine token
+     * @When /^I log in as "([^"]*)"$/
+     *
+     * @param [string] $email An email address
+     * @return [void]
+     */
+    public function iLogInAs($email = '[[username]]')
+    {
+        $this->iRun("terminus auth:login --email=$email");
     }
 
     /**
@@ -588,15 +636,19 @@ class FeatureContext implements Context
 
         $command      = $this->replacePlaceholders($command);
         if (isset($this->connection_info['host'])) {
-            $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
+            $command = "TERMINUS_HOST={$this->connection_info['host']} $command -vvv";
+        }
+        if (isset($this->cassette_name)) {
+            $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
+        }
+        if (!empty($mode = $this->parameters['vcr_mode'])) {
+            $command = "TERMINUS_VCR_MODE=$mode $command";
         }
         $command = preg_replace($regex, $terminus_cmd, $command);
 
-        $this->startVCR(['cassette' => $this->cassette_name, 'mode' => $this->parameters['vcr_mode']]);
         ob_start();
         passthru($command . ' 2>&1');
         $this->output = ob_get_clean();
-        $this->stopVCR();
 
         return $this->output;
     }
@@ -931,32 +983,5 @@ class FeatureContext implements Context
             $this->cassette_name = $tags['vcr'];
         }
         return $this->cassette_name;
-    }
-
-    /**
-     * Starts and configures PHP-VCR
-     *
-     * @param string[] $options Elements as follow:
-     *        string cassette The name of the fixture in tests/fixtures to record or run in this feature test run
-     *        string mode     Mode in which to run PHP-VCR (options are none, once, strict, and new_episodes)
-     * @return void
-     */
-    private function startVCR(array $options = ['cassette' => null, 'mode' => null,])
-    {
-        VCR::configure()->enableRequestMatchers(['method', 'url', 'body',]);
-        VCR::configure()->setMode($options['mode']);
-        VCR::turnOn();
-        VCR::insertCassette($options['cassette']);
-    }
-
-    /**
-     * Stops PHP-VCR's recording and playback
-     *
-     * @return void
-     */
-    private function stopVCR()
-    {
-        VCR::eject();
-        VCR::turnOff();
     }
 }
