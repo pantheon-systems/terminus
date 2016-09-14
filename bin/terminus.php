@@ -42,4 +42,5 @@ $container->inflector(SessionAwareInterface::class)
 // Running Terminus
 $runner = new Runner($container);
 $status_code = $runner->run($input, $output);
+
 exit($status_code);

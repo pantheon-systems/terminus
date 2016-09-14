@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
+use VCR\VCR;
 
 /**
  * Features context for Behat feature testing
@@ -572,26 +573,21 @@ class FeatureContext implements Context {
    * @return [string] Returns output of command run
    */
   public function iRun($command) {
-    $command      = $this->_replacePlaceholders($command);
     $regex        = '/(?<!\.)terminus/';
     $terminus_cmd = sprintf('bin/terminus.php', $this->cliroot);
-    if ($this->_cassette_name) {
-      $command = 'TERMINUS_VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
-    }
-    if (isset($this->_parameters['vcr_mode'])) {
-      $command = 'TERMINUS_VCR_MODE=' . $this->_parameters['vcr_mode']
-        . ' ' . $command;
-    }
+
+    $command      = $this->_replacePlaceholders($command);
     if (isset($this->_connection_info['host'])) {
-      $command = 'TERMINUS_HOST=' . $this->_connection_info['host']
-        . ' ' . $command;
+      $command = "TERMINUS_HOST={$this->_connection_info['host']} $command";
     }
     $command = preg_replace($regex, $terminus_cmd, $command);
-    //echo $command . PHP_EOL;
+
+    $this->_startVCR(['cassette' => $this->_cassette_name, 'mode' => $this->_parameters['vcr_mode']]);
     ob_start();
     passthru($command . ' 2>&1');
     $this->_output = ob_get_clean();
-    //echo $this->_output . PHP_EOL;
+    $this->_stopVCR();
+
     return $this->_output;
   }
 
@@ -908,4 +904,30 @@ class FeatureContext implements Context {
     return $this->_cassette_name;
   }
 
+  /**
+   * Starts and configures PHP-VCR
+   *
+   * @param string[] $options Elements as follow:
+   *        string cassette The name of the fixture in tests/fixtures to record or run in this feature test run
+   *        string mode     Mode in which to run PHP-VCR (options are none, once, strict, and new_episodes)
+   * @return void
+   */
+  private function _startVCR(array $options = ['cassette' => null, 'mode' => null,])
+  {
+      VCR::configure()->enableRequestMatchers(['method', 'url', 'body',]);
+      VCR::configure()->setMode($options['mode']);
+      VCR::turnOn();
+      VCR::insertCassette($options['cassette']);
+  }
+
+  /**
+   * Stops PHP-VCR's recording and playback
+   *
+   * @return void
+   */
+  private function _stopVCR()
+  {
+      VCR::eject();
+      VCR::turnOff();
+  }
 }
