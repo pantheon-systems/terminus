@@ -26,8 +26,6 @@ class FeatureContext implements Context {
     $this->_start_time      = time();
     $this->_cache_file_name = $_SERVER['HOME'] . '/.terminus/cache/session';
     $this->_connection_info = array(
-      'username' => $parameters['username'],
-      'password' => $parameters['password'],
       'host'     => $parameters['host']
     );
   }
