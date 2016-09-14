@@ -1,5 +1,6 @@
 <?php
-namespace Pantheon\Terminus\Tests;
+
+namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
 use Pantheon\Terminus\Config;
@@ -9,6 +10,7 @@ use Robo\Robo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use VCR\VCR;
 
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -225,6 +227,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 
         if (!$this->runner) {
             $this->runner = new Runner($this->container);
+        }
+
+        if (!empty($mode = $this->config->get('vcr_mode'))) {
+            VCR::configure()->setMode($mode);
         }
     }
 }

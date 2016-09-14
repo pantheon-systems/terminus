@@ -2,15 +2,12 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
 class ArtCommand extends TerminusCommand
 {
     /**
      * Displays Pantheon ASCII artwork
      *
      * @name art
-     * @authorize
      *
      * @param string $name Name of the artwork to select
      * @usage terminus art rocket

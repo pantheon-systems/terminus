@@ -1,8 +1,6 @@
 <?php
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-use Pantheon\Terminus\Tests\CommandTestCase;
-
 class ArtCommandTest extends CommandTestCase
 {
 
