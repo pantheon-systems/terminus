@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
 class ArtCommand extends TerminusCommand
 {
     /**
