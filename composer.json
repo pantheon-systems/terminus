@@ -29,7 +29,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Pantheon\\Terminus\\UnitTests\\": "tests/new_unit_tests/"
+      "Pantheon\\Terminus\\UnitTests\\": "tests/new_unit_tests/",
+      "Pantheon\\Terminus\\Tests\\": "tests/"
     }
   },
   "require-dev": {
