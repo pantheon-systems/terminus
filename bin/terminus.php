@@ -20,6 +20,14 @@ use Robo\Robo;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
+if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
+    \VCR\VCR::configure()->enableRequestMatchers(array('method', 'url', 'body'));
+    \VCR\VCR::configure()->setMode($_SERVER['TERMINUS_VCR_MODE']);
+    \VCR\VCR::turnOn();
+    \VCR\VCR::insertCassette($_SERVER['TERMINUS_VCR_CASSETTE']);
+}
+
+
 // Initializing the Terminus application
 $config = new Config();
 $application = new Terminus('Terminus', $config->get('version'), $config);
@@ -34,3 +42,8 @@ Robo::configureContainer($container, $config, $input, $output, $application);
 $runner = new Runner($container);
 $status_code = $runner->run($input, $output);
 exit($status_code);
+
+if (isset($_SERVER['TERMINUS_VCR_CASSETTE'])) {
+    \VCR\VCR::eject();
+    \VCR\VCR::turnOff();
+}
