@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -13,11 +15,12 @@ use Robo\Common\IO;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface
+abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface, SessionAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use IO;
+    use SessionAwareTrait;
 
     /**
      * TerminusCommand constructor
