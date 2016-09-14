@@ -33,11 +33,7 @@ class Authorizer implements LoggerAwareInterface, ConfigAwareInterface
             } elseif (!is_null($this->config->get('user')) && $email = $this->config->get('user')) {
                 $auth->logInViaMachineToken(compact('email'));
             } else {
-                $this->logger->error(
-                    'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
-                );
-                // This should print an error message, but presently it does not.
-                throw new \RuntimeException(
+                throw new \Exception(
                     'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
                 );
             }
