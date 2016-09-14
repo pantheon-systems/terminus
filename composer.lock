@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "consolidation/annotated-command",
-            "version": "1.3.1",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consolidation-org/annotated-command.git",
-                "reference": "dc78a7303453a67598aa7cdbf22c1fbf2714c684"
+                "url": "https://github.com/consolidation/annotated-command.git",
+                "reference": "c2dc2464e1edf0498bf97a99f34cac5805d00946"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/annotated-command/zipball/dc78a7303453a67598aa7cdbf22c1fbf2714c684",
-                "reference": "dc78a7303453a67598aa7cdbf22c1fbf2714c684",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/c2dc2464e1edf0498bf97a99f34cac5805d00946",
+                "reference": "c2dc2464e1edf0498bf97a99f34cac5805d00946",
                 "shasum": ""
             },
             "require": {
@@ -57,19 +57,19 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2016-09-09 04:45:40"
+            "time": "2016-09-13 21:37:50"
         },
         {
             "name": "consolidation/log",
             "version": "1.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consolidation-org/log.git",
+                "url": "https://github.com/consolidation/log.git",
                 "reference": "74ba81b4edc585616747cc5c5309ce56fec41254"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/log/zipball/74ba81b4edc585616747cc5c5309ce56fec41254",
+                "url": "https://api.github.com/repos/consolidation/log/zipball/74ba81b4edc585616747cc5c5309ce56fec41254",
                 "reference": "74ba81b4edc585616747cc5c5309ce56fec41254",
                 "shasum": ""
             },
@@ -111,12 +111,12 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consolidation-org/output-formatters.git",
+                "url": "https://github.com/consolidation/output-formatters.git",
                 "reference": "6428d8fb30c9ed3b96314580808b3e4415b46dd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/output-formatters/zipball/6428d8fb30c9ed3b96314580808b3e4415b46dd9",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/6428d8fb30c9ed3b96314580808b3e4415b46dd9",
                 "reference": "6428d8fb30c9ed3b96314580808b3e4415b46dd9",
                 "shasum": ""
             },
@@ -158,13 +158,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/consolidation-org/Robo.git",
-                "reference": "a2fdb08d6a1cb0e07c066f7fc736f780f1dbc20d"
+                "url": "https://github.com/consolidation/Robo.git",
+                "reference": "00d80a0bea8f862af520aa6bdc89482c7e396c06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation-org/Robo/zipball/a2fdb08d6a1cb0e07c066f7fc736f780f1dbc20d",
-                "reference": "a2fdb08d6a1cb0e07c066f7fc736f780f1dbc20d",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/00d80a0bea8f862af520aa6bdc89482c7e396c06",
+                "reference": "00d80a0bea8f862af520aa6bdc89482c7e396c06",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-12 20:29:51"
+            "time": "2016-09-14 04:21:43"
         },
         {
             "name": "container-interop/container-interop",
