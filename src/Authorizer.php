@@ -24,8 +24,6 @@ class Authorizer implements LoggerAwareInterface, ConfigAwareInterface
      */
     public function ensureLogin()
     {
-        throw new \Exception('Bam!');
-        return new CommandError("Sorry about that.");
         $auth   = new Auth();
         $tokens = $auth->getAllSavedTokenEmails();
         if (!$auth->loggedIn()) {
