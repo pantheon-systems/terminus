@@ -18,12 +18,15 @@ eval $cmd
 
 #Run PHP Code Sniffer on command files using a standards subset excepting long lines
 phpcs="vendor/bin/phpcs --standard=tests/config/context_standards.xml --extensions=php --warning-severity=6 --error-severity=1"
-cmd=$phpcs+" tests/features/bootstrap/FeatureContext.php tests/active_features/bootstrap/FeatureContext.php"
+cmd=$phpcs+" tests/features/bootstrap/FeatureContext.php"
 eval $cmd
 
 #Enforce PSR2 on 1.x
 phpcs="vendor/bin/phpcs --standard=PSR2 --extensions=php"
 cmd=$phpcs+" tests/new_unit_tests/*"
+eval $cmd
+
+cmd=$phpcs+" tests/active_features/bootstrap/*"
 eval $cmd
 
 cmd=$phpcs+" bin/terminus.php"

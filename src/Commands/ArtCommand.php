@@ -2,11 +2,8 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Symfony\Component\Console\Output\OutputInterface;
-
 class ArtCommand extends TerminusCommand
 {
-
     /**
      * Displays Pantheon ASCII artwork
      *
@@ -17,20 +14,33 @@ class ArtCommand extends TerminusCommand
      *   Displays the rocket artwork
      */
     public function art($name) {
-        // Symfony Style
-        $this->io()->title("Symfony Style Example.");
+        $artwork_content = $this->retrieveArt($name);
+        $this->io()->text("<comment>{$artwork_content}</comment>");
+    }
 
-        // Symfony OutputInterface
-        $this->output()->writeln("Wow!");
-        $this->output()->writeln("The verbosity level is " . $this->output->getVerbosity() . "\n");
-        $this->output()->writeln("Print this message only in verbose mode", OutputInterface::VERBOSITY_VERBOSE);
-        $this->output()->writeln("Print this message only in very verbose mode", OutputInterface::VERBOSITY_VERY_VERBOSE);
-        $this->output()->writeln("Print this message only in debug mode", OutputInterface::VERBOSITY_DEBUG);
+    /**
+     * @param $name
+     * @return string
+     */
+    protected function retrieveArt($name)
+    {
+        $file_path = $this->config->get('assets_dir') . "/{$name}.txt";
+        if ($this->validateAsset($file_path)) {
+            $output = base64_decode(file_get_contents($file_path));
+        } else {
+            $output = "Not a valid work of art!";
+        }
+        return $output;
+    }
 
-        // Robo logger
-        $this->log()->warning('This is a warning log message. (Warnings always printed)');
-        $this->log()->notice('This is a notice log message. (Also always printed)');
-        $this->log()->info('This is an informational log message. (Verbose only)');
-        $this->log()->debug('This is a debug log message. (Debug only)');
+    /**
+     * Check to see if an asset exists.
+     *
+     * @param $file_path
+     * @return bool
+     */
+    private function validateAsset($file_path)
+    {
+        return file_exists($file_path);
     }
 }

@@ -1,5 +1,15 @@
 # Terminus\Models\Backup
 
+### __construct
+##### Description:
+    Object constructor
+
+##### Parameters:
+    [object] $attributes Attributes of this model
+    [array]  $options    Options with which to configure this model
+
+---
+
 ### backupIsFinished
 ##### Description:
     Determines whether the backup has been completed or not

@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -10,28 +12,21 @@ use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface
+abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface, SessionAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use IO;
-
-    /**
-     * @var boolean True if the command requires the user to be logged in
-     */
-    protected $authorized = false;
+    use SessionAwareTrait;
 
     /**
      * TerminusCommand constructor
      */
     public function __construct()
     {
-        // TODO: Cannot log in until our dependencies are inflected
-        //if ($this->authorized) {
-        //    $this->ensureLogin();
-        //}
     }
 
     /**
@@ -44,26 +39,15 @@ abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface
         return $this->logger;
     }
 
-    /**
-     * Logs the user in or errs
-     *
-     * @return void
-     */
-    private function ensureLogin() {
-        $auth   = new Auth();
-        $tokens = $auth->getAllSavedTokenEmails();
-        if (!$auth->loggedIn()) {
-            if (count($tokens) === 1) {
-                $email = array_shift($tokens);
-                $auth->logInViaMachineToken(compact('email'));
-            } else if (!is_null($this->config->get('user')) && $email = $this->config->get('user')) {
-                $auth->logInViaMachineToken(compact('email'));
-            } else {
-                $this->log()->error(
-                  'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
-                );
-            }
+   /**
+    * @param $question
+    * @return string
+    */
+    protected function confirm($question)
+    {
+        if ($this->input()->hasParameterOption(['--yes', '-y'])) {
+            return true;
         }
-        return true;
+        return $this->doAsk(new ConfirmationQuestion($this->formatQuestion($question . ' (y/n)'), false));
     }
 }

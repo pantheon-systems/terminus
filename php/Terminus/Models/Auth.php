@@ -114,7 +114,6 @@ class Auth extends TerminusModel {
       );
     }
 
-    $data = $response['data'];
     $this->setInstanceData($response['data']);
     $user = Session::getUser();
     $user->fetch();
@@ -172,7 +171,7 @@ class Auth extends TerminusModel {
    * @return void
    */
   public function logOut() {
-    Session::destroy();
+      Session::instance()->destroy();
   }
 
   /**

@@ -1,15 +1,19 @@
 # Terminus\Models\SiteOrganizationMembership
 
-### getOrganization
+### __construct
 ##### Description:
-    Returns organization object within SiteOrganizationMembership object
+    Object constructor
+
+##### Parameters:
+    [object] $attributes Attributes of this model
+    [array]  $options    Options to set as $this->key
 
 ##### Return:
-    [Organization]
+    [SiteUserMembership]
 
 ---
 
-### removeMember
+### delete
 ##### Description:
     Remove membership of organization
 

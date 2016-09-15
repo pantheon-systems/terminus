@@ -223,6 +223,8 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
+    -array  args    Parameters from the command line
+    -string key     Key to look for in args
     -string message Message to give at prompt
     -mixed  default Returned if user does not select a valid option
 
@@ -242,6 +244,8 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
+    -array  args    Parameters from the command line
+    -string key     Key to look for in args
     -string message Message to give at prompt
     -mixed  default Returned if user does not select a valid option
 

@@ -4,10 +4,10 @@ namespace Pantheon\Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\Container;
-use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VCR\VCR;
 
 class Runner
 {
@@ -19,6 +19,10 @@ class Runner
      * @var string[]
      */
     private $commands = [];
+    /**
+     * @var Config
+     */
+    private $config;
 
     /**
      * Object constructor
@@ -29,7 +33,9 @@ class Runner
     {
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
+        $this->config = $container->get('config');
         $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        $this->commands[] = 'Pantheon\\Terminus\\Authorizer';
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
     }
@@ -43,7 +49,13 @@ class Runner
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
+        if (!empty($cassette = $this->config->get('vcr_cassette')) && !empty($mode = $this->config->get('vcr_mode'))) {
+            $this->startVCR(array_merge(compact('cassette'), compact('mode')));
+        }
         $status_code = $this->runner->run($input, $output, null, $this->commands);
+        if (!empty($cassette) && !empty($mode)) {
+            $this->stopVCR();
+        }
         return $status_code;
     }
 
@@ -60,5 +72,32 @@ class Runner
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
         return $discovery->discover($options['path'], $options['namespace']);
+    }
+
+    /**
+     * Starts and configures PHP-VCR
+     *
+     * @param string[] $options Elements as follow:
+     *        string cassette The name of the fixture in tests/fixtures to record or run in this feature test run
+     *        string mode     Mode in which to run PHP-VCR (options are none, once, strict, and new_episodes)
+     * @return void
+     */
+    private function startVCR(array $options = ['cassette' => 'tmp', 'mode' => 'none',])
+    {
+        VCR::configure()->enableRequestMatchers(['method', 'url', 'body',]);
+        VCR::configure()->setMode($options['mode']);
+        VCR::turnOn();
+        VCR::insertCassette($options['cassette']);
+    }
+
+    /**
+     * Stops PHP-VCR's recording and playback
+     *
+     * @return void
+     */
+    private function stopVCR()
+    {
+        VCR::eject();
+        VCR::turnOff();
     }
 }
