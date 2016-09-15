@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## [0.13.0] - 2016-09-15
 ### Added
 - New rocket art available using `art rocket`. (#1148)
 
