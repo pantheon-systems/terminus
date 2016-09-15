@@ -27,11 +27,7 @@ class InfoCommandTest extends ConnectionCommandTest
     {
         parent::setUp();
 
-        // TODO: (ajbarry) Where is the appropriate place to configure VCR mode?
-        // Picking up 'new_episodes' somewhere
-        VCR::configure()->setMode('none');
-
-        $this->command = new InfoCommand(new Config());
+        $this->command = new InfoCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->prophet = new Prophet;
     }
