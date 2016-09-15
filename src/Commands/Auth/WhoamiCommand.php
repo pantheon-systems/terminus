@@ -19,12 +19,12 @@ class WhoamiCommand extends TerminusCommand
      *   lastname: Last Name
      *   email: eMail
      *   id: ID
-     * @single-field-default email
+     * @default-string-field email
      * @usage terminus auth:whoami
      *   Responds with the email of the logged-in user
      * @usage terminus auth:whoami --format=table
      *   Responds with the current session and user's data
-     * @return string
+     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
      */
     public function whoAmI($options = ['format' => 'string', 'fields' => ''])
     {

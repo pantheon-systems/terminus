@@ -73,13 +73,29 @@ Feature: Authorization command
     [[username]]
     """
 
-  @vcr cli_session-dump
-  Scenario: Dumping a session
+  @vcr auth_whoami_id
+  Scenario: Check Which User I Am by id
     Given I am authenticated
-    When I run "terminus auth:whoami -vvv"
+    When I run "terminus auth:whoami --fields=id"
     Then I should get:
     """
-    [id] => [[user_uuid]]
+    [[user_uuid]]
+    """
+    And I should not get:
+    """
+    [[username]]
+    """
+
+  @vcr auth_whoami_table
+  Scenario: Displaying fields in a session in a table
+    Given I am authenticated
+    When I run "terminus auth:whoami --format=table --fields=email,id"
+    Then I should get:
+    """
+     ------------ --------------------------------------
+      eMail        [[username]]
+      ID           [[user_uuid]]
+     ------------ --------------------------------------
     """
 
   Scenario: Checking my user should not get any useful result when I am logged out.
