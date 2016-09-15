@@ -1,6 +1,19 @@
 # Terminus\Models\SiteUserMembership
 
-### removeMember
+### __construct
+##### Description:
+    Object constructor
+
+##### Parameters:
+    [object] $attributes Attributes of this model
+    [array]  $options    Options with which to configure this model
+
+##### Return:
+    [SiteUserMembership]
+
+---
+
+### delete
 ##### Description:
     Remove membership, either org or user
 

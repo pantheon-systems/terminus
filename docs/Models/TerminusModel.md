@@ -6,22 +6,7 @@
 
 ##### Parameters:
     [object] $attributes Attributes of this model
-    [array]  $options    Options to set as $this->key
-
----
-
-### __get
-##### Description:
-    Handles requests for inaccessible properties
-
-##### Parameters:
-    [string] $property Name of property being requested
-
-##### Return:
-    [mixed] $this->$property
-
-##### Throws:
-    TerminusException
+    [array]  $options    Options with which to configure this model
 
 ---
 
@@ -30,7 +15,7 @@
     Fetches this object from Pantheon
 
 ##### Parameters:
-    [array] $options Params to pass to url request
+    [array] $args Params to pass to request
 
 ##### Return:
     [TerminusModel] $this
