@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Auth;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Terminus\Models\Auth;
+use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 
 class WhoamiCommand extends TerminusCommand
 {
@@ -13,19 +14,24 @@ class WhoamiCommand extends TerminusCommand
      * @command auth:whoami
      * @aliases whoami
      *
+     * @field-labels
+     *   firstname: First Name
+     *   lastname: Last Name
+     *   email: eMail
+     *   id: ID
+     * @single-field-default email
      * @usage terminus auth:whoami
      *   Responds with the email of the logged-in user
-     * @usage terminus auth:whoami -vvv
+     * @usage terminus auth:whoami --format=table
      *   Responds with the current session and user's data
      * @return string
      */
-    public function whoAmI()
+    public function whoAmI($options = ['format' => 'string', 'fields' => ''])
     {
         $auth = new Auth();
         if ($auth->loggedIn()) {
             $user = $this->session()->getUser();
-            $this->log()->debug(print_r($user->fetch()->serialize(), true));
-            return $user->get('email');
+            return new AssociativeList($user->fetch()->serialize());
         } else {
             $this->log()->notice('You are not logged in.');
             return null;
