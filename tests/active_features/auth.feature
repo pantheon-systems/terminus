@@ -73,8 +73,8 @@ Feature: Authorization command
     [[username]]
     """
 
-  @vcr auth_whoami_id
-  Scenario: Check Which User I Am by id
+  @vcr auth_whoami
+  Scenario: Check which user I am by ID
     Given I am authenticated
     When I run "terminus auth:whoami --fields=id"
     Then I should get:
@@ -86,17 +86,14 @@ Feature: Authorization command
     [[username]]
     """
 
-  @vcr auth_whoami_table
+  @vcr auth_whoami
   Scenario: Displaying fields in a session in a table
     Given I am authenticated
     When I run "terminus auth:whoami --format=table --fields=email,id"
-    Then I should get:
-    """
-     ------------ --------------------------------------
-      eMail        [[username]]
-      ID           [[user_uuid]]
-     ------------ --------------------------------------
-    """
+    Then I should get: "------- --------------------------------------"
+    And I should get: "eMail   [[username]]"
+    And I should get: "ID      [[user_uuid]]"
+    And I should get: "------- --------------------------------------"
 
   Scenario: Checking my user should not get any useful result when I am logged out.
     When I am not authenticated

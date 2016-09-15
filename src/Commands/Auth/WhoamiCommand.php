@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Auth;
 
+use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Terminus\Models\Auth;
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 
 class WhoamiCommand extends TerminusCommand
 {
