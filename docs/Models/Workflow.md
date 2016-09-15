@@ -1,11 +1,15 @@
 # Terminus\Models\Workflow
 
-### getFetchUrl
+### __construct
 ##### Description:
-    Give the URL for collection data fetching
+    Object constructor
+
+##### Parameters:
+    [object] $attributes Attributes of this model
+    [array]  $options    Options with which to configure this model
 
 ##### Return:
-    [string] $url URL to use in fetch query
+    [Workflow]
 
 ---
 

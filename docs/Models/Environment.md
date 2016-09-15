@@ -6,7 +6,7 @@
 
 ##### Parameters:
     [object] $attributes Attributes of this model
-    [array]  $options    Options to set as $this->key
+    [array]  $options    Options with which to configure this model
 
 ---
 
@@ -36,7 +36,7 @@
     Clones database from this environment to another
 
 ##### Parameters:
-    [string] $to_env Environment to clone into
+    [string] $from_env Name of the environment to clone
 
 ##### Return:
     [Workflow]
@@ -48,7 +48,7 @@
     Clones files from this environment to another
 
 ##### Parameters:
-    [string] $to_env Environment to clone into
+    [string] $from_env Name of the environment to clone
 
 ##### Return:
     [Workflow]
@@ -186,6 +186,18 @@
 
 ---
 
+### import
+##### Description:
+    Imports a site archive onto Pantheon
+
+##### Parameters:
+    [string] $url URL of the archive to import
+
+##### Return:
+    [Workflow]
+
+---
+
 ### importFiles
 ##### Description:
     Imports a file archive
@@ -247,7 +259,9 @@
     Enable HTTP Basic Access authentication on the web environment
 
 ##### Parameters:
-    [array] $options Parameters to override defaults
+    [array] $params Elements as follow:
+    -string username
+    -string password
 
 ##### Return:
     [Workflow]
@@ -280,10 +294,12 @@
 
 ### mergeToDev
 ##### Description:
-    Merge code from this Multidev Environment into the Dev Environment
+    Merge code from a multidev environment into the dev environment
 
 ##### Parameters:
     [array] $options Parameters to override defaults
+    -string  from_environment Name of the multidev environment to merge
+    -boolean updatedb         True to update DB with merge
 
 ##### Return:
     [Workflow]

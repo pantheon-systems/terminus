@@ -2,15 +2,18 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Symfony\Component\Finder\Finder;
+
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ArtCommand extends TerminusCommand
 {
     /**
      * Displays Pantheon ASCII artwork
      *
-     * @name art
-     * @authorize
+     * @command art
      *
      * @param string $name Name of the artwork to select
      * @usage terminus art rocket
@@ -19,6 +22,24 @@ class ArtCommand extends TerminusCommand
     public function art($name) {
         $artwork_content = $this->retrieveArt($name);
         $this->io()->text("<comment>{$artwork_content}</comment>");
+    }
+
+    /**
+     * If the user does not specify the $name parameter, then we will
+     * prompt for it here.
+     *
+     * @hook interact
+     */
+    public function interact(InputInterface $input, OutputInterface $output)
+    {
+        $available_art = $this->availableArt();
+
+        $io = new SymfonyStyle($input, $output);
+        $art_name = $input->getArgument('name');
+        if (!$art_name) {
+            $art_name = $io->choice('Select art:', $available_art, 'fist');
+            $input->setArgument('name', $art_name);
+        }
     }
 
     /**
@@ -45,5 +66,30 @@ class ArtCommand extends TerminusCommand
     private function validateAsset($file_path)
     {
         return file_exists($file_path);
+    }
+
+    /**
+     * Return available art
+     * @return array
+     */
+    protected function availableArt()
+    {
+        // Find all of the art in the assets directory.
+        $finder = new Finder();
+        $finder
+            ->files()
+            ->in($this->config->get('assets_dir'))
+            ->depth('== 0')
+            ->name('*.txt')
+            ->sortbyname();
+
+        return array_values(
+            array_map(
+                function ($file) {
+                    return $file->getBasename('.txt');
+                },
+                (array) $finder->getIterator()
+            )
+        );
     }
 }

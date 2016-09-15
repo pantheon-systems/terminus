@@ -12,6 +12,7 @@ use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Terminus\Models\Auth;
 
 abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface, SessionAwareInterface
@@ -36,5 +37,17 @@ abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface
     protected function log()
     {
         return $this->logger;
+    }
+
+   /**
+    * @param $question
+    * @return string
+    */
+    protected function confirm($question)
+    {
+        if ($this->input()->hasParameterOption(['--yes', '-y'])) {
+            return true;
+        }
+        return $this->doAsk(new ConfirmationQuestion($this->formatQuestion($question . ' (y/n)'), false));
     }
 }
