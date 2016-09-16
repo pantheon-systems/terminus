@@ -16,7 +16,7 @@ Feature: Machine tokens command
 
   @vcr machine-tokens_delete
   Scenario: Delete machine token
-    When I run "terminus machine-token:delete [[machine_token_id]] --yes"
+    When I run "terminus machine-token:delete [[machine_token_id]]"
     Then I should get:
     """
     Deleted [[machine_token_device]]!

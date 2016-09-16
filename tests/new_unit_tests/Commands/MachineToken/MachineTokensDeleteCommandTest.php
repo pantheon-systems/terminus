@@ -2,7 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Pantheon\Terminus\Config;
-use Symfony\Component\Console\Input\ArrayInput;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\MachineToken;
 
 /**
@@ -22,17 +22,6 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     $this->command = new DeleteCommand(new Config());
     $this->command->setSession($this->session);
     $this->command->setLogger($this->logger);
-
-    // Ignore user input.
-    $input = $this->getMockBuilder(ArrayInput::class)
-      ->disableOriginalConstructor()
-      ->getMock();
-    $input->expects($this->any())
-      ->method('hasParameterOption')
-      ->with(['--yes', '-y'])
-      ->willReturn(true);
-
-    $this->command->setInput($input);
   }
 
 
@@ -82,9 +71,10 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     $this->machine_tokens->expects($this->once())
       ->method('get')
       ->with($this->equalTo('123'))
-      ->willReturn(null);
+      ->will($this->throwException(new TerminusException));
 
-    $this->setExpectedException(\Exception::class, 'There are no machine tokens with the id {id}.');
+
+    $this->setExpectedException(TerminusException::class);
 
     $this->command->delete('123');
   }

@@ -30,6 +30,7 @@ class TerminusException extends \Exception {
     $code = 0
   ) {
     $this->replacements = $replacements;
+
     parent::__construct($message, $code);
   }
 

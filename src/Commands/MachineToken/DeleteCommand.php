@@ -28,22 +28,14 @@ class DeleteCommand extends TerminusCommand
 
         // Find the token. Will throw an exception if it doesn't exist.
         $machine_token = $user->machine_tokens->get($machine_token_id);
-        if (empty($machine_token)) {
-            throw new TerminusException('There are no machine tokens with the id {id}.', compact($machine_token_id));
-        }
         $name = $machine_token->get('device_name');
 
-        // Confirm the delete.
-        if ($this->confirm(sprintf('Are you sure you want to delete "%s"?', $name))) {
-            $this->log()->notice('Deleting {token} ...', ['token' => $name]);
-
-            $response = $machine_token->delete();
-            if ($response['status_code'] == 200) {
-                $this->log()->notice('Deleted {token}!', ['token' => $name]);
-            } else {
-                throw new TerminusException('There was an problem deleting the machine token.');
-            }
-
+        $this->log()->notice('Deleting {token} ...', ['token' => $name]);
+        $response = $machine_token->delete();
+        if ($response['status_code'] == 200) {
+            $this->log()->notice('Deleted {token}!', ['token' => $name]);
+        } else {
+            throw new TerminusException('There was an problem deleting the machine token.');
         }
     }
 
