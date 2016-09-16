@@ -31,7 +31,7 @@ class DeleteCommand extends TerminusCommand
         $name = $machine_token->get('device_name');
 
         $this->log()->notice('Deleting {token} ...', ['token' => $name]);
-        $response = $machine_token->delete();
+        $machine_token->delete();
         $this->log()->notice('Deleted {token}!', ['token' => $name]);
     }
 
