@@ -32,11 +32,7 @@ class DeleteCommand extends TerminusCommand
 
         $this->log()->notice('Deleting {token} ...', ['token' => $name]);
         $response = $machine_token->delete();
-        if ($response['status_code'] == 200) {
-            $this->log()->notice('Deleted {token}!', ['token' => $name]);
-        } else {
-            throw new TerminusException('There was an problem deleting the machine token.');
-        }
+        $this->log()->notice('Deleted {token}!', ['token' => $name]);
     }
 
 }

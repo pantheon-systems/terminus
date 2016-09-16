@@ -27,7 +27,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      * Tests the get function
      *
      * @expectedException \Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage No configuration setting for {key} found.
+     * @expectedExceptionMessage No configuration setting for DNE found.
      */
     public function testGet()
     {

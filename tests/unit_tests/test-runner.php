@@ -15,7 +15,7 @@ class RunnerTest extends PHPUnit_Framework_TestCase {
 
   /**
    * @expectedException \Terminus\Exceptions\TerminusException
-   * @expectedExceptionMessage There is no configuration option set with the key {key}.
+   * @expectedExceptionMessage There is no configuration option set with the key invalid.
    */
   public function testGetConfig() {
     $format = $this->runner->getConfig('format');

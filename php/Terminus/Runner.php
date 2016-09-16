@@ -298,8 +298,8 @@ class Runner {
         self::getLogger()->info($return);
       }
     } catch (\Exception $e) {
-      if (method_exists($e, 'getReplacements')) {
-        self::getLogger()->error($e->getMessage(), $e->getReplacements());
+      if (method_exists($e, 'getRawMessage') && method_exists($e, 'getReplacements')) {
+        self::getLogger()->error($e->getRawMessage(), $e->getReplacements());
       } else {
         self::getLogger()->error($e->getMessage());
       }

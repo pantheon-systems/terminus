@@ -92,9 +92,8 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
 
     $token->expects($this->once())
       ->method('delete')
-      ->willReturn(
-        ['status_code' => 500]
-      );
+      ->will($this->throwException(new TerminusException('There was an problem deleting the machine token.')));
+
 
     $this->machine_tokens->expects($this->once())
       ->method('get')
