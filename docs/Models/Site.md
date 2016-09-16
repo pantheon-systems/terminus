@@ -6,7 +6,7 @@
 
 ##### Parameters:
     [object] $attributes Attributes of this model
-    [array]  $options    Options to set as $this->key
+    [array]  $options    Options with which to configure this model
 
 ---
 
@@ -27,8 +27,8 @@
     Adds a tag to the site
 
 ##### Parameters:
-    [string] $tag    Name of tag to apply
-    [string] $org_id Organization to add the tag association to
+    [string]       $tag Name of tag to apply
+    [Organization] $org Organization to add the tag association to
 
 ##### Return:
     [array]
@@ -55,6 +55,18 @@
 
 ##### Return:
     [\stdClass]
+
+---
+
+### deployProduct
+##### Description:
+    Creates a new site for migration
+
+##### Parameters:
+    [string[]] $product_id The uuid for the product to deploy.
+
+##### Return:
+    [Workflow]
 
 ---
 
@@ -235,9 +247,10 @@
 ### getTags
 ##### Description:
     Returns tags from the site/org join
+    TODO: Move these into tags model/collection
 
 ##### Parameters:
-    [string] $org_id UUID of organization site belongs to
+    [Organization] $org UUID of organization site belongs to
 
 ##### Return:
     [string[]]
@@ -272,18 +285,6 @@
 
 ##### Return:
     [bool]
-
----
-
-### import
-##### Description:
-    Imports a site archive onto Pantheon
-
-##### Parameters:
-    [string] $url URL of the archive to import
-
-##### Return:
-    [Workflow]
 
 ---
 
@@ -336,8 +337,8 @@
     Removes a tag to the site
 
 ##### Parameters:
-    [string] $tag    Tag to remove
-    [string] $org_id Organization to remove the tag association from
+    [string]       $tag Tag to remove
+    [Organization] $org Organization to remove the tag association from
 
 ##### Return:
     [array]

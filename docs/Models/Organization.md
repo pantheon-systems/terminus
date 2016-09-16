@@ -6,10 +6,7 @@
 
 ##### Parameters:
     [object] $attributes Attributes of this model
-    [array]  $options    Options to set as $this->key
-
-##### Return:
-    [Organization]
+    [array]  $options    Options with which to configure this model
 
 ---
 
