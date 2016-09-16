@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4eb68ff865425a06b039c5b5032a2f4b",
-    "content-hash": "950d846075d42de309f51895d852844d",
+    "hash": "61595256a28134573f0ed27dd6f36239",
+    "content-hash": "5c4b4afcabecfd0572cdc72f3354ab2e",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -108,16 +108,16 @@
         },
         {
             "name": "consolidation/output-formatters",
-            "version": "2.0.0-beta1",
+            "version": "2.0.0-beta2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "22f03ba1d3b17bbf071a7bdae32728401bdd71b8"
+                "reference": "8473a4c0f337914078a036cbf360ecd9532e9f46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/22f03ba1d3b17bbf071a7bdae32728401bdd71b8",
-                "reference": "22f03ba1d3b17bbf071a7bdae32728401bdd71b8",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/8473a4c0f337914078a036cbf360ecd9532e9f46",
+                "reference": "8473a4c0f337914078a036cbf360ecd9532e9f46",
                 "shasum": ""
             },
             "require": {
@@ -151,7 +151,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2016-09-15 18:06:12"
+            "time": "2016-09-15 22:28:19"
         },
         {
             "name": "consolidation/robo",
@@ -159,12 +159,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "f4dad3383d6642856343de34298b9beb04fb62c2"
+                "reference": "67f5bdfbdd9d3a55640c430b74b324ce9c567315"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/f4dad3383d6642856343de34298b9beb04fb62c2",
-                "reference": "f4dad3383d6642856343de34298b9beb04fb62c2",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/67f5bdfbdd9d3a55640c430b74b324ce9c567315",
+                "reference": "67f5bdfbdd9d3a55640c430b74b324ce9c567315",
                 "shasum": ""
             },
             "require": {
@@ -225,7 +225,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-15 18:32:03"
+            "time": "2016-09-15 20:16:13"
         },
         {
             "name": "container-interop/container-interop",
