@@ -19,7 +19,7 @@ class MachineToken extends TerminusModel {
 
   /**
    * Deletes machine token
-   * @return null
+   * @return void
    * @throws \Terminus\Exceptions\TerminusException
    */
   public function delete() {
