@@ -9,12 +9,9 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class ListCommand extends TerminusCommand
 {
     /**
-     * @var boolean True if the command requires the user to be logged in
-     */
-    protected $authorized = true;
-
-    /**
      * Lists the IDs and labels of machine tokens belonging to the logged-in user
+     *
+     * @authorized
      *
      * @name machine-token:list
      * @aliases machine-tokens mt:list mts
@@ -22,7 +19,11 @@ class ListCommand extends TerminusCommand
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
      *
-     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     * @return RowsOfFields
+     *
+     * @field-labels
+     *   id: ID
+     *   device_name: Device Name
      */
     public function listTokens($options = ['format' => 'table', 'fields' => '']) {
         $user = $this->session()->getUser();
