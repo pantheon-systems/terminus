@@ -6,6 +6,7 @@ use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Terminus;
+use ReflectionMethod;
 use Robo\Robo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -232,5 +233,23 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         if (!empty($mode = $this->config->get('vcr_mode'))) {
             VCR::configure()->setMode($mode);
         }
+    }
+
+    /**
+     * Expose a protected method to testing
+     * https://rjzaworski.com/2012/04/testing-protected-methods-in-php
+     *
+     * @param mixed  $obj    Object containing the protected method to be called
+     * @param string $method Name of protected method
+     * @param array  $args   Method arguments
+     *
+     * @return mixed
+     */
+    protected function protectedMethodCall($obj, $method, $args = array())
+    {
+        $method = new ReflectionMethod(get_class($obj), $method);
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($obj, $args);
     }
 }
