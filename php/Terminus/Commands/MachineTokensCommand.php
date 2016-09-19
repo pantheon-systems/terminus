@@ -2,6 +2,7 @@
 
 namespace Terminus\Commands;
 
+use Terminus\Exceptions\TerminusException;
 use Terminus\Session;
 
 /**
@@ -94,17 +95,18 @@ class MachineTokensCommand extends TerminusCommand {
       'Deleting {name} ...',
       array('name' => $name)
     );
-    $response = $machine_token->delete();
-    if ($response['status_code'] == 200) {
-      $this->log()->info(
-        'Deleted {name}!',
-        array('name' => $name)
-      );
-    } else {
+    try {
+      $machine_token->delete();
+    }
+    catch (TerminusException $e) {
       $this->failure(
         'There was an problem deleting the machine token.'
       );
     }
+    $this->log()->info(
+      'Deleted {name}!',
+      array('name' => $name)
+    );
   }
 
 }
