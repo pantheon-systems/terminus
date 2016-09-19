@@ -6,8 +6,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 
-use Pantheon\Terminus\Commands\Auth\SSHKey\ListCommand;
+use Pantheon\Terminus\Commands\SSHKey\ListCommand;
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\UnitTests\Commands\SSHKeysCommandTest;
 use Terminus\Collections\SshKeys;
 use Terminus\Models\SshKey;
 
@@ -21,7 +22,7 @@ class SSHKeysListCommandTest extends SSHKeysCommandTest {
   {
     parent::setUp();
 
-    $this->command = new ListCommand(new Config());
+    $this->command = new ListCommand($this->getConfig());
     $this->command->setSession($this->session);
     $this->command->setLogger($this->logger);
   }

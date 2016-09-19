@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands;
 
 
 use Pantheon\Terminus\Session\Session;
@@ -11,7 +11,7 @@ use Terminus\Models\User;
 /**
  * @property \PHPUnit_Framework_MockObject_MockObject ssh_keys
  */
-abstract class SSHKeysCommandTest extends \PHPUnit_Framework_TestCase {
+abstract class SSHKeysCommandTest extends CommandTestCase {
   protected $session;
   protected $ssh_keys;
   protected $user;

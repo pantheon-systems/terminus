@@ -1,8 +1,8 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands;
 
 
-use Pantheon\Terminus\Commands\Auth\SSHKey\DeleteCommand;
+use Pantheon\Terminus\Commands\SSHKey\DeleteCommand;
 use Pantheon\Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\SshKey;
@@ -21,7 +21,7 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
   {
     parent::setUp();
 
-    $this->command = new DeleteCommand(new Config());
+    $this->command = new DeleteCommand($this->getConfig());
     $this->command->setSession($this->session);
     $this->command->setLogger($this->logger);
   }

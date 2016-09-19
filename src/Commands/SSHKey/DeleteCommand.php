@@ -5,7 +5,7 @@
  */
 
 
-namespace Pantheon\Terminus\Commands\Auth\SSHKey;
+namespace Pantheon\Terminus\Commands\SSHKey;
 
 
 use Pantheon\Terminus\Commands\TerminusCommand;
@@ -17,13 +17,13 @@ class DeleteCommand extends TerminusCommand
    *
    * @authorized
    *
-   * @command auth:ssh-key:delete
-   * @aliases ssh-key:delete, auth:ssh-key:rm, ssh-key:rm
+   * @command ssh-key:delete
+   * @aliases ssh-key:rm
    *
    * @param string $ssh_key_id The ID of the machine token to be deleted
    *
-   * @usage auth:ssh-key:delete <ssh-key-id>
-   *   Removes the  SSHkey from the user's account
+   * @usage terminus ssh-key:delete <ssh-key-id>
+   *   Removes the SSH key with the specified id from the user's account
    */
   public function delete($ssh_key_id) {
     $user = $this->session()->getUser();

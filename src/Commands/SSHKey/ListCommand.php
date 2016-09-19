@@ -5,7 +5,7 @@
  */
 
 
-namespace Pantheon\Terminus\Commands\Auth\SSHKey;
+namespace Pantheon\Terminus\Commands\SSHKey;
 
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -18,7 +18,7 @@ class ListCommand extends TerminusCommand {
    *
    * @authorized
    *
-   * @command auth:ssh-key:list
+   * @command ssh-key:list
    * @aliases ssh-keys
    *
    * @return RowsOfFields
@@ -28,7 +28,7 @@ class ListCommand extends TerminusCommand {
    *   hex: Fingerprint
    *   comment: Description
    *
-   * @example auth:ssh-key:list
+   * @example terminus ssh-key:list
    *
    */
   public function listSSHKeys($options = ['format' => 'table', 'fields' => '']) {

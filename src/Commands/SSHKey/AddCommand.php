@@ -5,7 +5,7 @@
  */
 
 
-namespace Pantheon\Terminus\Commands\Auth\SSHKey;
+namespace Pantheon\Terminus\Commands\SSHKey;
 
 
 use Pantheon\Terminus\Commands\TerminusCommand;
@@ -17,8 +17,7 @@ class AddCommand extends TerminusCommand {
    *
    * @authorized
    *
-   * @command auth:ssh-key:add
-   * @aliases ssh-key:add
+   * @command ssh-key:add
    *
    * @param string $file The path to the SSH public key file to use
    *
