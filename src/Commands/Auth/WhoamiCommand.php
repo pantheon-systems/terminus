@@ -24,9 +24,9 @@ class WhoamiCommand extends TerminusCommand
      *   Responds with the email of the logged-in user
      * @usage terminus auth:whoami --format=table
      *   Responds with the current session and user's data
-     * @return \Consolidation\OutputFormatters\StructuredData\AssociativeList
+     * @return AssociativeList
      */
-    public function whoAmI($options = ['format' => 'string', 'fields' => ''])
+    public function whoAmI()
     {
         $auth = new Auth();
         if ($auth->loggedIn()) {
