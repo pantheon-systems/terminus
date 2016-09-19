@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## [0.13.1] - 2016-09-19
+## Changed
+- Fixed ability to use `composer require pantheon-systems/terminus:VERSION` (#1209)
+
 ## [0.13.0] - 2016-09-15
 ### Added
 - New rocket art available using `art rocket`. (#1148)
