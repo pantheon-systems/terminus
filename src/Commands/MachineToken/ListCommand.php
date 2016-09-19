@@ -25,7 +25,7 @@ class ListCommand extends TerminusCommand
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
      */
-    public function listTokens($options = ['format' => 'table', 'fields' => '']) {
+    public function listTokens() {
         $user = $this->session()->getUser();
 
         $machine_tokens = $user->machine_tokens->all();

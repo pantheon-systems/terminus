@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus;
 
-use Robo\Application;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
 class Terminus extends Application
