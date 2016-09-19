@@ -16,14 +16,14 @@ class ListCommand extends TerminusCommand
      * @name machine-token:list
      * @aliases machine-tokens mt:list mts
      *
-     * @usage terminus machine-token:list
-     *   Lists your user's machine tokens
-     *
      * @return RowsOfFields
      *
      * @field-labels
      *   id: ID
      *   device_name: Device Name
+     *
+     * @usage terminus machine-token:list
+     *   Lists your user's machine tokens
      */
     public function listTokens($options = ['format' => 'table', 'fields' => '']) {
         $user = $this->session()->getUser();
