@@ -26,9 +26,24 @@ Whether you want to fix a bug or implement a new feature, the process is pretty 
 
 It doesn't matter if the code isn't perfect. The idea is to get it reviewed early and iterate on it.
 
-If you're adding a new feature, please add one or more functional tests for it in the `tests/features/` directory. See below.
+If you're adding a new feature, please add one or more functional tests for it in the `tests/features/` directory. See below. Also, keep the documentation up-to-date by running:
 
-Lastly, please follow the [WordPress Coding Standards](http://make.wordpress.org/core/handbook/coding-standards/).
+  ```bash
+  cd /install/location/terminus
+  composer docs
+  ```
+
+
+Lastly, please follow [PSR-2](http://www.php-fig.org/psr/psr-2/).  You can test for conformance via:
+  ```bash
+  cd /install/location/terminus
+  composer cs
+  ```
+The PHP code beautifier can automatically fix a number of style issues. Run it via:
+  ```bash
+  cd /install/location/terminus
+  composer cbf
+  ```
 
 Running and Writing Tests
 -------------------------
@@ -40,19 +55,27 @@ There are two types of automated tests:
 
 Both the unit and functional tests can be run together via:
 
-`./scripts/test.sh`
+`composer test`
 
 ### Unit Tests
 
 The unit test files are in the `tests/unit-tests` directory.
 
-To run the unit tests, simply execute:
+To run the unit tests for Terminus 0.x, simply execute:
 
   `vendor/bin/phpunit`
+  
+The Terminus 1.x unit tests can be run via:
+
+  ```bash
+  cd /install/location/terminus
+  composer phpunit
+  ```
+
 
 ### Functional Tests
 
-The functional test files are in the `test/features` directory. To run the entire test suite:
+The functional test files are in the `test/features` directory. To run the entire test suite for Terminus 0.x:
 
   `vendor/bin/behat -c=tests/config/behat.yml`
 
@@ -60,7 +83,15 @@ Or to test a single feature:
 
   `vendor/bin/behat -c=tests/config/behat.yml tests/features/core.feature`
 
+The complete behat suite for Terminus 1.x can be run via:
+
+  ```bash
+  cd /install/location/terminus
+  composer behat
+  ```
+
 More information can be found by running `vendor/bin/behat --help`.
+
 
 Versioning
 ----------

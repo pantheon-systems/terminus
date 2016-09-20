@@ -142,26 +142,7 @@ Head over to [your support tickets in the Pantheon Dashboard](https://dashboard.
 
 Contributions
 ------------
-Here are steps to follow if you would like to contribute to Terminus:
-
-1. Fork the repository.
-2. Add your changes. Please add tests as necessary. You can check your syntax for coherence to our standards by running:
-  ```bash
-  cd /install/location/terminus
-  ./scripts/lint.sh
-  ```
-And run your tests via:
-  ```bash
-  cd /install/location/terminus
-  ./scripts/test.sh
-  ```
-Please also run the internal documentation generator before committing your changes. This keeps the documentation always up-to-date:
-  ```bash
-  cd /install/location/terminus
-  php utils/make-docs.php
-  ```
-
-3. Open a pull request on GitHub so that we may evaluate and merge your changes.
+See the [CONTRIBUTING](CONTRIBUTING.md) document.
 
 Credits
 ------------
