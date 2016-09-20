@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4eb68ff865425a06b039c5b5032a2f4b",
-    "content-hash": "950d846075d42de309f51895d852844d",
+    "hash": "61595256a28134573f0ed27dd6f36239",
+    "content-hash": "5c4b4afcabecfd0572cdc72f3354ab2e",
     "packages": [
         {
             "name": "consolidation/annotated-command",
-            "version": "2.0.0-beta1",
+            "version": "2.0.0-beta4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "697c234f3a2ffdd02b8af7b39605c9f78684e56a"
+                "reference": "47d5e634385f379c17ccf547e4a20f48c11b9183"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/697c234f3a2ffdd02b8af7b39605c9f78684e56a",
-                "reference": "697c234f3a2ffdd02b8af7b39605c9f78684e56a",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/47d5e634385f379c17ccf547e4a20f48c11b9183",
+                "reference": "47d5e634385f379c17ccf547e4a20f48c11b9183",
                 "shasum": ""
             },
             "require": {
@@ -30,10 +30,13 @@
                 "symfony/finder": "~2.5|~3.0"
             },
             "require-dev": {
-                "consolidation/output-formatters": "~1",
+                "consolidation/output-formatters": "^2.0.0-beta3",
                 "phpunit/phpunit": "4.*",
                 "satooshi/php-coveralls": "^1.0",
                 "squizlabs/php_codesniffer": "2.*"
+            },
+            "suggest": {
+                "consolidation/output-formatters": "Format text by applying transformations provided by plug-in formatters."
             },
             "type": "library",
             "extra": {
@@ -57,7 +60,7 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2016-09-15 18:06:42"
+            "time": "2016-09-19 19:00:17"
         },
         {
             "name": "consolidation/log",
@@ -108,21 +111,22 @@
         },
         {
             "name": "consolidation/output-formatters",
-            "version": "2.0.0-beta1",
+            "version": "2.0.0-beta5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "22f03ba1d3b17bbf071a7bdae32728401bdd71b8"
+                "reference": "9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/22f03ba1d3b17bbf071a7bdae32728401bdd71b8",
-                "reference": "22f03ba1d3b17bbf071a7bdae32728401bdd71b8",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a",
+                "reference": "9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "symfony/console": "~2.5|~3.0"
+                "symfony/console": "~2.5|~3.0",
+                "symfony/finder": "~2.5|~3.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "4.*",
@@ -151,7 +155,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2016-09-15 18:06:12"
+            "time": "2016-09-19 19:44:19"
         },
         {
             "name": "consolidation/robo",
@@ -159,18 +163,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "f4dad3383d6642856343de34298b9beb04fb62c2"
+                "reference": "9af2f87c9da1579526ac7ebacaa03613bcc6bad1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/f4dad3383d6642856343de34298b9beb04fb62c2",
-                "reference": "f4dad3383d6642856343de34298b9beb04fb62c2",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/9af2f87c9da1579526ac7ebacaa03613bcc6bad1",
+                "reference": "9af2f87c9da1579526ac7ebacaa03613bcc6bad1",
                 "shasum": ""
             },
             "require": {
-                "consolidation/annotated-command": "^2.0.0-beta1",
+                "consolidation/annotated-command": "^2.0.0-beta3",
                 "consolidation/log": "~1",
-                "consolidation/output-formatters": "^2.0.0-beta1",
+                "consolidation/output-formatters": "^2.0.0-beta3",
                 "league/container": "^2.2",
                 "php": ">=5.5.0",
                 "symfony/console": "~2.5|~3.0",
@@ -225,7 +229,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-15 18:32:03"
+            "time": "2016-09-19 19:22:04"
         },
         {
             "name": "container-interop/container-interop",
@@ -661,16 +665,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v2.1.0",
+            "version": "v2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "47b254ea51f1d6d5dc04b9b299e88346bf2369e3"
+                "reference": "4dd659edadffdc2143e4753df655d866dbfeedf0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/47b254ea51f1d6d5dc04b9b299e88346bf2369e3",
-                "reference": "47b254ea51f1d6d5dc04b9b299e88346bf2369e3",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4dd659edadffdc2143e4753df655d866dbfeedf0",
+                "reference": "4dd659edadffdc2143e4753df655d866dbfeedf0",
                 "shasum": ""
             },
             "require": {
@@ -708,7 +712,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2016-04-19 13:41:41"
+            "time": "2016-09-16 12:04:44"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -1903,16 +1907,16 @@
         },
         {
             "name": "behat/gherkin",
-            "version": "v4.4.2",
+            "version": "v4.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Gherkin.git",
-                "reference": "d26757dc970e67b50ed0ee47b95273daeb84fea6"
+                "reference": "cf8cc94647101e02a33d690245896d83d880aea1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Gherkin/zipball/d26757dc970e67b50ed0ee47b95273daeb84fea6",
-                "reference": "d26757dc970e67b50ed0ee47b95273daeb84fea6",
+                "url": "https://api.github.com/repos/Behat/Gherkin/zipball/cf8cc94647101e02a33d690245896d83d880aea1",
+                "reference": "cf8cc94647101e02a33d690245896d83d880aea1",
                 "shasum": ""
             },
             "require": {
@@ -1958,7 +1962,7 @@
                 "gherkin",
                 "parser"
             ],
-            "time": "2016-09-03 07:28:57"
+            "time": "2016-09-18 12:16:14"
         },
         {
             "name": "behat/transliterator",
