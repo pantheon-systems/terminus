@@ -41,10 +41,8 @@ class SessionTest extends PHPUnit_Framework_TestCase {
 
   public function testGetValue() {
     //Extant value
-    $session = Session::getValue('session');
-    $this->assertTrue(
-      strpos($session, '0ffec038-4410-43d0-a404-46997f672d7a') !== false
-    );
+    $this->assertNotFalse(Session::getValue('session'));
+    $this->assertNotNull(Session::getValue('session'));
 
     //Invalid look-up
     $invalid = Session::getValue('invalid');

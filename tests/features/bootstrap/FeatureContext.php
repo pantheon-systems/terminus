@@ -56,32 +56,15 @@ class FeatureContext implements Context {
   /**
    * Ensures a site of the given name exists
    * @Given /^a site named "([^"]*)"$/
+   * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
    *
    * @param [string] $site Name of site to ensure exists
    * @return [boolean] Always true, else errs
    */
   public function aSiteNamed($site) {
-    $output = $this->iGetInfoForTheSite($site);
-    if (!$this->_checkResult('created', $output)) {
-      throw new Exception("Your user does not have a site named $site.");
-    }
-    return true;
-  }
-
-  /**
-   * Ensures a site of the given name exists and belongs to given org
-   * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
-   *
-   * @param [string] $site Name of site to ensure exists
-   * @param [string] $org  Name or UUID of organization to ensure ownership
-   * @return [boolean] Always true, else errs
-   */
-  public function aSiteNamedBelongingTo($site, $org) {
-    $output = $this->iGetInfoForTheSite($site);
-    if (!$this->_checkResult($site, $output)) {
-      $this->iCreateSiteNamed('Drupal 7', $site, $org);
-      $recurse = $this->aSiteNamedBelongingTo($site, $org);
-      return $recurse;
+    $output = json_decode($this->iRun("terminus site lookup --site=$site --format=json"));
+    if (!isset($output->name)) {
+      throw new \Exception("Cannot find a site named $site.");
     }
     return true;
   }
@@ -804,11 +787,9 @@ class FeatureContext implements Context {
    * @return [boolean] Always returns true
    */
   public function noSiteNamed($site) {
-    $output = $this->iGetInfoForTheSite($site);
-    if ($this->_checkResult('created', $output)) {
-      $this->iDeleteTheSiteNamed($site);
-      $status = $this->noSiteNamed($site);
-      return $status;
+    $output = json_decode($this->iRun("terminus site lookup --site=$site --format=json"));
+    if (isset($output->name)) {
+      throw new \Exception("Found a site named $site.");
     }
     return true;
   }

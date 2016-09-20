@@ -1085,10 +1085,9 @@ class SiteCommand extends TerminusCommand {
     $site->environments->all();
 
     if (isset($assoc_args['field'])) {
-      $field = $assoc_args['field'];
-      $this->output()->outputValue($site->info($field));
+      $this->output()->outputValue($site->serialize()[$assoc_args['field']]);
     } else {
-      $this->output()->outputRecord($site->info());
+      $this->output()->outputRecord($site->serialize());
     }
   }
 
@@ -2048,16 +2047,10 @@ class SiteCommand extends TerminusCommand {
    * @subcommand upstream-info
    */
   public function upstreamInfo($args, $assoc_args) {
-    $site     = $this->sites->get(
-      $this->input()->siteName(array('args' => $assoc_args))
-    );
-    $upstream = $site->get('upstream');
-    $upstream_updates   = $site->getUpstreamUpdates();
-    $upstream['status'] = 'current';
-    if ($upstream_updates->behind > 0) {
-      $upstream['status'] = 'outdated';
-    }
-    $this->output()->outputRecord($upstream);
+    $upstream = $this->sites->get(
+      $this->input()->siteName(['args' => $assoc_args,])
+    )->upstream;
+    $this->output()->outputRecord($upstream->fetch()->serialize());
   }
 
   /**
@@ -2088,41 +2081,36 @@ class SiteCommand extends TerminusCommand {
     if (!empty($args)) {
       $action = array_shift($args);
     }
-    $site     = $this->sites->get(
-      $this->input()->siteName(['args' => $assoc_args,])
-    );
-    $upstream = $site->getUpstreamUpdates();
-    if (isset($upstream->remote_url) && isset($upstream->behind)) {
-      $update_log = (array)$upstream->update_log;
-      if (!isset($upstream) || empty($update_log)) {
+    $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
+    $upstream_updates = $site->upstream->getUpdates();
+    if (isset($upstream_updates->remote_url) && isset($upstream_updates->behind)) {
+      if (!isset($upstream_updates) || empty((array)$upstream_updates->update_log)) {
         $this->log()->info("No updates to $action.");
         exit(0);
       }
     } else {
-      $message  = 'There was a problem checking your upstream status.';
-      $message .= ' Please try again.';
-      $this->failure($message);
+      $this->failure('There was a problem checking your upstream status. Please try again.');
     }
 
     switch($action) {
       default:
       case 'list':
-        $data = [];
-        $upstreams = (array)$upstream->update_log;
-        if (!empty($upstreams)) {
-          foreach ($upstreams as $commit) {
-            $data[] = [
+        $data = array_map(
+          function ($commit) {
+            $info = [
               'hash'     => $commit->hash,
               'datetime' => $commit->datetime,
               'message'  => $commit->message,
               'author'   => $commit->author,
             ];
-          }
-        }
+            return $info;
+          },
+          (array)$upstream_updates->update_log
+        );
         $this->output()->outputRecordList($data);
           break;
       case 'apply':
-        if (!empty($upstream->update_log)) {
+        if (!empty($upstream_updates->update_log)) {
           $env = $site->environments->get(
             $this->input()->env(['args' => $assoc_args, 'site' => $site,])
           );
@@ -2149,9 +2137,7 @@ class SiteCommand extends TerminusCommand {
           $workflow->wait();
           $this->workflowOutput($workflow);
         } else {
-          $this->log()->warning(
-            'There are no upstream updates to apply.'
-          );
+          $this->log()->warning('There are no upstream updates to apply.');
         }
           break;
     }

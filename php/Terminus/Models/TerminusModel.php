@@ -16,7 +16,7 @@ abstract class TerminusModel {
   /**
    * @var object
    */
-  public $attributes;
+  protected $attributes;
   /**
    * @var Request
    */
@@ -38,7 +38,9 @@ abstract class TerminusModel {
     } else {
       $this->attributes = (object)[];
     }
-    $this->id = $this->attributes->id;
+    if (isset($this->attributes->id)) {
+      $this->id = $this->attributes->id;
+    }
     $this->request = new Request();
   }
 
@@ -55,9 +57,7 @@ abstract class TerminusModel {
       $args
     );
     $results = $this->request->request($this->url, $options);
-    $data = $results['data'];
-    $data = $this->parseAttributes($data);
-    $this->attributes = $data;
+    $this->attributes = $this->parseAttributes($results['data']);
 
     return $this;
   }
