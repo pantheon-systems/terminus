@@ -23,6 +23,9 @@ class Workflow extends TerminusModel {
    */
   private $user;
 
+  // @TODO: Make this configurable.
+  const POLLING_PERIOD = 3;
+
   /**
    * Object constructor
    *
@@ -213,6 +216,74 @@ class Workflow extends TerminusModel {
           throw new TerminusException((string)$message->message);
         }
       }
+    }
+  }
+
+  /**
+   * Check on the progress of a workflow. This can be called repeatedly and will apply a polling
+   * period to prevent flooding the API with requests.
+   *
+   * @return bool Whether the workflow is finished or not
+   * @throws \Terminus\Exceptions\TerminusException
+   */
+  public function checkProgress() {
+    // Fetch the workflow status from the API.
+    $this->poll();
+
+    if ($this->isFinished()) {
+      // If the workflow failed then figure out the correct output message and throw an exception.
+      if (!$this->isSuccessful()) {
+        throw new TerminusException($this->getMessage());
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the success message of a workflow or throw an exception of the workflow failed.
+   *
+   * @return string The message to output to the user
+   * @throws \Terminus\Exceptions\TerminusException
+   */
+  public function getMessage() {
+    if (!$this->isSuccessful()) {
+
+      $message = 'Workflow failed.';
+      $final_task = $this->get('final_task');
+      if (!empty($final_task) && !empty($final_task->reason)) {
+        $message = $final_task->reason;
+      }
+      else if (!empty($final_task) && !empty($final_task->messages)) {
+        foreach ($final_task->messages as $data => $message) {
+          if (!is_string($message->message)) {
+            $message = print_r($message->message, true);
+          } else {
+            $message = $message->message;
+          }
+        }
+      }
+    } else {
+      $message = $this->get('active_description');
+    }
+
+    return $message;
+  }
+
+  /**
+   * Fetches this object from Pantheon. Waits a given length of time between checks.
+   *
+   * @return void
+   */
+  private function poll() {
+    static $last_check = 0;
+
+    // Poll for the workflow status. Don't check more often than the polling period
+    $now = time();
+    if ($last_check + Workflow::POLLING_PERIOD <= $now) {
+      $this->fetch();
+      $last_check = $now;
     }
   }
 
