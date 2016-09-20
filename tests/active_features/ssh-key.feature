@@ -13,16 +13,11 @@ Feature: SSH Keys
 
   @vcr ssh-keys_add
   Scenario: Add an SSH key
-    When I run "terminus ssh-key:add --file=tests/config/dummy_key.pub"
+    When I run "terminus ssh-key:add tests/config/dummy_key.pub"
     Then I should get: "Added SSH key from file tests/config/dummy_key.pub"
 
   @vcr ssh-keys_delete
   Scenario: Delete an SSH key
-    When I run "terminus ssh-key:delete --fingerprint=11111111111111111111111111111"
-    Then I should get: "Deleted SSH key 11111111111111111111111111111."
+    When I run "terminus ssh-key:delete 11111111111111111111111111111"
+    Then I should get: "Deleted SSH key 11111111111111111111111111111!"
 
-  @vcr ssh-keys_delete_all
-  Scenario: Delete all SSH keys
-    When I run "terminus ssh-key:delete all --yes"
-    And I run "terminus ssh-key:list"
-    Then I should get: "You do not have any SSH keys saved."
