@@ -32,13 +32,17 @@ class InfoCommand extends TerminusCommand
      *   git_port: Git Port
      *   git_url: Git URL
      *   git_command: Git Command
-     *   mysql_host: Mysql Host
-     *   mysql_username: Mysql Username
-     *   mysql_password: Mysql Password
-     *   mysql_port: Mysql Port
-     *   mysql_database: Mysql Database
-     *   mysql_url: Mysql URL
-     *   mysql_command: Mysql Command
+     *   mysql_host: MySQL Host
+     *   mysql_username: MySQL Username
+     *   mysql_password: MySQL Password
+     *   mysql_port: MySQL Port
+     *   mysql_database: MySQL Database
+     *   mysql_url: MySQL URL
+     *   mysql_command: MySQL Command
+     *   redis_command: Redis Command
+     *   redis_password: Redis Password
+     *   redis_port: Redis Port
+     *   redis_url: Redis URL
      *
      * @param string $environment Name of the environment to retrieve
      *
