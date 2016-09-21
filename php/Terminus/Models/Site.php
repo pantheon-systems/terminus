@@ -116,28 +116,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Apply upstream updates
-   *
-   * @param string $env_id   Environment name
-   * @param bool   $updatedb True to run update.php
-   * @param bool   $xoption  True to automatically resolve merge conflicts
-   * @return Workflow
-   */
-  public function applyUpstreamUpdates(
-    $env_id,
-    $updatedb = true,
-    $xoption = false
-  ) {
-    $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
-
-    $workflow = $this->workflows->create(
-      'apply_upstream_updates',
-      ['environment' => $env_id, 'params' => $params,]
-    );
-    return $workflow;
-  }
-
-  /**
    * Returns an array of attributes
    *
    * @return \stdClass

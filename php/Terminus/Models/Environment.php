@@ -54,6 +54,19 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Apply upstream updates
+   *
+   * @param boolean $updatedb True to run update.php
+   * @param boolean $xoption  True to automatically resolve merge conflicts
+   * @return Workflow
+   */
+  public function applyUpstreamUpdates($updatedb = true, $xoption = false) {
+    $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
+    $workflow = $this->workflows->create('apply_upstream_updates', compact('params'));
+    return $workflow;
+  }
+
+  /**
    * Changes connection mode
    *
    * @param string $value Connection mode, "git" or "sftp"

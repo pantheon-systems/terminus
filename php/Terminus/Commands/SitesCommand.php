@@ -374,11 +374,7 @@ class SitesCommand extends TerminusCommand {
           if ($backup) {
             $this->log()->info('Backup of {site} created.', $context);
             $this->log()->info('Updating {site}.', $context);
-            $response = $site->applyUpstreamUpdates(
-              $env->id,
-              $updatedb,
-              $xoption
-            );
+            $response = $env->applyUpstreamUpdates($updatedb, $xoption);
             $data[$site->get('name')]['status'] = 'Updated';
             $this->log()->info('{site} is updated.', $context);
           } else {
