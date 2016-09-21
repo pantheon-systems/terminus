@@ -9,10 +9,10 @@ Feature: Looking up a site
 
   @vcr site_lookup
   Scenario: Site look-up
-    When I run "terminus site:lookup --site=[[test_site_name]]"
-    Then I should get: "Name"
+    When I run "terminus site:lookup [[test_site_name]]"
+    Then I should get: "11111111-1111-1111-1111-111111111111"
 
   @vcr site_lookup_dne
   Scenario: Site look-up fails because site DNE
-    When I run "terminus site:lookup --site=invalid"
+    When I run "terminus site:lookup invalid"
     Then I should get: "A site named invalid was not found."
