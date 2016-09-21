@@ -68,5 +68,4 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
         $this->assertEquals($tokens, $out->getArrayCopy());
     }
-
 }

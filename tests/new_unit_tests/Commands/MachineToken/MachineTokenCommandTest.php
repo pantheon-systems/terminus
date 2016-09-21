@@ -7,7 +7,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-
 use Pantheon\Terminus\Session\Session;
 use Psr\Log\NullLogger;
 use Terminus\Collections\MachineTokens;
@@ -46,7 +45,5 @@ abstract class MachineTokenCommandTest extends \PHPUnit_Framework_TestCase
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(array('log'))
             ->getMock();
-
-
     }
 }

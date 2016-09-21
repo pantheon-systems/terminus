@@ -7,7 +7,6 @@
 
 namespace Pantheon\Terminus\Commands\SSHKey;
 
-
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 class DeleteCommand extends TerminusCommand
@@ -39,5 +38,4 @@ class DeleteCommand extends TerminusCommand
         $key->delete();
         $this->log()->notice('Deleted SSH key {key}!', ['key' => $name]);
     }
-
 }

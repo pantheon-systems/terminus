@@ -16,7 +16,7 @@ class LoginCommandTest extends CommandTestCase
      * @test
      * @vcr auth_login
      */
-    public function auth_login_command_logs_in_with_machine_token()
+    public function authLoginCommandLogsInWithMachineToken()
     {
         $this->setInput([
           'command' => 'auth:login',
@@ -30,17 +30,16 @@ class LoginCommandTest extends CommandTestCase
      * @test
      * @vcr auth_login_machine-token_invalid
      */
-    public function auth_login_command_fails_to_log_in_with_invalid_machine_token()
+    public function authLoginCommandFailsToLogInWithInvalidMachineToken()
     {
         $this->setInput([
           'command' => 'auth:login',
           ['machine-token' => 'invalid',]
         ]);
         $this->assertEquals(
-          '[error]  The provided machine token is not valid.',
-          $this->runCommand()->fetchTrimmedOutput()
+            '[error]  The provided machine token is not valid.',
+            $this->runCommand()->fetchTrimmedOutput()
         );
         $this->assertEquals(1, $this->getStatusCode());
     }
-
 }

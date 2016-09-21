@@ -1,7 +1,6 @@
 <?php
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-
 use Pantheon\Terminus\Commands\SSHKey\DeleteCommand;
 use Pantheon\Terminus\Config;
 use Terminus\Exceptions\TerminusException;
@@ -106,8 +105,10 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
             );
 
 
-        $this->setExpectedException(\Exception::class,
-            'There was an problem deleting the SSH key.');
+        $this->setExpectedException(
+            \Exception::class,
+            'There was an problem deleting the SSH key.'
+        );
 
         $this->command->delete('123');
     }

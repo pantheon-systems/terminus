@@ -19,7 +19,8 @@ class ArtCommand extends TerminusCommand
      * @usage terminus art rocket
      *   Displays the rocket artwork
      */
-    public function art($name) {
+    public function art($name)
+    {
         $artwork_content = $this->retrieveArt($name);
         $this->io()->text("<comment>{$artwork_content}</comment>");
     }

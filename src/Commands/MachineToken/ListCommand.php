@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Commands\MachineToken;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
-
 class ListCommand extends TerminusCommand
 {
     /**
@@ -45,5 +44,4 @@ class ListCommand extends TerminusCommand
         // Return the output data.
         return new RowsOfFields($data);
     }
-
 }
