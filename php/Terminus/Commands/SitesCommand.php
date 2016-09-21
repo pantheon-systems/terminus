@@ -197,21 +197,17 @@ class SitesCommand extends TerminusCommand
         }
         $sites = $this->sites->all();
 
-        if (count($sites) == 0) {
-            $this->log()->warning('You have no sites.');
+    $rows = [];
+    foreach ($sites as $site) {
+      $memberships = [];
+      foreach ($site->org_memberships->all() as $membership) {
+        if (property_exists($membership, 'user')) {
+          $memberships[] = "{$membership->user->id}: Team";
+        } elseif (property_exists($membership, 'organization')) {
+          $profile       = $membership->organization->get('profile');
+          $memberships[] = "{$membership->organization->id}: {$profile->name}";
         }
 
-        $rows = [];
-        foreach ($sites as $site) {
-            $memberships = [];
-            foreach ($site->memberships as $membership) {
-                if (property_exists($membership, 'user')) {
-                    $memberships[] = "{$membership->user->id}: Team";
-                } elseif (property_exists($membership, 'organization')) {
-                    $profile       = $membership->organization->get('profile');
-                    $memberships[] = "{$membership->organization->id}: {$profile->name}";
-                }
-            }
             $rows[$site->id] = [
             'name'          => $site->get('name'),
             'id'            => $site->id,
