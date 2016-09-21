@@ -25,20 +25,21 @@ class ListCommand extends TerminusCommand
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
      */
-    public function listTokens() {
+    public function listTokens()
+    {
         $user = $this->session()->getUser();
 
         $machine_tokens = $user->machine_tokens->all();
         $data = array();
         foreach ($machine_tokens as $id => $machine_token) {
-          $data[] = array(
-            'id'          => $machine_token->id,
-            'device_name' => $machine_token->get('device_name'),
-          );
+            $data[] = array(
+                'id' => $machine_token->id,
+                'device_name' => $machine_token->get('device_name'),
+            );
         }
 
         if (count($data) == 0) {
-          $this->log()->warning('You have no machine tokens.');
+            $this->log()->warning('You have no machine tokens.');
         }
 
         // Return the output data.

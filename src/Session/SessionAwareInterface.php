@@ -9,17 +9,18 @@ namespace Pantheon\Terminus\Session;
  *
  * Provides an interface for direct injection of the session helper.
  */
-interface SessionAwareInterface {
+interface SessionAwareInterface
+{
 
-  /***
-   * @param Session $session
-   * @return void
-   */
-  public function setSession(Session $session);
+    /***
+     * @param Session $session
+     * @return void
+     */
+    public function setSession(Session $session);
 
-  /**
-   * @return Session
-   */
-  public function session();
+    /**
+     * @return Session
+     */
+    public function session();
 
 }
