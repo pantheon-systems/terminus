@@ -20,7 +20,8 @@ class DeleteCommand extends TerminusCommand
      * @usage terminus machine-token:delete <machine_token_id>
      *   Removes the given machine token from the user's account
      */
-    public function delete($machine_token_id) {
+    public function delete($machine_token_id)
+    {
         $user = $this->session()->getUser();
 
         // Find the token. Will throw an exception if it doesn't exist.
