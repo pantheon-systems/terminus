@@ -12,8 +12,8 @@ for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "
 ./scripts/lint.sh
 
 # Run the functional tests
-behat_cmd="vendor/bin/behat -c=tests/config/behat.yml --suite="
-behat_cmd_10="vendor/bin/behat -c=tests/config/behat_10.yml --suite="
+behat_cmd="vendor/bin/behat --colors -c=tests/config/behat.yml --suite="
+behat_cmd_10="vendor/bin/behat --colors -c=tests/config/behat_10.yml --suite="
 if [ ! -z $1 ]; then
   behat_cmd+=$1
   behat_cmd_10+=$1
@@ -23,8 +23,8 @@ else
 fi
 if [ -z $2 ]; then
   # Run the unit tests if we are not targeting a feature
-  vendor/bin/phpunit -c tests/config/phpunit.xml.dist --debug
-  vendor/bin/phpunit -c tests/config/phpunit-10.xml.dist --debug
+  vendor/bin/phpunit --colors=always -c tests/config/phpunit.xml.dist --debug
+  vendor/bin/phpunit --colors=always  -c tests/config/phpunit-10.xml.dist --debug
 fi
 eval $behat_cmd
 eval $behat_cmd_10
