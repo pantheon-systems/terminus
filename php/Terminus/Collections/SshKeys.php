@@ -2,6 +2,8 @@
 
 namespace Terminus\Collections;
 
+use Terminus\Exceptions\TerminusException;
+
 class SshKeys extends TerminusCollection {
   /**
    * @var User

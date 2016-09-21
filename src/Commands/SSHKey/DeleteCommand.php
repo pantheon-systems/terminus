@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains Pantheon\Terminus\Commands\Auth\SSHKey\DeleteCommand
+ * Contains Pantheon\Terminus\Commands\SSHKey\DeleteCommand
  */
 
 

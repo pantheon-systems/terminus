@@ -8,7 +8,7 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\SshKey;
 
 /**
- * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
+ * Testing class for Pantheon\Terminus\Commands\SSHKeysDeleteCommand
  */
 class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
 {

@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains Pantheon\Terminus\Commands\Auth\SSHKey\AddCommand
+ * Contains Pantheon\Terminus\Commands\SSHKey\AddCommand
  */
 
 
@@ -22,10 +22,10 @@ class AddCommand extends TerminusCommand
      *
      * @param string $file The path to the SSH public key file to use
      *
-     * @usage terminus auth:ssh-key:add ~/.ssh/id_rsa.pub
+     * @usage terminus ssh-key:add ~/.ssh/id_rsa.pub
      *   Adds the public key at the given file path to your account
      */
-    public function delete($file)
+    public function add($file)
     {
         $user = $this->session()->getUser();
         $user->ssh_keys->addKey($file);
