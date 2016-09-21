@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\FeatureTests;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * Features context for Behat feature testing
@@ -62,8 +63,9 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function aSiteNamed($site)
     {
-        $output = $this->iGetInfoForTheSite($site);
-        if (!$this->checkResult('created', $output)) {
+        try {
+            $this->iRun("terminus site:lookup $site");
+        } catch (TerminusException $e) {
             throw new \Exception("Your user does not have a site named $site.");
         }
         return true;
@@ -821,13 +823,12 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function noSiteNamed($site)
     {
-        $output = $this->iGetInfoForTheSite($site);
-        if ($this->checkResult('created', $output)) {
-            $this->iDeleteTheSiteNamed($site);
-            $status = $this->noSiteNamed($site);
-            return $status;
+        try {
+            $this->aSiteNamed($site);
+        } catch (\Exception $e) {
+            return true;
         }
-        return true;
+        throw new \Exception("A site named $site was found.");
     }
 
     /**
