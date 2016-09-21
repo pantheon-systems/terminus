@@ -2123,38 +2123,29 @@ class SiteCommand extends TerminusCommand {
           break;
       case 'apply':
         if (!empty($upstream->update_log)) {
-          $env = 'dev';
-          if (isset($assoc_args['env'])) {
-            $env = $assoc_args['env'];
-          }
-          if (in_array($env, ['test', 'live',])) {
+          $env = $site->environments->get(
+            $this->input()->env(['args' => $assoc_args, 'site' => $site,])
+          );
+          if (in_array($env->id, ['test', 'live',])) {
             $this->failure(
               'Upstream updates cannot be applied to the {env} environment',
-              compact('env')
+              ['env' => $env->id,]
             );
           }
 
-          $updatedb       = (
-            isset($assoc_args['updatedb'])
-            && $assoc_args['updatedb']
-          );
+          $updatedb = (isset($assoc_args['updatedb']) && $assoc_args['updatedb']);
           $acceptupstream = (
             isset($assoc_args['accept-upstream'])
             && $assoc_args['accept-upstream']
           );
-          $message  = 'Are you sure you want to apply the ';
-          $message .= 'upstream updates to %s-dev';
+          $message = 'Are you sure you want to apply the upstream updates to %s-dev';
           $this->input()->confirm(
-            array(
+            [
               'message' => $message,
-              'context' => array($site->get('name'), $env),
-            )
+              'context' => array($site->get('name'), $env->id),
+            ]
           );
-          $workflow = $site->applyUpstreamUpdates(
-            $env,
-            $updatedb,
-            $acceptupstream
-          );
+          $workflow = $env->applyUpstreamUpdates($updatedb, $acceptupstream);
           $workflow->wait();
           $this->workflowOutput($workflow);
         } else {
