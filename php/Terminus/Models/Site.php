@@ -30,6 +30,10 @@ class Site extends TerminusModel {
    */
   public $org_memberships;
   /**
+   * @var Upstream
+   */
+  public $upstream;
+  /**
    * @var SiteUserMemberships
    */
   public $user_memberships;
@@ -37,6 +41,10 @@ class Site extends TerminusModel {
    * @var Workflows
    */
   public $workflows;
+    /**
+     * @var string The URL at which to fetch this model's information
+     */
+  protected $url;
   /**
    * @var array
    */
@@ -53,27 +61,21 @@ class Site extends TerminusModel {
    * @param array  $options    Options with which to configure this model
    */
   public function __construct($attributes = null, array $options = []) {
-    $must_haves = [
-      'name',
-      'id',
-      'service_level',
-      'framework',
-      'created',
-      'memberships'
-    ];
-    foreach ($must_haves as $must_have) {
-      if (!isset($attributes->$must_have)) {
-        $attributes->$must_have = null;
-      }
-    }
     parent::__construct($attributes, $options);
+    $this->url = "sites/{$this->id}?site_state=true";
 
-    $params                 = ['site' => $this,];
+    $params = ['site' => $this,];
     $this->authorizations   = new SiteAuthorizations($params);
     $this->environments     = new Environments($params);
     $this->org_memberships  = new SiteOrganizationMemberships($params);
     $this->user_memberships = new SiteUserMemberships($params);
     $this->workflows        = new Workflows($params);
+
+    if (isset($attributes->upstream)) {
+      $this->upstream = new Upstream($attributes->upstream, $params);
+    } else {
+      $this->upstream = new Upstream((object)[], $params);
+    }
   }
 
   /**
@@ -107,34 +109,12 @@ class Site extends TerminusModel {
         ['tag' => $tag, 'org' => $org->id,]
       );
     }
-    $params    = [$tag => ['sites' => [$this->id,],],];
-    $response  = $this->request->request(
+    $params   = [$tag => ['sites' => [$this->id,],],];
+    $response = $this->request->request(
       sprintf('organizations/%s/tags', $org->id),
       ['method' => 'put', 'form_params' => $params,]
     );
     return $response;
-  }
-
-  /**
-   * Apply upstream updates
-   *
-   * @param string $env_id   Environment name
-   * @param bool   $updatedb True to run update.php
-   * @param bool   $xoption  True to automatically resolve merge conflicts
-   * @return Workflow
-   */
-  public function applyUpstreamUpdates(
-    $env_id,
-    $updatedb = true,
-    $xoption = false
-  ) {
-    $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
-
-    $workflow = $this->workflows->create(
-      'apply_upstream_updates',
-      ['environment' => $env_id, 'params' => $params,]
-    );
-    return $workflow;
   }
 
   /**
@@ -331,9 +311,9 @@ class Site extends TerminusModel {
    * @return Site
    */
   public function fetch(array $options = []) {
-    $response         = $this->request->request(
-      sprintf('sites/%s?site_state=true', $this->id)
-    );
+    $response = $this->request->request($this->url);
+    $this->upstream = new Upstream($response['data']->upstream, ['site' => $this,]);
+    unset($response['data']->upstream);
     $this->attributes = $response['data'];
     return $this;
   }
@@ -450,18 +430,6 @@ class Site extends TerminusModel {
   }
 
   /**
-   * Get upstream updates
-   *
-   * @return \stdClass
-   */
-  public function getUpstreamUpdates() {
-    $response = $this->request->request(
-      'sites/' . $this->id .  '/code-upstream-updates'
-    );
-    return $response['data'];
-  }
-
-  /**
    * Checks to see whether the site has a tag associated with the given org
    *
    * @param string $tag    Name of tag to check for
@@ -472,57 +440,6 @@ class Site extends TerminusModel {
     $tags    = $this->getTags($org_id);
     $has_tag = in_array($tag, $tags);
     return $has_tag;
-  }
-
-  /**
-   * Load site info
-   *
-   * @param string $key Set to retrieve a specific attribute as named
-   * @return array|null|mixed
-   *   If $key is supplied, return named bit of info, or null if not found.
-   *   If no $key supplied, return entire info array.
-   */
-  public function info($key = null) {
-    $info = [
-      'id'            => $this->id,
-      'name'          => null,
-      'label'         => null,
-      'created'       => null,
-      'framework'     => null,
-      'organization'  => null,
-      'service_level' => null,
-      'upstream'      => null,
-      'php_version'   => null,
-      'holder_type'   => null,
-      'holder_id'     => null,
-      'owner'         => null,
-    ];
-    foreach ($info as $info_key => $datum) {
-      if ($datum == null) {
-        $info[$info_key] = $this->get($info_key);
-      }
-    }
-    if (!is_null($info['created']) && is_numeric($info['created'])) {
-      $info['created'] = date(Config::get('date_format'), $info['created']);
-    }
-    if ((boolean)$this->get('frozen')) {
-      $info['frozen'] = true;
-    }
-    if (!is_null($info['php_version'])) {
-      $info['php_version'] = substr($info['php_version'], 0, 1)
-        . '.' . substr($info['php_version'], 1, 1);
-    }
-    $info['upstream'] = (array)$info['upstream'];
-
-    if ($key) {
-      if (isset($info[$key])) {
-        return $info[$key];
-      } else {
-        return null;
-      }
-    } else {
-      return $info;
-    }
   }
 
   /**
@@ -579,6 +496,36 @@ class Site extends TerminusModel {
       ['method' => 'delete',]
     );
     return $response;
+  }
+
+    /**
+     * Formats the Site object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+  public function serialize() {
+    $data = [
+      'id'            => $this->id,
+      'name'          => $this->get('name'),
+      'label'         => $this->get('label'),
+      'created'       => date(Config::get('date_format'), $this->get('created')),
+      'framework'     => $this->get('framework'),
+      'organization'  => $this->get('organization'),
+      'service_level' => $this->get('service_level'),
+      'upstream'      => $this->upstream->serialize(),
+      'php_version'   => $this->get('php_version'),
+      'holder_type'   => $this->get('holder_type'),
+      'holder_id'     => $this->get('holder_id'),
+      'owner'         => $this->get('owner'),
+    ];
+    if ((boolean)$this->get('frozen')) {
+        $data['frozen'] = true;
+    }
+    if (!is_null($data['php_version'])) {
+        $data['php_version'] = substr($data['php_version'], 0, 1)
+          . '.' . substr($data['php_version'], 1, 1);
+    }
+    return $data;
   }
 
   /**

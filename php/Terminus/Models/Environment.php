@@ -54,6 +54,19 @@ class Environment extends TerminusModel {
   }
 
   /**
+   * Apply upstream updates
+   *
+   * @param boolean $updatedb True to run update.php
+   * @param boolean $xoption  True to automatically resolve merge conflicts
+   * @return Workflow
+   */
+  public function applyUpstreamUpdates($updatedb = true, $xoption = false) {
+    $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
+    $workflow = $this->workflows->create('apply_upstream_updates', compact('params'));
+    return $workflow;
+  }
+
+  /**
    * Changes connection mode
    *
    * @param string $value Connection mode, "git" or "sftp"
@@ -505,7 +518,7 @@ class Environment extends TerminusModel {
     ) {
       $connection_mode = 'sftp';
     }
-    $php_version = $this->site->info()['php_version'];
+    $php_version = $this->site->serialize()['php_version'];
     if (property_exists($result['data'], 'php_version')) {
       $php_version = substr($result['data']->php_version, 0, 1)
         . '.' . substr($result['data']->php_version, 1, 1);

@@ -1,8 +1,13 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Fixed
+- Fixed apply upstream updates. (#1233)
+- Fixed `site upstream-info`. (#1224)
+
 ## [0.13.1] - 2016-09-19
-## Changed
+### Changed
 - Fixed ability to use `composer require pantheon-systems/terminus:VERSION` (#1209)
 
 ## [0.13.0] - 2016-09-15

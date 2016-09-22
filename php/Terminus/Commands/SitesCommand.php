@@ -306,16 +306,15 @@ class SitesCommand extends TerminusCommand {
     foreach ($sites as $site) {
       $context = array('site' => $site->get('name'));
       $site->fetch();
-      $updates = $site->getUpstreamUpdates();
+      $updates = $site->upstream->getUpdates();
       if (!isset($updates->behind)) {
         // No updates, go back to start.
         continue;
       }
       // Check for upstream argument and site upstream URL match.
-      $siteUpstream = $site->info('upstream');
-      if ($upstream && isset($siteUpstream->url)) {
-        if ($siteUpstream->url <> $upstream) {
-          // Uptream doesn't match, go back to start.
+      if ($upstream && !is_null($site->upstream->get('url'))) {
+        if ($site->upstream->get('url') <> $upstream) {
+          // Upstream doesn't match, go back to start.
           continue;
         }
       }
@@ -351,11 +350,9 @@ class SitesCommand extends TerminusCommand {
           )
         );
         if (!$report) {
-          $message = 'Apply upstream updates to %s ';
-          $message .= '( run update.php:%s, xoption:%s ) ';
           $confirmed = $this->input()->confirm(
             array(
-              'message' => $message,
+              'message' => 'Apply upstream updates to %s ( run update.php:%s, xoption:%s )',
               'context' => array(
                 $site->get('name'),
                 var_export($updatedb, 1),
@@ -374,11 +371,7 @@ class SitesCommand extends TerminusCommand {
           if ($backup) {
             $this->log()->info('Backup of {site} created.', $context);
             $this->log()->info('Updating {site}.', $context);
-            $response = $site->applyUpstreamUpdates(
-              $env->id,
-              $updatedb,
-              $xoption
-            );
+            $response = $env->applyUpstreamUpdates($updatedb, $xoption);
             $data[$site->get('name')]['status'] = 'Updated';
             $this->log()->info('{site} is updated.', $context);
           } else {
