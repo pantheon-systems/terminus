@@ -214,3 +214,38 @@
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
         body: '{"watchers": 1, "diffstat": {}, "on_server_development": false, "environment_created": 1471385341, "dns_zone": "pantheonsite.io", "randseed": "DAWMHE2LTF12P5H2DY3URABPX8N16US9", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "styx_cluster": "styx-03.pantheon.io"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/code-upstream-updates'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.13.1 (php_version=7.0.6&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:286451ce-6641-11e6-a161-bc764e1141f9:uWiqILJ8zJ1dFG2a6KLS7'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:286451ce-6641-11e6-a161-bc764e1141f9:uWiqILJ8zJ1dFG2a6KLS7'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 20 Sep 2016 18:49:44 GMT'
+            Content-Type: application/json
+            Content-Length: '1575'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: ff026b50-7f62-11e6-88c9-699df0f70b59
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"remote_head": "cccdd26e7c511bebbd40b23e6756056f8eb7bd3d", "ahead": 7, "update_log": {"cccdd26e7c511bebbd40b23e6756056f8eb7bd3d": {"gravitar_url": "https://secure.gravatar.com/avatar/3f4024df90770e003703e1c5e6d29bd6?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "cccdd26e7c511bebbd40b23e6756056f8eb7bd3d", "author": "Pantheon Automation", "labels": [], "datetime": "2016-09-07T19:06:47", "parents": ["99d9779d7924d37be5750954b774ec786a95e5e0"], "message": "Update to WordPress 4.6.1. For more information, see: https://wordpress.org/news/2016/09/wordpress-4-6-1-security-and-maintenance-release/\n", "email": "bot@getpantheon.com"}, "99d9779d7924d37be5750954b774ec786a95e5e0": {"gravitar_url": "https://secure.gravatar.com/avatar/3f4024df90770e003703e1c5e6d29bd6?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "99d9779d7924d37be5750954b774ec786a95e5e0", "author": "Pantheon Automation", "labels": [], "datetime": "2016-08-16T20:13:12", "parents": ["85431ad7eefbc602420812a1ab891965642c2183"], "message": "Update to WordPress 4.6. For more information, see: https://wordpress.org/news/2016/08/pepper/\n", "email": "bot@getpantheon.com"}}, "remote_branch": "refs/remotes/origin/master", "behind": 2, "dev": {"has_code": true, "is_up_to_date_with_upstream": false}, "live": {"has_code": false, "is_up_to_date_with_upstream": false}, "has_code": true, "test": {"has_code": false, "is_up_to_date_with_upstream": false}, "has_remote_head": false, "remote_url": "https://github.com/pantheon-systems/WordPress"}'
