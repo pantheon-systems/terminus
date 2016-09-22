@@ -7,7 +7,6 @@
 
 namespace Pantheon\Terminus\Commands\SSHKey;
 
-
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
@@ -51,5 +50,4 @@ class ListCommand extends TerminusCommand
         // Return the output data.
         return new RowsOfFields($data);
     }
-
 }

@@ -22,7 +22,7 @@ cmd=$phpcs+" tests/features/bootstrap/FeatureContext.php"
 eval $cmd
 
 #Enforce PSR2 on 1.x
-phpcs="vendor/bin/phpcs --standard=PSR2 --extensions=php"
+phpcs="vendor/bin/phpcs --standard=PSR2 --extensions=php --severity=1"
 cmd=$phpcs+" tests/new_unit_tests/*"
 eval $cmd
 

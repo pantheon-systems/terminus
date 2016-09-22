@@ -13,7 +13,7 @@ class ArtCommandTest extends CommandTestCase
     /**
      * @test
      */
-    public function art_command_prints_contents_of_files_in_assets_directory()
+    public function artCommandPrintsContentsOfFilesInAssetsDirectory()
     {
         $this->assertEquals('Hello World!', $this->runCommand()->fetchTrimmedOutput());
     }
@@ -21,7 +21,7 @@ class ArtCommandTest extends CommandTestCase
     /**
      * @test
      */
-    public function art_command_rejects_files_not_in_assets_directory()
+    public function artCommandRejectsFilesNotInAssetsDirectory()
     {
         $this->setInput(['command' => 'art', 'name' => 'foo']);
         $this->assertEquals('Not a valid work of art!', $this->runCommand()->fetchTrimmedOutput());

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Session;
 
-
 /**
  * Provides the basic properties needed to fulfill the SessionAwareInterface.
  *
@@ -34,6 +33,4 @@ trait SessionAwareTrait
     {
         return $this->session;
     }
-
-
 }
