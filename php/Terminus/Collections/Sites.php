@@ -73,7 +73,9 @@ class Sites extends TerminusCollection
   /**
    * Fetches model data from API and instantiates its model instances
    *
-   * @param array $arg_options params to pass to url request
+   * @param array $arg_options Options to change the requests made. Elements as follow:
+   *        string  org_id    UUID of the organization to retrieve sites for
+   *        boolean team_only True to only retrieve team sites
    * @return Sites
    */
     public function fetch(array $arg_options = [])
@@ -82,32 +84,35 @@ class Sites extends TerminusCollection
         'org_id'    => null,
         'team_only' => false,
         ];
-        $options         = array_merge($default_options, $arg_options);
+        $options = array_merge($default_options, $arg_options);
 
         $sites = [];
         if (is_null($options['org_id'])) {
-            $sites = $this->user->getSites();
+            $sites[] = $this->user->getSites();
         }
         if (!$options['team_only']) {
             $memberships = $this->user->org_memberships->fetch()->all();
+            if (!is_null($org_id = $options['org_id']) && ($org_id != 'all')) {
+                $memberships = [$memberships[$org_id],];
+            }
             foreach ($memberships as $membership) {
                 if ($membership->get('role') != 'unprivileged') {
-                    $sites = array_merge($sites, $membership->organization->getSites());
+                    $sites[] = $membership->organization->getSites();
                 }
             }
         }
-
-        foreach ($sites as $site) {
-            if (!isset($this->models[$site->id])) {
-                $site->collection        = $this;
-                $this->models[$site->id] = $site;
-            } else {
-                $this->models[$site->id]->memberships[] = array_merge(
-                    $this->models[$site->id]->memberships,
-                    $site->memberships
-                );
+        $merged_sites = [];
+        foreach ($sites as $site_group) {
+            foreach ($site_group as $site) {
+                if (!isset($merged_sites[$site->id])) {
+                    $merged_sites[$site->id] = $site;
+                } else {
+                    $merged_sites[$site->id]->memberships[] = $site->memberships[0];
+                }
             }
         }
+        $this->models = $merged_sites;
+
         return $this;
     }
 

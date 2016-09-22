@@ -37,8 +37,8 @@
     }
   },
   "scripts": {
-      "cs": "phpcs --standard=PSR2 --extensions=php --severity=1 -n tests/* bin/terminus.php src/* php/*",
-      "cbf": "phpcbf --standard=PSR2 -n src",
+      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus.php src/* php/*",
+      "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus.php src/* php/*",
       "docs": "php utils/make-docs.php",
       "phpunit": "TERMINUS_TEST_MODE=1 SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit-10.xml.dist --debug",
       "behat": "TERMINUS_TEST_MODE=1 SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",

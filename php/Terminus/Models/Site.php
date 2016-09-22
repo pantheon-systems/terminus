@@ -67,11 +67,11 @@ class Site extends TerminusModel
         $this->url = "sites/{$this->id}?site_state=true";
 
         $params = ['site' => $this,];
-        $this->authorizations   = new SiteAuthorizations($params);
-        $this->environments     = new Environments($params);
-        $this->org_memberships  = new SiteOrganizationMemberships($params);
+        $this->authorizations = new SiteAuthorizations($params);
+        $this->environments = new Environments($params);
+        $this->org_memberships = new SiteOrganizationMemberships($params);
         $this->user_memberships = new SiteUserMemberships($params);
-        $this->workflows        = new Workflows($params);
+        $this->workflows = new Workflows($params);
 
         if (isset($attributes->upstream)) {
             $this->upstream = new Upstream($attributes->upstream, $params);

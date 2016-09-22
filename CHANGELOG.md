@@ -6,6 +6,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed apply upstream updates. (#1233)
 - Fixed `site upstream-info`. (#1224)
 - Fixed the notices emitting from `sites list`. (#1231)
+- Fixed the memberships column in `sites list` to accurately reflect when your user is a both a team and organizational member of a site. (#1231)
 
 ## [0.13.1] - 2016-09-19
 ### Changed

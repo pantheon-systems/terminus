@@ -23,9 +23,7 @@ class UserOrganizationMembership extends TerminusModel
     {
         parent::__construct($attributes, $options);
         $this->user = $options['collection']->user;
-        $this->organization = new Organization(
-            $attributes->organization,
-            ['id' => $attributes->organization->id, 'memberships' => [$this,],]
-        );
+        $this->organization = new Organization($attributes->organization);
+        $this->organization->memberships = [$this,];
     }
 }
