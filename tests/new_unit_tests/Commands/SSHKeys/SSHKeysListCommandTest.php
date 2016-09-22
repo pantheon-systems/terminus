@@ -5,7 +5,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-
 use Pantheon\Terminus\Commands\SSHKey\ListCommand;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\UnitTests\Commands\SSHKeysCommandTest;
@@ -91,5 +90,4 @@ class SSHKeysListCommandTest extends SSHKeysCommandTest
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
         $this->assertEquals($output, $out->getArrayCopy());
     }
-
 }

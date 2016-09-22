@@ -104,8 +104,10 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
             );
 
 
-        $this->setExpectedException(\Exception::class,
-            'There was an problem deleting the machine token.');
+        $this->setExpectedException(
+            \Exception::class,
+            'There was an problem deleting the machine token.'
+        );
 
         $this->command->delete('123');
     }

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-
 use Pantheon\Terminus\Session\Session;
 use Psr\Log\NullLogger;
 use Terminus\Collections\SshKeys;
@@ -44,7 +43,5 @@ abstract class SSHKeysCommandTest extends CommandTestCase
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(array('log'))
             ->getMock();
-
-
     }
 }

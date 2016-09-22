@@ -35,7 +35,7 @@
     }
   },
   "scripts": {
-      "cs": "phpcs --standard=PSR2 -n src",
+      "cs": "phpcs --standard=PSR2 --severity=1 -n src",
       "cbf": "phpcbf --standard=PSR2 -n src",
       "docs": "php utils/make-docs.php",
       "phpunit": "TERMINUS_TEST_MODE=1 SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit-10.xml.dist --debug",

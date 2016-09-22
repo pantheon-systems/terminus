@@ -20,8 +20,7 @@ class ImportCommand extends TerminusCommand
      * @usage terminus import --site=<site_name> --url=<archive_url>
      *   Imports the file at the archive URL to the site named.
      */
-    public function import(array $options = []) {
-
+    public function import(array $options = [])
+    {
     }
-
 }

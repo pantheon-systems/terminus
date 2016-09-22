@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Session;
 
-
 /**
  * Interface SessionAwareInterface
  * @package Pantheon\Terminus\Session
@@ -22,5 +21,4 @@ interface SessionAwareInterface
      * @return Session
      */
     public function session();
-
 }
