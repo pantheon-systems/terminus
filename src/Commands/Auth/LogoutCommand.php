@@ -17,7 +17,8 @@ class LogoutCommand extends TerminusCommand
      * @usage terminus auth:logout
      *   Logs you out of Pantheon by removing your saved session
      */
-    public function logOut() {
+    public function logOut()
+    {
         $auth = new Auth();
         $auth->logOut();
         $this->log()->notice('You have been logged out of Pantheon.');

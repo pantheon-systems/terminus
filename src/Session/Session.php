@@ -106,5 +106,4 @@ class Session
         $user = new User((object)array('id' => $user_uuid));
         return $user;
     }
-
 }

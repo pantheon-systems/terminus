@@ -29,18 +29,17 @@ class LoginCommand extends TerminusCommand
         if (!is_null($token = $options['machine-token'])) {
             $auth->logInViaMachineToken(compact('token'));
             $this->log()->notice('Logging in via machine token.');
-        } else if (!is_null($email = $options['email']) && !$auth->tokenExistsForEmail($email)) {
+        } elseif (!is_null($email = $options['email']) && !$auth->tokenExistsForEmail($email)) {
             $message = 'There are no saved tokens for %s.';
             throw new \Exception(vsprintf($message, compact('email')), 1);
-        } else if (
-        (
+        } elseif ((
           (!is_null($email = $options['email']) || !empty($email = $this->config->get('user')))
           && $auth->tokenExistsForEmail($email)
         )
         ) {
             $auth->logInViaMachineToken(compact('email'));
             $this->log()->notice('Logging in via machine token.');
-        } else if (is_null($options['email']) && (count($tokens) == 1)) {
+        } elseif (is_null($options['email']) && (count($tokens) == 1)) {
             $email = array_shift($tokens);
             $this->log()->notice('Found a machine token for {email}.', compact('email'));
             $auth->logInViaMachineToken(compact('email'));

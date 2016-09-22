@@ -56,10 +56,13 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
     /**
      * Ensures a site of the given name exists
-     * @Given /^a site named "([^"]*)"$/
      *
-     * @param [string] $site Name of site to ensure exists
-     * @return [boolean] Always true, else errs
+     * @Given /^a site named "([^"]*)"$/
+     * @Given /^a site named: (.*)$/
+     *
+     * @param string $site Name of site to ensure exists
+     * @return boolean Always true, else errs
+     * @throws \Exception
      */
     public function aSiteNamed($site)
     {
@@ -368,7 +371,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iGetInfoForTheSite($site)
     {
-        $return = json_decode($this->iRun("terminus site:info $site --format=json"));
+        $return = $this->iRun("terminus site:info $site");
         return $return;
     }
 
@@ -669,6 +672,77 @@ class FeatureContext implements Context, SnippetAcceptingContext
     {
         $i_have_this = $this->iShouldGetOneOfTheFollowing($string);
         return $i_have_this;
+    }
+
+    /**
+     * Checks the output for a table with the given headers
+     *
+     * @Then /^I should see a table with the headers$/
+     * @Then /^I should see a table with the headers: ([^"]*)$/
+     * @Then /^I should see a table with the headers: "([^"]*)"$/
+     *
+     * @param string $headers Comma separated row values to match
+     * @return boolean true if $headers exists in output
+     *
+     * @throws \Exception
+     */
+    public function shouldSeeATableWithHeaders($headers)
+    {
+        $table_headers = explode(',', $headers);
+        foreach ($table_headers as $column) {
+            if (!$this->checkResult(trim((string)$column), $this->output)) {
+                throw new \Exception("Expected table headers to include: '{$column}' in table:\n{$this->output}\n");
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the output for a table with the given row values
+     *
+     * @Then /^I should see a table with rows like:$/
+     * @Then /^I should see a table with rows like"([^"]*)"$/
+     * @Then /^I should see a table with rows like: "([^"]*)"$/
+     *
+     * @param $rows string newline separated row values to match
+     * @return boolean true if all of the rows are present in the output
+     * @throws \Exception
+     */
+    public function shouldSeeATableWithRows($rows)
+    {
+        $lines = explode("\n", $rows);
+        foreach ($lines as $line) {
+            if (!$this->checkResult(trim((string)$line), $this->output)) {
+                throw new \Exception("Expected the row '{$line}' in table:\n{$this->output}\n");
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the output for a type of message. Message to match is optional.
+     *
+     * @Then /^I should see a[n]? (notice|warning|error) message$/
+     * @Then /^I should see a[n]? (notice|warning|error) message: (.*)$/
+     *
+     * @param $type string One of the standard logging levels
+     * @param $message string Optional message to match in the output
+     * @return bool True if message is the correct type and exists in output if given
+     * @throws \Exception
+     */
+    public function shouldSeeATypeOfMessage($type, $message = null)
+    {
+        $type_marker = "[$type]";
+        if (strpos($this->output, $type_marker) === false) {
+            throw new \Exception("Expected $type_marker in message: $this->output");
+        }
+
+        if (!empty($message) and strpos($this->output, $message) === false) {
+            throw new \Exception("Expected '$message' in message: $this->output");
+        }
+        return true;
     }
 
     /**

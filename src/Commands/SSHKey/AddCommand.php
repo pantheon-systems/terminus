@@ -7,7 +7,6 @@
 
 namespace Pantheon\Terminus\Commands\SSHKey;
 
-
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 class AddCommand extends TerminusCommand

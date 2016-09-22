@@ -32,5 +32,4 @@ class DeleteCommand extends TerminusCommand
         $machine_token->delete();
         $this->log()->notice('Deleted {token}!', ['token' => $name]);
     }
-
 }

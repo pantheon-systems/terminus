@@ -14,7 +14,11 @@ use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 use Terminus\Models\Auth;
 
-abstract class TerminusCommand implements IOAwareInterface, LoggerAwareInterface, ConfigAwareInterface, SessionAwareInterface
+abstract class TerminusCommand implements
+    IOAwareInterface,
+    LoggerAwareInterface,
+    ConfigAwareInterface,
+    SessionAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
