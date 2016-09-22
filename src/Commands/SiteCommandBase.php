@@ -1,12 +1,6 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\SiteCommandBase
- */
-
 
 namespace Pantheon\Terminus\Commands;
-
 
 use Terminus\Collections\Sites;
 
@@ -20,7 +14,7 @@ abstract class SiteCommandBase extends TerminusCommand
     /**
      * @param \Terminus\Collections\Sites $sites The sites collection
      */
-    function setSites(Sites $sites)
+    public function setSites(Sites $sites)
     {
         $this->sites = $sites;
     }
@@ -28,7 +22,7 @@ abstract class SiteCommandBase extends TerminusCommand
     /**
      * @return \Terminus\Collections\Sites
      */
-    function sites()
+    protected function sites()
     {
         // @TODO: This could be injectable using the container
         if (empty($this->sites)) {
@@ -45,7 +39,7 @@ abstract class SiteCommandBase extends TerminusCommand
      * @return \Terminus\Collections\Site
      * @throws \Terminus\Exceptions\TerminusException
      */
-    function getSite($site_id)
+    protected function getSite($site_id)
     {
         return $this->sites()->get($site_id);
     }

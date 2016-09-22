@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-
 use Pantheon\Terminus\Session\Session;
 use Psr\Log\NullLogger;
 use Terminus\Collections\Sites;

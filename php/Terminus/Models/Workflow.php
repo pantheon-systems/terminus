@@ -254,8 +254,7 @@ class Workflow extends TerminusModel {
       $final_task = $this->get('final_task');
       if (!empty($final_task) && !empty($final_task->reason)) {
         $message = $final_task->reason;
-      }
-      else if (!empty($final_task) && !empty($final_task->messages)) {
+      } else if (!empty($final_task) && !empty($final_task->messages)) {
         foreach ($final_task->messages as $data => $message) {
           if (!is_string($message->message)) {
             $message = print_r($message->message, true);

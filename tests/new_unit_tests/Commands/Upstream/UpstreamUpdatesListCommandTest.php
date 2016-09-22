@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands;
-
 
 use Pantheon\Terminus\Commands\Upstream\UpdatesListCommand;
 
@@ -32,8 +30,10 @@ class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('warning'),
-                $this->equalTo('There are no available updates for this site.'));
+            ->with(
+                $this->equalTo('warning'),
+                $this->equalTo('There are no available updates for this site.')
+            );
 
 
         $out = $this->command->listUpstreamUpdates('123');
@@ -59,7 +59,8 @@ class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
                     "parents" => [
                         "45be60a4e82bc42b34bde2b6f02f4d2885a05eed"
                     ],
-                    "message" => "Update to Drupal 7.44. For more information, see https://www.drupal.org/project/drupal/releases/7.44.",
+                    "message" => "Update to Drupal 7.44. For more information, see " .
+                        "https://www.drupal.org/project/drupal/releases/7.44.",
                     "email" => "bot@getpantheon.com",
                 ],
                 "2f1c945d01cd03250e2b6668ad77bf24f54a5a56" => (object)[
@@ -71,7 +72,8 @@ class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
                     "parents" => [
                         "45be60a4e82bc42b34bde2b6f02f4d2885a05eed"
                     ],
-                    "message" => "Update to Drupal 7.50. For more information, see https://www.drupal.org/project/drupal/releases/7.50",
+                    "message" => "Update to Drupal 7.50. For more information, see " .
+                        "https://www.drupal.org/project/drupal/releases/7.50",
                     "email" => "bot@getpantheon.com",
                 ],
             ],
@@ -85,13 +87,15 @@ class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
             [
                 'hash' => "1bc423f65b3cc527b77d91da5c95eb240d9484f0",
                 'datetime' => "2016-06-16T04:21:14",
-                'message' => "Update to Drupal 7.44. For more information, see https://www.drupal.org/project/drupal/releases/7.44.",
+                'message' => "Update to Drupal 7.44. For more information, see " .
+                    "https://www.drupal.org/project/drupal/releases/7.44.",
                 'author' => "Pantheon Automation",
             ],
             [
                 'hash' => "2f1c945d01cd03250e2b6668ad77bf24f54a5a56",
                 'datetime' => "2016-07-07T20:24:52",
-                'message' => "Update to Drupal 7.50. For more information, see https://www.drupal.org/project/drupal/releases/7.50",
+                'message' => "Update to Drupal 7.50. For more information, see " .
+                    "https://www.drupal.org/project/drupal/releases/7.50",
                 'author' => "Pantheon Automation",
             ],
         ];

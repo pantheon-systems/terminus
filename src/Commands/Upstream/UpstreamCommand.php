@@ -1,12 +1,6 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\Upstream\UpdatesCommand
- */
-
 
 namespace Pantheon\Terminus\Commands\Upstream;
-
 
 use Pantheon\Terminus\Commands\SiteCommandBase;
 use Terminus\Exceptions\TerminusException;

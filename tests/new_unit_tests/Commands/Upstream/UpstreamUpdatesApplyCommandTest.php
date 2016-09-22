@@ -1,12 +1,6 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\UnitTests\Commands\UpstreamUpdatesApplyCommand
- */
-
 
 namespace Pantheon\Terminus\UnitTests\Commands;
-
 
 use Pantheon\Terminus\Commands\Upstream\UpdatesApplyCommand;
 use Terminus\Collections\Environments;
@@ -51,8 +45,10 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('warning'),
-                $this->equalTo('There are no available updates for this site.'));
+            ->with(
+                $this->equalTo('warning'),
+                $this->equalTo('There are no available updates for this site.')
+            );
 
         $this->environment->expects($this->never())
             ->method('applyUpstreamUpdates');
@@ -75,7 +71,8 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
                     "parents" => [
                         "45be60a4e82bc42b34bde2b6f02f4d2885a05eed"
                     ],
-                    "message" => "Update to Drupal 7.44. For more information, see https://www.drupal.org/project/drupal/releases/7.44.",
+                    "message" => "Update to Drupal 7.44. For more information, see " .
+                        "https://www.drupal.org/project/drupal/releases/7.44.",
                     "email" => "bot@getpantheon.com",
                 ],
                 "2f1c945d01cd03250e2b6668ad77bf24f54a5a56" => (object)[
@@ -87,7 +84,8 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
                     "parents" => [
                         "45be60a4e82bc42b34bde2b6f02f4d2885a05eed"
                     ],
-                    "message" => "Update to Drupal 7.50. For more information, see https://www.drupal.org/project/drupal/releases/7.50",
+                    "message" => "Update to Drupal 7.50. For more information, see " .
+                        "https://www.drupal.org/project/drupal/releases/7.50",
                     "email" => "bot@getpantheon.com",
                 ],
             ],
