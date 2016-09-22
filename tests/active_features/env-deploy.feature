@@ -22,7 +22,7 @@ Feature: Site Deployment
     When I run "terminus env:deploy test --site=[[test_site_name]] --sync-content --note='Deploy test'"
     Then I should get: "There is nothing to deploy."
 
-  @vcr site_init-env
+  @vcr env-deploy
   Scenario: Initializing test when it has not been previously initialized
     When I run "terminus env:deploy test --site=[[test_site_name]] --sync-content --note='First deploy to live'"
     Then I should get "."
@@ -31,4 +31,3 @@ Feature: Site Deployment
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
     """
-    
