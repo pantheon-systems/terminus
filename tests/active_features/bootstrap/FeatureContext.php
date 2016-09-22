@@ -32,9 +32,10 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
         $this->parameters      = $parameters;
         $this->start_time      = time();
-        $this->cache_file_name = $_SERVER['HOME'] . '/.terminus/cache/session';
-        $this->cache_token_dir = $_SERVER['HOME'] . '/.terminus/cache/tokens';
         $this->connection_info = ['host' => $parameters['host'], 'machine_token' => $parameters['machine_token'],];
+
+        $this->cache_dir = $parameters['cache_dir'];
+        $this->cache_token_dir = $this->cache_dir . "/tokens";
     }
 
     /**
@@ -651,6 +652,10 @@ class FeatureContext implements Context, SnippetAcceptingContext
         if (!empty($mode = $this->parameters['vcr_mode'])) {
             $command = "TERMINUS_VCR_MODE=$mode $command";
         }
+
+        // Pass the cache directory to the command so that tests don't poison the user's cache.
+        $command = "TERMINUS_CACHE_DIR=$this->cache_dir $command";
+
         $command = preg_replace($regex, $terminus_cmd, $command);
 
         ob_start();
