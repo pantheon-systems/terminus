@@ -3,17 +3,17 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Collections\Sites;
 
-class LookupCommand extends TerminusCommand implements SiteAwareInterface
+/**
+ * Class LookupCommand
+ * @package Pantheon\Terminus\Commands\Site
+ */
+class LookupCommand extends SiteCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Looks up a site name
+     *
+     * @authorized
      *
      * @command site:lookup
      *

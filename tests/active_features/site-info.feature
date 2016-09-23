@@ -9,7 +9,7 @@ Feature: View site information
 
   @vcr site_info
   Scenario: Site Info
-    When I run "terminus site:info --site=[[test_site_name]]"
+    When I run "terminus site:info [[test_site_name]]"
     Then I should get:
     """
     Service Level
@@ -17,5 +17,5 @@ Feature: View site information
 
   @vcr site_owner
   Scenario: Showing the site owner
-    When I run "terminus site:info --site=[[test_site_name]] --field=owner"
-    Then I should get a valid UUID
+    When I run "terminus site:info [[test_site_name]] --field=id"
+    Then I should get: "11111111-1111-1111-1111-111111111111"
