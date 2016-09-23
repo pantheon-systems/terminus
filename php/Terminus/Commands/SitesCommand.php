@@ -199,7 +199,7 @@ class SitesCommand extends TerminusCommand {
     $rows = [];
     foreach ($sites as $site) {
       $memberships = [];
-      foreach ($site->memberships as $membership) {
+      foreach ($site->user_memberships as $membership) {
         if (property_exists($membership, 'user')) {
           $memberships[] = "{$membership->user->id}: Team";
         } elseif (property_exists($membership, 'organization')) {
