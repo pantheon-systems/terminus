@@ -9,7 +9,7 @@ Feature: Site Deployment
 
   @vcr site_deploy
   Scenario: Deploy dev to test
-    When I run "terminus env:deploy test --site=[[test_site_name]] --sync-content --note='Deploy test'"
+    When I run "terminus env:deploy [[test_site_name]].test 'Deploy log note' --sync-content"
     Then I should get "."
     And I should get "."
     Then I should get:
@@ -19,12 +19,12 @@ Feature: Site Deployment
 
   @vcr site_deploy_no_changes
   Scenario: Failing to deploy dev to test because there are no changes to deploy
-    When I run "terminus env:deploy test --site=[[test_site_name]] --sync-content --note='Deploy test'"
+    When I run "terminus env:deploy [[test_site_name]].test 'Deploy log note' --sync-content"
     Then I should get: "There is nothing to deploy."
 
   @vcr site_init-env
   Scenario: Initializing test when it has not been previously initialized
-    When I run "terminus env:deploy test --site=[[test_site_name]] --sync-content --note='First deploy to live'"
+    When I run "terminus env:deploy [[test_site_name]].test 'First deploy' --sync-content"
     Then I should get "."
     And I should get "."
     Then I should get:
