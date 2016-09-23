@@ -12,17 +12,18 @@ namespace Terminus\Outputters;
  * Class Outputter
  * @package Terminus\Outputters
  */
-class Outputter implements OutputterInterface {
+class Outputter implements OutputterInterface
+{
 
   /**
    * @var OutputFormatterInterface
    */
-  protected $formatter;
+    protected $formatter;
 
   /**
    * @var OutputWriterInterface
    */
-  protected $writer;
+    protected $writer;
 
   /**
    * Object constructor. Sets writer and formatter properties.
@@ -30,31 +31,33 @@ class Outputter implements OutputterInterface {
    * @param OutputWriterInterface    $writer    Writer object to set
    * @param OutputFormatterInterface $formatter Formatter object to set
    */
-  public function __construct(
-    OutputWriterInterface $writer,
-    OutputFormatterInterface $formatter
-  ) {
-    $this->setFormatter($formatter);
-    $this->setWriter($writer);
-  }
+    public function __construct(
+        OutputWriterInterface $writer,
+        OutputFormatterInterface $formatter
+    ) {
+        $this->setFormatter($formatter);
+        $this->setWriter($writer);
+    }
 
   /**
    * Retrieves the set formatter object
    *
    * @return OutputFormatterInterface
    */
-  public function getFormatter() {
-    return $this->formatter;
-  }
+    public function getFormatter()
+    {
+        return $this->formatter;
+    }
 
   /**
    * Retrieves the set writer object
    *
    * @return OutputWriterInterface
    */
-  public function getWriter() {
-    return $this->writer;
-  }
+    public function getWriter()
+    {
+        return $this->writer;
+    }
 
   /**
    * Display a message in the CLI and end with a newline
@@ -63,9 +66,10 @@ class Outputter implements OutputterInterface {
    * @param string $message Message to output before the new line
    * @return void
    */
-  public function line($message = '') {
-    $this->getWriter()->write($message . PHP_EOL);
-  }
+    public function line($message = '')
+    {
+        $this->getWriter()->write($message . PHP_EOL);
+    }
 
   /**
    * Outputs any variable type as a raw dump
@@ -73,9 +77,10 @@ class Outputter implements OutputterInterface {
    * @param object|array $object Item to dump information on
    * @return void
    */
-  public function outputDump($object) {
-    $this->getWriter()->write($this->getFormatter()->formatDump($object));
-  }
+    public function outputDump($object)
+    {
+        $this->getWriter()->write($this->getFormatter()->formatDump($object));
+    }
 
   /**
    * Formats a single record or object
@@ -85,11 +90,12 @@ class Outputter implements OutputterInterface {
    *   the record to human labels
    * @return void
    */
-  public function outputRecord($record, array $human_labels = array()) {
-    $this->getWriter()->write(
-      $this->getFormatter()->formatRecord($record, $human_labels)
-    );
-  }
+    public function outputRecord($record, array $human_labels = array())
+    {
+        $this->getWriter()->write(
+            $this->getFormatter()->formatRecord($record, $human_labels)
+        );
+    }
 
   /**
    * Formats a list of records of the same type
@@ -98,11 +104,12 @@ class Outputter implements OutputterInterface {
    * @param array $human_labels An array that maps record keys to human names
    * @return void
    */
-  public function outputRecordList(array $records, array $human_labels = array()) {
-    $this->getWriter()->write(
-      $this->getFormatter()->formatRecordList($records, $human_labels)
-    );
-  }
+    public function outputRecordList(array $records, array $human_labels = array())
+    {
+        $this->getWriter()->write(
+            $this->getFormatter()->formatRecordList($records, $human_labels)
+        );
+    }
 
   /**
    * Formats a single scalar value with an optional human label
@@ -111,11 +118,12 @@ class Outputter implements OutputterInterface {
    * @param string $human_label The human readable label for the value
    * @return void
    */
-  public function outputValue($value, $human_label = '') {
-    $this->getWriter()->write(
-      $this->getFormatter()->formatValue($value, $human_label)
-    );
-  }
+    public function outputValue($value, $human_label = '')
+    {
+        $this->getWriter()->write(
+            $this->getFormatter()->formatValue($value, $human_label)
+        );
+    }
 
   /**
    * Formats a list of scalar values
@@ -125,11 +133,12 @@ class Outputter implements OutputterInterface {
    *   value needs a separate label, then formatRecord should be used.
    * @return void
    */
-  public function outputValueList(array $values, $human_label = '') {
-    $this->getWriter()->write(
-      $this->getFormatter()->formatRecord($values, [$human_label])
-    );
-  }
+    public function outputValueList(array $values, $human_label = '')
+    {
+        $this->getWriter()->write(
+            $this->getFormatter()->formatRecord($values, [$human_label])
+        );
+    }
 
   /**
    * Sets the formatter which converts the output to a useful string
@@ -137,9 +146,10 @@ class Outputter implements OutputterInterface {
    * @param OutputFormatterInterface $formatter Formatter selected for use
    * @return void
    */
-  public function setFormatter(OutputFormatterInterface $formatter) {
-    $this->formatter = $formatter;
-  }
+    public function setFormatter(OutputFormatterInterface $formatter)
+    {
+        $this->formatter = $formatter;
+    }
 
   /**
    * Sets the writer which sends the output to its final destination
@@ -147,8 +157,8 @@ class Outputter implements OutputterInterface {
    * @param OutputWriterInterface $writer Writer selected for use
    * @return void
    */
-  public function setWriter(OutputWriterInterface $writer) {
-    $this->writer = $writer;
-  }
-
+    public function setWriter(OutputWriterInterface $writer)
+    {
+        $this->writer = $writer;
+    }
 }

@@ -2,5 +2,6 @@
 
 namespace Terminus\Models;
 
-class Commit extends TerminusModel {
+class Commit extends TerminusModel
+{
 }

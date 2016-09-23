@@ -5,24 +5,25 @@ namespace Terminus\Commands;
 /**
  * @command drush
  */
-class DrushCommand extends CommandWithSSH {
+class DrushCommand extends CommandWithSSH
+{
   /**
    * {@inheritdoc}
    */
-  protected $client = 'Drush';
+    protected $client = 'Drush';
 
   /**
    * {@inheritdoc}
    */
-  protected $command = 'drush';
+    protected $command = 'drush';
 
   /**
    * {@inheritdoc}
    */
-  protected $unavailable_commands = [
+    protected $unavailable_commands = [
     'sql-connect' => 'site connection-info --field=mysql_command',
     'sql-sync'    => '',
-  ];
+    ];
 
   /**
    * Invoke `drush` commands on a Pantheon development site
@@ -37,13 +38,13 @@ class DrushCommand extends CommandWithSSH {
    * : Your Pantheon environment. Default: dev
    *
    */
-  public function __invoke($args, $assoc_args) {
-    $elements = $this->getElements($args, $assoc_args);
-    if ($this->log()->getOptions('logFormat') != 'normal') {
-      $elements['command']   .= ' --pipe';
+    public function __invoke($args, $assoc_args)
+    {
+        $elements = $this->getElements($args, $assoc_args);
+        if ($this->log()->getOptions('logFormat') != 'normal') {
+            $elements['command']   .= ' --pipe';
+        }
+        $result = $this->sendCommand($elements);
+        $this->output()->outputDump($result);
     }
-    $result = $this->sendCommand($elements);
-    $this->output()->outputDump($result);
-  }
-
 }

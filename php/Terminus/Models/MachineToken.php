@@ -4,7 +4,8 @@ namespace Terminus\Models;
 
 use Terminus\Exceptions\TerminusException;
 
-class MachineToken extends TerminusModel {
+class MachineToken extends TerminusModel
+{
 
   /**
    * Object constructor
@@ -12,24 +13,25 @@ class MachineToken extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes, array $options = []) {
-    parent::__construct($attributes, $options);
-    $this->user = $options['collection']->user;
-  }
+    public function __construct($attributes, array $options = [])
+    {
+        parent::__construct($attributes, $options);
+        $this->user = $options['collection']->user;
+    }
 
   /**
    * Deletes machine token
    * @return void
    * @throws \Terminus\Exceptions\TerminusException
    */
-  public function delete() {
-    $response = $this->request->request(
-      "users/{$this->user->id}/machine_tokens/{$this->id}",
-      ['method' => 'delete',]
-    );
-    if ($response['status_code'] !== 200) {
-      throw new TerminusException('There was an problem deleting the machine token.');
+    public function delete()
+    {
+        $response = $this->request->request(
+            "users/{$this->user->id}/machine_tokens/{$this->id}",
+            ['method' => 'delete',]
+        );
+        if ($response['status_code'] !== 200) {
+            throw new TerminusException('There was an problem deleting the machine token.');
+        }
     }
-  }
-
 }

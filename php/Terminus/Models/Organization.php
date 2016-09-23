@@ -6,23 +6,24 @@ use Terminus\Collections\OrganizationSiteMemberships;
 use Terminus\Collections\OrganizationUserMemberships;
 use Terminus\Collections\Workflows;
 
-class Organization extends TerminusModel {
+class Organization extends TerminusModel
+{
   /**
    * @var OrganizationSiteMemberships
    */
-  public $site_memberships;
+    public $site_memberships;
   /**
    * @var OrganizationUserMemberships
    */
-  public $user_memberships;
+    public $user_memberships;
   /**
    * @var Workflows
    */
-  public $workflows;
+    public $workflows;
   /**
    * @var array
    */
-  private $features;
+    private $features;
 
   /**
    * Object constructor
@@ -30,13 +31,14 @@ class Organization extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes = null, array $options = []) {
-    parent::__construct($attributes, $options);
-    $params                 = ['organization' => $this,];
-    $this->site_memberships = new OrganizationSiteMemberships($params);
-    $this->user_memberships = new OrganizationUserMemberships($params);
-    $this->workflows        = new Workflows($params);
-  }
+    public function __construct($attributes = null, array $options = [])
+    {
+        parent::__construct($attributes, $options);
+        $params                 = ['organization' => $this,];
+        $this->site_memberships = new OrganizationSiteMemberships($params);
+        $this->user_memberships = new OrganizationUserMemberships($params);
+        $this->workflows        = new Workflows($params);
+    }
 
   /**
    * Returns a specific organization feature value
@@ -44,64 +46,66 @@ class Organization extends TerminusModel {
    * @param string $feature Feature to check
    * @return mixed|null Feature value, or null if not found
    */
-  public function getFeature($feature) {
-    if (!isset($this->features)) {
-      $response       = $this->request->request(
-        sprintf('organizations/%s/features', $this->id)
-      );
-      $this->features = (array)$response['data'];
+    public function getFeature($feature)
+    {
+        if (!isset($this->features)) {
+            $response       = $this->request->request(
+                sprintf('organizations/%s/features', $this->id)
+            );
+            $this->features = (array)$response['data'];
+        }
+        if (isset($this->features[$feature])) {
+            return $this->features[$feature];
+        }
+        return null;
     }
-    if (isset($this->features[$feature])) {
-      return $this->features[$feature];
-    }
-    return null;
-  }
 
   /**
    * Retrieves organization sites
    *
    * @return Site[]
    */
-  public function getSites() {
-    $site_memberships = $this->site_memberships->all();
-    $sites = array_combine(
-      array_map(
-        function($membership) {
-          return $membership->site->id;
-        },
-        $site_memberships
-      ),
-      array_map(
-        function($membership) {
-          return $membership->site;
-        },
-        $site_memberships
-      )
-    );
-    return $sites;
-  }
+    public function getSites()
+    {
+        $site_memberships = $this->site_memberships->all();
+        $sites = array_combine(
+            array_map(
+                function ($membership) {
+                    return $membership->site->id;
+                },
+                $site_memberships
+            ),
+            array_map(
+                function ($membership) {
+                    return $membership->site;
+                },
+                $site_memberships
+            )
+        );
+        return $sites;
+    }
 
   /**
    * Retrieves organization users
    *
    * @return User[]
    */
-  public function getUsers() {
-    $users = array_combine(
-      array_map(
-        function($membership) {
-          return $membership->user->id;
-        },
-        $this->user_memberships->all()
-      ),
-      array_map(
-        function($membership) {
-          return $membership->user;
-        },
-        $this->user_memberships->all()
-      )
-    );
-    return $users;
-  }
-
+    public function getUsers()
+    {
+        $users = array_combine(
+            array_map(
+                function ($membership) {
+                    return $membership->user->id;
+                },
+                $this->user_memberships->all()
+            ),
+            array_map(
+                function ($membership) {
+                    return $membership->user;
+                },
+                $this->user_memberships->all()
+            )
+        );
+        return $users;
+    }
 }
