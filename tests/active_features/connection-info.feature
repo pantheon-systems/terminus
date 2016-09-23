@@ -17,10 +17,64 @@ Feature: Environment Connection Info Command
       Git Command
       MySQL Command
     """
+    And I should not get:
+    """
+      Git URL
+    """
+
+  @vcr site_connection-info
+  Scenario: Show all connection info for a site's environment
+    When I run "terminus connection:info [[test_site_name]].dev --fields='*_url'"
+    Then I should see a table with rows like:
+    """
+      SFTP URL
+      Git URL
+      MySQL URL
+    """
+    And I should not get:
+    """
+      Git Command
+    """
+
+  @vcr site_connection-info
+  Scenario: Show all connection info for a site's environment
+    When I run "terminus connection:info [[test_site_name]].dev --fields='*'"
+    Then I should see a table with rows like:
+    """
+      SFTP Command
+      SFTP Username
+      SFTP Host
+      SFTP Password
+      SFTP URL
+      Git Command
+      Git Username
+      Git Host
+      Git Port
+      Git URL
+      MySQL Command
+      MySQL Username
+      MySQL Host
+      MySQL Password
+      MySQL URL
+      MySQL Port
+      MySQL Database
+    """
 
   @vcr site_connection-info
   Scenario: Show only a specific connection info parameter for a site's environment
     When I run "terminus connection:info [[test_site_name]].dev --fields=git_command"
+    Then I should see a table with rows like:
+    """
+      Git Command
+    """
+    And I should not get:
+    """
+      SFTP Command
+    """
+
+  @vcr site_connection-info
+  Scenario: Show only a specific connection info parameter for a site's environment
+    When I run "terminus connection:info [[test_site_name]].dev --fields='Git Command'"
     Then I should see a table with rows like:
     """
       Git Command
