@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\Commands\Env;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Terminus\Collections\Sites;
 
-
-class DeployCommand extends TerminusCommand {
+class DeployCommand extends TerminusCommand
+{
 
     /**
      * Deploy the dev environment to test or live.
@@ -29,7 +29,8 @@ class DeployCommand extends TerminusCommand {
                                     'sync-content' => false,
                                     'note' => 'Deploy from Terminus',
                                     'cc' => false,
-                                    'updatedb' => false]) {
+                                    'updatedb' => false])
+    {
         $sites = new Sites();
         $site = $sites->get($options['site']);
         $env  = $site->environments->get($env);
