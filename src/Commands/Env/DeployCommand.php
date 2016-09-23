@@ -9,11 +9,20 @@ class DeployCommand extends TerminusCommand
 {
 
     /**
+     * Contructor that supports injection for unit testing.
+     */
+    public function __construct($sites = null)
+    {
+        parent::__construct();
+        $this->sites = $sites ? $sites : new Sites();
+    }
+
+    /**
      * Deploy the dev environment to test or live.
      *
      * @command env:deploy
      *
-     * @param string $env Environment to deploy to
+     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
      *
      * @option string $site Site to deploy from
      * @option string $sync-content If deploying test, copy database and files from Live
@@ -24,16 +33,16 @@ class DeployCommand extends TerminusCommand
      * @usage terminus env:deploy test --site=my-site-1
      *   Deploy from dev to test environment
      */
-    public function deploy($env, $options = [
+    public function deploy($site_env, $options = [
                                     'site' => '',
                                     'sync-content' => false,
                                     'note' => 'Deploy from Terminus',
                                     'cc' => false,
                                     'updatedb' => false])
     {
-        $sites = new Sites();
-        $site = $sites->get($options['site']);
-        $env  = $site->environments->get($env);
+        list($site_name, $env_name) = explode('.', $site_env);
+        $site = $this->sites->get($site_name);
+        $env  = $site->environments->get($env_name);
 
         if (!$env->hasDeployableCode()) {
             $this->log()->info('There is nothing to deploy.');
