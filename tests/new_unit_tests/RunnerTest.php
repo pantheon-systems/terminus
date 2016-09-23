@@ -8,7 +8,7 @@ use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Terminus;
 use Robo\Robo;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -50,7 +50,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         // Configuring the dependency-injection container
         $this->container = new Container();
         $input = new ArgvInput($_SERVER['argv']);
-        $this->output = new ConsoleOutput();
+        $this->output = new NullOutput();
         $roboConfig = new \Robo\Config(); // TODO: make Terminus Config extend \Robo\Config and use $config here
         Robo::configureContainer($this->container, $roboConfig, $input, $this->output, $this->application);
 
