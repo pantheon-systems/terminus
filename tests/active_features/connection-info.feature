@@ -11,46 +11,36 @@ Feature: Environment Connection Info Command
   @vcr site_connection-info
   Scenario: Show all connection info for a site's environment
     When I run "terminus connection:info [[test_site_name]].dev"
-    Then I should see a table with the headers: Parameter, Connection Info
-    And I should see a table with rows like:
+    Then I should see a table with rows like:
     """
-      sftp_command
-      sftp_host
-      sftp_password
-      sftp_url
-      sftp_username
-      git_username
-      git_host
-      git_port
-      git_url
-      git_command
-      mysql_host
-      mysql_username
-      mysql_password
-      mysql_port
-      mysql_database
-      mysql_url
-      mysql_command
-      redis_password
-      redis_host
-      redis_port
-      redis_url
-      redis_command
+      SFTP Command
+      Git Command
+      MySQL Command
     """
 
   @vcr site_connection-info
   Scenario: Show only a specific connection info parameter for a site's environment
-    When I run "terminus connection:info [[test_site_name]].dev git_command"
-    Then I should see a table with the headers: Parameter, Connection Info
-    And I should see a table with rows like:
+    When I run "terminus connection:info [[test_site_name]].dev --fields=git_command"
+    Then I should see a table with rows like:
     """
-      git_command
+      Git Command
+    """
+    And I should not get:
+    """
+      SFTP Command
     """
 
   @vcr site_connection-info
-  Scenario: Specify connection info table headers
-    When I run "terminus connection:info [[test_site_name]].dev --fields=env,param,value"
-    Then I should see a table with the headers: Environment, Parameter, Connection Info
+  Scenario: Show only a specific connection info parameter for a site's environment
+    When I run "terminus connection:info [[test_site_name]].dev --field=git_command"
+    Then I should see a table with rows like:
+    """
+      git clone ssh://codeserver
+    """
+    And I should not get:
+    """
+      Git Command
+    """
 
   @vcr site_connection-info
   Scenario: Show only a specific connection info parameter for a site's environment

@@ -22,27 +22,28 @@ class InfoCommand extends TerminusCommand
      * @command connection:info
      *
      * @field-labels
+     *   sftp_command: SFTP Command
      *   sftp_username: SFTP Username
      *   sftp_host: SFTP Host
      *   sftp_password: SFTP Password
      *   sftp_url: SFTP URL
-     *   sftp_command: SFTP Command
+     *   git_command: Git Command
      *   git_username: Git Username
      *   git_host: Git Host
      *   git_port: Git Port
      *   git_url: Git URL
-     *   git_command: Git Command
-     *   mysql_host: MySQL Host
+     *   mysql_command: MySQL Command
      *   mysql_username: MySQL Username
+     *   mysql_host: MySQL Host
      *   mysql_password: MySQL Password
+     *   mysql_url: MySQL URL
      *   mysql_port: MySQL Port
      *   mysql_database: MySQL Database
-     *   mysql_url: MySQL URL
-     *   mysql_command: MySQL Command
      *   redis_command: Redis Command
-     *   redis_password: Redis Password
      *   redis_port: Redis Port
      *   redis_url: Redis URL
+     *   redis_password: Redis Password
+     * @default-fields *_command
      *
      * @param string $environment Name of the environment to retrieve
      *
