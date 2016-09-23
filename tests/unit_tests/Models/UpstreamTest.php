@@ -4,11 +4,12 @@ namespace Terminus\UnitTests\Models;
 
 use Terminus\Models\Site;
 use Terminus\Models\Upstream;
+use Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Upstream
  */
-class UpstreamTest extends \PHPUnit_Framework_TestCase
+class UpstreamTest extends TerminusTest
 {
 
     /**
@@ -16,7 +17,7 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
      */
     private $site;
 
-  /**
+    /**
      * @inheritdoc
      *
      * @vcr site_upstream-info

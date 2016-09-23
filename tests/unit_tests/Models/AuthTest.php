@@ -3,14 +3,13 @@
 namespace Terminus\UnitTests\Models;
 
 use Terminus\Caches\TokensCache;
-use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Auth;
-use Terminus\Runner;
+use Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Auth
  */
-class AuthTest extends \PHPUnit_Framework_TestCase
+class AuthTest extends TerminusTest
 {
 
   /**
@@ -46,8 +45,12 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('integer', strpos($url, 'machine-token/create'));
     }
 
+    /**
+     * @vcr auth_login
+     */
     public function testLoggedIn()
     {
+        $this->logInWithVCRCredentials();
         $this->assertTrue($this->auth->loggedIn());
     }
 
@@ -56,18 +59,20 @@ class AuthTest extends \PHPUnit_Framework_TestCase
    */
     public function testLogInViaMachineToken()
     {
-        $passed = $this->auth->logInViaMachineToken($this->getBehatCredentials());
+        $creds = $this->getVCRCredentials();
+        $creds['token'] = $creds['machine_token'];
+        $passed = $this->auth->logInViaMachineToken($creds);
         $this->assertTrue($passed);
         $this->setDummyCredentials();
     }
 
   /**
    * @expectedException        \Terminus\Exceptions\TerminusException
-   * @expectedExceptionMessage Login unsuccessful
+   * @expectedExceptionMessage Login unsuccessful for devuser@pantheon.io
    */
     public function testLogInViaUsernameAndPassword()
     {
-        $creds = $this->getBehatCredentials();
+        $creds = $this->getVCRCredentials();
         $this->assertTrue(
             $this->auth->logInViaUsernameAndPassword(
                 $creds['username'],
@@ -83,7 +88,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     {
         $tokens_cache = new TokensCache();
         $tokens_dir   = $tokens_cache->getCacheDir();
-        $creds        = $this->getBehatCredentials();
+        $creds        = $this->getVCRCredentials();
         $file_name    = $tokens_dir . '/' . $creds['username'];
         $this->setOutputDestination($file_name);
         $this->assertTrue($this->auth->tokenExistsForEmail($creds['username']));

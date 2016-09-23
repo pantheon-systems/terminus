@@ -3,11 +3,12 @@
 namespace Terminus\UnitTests\Models;
 
 use Terminus\Collections\Sites;
+use Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Environment
  */
-class EnvironmentTest extends \PHPUnit_Framework_TestCase
+class EnvironmentTest extends TerminusTest
 {
 
   /**
@@ -28,7 +29,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testCacheserverConnectionInfo()
     {
-        logInWithBehatCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
 
@@ -49,7 +50,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         ];
         $this->assertArraySubset($cache_info_expected, $connection_info);
 
-        setDummyCredentials();
+        $this->setDummyCredentials();
     }
 
   /**
@@ -60,7 +61,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testConnectionInfoDev()
     {
-        $this->$this->logInWithVCRCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
 
@@ -189,7 +190,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testDatabaseConnectionInfo()
     {
-        logInWithBehatCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
         $connection_info = $env->databaseConnectionInfo();
@@ -211,7 +212,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         'command' => "mysql -u $user -p$pass -h $host -P $port $database",
         ];
         $this->assertArraySubset($db_info_expected, $connection_info);
-        setDummyCredentials();
+        $this->setDummyCredentials();
     }
 
   /**
@@ -219,12 +220,12 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testGetParentEnvironment()
     {
-        logInWithBehatCredentials();
+        $this->logInWithVCRCredentials();
         $site     = $this->sites->get('behat-tests');
         $test_env = $site->environments->get('test');
         $dev_env  = $test_env->getParentEnvironment();
         $this->assertEquals($dev_env->get('id'), 'dev');
-        setDummyCredentials();
+        $this->setDummyCredentials();
     }
 
   /**
@@ -234,7 +235,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testGitConnectionInfo()
     {
-        logInWithBehatCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
         $connection_info = $env->gitConnectionInfo();
@@ -253,7 +254,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         'command' => "git clone $url {$site->get('name')}",
         ];
         $this->assertArraySubset($git_info_expected, $connection_info);
-        setDummyCredentials();
+        $this->setDummyCredentials();
     }
 
   /**
@@ -287,7 +288,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testSftpConnectionInfo()
     {
-        logInWithBehatCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
         $connection_info = $env->sftpConnectionInfo();
@@ -305,6 +306,6 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         'command' => "sftp -o Port=$port {$env->id}.{$site->id}@$host",
         ];
         $this->assertArraySubset($sftp_info_expected, $connection_info);
-        setDummyCredentials();
+        $this->setDummyCredentials();
     }
 }
