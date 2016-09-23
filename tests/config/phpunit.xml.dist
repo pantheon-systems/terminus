@@ -4,9 +4,7 @@
   >
   <testsuites>
     <testsuite>
-      <file>tests/unit_tests/test-session.php</file>
-      <directory prefix="spec-" suffix=".php">../unit_tests/</directory>
-      <directory prefix="test-" suffix=".php">../unit_tests/</directory>
+      <directory suffix="Test.php">../unit_tests/</directory>
     </testsuite>
   </testsuites>
   <listeners>

@@ -8,15 +8,16 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 use Terminus\Session;
 
-class Auth extends TerminusModel {
+class Auth extends TerminusModel
+{
   /**
    * @var Request
    */
-  protected $request;
+    protected $request;
   /**
    * @var TokensCache
    */
-  private $tokens_cache;
+    private $tokens_cache;
 
   /**
    * Object constructor
@@ -24,52 +25,56 @@ class Auth extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes = null, array $options = []) {
-    $this->tokens_cache = new TokensCache();
-    $this->attributes = $attributes;
-    $this->request = new Request();
-  }
+    public function __construct($attributes = null, array $options = [])
+    {
+        $this->tokens_cache = new TokensCache();
+        $this->attributes = $attributes;
+        $this->request = new Request();
+    }
 
   /**
    * Gets all email addresses for which there are saved machine tokens
    *
    * @return string[]
    */
-  public function getAllSavedTokenEmails() {
-    $emails = $this->tokens_cache->getAllSavedTokenEmails();
-    return $emails;
-  }
+    public function getAllSavedTokenEmails()
+    {
+        $emails = $this->tokens_cache->getAllSavedTokenEmails();
+        return $emails;
+    }
 
   /**
    * Generates the URL string for where to create a machine token
    *
    * @return string
    */
-  public function getMachineTokenCreationUrl() {
-    $config = Config::getAll();
-    $url = vsprintf(
-      '%s://%s/machine-token/create/%s',
-      [$config['dashboard_protocol'], $config['dashboard_host'], gethostname(),]
-    );
-    return $url;
-  }
+    public function getMachineTokenCreationUrl()
+    {
+        $config = Config::getAll();
+        $url = vsprintf(
+            '%s://%s/machine-token/create/%s',
+            [$config['dashboard_protocol'], $config['dashboard_host'], gethostname(),]
+        );
+        return $url;
+    }
 
   /**
    * Checks to see if the current user is logged in
    *
    * @return bool True if the user is logged in
    */
-  public function loggedIn() {
-    $session      = Session::instance()->getData();
-    $is_logged_in = (
-      isset($session->session)
-      && (
+    public function loggedIn()
+    {
+        $session      = Session::instance()->getData();
+        $is_logged_in = (
+        isset($session->session)
+        && (
         (boolean)Config::get('test_mode')
         || ($session->session_expire_time >= time())
-      )
-    );
-    return $is_logged_in;
-  }
+        )
+        );
+        return $is_logged_in;
+    }
 
   /**
    * Execute the login based on a machine token
@@ -80,51 +85,52 @@ class Auth extends TerminusModel {
    * @return bool True if login succeeded
    * @throws TerminusException
    */
-  public function logInViaMachineToken($args) {
-    if (isset($args['token'])) {
-      $token = $args['token'];
-    } elseif (isset($args['email'])) {
-      $token = $this->tokens_cache->findByEmail($args['email'])['token'];
-      if (!$token) {
-        throw new TerminusException(
-          'No machine token for "{email}" found.',
-          compact('email'),
-          1
-        );
-      }
-    }
-    $options = [
-      'form_params' => [
+    public function logInViaMachineToken($args)
+    {
+        if (isset($args['token'])) {
+            $token = $args['token'];
+        } elseif (isset($args['email'])) {
+            $token = $this->tokens_cache->findByEmail($args['email'])['token'];
+            if (!$token) {
+                throw new TerminusException(
+                    'No machine token for "{email}" found.',
+                    compact('email'),
+                    1
+                );
+            }
+        }
+        $options = [
+        'form_params' => [
         'machine_token' => $token,
         'client'        => 'terminus',
-      ],
-      'method' => 'post',
-    ];
+        ],
+        'method' => 'post',
+        ];
 
-    try {
-      $response = $this->request->request(
-        'authorize/machine-token',
-        $options
-      );
-    } catch (\Exception $e) {
-      throw new TerminusException(
-        'The provided machine token is not valid.',
-        [],
-        1
-      );
-    }
+        try {
+            $response = $this->request->request(
+                'authorize/machine-token',
+                $options
+            );
+        } catch (\Exception $e) {
+            throw new TerminusException(
+                'The provided machine token is not valid.',
+                [],
+                1
+            );
+        }
 
-    $this->setInstanceData($response['data']);
-    $user = Session::getUser();
-    $user->fetch();
-    $user_data = $user->serialize();
-    if (isset($args['token'])) {
-      $this->tokens_cache->add(
-        ['email' => $user_data['email'], 'token' => $token,]
-      );
+        $this->setInstanceData($response['data']);
+        $user = Session::getUser();
+        $user->fetch();
+        $user_data = $user->serialize();
+        if (isset($args['token'])) {
+            $this->tokens_cache->add(
+                ['email' => $user_data['email'], 'token' => $token,]
+            );
+        }
+        return true;
     }
-    return true;
-  }
 
   /**
    * Execute the login via email/password
@@ -134,45 +140,49 @@ class Auth extends TerminusModel {
    * @return bool True if login succeeded
    * @throws TerminusException
    */
-  public function logInViaUsernameAndPassword($email, $password) {
-    if (!$this->isValidEmail($email)) {
-      throw new TerminusException(
-        $email . ' {email} is not a valid email address.',
-        compact('email'),
-        1
-      );
-    }
+    public function logInViaUsernameAndPassword($email, $password)
+    {
+        if (!$this->isValidEmail($email)) {
+            throw new TerminusException(
+                $email . ' {email} is not a valid email address.',
+                compact('email'),
+                1
+            );
+        }
 
-    $options = [
-      'form_params' => [
+        $options = [
+        'form_params' => [
         'email'    => $email,
         'password' => $password,
-      ],
-      'method' => 'post'
-    ];
-    try {
-      $response = $this->request->request('authorize', $options);
-      if ($response['status_code'] != '200') {
-        throw new TerminusException();
-      }
-    } catch (\Exception $e) {
-      throw new TerminusException(
-        'Login unsuccessful for {email}', compact('email'), 1
-      );
-    }
+        ],
+        'method' => 'post'
+        ];
+        try {
+            $response = $this->request->request('authorize', $options);
+            if ($response['status_code'] != '200') {
+                throw new TerminusException();
+            }
+        } catch (\Exception $e) {
+            throw new TerminusException(
+                'Login unsuccessful for {email}',
+                compact('email'),
+                1
+            );
+        }
 
-    $this->setInstanceData($response['data']);
-    return true;
-  }
+        $this->setInstanceData($response['data']);
+        return true;
+    }
 
   /**
    * Logs the current user out of their Pantheon session
    *
    * @return void
    */
-  public function logOut() {
-      Session::instance()->destroy();
-  }
+    public function logOut()
+    {
+        Session::instance()->destroy();
+    }
 
   /**
    * Checks to see whether the email has been set with a machine token
@@ -180,10 +190,11 @@ class Auth extends TerminusModel {
    * @param string $email Email address to check for
    * @return bool
    */
-  public function tokenExistsForEmail($email) {
-    $file_exists = $this->tokens_cache->tokenExistsForEmail($email);
-    return $file_exists;
-  }
+    public function tokenExistsForEmail($email)
+    {
+        $file_exists = $this->tokens_cache->tokenExistsForEmail($email);
+        return $file_exists;
+    }
 
   /**
    * Checks whether email is in a valid or not
@@ -191,10 +202,11 @@ class Auth extends TerminusModel {
    * @param string $email String to be evaluated for email address format
    * @return bool True if $email is in email address format
    */
-  private function isValidEmail($email) {
-    $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
-    return $is_email;
-  }
+    private function isValidEmail($email)
+    {
+        $is_email = !is_bool(filter_var($email, FILTER_VALIDATE_EMAIL));
+        return $is_email;
+    }
 
   /**
    * Saves the session data to a cookie
@@ -202,22 +214,22 @@ class Auth extends TerminusModel {
    * @param \stdClass $data Session data to save
    * @return bool Always true
    */
-  private function setInstanceData(\stdClass $data) {
-    if (!isset($data->machine_token)) {
-      $machine_token = (array)Session::instance()->get('machine_token');
-    } else {
-      $machine_token = $data->machine_token;
+    private function setInstanceData(\stdClass $data)
+    {
+        if (!isset($data->machine_token)) {
+            $machine_token = (array)Session::instance()->get('machine_token');
+        } else {
+            $machine_token = $data->machine_token;
+        }
+        $session = [
+        'user_uuid'           => $data->user_id,
+        'session'             => $data->session,
+        'session_expire_time' => $data->expires_at,
+        ];
+        if ($machine_token && is_string($machine_token)) {
+            $session['machine_token'] = $machine_token;
+        }
+        Session::instance()->setData($session);
+        return true;
     }
-    $session = [
-      'user_uuid'           => $data->user_id,
-      'session'             => $data->session,
-      'session_expire_time' => $data->expires_at,
-    ];
-    if ($machine_token && is_string($machine_token)) {
-      $session['machine_token'] = $machine_token;
-    }
-    Session::instance()->setData($session);
-    return true;
-  }
-
 }

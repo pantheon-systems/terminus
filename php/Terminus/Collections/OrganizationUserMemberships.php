@@ -4,30 +4,32 @@ namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
 
-class OrganizationUserMemberships extends TerminusCollection {
+class OrganizationUserMemberships extends TerminusCollection
+{
   /**
    * @var Organization
    */
-  public $organization;
+    public $organization;
   /**
    * @var string
    */
-  protected $collected_class = 'Terminus\Models\OrganizationUserMembership';
+    protected $collected_class = 'Terminus\Models\OrganizationUserMembership';
    /**
     * @var boolean
     */
-  protected $paged = true;
+    protected $paged = true;
 
   /**
    * Instantiates the collection, sets param members as properties
    *
    * @param array $options To be set to $this->key
    */
-  public function __construct(array $options = []) {
-    parent::__construct($options);
-    $this->organization = $options['organization'];
-    $this->url = "organizations/{$this->organization->id}/memberships/users";
-  }
+    public function __construct(array $options = [])
+    {
+        parent::__construct($options);
+        $this->organization = $options['organization'];
+        $this->url = "organizations/{$this->organization->id}/memberships/users";
+    }
 
   /**
    * Adds a user to this organization
@@ -36,13 +38,14 @@ class OrganizationUserMemberships extends TerminusCollection {
    * @param string $role Role to assign to the new member
    * @return Workflow $workflow
    */
-  public function create($uuid, $role) {
-    $workflow = $this->organization->workflows->create(
-      'add_organization_user_membership',
-      ['params' => ['user_email' => $uuid, 'role' => $role,]]
-    );
-    return $workflow;
-  }
+    public function create($uuid, $role)
+    {
+        $workflow = $this->organization->workflows->create(
+            'add_organization_user_membership',
+            ['params' => ['user_email' => $uuid, 'role' => $role,]]
+        );
+        return $workflow;
+    }
 
   /**
    * Retrieves models by either user ID, email address, or full name
@@ -51,22 +54,22 @@ class OrganizationUserMemberships extends TerminusCollection {
    * @return OrganizationUserMembership
    * @throws TerminusException
    */
-  public function get($id) {
-    $models = $this->getMembers();
-    if (isset($models[$id])) {
-      return $models[$id];
+    public function get($id)
+    {
+        $models = $this->getMembers();
+        if (isset($models[$id])) {
+            return $models[$id];
+        }
+        foreach ($models as $model) {
+            $user_data = $model->get('user');
+            if (in_array($id, [$user_data->email, $user_data->profile->full_name])) {
+                return $model;
+            }
+        }
+        throw new TerminusException(
+            'An organization member idenfitied by "{id}" could not be found.',
+            compact('id'),
+            1
+        );
     }
-    foreach ($models as $model) {
-      $user_data = $model->get('user');
-      if (in_array($id, [$user_data->email, $user_data->profile->full_name])) {
-        return $model;
-      }
-    }
-    throw new TerminusException(
-      'An organization member idenfitied by "{id}" could not be found.',
-      compact('id'),
-      1
-    );
-  }
-
 }

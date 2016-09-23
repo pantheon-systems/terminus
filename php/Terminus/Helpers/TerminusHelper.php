@@ -4,12 +4,13 @@ namespace Terminus\Helpers;
 
 use Terminus\Commands\TerminusCommand;
 
-abstract class TerminusHelper {
+abstract class TerminusHelper
+{
 
   /**
    * @var TerminusCommand
    */
-  protected $command;
+    protected $command;
 
   /**
    * TerminusHelper constructor.
@@ -17,8 +18,8 @@ abstract class TerminusHelper {
    * @param array $options Options and dependencies for this helper
    * @return TerminusHelper $this
    */
-  public function __construct(array $options = []) {
-    $this->command = $options['command'];
-  }
-
+    public function __construct(array $options = [])
+    {
+        $this->command = $options['command'];
+    }
 }

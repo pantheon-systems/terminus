@@ -9,9 +9,10 @@ use Terminus\Config;
  *
  * @return bool
  */
-function isTest() {
-  $is_test = (boolean)Config::get('test_mode');
-  return $is_test;
+function isTest()
+{
+    $is_test = (boolean)Config::get('test_mode');
+    return $is_test;
 }
 
 /**
@@ -20,23 +21,24 @@ function isTest() {
  * @param string $test_os The operating system to check
  * @return bool True if OS running Terminus is based on argument passed
  */
-function isOs($test_os = '') {
-  $test_os = strtoupper($test_os);
-  $os = strtoupper(substr(PHP_OS, 0, 3));
-  switch ($test_os) {
-    case 'MAC':
-      $is_os = ($os == 'DAR');
-        break;
-    case 'LINUX':
-      $is_os = ($os == 'LIN');
-        break;
-    case 'WINDOWS':
-      $is_os = ($os == 'WIN');
-        break;
-    default:
-      $is_os = false;
-  }
-  return $is_os;
+function isOs($test_os = '')
+{
+    $test_os = strtoupper($test_os);
+    $os = strtoupper(substr(PHP_OS, 0, 3));
+    switch ($test_os) {
+        case 'MAC':
+            $is_os = ($os == 'DAR');
+            break;
+        case 'LINUX':
+            $is_os = ($os == 'LIN');
+            break;
+        case 'WINDOWS':
+            $is_os = ($os == 'WIN');
+            break;
+        default:
+            $is_os = false;
+    }
+    return $is_os;
 }
 
 /**
@@ -44,8 +46,9 @@ function isOs($test_os = '') {
  *
  * @return bool True if OS running Terminus is Mac
  */
-function isMac() {
-  return isOs('Mac');
+function isMac()
+{
+    return isOs('Mac');
 }
 
 /**
@@ -53,8 +56,9 @@ function isMac() {
  *
  * @return bool True if OS running Terminus is Linux
  */
-function isLinux() {
-  return isOs('Linux');
+function isLinux()
+{
+    return isOs('Linux');
 }
 
 /**
@@ -62,6 +66,7 @@ function isLinux() {
  *
  * @return bool True if OS running Terminus is Windows
  */
-function isWindows() {
-  return isOs('Windows');
+function isWindows()
+{
+    return isOs('Windows');
 }

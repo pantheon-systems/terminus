@@ -10,12 +10,13 @@ use Terminus\Config;
  *
  * @package Terminus\Helpers
  */
-class TemplateHelper extends TerminusHelper {
+class TemplateHelper extends TerminusHelper
+{
 
   /**
    * @var string
    */
-  private $template_root;
+    private $template_root;
 
   /**
    * TemplateHelper constructor.
@@ -23,10 +24,11 @@ class TemplateHelper extends TerminusHelper {
    * @param array $options Options and dependencies for this helper
    * @return TerminusHelper $this
    */
-  public function __construct(array $options = []) {
-    parent::__construct($options);
-    $this->template_root = Config::get('templates_dir');
-  }
+    public function __construct(array $options = [])
+    {
+        parent::__construct($options);
+        $this->template_root = Config::get('templates_dir');
+    }
 
   /**
    * Renders the data using the given options.
@@ -37,11 +39,11 @@ class TemplateHelper extends TerminusHelper {
    *  array  options       Options to pass through for template use
    * @return string The rendered template
    */
-  public function render(array $options = []) {
-    $loader   = new \Twig_Loader_Filesystem($this->template_root);
-    $twig     = new \Twig_Environment($loader);
-    $rendered = $twig->render($options['template_name'], $options);
-    return $rendered;
-  }
-
+    public function render(array $options = [])
+    {
+        $loader   = new \Twig_Loader_Filesystem($this->template_root);
+        $twig     = new \Twig_Environment($loader);
+        $rendered = $twig->render($options['template_name'], $options);
+        return $rendered;
+    }
 }

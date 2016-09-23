@@ -10,13 +10,14 @@ namespace Terminus\Exceptions;
  * Class TerminusException
  * @package Terminus\Exceptions
  */
-class TerminusException extends \Exception {
+class TerminusException extends \Exception
+{
   /**
    * @var array
    */
-  private $replacements;
+    private $replacements;
 
-  private $raw_message;
+    private $raw_message;
 
   /**
    * Object constructor. Sets context array as replacements property
@@ -25,34 +26,36 @@ class TerminusException extends \Exception {
    * @param array  $replacements Context array to interpolate into message
    * @param int    $code         Exit code
    */
-  public function __construct(
-    $message = null,
-    $replacements = array(),
-    $code = 0
-  ) {
-    $this->replacements = $replacements;
-    $this->raw_message = $message;
+    public function __construct(
+        $message = null,
+        $replacements = array(),
+        $code = 0
+    ) {
+        $this->replacements = $replacements;
+        $this->raw_message = $message;
 
-    parent::__construct($this->interpolateString($message, $replacements), $code);
-  }
+        parent::__construct($this->interpolateString($message, $replacements), $code);
+    }
 
   /**
    * Returns the replacements context array
    *
    * @return array $this->replacements The replacement variables.
    */
-  public function getReplacements() {
-    return $this->replacements;
-  }
+    public function getReplacements()
+    {
+        return $this->replacements;
+    }
 
   /**
    * Returns the replacements context array
    *
    * @return string $this->replacements
    */
-  public function getRawMessage() {
-    return $this->raw_message;
-  }
+    public function getRawMessage()
+    {
+        return $this->raw_message;
+    }
 
   /**
    * Replace the variables into the message string.
@@ -61,12 +64,12 @@ class TerminusException extends \Exception {
    * @param array  $replacements The values to replace into the message
    * @return string
    */
-  protected function interpolateString($message, $replacements) {
-    $tr = [];
-    foreach ($replacements as $key => $val) {
-      $tr['{' . $key . '}'] = $val;
+    protected function interpolateString($message, $replacements)
+    {
+        $tr = [];
+        foreach ($replacements as $key => $val) {
+            $tr['{' . $key . '}'] = $val;
+        }
+        return strtr($message, $tr);
     }
-    return strtr($message, $tr);
-  }
-
 }

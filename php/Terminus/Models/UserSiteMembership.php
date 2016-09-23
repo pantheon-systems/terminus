@@ -2,15 +2,16 @@
 
 namespace Terminus\Models;
 
-class UserSiteMembership extends TerminusModel {
+class UserSiteMembership extends TerminusModel
+{
   /**
    * @var Site
    */
-  public $site;
+    public $site;
   /**
    * @var User
    */
-  public $user;
+    public $user;
 
   /**
    * Object constructor
@@ -18,13 +19,13 @@ class UserSiteMembership extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes = null, array $options = []) {
-    parent::__construct($attributes, $options);
-    $this->site = new Site(
-      $attributes->site,
-      ['id' => $attributes->site->id, 'memberships' => [$this,],]
-    );
-    $this->user = $options['collection']->user;
-  }
-
+    public function __construct($attributes = null, array $options = [])
+    {
+        parent::__construct($attributes, $options);
+        $this->site = new Site(
+            $attributes->site,
+            ['id' => $attributes->site->id, 'memberships' => [$this,],]
+        );
+        $this->user = $options['collection']->user;
+    }
 }
