@@ -2,6 +2,8 @@
 
 namespace Terminus\Collections;
 
+use Terminus\Exceptions\TerminusException;
+
 class SshKeys extends TerminusCollection {
   /**
    * @var User
@@ -41,7 +43,8 @@ class SshKeys extends TerminusCollection {
     $response = $this->request->request(
       'users/' . $this->user->id . '/keys',
       [
-        'form_params' => file_get_contents($key_file),
+        // Trim the newline from the end of the file or creates invalid JSON.
+        'form_params' => rtrim(file_get_contents($key_file)),
         'method'      => 'post',
       ]
     );
