@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Terminus\Exceptions\TerminusException;
 
@@ -1002,6 +1003,14 @@ class FeatureContext implements Context, SnippetAcceptingContext
                 break;
         }
         exec("$cmd $url");
+    }
+
+    /**
+     * @When /^This step is implemented I will test: (.*)$/
+     */
+    public function thisStepIsImplementedIWillTestInvalidConnectionModes($pending)
+    {
+        throw new PendingException("Testing $pending is pending.");
     }
 
     /**

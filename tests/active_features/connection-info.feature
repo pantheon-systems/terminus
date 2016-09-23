@@ -9,13 +9,14 @@ Feature: Environment Connection Info Command
     And a site named: [[test_site_name]]
 
   @vcr site_connection-info
-  Scenario: Show all connection info for a site's environment
+  Scenario: Show the default connection info for a site environment
     When I run "terminus connection:info [[test_site_name]].dev"
     Then I should see a table with rows like:
     """
       SFTP Command
       Git Command
       MySQL Command
+      Redis Command
     """
     And I should not get:
     """
@@ -23,7 +24,7 @@ Feature: Environment Connection Info Command
     """
 
   @vcr site_connection-info
-  Scenario: Show all connection info for a site's environment
+  Scenario: Show connection info for a site environment using a qualified field glob
     When I run "terminus connection:info [[test_site_name]].dev --fields='*_url'"
     Then I should see a table with rows like:
     """
@@ -37,7 +38,7 @@ Feature: Environment Connection Info Command
     """
 
   @vcr site_connection-info
-  Scenario: Show all connection info for a site's environment
+  Scenario: Show all connection info for a site environment using a field glob
     When I run "terminus connection:info [[test_site_name]].dev --fields='*'"
     Then I should see a table with rows like:
     """
@@ -58,10 +59,14 @@ Feature: Environment Connection Info Command
       MySQL URL
       MySQL Port
       MySQL Database
+      Redis Command
+      Redis Port
+      Redis URL
+      Redis Password
     """
 
   @vcr site_connection-info
-  Scenario: Show only a specific connection info parameter for a site's environment
+  Scenario: Show only a specific connection info parameter for a site environment
     When I run "terminus connection:info [[test_site_name]].dev --fields=git_command"
     Then I should see a table with rows like:
     """
@@ -73,7 +78,7 @@ Feature: Environment Connection Info Command
     """
 
   @vcr site_connection-info
-  Scenario: Show only a specific connection info parameter for a site's environment
+  Scenario: Show only a specific connection info parameter using a field label
     When I run "terminus connection:info [[test_site_name]].dev --fields='Git Command'"
     Then I should see a table with rows like:
     """
@@ -85,7 +90,7 @@ Feature: Environment Connection Info Command
     """
 
   @vcr site_connection-info
-  Scenario: Show only a specific connection info parameter for a site's environment
+  Scenario: Show only a specific connection info parameter using a single field key
     When I run "terminus connection:info [[test_site_name]].dev --field=git_command"
     Then I should see a table with rows like:
     """
@@ -97,6 +102,6 @@ Feature: Environment Connection Info Command
     """
 
   @vcr site_connection-info
-  Scenario: Show only a specific connection info parameter for a site's environment
+  Scenario: Show an error if the environment is not correctly specified
     When I run "terminus connection:info [[test_site_name]]"
     Then I should see an error message: The environment argument must be given as <site_name>.<environment>
