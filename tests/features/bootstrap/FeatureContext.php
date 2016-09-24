@@ -51,8 +51,8 @@ class FeatureContext implements Context
                 $this->_replacePlaceholders($instrument_uuid)
             );
             $this->iShouldGet($uuid);
-        } catch (Exception $e) {
-            throw new Exception(
+        } catch (\Exception $e) {
+            throw new \Exception(
                 "Your user does not have access to instrument $instrument_uuid."
             );
         }
@@ -219,7 +219,7 @@ class FeatureContext implements Context
     {
         $url = $this->_replacePlaceholders($url);
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
-            throw new Exception("$url URL is not valid.");
+            throw new \Exception("$url URL is not valid.");
         }
     }
 
@@ -427,7 +427,7 @@ class FeatureContext implements Context
         $sites       = json_decode($this->iRun('terminus sites list --format=json'));
         $has_the_min = ($min <= count($sites));
         if (!$has_the_min) {
-            throw new Exception(count($sites) . ' sites found.');
+            throw new \Exception(count($sites) . ' sites found.');
         }
         return $has_the_min;
     }
@@ -446,7 +446,7 @@ class FeatureContext implements Context
         $sites      = json_decode($this->iRun('terminus sites list --format=json'));
         $has_amount = ($num === count($sites));
         if (!$has_amount) {
-            throw new Exception(count($sites) . ' sites found.');
+            throw new \Exception(count($sites) . ' sites found.');
         }
         return $has_amount;
     }
@@ -703,7 +703,7 @@ class FeatureContext implements Context
         if (empty($matches)
         && ($this->_output != '11111111-1111-1111-1111-111111111111')
         ) {
-            throw new Exception($this->_output . ' is not a valid UUID.');
+            throw new \Exception($this->_output . ' is not a valid UUID.');
         }
         return true;
     }
@@ -726,7 +726,7 @@ class FeatureContext implements Context
                 return true;
             }
         }
-        throw new Exception("Actual output:\n" . $this->_output);
+        throw new \Exception("Actual output:\n" . $this->_output);
     }
 
   /**
@@ -742,10 +742,10 @@ class FeatureContext implements Context
     {
         try {
             $this->iShouldGetOneOfTheFollowing($list_string);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return true;
         }
-        throw new Exception("Actual output:\n" . $this->_output);
+        throw new \Exception("Actual output:\n" . $this->_output);
     }
 
   /**
@@ -763,7 +763,7 @@ class FeatureContext implements Context
                 return true;
             }
         }
-        throw new Exception('No new backups were created.' . PHP_EOL);
+        throw new \Exception('No new backups were created.' . PHP_EOL);
     }
 
   /**
@@ -778,7 +778,7 @@ class FeatureContext implements Context
         preg_match("/.*(\[{.*}\]).*/", str_replace("\n", '', $this->_output), $matches);
         $records = json_decode($matches[1]);
         if ((integer)$number != count($records)) {
-            throw new Exception("Wanted $number records, got " . count($records) . '.');
+            throw new \Exception("Wanted $number records, got " . count($records) . '.');
         }
         return true;
     }
@@ -794,7 +794,7 @@ class FeatureContext implements Context
     public function iShouldNotGet($string)
     {
         if ($this->_checkResult((string)$string, $this->_output)) {
-            throw new Exception("Actual output:\n" . $this->_output);
+            throw new \Exception("Actual output:\n" . $this->_output);
         }
         return true;
     }
@@ -874,9 +874,9 @@ class FeatureContext implements Context
     public function setTestStatus($status)
     {
         if ($status == 'pending') {
-            throw new Exception("Implementation of this functionality is pending.");
+            throw new \Exception("Implementation of this functionality is pending.");
         }
-        throw new Exception("Test explicitly set to $status");
+        throw new \Exception("Test explicitly set to $status");
     }
 
   /**

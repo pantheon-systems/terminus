@@ -24,10 +24,8 @@ class SiteUserMembership extends TerminusModel
     {
         parent::__construct($attributes, $options);
         $this->site = $options['collection']->site;
-        $this->user = new User(
-            $attributes->user,
-            ['id' => $attributes->user->id, 'memberships' => [$this,],]
-        );
+        $this->user = new User($attributes->user);
+        $this->user->memberships = [$this,];
     }
 
   /**

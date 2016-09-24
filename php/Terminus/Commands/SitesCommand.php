@@ -197,8 +197,8 @@ class SitesCommand extends TerminusCommand
         }
         $sites = $this->sites->all();
 
-        if (count($sites) == 0) {
-            $this->log()->warning('You have no sites.');
+        if (empty($sites)) {
+            $this->log()->info('You have no sites.');
         }
 
         $rows = [];
@@ -208,7 +208,7 @@ class SitesCommand extends TerminusCommand
                 if (property_exists($membership, 'user')) {
                     $memberships[] = "{$membership->user->id}: Team";
                 } elseif (property_exists($membership, 'organization')) {
-                    $profile       = $membership->organization->get('profile');
+                    $profile = $membership->organization->get('profile');
                     $memberships[] = "{$membership->organization->id}: {$profile->name}";
                 }
             }
@@ -218,11 +218,8 @@ class SitesCommand extends TerminusCommand
             'service_level' => $site->get('service_level'),
             'framework'     => $site->get('framework'),
             'owner'         => $site->get('owner'),
-            'created'       => date(
-                Config::get('date_format'),
-                $site->get('created')
-            ),
-              'memberships'   => implode(', ', $memberships),
+            'created'       => date(Config::get('date_format'), $site->get('created')),
+            'memberships'   => implode(', ', $memberships),
             ];
             if (!is_null($site->get('frozen'))) {
                 $rows[$site->id]['frozen'] = true;
@@ -356,36 +353,36 @@ class SitesCommand extends TerminusCommand
                     )
                 );
                 if (!$report) {
-                        $confirmed = $this->input()->confirm(
-                            array(
-                            'message' => 'Apply upstream updates to %s ( run update.php:%s, xoption:%s )',
-                            'context' => array(
-                              $site->get('name'),
-                              var_export($updatedb, 1),
-                              var_export($xoption, 1)
-                            ),
-                            'exit' => false,
-                            )
-                        );
+                    $confirmed = $this->input()->confirm(
+                        array(
+                        'message' => 'Apply upstream updates to %s ( run update.php:%s, xoption:%s )',
+                        'context' => array(
+                            $site->get('name'),
+                            var_export($updatedb, 1),
+                            var_export($xoption, 1)
+                        ),
+                        'exit' => false,
+                        )
+                    );
                     if (!$confirmed) {
-                                      continue; // User says No, go back to start.
+                        continue; // User says No, go back to start.
                     }
-                        // Back up the site so it may be restored should something go awry
-                        $this->log()->info('Backing up {site}.', $context);
-                        $backup = $env->backups->create(['element' => 'all',]);
-                        // Only continue if the backup was successful.
+                    // Back up the site so it may be restored should something go awry
+                    $this->log()->info('Backing up {site}.', $context);
+                    $backup = $env->backups->create(['element' => 'all',]);
+                    // Only continue if the backup was successful.
                     if ($backup) {
-                                      $this->log()->info('Backup of {site} created.', $context);
-                                      $this->log()->info('Updating {site}.', $context);
-                                      $response = $env->applyUpstreamUpdates($updatedb, $xoption);
-                                      $data[$site->get('name')]['status'] = 'Updated';
-                                      $this->log()->info('{site} is updated.', $context);
+                        $this->log()->info('Backup of {site} created.', $context);
+                        $this->log()->info('Updating {site}.', $context);
+                        $response = $env->applyUpstreamUpdates($updatedb, $xoption);
+                        $data[$site->get('name')]['status'] = 'Updated';
+                        $this->log()->info('{site} is updated.', $context);
                     } else {
-                                    $data[$site->get('name')]['status'] = 'Backup failed';
-                                    $this->failure(
-                                        'There was a problem backing up {site}. Update aborted.',
-                                        $context
-                                    );
+                        $data[$site->get('name')]['status'] = 'Backup failed';
+                        $this->failure(
+                            'There was a problem backing up {site}. Update aborted.',
+                            $context
+                        );
                     }
                 }
             } else {
@@ -407,6 +404,7 @@ class SitesCommand extends TerminusCommand
     }
 
   /**
+<<<<<<< 6069ee197b85b18c4fb73d9756dd70e7da825cd0
    * Filters an array of sites by whether the user is an organizational member
    *
    * @param Site[] $sites An array of sites to filter by
@@ -495,6 +493,8 @@ class SitesCommand extends TerminusCommand
     }
 
   /**
+=======
+>>>>>>> Fixed sites list memberships so that information is correctly rendered when a user is both an organizational and a team member.
    * A helper function for getting/prompting for the site create options.
    *
    * @param array $assoc_args Arguments from command

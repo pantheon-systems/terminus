@@ -24,10 +24,8 @@ class SiteOrganizationMembership extends TerminusModel
     {
         parent::__construct($attributes, $options);
         $this->site = $options['collection']->site;
-        $this->organization = new Organization(
-            $attributes->organization,
-            ['id' => $attributes->organization->id, 'memberships' => [$this,],]
-        );
+        $this->organization = new Organization($attributes->organization);
+        $this->organization->memberships = [$this,];
     }
 
   /**
