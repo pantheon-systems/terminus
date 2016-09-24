@@ -32,8 +32,9 @@ class UpdatesListCommand extends UpstreamCommand
      */
     public function listUpstreamUpdates($site_id)
     {
+        $site = $this->getSite($site_id);
         $data = [];
-        foreach ($this->getUpstreamUpdatesLog($site_id) as $commit) {
+        foreach ($this->getUpstreamUpdatesLog($site) as $commit) {
             $data[] = [
                 'hash' => $commit->hash,
                 'datetime' => $commit->datetime,

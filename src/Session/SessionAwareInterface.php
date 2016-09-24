@@ -12,12 +12,16 @@ interface SessionAwareInterface
 {
 
     /***
+     * Inject a session object.
+     *
      * @param Session $session
      * @return void
      */
     public function setSession(Session $session);
 
     /**
+     * Get the current user's session object.
+     *
      * @return Session
      */
     public function session();

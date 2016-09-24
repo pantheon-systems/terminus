@@ -5,6 +5,8 @@ namespace Pantheon\Terminus\Commands\Connection;
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Collections\Sites;
 use Terminus\Models\Environment;
 
@@ -12,8 +14,10 @@ use Terminus\Models\Environment;
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Connection
  */
-class InfoCommand extends TerminusCommand
+class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
+
     /**
      * Retrieve connection info for a specific environment such as git, sftp, mysql, redis
      *
@@ -45,7 +49,7 @@ class InfoCommand extends TerminusCommand
      *   redis_password: Redis Password
      * @default-fields *_command
      *
-     * @param string $environment Name of the environment to retrieve
+     * @param string $site_env_id Name of the environment to retrieve
      *
      * @return AssociativeList
      *
@@ -57,16 +61,9 @@ class InfoCommand extends TerminusCommand
      *   Display all of the connection information fields related to git.
      *
      */
-    public function connectionInfo($environment)
+    public function connectionInfo($site_env_id)
     {
-        $site_env = explode('.', $environment);
-        if (count($site_env) != 2) {
-            throw new \Exception('The environment argument must be given as <site_name>.<environment>');
-        }
-
-        $sites = new Sites();
-        $site  = $sites->get($site_env[0]);
-        $env   = $site->environments->get($site_env[1]);
+        list(, $env) = $this->getSiteEnv($site_env_id);
 
         return new AssociativeList($env->connectionInfo());
     }

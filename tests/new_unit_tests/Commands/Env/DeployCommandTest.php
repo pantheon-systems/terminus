@@ -2,8 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
-use Pantheon\Terminus\Config;
-use Terminus\Exceptions\TerminusException;
+use Terminus\Collections\Sites;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Env\DeployCommand
@@ -18,8 +17,9 @@ class DeployCommandTest extends EnvCommandTest
     protected function setUp()
     {
         parent::setUp();
-        $this->command = new DeployCommand($this->sites);
+        $this->command = new DeployCommand($this->getConfig());
         $this->command->setLogger($this->logger);
+        $this->command->setSites($this->sites);
     }
 
 
