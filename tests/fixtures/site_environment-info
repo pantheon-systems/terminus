@@ -249,3 +249,39 @@
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
         body: '{"remote_head": "cccdd26e7c511bebbd40b23e6756056f8eb7bd3d", "ahead": 7, "update_log": {"cccdd26e7c511bebbd40b23e6756056f8eb7bd3d": {"gravitar_url": "https://secure.gravatar.com/avatar/3f4024df90770e003703e1c5e6d29bd6?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "cccdd26e7c511bebbd40b23e6756056f8eb7bd3d", "author": "Pantheon Automation", "labels": [], "datetime": "2016-09-07T19:06:47", "parents": ["99d9779d7924d37be5750954b774ec786a95e5e0"], "message": "Update to WordPress 4.6.1. For more information, see: https://wordpress.org/news/2016/09/wordpress-4-6-1-security-and-maintenance-release/\n", "email": "bot@getpantheon.com"}, "99d9779d7924d37be5750954b774ec786a95e5e0": {"gravitar_url": "https://secure.gravatar.com/avatar/3f4024df90770e003703e1c5e6d29bd6?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "99d9779d7924d37be5750954b774ec786a95e5e0", "author": "Pantheon Automation", "labels": [], "datetime": "2016-08-16T20:13:12", "parents": ["85431ad7eefbc602420812a1ab891965642c2183"], "message": "Update to WordPress 4.6. For more information, see: https://wordpress.org/news/2016/08/pepper/\n", "email": "bot@getpantheon.com"}}, "remote_branch": "refs/remotes/origin/master", "behind": 2, "dev": {"has_code": true, "is_up_to_date_with_upstream": false}, "live": {"has_code": false, "is_up_to_date_with_upstream": false}, "has_code": true, "test": {"has_code": false, "is_up_to_date_with_upstream": false}, "has_remote_head": false, "remote_url": "https://github.com/pantheon-systems/WordPress"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments/dev/code-log'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:286451ce-6641-11e6-a161-bc764e1141f9:uWiqILJ8zJ1dFG2a6KLS7'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:286451ce-6641-11e6-a161-bc764e1141f9:uWiqILJ8zJ1dFG2a6KLS7'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 19 Aug 2016 19:14:52 GMT'
+            Content-Type: application/json
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 345df8e0-6641-11e6-9aa2-6117a1834a25
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '[{"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "author": "Dev User", "labels": ["test", "dev"], "datetime": "2016-08-19T19:04:59", "parents": ["e75b1b49ddeeabbcab81cdd936ad371b7f69e8e2"], "message": "added a file\n", "email": "devuser@pantheon.io"}, {"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "e75b1b49ddeeabbcab81cdd936ad371b7f69e8e2", "author": "Dev User", "labels": ["test", "dev"], "datetime": "2016-08-19T19:00:29", "parents": ["a6a94cff8dbc3f15c93b2d3c6777aa334a476927"], "message": "Removed license\n", "email": "devuser@pantheon.io"}, {"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "a6a94cff8dbc3f15c93b2d3c6777aa334a476927", "author": "Dev User", "labels": ["test", "dev"], "datetime": "2016-08-18T23:31:15", "parents": ["41710101cf34dd3980c7534a2a1678208303fe19"], "message": "Behat test commit\n", "email": "devuser@pantheon.io"}, {"gravitar_url": "https://secure.gravatar.com/avatar/a1f13b162091be9d5bc2fdd369aedafa?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "41710101cf34dd3980c7534a2a1678208303fe19", "author": "Dev User", "labels": ["test", "dev"], "datetime": "2016-08-17T00:46:03", "parents": ["1fdf194d3d7a0c930a4f118e1398412765320328"], "message": "Removed README.md\n", "email": "devuser@pantheon.io"}, {"gravitar_url": "https://secure.gravatar.com/avatar/9631f4a345eabaa121f599004f32fab2?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "1fdf194d3d7a0c930a4f118e1398412765320328", "author": "Root", "labels": ["test", "live", "dev"], "datetime": "2016-08-16T22:09:25", "parents": ["99d9779d7924d37be5750954b774ec786a95e5e0"], "message": "\"Initial Commit\"\n", "email": "root@getpantheon.com"}]'

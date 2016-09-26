@@ -36,12 +36,12 @@ abstract class TerminusModel
     public function __construct($attributes = null, array $options = [])
     {
         if (is_object($attributes)) {
-            $this->attributes = $attributes;
+            $this->attributes = $this->parseAttributes($attributes);
+            if (isset($this->attributes->id)) {
+                $this->id = $this->attributes->id;
+            }
         } else {
             $this->attributes = (object)[];
-        }
-        if (isset($this->attributes->id)) {
-            $this->id = $this->attributes->id;
         }
         $this->request = new Request();
     }
@@ -60,20 +60,12 @@ abstract class TerminusModel
             $args
         );
         $results = $this->request->request($this->url, $options);
-        $this->attributes = $this->parseAttributes($results['data']);
+        $this->attributes = (object)array_merge(
+            (array)$this->attributes,
+            (array)$this->parseAttributes($results['data'])
+        );
 
         return $this;
-    }
-
-  /**
-   * Modify response data between fetch and assignment
-   *
-   * @param [object] $data attributes received from API response
-   * @return [object] $data
-   */
-    public function parseAttributes($data)
-    {
-        return $data;
     }
 
   /**
@@ -100,5 +92,16 @@ abstract class TerminusModel
     {
         $isset = isset($this->attributes->$attribute);
         return $isset;
+    }
+
+    /**
+     * Modify response data between fetch and assignment
+     *
+     * @param object $data attributes received from API response
+     * @return object $data
+     */
+    protected function parseAttributes($data)
+    {
+        return $data;
     }
 }
