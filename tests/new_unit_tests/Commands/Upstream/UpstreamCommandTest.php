@@ -24,23 +24,10 @@ abstract class UpstreamCommandTest extends CommandTestCase
      */
     protected function setUp()
     {
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        parent::setUp();
 
         $this->site->upstream = $this->getMockBuilder(Upstream::class)
             ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->sites = $this->getMockBuilder(Sites::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->sites->method('get')
-            ->willReturn($this->site);
-
-        $this->logger = $this->getMockBuilder(NullLogger::class)
-            ->setMethods(array('log'))
             ->getMock();
     }
 }

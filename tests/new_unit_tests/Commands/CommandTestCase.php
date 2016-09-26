@@ -6,11 +6,16 @@ use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Terminus;
+use Psr\Log\NullLogger;
 use ReflectionMethod;
 use Robo\Robo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Terminus\Collections\Environments;
+use Terminus\Collections\Sites;
+use Terminus\Models\Environment;
+use Terminus\Models\Site;
 use VCR\VCR;
 
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
@@ -43,6 +48,17 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * @var ArrayInput
      */
     protected $input;
+
+    /**
+     * @var Sites
+     */
+    protected $sites;
+
+    /**
+     * @var Site
+     */
+    protected $site;
+
 
     /**
      * @return Terminus
@@ -233,6 +249,36 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         if (!empty($mode = $this->config->get('vcr_mode'))) {
             VCR::configure()->setMode($mode);
         }
+
+        // These are not used by every test but are useful for SiteAwareInterface commands. Which is a lot of them.
+        // Use `$command->setSites($this->site());` after you create your command to test.
+        $this->site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->environment = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->site->environments = $this->getMockBuilder(Environments::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->site->environments->method('get')
+            ->willReturn($this->environment);
+
+        $this->sites = $this->getMockBuilder(Sites::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->sites->method('get')
+            ->willReturn($this->site);
+
+        // A lot of commands output to a logger.
+        // To use this call `$command->setLogger($this->logger);` after you create your command to test.
+        $this->logger = $this->getMockBuilder(NullLogger::class)
+            ->setMethods(array('log'))
+            ->getMock();
     }
 
     /**

@@ -26,9 +26,8 @@ class ListCommand extends TerminusCommand
      */
     public function listTokens()
     {
-        $user = $this->session()->getUser();
 
-        $machine_tokens = $user->machine_tokens->all();
+        $machine_tokens = $this->session()->getUser()->machine_tokens->all();
         $data = array();
         foreach ($machine_tokens as $id => $machine_token) {
             $data[] = array(

@@ -17,11 +17,13 @@ use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Terminus;
 use Robo\Robo;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Terminus\Caches\FileCache;
+use Terminus\Collections\Sites;
 
 // Initializing the Terminus application
 $config = new Config();
@@ -38,6 +40,9 @@ $container->share('session', Session::class)
     ->withArgument('fileCache');
 $container->inflector(SessionAwareInterface::class)
     ->invokeMethod('setSession', ['session']);
+$container->share('sites', Sites::class);
+$container->inflector(SiteAwareInterface::class)
+    ->invokeMethod('setSites', ['sites']);
 
 // Running Terminus
 $runner = new Runner($container);

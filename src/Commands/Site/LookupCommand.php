@@ -4,10 +4,14 @@ namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Collections\Sites;
 
-class LookupCommand extends TerminusCommand
+class LookupCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
+
     /**
      * Looks up a site name
      *
@@ -27,8 +31,7 @@ class LookupCommand extends TerminusCommand
      */
     public function lookup($site_name)
     {
-        $sites = new Sites();
-        $response = (array)$sites->findUuidByName($site_name);
+        $response = (array)$this->sites()->findUuidByName($site_name);
         return new AssociativeList($response);
     }
 }

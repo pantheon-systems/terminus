@@ -4,12 +4,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\Connection\InfoCommand;
-use Pantheon\Terminus\Config;
-
 use Prophecy\Prophet;
-use Terminus\Models\Environment;
-use Terminus\Models\Site;
-use VCR\VCR;
+use Terminus\Collections\Sites;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Connection\InfoCommand
@@ -29,6 +26,7 @@ class InfoCommandTest extends ConnectionCommandTest
 
         $this->command = new InfoCommand($this->getConfig());
         $this->command->setLogger($this->logger);
+        $this->command->setSites(new Sites());
         $this->prophet = new Prophet;
     }
 
@@ -76,7 +74,8 @@ class InfoCommandTest extends ConnectionCommandTest
      */
     public function testConnectionInfoInvalid()
     {
-        // should return the correct type and structure
-        $out = $this->command->connectionInfo('invalid-env');
+        // Should throw an exception so that the runner returns an error exit code.
+        $this->setExpectedException(TerminusException::class);
+        $this->command->connectionInfo('invalid-env');
     }
 }

@@ -2,9 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Upstream;
 
-use Terminus\Collections\Sites;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Site;
 
 class UpdatesApplyCommand extends UpstreamCommand
 {
@@ -14,9 +12,9 @@ class UpdatesApplyCommand extends UpstreamCommand
      *
      * @authorized
      *
-     * @name upstream :updates:apply
+     * @name upstream:updates:apply
      *
-     * @param string $environment Name of the environment to retrieve
+     * @param string $site_env_id Name of the environment to retrieve
      *
      * @return void
      *
@@ -26,30 +24,28 @@ class UpdatesApplyCommand extends UpstreamCommand
      *   Lists the available updates for the site called <site-name> and the environment <env>
      */
     public function applyUpstreamUpdates(
-        $environment,
-        $options = ['updatedb' => true, 'accept-upstream' => true]
+        $site_env_id,
+        $options = ['updatedb' => true, 'accept-upstream' => true,]
     ) {
-        $parts = explode('.', $environment);
-        $site_id = $parts[0];
-        $env = !empty($parts[1]) ? $parts[1] : 'dev';
-        if (in_array($env, ['test', 'live',])) {
+
+        list($site, $env) = $this->getSiteEnv($site_env_id, 'dev');
+
+        if (in_array($env->id, ['test', 'live',])) {
             throw new TerminusException(
                 'Upstream updates cannot be applied to the {env} environment',
-                compact('env')
+                ['env' => $env->id,]
             );
         }
 
-        $updates = $this->getUpstreamUpdatesLog($site_id);
+        $updates = $this->getUpstreamUpdatesLog($site);
         $count = count($updates);
         if ($count) {
             $this->log()->notice(
                 'Applying {count} upstream update(s) to the {env} environment of {site_id}...',
-                compact('count', 'env', 'site_id')
+                ['count' => $count, 'env' => $env->id, 'site_id' => $site->get('name'),]
             );
 
-            $site = $this->getSite($site_id);
-            $environment = $site->environments->get($env);
-            $workflow = $environment->applyUpstreamUpdates(
+            $workflow = $env->applyUpstreamUpdates(
                 $options['updatedb'],
                 $options['accept-upstream']
             );
