@@ -2,15 +2,16 @@
 
 namespace Terminus\Models;
 
-class SiteUserMembership extends TerminusModel {
+class SiteUserMembership extends TerminusModel
+{
   /**
    * @var Site
    */
-  public $site;
+    public $site;
   /**
    * @var User
    */
-  public $user;
+    public $user;
 
   /**
    * Object constructor
@@ -19,27 +20,27 @@ class SiteUserMembership extends TerminusModel {
    * @param array  $options    Options with which to configure this model
    * @return SiteUserMembership
    */
-  public function __construct($attributes = null, array $options = []) {
-    parent::__construct($attributes, $options);
-    $this->site = $options['collection']->site;
-    $this->user = new User(
-      $attributes->user,
-      ['id' => $attributes->user->id, 'memberships' => [$this,],]
-    );
-  }
+    public function __construct($attributes = null, array $options = [])
+    {
+        parent::__construct($attributes, $options);
+        $this->site = $options['collection']->site;
+        $this->user = new User($attributes->user);
+        $this->user->memberships = [$this,];
+    }
 
   /**
    * Remove membership, either org or user
    *
    * @return Workflow
    **/
-  public function delete() {
-    $workflow = $this->site->workflows->create(
-      'remove_site_user_membership',
-      ['params' => ['user_id' => $this->id,],]
-    );
-    return $workflow;
-  }
+    public function delete()
+    {
+        $workflow = $this->site->workflows->create(
+            'remove_site_user_membership',
+            ['params' => ['user_id' => $this->id,],]
+        );
+        return $workflow;
+    }
 
   /**
    * Changes the role of the given member
@@ -47,12 +48,12 @@ class SiteUserMembership extends TerminusModel {
    * @param string $role Desired role for this member
    * @return Workflow
    */
-  public function setRole($role) {
-    $workflow = $this->site->workflows->create(
-      'update_site_user_membership',
-      ['params' => ['user_id' => $this->id, 'role' => $role,],]
-    );
-    return $workflow;
-  }
-
+    public function setRole($role)
+    {
+        $workflow = $this->site->workflows->create(
+            'update_site_user_membership',
+            ['params' => ['user_id' => $this->id, 'role' => $role,],]
+        );
+        return $workflow;
+    }
 }

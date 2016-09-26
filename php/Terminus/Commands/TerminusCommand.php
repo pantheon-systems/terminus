@@ -14,70 +14,70 @@ use Terminus\Utils;
 /**
  * The base class for Terminus commands
  */
-abstract class TerminusCommand {
+abstract class TerminusCommand
+{
   /**
    * @var Runner
    */
-  public $runner;
+    public $runner;
   /**
    * @var FileCache
    */
-  protected $cache;
+    protected $cache;
   /**
    * @var Input
    */
-  protected $inputter;
+    protected $inputter;
   /**
    * @var stdClass
    */
-  protected $helpers;
+    protected $helpers;
   /**
    * @var Session
    */
-  protected $session;
+    protected $session;
   /**
    * @var Sites
    */
-  protected $sites;
+    protected $sites;
   /**
    * @var Logger
    */
-  private $logger;
+    private $logger;
   /**
    * @var Outputter
    */
-  private $outputter;
+    private $outputter;
 
   /**
    * Instantiates object, sets cache and session
    *
    * @param array $arg_options Elements as follow:
-   *        FileCache cache
-   *        Logger    Logger
-   *        Outputter Outputter
-   *        Session   Session
+   *        string require_login True to enforce login on a command
+   *        Runner    runner
    * @return TerminusCommand
    */
-  public function __construct(array $arg_options = []) {
-    $default_options = [
-      'require_login' => false,
-      'runner'        => null,
-    ];
-    $options         = array_merge($default_options, $arg_options);
-    if ($options['require_login']) {
-      $this->ensureLogin();
-    }
-    $this->cache     = new FileCache();
-    $this->runner    = $options['runner'];
-    $this->session   = Session::instance();
-    $this->logger    = $this->runner->getLogger();
-    $this->outputter = $this->runner->getOutputter();
-    $this->loadHelpers();
+    public function __construct(array $arg_options = [])
+    {
+        $default_options = [
+        'require_login' => false,
+        'runner' => null,
+        ];
+        $options         = array_merge($default_options, $arg_options);
+        if ($options['require_login']) {
+            $this->ensureLogin();
+        }
+        $this->cache     = new FileCache();
+        $this->session   = Session::instance();
+        $this->runner    = $options['runner'];
+        $this->logger    = $this->runner->getLogger();
+        $this->outputter = $this->runner->getOutputter();
+        $this->loadHelpers();
 
-    if (!Utils\isTest()) {
-      $this->helpers->update->checkForUpdate($this->log());
+        if (!Utils\isTest()) {
+            $this->helpers->update->checkForUpdate($this->log());
+        }
     }
-  }
 
   /**
    * Retrieves the logger for use
@@ -85,9 +85,10 @@ abstract class TerminusCommand {
    * @return Logger
    * @non-command
    */
-  public function log() {
-    return $this->logger;
-  }
+    public function log()
+    {
+        return $this->logger;
+    }
 
   /**
    * Retrieves the outputter for use
@@ -95,9 +96,10 @@ abstract class TerminusCommand {
    * @return OutputterInterface
    * @non-command
    */
-  public function output() {
-    return $this->outputter;
-  }
+    public function output()
+    {
+        return $this->outputter;
+    }
 
   /**
    * Ensures the user is logged in or errs.
@@ -105,25 +107,26 @@ abstract class TerminusCommand {
    * @return bool Always true
    * @throws TerminusException
    */
-  protected function ensureLogin() {
-    $auth   = new Auth();
-    $tokens = $auth->getAllSavedTokenEmails();
-    if (!$auth->loggedIn()) {
-      if (count($tokens) === 1) {
-        $email = array_shift($tokens);
-        $auth->logInViaMachineToken(compact('email'));
-      } else if (!is_null(Config::get('user'))
-       && $email = Config::get('user')
-      ) {
-        $auth->logInViaMachineToken(compact('email'));
-      } else {
-        $message  = 'You are not logged in. Run `auth login` to ';
-        $message .= 'authenticate or `help auth login` for more info.';
-        $this->failure($message);
-      }
+    protected function ensureLogin()
+    {
+        $auth   = new Auth();
+        $tokens = $auth->getAllSavedTokenEmails();
+        if (!$auth->loggedIn()) {
+            if (count($tokens) === 1) {
+                $email = array_shift($tokens);
+                $auth->logInViaMachineToken(compact('email'));
+            } elseif (!is_null(Config::get('user'))
+             && $email = Config::get('user')
+            ) {
+                $auth->logInViaMachineToken(compact('email'));
+            } else {
+                $message  = 'You are not logged in. Run `auth login` to ';
+                $message .= 'authenticate or `help auth login` for more info.';
+                $this->failure($message);
+            }
+        }
+        return true;
     }
-    return true;
-  }
 
   /**
    * Sends the given message to logger as an error and exits with -1
@@ -134,61 +137,63 @@ abstract class TerminusCommand {
    * @return void
    * @throws TerminusException
    */
-  protected function failure(
-    $message       = 'Command failed',
-    array $context = [],
-    $exit_code     = 1
-  ) {
-    throw new TerminusException($message, $context, $exit_code);
-  }
+    protected function failure(
+        $message = 'Command failed',
+        array $context = [],
+        $exit_code = 1
+    ) {
+        throw new TerminusException($message, $context, $exit_code);
+    }
 
   /**
    * Retrieves the input helper for use
    *
    * @return Input
    */
-  protected function input() {
-    return $this->helpers->input;
-  }
+    protected function input()
+    {
+        return $this->helpers->input;
+    }
 
   /**
    * Loads helper classes
    *
    * @return void
    */
-  protected function loadHelpers() {
-    if (isset($this->helpers)) {
-      return;
-    }
-    $helpers_dir       = __DIR__ . '/../Helpers';
-    $helpers_namespace = 'Terminus\\Helpers\\';
+    protected function loadHelpers()
+    {
+        if (isset($this->helpers)) {
+            return;
+        }
+        $helpers_dir       = __DIR__ . '/../Helpers';
+        $helpers_namespace = 'Terminus\\Helpers\\';
 
-    $this->loadDirectory($helpers_dir);
-    $classes = get_declared_classes();
-    $helpers = array_filter(
-      $classes,
-      function ($class) use ($helpers_namespace) {
-        $reflection = new \ReflectionClass($class);
-        $is_helper  = (
-          (strpos($class, $helpers_namespace) === 0)
-          && !$reflection->isAbstract()
+        $this->loadDirectory($helpers_dir);
+        $classes = get_declared_classes();
+        $helpers = array_filter(
+            $classes,
+            function ($class) use ($helpers_namespace) {
+                $reflection = new \ReflectionClass($class);
+                $is_helper  = (
+                (strpos($class, $helpers_namespace) === 0)
+                && !$reflection->isAbstract()
+                );
+                return $is_helper;
+            }
         );
-        return $is_helper;
-      }
-    );
 
-    if (!empty($helpers)) {
-      $options          = ['command' => $this];
-      $helpers_property = new \stdClass();
-      foreach ($helpers as $helper) {
-        $property_name = strtolower(
-          str_replace([$helpers_namespace, 'Helper'], '', $helper)
-        );
-        $helpers_property->$property_name = new $helper($options);
-      }
+        if (!empty($helpers)) {
+            $options          = ['command' => $this];
+            $helpers_property = new \stdClass();
+            foreach ($helpers as $helper) {
+                $property_name = strtolower(
+                    str_replace([$helpers_namespace, 'Helper'], '', $helper)
+                );
+                $helpers_property->$property_name = new $helper($options);
+            }
+        }
+        $this->helpers = $helpers_property;
     }
-    $this->helpers = $helpers_property;
-  }
 
   /**
    * Saves the logger object as a class property
@@ -196,9 +201,10 @@ abstract class TerminusCommand {
    * @param Logger $logger Logger object to save
    * @return void
    */
-  protected function setLogger(Logger $logger) {
-    $this->logger = $logger;
-  }
+    protected function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
 
   /**
    * Saves the outputter object as a class property
@@ -206,9 +212,10 @@ abstract class TerminusCommand {
    * @param OutputterInterface $outputter Outputter object to save
    * @return void
    */
-  protected function setOutputter(OutputterInterface $outputter) {
-    $this->outputter = $outputter;
-  }
+    protected function setOutputter(OutputterInterface $outputter)
+    {
+        $this->outputter = $outputter;
+    }
 
   /**
    * Outputs basic workflow success/failure messages
@@ -219,23 +226,24 @@ abstract class TerminusCommand {
    *  string failure Failure message to override workflow default
    * @return void
    */
-  protected function workflowOutput($workflow, array $messages = []) {
-    if ($workflow->get('result') == 'succeeded') {
-      $message = $workflow->get('active_description');
-      if (isset($messages['success'])) {
-        $message = $messages['success'];
-      }
-      $this->log()->info($message);
-    } else {
-      $message = 'Workflow failed.';
-      if (isset($messages['failure'])) {
-        $message = $messages['failure'];
-      } elseif (!is_null($final_task = $workflow->get('final_task'))) {
-        $message = $final_task->reason;
-      }
-      $this->log()->error($message);
+    protected function workflowOutput($workflow, array $messages = [])
+    {
+        if ($workflow->get('result') == 'succeeded') {
+            $message = $workflow->get('active_description');
+            if (isset($messages['success'])) {
+                $message = $messages['success'];
+            }
+            $this->log()->info($message);
+        } else {
+            $message = 'Workflow failed.';
+            if (isset($messages['failure'])) {
+                $message = $messages['failure'];
+            } elseif (!is_null($final_task = $workflow->get('final_task'))) {
+                $message = $final_task->reason;
+            }
+            $this->log()->error($message);
+        }
     }
-  }
 
   /**
    * Includes all PHP files within a directory
@@ -243,15 +251,15 @@ abstract class TerminusCommand {
    * @param string $directory Directory to include PHP files from
    * @return void
    */
-  private function loadDirectory($directory) {
-    if ($directory && file_exists($directory)) {
-      $iterator = new \DirectoryIterator($directory);
-      foreach ($iterator as $file) {
-        if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
-          include_once $file->getPathname();
+    private function loadDirectory($directory)
+    {
+        if ($directory && file_exists($directory)) {
+            $iterator = new \DirectoryIterator($directory);
+            foreach ($iterator as $file) {
+                if ($file->isFile() && $file->isReadable() && $file->getExtension() == 'php') {
+                    include_once $file->getPathname();
+                }
+            }
         }
-      }
     }
-  }
-
 }

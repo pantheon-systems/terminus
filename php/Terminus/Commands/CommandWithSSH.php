@@ -3,28 +3,34 @@
 namespace Terminus\Commands;
 
 use Terminus\Collections\Sites;
-use Terminus\Config;
 
 /**
  * Base class for Terminus commands that deal with sending SSH commands
  */
-abstract class CommandWithSSH extends TerminusCommand {
+abstract class CommandWithSSH extends TerminusCommand
+{
   /**
    * @var string Name of the client to run a command on the platform
    */
-  protected $client = '';
-
+    protected $client = '';
   /**
    * @var string Name of the command to be run as it will be used on server
    */
-  protected $command = '';
-
+    protected $command = '';
+  /**
+   * @var Environment
+   */
+    protected $environment;
+  /**
+   * @var string
+   */
+    protected $ssh_command;
   /**
    * @var string[] A hash of commands which do not work in Terminus. The key
    *   is the Drush command, and the value is the Terminus equivalent, and
    *   blank if DNE.
    */
-  protected $unavailable_commands = [];
+    protected $unavailable_commands = [];
 
   /**
    * Object constructor
@@ -32,182 +38,86 @@ abstract class CommandWithSSH extends TerminusCommand {
    * @param array $options Options to construct the command object
    * @return CommandWithSSH
    */
-  public function __construct(array $options = []) {
-    $options['require_login'] = true;
-    parent::__construct($options);
-  }
+    public function __construct(array $options = [])
+    {
+        $options['require_login'] = true;
+        parent::__construct($options);
+    }
+
+  /**
+    * Parent invoke function
+    *
+    * @param array $args       Parameters from the command line
+    * @param array $assoc_args Options from the command line
+    * @return void
+    */
+    public function __invoke($args, $assoc_args)
+    {
+        $command = array_shift($args);
+        $this->ensureCommandIsPermitted($command);
+
+        $sites = new Sites();
+        $site = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
+        $this->environment = $site->environments->get(
+            $this->input()->env(['args' => $assoc_args, 'site' => $site,])
+        );
+        $this->checkConnectionMode($this->environment);
+
+        $this->ssh_command = "{$this->command} $command";
+        $this->log()->info(
+            'Running {command} on {site}-{env}',
+            [
+            'command' => $this->ssh_command,
+            'site' => $site->get('name'),
+            'env' => $this->environment->id,
+            ]
+        );
+        $this->log()->debug(
+            'Command "{command}" is being run.',
+            ['command' => escapeshellarg($this->ssh_command),]
+        );
+    }
 
   /**
    * Checks to see if the command is not available in Terminus and, if not,
    * it will refer you to an equivalent Terminus command, if such exists.
    *
-   * @param string[] $args       Command-line arguments
-   * @param string[] $assoc_args Command-line parameters and flags
+   * @param string $command The command to be sent to Pantheon via SSH
    * @return void
    */
-  protected function checkCommand($args, $assoc_args) {
-    $command_array = explode(' ', $args[0]);
-    foreach ($command_array as $element) {
-      if ((strpos($element, '--') === 0)
-        || !isset($this->unavailable_commands[$element])
-      ) {
-        continue;
-      }
-      $alternative = $this->unavailable_commands[$element];
-      $error_message = "$element is not available via Terminus. "
-        . 'Please run it via ' . $this->client;
-      if (!empty($alternative)) {
-        $command = sprintf(
-          '%s %s%s',
-          'terminus',
-          $alternative,
-          $this->helpers->launch->assocArgsToStr($assoc_args)
-        );
-        $error_message .= ', or you can use `{command}` to the same effect';
-      }
-      $error_message .= '.';
-      $this->failure($error_message, compact('command'));
+    protected function ensureCommandIsPermitted($command)
+    {
+        $command_array = explode(' ', $command);
+        foreach ($command_array as $element) {
+            if ((strpos($element, '--') === 0) || !isset($this->unavailable_commands[$element])) {
+                continue;
+            }
+            $message = "That command is not available via Terminus. Please run it via {client}";
+            if (!empty($alternative = $this->unavailable_commands[$element])) {
+                $this->failure(
+                    "$message, or you can use `{suggestion}` to the same effect.",
+                    ['client' => $this->client, 'suggestion' => "terminus $alternative",]
+                );
+            } else {
+                $this->failure("$message.", ['client' => $this->client,]);
+            }
+        }
     }
-  }
 
   /**
    * Checks the site's mode and suggests SFTP if it is not set.
    *
-   * @param Environment $environment Environment object to check mode of
+   * @param Environment $env Environment object to check mode of
    * @return void
    */
-  protected function checkConnectionMode($environment) {
-    if ($environment->info('connection_mode') != 'sftp') {
-      $message  = 'Note: This environment is in read-only Git mode. If you ';
-      $message .= 'want to make changes to the codebase of this site ';
-      $message .= '(e.g. updating modules or plugins), you will need to ';
-      $message .= 'toggle into read/write SFTP mode first.';
-      $this->log()->warning($message);
+    protected function checkConnectionMode($env)
+    {
+        if ($env->info('connection_mode') != 'sftp') {
+            $this->log()->warning(
+                "Note: This environment is in read-only Git mode. If you want to make changes to the
+            codebase of this site (e.g. updating modules or plugins), you will need to toggle into
+            read/write SFTP mode first."
+            );
+        }
     }
-  }
-
-  /**
-   * Verifies that there is only one argument given and no extaneous params
-   *
-   * @param string[] $args       Command(s) given in the command line
-   * @param string[] $assoc_args Arguments and flags passed into the former
-   * @return bool True if correct
-   */
-  protected function ensureQuotation($args, $assoc_args) {
-    unset($assoc_args['site']);
-    unset($assoc_args['env']);
-    if (!empty($assoc_args) || (count($args) !== 1)) {
-      $message  = 'Your {client} subcommands and arguments must be in ';
-      $message .= "quotation marks.\n    Example: terminus {command} ";
-      $message .= '"subcommand --arg=value" --site=<site> --env=<env>';
-
-      $this->failure(
-        $message,
-        ['client' => $this->client, 'command' => $this->command]
-      );
-    }
-    return true;
-  }
-
-  /**
-   * Parses server information for connections
-   *
-   * @param array $site_info Elements as follows:
-   *        [string] site        Site UUID
-   *        [string] environment Environment name
-   * @return array Connection info
-   */
-  protected function getAppserverInfo(array $site_info = []) {
-    $config = Config::getAll();
-    $site_id = $site_info['site'];
-    $env_id  = $site_info['environment'];
-    $server  = [
-      'user' => "$env_id.$site_id",
-      'host' => "appserver.$env_id.$site_id.drush.in",
-      'port' => '2222',
-    ];
-    if (!is_null($ssh_host = $config['ssh_host'])) {
-      $server['user'] = "appserver.$env_id.$site_id";
-      $server['host'] = $ssh_host;
-    } else if (strpos($config['host'], 'onebox') !== false) {
-      $server['user'] = "appserver.$env_id.$site_id";
-      $server['host'] = $config['host'];
-    }
-    return $server;
-  }
-
-  /**
-   * Parent function to SSH-based command invocations
-   *
-   * @param string[] $args       Command(s) given in the command line
-   * @param string[] $assoc_args Arguments and flags passed into the former
-   * @return array Elements as follow:
-   *         Site   site    Site being invoked
-   *         string env_id  Name of the environment being invoked
-   *         string command Command to run remotely
-   *         string server  Server connection info
-   */
-  protected function getElements($args, $assoc_args) {
-    $this->ensureQuotation($args, $assoc_args);
-    $this->checkCommand($args, $assoc_args);
-
-    $sites = new Sites();
-    $site  = $sites->get($this->input()->siteName(['args' => $assoc_args,]));
-    if (!$site) {
-      $this->failure('Command could not be completed. Unknown site specified.');
-    }
-
-    $env_id = $this->input()->env(['args' => $assoc_args, 'site' => $site,]);
-    if (!in_array($env_id, ['test', 'live',])) {
-      $this->checkConnectionMode($site->environments->get($env_id));
-    }
-
-    $elements = [
-      'site'    => $site,
-      'env_id'  => $env_id,
-      'command' => $args[0],
-      'server'  => $this->getAppserverInfo(
-        ['site' => $site->id, 'environment' => $env_id,]
-      ),
-    ];
-    return $elements;
-  }
-
-  /**
-   * Sends command through SSH
-   *
-   * @param array $options Elements as follow:
-   *        Site   site       Site being invoked
-   *        string env_id     Name of the environment being invoked
-   *        string command    Command to run remotely
-   *        string server     Server connection info
-   * @return array
-   */
-  protected function sendCommand(array $options = []) {
-    $this->log()->info(
-      sprintf('Running %s {cmd} on {site}-{env}', $this->command),
-      [
-        'cmd'   => $options['command'],
-        'site'  => $options['site']->get('name'),
-        'env'   => $options['env_id'],
-      ]
-    );
-    $server     = $options['server'];
-
-    $cmd       = 'ssh -T ' . $server['user'] . '@' . $server['host'] . ' -p '
-      . $server['port'] . ' -o "AddressFamily inet"' . " "
-      . escapeshellarg(
-        $this->command . ' ' . $options['command'] . ' '
-      );
-    $this->log()->debug(
-      'Command "{command}" is being run.',
-      ['command' => escapeshellarg($cmd),]
-    );
-
-    ob_start();
-    passthru($cmd, $exit_code);
-    $result = ob_get_clean();
-    return $result;
-  }
-
 }

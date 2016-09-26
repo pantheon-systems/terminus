@@ -2,5 +2,6 @@
 
 namespace Terminus\Models;
 
-class Binding extends TerminusModel {
+class Binding extends TerminusModel
+{
 }

@@ -11,22 +11,24 @@ namespace Terminus\Outputters;
  * Class JSONFormatter
  * @package Terminus\Outputters
  */
-class JSONFormatter implements OutputFormatterInterface {
+class JSONFormatter implements OutputFormatterInterface
+{
 
   /**
    * @var int The options to be passed to json_encode
    * See: http://php.net/manual/en/function.json-encode.php
    */
-  protected $json_options;
+    protected $json_options;
 
   /**
    * Object constructor. Sets the JSON options property
    *
    * @param int $options The json_encode options bitmask
    */
-  public function __construct($options = 0) {
-    $this->json_options = $options;
-  }
+    public function __construct($options = 0)
+    {
+        $this->json_options = $options;
+    }
 
   /**
    * Formats any kind of value as a raw dump
@@ -34,10 +36,11 @@ class JSONFormatter implements OutputFormatterInterface {
    * @param mixed $object An object to dump via print_r
    * @return string
    */
-  public function formatDump($object) {
-    $printout = json_encode($object, $this->json_options);
-    return $printout;
-  }
+    public function formatDump($object)
+    {
+        $printout = json_encode($object, $this->json_options);
+        return $printout;
+    }
 
   /**
    * Format a single record or object
@@ -47,10 +50,11 @@ class JSONFormatter implements OutputFormatterInterface {
    *   the record to human labels
    * @return string
    */
-  public function formatRecord($record, array $human_labels = array()) {
-    $record = json_encode((array)$record, $this->json_options);
-    return $record;
-  }
+    public function formatRecord($record, array $human_labels = array())
+    {
+        $record = json_encode((array)$record, $this->json_options);
+        return $record;
+    }
 
   /**
    * Format a list of records of the same type.
@@ -59,10 +63,11 @@ class JSONFormatter implements OutputFormatterInterface {
    * @param array $human_labels An array mapping record keys to human names
    * @return string
    */
-  public function formatRecordList(array $records, array $human_labels = array()) {
-    $list = json_encode((array)$records, $this->json_options);
-    return $list;
-  }
+    public function formatRecordList(array $records, array $human_labels = array())
+    {
+        $list = json_encode((array)$records, $this->json_options);
+        return $list;
+    }
 
   /**
    * Formats a single scalar value with an optional human label.
@@ -71,10 +76,11 @@ class JSONFormatter implements OutputFormatterInterface {
    * @param string $human_label A human readable label for that value
    * @return string
    */
-  public function formatValue($value, $human_label = '') {
-    $formatted_value = json_encode($value, $this->json_options);
-    return $formatted_value;
-  }
+    public function formatValue($value, $human_label = '')
+    {
+        $formatted_value = json_encode($value, $this->json_options);
+        return $formatted_value;
+    }
 
   /**
    * Format a list of scalar values
@@ -84,9 +90,9 @@ class JSONFormatter implements OutputFormatterInterface {
    *   needs a separate label, then formatRecord should be used.
    * @return void
    */
-  public function formatValueList(array $values, $human_label = '') {
-    $list = json_encode((array)$values, $this->json_options);
-    return $list;
-  }
-
+    public function formatValueList(array $values, $human_label = '')
+    {
+        $list = json_encode((array)$values, $this->json_options);
+        return $list;
+    }
 }

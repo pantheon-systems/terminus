@@ -8,12 +8,13 @@ namespace Terminus\Dispatcher;
  * @param \Terminus\Dispatcher\RootCommand $command Chained command object
  * @return array Represents names of all commands in param
  */
-function getPath($command) {
-  $path = array();
+function getPath($command)
+{
+    $path = array();
 
-  do {
-    array_unshift($path, $command->getName());
-  } while ($command = $command->getParent());
+    do {
+        array_unshift($path, $command->getName());
+    } while ($command = $command->getParent());
 
-  return $path;
+    return $path;
 }

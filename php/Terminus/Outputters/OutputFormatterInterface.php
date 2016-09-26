@@ -19,7 +19,7 @@ interface OutputFormatterInterface
    * @param mixed $object An object to dump via print_r
    * @return string
    */
-  public function formatDump($object);
+    public function formatDump($object);
 
   /**
    * Format a single record or object
@@ -29,7 +29,7 @@ interface OutputFormatterInterface
    *   the record to human labels
    * @return string
    */
-  public function formatRecord($record, array $human_labels = array());
+    public function formatRecord($record, array $human_labels = array());
 
   /**
    * Format a list of records of the same type.
@@ -38,7 +38,7 @@ interface OutputFormatterInterface
    * @param array $human_labels An array mapping record keys to human names
    * @return string
    */
-  public function formatRecordList(array $records, array $human_labels = array());
+    public function formatRecordList(array $records, array $human_labels = array());
 
   /**
    * Formats a single scalar value with an optional human label.
@@ -47,7 +47,7 @@ interface OutputFormatterInterface
    * @param string $human_label A human readable label for that value
    * @return string
    */
-  public function formatValue($value, $human_label = '');
+    public function formatValue($value, $human_label = '');
 
   /**
    * Format a list of scalar values
@@ -57,6 +57,5 @@ interface OutputFormatterInterface
    *   needs a separate label, then formatRecord should be used.
    * @return void
    */
-  public function formatValueList(array $values, $human_label = '');
-
+    public function formatValueList(array $values, $human_label = '');
 }

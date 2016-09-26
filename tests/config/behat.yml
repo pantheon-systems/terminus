@@ -4,7 +4,7 @@ default:
     default:
       paths: [ %paths.base%/../features ]
       contexts:
-        - FeatureContext:
+        - Terminus\FeatureTests\FeatureContext:
             parameters:
               username:                'devuser@pantheon.io'
               user_uuid:               '11111111-1111-1111-1111-111111111111'
@@ -25,7 +25,7 @@ default:
     qa:
       paths: [ %paths.base%/../qa_features ]
       contexts:
-        - FeatureContext:
+        - Terminus\FeatureTests\FeatureContext:
             parameters:
               username:                'devuser@pantheon.io'
               user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'

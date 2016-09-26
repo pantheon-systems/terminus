@@ -4,30 +4,32 @@ namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
 
-class SiteUserMemberships extends TerminusCollection {
+class SiteUserMemberships extends TerminusCollection
+{
   /**
    * @var Site
    */
-  public $site;
+    public $site;
   /**
    * @var string
    */
-  protected $collected_class = 'Terminus\Models\SiteUserMembership';
+    protected $collected_class = 'Terminus\Models\SiteUserMembership';
   /**
    * @var boolean
    */
-  protected $paged = true;
+    protected $paged = true;
 
   /**
    * Object constructor
    *
    * @param array $options Options to set as $this->key
    */
-  public function __construct($options = []) {
-    parent::__construct($options);
-    $this->site = $options['site'];
-    $this->url = "sites/{$this->site->id}/memberships/users";
-  }
+    public function __construct($options = [])
+    {
+        parent::__construct($options);
+        $this->site = $options['site'];
+        $this->url = "sites/{$this->site->id}/memberships/users";
+    }
 
   /**
    * Adds this user as a member to the site
@@ -36,13 +38,14 @@ class SiteUserMemberships extends TerminusCollection {
    * @param string $role  Role to assign to the new user
    * @return Workflow
    **/
-  public function create($email, $role) {
-    $workflow = $this->site->workflows->create(
-      'add_site_user_membership',
-      ['params' => ['user_email' => $email, 'role' => $role,],]
-    );
-    return $workflow;
-  }
+    public function create($email, $role)
+    {
+        $workflow = $this->site->workflows->create(
+            'add_site_user_membership',
+            ['params' => ['user_email' => $email, 'role' => $role,],]
+        );
+        return $workflow;
+    }
 
   /**
    * Retrieves the membership of the given UUID or email
@@ -51,27 +54,27 @@ class SiteUserMemberships extends TerminusCollection {
    * @return SiteUserMembership
    * @throws TerminusException
    */
-  public function get($id) {
-    $models     = $this->getMembers();
-    $membership = null;
-    if (isset($models[$id])) {
-      $membership = $models[$id];
-    } else {
-      foreach ($models as $model) {
-        $userdata = $model->get('user');
-        if (is_object($userdata)
-          && property_exists($userdata, 'email')
-          && ($userdata->email == $id)
-        ) {
-          return $model;
+    public function get($id)
+    {
+        $models     = $this->getMembers();
+        $membership = null;
+        if (isset($models[$id])) {
+            $membership = $models[$id];
+        } else {
+            foreach ($models as $model) {
+                $userdata = $model->get('user');
+                if (is_object($userdata)
+                && property_exists($userdata, 'email')
+                && ($userdata->email == $id)
+                ) {
+                    return $model;
+                }
+            }
         }
-      }
+        throw new TerminusException(
+            'Cannot find site user with the name "{id}"',
+            compact('id'),
+            1
+        );
     }
-    throw new TerminusException(
-      'Cannot find site user with the name "{id}"',
-      compact('id'),
-      1
-    );
-  }
-
 }

@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "61595256a28134573f0ed27dd6f36239",
+    "hash": "2e23874d2e8ccaab25dcf96aa9213083",
     "content-hash": "5c4b4afcabecfd0572cdc72f3354ab2e",
     "packages": [
         {
             "name": "consolidation/annotated-command",
-            "version": "2.0.0-beta4",
+            "version": "2.0.0-beta7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "47d5e634385f379c17ccf547e4a20f48c11b9183"
+                "reference": "76a15b061124f8a57742854662a58a501133a84a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/47d5e634385f379c17ccf547e4a20f48c11b9183",
-                "reference": "47d5e634385f379c17ccf547e4a20f48c11b9183",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/76a15b061124f8a57742854662a58a501133a84a",
+                "reference": "76a15b061124f8a57742854662a58a501133a84a",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
                 "symfony/finder": "~2.5|~3.0"
             },
             "require-dev": {
-                "consolidation/output-formatters": "^2.0.0-beta3",
+                "consolidation/output-formatters": "^2.0.0-beta6",
                 "phpunit/phpunit": "4.*",
                 "satooshi/php-coveralls": "^1.0",
                 "squizlabs/php_codesniffer": "2.*"
@@ -60,7 +60,7 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2016-09-19 19:00:17"
+            "time": "2016-09-23 20:31:13"
         },
         {
             "name": "consolidation/log",
@@ -111,16 +111,16 @@
         },
         {
             "name": "consolidation/output-formatters",
-            "version": "2.0.0-beta5",
+            "version": "2.0.0-beta7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a"
+                "reference": "e38a631b56e31b996e621bf87a3e06c59bc29b8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a",
-                "reference": "9f40486dfccd510bb1620a7c0b4ee5dfd6ccd66a",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/e38a631b56e31b996e621bf87a3e06c59bc29b8f",
+                "reference": "e38a631b56e31b996e621bf87a3e06c59bc29b8f",
                 "shasum": ""
             },
             "require": {
@@ -155,7 +155,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2016-09-19 19:44:19"
+            "time": "2016-09-23 21:25:10"
         },
         {
             "name": "consolidation/robo",
@@ -163,12 +163,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "9af2f87c9da1579526ac7ebacaa03613bcc6bad1"
+                "reference": "217d626e92be64521020187a772ffafbd529d6e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/9af2f87c9da1579526ac7ebacaa03613bcc6bad1",
-                "reference": "9af2f87c9da1579526ac7ebacaa03613bcc6bad1",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/217d626e92be64521020187a772ffafbd529d6e3",
+                "reference": "217d626e92be64521020187a772ffafbd529d6e3",
                 "shasum": ""
             },
             "require": {
@@ -229,7 +229,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-19 19:22:04"
+            "time": "2016-09-19 19:48:01"
         },
         {
             "name": "container-interop/container-interop",
@@ -1554,16 +1554,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.24.2",
+            "version": "v1.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7"
+                "reference": "f16a634ab08d87e520da5671ec52153d627f10f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
-                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/f16a634ab08d87e520da5671ec52153d627f10f6",
+                "reference": "f16a634ab08d87e520da5671ec52153d627f10f6",
                 "shasum": ""
             },
             "require": {
@@ -1576,7 +1576,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.24-dev"
+                    "dev-master": "1.25-dev"
                 }
             },
             "autoload": {
@@ -1611,7 +1611,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-09-01 17:50:53"
+            "time": "2016-09-21 23:05:12"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1826,20 +1826,20 @@
         },
         {
             "name": "behat/behat",
-            "version": "v3.2.0rc2",
+            "version": "v3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Behat.git",
-                "reference": "046e69b62e4b941b181920ab2447d31db8c00a00"
+                "reference": "73b433326c87bbd8bc528ce57c29722405ffff5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/046e69b62e4b941b181920ab2447d31db8c00a00",
-                "reference": "046e69b62e4b941b181920ab2447d31db8c00a00",
+                "url": "https://api.github.com/repos/Behat/Behat/zipball/73b433326c87bbd8bc528ce57c29722405ffff5e",
+                "reference": "73b433326c87bbd8bc528ce57c29722405ffff5e",
                 "shasum": ""
             },
             "require": {
-                "behat/gherkin": "^4.4.2",
+                "behat/gherkin": "^4.4.4",
                 "behat/transliterator": "~1.0",
                 "ext-mbstring": "*",
                 "php": ">=5.3.3",
@@ -1903,7 +1903,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2016-09-10 04:14:55"
+            "time": "2016-09-20 07:23:29"
         },
         {
             "name": "behat/gherkin",

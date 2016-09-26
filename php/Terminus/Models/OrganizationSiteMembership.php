@@ -2,15 +2,16 @@
 
 namespace Terminus\Models;
 
-class OrganizationSiteMembership extends TerminusModel {
+class OrganizationSiteMembership extends TerminusModel
+{
   /**
    * @var Organization
    */
-  public $organization;
+    public $organization;
   /**
    * @var Site
    */
-  public $site;
+    public $site;
 
   /**
    * Object constructor
@@ -18,26 +19,25 @@ class OrganizationSiteMembership extends TerminusModel {
    * @param object $attributes Attributes of this model
    * @param array  $options    Options with which to configure this model
    */
-  public function __construct($attributes = null, array $options = []) {
-    parent::__construct($attributes, $options);
-    $this->organization = $options['collection']->organization;
-    $this->site = new Site(
-      $attributes->site,
-      ['id' => $attributes->site->id, 'memberships' => [$this,],]
-    );
-  }
+    public function __construct($attributes = null, array $options = [])
+    {
+        parent::__construct($attributes, $options);
+        $this->organization = $options['collection']->organization;
+        $this->site = new Site($attributes->site);
+        $this->site->memberships = [$this,];
+    }
 
   /**
    * Removes a site from this organization
    *
    * @return Workflow
    */
-  public function delete() {
-    $workflow = $this->organization->workflows->create(
-      'remove_organization_site_membership',
-      ['params' => ['site_id' => $this->site->id,],]
-    );
-    return $workflow;
-  }
-
+    public function delete()
+    {
+        $workflow = $this->organization->workflows->create(
+            'remove_organization_site_membership',
+            ['params' => ['site_id' => $this->site->id,],]
+        );
+        return $workflow;
+    }
 }
