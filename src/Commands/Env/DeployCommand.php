@@ -31,7 +31,6 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
                                     'cc' => false,
                                     'updatedb' => false,])
     {
-        // @TODO: Switch this to the standard site.env input format?
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
         if (!$env->hasDeployableCode()) {
