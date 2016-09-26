@@ -100,6 +100,7 @@ Your dashboard password (input will not be shown)
 [1969-07-20 20:18:00] [info] Logging in as user@pantheon.io
 [1969-07-21 02:56:00] [info] Saving session data
 ```
+If you are planning to run WP-CLI or Drush commands through terminus, please [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing terminus.
 
 Tab completion
 --------------
