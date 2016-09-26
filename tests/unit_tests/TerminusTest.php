@@ -47,8 +47,8 @@ abstract class TerminusTest extends \PHPUnit_Framework_TestCase
   */
     public function getVCRCredentials()
     {
-        $vcr_config = $this->config->get('root') . '/behat.yml';
-        return Yaml::parse(file_get_contents($vcr_config));
+        $vcr_config = Yaml::parse(file_get_contents($this->config->get('root') . '/tests/config/behat.yml'));
+        return $vcr_config['default']['suites']['default']['contexts'][0]['Terminus\FeatureTests\FeatureContext']['parameters'];
     }
 
   /**
@@ -58,7 +58,8 @@ abstract class TerminusTest extends \PHPUnit_Framework_TestCase
   */
     public function logInWithVCRCredentials()
     {
-        $creds = getVCRCredentials();
+        $creds = $this->getVCRCredentials();
+        $creds['token'] = $creds['machine_token'];
         $auth = new Auth();
         $auth->logInViaMachineToken($creds);
     }

@@ -8,17 +8,15 @@ namespace Terminus\Commands;
 class DrushCommand extends CommandWithSSH
 {
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $client = 'Drush';
-
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $command = 'drush';
-
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $unavailable_commands = [
     'sql-connect' => 'site connection-info --field=mysql_command',
@@ -40,11 +38,13 @@ class DrushCommand extends CommandWithSSH
    */
     public function __invoke($args, $assoc_args)
     {
-        $elements = $this->getElements($args, $assoc_args);
+        parent::__invoke($args, $assoc_args);
+        $command = $this->ssh_command;
         if ($this->log()->getOptions('logFormat') != 'normal') {
-            $elements['command']   .= ' --pipe';
+            $command .= ' --pipe';
         }
-        $result = $this->sendCommand($elements);
-        $this->output()->outputDump($result);
+        $result = $this->environment->sendCommandViaSsh($command);
+        $this->output()->outputDump($result['output']);
+        exit($result['exit_code']);
     }
 }

@@ -26,12 +26,11 @@ class DeleteCommand extends TerminusCommand
      */
     public function delete($ssh_key_id)
     {
-        $user = $this->session()->getUser();
 
         // Remove ':' to allow the id to be specified in ssh thumbnail format.
         $ssh_key_id = str_replace(':', '', $ssh_key_id);
         // Find the key. Will throw an exception if it doesn't exist.
-        $key = $user->ssh_keys->get($ssh_key_id);
+        $key = $this->session()->getUser()->ssh_keys->get($ssh_key_id);
         $name = $key->get('id');
 
         $this->log()->notice('Deleting SSH key {key} ...', ['key' => $name]);

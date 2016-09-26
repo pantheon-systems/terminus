@@ -8,17 +8,17 @@ namespace Terminus\Commands;
 class WpCommand extends CommandWithSSH
 {
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $client = 'WP-CLI';
 
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $command = 'wp';
 
   /**
-   * {@inheritdoc}
+   * @inheritdoc
    */
     protected $unavailable_commands = [
     'db' => '',
@@ -27,7 +27,7 @@ class WpCommand extends CommandWithSSH
   /**
    * Invoke `wp` commands on a Pantheon development site
    *
-   * <commands>...
+   * <commands>
    * : The WP-CLI command you intend to run with its arguments, in quotes
    *
    * [--site=<site>]
@@ -39,8 +39,9 @@ class WpCommand extends CommandWithSSH
    */
     public function __invoke($args, $assoc_args)
     {
-        $elements = $this->getElements($args, $assoc_args);
-        $results  = $this->sendCommand($elements);
-        $this->output()->outputDump($results);
+        parent::__invoke($args, $assoc_args);
+        $result = $this->environment->sendCommandViaSsh($this->ssh_command);
+        $this->output()->outputDump($result['output']);
+        exit($result['exit_code']);
     }
 }

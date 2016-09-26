@@ -3,10 +3,14 @@
 namespace Pantheon\Terminus\Commands\Upstream;
 
 use Pantheon\Terminus\Commands\SiteCommandBase;
+use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Exceptions\TerminusException;
 
-abstract class UpstreamCommand extends SiteCommandBase
+abstract class UpstreamCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
 
     /**
      * Return the upstream for the given site
@@ -17,7 +21,7 @@ abstract class UpstreamCommand extends SiteCommandBase
      */
     protected function getUpstreamUpdates($site)
     {
-        $upstream = $this->getSite($site)->upstream->getUpdates();
+        $upstream = $site->upstream->getUpdates();
 
         if (empty($upstream)) {
             $message = 'There was a problem checking your upstream status. Please try again.';

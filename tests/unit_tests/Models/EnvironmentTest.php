@@ -3,11 +3,12 @@
 namespace Terminus\UnitTests\Models;
 
 use Terminus\Collections\Sites;
+use Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Environment
  */
-class EnvironmentTest extends \PHPUnit_Framework_TestCase
+class EnvironmentTest extends TerminusTest
 {
 
   /**
@@ -22,6 +23,37 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     }
 
   /**
+   * Ensure correct cacheserver connection info for environments
+   *
+   * @vcr site_connection-info
+   */
+    public function testCacheserverConnectionInfo()
+    {
+        $this->logInWithVCRCredentials();
+        $site = $this->sites->get('behat-tests');
+        $env  = $site->environments->get('dev');
+
+        $connection_info = $env->cacheserverConnectionInfo();
+
+      // Cache server connection connection_info
+        $pass = 'bf19fbfd2f584df591aa1c8666a8f126';
+        $host = '23.253.39.24';
+        $port = '11279';
+        $user = "pantheon";
+
+        $cache_info_expected = [
+        'password' => $pass,
+        'host'     => $host,
+        'port'     => $port,
+        'url'      => "redis://$user:$pass@$host:$port",
+        'command'  => "redis-cli -h $host -p $port -a $pass",
+        ];
+        $this->assertArraySubset($cache_info_expected, $connection_info);
+
+        $this->setDummyCredentials();
+    }
+
+  /**
    * Ensure correct connection info for development environments
    * Development environment connection info includes git parameters
    *
@@ -29,7 +61,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
    */
     public function testConnectionInfoDev()
     {
-        $this->$this->logInWithVCRCredentials();
+        $this->logInWithVCRCredentials();
         $site = $this->sites->get('behat-tests');
         $env  = $site->environments->get('dev');
 
@@ -152,6 +184,80 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     }
 
   /**
+   * Ensure correct database connection info for environments
+   *
+   * @vcr site_connection-info
+   */
+    public function testDatabaseConnectionInfo()
+    {
+        $this->logInWithVCRCredentials();
+        $site = $this->sites->get('behat-tests');
+        $env  = $site->environments->get('dev');
+        $connection_info = $env->databaseConnectionInfo();
+
+      // Database Connection Info
+        $host     = "dbserver.{$env->id}.{$site->id}.drush.in";
+        $user     = 'pantheon';
+        $database = 'pantheon';
+        $pass     = 'ad7e59695d264b3782c2a9fd959d6a40';
+        $port     = '16698';
+
+        $db_info_expected = [
+        'host' => $host,
+        'username' => $user,
+        'password' => $pass,
+        'port' => $port,
+        'database' => $database,
+        'url' => "mysql://{$user}:{$pass}@{$host}:{$port}/{$database}",
+        'command' => "mysql -u $user -p$pass -h $host -P $port $database",
+        ];
+        $this->assertArraySubset($db_info_expected, $connection_info);
+        $this->setDummyCredentials();
+    }
+
+  /**
+   * @vcr site_deploy
+   */
+    public function testGetParentEnvironment()
+    {
+        $this->logInWithVCRCredentials();
+        $site     = $this->sites->get('behat-tests');
+        $test_env = $site->environments->get('test');
+        $dev_env  = $test_env->getParentEnvironment();
+        $this->assertEquals($dev_env->get('id'), 'dev');
+        $this->setDummyCredentials();
+    }
+
+  /**
+   * Ensure correct Git connection info for environments
+   *
+   * @vcr site_connection-info
+   */
+    public function testGitConnectionInfo()
+    {
+        $this->logInWithVCRCredentials();
+        $site = $this->sites->get('behat-tests');
+        $env  = $site->environments->get('dev');
+        $connection_info = $env->gitConnectionInfo();
+
+      // Git Connection Info
+        $user = "codeserver.{$env->id}.{$site->id}";
+        $host = "$user.drush.in";
+        $port = '2222';
+        $url  = "ssh://$user@$host:$port/~/repository.git";
+
+        $git_info_expected = [
+        'username' => $user,
+        'host' => $host,
+        'port' => $port,
+        'url' => $url,
+        'command' => "git clone $url {$site->get('name')}",
+        ];
+        $this->assertArraySubset($git_info_expected, $connection_info);
+        $this->setDummyCredentials();
+    }
+
+  /**
    * @vcr site_deploy
    */
     public function testHasDeployableCode()
@@ -176,15 +282,30 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     }
 
   /**
-   * @vcr site_deploy
+   * Ensure correct SFTP connection info for environments
+   *
+   * @vcr site_connection-info
    */
-    public function testGetParentEnvironment()
+    public function testSftpConnectionInfo()
     {
         $this->logInWithVCRCredentials();
-        $site     = $this->sites->get('behat-tests');
-        $test_env = $site->environments->get('test');
-        $dev_env  = $test_env->getParentEnvironment();
-        $this->assertEquals($dev_env->get('id'), 'dev');
+        $site = $this->sites->get('behat-tests');
+        $env  = $site->environments->get('dev');
+        $connection_info = $env->sftpConnectionInfo();
+
+      // SFTP Connection Info
+        $user = "{$env->id}.{$site->id}";
+        $host = "appserver.{$user}.drush.in";
+        $port = "2222";
+
+        $sftp_info_expected = [
+        'username' => $user,
+        'host' => $host,
+        'password' => 'Use your account password',
+        'url' => "sftp://{$env->id}.{$site->id}@$host:$port",
+        'command' => "sftp -o Port=$port {$env->id}.{$site->id}@$host",
+        ];
+        $this->assertArraySubset($sftp_info_expected, $connection_info);
         $this->setDummyCredentials();
     }
 }

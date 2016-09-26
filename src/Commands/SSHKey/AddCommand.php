@@ -26,8 +26,7 @@ class AddCommand extends TerminusCommand
      */
     public function add($file)
     {
-        $user = $this->session()->getUser();
-        $user->ssh_keys->addKey($file);
+        $this->session()->getUser()->ssh_keys->addKey($file);
         $this->log()->notice('Added SSH key from file {file}.', compact('file'));
     }
 }

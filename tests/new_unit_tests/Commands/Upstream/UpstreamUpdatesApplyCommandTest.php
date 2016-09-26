@@ -3,8 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\Upstream\UpdatesApplyCommand;
-use Terminus\Collections\Environments;
-use Terminus\Models\Environment;
 use Terminus\Models\Workflow;
 
 class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
@@ -15,17 +13,6 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
     {
         parent::setUp();
 
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site->environments = $this->getMockBuilder(Environments::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site->environments->method('get')
-            ->willReturn($this->environment);
-
         $this->command = new UpdatesApplyCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
@@ -33,12 +20,13 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
 
     public function testApplyUpdatesNone()
     {
+        $this->environment->id = 'dev';
+
         $upstream = (object)[
             "remote_head" => "2f1c945d01cd03250e2b6668ad77bf24f54a5a56",
             "ahead" => 1,
             "update_log" => (object)[],
         ];
-
 
         $this->site->upstream->method('getUpdates')
             ->willReturn($upstream);
@@ -58,6 +46,8 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
 
     public function testApplyUpdates()
     {
+        $this->environment->id = 'dev';
+
         $upstream = (object)[
             "remote_head" => "2f1c945d01cd03250e2b6668ad77bf24f54a5a56",
             "ahead" => 1,
@@ -110,6 +100,11 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
             ->with($this->equalTo(true), $this->equalTo(true))
             ->willReturn($workflow);
 
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with('name')
+            ->willReturn('my-site');
+
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
@@ -124,7 +119,6 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo('Applied upstream updates to "dev"')
             );
-
 
         $this->command->applyUpstreamUpdates('my-site');
     }
