@@ -15,7 +15,10 @@
     Deletes machine token
 
 ##### Return:
-    [array]
+    [void]
+
+##### Throws:
+    \Terminus\Exceptions\TerminusException
 
 ---
 

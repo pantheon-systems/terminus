@@ -36,6 +36,23 @@
 
 ---
 
+### confirm
+##### Description:
+    Asks for confirmation before running a destructive operation.
+
+##### Parameters:
+    [array] $arg_options Elements as follow:
+    -string question Prompt text
+    -array  params   Elements to interpolate into the prompt text
+    -array  args     Arguments given via param
+    -string key      Args key to search for
+    -bool   exit     If true, exit when turned down
+
+##### Return:
+    [bool] True if prompt is accepted
+
+---
+
 ### day
 ##### Description:
     Facilitates the selection of a day of the week
