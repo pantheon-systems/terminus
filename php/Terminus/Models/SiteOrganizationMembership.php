@@ -2,8 +2,11 @@
 
 namespace Terminus\Models;
 
+use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+
 class SiteOrganizationMembership extends TerminusModel
 {
+
   /**
    * @var Organization
    */
@@ -40,6 +43,21 @@ class SiteOrganizationMembership extends TerminusModel
             ['params' => ['organization_id' => $this->id,],]
         );
         return $workflow;
+    }
+
+    /**
+     * Get model data as AssociativeList
+     *
+     * @return AssociativeList
+     */
+    public function serialize() {
+        $data = [
+            'org_id'    => $this->organization->id,
+            'org_name'  => $this->organization->get('profile')->name,
+            'site_id'   => $this->site->id,
+            'site_name' => $this->site->get('name'),
+        ];
+        return $data;
     }
 
   /**
