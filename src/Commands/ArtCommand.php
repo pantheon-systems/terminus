@@ -2,27 +2,40 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Symfony\Component\Finder\Finder;
-
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Finder\Finder;
 
+/**
+ * Class ArtCommand
+ * @package Pantheon\Terminus\Commands
+ */
 class ArtCommand extends TerminusCommand
 {
+    /**
+     * @var string name of the file.
+     */
+    protected $filename;
+
     /**
      * Displays Pantheon ASCII artwork
      *
      * @command art
      *
      * @param string $name Name of the artwork to select
+     *
      * @usage terminus art rocket
      *   Displays the rocket artwork
      */
-    public function art($name)
+    public function art($name = '')
     {
-        $artwork_content = $this->retrieveArt($name);
-        $this->io()->text("<comment>{$artwork_content}</comment>");
+        $this->formatFilename($name);
+        // If a name wasn't provide we want to only print available items.
+        if ($name) {
+            $artwork_content = $this->retrieveArt($name);
+            $this->io()->text("<comment>{$artwork_content}</comment>");
+        }
     }
 
     /**
@@ -30,43 +43,19 @@ class ArtCommand extends TerminusCommand
      * prompt for it here.
      *
      * @hook interact
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
     public function interact(InputInterface $input, OutputInterface $output)
     {
         $available_art = $this->availableArt();
-
         $io = new SymfonyStyle($input, $output);
         $art_name = $input->getArgument('name');
         if (!$art_name) {
-            $art_name = $io->choice('Select art:', $available_art, 'fist');
-            $input->setArgument('name', $art_name);
+            $io->title('Available Art');
+            $io->listing($available_art);
         }
-    }
-
-    /**
-     * @param $name
-     * @return string
-     */
-    protected function retrieveArt($name)
-    {
-        $file_path = $this->config->get('assets_dir') . "/{$name}.txt";
-        if ($this->validateAsset($file_path)) {
-            $output = base64_decode(file_get_contents($file_path));
-        } else {
-            $output = "Not a valid work of art!";
-        }
-        return $output;
-    }
-
-    /**
-     * Check to see if an asset exists.
-     *
-     * @param $file_path
-     * @return bool
-     */
-    private function validateAsset($file_path)
-    {
-        return file_exists($file_path);
     }
 
     /**
@@ -89,8 +78,68 @@ class ArtCommand extends TerminusCommand
                 function ($file) {
                     return $file->getBasename('.txt');
                 },
-                (array) $finder->getIterator()
+                (array)$finder->getIterator()
             )
         );
+    }
+
+    /**
+     * Set the art filename.
+     *
+     * @param $name
+     *
+     * @return \Pantheon\Terminus\Commands\ArtCommand
+     *
+     */
+    protected function formatFilename($name)
+    {
+        if ($name == 'random') {
+            $name = $this->randomArtName();
+        }
+        $this->filename = $this->config->get('assets_dir') . "/{$name}.txt";
+
+        return $this;
+    }
+
+    /**
+     * Retrieve the contents of an art file.
+     *
+     * @param $name
+     * @return string
+     * @throws \Exception
+     */
+    protected function retrieveArt($name)
+    {
+        if (!file_exists($this->filename)) {
+            throw new \Exception("There is no source for the requested {$name} artwork.", 1);
+        }
+        return base64_decode(file_get_contents($this->filename));
+    }
+
+    /**
+     * Feeling lucky? Get a random artwork.
+     * @return string
+     */
+    private function randomArtName()
+    {
+        $art = $this->availableArt();
+
+        return $art[array_rand($art)];
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param string $filename
+     */
+    protected function setFilename(string $filename)
+    {
+        $this->filename = $filename;
     }
 }
