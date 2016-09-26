@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## [0.13.2] - 2016-09-26
 ### Fixed
 - Fixed apply upstream updates. (#1233)
 - Fixed `site upstream-info`. (#1224)
