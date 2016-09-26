@@ -9,16 +9,16 @@
     "packages": [
         {
             "name": "consolidation/annotated-command",
-            "version": "2.0.0-beta7",
+            "version": "2.0.0-beta8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "76a15b061124f8a57742854662a58a501133a84a"
+                "reference": "2c2ae1ac7b89af662fcbcb898dc51ad2b5b89b60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/76a15b061124f8a57742854662a58a501133a84a",
-                "reference": "76a15b061124f8a57742854662a58a501133a84a",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/2c2ae1ac7b89af662fcbcb898dc51ad2b5b89b60",
+                "reference": "2c2ae1ac7b89af662fcbcb898dc51ad2b5b89b60",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2016-09-23 20:31:13"
+            "time": "2016-09-26 04:52:45"
         },
         {
             "name": "consolidation/log",
@@ -163,12 +163,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "217d626e92be64521020187a772ffafbd529d6e3"
+                "reference": "bf6fec8bd48931e0ae3e7db8c566adafe5c3a4f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/217d626e92be64521020187a772ffafbd529d6e3",
-                "reference": "217d626e92be64521020187a772ffafbd529d6e3",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/bf6fec8bd48931e0ae3e7db8c566adafe5c3a4f3",
+                "reference": "bf6fec8bd48931e0ae3e7db8c566adafe5c3a4f3",
                 "shasum": ""
             },
             "require": {
@@ -229,7 +229,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-19 19:48:01"
+            "time": "2016-09-26 05:14:22"
         },
         {
             "name": "container-interop/container-interop",
@@ -1826,16 +1826,16 @@
         },
         {
             "name": "behat/behat",
-            "version": "v3.2.0",
+            "version": "v3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Behat.git",
-                "reference": "73b433326c87bbd8bc528ce57c29722405ffff5e"
+                "reference": "df7d9225e9ee37fdaa54273e3e0aecf2515bbe76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Behat/zipball/73b433326c87bbd8bc528ce57c29722405ffff5e",
-                "reference": "73b433326c87bbd8bc528ce57c29722405ffff5e",
+                "url": "https://api.github.com/repos/Behat/Behat/zipball/df7d9225e9ee37fdaa54273e3e0aecf2515bbe76",
+                "reference": "df7d9225e9ee37fdaa54273e3e0aecf2515bbe76",
                 "shasum": ""
             },
             "require": {
@@ -1903,7 +1903,7 @@
                 "symfony",
                 "testing"
             ],
-            "time": "2016-09-20 07:23:29"
+            "time": "2016-09-25 09:40:39"
         },
         {
             "name": "behat/gherkin",

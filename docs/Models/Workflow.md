@@ -79,3 +79,28 @@
 
 ---
 
+### checkProgress
+##### Description:
+    Check on the progress of a workflow. This can be called repeatedly and will apply a polling
+    period to prevent flooding the API with requests.
+
+##### Return:
+    [bool] Whether the workflow is finished or not
+
+##### Throws:
+    \Terminus\Exceptions\TerminusException
+
+---
+
+### getMessage
+##### Description:
+    Get the success message of a workflow or throw an exception of the workflow failed.
+
+##### Return:
+    [string] The message to output to the user
+
+##### Throws:
+    \Terminus\Exceptions\TerminusException
+
+---
+

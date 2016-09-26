@@ -35,20 +35,6 @@
 
 ---
 
-### applyUpstreamUpdates
-##### Description:
-    Apply upstream updates
-
-##### Parameters:
-    [string] $env_id   Environment name
-    [bool]   $updatedb True to run update.php
-    [bool]   $xoption  True to automatically resolve merge conflicts
-
-##### Return:
-    [Workflow]
-
----
-
 ### attributes
 ##### Description:
     Returns an array of attributes
@@ -266,15 +252,6 @@
 
 ---
 
-### getUpstreamUpdates
-##### Description:
-    Get upstream updates
-
-##### Return:
-    [\stdClass]
-
----
-
 ### hasTag
 ##### Description:
     Checks to see whether the site has a tag associated with the given org
@@ -285,20 +262,6 @@
 
 ##### Return:
     [bool]
-
----
-
-### info
-##### Description:
-    Load site info
-
-##### Parameters:
-    [string] $key Set to retrieve a specific attribute as named
-
-##### Return:
-    [array|null|mixed]
-    -If $key is supplied, return named bit of info, or null if not found.
-    -If no $key supplied, return entire info array.
 
 ---
 
@@ -342,6 +305,15 @@
 
 ##### Return:
     [array]
+
+---
+
+### serialize
+##### Description:
+    Formats the Site object into an associative array for output
+
+##### Return:
+    [array] Associative array of data for output
 
 ---
 

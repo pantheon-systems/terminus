@@ -10,6 +10,28 @@
 
 ---
 
+### applyUpstreamUpdates
+##### Description:
+    Apply upstream updates
+
+##### Parameters:
+    [boolean] $updatedb True to run update.php
+    [boolean] $xoption  True to automatically resolve merge conflicts
+
+##### Return:
+    [Workflow]
+
+---
+
+### cacheserverConnectionInfo
+##### Description:
+    Gives cacheserver connection info for this environment
+
+##### Return:
+    [array]
+
+---
+
 ### changeConnectionMode
 ##### Description:
     Changes connection mode
@@ -95,6 +117,15 @@
 
 ---
 
+### databaseConnectionInfo
+##### Description:
+    Gives database connection info for this environment
+
+##### Return:
+    [array]
+
+---
+
 ### delete
 ##### Description:
     Delete a multidev environment
@@ -162,6 +193,15 @@
 
 ##### Return:
     [Environment]
+
+---
+
+### gitConnectionInfo
+##### Description:
+    Gives Git connection info for this environment
+
+##### Return:
+    [array]
 
 ---
 
@@ -309,6 +349,20 @@
 
 ---
 
+### sendCommandViaSsh
+##### Description:
+    Sends a command to an environment via SSH.
+
+##### Parameters:
+    [string] $command The command to be run on the platform
+
+##### Return:
+    [string[]] $response Elements as follow:
+    -string output    The output from the command run
+    -string exit_code The status code returned by the command run
+
+---
+
 ### setHttpsCertificate
 ##### Description:
     Add/replace an HTTPS certificate on the environment
@@ -321,6 +375,15 @@
 
 ##### Return:
     [$workflow]
+
+---
+
+### sftpConnectionInfo
+##### Description:
+    Gives SFTP connection info for this environment
+
+##### Return:
+    [array]
 
 ---
 
