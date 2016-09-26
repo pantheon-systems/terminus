@@ -4,6 +4,7 @@ namespace Terminus\Models;
 
 use GuzzleHttp\TransferStats as TransferStats;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Config;
 use Terminus\Collections\Backups;
 use Terminus\Collections\Bindings;
 use Terminus\Collections\Commits;
@@ -67,6 +68,39 @@ class Environment extends TerminusModel
         $params = ['updatedb' => $updatedb, 'xoption' => $xoption];
         $workflow = $this->workflows->create('apply_upstream_updates', compact('params'));
         return $workflow;
+    }
+
+  /**
+   * Gives cacheserver connection info for this environment
+   *
+   * @return array
+   */
+    public function cacheserverConnectionInfo()
+    {
+        $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
+        if (!empty($cacheserver_binding)) {
+            do {
+                $next_binding = array_shift($cacheserver_binding);
+                if (is_null($next_binding)) {
+                    break;
+                }
+                $cache_binding = $next_binding;
+            } while (!is_null($cache_binding) && $cache_binding->get('environment') != $this->id);
+
+            $password = $cache_binding->get('password');
+            $hostname = $cache_binding->get('host');
+            $port = $cache_binding->get('port');
+            $url = "redis://pantheon:$password@$hostname:$port";
+            $command = "redis-cli -h $hostname -p $port -a $password";
+            $info = [
+            'password' => $password,
+            'host' => $hostname,
+            'port' => $port,
+            'url' => $url,
+            'command' => $command,
+            ];
+            return $info;
+        }
     }
 
   /**
@@ -170,153 +204,42 @@ class Environment extends TerminusModel
    */
     public function connectionInfo()
     {
-        $info = [];
+        $sftp_info = $this->sftpConnectionInfo();
+        $mysql_info = $this->databaseConnectionInfo();
+        $redis_info = $this->cacheserverConnectionInfo();
+        $info = array_merge(
+            array_combine(
+                array_map(function ($key) {
+                    return "sftp_$key";
+                }, array_keys($sftp_info)),
+                array_values($sftp_info)
+            ),
+            array_combine(
+                array_map(function ($key) {
+                    return "mysql_$key";
+                }, array_keys($mysql_info)),
+                array_values($mysql_info)
+            ),
+            array_combine(
+                array_map(function ($key) {
+                    return "redis_$key";
+                }, array_keys($redis_info)),
+                array_values($redis_info)
+            )
+        );
 
-        $sftp_username = sprintf(
-            '%s.%s',
-            $this->id,
-            $this->site->id
-        );
-        $sftp_password = 'Use your account password';
-        $sftp_host     = sprintf(
-            'appserver.%s.%s.drush.in',
-            $this->id,
-            $this->site->id
-        );
-        $sftp_port     = 2222;
-        $sftp_url      = sprintf(
-            'sftp://%s@%s:%s',
-            $sftp_username,
-            $sftp_host,
-            $sftp_port
-        );
-        $sftp_command  = sprintf(
-            'sftp -o Port=%s %s@%s',
-            $sftp_port,
-            $sftp_username,
-            $sftp_host
-        );
-        $sftp_params   = [
-        'sftp_username' => $sftp_username,
-        'sftp_host'     => $sftp_host,
-        'sftp_password' => $sftp_password,
-        'sftp_url'      => $sftp_url,
-        'sftp_command'  => $sftp_command,
-        ];
-        $info = array_merge($info, $sftp_params);
-
-        // Can only Use Git on dev/multidev environments
+      // Can only Use Git on dev/multidev environments
         if (!in_array($this->id, ['test', 'live',])) {
-            $git_username = sprintf(
-                'codeserver.dev.%s',
-                $this->site->id
+            $git_info = $this->gitConnectionInfo();
+            $info = array_merge(
+                array_combine(
+                    array_map(function ($key) {
+                        return "git_$key";
+                    }, array_keys($git_info)),
+                    array_values($git_info)
+                ),
+                $info
             );
-            $git_host     = sprintf(
-                'codeserver.dev.%s.drush.in',
-                $this->site->id
-            );
-            $git_port     = 2222;
-            $git_url      = sprintf(
-                'ssh://%s@%s:%s/~/repository.git',
-                $git_username,
-                $git_host,
-                $git_port
-            );
-            $git_command  = sprintf(
-                'git clone %s %s',
-                $git_url,
-                $this->site->get('name')
-            );
-            $git_params   = [
-              'git_username' => $git_username,
-              'git_host'     => $git_host,
-              'git_port'     => $git_port,
-              'git_url'      => $git_url,
-              'git_command'  => $git_command,
-            ];
-            $info = array_merge($info, $git_params);
-        }
-
-        $dbserver_binding = (array)$this->bindings->getByType('dbserver');
-        if (!empty($dbserver_binding)) {
-            do {
-                $db_binding = array_shift($dbserver_binding);
-            } while ($db_binding->get('environment') != $this->id);
-
-            $mysql_username = 'pantheon';
-            $mysql_password = $db_binding->get('password');
-            $mysql_host     = sprintf(
-                'dbserver.%s.%s.drush.in',
-                $this->id,
-                $this->site->id
-            );
-            $mysql_port     = $db_binding->get('port');
-            $mysql_database = 'pantheon';
-            $mysql_url      = sprintf(
-                'mysql://%s:%s@%s:%s/%s',
-                $mysql_username,
-                $mysql_password,
-                $mysql_host,
-                $mysql_port,
-                $mysql_database
-            );
-            $mysql_command  = sprintf(
-                'mysql -u %s -p%s -h %s -P %s %s',
-                $mysql_username,
-                $mysql_password,
-                $mysql_host,
-                $mysql_port,
-                $mysql_database
-            );
-            $mysql_params   = [
-              'mysql_host'     => $mysql_host,
-              'mysql_username' => $mysql_username,
-              'mysql_password' => $mysql_password,
-              'mysql_port'     => $mysql_port,
-              'mysql_database' => $mysql_database,
-              'mysql_url'      => $mysql_url,
-              'mysql_command'  => $mysql_command,
-            ];
-
-            $info = array_merge($info, $mysql_params);
-        }
-
-        $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
-        if (!empty($cacheserver_binding)) {
-            do {
-                $next_binding = array_shift($cacheserver_binding);
-                if (is_null($next_binding)) {
-                    break;
-                }
-                $cache_binding = $next_binding;
-            } while (!is_null($cache_binding)
-            && $cache_binding->get('environment') != $this->id
-            );
-
-            $redis_password = $cache_binding->get('password');
-            $redis_host     = $cache_binding->get('host');
-            $redis_port     = $cache_binding->get('port');
-            $redis_url      = sprintf(
-                'redis://pantheon:%s@%s:%s',
-                $redis_password,
-                $redis_host,
-                $redis_port
-            );
-            $redis_command  = sprintf(
-                'redis-cli -h %s -p %s -a %s',
-                $redis_host,
-                $redis_port,
-                $redis_password
-            );
-            $redis_params   = [
-              'redis_password' => $redis_password,
-              'redis_host'     => $redis_host,
-              'redis_port'     => $redis_port,
-              'redis_url'      => $redis_url,
-              'redis_command'  => $redis_command,
-            ];
-
-            $info = array_merge($info, $redis_params);
         }
 
         return $info;
@@ -351,6 +274,39 @@ class Environment extends TerminusModel
             );
         }
         return $number_of_commits;
+    }
+
+  /**
+   * Gives database connection info for this environment
+   *
+   * @return array
+   */
+    public function databaseConnectionInfo()
+    {
+        $dbserver_binding = (array)$this->bindings->getByType('dbserver');
+        if (!empty($dbserver_binding)) {
+            do {
+                $db_binding = array_shift($dbserver_binding);
+            } while ($db_binding->get('environment') != $this->id);
+
+            $username = 'pantheon';
+            $password = $db_binding->get('password');
+            $hostname = "dbserver.{$this->id}.{$this->site->id}.drush.in";
+            $port = $db_binding->get('port');
+            $database = 'pantheon';
+            $url = "mysql://$username:$password@$hostname:$port/$database";
+            $command  = "mysql -u $username -p$password -h $hostname -P $port $database";
+            $info = [
+            'host'     => $hostname,
+            'username' => $username,
+            'password' => $password,
+            'port'     => $port,
+            'database' => $database,
+            'url'      => $url,
+            'command'  => $command,
+            ];
+        }
+        return $info;
     }
 
   /**
@@ -461,6 +417,28 @@ class Environment extends TerminusModel
         }
         $environment = $this->site->environments->get($parent_env_id);
         return $environment;
+    }
+
+  /**
+   * Gives Git connection info for this environment
+   *
+   * @return array
+   */
+    public function gitConnectionInfo()
+    {
+        $username = "codeserver.dev.{$this->site->id}";
+        $hostname = "codeserver.dev.{$this->site->id}.drush.in";
+        $port = '2222';
+        $url = "ssh://$username@$hostname:$port/~/repository.git";
+        $command  = "git clone $url {$this->site->get('name')}";
+        $info = [
+        'username' => $username,
+        'host' => $hostname,
+        'port' => $port,
+        'url' => $url,
+        'command' => $command,
+        ];
+        return $info;
     }
 
   /**
@@ -707,6 +685,27 @@ class Environment extends TerminusModel
         return $workflow;
     }
 
+    /**
+     * Sends a command to an environment via SSH.
+     *
+     * @param string $command The command to be run on the platform
+     * @return string[] $response Elements as follow:
+     *         string output    The output from the command run
+     *         string exit_code The status code returned by the command run
+     */
+    public function sendCommandViaSsh($command)
+    {
+        $sftp = $this->sftpConnectionInfo();
+        $ssh_command = vsprintf(
+            'ssh -T %s@%s -p %s -o "AddressFamily inet" %s',
+            [$sftp['username'], $sftp['host'], $sftp['port'], escapeshellarg($command),]
+        );
+        ob_start();
+        passthru($ssh_command, $exit_code);
+        $response = ['output' => ob_get_clean(), 'exit_code' => $exit_code,];
+        return $response;
+    }
+
   /**
    * Add/replace an HTTPS certificate on the environment
    *
@@ -741,6 +740,38 @@ class Environment extends TerminusModel
         $workflow_data = $response['data'];
         $workflow = new Workflow($workflow_data, ['environment' => $this,]);
         return $workflow;
+    }
+
+  /**
+   * Gives SFTP connection info for this environment
+   *
+   * @return array
+   */
+    public function sftpConnectionInfo()
+    {
+        if (!empty($ssh_host = Config::get('ssh_host'))) {
+            $username = "appserver.{$this->id}.{$this->site->id}";
+            $hostname = $ssh_host;
+        } elseif (strpos(Config::get('host'), 'onebox') !== false) {
+            $username = "appserver.{$this->id}.{$this->site->id}";
+            $hostname = Config::get('host');
+        } else {
+            $username = "{$this->id}.{$this->site->id}";
+            $hostname = "appserver.{$this->id}.{$this->site->id}.drush.in";
+        }
+        $password = 'Use your account password';
+        $port = '2222';
+        $url = "sftp://$username@$hostname:$port";
+        $command = "sftp -o Port=$port $username@$hostname";
+        $info = [
+        'username' => $username,
+        'host' => $hostname,
+        'port' => $port,
+        'password' => $password,
+        'url' => $url,
+        'command'  => $command,
+        ];
+        return $info;
     }
 
   /**
