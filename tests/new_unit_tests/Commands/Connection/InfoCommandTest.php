@@ -13,8 +13,6 @@ use Terminus\Exceptions\TerminusException;
  */
 class InfoCommandTest extends ConnectionCommandTest
 {
-    private $prophet;
-
     /**
      * Test suite setup
      *
@@ -25,57 +23,26 @@ class InfoCommandTest extends ConnectionCommandTest
         parent::setUp();
 
         $this->command = new InfoCommand($this->getConfig());
-        $this->command->setLogger($this->logger);
-        $this->command->setSites(new Sites());
-        $this->prophet = new Prophet;
+
+        // use the basic mocked sites from CommandTestCase
+        $this->command->setSites($this->sites);
     }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $this->prophet->checkPredictions();
-    }
-
 
     /**
-     * Exercises connection:info command with a valid environment
+     * Ensure connection:info delegates to the Environment::connectionInfo()
      *
      * @return void
-     *
-     * @vcr site_connection-info
      */
     public function testConnectionInfo()
     {
-        // command output with a valid site
-        $out = $this->command->connectionInfo('behat-tests.dev');
+        // should delegate to the environment model appropriately
+        $this->environment->expects($this->once())->method('connectionInfo')
+            ->willReturn(['foo' => 'bar']);
 
-        // should return a RowOfFields object
+        // command execution
+        $out = $this->command->connectionInfo('dummy-site.dev');
+
+        // should return the correct type
         $this->assertInstanceOf(AssociativeList::class, $out);
-
-        // should have a field structure
-        $connection_info = $out->getArrayCopy();
-
-        // should contain connection parameters
-        $connection_keys = array_keys($connection_info);
-        $this->assertContains('sftp_command', $connection_keys);
-        $this->assertContains('git_command', $connection_keys);
-        $this->assertContains('mysql_command', $connection_keys);
-        $this->assertContains('redis_command', $connection_keys);
-    }
-
-    /**
-     * Exercises connection:info command without a valid environment argument
-     *
-     * @return void
-     *
-     * @expectedException \Exception
-     * @expectedExceptionMessage The environment argument must be given as <site_name>.<environment>
-     */
-    public function testConnectionInfoInvalid()
-    {
-        // Should throw an exception so that the runner returns an error exit code.
-        $this->setExpectedException(TerminusException::class);
-        $this->command->connectionInfo('invalid-env');
     }
 }
