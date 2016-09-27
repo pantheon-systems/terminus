@@ -12,7 +12,7 @@ use Terminus\Models\Environment;
 use Terminus\Models\Workflow;
 
 /**
- * @property \PHPUnit_Framework_MockObject_MockObject sites
+ * Base class for environment tests.
  */
 abstract class EnvCommandTest extends CommandTestCase
 {
@@ -23,8 +23,7 @@ abstract class EnvCommandTest extends CommandTestCase
     protected $command;
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * Setup the fixture.
      */
     protected function setUp()
     {

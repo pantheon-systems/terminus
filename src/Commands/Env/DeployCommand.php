@@ -50,6 +50,6 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
 
         $workflow = $env->deploy($params);
         $workflow->wait();
-        $this->workflowOutput($workflow, ['failure' => 'Deployment failed.',]);
+        return $workflow->getMessage();
     }
 }

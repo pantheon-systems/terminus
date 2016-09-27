@@ -9,7 +9,7 @@ use Pantheon\Terminus\Commands\Env\DeployCommand;
 class DeployCommandTest extends EnvCommandTest
 {
     /**
-     * Sets up the test fixture.
+     * Setup the test fixture.
      */
     protected function setUp()
     {
