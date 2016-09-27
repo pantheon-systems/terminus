@@ -201,36 +201,29 @@ class SitesCommand extends TerminusCommand
             $this->log()->info('You have no sites.');
         }
 
-        $rows = [];
-        foreach ($sites as $site) {
-            $memberships = [];
-            foreach ($site->memberships as $membership) {
-                if (property_exists($membership, 'user')) {
-                    $memberships[] = "{$membership->user->id}: Team";
-                } elseif (property_exists($membership, 'organization')) {
-                    $profile = $membership->organization->get('profile');
-                    $memberships[] = "{$membership->organization->id}: {$profile->name}";
+        $rows = array_map(
+            function ($site) {
+                $row = [
+                'name'          => $site->get('name'),
+                'id'            => $site->id,
+                'service_level' => $site->get('service_level'),
+                'framework'     => $site->get('framework'),
+                'owner'         => $site->get('owner'),
+                'created'       => date(Config::get('date_format'), $site->get('created')),
+                'memberships'   => implode(', ', $site->memberships),
+                ];
+                if (!is_null($site->get('frozen'))) {
+                    $row['frozen'] = true;
                 }
-            }
-            $rows[$site->id] = [
-            'name'          => $site->get('name'),
-            'id'            => $site->id,
-            'service_level' => $site->get('service_level'),
-            'framework'     => $site->get('framework'),
-            'owner'         => $site->get('owner'),
-            'created'       => date(Config::get('date_format'), $site->get('created')),
-            'memberships'   => implode(', ', $memberships),
-            ];
-            if (!is_null($site->get('frozen'))) {
-                $rows[$site->id]['frozen'] = true;
-            }
-        }
+                return $row;
+            },
+            $sites
+        );
 
         usort(
             $rows,
             function ($row_1, $row_2) {
-                $comparison = strcasecmp($row_1['name'], $row_2['name']);
-                return $comparison;
+                return strcasecmp($row_1['name'], $row_2['name']);
             }
         );
 
