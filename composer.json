@@ -46,7 +46,6 @@
   },
   "require-dev": {
     "behat/behat": "^3.1",
-    "phpspec/prophecy": "^1.0",
     "phpunit/phpcov": "^2.0",
     "phpunit/phpunit": "^4.0",
     "php-vcr/php-vcr": "^1.2",
