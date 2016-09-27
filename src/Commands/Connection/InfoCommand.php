@@ -55,9 +55,9 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage connection:info awesome-site.dev --format=json
      *   Display connection information in json format
-     * @usage connection:info awesome-site.dev --fields=mysql_command --format=string
+     * @usage connection:info awesome-site.dev --field=mysql_command --format=string
      *   Display connection information only for the given parameter
-     * @usage connection:info awesome-site.dev --fields=git_*
+     * @usage connection:info awesome-site.dev --fields='git_*'
      *   Display all of the connection information fields related to git.
      *
      */
