@@ -237,11 +237,11 @@ class OrganizationsCommand extends TerminusCommand
         $site_memberships = $org->site_memberships->all();
         if (!is_null($tag)) {
             $site_memberships = array_filter(
-                function ($membership) {
+                $site_memberships,
+                function ($membership) use ($tag) {
                     $has_tag = in_array($tag, $membership->get('tags'));
                     return $has_tag;
-                },
-                $site_memberships
+                }
             );
         }
 
