@@ -4,21 +4,18 @@ namespace Terminus\Models;
 
 class OrganizationSiteMembership extends TerminusModel
 {
-  /**
-   * @var Organization
-   */
+    /**
+     * @var Organization
+     */
     public $organization;
-  /**
-   * @var Site
-   */
+    /**
+     * @var Site
+     */
     public $site;
 
-  /**
-   * Object constructor
-   *
-   * @param object $attributes Attributes of this model
-   * @param array  $options    Options with which to configure this model
-   */
+    /**
+     * @inheritdoc
+     */
     public function __construct($attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
@@ -27,11 +24,19 @@ class OrganizationSiteMembership extends TerminusModel
         $this->site->memberships = [$this,];
     }
 
-  /**
-   * Removes a site from this organization
-   *
-   * @return Workflow
-   */
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return "{$this->organization->id}: {$this->organization->get('profile')->name}";
+    }
+
+    /**
+     * Removes a site from this organization
+     *
+     * @return Workflow
+     */
     public function delete()
     {
         $workflow = $this->organization->workflows->create(
