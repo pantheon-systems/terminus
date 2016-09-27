@@ -3,13 +3,13 @@
 namespace Terminus\Models;
 
 use GuzzleHttp\TransferStats as TransferStats;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Config;
 use Terminus\Collections\Backups;
 use Terminus\Collections\Bindings;
 use Terminus\Collections\Commits;
 use Terminus\Collections\Hostnames;
 use Terminus\Collections\Workflows;
+use Terminus\Config;
+use Terminus\Exceptions\TerminusException;
 
 class Environment extends TerminusModel
 {
@@ -77,6 +77,7 @@ class Environment extends TerminusModel
    */
     public function cacheserverConnectionInfo()
     {
+        $info = [];
         $cacheserver_binding = (array)$this->bindings->getByType('cacheserver');
         if (!empty($cacheserver_binding)) {
             do {
@@ -99,8 +100,8 @@ class Environment extends TerminusModel
             'url' => $url,
             'command' => $command,
             ];
-            return $info;
         }
+        return $info;
     }
 
   /**
