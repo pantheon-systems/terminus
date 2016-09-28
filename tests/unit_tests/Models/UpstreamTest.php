@@ -53,7 +53,6 @@ class UpstreamTest extends TerminusTest
         //Getting the Upstream property instantiated by a Site
         $this->site->fetch();
         $upstream_from_site = $this->site->upstream;
-        $this->assertNotNull($upstream_from_site->id);
         $this->assertEquals($upstream_from_site->site, $this->site);
     }
 
