@@ -107,16 +107,15 @@ abstract class CommandWithSSH extends TerminusCommand
   /**
    * Checks the site's mode and suggests SFTP if it is not set.
    *
-   * @param Environment $env Environment object to check mode of
+   * @param Environment $environment Environment object to check mode of
    * @return void
    */
-    protected function checkConnectionMode($env)
+    protected function checkConnectionMode($environment)
     {
-        if ($env->info('connection_mode') != 'sftp') {
+        if (!$environment->get('on_server_development')) {
             $this->log()->warning(
-                "Note: This environment is in read-only Git mode. If you want to make changes to the
-            codebase of this site (e.g. updating modules or plugins), you will need to toggle into
-            read/write SFTP mode first."
+                "Note: This environment is in read-only Git mode. If you want to make changes to the codebase of
+                this site (e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first."
             );
         }
     }

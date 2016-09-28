@@ -321,15 +321,16 @@ class SitesCommand extends TerminusCommand
                 'status' => 'Needs update'
                 );
                 $env = $site->environments->get('dev');
-                if ($env->info('connection_mode') == 'sftp') {
-                        $message  = '{site} has available updates, but is in SFTP mode.';
-                        $message .= ' Switch to Git mode to apply updates.';
-                        $this->log()->warning($message, $context);
-                        $data[$site->get('name')] = array(
-                          'site'=> $site->get('name'),
-                          'status' => 'Needs update - switch to Git mode'
-                        );
-                        continue;
+                if ($env->get('on_server_development')) {
+                    $this->log()->warning(
+                        '{site} has available updates, but is in SFTP mode. Switch to Git mode to apply updates.',
+                        $context
+                    );
+                    $data[$site->get('name')] = [
+                        'site'=> $site->get('name'),
+                        'status' => 'Needs update - switch to Git mode',
+                    ];
+                    continue;
                 }
                 $updatedb = !$this->input()->optional(
                     array(

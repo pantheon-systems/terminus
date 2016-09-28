@@ -780,15 +780,19 @@ class SiteCommand extends TerminusCommand
         $site = $this->sites->get(
             $this->input()->siteName(['args' => $assoc_args])
         );
-        $env  = $site->environments->get(
-            $this->input()->env(array('args' => $assoc_args, 'site' => $site))
+        $env = $site->environments->get(
+            $this->input()->env(['args' => $assoc_args, 'site' => $site,])
         );
 
+        $data = $env->serialize();
         if (isset($assoc_args['field'])) {
             $field = $assoc_args['field'];
-            $this->output()->outputValue($env->info($field), $field);
+            if (!isset($data[$field])) {
+                throw new TerminusException('There is no field {field}.', compact('field'));
+            }
+            $this->output()->outputValue($data[$field], $field);
         } else {
-            $this->output()->outputRecord($env->info());
+            $this->output()->outputRecord($data);
         }
     }
 
@@ -803,47 +807,23 @@ class SiteCommand extends TerminusCommand
    */
     public function environments($args, $assoc_args)
     {
-        $site         = $this->sites->get(
-            $this->input()->siteName(array('args' => $assoc_args))
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
+        $data = array_map(
+            function ($env) {
+                return $env->serialize();
+            },
+            $site->environments->all()
         );
-        $environments = $site->environments->all();
-
-        $data = array();
-        foreach ($environments as $name => $env) {
-            $osd  = $locked = $initialized ='false';
-            $lock = $env->get('lock');
-            if ((boolean)$lock->locked) {
-                $locked = 'true';
-            }
-            if ((boolean)$env->get('on_server_development')) {
-                $osd = 'true';
-            }
-            if ((boolean)$env->isInitialized()) {
-                $initialized = 'true';
-            }
-
-            $data[] = array(
-            'name'        => $env->id,
-            'created'     => date(
-                Config::get('date_format'),
-                $env->get('environment_created')
-            ),
-            'domain'      => $env->domain(),
-            'onserverdev' => $osd,
-            'locked'      => $locked,
-            'initialized' => $initialized,
-            );
-        }
         $this->output()->outputRecordList(
             $data,
-            array(
+            [
             'name'        => 'Name',
             'created'     => 'Created',
             'domain'      => 'Domain',
             'onserverdev' => 'OnServer Dev?',
             'locked'      => 'Locked?',
-            'initialized' => 'Initialized?'
-            )
+            'initialized' => 'Initialized?',
+            ]
         );
         return $data;
     }
@@ -1640,16 +1620,7 @@ class SiteCommand extends TerminusCommand
             $this->input()->env(['args' => $assoc_args, 'choices' => $environments,])
         );
         if (in_array($env->id, ['test', 'live',])) {
-            $this->failure(
-                'Connection mode cannot be set in Test or Live environments'
-            );
-        }
-        try {
-            $current_mode = $env->info('connection_mode');
-        } catch (TerminusException $e) {
-            $this->log()->info(
-                'Current connection info not available. Proceeding with mode change.'
-            );
+            $this->failure('Connection mode cannot be set in test or live environments');
         }
         $workflow = $env->changeConnectionMode($mode);
         if (is_string($workflow)) {

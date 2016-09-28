@@ -119,19 +119,6 @@ class Site extends TerminusModel
     }
 
     /**
-     * Returns an array of attributes
-     *
-     * @return \stdClass
-     */
-    public function attributes()
-    {
-        $path     = sprintf('sites/%s/attributes', $this->id);
-        $options  = ['method' => 'get',];
-        $response = $this->request->request($path, $options);
-        return $response['data'];
-    }
-
-    /**
      * Creates a new site for migration
      *
      * @param string[] $product_id The uuid for the product to deploy.
@@ -359,7 +346,7 @@ class Site extends TerminusModel
     public function getOrganizations()
     {
         $memberships = $this->org_memberships->all();
-        $users = array_combine(
+        $orgs = array_combine(
             array_map(
                 function ($membership) {
                     return $membership->organization->id;
@@ -374,17 +361,6 @@ class Site extends TerminusModel
             )
         );
         return $orgs;
-    }
-
-    /**
-     * Lists user memberships for this site
-     *
-     * @return SiteUserMemberships
-     */
-    public function getSiteUserMemberships()
-    {
-        $this->user_memberships = $this->user_memberships->fetch();
-        return $this->user_memberships;
     }
 
     /**
@@ -447,19 +423,6 @@ class Site extends TerminusModel
             'sites/' . $this->id . '/new-relic'
         );
         return $response['data'];
-    }
-
-    /**
-     * Determines if an organization is a member of this site
-     *
-     * @param string $uuid UUID of organization to check for
-     * @return bool True if organization is a member of this site
-     */
-    public function organizationIsMember($uuid)
-    {
-        $org_ids       = $this->org_memberships->ids();
-        $org_is_member = in_array($uuid, $org_ids);
-        return $org_is_member;
     }
 
     /**
@@ -576,15 +539,16 @@ class Site extends TerminusModel
     }
 
     /**
-     * Verifies if the given framework is in use
+     * Modify response data between fetch and assignment
      *
-     * @param string $framework_name Name of framework to verify
-     * @return bool
-     * @todo This function is unused; remove?
+     * @param object $data attributes received from API response
+     * @return object $data
      */
-    private function hasFramework($framework_name)
+    protected function parseAttributes($data)
     {
-        $has_framework = ($framework_name == $this->get('framework'));
-        return $has_framework;
+        if (property_exists($data, 'php_version')) {
+            $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
+        }
+        return $data;
     }
 }

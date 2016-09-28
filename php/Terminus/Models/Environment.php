@@ -46,14 +46,15 @@ class Environment extends TerminusModel
    */
     public function __construct($attributes, array $options = [])
     {
-        parent::__construct($attributes, $options);
         $this->site = $options['collection']->site;
+        parent::__construct($attributes, $options);
         $options = ['environment' => $this,];
-        $this->backups   = new Backups($options);
-        $this->bindings  = new Bindings($options);
-        $this->commits   = new Commits($options);
+        $this->backups = new Backups($options);
+        $this->bindings = new Bindings($options);
+        $this->commits = new Commits($options);
         $this->hostnames = new Hostnames($options);
         $this->workflows = new Workflows($options);
+        $this->url = "sites/{$this->site->id}/environments/{$this->id}";
     }
 
   /**
@@ -112,7 +113,7 @@ class Environment extends TerminusModel
    */
     public function changeConnectionMode($value)
     {
-        $current_mode = $this->info('connection_mode');
+        $current_mode = $this->serialize()['connection_mode'];
         if ($value == $current_mode) {
             $reply = "The connection mode is already set to $value.";
             return $reply;
@@ -368,13 +369,7 @@ class Environment extends TerminusModel
    */
     public function domain()
     {
-        $host = sprintf(
-            '%s-%s.%s',
-            $this->id,
-            $this->site->get('name'),
-            $this->get('dns_zone')
-        );
-        return $host;
+        return "{$this->id}-{$this->site->get('name')}.{$this->get('dns_zone')}";
     }
 
   /**
@@ -384,7 +379,7 @@ class Environment extends TerminusModel
    */
     public function getDrushVersion()
     {
-        $version = (integer)$this->getSettings('drush_version');
+        $version = (integer)$this->settings('drush_version');
         return $version;
     }
 
@@ -496,54 +491,6 @@ class Environment extends TerminusModel
             ['params' => compact('url'),]
         );
         return $workflow;
-    }
-
-  /**
-   * Load site info
-   *
-   * @param string $key Set to retrieve a specific attribute as named
-   * @return array $info
-   * @throws TerminusException
-   */
-    public function info($key = null)
-    {
-        $path    = sprintf(
-            'sites/%s/environments/%s',
-            $this->site->id,
-            $this->id
-        );
-        $options = ['method' => 'get',];
-        $result  = $this->request->request($path, $options);
-        $connection_mode = 'git';
-        if (property_exists($result['data'], 'on_server_development')
-        && (boolean)$result['data']->on_server_development
-        ) {
-            $connection_mode = 'sftp';
-        }
-        $php_version = $this->site->serialize()['php_version'];
-        if (property_exists($result['data'], 'php_version')) {
-            $php_version = substr($result['data']->php_version, 0, 1)
-            . '.' . substr($result['data']->php_version, 1, 1);
-        }
-        $info = [
-        'id'              => $this->id,
-        'connection_mode' => $connection_mode,
-        'php_version'     => $php_version,
-        ];
-
-        if ($key) {
-            if (isset($info[$key])) {
-                return $info[$key];
-            } else {
-                throw new TerminusException(
-                    'There is no field {field}.',
-                    ['field' => $key,],
-                    1
-                );
-            }
-        } else {
-            return $info;
-        }
     }
 
   /**
@@ -707,6 +654,26 @@ class Environment extends TerminusModel
         return $response;
     }
 
+    /**
+     * Formats environment object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        $info = [
+          'id' => $this->id,
+          'created' => date(Config::get('date_format'), $this->get('environment_created')),
+          'domain' => $this->domain(),
+          'onserverdev' => $this->get('on_server_development') ? 'true' : 'false',
+          'locked' => $this->get('lock')->locked ? 'true' : 'false',
+          'initialized' => $this->isInitialized() ? 'true' : 'false',
+          'connection_mode' => $this->get('connection_mode'),
+          'php_version' => $this->get('php_version'),
+        ];
+        return $info;
+    }
+
   /**
    * Add/replace an HTTPS certificate on the environment
    *
@@ -822,21 +789,40 @@ class Environment extends TerminusModel
         return $workflow;
     }
 
+    /**
+     * Modify response data between fetch and assignment
+     *
+     * @param object $data attributes received from API response
+     * @return object $data
+     */
+    protected function parseAttributes($data)
+    {
+        if (property_exists($data, 'on_server_development')
+          && (boolean)$data->on_server_development
+        ) {
+            $data->connection_mode = 'sftp';
+        } else {
+            $data->connection_mode = 'git';
+        }
+        if (property_exists($data, 'php_version')) {
+            $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
+        } else {
+            $data->php_version = $this->site->get('php_version');
+        }
+        return $data;
+    }
+
   /**
    * Retrieves the value of an environmental setting
    *
    * @param string $setting Name of the setting to retrieve
    * @return mixed
    */
-    private function getSettings($setting = null)
+    private function settings($setting = null)
     {
-        $path   = sprintf(
-            'sites/%s/environments/%s/settings',
-            $this->site->id,
-            $this->id
-        );
+        $path = "sites/{$this->site->id}/environments/{$this->id}/settings";
         $response = (array)$this->request->request($path, ['method' => 'get',]);
-        if (isset($response['data']->$setting)) {
+        if (property_exists($response['data'], $setting)) {
             return $response['data']->$setting;
         }
         return (array)$response['data'];
