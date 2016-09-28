@@ -80,7 +80,7 @@ class Backup extends TerminusModel
             return null;
         }
         preg_match(
-            '~(?:.*_|^)(.*)\.(?:tar|sql).gz$~',
+            '~(?:.*_|^)(.*)\.(?:tar|sql)\.gz(?:\.gpg)?$~',
             $this->get('filename'),
             $type_match
         );

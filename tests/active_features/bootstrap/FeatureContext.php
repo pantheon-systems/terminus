@@ -835,7 +835,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function iShouldHaveRecords($number)
     {
-        preg_match("/.*(\[{.*}\]).*/", str_replace("\n", '', $this->output), $matches);
+        preg_match("/.*(\[.*\]).*/", str_replace("\n", '', $this->output), $matches);
         $records = json_decode($matches[1]);
         if ((integer)$number != count($records)) {
             throw new \Exception("Wanted $number records, got " . count($records) . '.');
