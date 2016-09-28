@@ -30,10 +30,9 @@ $config = new Config();
 $application = new Terminus('Terminus', $config->get('version'), $config);
 
 // Configuring the dependency-injection container
-$container = new Container();
 $input = new ArgvInput($_SERVER['argv']);
 $output = new ConsoleOutput();
-Robo::configureContainer($container, $config, $input, $output, $application);
+$container = Robo::createDefaultContainer($input, $output, $application, $config);
 
 $container->share('fileCache', FileCache::class);
 $container->share('session', Session::class)

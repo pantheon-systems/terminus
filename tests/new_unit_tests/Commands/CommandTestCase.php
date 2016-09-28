@@ -236,11 +236,14 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         // Configuring the dependency-injection container
         Robo::configureContainer(
             $this->container,
+            $this->app,
             $this->config,
             $this->input,
-            $this->output,
-            $this->app
+            $this->output
         );
+
+        // Set the application dispatcher (required when using Robo::configureContainer)
+        $this->app->setDispatcher($this->container->get('eventDispatcher'));
 
         if (!$this->runner) {
             $this->runner = new Runner($this->container);
