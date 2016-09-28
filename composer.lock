@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "112bdf662ed582918bc3965d0474c993",
-    "content-hash": "ec245aaab37d2406db917228994f500c",
+    "hash": "053d5ef279088e3431ec6dade38f0e23",
+    "content-hash": "950d846075d42de309f51895d852844d",
     "packages": [
         {
             "name": "consolidation/annotated-command",
@@ -156,16 +156,16 @@
         },
         {
             "name": "consolidation/robo",
-            "version": "dev-container-config",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "0ff0c43601254a819cdbbb941f7884c92c50a86a"
+                "reference": "33db84b313fddcfb4d90d69bd672609da8b00a8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/0ff0c43601254a819cdbbb941f7884c92c50a86a",
-                "reference": "0ff0c43601254a819cdbbb941f7884c92c50a86a",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/33db84b313fddcfb4d90d69bd672609da8b00a8b",
+                "reference": "33db84b313fddcfb4d90d69bd672609da8b00a8b",
                 "shasum": ""
             },
             "require": {
@@ -226,7 +226,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-09-28 17:34:57"
+            "time": "2016-09-28 19:01:56"
         },
         {
             "name": "container-interop/container-interop",
