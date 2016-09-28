@@ -48,11 +48,10 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $this->application = new Terminus('Terminus', $this->config->get('version'), $this->config);
 
         // Configuring the dependency-injection container
-        $this->container = new Container();
         $input = new ArgvInput($_SERVER['argv']);
         $this->output = new NullOutput();
-        $roboConfig = new \Robo\Config(); // TODO: make Terminus Config extend \Robo\Config and use $config here
-        Robo::configureContainer($this->container, $roboConfig, $input, $this->output, $this->application);
+        $roboConfig = new \Robo\Config();
+        $this->container = Robo::createDefaultContainer($input, $this->output, $this->application, $roboConfig);
 
         // Instantiating the Runner
         $this->runner = new Runner($this->container);
