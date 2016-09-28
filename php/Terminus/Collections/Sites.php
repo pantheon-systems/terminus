@@ -93,7 +93,9 @@ class Sites extends TerminusCollection
         if (!$options['team_only']) {
             $memberships = $this->user->org_memberships->fetch()->all();
             if (!is_null($org_id = $options['org_id']) && ($org_id != 'all')) {
-                $memberships = [$memberships[$org_id],];
+                $memberships = array_filter($memberships, function ($membership) use ($org_id) {
+                    return $membership->id == $org_id;
+                });
             }
             foreach ($memberships as $membership) {
                 if ($membership->get('role') != 'unprivileged') {
