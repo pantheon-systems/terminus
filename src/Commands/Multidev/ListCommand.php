@@ -12,14 +12,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Lists the the multidev environments belonging to the given site
+     * Lists the multidev environments belonging to the given site
      *
      * @authorized
      *
      * @name multidev:list
      * @aliases multidevs
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   id: ID/Name
