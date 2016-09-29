@@ -31,7 +31,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function prepareEnvironment($site_env_id)
     {
         list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
-        $this->validateEnvironment();
+        $this->validateConnectionMode($this->environment->get('connection_mode'));
     }
 
     protected function executeCommand(array $command_args)
@@ -79,28 +79,16 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         return $is_valid;
     }
 
-    protected function validateEnvironment()
+    protected function validateConnectionMode($mode)
     {
-        $this->validateConnectionMode();
-        $this->validateApplication();
-    }
-
-    protected function validateConnectionMode()
-    {
-        if ($this->environment->info('connection_mode') == 'git') {
-            $this->log()->warning(
-                "Note: This environment is in read-only Git mode. "
+        if ($mode == 'git') {
+            $this->log()->notice(
+                "This environment is in read-only Git mode. "
                 . "If you want to make changes to the codebase of this site "
                 . "(e.g. updating modules or plugins), "
                 . "you will need to toggle into read/write SFTP mode first."
             );
         }
-    }
-
-    protected function validateApplication()
-    {
-        // TODO: validate application type [drupal, wordpress]
-        // print_r($this->environment->info);
     }
 
     private function getCommandLine($command_args)

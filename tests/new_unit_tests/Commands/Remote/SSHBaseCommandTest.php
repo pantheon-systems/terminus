@@ -35,33 +35,6 @@ class SSHBaseCommandTest extends CommandTestCase
         $this->assertEquals('dummy output', $output);
     }
 
-    public function testValidateConnectionModeGitWarning()
-    {
-        // fake out ssh command
-        $this->environment->expects($this->once())
-            ->method('sendCommandViaSsh')
-            ->with($this->equalTo('dummy arg1 arg2'))
-            ->willReturn(['output' => 'dummy output', 'exit_code' => 0]);
-
-        // trigger git connection mode warning
-        $this->environment->expects($this->once())
-            ->method('info')
-            ->with($this->equalTo('connection_mode'))
-            ->willReturn('git');
-
-        //expected info and error messages
-        $this->logger->expects($this->exactly(2))
-            ->method('log')->withConsecutive(
-                [
-                    $this->equalTo('warning'),
-                    $this->stringContains('Note: This environment is in read-only Git mode.')
-                ],
-                [$this->equalTo('info'), $this->stringContains('Command:')]
-            );
-
-        $this->command->dummyCommand('dummy-site.dummy-env', ['arg1', 'arg2']);
-    }
-
     public function testUnavailableWithSuggestion()
     {
         //expected info and error messages
@@ -102,5 +75,17 @@ class SSHBaseCommandTest extends CommandTestCase
         $output = $this->command->dummyCommand('dummy-site.dummy-env', ['no-alternative']);
 
         $this->assertEquals('', $output);
+    }
+
+    public function testValidateConnectionModeGit()
+    {
+        // should warn about git mode
+        $this->logger->expects($this->once())
+            ->method('log')->with(
+                $this->equalTo('notice'),
+                $this->stringContains('This environment is in read-only Git mode.')
+            );
+
+        $this->protectedMethodCall($this->command, 'validateConnectionMode', ['git']);
     }
 }
