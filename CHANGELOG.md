@@ -1,6 +1,17 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- `Tags` collection with `Tags::create()` function. (#1272)
+- `Tag` model with `Tag::delete()` function. (#1272)
+
+### Removed
+- `Site::getTags()` has been removed. Please use `Tags::all()` or `Tags::ids()` via the OrganizationSiteMembership's tags property. (#1272)
+- `Site::hasTag()` has been removed. Please use `Tags::get()` via the OrganizationSiteMembership's tags property. (#1272)
+- `Site::removeTag()` has been removed. Please use `Tag::delete()` via the OrganizationSiteMembership's tags property's member representing the tag to be removed. (#1272)
+- `Site::addTag()` has been removed. Please use `Tags::create()` via the OrganizationSiteMembership's tags property. (#1272)
+
 ## [0.13.3] - 2016-10-07
 ### Added
 - `Environment::serialize()` (#1251)

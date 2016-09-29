@@ -20,7 +20,7 @@ Feature: Tagging organizational sites
     When I run "terminus site tags list --site=[[test_site_name]] --org=[[organization_name]] --format=json"
     Then I should get:
     """
-    {"tags":["testtag"]}
+    ["testtag"]
     """
 
   @vcr site_tags_remove
@@ -36,5 +36,6 @@ Feature: Tagging organizational sites
     When I run "terminus site tags list --site=[[test_site_name]] --org=[[organization_name]] --format=json"
     Then I should get:
     """
-    {"tags":[]}
+    []
     """
+

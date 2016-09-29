@@ -2,6 +2,8 @@
 
 namespace Terminus\Models;
 
+use Terminus\Collections\Tags;
+
 class OrganizationSiteMembership extends TerminusModel
 {
     /**
@@ -12,6 +14,10 @@ class OrganizationSiteMembership extends TerminusModel
      * @var Site
      */
     public $site;
+    /**
+     * @var Tags
+     */
+    public $tags;
 
     /**
      * @inheritdoc
@@ -22,6 +28,7 @@ class OrganizationSiteMembership extends TerminusModel
         $this->organization = $options['collection']->organization;
         $this->site = new Site($attributes->site);
         $this->site->memberships = [$this,];
+        $this->tags = new Tags(['data' => (array)$attributes->tags, 'org_site_membership' => $this,]);
     }
 
     /**
