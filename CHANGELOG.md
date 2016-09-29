@@ -2,6 +2,11 @@
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- `Environment::serialize()` (#1251)
+
+### Removed
+- `Environment::info()` has been removed. Please use `Environment::serialize()` instead. (#1251)
 
 ## [0.13.2] - 2016-09-26
 ### Fixed
@@ -10,6 +15,25 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - Fixed the notices emitting from `sites list`. (#1231)
 - Fixed the memberships column in `sites list` to accurately reflect when your user is a both a team and organizational member of a site. (#1231)
 - Fixed `wp` and `drush` commands. (#1237)
+
+### Added
+- `Site::serialize()` (#1224)
+- `Upstream::getUpdates()` (#1224)
+- `Upstream::hasUpdates()` (#1224)
+- `Upstream::serialize()` (#1224)
+- `Upstream::fetch()` (#1224)
+- The `Upstream` model now accepts an optional site object so as to conduct API operations. (#1224)
+- `Environment::cacheserverConnectionInfo()` (#123y)
+- `Environment::databaseConnectionInfo()` (#1237)
+- `Environment::gitConnectionInfo()` (#1237)
+- `Environment::sftpConnectionInfo()` (#1237)
+
+### Removed
+- `Site::info()` has been removed. Please use `Site::serialize()` instead. (#1224)
+- `Site::getUpstreamUpdates()` has been removed. Please use `Upstream::getUpdates()` via the Site model's upstream property. (#1224)
+
+### Changed
+- `Environment::connectionInfo()` now compiles the returns from four newly added connection-info functions. Use these if only a subset of the connection info is required in order to avoid extraneous API calls. (#1237)
 
 ## [0.13.1] - 2016-09-19
 ### Changed
@@ -20,6 +44,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - New rocket art available using `art rocket`. (#1148)
 
 ## Changed
+- All Terminus\Models\Collections namespaces have been changed to Terminus\Collections. (#1162)
 - Makes API calls to host 'terminus.pantheon.io' instead of 'dashboard.pantheon.io' (#1180)
 
 ## Removed
