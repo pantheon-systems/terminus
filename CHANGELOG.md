@@ -8,6 +8,9 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ### Removed
 - `Environment::info()` has been removed. Please use `Environment::serialize()` instead. (#1251)
 
+### Fixed
+- Fixed `SiteCommand::getSiteCreateOptions()` to prevent the failure of the creation of sites. (#1278)
+
 ## [0.13.2] - 2016-09-26
 ### Fixed
 - Fixed apply upstream updates. (#1233)
