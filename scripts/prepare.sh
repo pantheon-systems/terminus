@@ -4,4 +4,4 @@
 
 set -ex
 
-composer install --no-interaction --prefer-source
+composer install --no-interaction --prefer-dist

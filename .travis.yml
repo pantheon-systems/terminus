@@ -47,6 +47,9 @@ before_script:
 
 script:
   - TERMINUS_TEST_MODE=1 vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
+  # XDebug is needed for code coverage, but makes things slow. It's enabled
+  # by default in Travis, we disable it here post-coverage run for speedy builds.
+  - phpenv config-rm xdebug.ini
   - TERMINUS_TEST_MODE=1 ./scripts/test.sh
 
 after_success:
@@ -56,3 +59,8 @@ after_success:
 notifications:
   email:
     on_success: never
+
+cache:
+  directories:
+    - $HOME/.cache/composer
+    - $HOME/.composer/cache
