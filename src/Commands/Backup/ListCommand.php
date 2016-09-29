@@ -1,9 +1,8 @@
 <?php
 /**
  * @file
- * Contains Pantheon\Terminus\Commands\SSHKey\ListCommand
+ * Contains Pantheon\Terminus\Commands\Backup\ListCommand
  */
-
 
 namespace Pantheon\Terminus\Commands\Backup;
 
