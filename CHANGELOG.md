@@ -23,7 +23,7 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 - `Upstream::serialize()` (#1224)
 - `Upstream::fetch()` (#1224)
 - The `Upstream` model now accepts an optional site object so as to conduct API operations. (#1224)
-- `Environment::cacheserverConnectionInfo()` (#123y)
+- `Environment::cacheserverConnectionInfo()` (#1237)
 - `Environment::databaseConnectionInfo()` (#1237)
 - `Environment::gitConnectionInfo()` (#1237)
 - `Environment::sftpConnectionInfo()` (#1237)
