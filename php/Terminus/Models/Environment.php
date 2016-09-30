@@ -650,9 +650,7 @@ class Environment extends TerminusModel
         );
 
         // Catch Terminus running in test mode
-        $test_mode = isset($_ENV["TERMINUS_TEST_MODE"])
-            && filter_var($_ENV["TERMINUS_TEST_MODE"], FILTER_VALIDATE_BOOLEAN);
-        if ($test_mode) {
+        if (Config::get('test_mode')) {
             return [
                 'output'    => "Terminus is in test mode. "
                     . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
