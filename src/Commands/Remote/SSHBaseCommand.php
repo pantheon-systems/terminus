@@ -25,18 +25,22 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected $unavailable_commands = [];
 
+    protected $valid_frameworks = [];
+
     private $site;
     private $environment;
 
     protected function prepareEnvironment($site_env_id)
     {
         list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
-        $this->validateConnectionMode($this->environment->get('connection_mode'));
     }
 
     protected function executeCommand(array $command_args)
     {
         $output = '';
+
+        $this->validateEnvironment($this->site, $this->environment);
+
         if ($this->validateCommand($command_args)) {
             $command_line = $this->getCommandLine($command_args);
 
@@ -79,6 +83,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         return $is_valid;
     }
 
+    protected function validateEnvironment($site, $environment)
+    {
+        $this->validateConnectionMode($environment->get('connection_mode'));
+        $this->validateFramework($site->get('framework'));
+    }
+
     protected function validateConnectionMode($mode)
     {
         if ($mode == 'git') {
@@ -87,6 +97,22 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
                 . "If you want to make changes to the codebase of this site "
                 . "(e.g. updating modules or plugins), "
                 . "you will need to toggle into read/write SFTP mode first."
+            );
+        }
+    }
+
+    protected function validateFramework($framework)
+    {
+        // print_r([$framework,$this->valid_frameworks]);
+        if (!in_array($framework, $this->valid_frameworks)) {
+            throw new TerminusException(
+                "The {command} command is only available on a sites running {frameworks}. "
+                ."The framework for this site is {framework}.",
+                [
+                    'command'    => $this->command,
+                    'frameworks' => implode(", ", $this->valid_frameworks),
+                    'framework'  => $framework,
+                ]
             );
         }
     }

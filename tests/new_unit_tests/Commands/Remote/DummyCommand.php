@@ -16,6 +16,11 @@ class DummyCommand extends SSHBaseCommand
         'no-alternative' => '',
     ];
 
+    protected $valid_frameworks = [
+        'framework-a',
+        'framework-b',
+    ];
+
     public function dummyCommand($site_env_id, array $dummy_args)
     {
         $this->prepareEnvironment($site_env_id);

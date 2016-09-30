@@ -17,6 +17,14 @@ class DrushCommand extends SSHBaseCommand
     /**
      * @inheritdoc
      */
+    protected $valid_frameworks = [
+        'drupal',
+        'drupal8',
+    ];
+
+    /**
+     * @inheritdoc
+     */
     protected $unavailable_commands = [
         'sql-connect' => 'connection:info --field=mysql_command',
         'sql-sync'    => '',
