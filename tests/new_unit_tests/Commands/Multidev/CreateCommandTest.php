@@ -3,19 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\CreateCommand;
-use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Multidev\CreateCommand
  */
-class CreateCommandTest extends CommandTestCase
+class CreateCommandTest extends MultidevCommandTest
 {
-    /**
-     * @var Workflow
-     */
-    protected $workflow;
-
     /**
      * @inheritdoc
      */
@@ -26,9 +19,6 @@ class CreateCommandTest extends CommandTestCase
         $this->command = new CreateCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-          ->disableOriginalConstructor()
-          ->getMock();
         $this->site->environments->method('create')->willReturn($this->workflow);
     }
 

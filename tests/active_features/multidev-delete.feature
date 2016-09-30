@@ -9,17 +9,17 @@ Feature: Deleting a site's multidev environments
 
   @vcr site_delete-env
   Scenario: Deleting a multidev environment
-    When I run "terminus multidev:delete multidev --site=[[test_site_name]] --yes"
+    When I run "terminus multidev:delete [[test_site_name]].multidev"
     Then I should get:
     """
-    Deleted Multidev environment "multidev"
+    Deleted the multidev environment multidev.
     """
 
-  @vcr site_delete-env_none
-  Scenario: Failing to delete a multidev environment when none exist on the site
-    When I run "terminus multidev:delete any_env --site=[[test_site_name]] --yes"
+  @vcr site_delete-env
+  Scenario: Failing to delete a multidev environment when the specified environment does not exist
+    When I run "terminus multidev:delete [[test_site_name]].invalid"
     Then I should get:
     """
-    [[test_site_name]] does not have any multidev environments to delete.
+    Could not find Terminus\Models\Environment "invalid"
     """
 
