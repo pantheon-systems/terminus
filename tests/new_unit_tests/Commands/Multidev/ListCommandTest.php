@@ -6,7 +6,7 @@ use Pantheon\Terminus\Commands\Multidev\ListCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
+ * Testing class for Pantheon\Terminus\Commands\Multidev\ListCommand
  */
 class ListCommandTest extends CommandTestCase
 {
@@ -24,9 +24,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Tests the multidev:list command when there are no multidev environments
-     *
-     * @return void
+     * Tests the multidev:list command when there are multidev environments
      */
     public function testMultidevListEmpty()
     {
@@ -42,9 +40,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Tests the multidev:list command when there are multidev environments
-     *
-     * @return void
+     * Tests the multidev:list command when there are no multidev environments
      */
     public function testMultidevListNotEmpty()
     {
