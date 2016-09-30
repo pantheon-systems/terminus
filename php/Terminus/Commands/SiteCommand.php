@@ -2304,6 +2304,19 @@ class SiteCommand extends TerminusCommand
             );
             $backups = $env->backups->getFinishedBackups($element);
 
+            if (empty($backups)) {
+                $message  = 'No backups available. Please create one with ';
+                $message .= '`terminus site backups create --site={site} --env={env}`';
+                throw new TerminusException(
+                    $message,
+                    [
+                        'site' => $site->get('name'),
+                        'env'  => $env->id
+                    ],
+                    1
+                );
+            }
+
             if ($latest) {
                 $backup = array_shift($backups);
             } else {

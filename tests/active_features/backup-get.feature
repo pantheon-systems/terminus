@@ -25,7 +25,7 @@ Feature: Get a particular backup for a Site
 
   @vcr site_backups_get_none
   Scenario: Fail to find a matching backup
-    When I run "terminus backups:get [[test_site_name]].test database"
+    When I run "terminus backup:get [[test_site_name]].test database"
     Then I should get:
     """
     No backups available. Create one with `terminus backup:create [[test_site_name]].test`
