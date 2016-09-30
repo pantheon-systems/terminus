@@ -630,6 +630,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
     /**
      * @When /^I run "([^"]*)"$/
+     * @When /^I run: (.*)$/
      * Runs command and saves output
      *
      * @param [string] $command To be entered as CL stdin

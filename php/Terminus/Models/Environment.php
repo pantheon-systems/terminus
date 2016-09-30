@@ -648,9 +648,21 @@ class Environment extends TerminusModel
             'ssh -T %s@%s -p %s -o "AddressFamily inet" %s',
             [$sftp['username'], $sftp['host'], $sftp['port'], escapeshellarg($command),]
         );
+
+        // Catch Terminus running in test mode
+        if (Config::get('test_mode')) {
+            return [
+                'output'    => "Terminus is in test mode. "
+                    . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
+                    . "SSH Command: ${ssh_command}",
+                'exit_code' => 255
+            ];
+        }
+
         ob_start();
         passthru($ssh_command, $exit_code);
         $response = ['output' => ob_get_clean(), 'exit_code' => $exit_code,];
+
         return $response;
     }
 
