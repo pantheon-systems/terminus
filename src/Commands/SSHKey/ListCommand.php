@@ -46,7 +46,6 @@ class ListCommand extends TerminusCommand
         if (count($data) == 0) {
             $this->log()->warning('You have no ssh keys.');
         }
-        // Return the output data.
         return new RowsOfFields($data);
     }
 }

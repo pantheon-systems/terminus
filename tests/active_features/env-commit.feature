@@ -9,6 +9,6 @@ Feature: Committing code to an environment's branch
 
   @vcr site_code_commit
   Scenario: Committing a change
-    When I run "terminus env:commit dev --site=[[test_site_name]] --message='Behat test commit' --yes"
-    And I run "terminus env:log dev --site=[[test_site_name]]"
+    When I run "terminus env:commit [[test_site_name]].dev --message='Behat test commit'"
+    And I run "terminus env:code-log [[test_site_name]].dev"
     Then I should get: "Behat test commit"

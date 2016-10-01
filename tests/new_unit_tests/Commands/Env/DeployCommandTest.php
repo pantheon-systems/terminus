@@ -2,17 +2,14 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
-use Terminus\Collections\Sites;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Env\DeployCommand
  */
 class DeployCommandTest extends EnvCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * Sets up the test fixture.
      */
     protected function setUp()
     {
@@ -21,7 +18,6 @@ class DeployCommandTest extends EnvCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
     }
-
 
     /**
      * Tests the env:deploy command success with all parameters.
