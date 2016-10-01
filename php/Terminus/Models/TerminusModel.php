@@ -95,6 +95,17 @@ abstract class TerminusModel
     }
 
     /**
+     * Sets an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     * @param mixed  $value     The value to assign to the attribute
+     */
+    public function set($attribute, $value)
+    {
+        $this->attributes->$attribute = $value;
+    }
+
+    /**
      * Modify response data between fetch and assignment
      *
      * @param object $data attributes received from API response

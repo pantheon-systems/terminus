@@ -13,7 +13,9 @@ Feature: Authorization command
   Scenario: Failing to log in via invalid machine token
     Given I am not authenticated
     When I run "terminus auth:login --machine-token=invalid"
-    Then I should get: "The provided machine token is not valid."
+    Then I should get: "Logging in via machine token."
+    And I should get: "Server error: `POST https://onebox/api/authorize/machine-token` resulted in a `500 Internal Server Error` response:"
+    And I should get: "Authorization failed. Please check that your machine token is valid."
 
   @vcr auth_login
   Scenario: Logging back in automatically when there is only one token saved and no email given
@@ -36,7 +38,7 @@ Feature: Authorization command
     When I run "terminus auth:login --email=invalid"
     Then I should get:
     """
-    There are no saved tokens for invalid.
+    Could not find a saved token identified by invalid.
     """
 
   Scenario: Failing to log in automatically when multiple machine tokens have been saved
@@ -79,7 +81,7 @@ Feature: Authorization command
     When I run "terminus auth:whoami --fields=id"
     Then I should get:
     """
-    [[user_uuid]]
+    [[user_id]]
     """
     And I should not get:
     """
@@ -92,7 +94,7 @@ Feature: Authorization command
     When I run "terminus auth:whoami --format=table --fields=email,id"
     Then I should get: "------- --------------------------------------"
     And I should get: "eMail   [[username]]"
-    And I should get: "ID      [[user_uuid]]"
+    And I should get: "ID      [[user_id]]"
     And I should get: "------- --------------------------------------"
 
   Scenario: Checking my user should not get any useful result when I am logged out.

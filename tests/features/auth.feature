@@ -45,7 +45,7 @@ Feature: Authorization command
     When I run "terminus auth whoami"
     Then I should get:
     """
-    [[user_uuid]]
+    [[user_id]]
     """
 
   Scenario: Checking my user should not get any useful result when I am logged out.
@@ -53,5 +53,5 @@ Feature: Authorization command
     And I run "terminus auth whoami"
     Then I should not get:
     """
-    You are authenticated as: [[user_uuid]]
+    You are authenticated as: [[user_id]]
     """

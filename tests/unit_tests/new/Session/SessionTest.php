@@ -71,7 +71,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->filecache->expects($this->once())
         ->method('getData')
         ->with('session')
-        ->willReturn(['user_uuid' => '123']);
+        ->willReturn(['user_id' => '123']);
 
         $this->session = new Session($this->filecache);
 

@@ -100,7 +100,7 @@ class PantheonAliases
         $method   = 'GET';
         $response = $request->request(
             'users',
-            Session::getValue('user_uuid'),
+            Session::getValue('user_id'),
             $path,
             $method
         );

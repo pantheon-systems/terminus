@@ -141,7 +141,7 @@ class AuthCommand extends TerminusCommand
    */
     public function whoami()
     {
-        if (Session::getValue('user_uuid')) {
+        if (Session::getValue('user_id')) {
             $user = Session::getUser();
             $user->fetch();
 

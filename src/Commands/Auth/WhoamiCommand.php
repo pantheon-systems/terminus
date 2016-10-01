@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Commands\Auth;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Terminus\Models\Auth;
 
 class WhoamiCommand extends TerminusCommand
 {
@@ -28,8 +27,7 @@ class WhoamiCommand extends TerminusCommand
      */
     public function whoAmI()
     {
-        $auth = new Auth();
-        if ($auth->loggedIn()) {
+        if ($this->session()->isActive()) {
             $user = $this->session()->getUser();
             return new AssociativeList($user->fetch()->serialize());
         } else {
