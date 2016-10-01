@@ -2,13 +2,23 @@
 
 namespace Terminus\Collections;
 
-use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 define('DAILY_BACKUP_TTL', 691200);
 define('WEEKLY_BACKUP_TTL', 2764800);
 
 class Backups extends TerminusCollection
 {
+  /**
+   * Valid backup types
+   *
+   * @return String[] An array of valid elements
+   */
+    public static function getValidElements()
+    {
+        return ['code', 'files', 'database', 'db'];
+    }
+
   /**
    * @var Environment
    */
@@ -106,7 +116,7 @@ class Backups extends TerminusCollection
    *
    * @param string $filename Name of the file name to filter by
    * @return Backup
-   * @throws TerminusException
+   * @throws TerminusNotFoundException
    */
     public function getBackupByFileName($filename)
     {
@@ -114,7 +124,7 @@ class Backups extends TerminusCollection
         try {
             $backup = $this->get(array_shift($matches));
         } catch (\Exception $e) {
-            throw new TerminusException(
+            throw new TerminusNotFoundException(
                 'Cannot find a backup named {filename}.',
                 compact('filename'),
                 1
@@ -183,7 +193,6 @@ class Backups extends TerminusCollection
    *
    * @param string $element Element requested (i.e. code, db, or files)
    * @return Backup[] An array of Backup objects
-   * @throws TerminusException
    */
     public function getFinishedBackups($element)
     {
@@ -191,19 +200,6 @@ class Backups extends TerminusCollection
             $all_backups = $this->getBackupsByElement($element);
         } else {
             $all_backups = $this->all();
-        }
-
-        if (empty($all_backups)) {
-            $message  = 'No backups available. Please create one with ';
-            $message .= '`terminus site backups create --site={site} --env={env}`';
-            throw new TerminusException(
-                $message,
-                [
-                'site' => $this->environment->site->get('name'),
-                'env'  => $this->environment->id
-                ],
-                1
-            );
         }
 
         $finished_backups = array_filter(

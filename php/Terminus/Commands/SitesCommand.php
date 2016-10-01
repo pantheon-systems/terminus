@@ -486,44 +486,40 @@ class SitesCommand extends TerminusCommand
         return $filtered_sites;
     }
 
-  /**
-=======
->>>>>>> Fixed sites list memberships so that information is correctly rendered when a user is both an organizational and a team member.
-   * A helper function for getting/prompting for the site create options.
-   *
-   * @param array $assoc_args Arguments from command
-   * @return array
-   */
+    /**
+     * A helper function for getting/prompting for the site create options.
+     *
+     * @param array $assoc_args Arguments from command
+     * @return array
+     */
     private function getSiteCreateOptions($assoc_args)
     {
-        $options          = [];
-        $options['label'] = $this->input()->string(
-            [
-            'args'     => $assoc_args,
-            'key'      => 'label',
-            'message'  => 'Human-readable label for the site',
-            'required' => true,
-            ]
-        );
-        $suggested_name   = $this->sanitizeName($options['label']);
-
+        $options = [
+          'label' => $this->input()->string(
+              [
+              'args'     => $assoc_args,
+              'key'      => 'label',
+              'message'  => 'Human-readable label for the site',
+              'required' => true,
+              ]
+          ),
+        ];
         if (array_key_exists('name', $assoc_args)) {
             // Deprecated but kept for backwards compatibility
             $options['site_name'] = $assoc_args['name'];
         } elseif (array_key_exists('site', $assoc_args)) {
             $options['site_name'] = $assoc_args['site'];
-        } elseif (!is_null(Config::get('site'))) {
-            $options['site_name'] = Config::get('site');
+        } elseif (!empty($site = Config::get('site'))) {
+            $options['site_name'] = $site;
         } else {
-            $message  = 'Machine name of the site; used as part of the default URL';
-            $message .= " (if left blank will be $suggested_name)";
-
+            $suggested_name = $this->sanitizeName($options['label']);
             $options['site_name'] = $this->input()->string(
                 [
                 'args'     => $assoc_args,
                 'key'      => 'site',
                 'default'  => $suggested_name,
-                'message'  => $message,
+                'message'  => 'The machine name of the site, used as part of the default URL '
+                    . "(if left blank, it will be $suggested_name)",
                 'required' => true,
                 ]
             );

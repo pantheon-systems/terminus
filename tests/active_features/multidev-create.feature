@@ -9,7 +9,7 @@ Feature: Working with multidev environments
 
   @vcr site_create-env
   Scenario: Create a multidev environment
-    When I run "terminus multidev:create --site=[[test_site_name]] --from-env=dev --to-env=multidev"
+    When I run "terminus multidev:create [[test_site_name]].dev multidev"
     Then I should get: "."
     And I should get:
     """
