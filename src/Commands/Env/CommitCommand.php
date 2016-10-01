@@ -34,6 +34,6 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
 
         $workflow = $env->commitChanges($options['message']);
         $workflow->wait();
-        $this->workflowOutput($workflow, ['failure' => 'The commit workflow failed.',]);
+        return $workflow->getMessage();
     }
 }
