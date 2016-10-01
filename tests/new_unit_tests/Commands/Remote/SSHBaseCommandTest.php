@@ -20,6 +20,13 @@ class SSHBaseCommandTest extends CommandTestCase
         $this->command = new DummyCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+
+        $this->site->expects($this->any())->method('get')
+            ->withConsecutive(
+                [$this->equalTo('framework')],
+                [$this->equalTo('name')]
+            )
+            ->willReturnOnConsecutiveCalls('framework-a', 'site');
     }
 
     public function testExecuteCommand()
@@ -30,7 +37,7 @@ class SSHBaseCommandTest extends CommandTestCase
             ->with($this->equalTo('dummy arg1 arg2'))
             ->willReturn(['output' => 'dummy output', 'exit_code' => 0]);
 
-        $output = $this->command->dummyCommand('dummy-site.dummy-env', ['arg1', 'arg2']);
+        $output = $this->command->dummyCommand('site.env', ['arg1', 'arg2']);
 
         $this->assertEquals('dummy output', $output);
     }
@@ -52,7 +59,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 ])
             );
 
-        $output = $this->command->dummyCommand('dummy-site.dummy-env', ['avoided']);
+        $output = $this->command->dummyCommand('site.env', ['avoided']);
 
         $this->assertEquals('', $output);
     }
@@ -72,14 +79,14 @@ class SSHBaseCommandTest extends CommandTestCase
                 ])
             );
 
-        $output = $this->command->dummyCommand('dummy-site.dummy-env', ['no-alternative']);
+        $output = $this->command->dummyCommand('site.env', ['no-alternative']);
 
         $this->assertEquals('', $output);
     }
 
-    public function testValidateConnectionModeGit()
+    public function testValidateConnectionMode()
     {
-        // should warn about git mode
+        // should log error message
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
@@ -87,5 +94,19 @@ class SSHBaseCommandTest extends CommandTestCase
             );
 
         $this->protectedMethodCall($this->command, 'validateConnectionMode', ['git']);
+    }
+
+    public function testValidateFrameworkValid()
+    {
+        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-a']);
+    }
+
+    /**
+     * @expectedException \Terminus\Exceptions\TerminusException
+     * @expectedExceptionMessage The dummy command is only available on a sites running framework-a, framework-b.
+     */
+    public function testValidateFrameworkInvalid()
+    {
+        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-invalid']);
     }
 }
