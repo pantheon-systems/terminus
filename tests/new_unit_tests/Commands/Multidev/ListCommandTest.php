@@ -52,10 +52,10 @@ class ListCommandTest extends MultidevCommandTest
           'initialized' => 'true',
         ];
 
-        $this->environment->method('serialize')
-          ->willReturn($data);
         $this->site->environments->method('multidev')
           ->willReturn([$this->environment,]);
+        $this->environment->method('serialize')
+          ->willReturn($data);
         $this->logger->expects($this->never())
             ->method($this->anything());
 

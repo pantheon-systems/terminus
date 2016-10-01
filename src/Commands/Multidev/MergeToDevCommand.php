@@ -16,8 +16,8 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorized
      *
-     * @name multidev:merge-to-dev
-     * @alias env:merge-to-dev
+     * @command multidev:merge-to-dev
+     * @aliases env:merge-to-dev
      *
      * @param string $site_env Site & environment to merge into dev, in the form `site-name.env`.
      * @option boolean $updatedb True to update the DB along with this merge

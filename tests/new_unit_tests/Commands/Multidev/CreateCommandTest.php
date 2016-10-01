@@ -31,12 +31,12 @@ class CreateCommandTest extends MultidevCommandTest
         $this->environment->id = 'dev';
 
         $this->workflow->method('getMessage')->willReturn("Created Multidev environment \"$multidev_name\"");
-        $this->logger->expects($this->once())
-            ->method('log')
-            ->with($this->equalTo('notice'), "Created Multidev environment \"$multidev_name\"");
         $this->workflow->expects($this->once())
             ->method('wait');
         $this->workflow->method('isSuccessful')->willReturn(true);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with($this->equalTo('notice'), "Created Multidev environment \"$multidev_name\"");
 
         $out = $this->command->createMultidev($multidev_name, $this->environment);
         $this->assertNull($out);
@@ -53,9 +53,9 @@ class CreateCommandTest extends MultidevCommandTest
         $multidev_name = 'multipass';
         $this->environment->id = 'dev';
 
-        $this->workflow->method('getMessage')->willReturn("The environment \"$multidev_name\" already exists.");
         $this->workflow->expects($this->once())->method('wait');
         $this->workflow->method('isSuccessful')->willReturn(false);
+        $this->workflow->method('getMessage')->willReturn("The environment \"$multidev_name\" already exists.");
 
         $out = $this->command->createMultidev($multidev_name, $this->environment);
         $this->assertNull($out);

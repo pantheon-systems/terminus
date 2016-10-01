@@ -16,7 +16,8 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorized
      *
-     * @name multidev:delete
+     * @command multidev:delete
+     * @aliases env:delete
      *
      * @param string $site_env Site & environment to delete, in the form `site-name.env`.
      * @option boolean $delete-branch Used to delete the branch of the same name

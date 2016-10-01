@@ -580,6 +580,7 @@ class Environment extends TerminusModel
    * Merge code from the Dev Environment into this Multidev Environment
    *
    * @param array $options Parameters to override defaults
+   *        boolean updatedb True to update DB with merge
    * @return Workflow
    * @throws TerminusException
    */
