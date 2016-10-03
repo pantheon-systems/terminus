@@ -3,19 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\CreateCommand;
-use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Multidev\CreateCommand
  */
-class CreateCommandTest extends CommandTestCase
+class CreateCommandTest extends MultidevCommandTest
 {
-    /**
-     * @var Workflow
-     */
-    protected $workflow;
-
     /**
      * @inheritdoc
      */
@@ -26,9 +19,6 @@ class CreateCommandTest extends CommandTestCase
         $this->command = new CreateCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-          ->disableOriginalConstructor()
-          ->getMock();
         $this->site->environments->method('create')->willReturn($this->workflow);
     }
 
@@ -41,12 +31,12 @@ class CreateCommandTest extends CommandTestCase
         $this->environment->id = 'dev';
 
         $this->workflow->method('getMessage')->willReturn("Created Multidev environment \"$multidev_name\"");
-        $this->logger->expects($this->once())
-            ->method('log')
-            ->with($this->equalTo('notice'), "Created Multidev environment \"$multidev_name\"");
         $this->workflow->expects($this->once())
             ->method('wait');
         $this->workflow->method('isSuccessful')->willReturn(true);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with($this->equalTo('notice'), "Created Multidev environment \"$multidev_name\"");
 
         $out = $this->command->createMultidev($multidev_name, $this->environment);
         $this->assertNull($out);
@@ -63,9 +53,9 @@ class CreateCommandTest extends CommandTestCase
         $multidev_name = 'multipass';
         $this->environment->id = 'dev';
 
-        $this->workflow->method('getMessage')->willReturn("The environment \"$multidev_name\" already exists.");
         $this->workflow->expects($this->once())->method('wait');
         $this->workflow->method('isSuccessful')->willReturn(false);
+        $this->workflow->method('getMessage')->willReturn("The environment \"$multidev_name\" already exists.");
 
         $out = $this->command->createMultidev($multidev_name, $this->environment);
         $this->assertNull($out);

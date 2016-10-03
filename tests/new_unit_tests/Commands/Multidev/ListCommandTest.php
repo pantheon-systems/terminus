@@ -3,12 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\ListCommand;
-use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Multidev\ListCommand
  */
-class ListCommandTest extends CommandTestCase
+class ListCommandTest extends MultidevCommandTest
 {
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -53,10 +52,10 @@ class ListCommandTest extends CommandTestCase
           'initialized' => 'true',
         ];
 
-        $this->environment->method('serialize')
-          ->willReturn($data);
         $this->site->environments->method('multidev')
           ->willReturn([$this->environment,]);
+        $this->environment->method('serialize')
+          ->willReturn($data);
         $this->logger->expects($this->never())
             ->method($this->anything());
 

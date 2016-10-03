@@ -580,6 +580,7 @@ class Environment extends TerminusModel
    * Merge code from the Dev Environment into this Multidev Environment
    *
    * @param array $options Parameters to override defaults
+   *        boolean updatedb True to update DB with merge
    * @return Workflow
    * @throws TerminusException
    */
@@ -612,16 +613,11 @@ class Environment extends TerminusModel
    * @return Workflow
    * @throws TerminusException
    */
-    public function mergeToDev($options = [])
+    public function mergeToDev(array $options = [])
     {
         if ($this->id != 'dev') {
-            throw new TerminusException(
-                'Environment::mergeToDev() may only be run on the dev environment.',
-                [],
-                1
-            );
+            throw new TerminusException('Environment::mergeToDev() may only be run on the dev environment.');
         }
-
         $default_params = ['updatedb' => false, 'from_environment' => null,];
         $params = array_merge($default_params, $options);
 

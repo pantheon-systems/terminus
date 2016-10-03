@@ -16,7 +16,8 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorized
      *
-     * @name multidev:create
+     * @command multidev:create
+     * @aliases env:create
      *
      * @param string $site_env Site & environment to copy from, in the form `site-name.env`.
      * @param string $multidev Name of the new multidev environment being created
