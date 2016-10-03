@@ -14,6 +14,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
      * Deploy the dev environment to test or live.
      *
      * @command env:deploy
+     * @aliases deploy
      *
      * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
      *
