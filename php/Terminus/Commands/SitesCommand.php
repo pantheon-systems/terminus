@@ -191,7 +191,7 @@ class SitesCommand extends TerminusCommand
         if (isset($assoc_args['owner'])) {
             $owner_uuid = $assoc_args['owner'];
             if ($owner_uuid == 'me') {
-                $owner_uuid = $this->user->id;
+                $owner_uuid = Session::getUser()->id;
             }
             $this->sites->filterByOwner($owner_uuid);
         }
@@ -497,10 +497,10 @@ class SitesCommand extends TerminusCommand
         $options = [
           'label' => $this->input()->string(
               [
-              'args'     => $assoc_args,
-              'key'      => 'label',
-              'message'  => 'Human-readable label for the site',
-              'required' => true,
+                  'args'     => $assoc_args,
+                  'key'      => 'label',
+                  'message'  => 'Human-readable label for the site',
+                  'required' => true,
               ]
           ),
         ];
@@ -515,12 +515,12 @@ class SitesCommand extends TerminusCommand
             $suggested_name = $this->sanitizeName($options['label']);
             $options['site_name'] = $this->input()->string(
                 [
-                'args'     => $assoc_args,
-                'key'      => 'site',
-                'default'  => $suggested_name,
-                'message'  => 'The machine name of the site, used as part of the default URL '
-                    . "(if left blank, it will be $suggested_name)",
-                'required' => true,
+                    'args'     => $assoc_args,
+                    'key'      => 'site',
+                    'default'  => $suggested_name,
+                    'message'  => 'The machine name of the site, used as part of the default URL '
+                        . "(if left blank, it will be $suggested_name)",
+                    'required' => false,
                 ]
             );
         }

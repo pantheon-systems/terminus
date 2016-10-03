@@ -633,20 +633,20 @@ class InputHelper extends TerminusHelper
    * Prompt the user for input
    *
    * @param array $arg_options Elements as follow:
-   *        array  args    Parameters from the command line
-   *        string key     Key to look for in args
-   *        string message Message to give at prompt
-   *        mixed  default Returned if user does not select a valid option
+   *        array   args     Parameters from the command line
+   *        string  key      Key to look for in args
+   *        string  message  Message to give at prompt
+   *        mixed   default  Returned if user does not select a valid option
    * @return string
    * @throws TerminusException
    */
     public function prompt(array $arg_options = [])
     {
         $default_options = [
-        'args' => [],
-        'key' => null,
-        'message' => '',
-        'default' => null,
+            'args' => [],
+            'key' => null,
+            'message' => '',
+            'default' => null,
         ];
         $options = array_merge($default_options, $arg_options);
 
@@ -655,12 +655,9 @@ class InputHelper extends TerminusHelper
         }
 
         try {
-            $response = \cli\prompt($options['message']);
+            $response = \cli\prompt($options['message'], $options['default']);
         } catch (\Exception $e) {
-            throw new TerminusException($e->getMessage, [], 1);
-        }
-        if (empty($response)) {
-            return $options['default'];
+            throw new TerminusException($e->getMessage(), [], 1);
         }
         return $response;
     }
@@ -846,34 +843,22 @@ class InputHelper extends TerminusHelper
    *        mixed  default  Returns if no other choice
    *        string key      Key for searched-for argument
    *        string message  Prompt printed to STDOUT
-   *        bool   required True to disallow empty strings
    * @return string Either $args[$key], $default, or string from prompt
    */
     public function string(array $arg_options = [])
     {
         $default_options = [
-        'args'     => [],
-        'default'  => null,
-        'key'      => 0,
-        'message'  => 'Enter',
-        'required' => false,
+            'args'     => [],
+            'default'  => null,
+            'key'      => 0,
+            'message'  => 'Enter',
         ];
         $options         = array_merge($default_options, $arg_options);
 
         if (isset($options['args'][$options['key']])) {
             return $options['args'][$options['key']];
         }
-        $string = $this->prompt($options);
-        if ($options['required']) {
-            if (($string == '') && !is_null($options['default'])) {
-                return $options['default'];
-            }
-            $options['message'] .= " (Your entry may not be blank.)";
-            while ($string == '') {
-                $string = $this->prompt($options);
-            }
-        }
-        return $string;
+        return $this->prompt($options);
     }
 
   /**
