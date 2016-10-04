@@ -20,13 +20,13 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Lists the Backups for a given Site and Environment
      *
-     * @authorize
+     * @authorized
      *
      * @command backup:list
      * @aliases backups
      *
      * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-     * @param string $element [code|files|database|db] Only show backups of a certain type
+*    * @param string $element [code|files|database|db] Only show backups of a certain type
      * @param array $options [format=<table|csv|yaml|json>]
      *
      * @return RowsOfFields

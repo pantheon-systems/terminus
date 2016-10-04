@@ -17,22 +17,6 @@ Feature: Authorization command
     And I should get: "Server error: `POST https://onebox/api/authorize/machine-token` resulted in a `500 Internal Server Error` response:"
     And I should get: "Authorization failed. Please check that your machine token is valid."
 
-  @vcr auth_login
-  Scenario: Logging back in automatically when there is only one token saved and no email given
-    Given I have no saved machine tokens
-    And I log in via machine token "[[machine_token]]"
-    And I log out
-    When I run "terminus auth:login"
-    Then I should get: "Found a machine token for [[username]]"
-    And I should get: "Logging in via machine token."
-
-  @vcr auth_login
-  Scenario: Logging in with a saved machine token by email
-    Given I log in via machine token "[[machine_token]]"
-    And I log out
-    When I log in as "[[username]]"
-    Then I should get: "Logging in via machine token."
-
   Scenario: Failing to log in by saved token when no such user's was saved
     Given I have no saved machine tokens
     When I run "terminus auth:login --email=invalid"

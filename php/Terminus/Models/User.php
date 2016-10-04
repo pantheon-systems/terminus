@@ -138,10 +138,10 @@ class User extends TerminusModel
         }
 
         $data = [
-          'firstname' => $first_name,
-          'lastname'  => $last_name,
-          'email' => $this->get('email'),
-          'id'  => $this->id,
+        'firstname' => $first_name,
+        'lastname'  => $last_name,
+        'email' => $this->get('email'),
+        'id'  => $this->id,
         ];
         return $data;
     }

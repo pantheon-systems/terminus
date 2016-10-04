@@ -25,18 +25,17 @@ class LoginCommand extends TerminusCommand
     public function logIn(array $options = ['machine-token' => null, 'email' => null,])
     {
         $tokens = $this->session()->tokens;
-        $all_tokens = $tokens->all();
 
-        if (!is_null($token_string = $options['machine-token'])) {
+        if (isset($options['machine-token']) && !is_null($token_string = $options['machine-token'])) {
             try {
                 $token = $tokens->get($token_string);
             } catch (\Exception $e) {
                 $this->log()->notice('Logging in via machine token.');
                 $tokens->create($token_string);
             }
-        } elseif (!is_null($email = $options['email'])) {
+        } elseif (isset($options['email']) && !is_null($email = $options['email'])) {
             $token = $tokens->get($email);
-        } elseif (count($tokens->all()) == 1) {
+        } elseif (count($all_tokens = $tokens->all()) == 1) {
             $token = array_shift($all_tokens);
             $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
         } else {

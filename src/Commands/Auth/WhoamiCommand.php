@@ -32,7 +32,6 @@ class WhoamiCommand extends TerminusCommand
             return new AssociativeList($user->fetch()->serialize());
         } else {
             $this->log()->notice('You are not logged in.');
-            return null;
         }
     }
 }
