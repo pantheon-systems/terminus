@@ -12,7 +12,7 @@ class UpdatesListCommand extends UpstreamCommand
      *
      * @authorized
      *
-     * @name upstream :updates:list
+     * @command upstream :updates:list
      * @aliases upstream-updates upstream:updates
      *
      * @param string $site_id Name of the site for which to check for updates.

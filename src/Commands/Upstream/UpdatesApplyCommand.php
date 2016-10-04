@@ -12,7 +12,7 @@ class UpdatesApplyCommand extends UpstreamCommand
      *
      * @authorized
      *
-     * @name upstream:updates:apply
+     * @command upstream:updates:apply
      *
      * @param string $site_env_id Name of the environment to retrieve
      *
