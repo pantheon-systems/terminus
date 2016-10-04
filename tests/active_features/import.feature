@@ -9,7 +9,7 @@ Feature: Import a a site and its content onto Pantheon
 
   @vcr site_import
   Scenario: Importing a site archive onto Pantheon
-    When I run "terminus import [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz --yes"
+    When I run "terminus site:import [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz"
     Then I should get "."
     Then I should get:
     """
@@ -18,7 +18,8 @@ Feature: Import a a site and its content onto Pantheon
 
   @vcr site_import-content_files
   Scenario: Import files into the site
-    When I run "terminus import:files --site=[[test_site_name]] --url=https://s3.amazonaws.com/pantheondemofiles/files.tar.gz"
+    When This step is implemented I will test: terminus import:files
+    When I run "terminus import:files [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/files.tar.gz"
     Then I should get "."
     Then I should get:
     """
@@ -27,7 +28,8 @@ Feature: Import a a site and its content onto Pantheon
 
   @vcr site_import-content_database
   Scenario: Import database into the site
-    When I run "terminus import:database --site=[[test_site_name]] --url=https://s3.amazonaws.com/pantheondemofiles/database.tar.gz"
+    When This step is implemented I will test: import:content
+    When I run "terminus import:database [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/database.tar.gz"
     Then I should get "."
     Then I should get:
     """
