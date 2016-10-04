@@ -12,7 +12,7 @@ class ListCommand extends TerminusCommand
      *
      * @authorized
      *
-     * @name machine-token:list
+     * @command machine-token:list
      * @aliases machine-tokens mt:list mts
      *
      * @return RowsOfFields
