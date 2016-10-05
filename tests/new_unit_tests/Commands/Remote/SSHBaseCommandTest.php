@@ -103,7 +103,7 @@ class SSHBaseCommandTest extends CommandTestCase
 
     /**
      * @expectedException \Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The dummy command is only available on a sites running framework-a, framework-b.
+     * @expectedExceptionMessage The dummy command is only available on sites running framework-a, framework-b.
      */
     public function testValidateFrameworkInvalid()
     {

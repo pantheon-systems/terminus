@@ -16,5 +16,10 @@ Feature: Running Drush Commands on a Drupal Site
   @vcr remote-drush.yml
   Scenario: Running a drush command that is not permitted
     When I run: terminus drush [[test_site_name]].dev -- sql-connect
-    Then I should get: "That command is not available via Terminus. Please use the native drush command."
+    Then I should see an error message: That command is not available via Terminus. Please use the native drush command.
     Then I should get: "Hint: You may want to try `terminus connection:info --field=mysql_command`."
+
+  @vcr remote-wp.yml
+  Scenario: Running a drush command on a Wordpress site is not possible
+    When I run: terminus drush [[test_site_name]].dev -- status
+    Then I should see an error message: The drush command is only available on sites running drupal, drupal8. The framework for this site is wordpress.
