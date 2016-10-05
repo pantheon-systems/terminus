@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Style\TerminusStyle;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
@@ -20,7 +21,9 @@ abstract class TerminusCommand implements
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
-    use IO;
+    use IO {
+        io as roboIo;
+    }
     use SessionAwareTrait;
 
     /**
@@ -38,5 +41,16 @@ abstract class TerminusCommand implements
     protected function log()
     {
         return $this->logger;
+    }
+
+    /**
+     * Override Robo's IO function with our custom style.
+     */
+    protected function io()
+    {
+        if (!$this->io) {
+            $this->io = new TerminusStyle($this->input(), $this->output());
+        }
+        return $this->io;
     }
 }

@@ -1074,4 +1074,25 @@ class FeatureContext implements Context, SnippetAcceptingContext
         }
         return $this->cassette_name;
     }
+
+    /**
+     * @Then I should see a progress bar with the message: :message
+     */
+    public function iShouldSeeAProgressBarWithTheMessage($message)
+    {
+        mb_substr_count(
+            $this->output,
+            $message
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%'
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%'
+        ) == 1;
+    }
 }
