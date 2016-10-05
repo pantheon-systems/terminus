@@ -130,8 +130,7 @@ class Sites extends TerminusCollection
         $this->models = array_filter(
             $this->models,
             function ($site) use ($tag, $org_id) {
-                $has_tag = in_array($tag, $site->getTags($org_id));
-                return $has_tag;
+                return in_array($tag, $site->getTags($org_id));
             }
         );
         return $this;
@@ -149,8 +148,7 @@ class Sites extends TerminusCollection
             $this->models,
             function ($site) use ($regex) {
                 preg_match("~$regex~", $site->get('name'), $matches);
-                $is_match = !empty($matches);
-                return $is_match;
+                return !empty($matches);
             }
         );
         return $this;
@@ -164,7 +162,12 @@ class Sites extends TerminusCollection
    */
     public function filterByOwner($owner_uuid)
     {
-        $this->filter(['owner' => $owner_uuid,]);
+        $this->models = array_filter(
+            $this->models,
+            function ($model) use ($owner_uuid) {
+                return ($model->get('owner') == $owner_uuid);
+            }
+        );
         return $this;
     }
 
