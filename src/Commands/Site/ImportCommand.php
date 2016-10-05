@@ -1,20 +1,21 @@
 <?php
+
 namespace Pantheon\Terminus\Commands\Site;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Exceptions\TerminusException;
 
-class ImportCommand extends TerminusCommand implements SiteAwareInterface
+/**
+ * Class ImportCommand
+ * @package Pantheon\Terminus\Commands\Site
+ */
+class ImportCommand extends SiteCommand
 {
-    use SiteAwareTrait;
     /**
      * Imports a site archive onto a Pantheon site
      *
      * @authorized
      *
-     * @name site:import
+     * @command site:import
      * @aliases import
      *
      * @option string $site Name of the site to import to
@@ -30,11 +31,11 @@ class ImportCommand extends TerminusCommand implements SiteAwareInterface
         try {
             $workflow->wait();
         } catch (\Exception $e) {
-            if ($e->getMessage() == "Successfully queued import_site") {
-                throw new TerminusException("Site import failed");
+            if ($e->getMessage() == 'Successfully queued import_site') {
+                throw new TerminusException('Site import failed');
             }
             throw $e;
         }
-        $this->log()->notice("Imported site onto Pantheon");
+        $this->log()->notice('Imported site onto Pantheon');
     }
 }
