@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Site;
+namespace Pantheon\Terminus\UnitTests\Commands\Import;
 
 use Pantheon\Terminus\Commands\Import\ImportFilesCommand;
 use Terminus\Exceptions\TerminusException;
