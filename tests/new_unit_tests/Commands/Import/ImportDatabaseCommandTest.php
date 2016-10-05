@@ -2,15 +2,15 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
-use Pantheon\Terminus\Commands\Site\ImportCommand;
+use Pantheon\Terminus\Commands\Import\ImportDatabaseCommand;
 use Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Models\Workflow;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Site\ImportCommand
+ * Test suite for class for Pantheon\Terminus\Commands\Import\ImportDatabaseCommand
  */
-class ImportCommandTest extends CommandTestCase
+class ImportDatabaseCommandTest extends CommandTestCase
 {
 
     /**
@@ -21,7 +21,7 @@ class ImportCommandTest extends CommandTestCase
     protected function setup()
     {
         parent::setUp();
-        $this->command = new ImportCommand($this->getConfig());
+        $this->command = new ImportDatabaseCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
@@ -32,7 +32,7 @@ class ImportCommandTest extends CommandTestCase
      * @return void
      *
      */
-    public function testSiteImportValidURL()
+    public function testSiteImportDatabaseValidURL()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -45,9 +45,9 @@ class ImportCommandTest extends CommandTestCase
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Imported site onto Pantheon')
+                $this->equalTo('Imported database into site.')
             );
 
-        $this->command->import('dummy-site', 'a-valid-url');
+        $this->command->importDatabase('dummy-site', 'a-valid-url');
     }
 }

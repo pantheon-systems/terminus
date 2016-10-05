@@ -1,27 +1,27 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Site;
+namespace Pantheon\Terminus\Commands\Import;
 
+use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Exceptions\TerminusException;
 
-/**
- * Class ImportCommand
- * @package Pantheon\Terminus\Commands\Site
- */
-class ImportCommand extends SiteCommand
+class ImportCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
     /**
      * Imports a site archive onto a Pantheon site
      *
      * @authorized
      *
-     * @command site:import
-     * @aliases import
+     * @command import
+     * @aliases site:import import:site
      *
-     * @option string $site Name of the site to import to
-     * @option string $url  URL at which the import archive exists
+     * @param string $sitename Name of the site to import to
+     * @param string $url  URL at which the import archive exists
      * @usage terminus import <site_name> <archive_url>
-     *   Imports the file at the archive URL to the site named.
+     *   Imports the site in the archive URL to the named site.
      */
     public function import($sitename, $url)
     {
