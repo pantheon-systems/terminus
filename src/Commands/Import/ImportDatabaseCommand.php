@@ -29,6 +29,6 @@ class ImportDatabaseCommand extends TerminusCommand implements SiteAwareInterfac
         list(, $env) = $this->getSiteEnv($site, 'dev');
         $workflow = $env->importDatabase($url);
         $workflow->wait();
-        $this->log()->notice("Imported database into site.");
+        $this->log()->notice('Importing database to "dev"');
     }
 }

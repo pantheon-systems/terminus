@@ -40,12 +40,12 @@ class ImportDatabaseCommandTest extends CommandTestCase
 
         $workflow->expects($this->once())->method('wait')->willReturn(true);
 
-        $this->environment->expects($this->once())->method('import')
+        $this->environment->expects($this->once())->method('importDatabase')
             ->with($this->equalTo('a-valid-url'))->willReturn($workflow);
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Imported database into site.')
+                $this->equalTo('Importing database to "dev"')
             );
 
         $this->command->importDatabase('dummy-site', 'a-valid-url');

@@ -40,12 +40,12 @@ class ImportfilesCommandTest extends CommandTestCase
 
         $workflow->expects($this->once())->method('wait')->willReturn(true);
 
-        $this->environment->expects($this->once())->method('import')
+        $this->environment->expects($this->once())->method('importFiles')
             ->with($this->equalTo('a-valid-url'))->willReturn($workflow);
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Imported files into site.')
+                $this->equalTo('Importing files to "dev"')
             );
 
         $this->command->importFiles('dummy-site', 'a-valid-url');

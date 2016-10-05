@@ -29,6 +29,6 @@ class ImportFilesCommand extends TerminusCommand implements SiteAwareInterface
         list(, $env) = $this->getSiteEnv($site, 'dev');
         $workflow = $env->importFiles($url);
         $workflow->wait();
-        $this->log()->notice("Imported files into site.");
+        $this->log()->notice('Importing files to "dev"');
     }
 }
