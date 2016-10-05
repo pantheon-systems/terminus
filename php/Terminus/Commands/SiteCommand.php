@@ -2061,7 +2061,7 @@ class SiteCommand extends TerminusCommand
         $upstream = $this->sites->get(
             $this->input()->siteName(['args' => $assoc_args,])
         )->upstream;
-        $this->output()->outputRecord($upstream->fetch()->serialize());
+        $this->output()->outputRecord($upstream->serialize());
     }
 
   /**

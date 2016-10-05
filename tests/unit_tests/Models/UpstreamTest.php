@@ -51,30 +51,8 @@ class UpstreamTest extends TerminusTest
         $this->assertEquals($upstream_with_site->site, $this->site);
 
         //Getting the Upstream property instantiated by a Site
-        $this->site->fetch();
         $upstream_from_site = $this->site->upstream;
         $this->assertEquals($upstream_from_site->site, $this->site);
-    }
-
-    /**
-     * Exercises the fetch function to ensure that data is appropriately extracted from the API
-     *
-     * @return void
-     *
-     * @vcr site_upstream-info
-     */
-    public function testFetch()
-    {
-        // Checking that fetch fills in attributes
-        $empty_object = (object)[];
-        $upstream_with_site = new Upstream($empty_object, ['site' => $this->site,]);
-        $this->assertNull($upstream_with_site->get('product_id'));
-        $this->assertNull($upstream_with_site->get('url'));
-        $this->assertNull($upstream_with_site->get('branch'));
-        $upstream_with_site->fetch();
-        $this->assertNotNull($upstream_with_site->get('product_id'));
-        $this->assertNotNull($upstream_with_site->get('url'));
-        $this->assertNotNull($upstream_with_site->get('branch'));
     }
 
     /**
@@ -156,13 +134,10 @@ class UpstreamTest extends TerminusTest
     {
         $empty_object = (object)[];
         $upstream_with_site = new Upstream($empty_object, ['site' => $this->site,]);
-        $data = $upstream_with_site->fetch()->serialize();
+        $data = $upstream_with_site->serialize();
         $this->assertArrayHasKey('url', $data);
-        $this->assertNotNull($data['url']);
         $this->assertArrayHasKey('product_id', $data);
-        $this->assertNotNull($data['product_id']);
         $this->assertArrayHasKey('branch', $data);
-        $this->assertNotNull($data['branch']);
         $this->assertArrayHasKey('status', $data);
         $this->assertEquals($data['status'], $upstream_with_site->getStatus());
     }

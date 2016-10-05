@@ -69,12 +69,7 @@ class Site extends TerminusModel
         $this->org_memberships = new SiteOrganizationMemberships($params);
         $this->user_memberships = new SiteUserMemberships($params);
         $this->workflows = new Workflows($params);
-
-        if (isset($attributes->upstream)) {
-            $this->upstream = new Upstream($attributes->upstream, $params);
-        } else {
-            $this->upstream = new Upstream((object)[], $params);
-        }
+        $this->setUpstream($attributes);
     }
 
     /**
@@ -314,6 +309,7 @@ class Site extends TerminusModel
     public function fetch(array $options = [])
     {
         $data = $this->request->request($this->url)['data'];
+        $this->setUpstream($data);
         $this->attributes = (object)array_merge((array)$this->attributes, (array)$data);
         return $this;
     }
@@ -474,7 +470,7 @@ class Site extends TerminusModel
         'framework'     => $this->get('framework'),
         'organization'  => $this->get('organization'),
         'service_level' => $this->get('service_level'),
-        'upstream'      => $this->upstream->serialize(),
+        'upstream'      => (string)$this->upstream,
         'php_version'   => $this->get('php_version'),
         'holder_type'   => $this->get('holder_type'),
         'holder_id'     => $this->get('holder_id'),
@@ -550,5 +546,21 @@ class Site extends TerminusModel
             $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
         }
         return $data;
+    }
+
+    /**
+     * Ensures the proper creation of an Upstream object
+     *
+     * @param object $attributes Data about the site from the API
+     */
+    private function setUpstream($attributes)
+    {
+        $upstream_data = (object)[];
+        if (isset($attributes->settings->upstream)) {
+            $upstream_data = $attributes->settings->upstream;
+        } else if (isset($attributes->upstream)) {
+            $upstream_data = $attributes->upstream;
+        }
+        $this->upstream = new Upstream($upstream_data, ['site' => $this,]);
     }
 }

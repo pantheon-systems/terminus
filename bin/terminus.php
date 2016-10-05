@@ -43,6 +43,9 @@ $container->share('sites', Sites::class);
 $container->inflector(SiteAwareInterface::class)
     ->invokeMethod('setSites', ['sites']);
 
+$factory = $container->get('commandFactory');
+$factory->setIncludeAllPublicMethods(false);
+
 // Running Terminus
 $runner = new Runner($container);
 $status_code = $runner->run($input, $output);
