@@ -883,7 +883,7 @@ class InputHelper extends TerminusHelper
             if ($this->isValidUuid($options['args'][$options['key']])) {
                 return $options['args'][$options['key']];
             }
-            $upstream  = $upstreams->getByIdOrName($options['args'][$options['key']]);
+            $upstream  = $upstreams->get($options['args'][$options['key']]);
             if ($upstream == null) {
                 throw new TerminusException(
                     'Could not find upstream: {upstream}',

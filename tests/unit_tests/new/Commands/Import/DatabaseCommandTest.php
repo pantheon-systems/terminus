@@ -2,15 +2,15 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Import;
 
-use Pantheon\Terminus\Commands\Import\ImportCommand;
+use Pantheon\Terminus\Commands\Import\DatabaseCommand;
+use Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Models\Workflow;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand
- * TODO: Move this to where it belongs
+ * Test suite for class for Pantheon\Terminus\Commands\Import\DatabaseCommand
  */
-class ImportCommandTest extends CommandTestCase
+class DatabaseCommandTest extends CommandTestCase
 {
 
     /**
@@ -21,18 +21,18 @@ class ImportCommandTest extends CommandTestCase
     protected function setup()
     {
         parent::setUp();
-        $this->command = new ImportCommand($this->getConfig());
+        $this->command = new DatabaseCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
-
+    
     /**
      * Exercises site:import command with a valid url
      *
      * @return void
      *
      */
-    public function testSiteImportValidURL()
+    public function testSiteImportDatabaseValidURL()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -40,14 +40,14 @@ class ImportCommandTest extends CommandTestCase
 
         $workflow->expects($this->once())->method('wait')->willReturn(true);
 
-        $this->environment->expects($this->once())->method('import')
+        $this->environment->expects($this->once())->method('importDatabase')
             ->with($this->equalTo('a-valid-url'))->willReturn($workflow);
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Imported site onto Pantheon')
+                $this->equalTo('Importing database to "dev"')
             );
 
-        $this->command->import('dummy-site', 'a-valid-url');
+        $this->command->importDatabase('dummy-site', 'a-valid-url');
     }
 }

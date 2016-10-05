@@ -1,14 +1,14 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Import;
+namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Import\ImportCommand;
+use Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand
- * TODO: Move this to where it belongs
  */
 class ImportCommandTest extends CommandTestCase
 {
@@ -25,7 +25,7 @@ class ImportCommandTest extends CommandTestCase
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
-
+    
     /**
      * Exercises site:import command with a valid url
      *
