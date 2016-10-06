@@ -14,6 +14,7 @@ if ($phar_path) {
 
 use League\Container\Container;
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Runner;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
@@ -22,8 +23,9 @@ use Pantheon\Terminus\Terminus;
 use Robo\Robo;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Terminus\Caches\FileCache;
 use Terminus\Collections\Sites;
+
+
 
 // Initializing the Terminus application
 $config = new Config();
@@ -34,14 +36,14 @@ $input = new ArgvInput($_SERVER['argv']);
 $output = new ConsoleOutput();
 $container = Robo::createDefaultContainer($input, $output, $application, $config);
 
-$container->share('fileCache', FileCache::class);
+
+$container->share('dataStore', FileStore::class)
+    ->withArgument(new League\Container\Argument\RawArgument($config->get('cache_dir')));
 $container->share('session', Session::class)
-    ->withArgument('fileCache');
+    ->withArgument('dataStore');
 $container->inflector(SessionAwareInterface::class)
     ->invokeMethod('setSession', ['session']);
-$container->share('sites', Sites::class);
-$container->inflector(SiteAwareInterface::class)
-    ->invokeMethod('setSites', ['sites']);
+
 
 $factory = $container->get('commandFactory');
 $factory->setIncludeAllPublicMethods(false);

@@ -18,7 +18,7 @@ class MergeFromDevCommandTest extends MultidevCommandTest
 
         $this->command = new MergeFromDevCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->environment->method('mergeFromDev')->willReturn($this->workflow);
     }
 

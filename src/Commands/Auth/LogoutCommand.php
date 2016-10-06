@@ -19,8 +19,7 @@ class LogoutCommand extends TerminusCommand
      */
     public function logOut()
     {
-        $auth = new Auth();
-        $auth->logOut();
+        $this->session()->logOut();
         $this->log()->notice('You have been logged out of Pantheon.');
     }
 }

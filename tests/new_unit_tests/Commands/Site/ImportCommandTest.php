@@ -22,7 +22,7 @@ class ImportCommandTest extends CommandTestCase
     {
         parent::setUp();
         $this->command = new ImportCommand($this->getConfig());
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
     }
     

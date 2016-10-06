@@ -11,7 +11,7 @@ class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
         parent::setUp();
 
         $this->command = new UpdatesListCommand($this->getConfig());
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
     }
 

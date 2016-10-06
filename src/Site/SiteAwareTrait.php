@@ -32,7 +32,7 @@ trait SiteAwareTrait
      */
     public function sites()
     {
-        return $this->sites;
+        return $this->session()->getUser()->sitesCollection();
     }
 
     /**

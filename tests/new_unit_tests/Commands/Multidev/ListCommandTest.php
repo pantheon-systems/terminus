@@ -19,7 +19,7 @@ class ListCommandTest extends MultidevCommandTest
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

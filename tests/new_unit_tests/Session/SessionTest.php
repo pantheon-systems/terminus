@@ -2,8 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Session;
 
+use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Caches\FileCache;
 
 /**
  * Testing class for Pantheon\Terminus\Session\Session
@@ -12,15 +13,16 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $session;
-    protected $filecache;
+    protected $filestore;
+
 
     protected function setUp()
     {
-        $this->filecache = $this->getMockBuilder(FileCache::class)
+        $this->filestore = $this->getMockBuilder(FileStore::class)
         ->disableOriginalConstructor()
         ->getMock();
 
-        $this->session = new Session($this->filecache);
+        $this->session = new Session($this->filestore);
     }
 
   /**
@@ -36,10 +38,29 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $this->session->get('abc'));
     }
 
+    /**
+     * Test getting and setting data
+     */
+    public function testWrite()
+    {
+        $data = [
+            'foo' => 'bar',
+            'abc' => 123
+        ];
 
-  /**
-   * Test getting and setting data
-   */
+        $this->filestore->expects($this->once())
+            ->method('set')
+            ->with('session', $data);
+
+        foreach ($data as $key => $val) {
+            $this->session->set($key, $val);
+        }
+        $this->session->write();
+    }
+
+    /**
+     * Test getting and setting data
+     */
     public function testSetData()
     {
         $data = [
@@ -47,9 +68,9 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         'abc' => 123
         ];
 
-        $this->filecache->expects($this->once())
-        ->method('putData')
-        ->with('session', $data);
+        $this->filestore->expects($this->once())
+            ->method('set')
+            ->with('session', $data);
 
         $this->session->setData($data);
 
@@ -63,22 +84,19 @@ class SessionTest extends \PHPUnit_Framework_TestCase
    */
     public function testGetUser()
     {
-        $data = [
-        'foo' => 'bar',
-        'abc' => 123
-        ];
+        $this->filestore->expects($this->once())
+            ->method('get')
+            ->with('session')
+            ->willReturn(['user_id' => '123']);
 
-        $this->filecache->expects($this->once())
-        ->method('getData')
-        ->with('session')
-        ->willReturn(['user_uuid' => '123']);
-
-        $this->session = new Session($this->filecache);
+        $this->session = new Session($this->filestore);
+        $this->session->setConfig(new Config());
 
         // @TODO: Test mocking of new user (will require some sort of mockable factory rather than
         // the direct use of new User() in Session)
         $user = $this->session->getUser();
         $this->assertInstanceOf('Terminus\Models\User', $user);
+        $this->assertEquals('123', $user->get('id'));
     }
 
   /**
@@ -86,10 +104,40 @@ class SessionTest extends \PHPUnit_Framework_TestCase
    */
     public function testDestroy()
     {
-        $this->filecache->expects($this->once())
-        ->method('remove')
-        ->with('session');
+        $this->filestore->expects($this->once())
+            ->method('remove')
+            ->with('session');
 
         $this->session->destroy();
     }
+
+    public function testEnsureLogin()
+    {
+    }
+
+    public function testLoggedIn()
+    {
+    }
+
+    public function testLogInViaSavedEmailMachineToken()
+    {
+    }
+
+    public function testLogInViaMachineToken()
+    {
+    }
+
+    public function testLogOut()
+    {
+    }
+
+    public function testGetAllSavedTokenEmails()
+    {
+    }
+
+    public function testGetMachineTokenCreationUrl()
+    {
+    }
+
+
 }

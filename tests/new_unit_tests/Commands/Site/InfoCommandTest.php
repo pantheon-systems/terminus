@@ -19,7 +19,7 @@ class InfoCommandTest extends CommandTestCase
     {
         parent::setUp();
         $this->command = new InfoCommand($this->getConfig());
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
     }
 

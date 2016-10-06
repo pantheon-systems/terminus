@@ -18,13 +18,13 @@ class CodeLogCommandTest extends EnvCommandTest
         parent::setUp();
         $this->command = new CodeLogCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
 
         $this->commits = $this->getMockBuilder(Commits::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->env->commits = $this->commits;
+        $this->environment->commits = $this->commits;
 
         $this->commit_1_attribs = [
             'datetime' => '2016-09-21T12:21:18',
@@ -51,7 +51,7 @@ class CodeLogCommandTest extends EnvCommandTest
      */
     public function testLog()
     {
-        $this->env->id = 'dev';
+        $this->environment->id = 'dev';
         $this->commits->method('all')
             ->willReturn([
                 $this->commit_1,
@@ -77,7 +77,7 @@ class CodeLogCommandTest extends EnvCommandTest
      */
     public function testDeployNoCode()
     {
-        $this->env->id = 'dev';
+        $this->environment->id = 'dev';
         $this->commits->method('all')
             ->willReturn([]);
 

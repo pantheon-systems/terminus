@@ -16,10 +16,6 @@ use Terminus\Models\Workflow;
  */
 abstract class EnvCommandTest extends CommandTestCase
 {
-    protected $session;
-    protected $sites;
-    protected $user;
-    protected $logger;
     protected $command;
 
     /**
@@ -27,31 +23,7 @@ abstract class EnvCommandTest extends CommandTestCase
      */
     protected function setUp()
     {
-        $this->sites = $this->getMockBuilder(Sites::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->sites->method('get')
-            ->willReturn($this->site);
-
-        $this->site->environments = $this->getMockBuilder(Environments::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->env = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site->environments->method('get')
-            ->willReturn($this->env);
-
-        $this->logger = $this->getMockBuilder(NullLogger::class)
-            ->setMethods(array('log'))
-            ->getMock();
+        parent::setUp();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()

@@ -17,7 +17,7 @@ class ListCommandTest extends TeamCommandTest
         parent::setUp();
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

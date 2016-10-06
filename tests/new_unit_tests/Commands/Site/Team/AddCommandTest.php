@@ -17,7 +17,7 @@ class TeamCommandsTest extends TeamCommandTest
         parent::setUp();
         $this->command = new AddCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

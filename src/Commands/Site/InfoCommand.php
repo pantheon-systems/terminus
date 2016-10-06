@@ -44,6 +44,6 @@ class InfoCommand extends SiteCommand
      */
     public function info($site)
     {
-        return new AssociativeList($this->sites->get($site)->serialize());
+        return new AssociativeList($this->sites()->get($site)->serialize());
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus;
 
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Consolidation\AnnotatedCommand\CommandError;
@@ -9,10 +11,11 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 use Terminus\Models\Auth;
 
-class Authorizer implements LoggerAwareInterface, ConfigAwareInterface
+class Authorizer implements LoggerAwareInterface, ConfigAwareInterface, SessionAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
+    use SessionAwareTrait;
 
     /**
      * Authorize the current user prior to running a command.  The
@@ -24,19 +27,6 @@ class Authorizer implements LoggerAwareInterface, ConfigAwareInterface
      */
     public function ensureLogin()
     {
-        $auth   = new Auth();
-        $tokens = $auth->getAllSavedTokenEmails();
-        if (!$auth->loggedIn()) {
-            if (count($tokens) === 1) {
-                $email = array_shift($tokens);
-                $auth->logInViaMachineToken(compact('email'));
-            } elseif (!is_null($this->config->get('user')) && $email = $this->config->get('user')) {
-                $auth->logInViaMachineToken(compact('email'));
-            } else {
-                throw new \Exception(
-                    'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
-                );
-            }
-        }
+        $this->session()->ensureLogin();
     }
 }
