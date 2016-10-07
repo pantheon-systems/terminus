@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 0.13.x
+### Changed
+- Branched 0.x from master, removed 1.x work.
+
 ## [0.13.3] - 2016-10-07
 ### Added
 - `Environment::serialize()` (#1251)

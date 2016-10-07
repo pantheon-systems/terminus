@@ -10,7 +10,6 @@
   "minimum-stability": "beta",
   "require": {
     "php": ">=5.5.9",
-    "consolidation/robo": "dev-master",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
@@ -31,13 +30,10 @@
   "autoload-dev": {
     "psr-4": {
       "Terminus\\UnitTests\\": "tests/unit_tests/old/",
-      "Terminus\\FeatureTests\\": "tests/features/bootstrap/",
-      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/new/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/active_features/bootstrap/"
+      "Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     }
   },
   "scripts": {
-      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus.php src/* php/*",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus.php src/* php/*",
       "docs": "php utils/make-docs.php",
