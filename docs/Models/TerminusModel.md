@@ -22,18 +22,6 @@
 
 ---
 
-### parseAttributes
-##### Description:
-    Modify response data between fetch and assignment
-
-##### Parameters:
-    [object] $data attributes received from API response
-
-##### Return:
-    [object] $data
-
----
-
 ### get
 ##### Description:
     Retrieves attribute of given name
@@ -55,6 +43,16 @@
 
 ##### Return:
     [boolean] True if attribute exists, false otherwise
+
+---
+
+### set
+##### Description:
+    Sets an attribute
+
+##### Parameters:
+    [string] $attribute Name of the attribute key
+    [mixed]  $value     The value to assign to the attribute
 
 ---
 

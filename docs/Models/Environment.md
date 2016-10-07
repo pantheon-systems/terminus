@@ -250,21 +250,6 @@
 
 ---
 
-### info
-##### Description:
-    Load site info
-
-##### Parameters:
-    [string] $key Set to retrieve a specific attribute as named
-
-##### Return:
-    [array] $info
-
-##### Throws:
-    TerminusException
-
----
-
 ### initializeBindings
 ##### Description:
     Initializes the test/live environments on a newly created site  and clones
@@ -323,6 +308,7 @@
 
 ##### Parameters:
     [array] $options Parameters to override defaults
+    -boolean updatedb True to update DB with merge
 
 ##### Return:
     [Workflow]
@@ -360,6 +346,15 @@
     [string[]] $response Elements as follow:
     -string output    The output from the command run
     -string exit_code The status code returned by the command run
+
+---
+
+### serialize
+##### Description:
+    Formats environment object into an associative array for output
+
+##### Return:
+    [array] Associative array of data for output
 
 ---
 
