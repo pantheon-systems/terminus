@@ -240,10 +240,10 @@
 
 ##### Parameters:
     [array] $arg_options Elements as follow:
-    -array  args    Parameters from the command line
-    -string key     Key to look for in args
-    -string message Message to give at prompt
-    -mixed  default Returned if user does not select a valid option
+    -array   args     Parameters from the command line
+    -string  key      Key to look for in args
+    -string  message  Message to give at prompt
+    -mixed   default  Returned if user does not select a valid option
 
 ##### Return:
     [string]
@@ -329,7 +329,6 @@
     -mixed  default  Returns if no other choice
     -string key      Key for searched-for argument
     -string message  Prompt printed to STDOUT
-    -bool   required True to disallow empty strings
 
 ##### Return:
     [string] Either $args[$key], $default, or string from prompt

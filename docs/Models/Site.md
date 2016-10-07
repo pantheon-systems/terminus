@@ -1,13 +1,6 @@
 # Terminus\Models\Site
 
 ### __construct
-##### Description:
-    Object constructor
-
-##### Parameters:
-    [object] $attributes Attributes of this model
-    [array]  $options    Options with which to configure this model
-
 ---
 
 ### addInstrument
@@ -32,15 +25,6 @@
 
 ##### Return:
     [array]
-
----
-
-### attributes
-##### Description:
-    Returns an array of attributes
-
-##### Return:
-    [\stdClass]
 
 ---
 
@@ -88,10 +72,7 @@
 
 ### delete
 ##### Description:
-    Deletes site
-
-##### Return:
-    [array]
+    Deletes the site represented by this object
 
 ---
 
@@ -179,27 +160,6 @@
 
 ---
 
-### fetchAttributes
-##### Description:
-    Re-fetches site attributes from the API
-
-##### Return:
-    [void]
-
----
-
-### get
-##### Description:
-    Returns given attribute, if present
-
-##### Parameters:
-    [string] $attribute Name of attribute requested
-
-##### Return:
-    [mixed|null] Attribute value, or null if not found
-
----
-
 ### getFeature
 ##### Description:
     Returns a specific site feature value
@@ -218,15 +178,6 @@
 
 ##### Return:
     [SiteOrganizationMembership[]]
-
----
-
-### getSiteUserMemberships
-##### Description:
-    Lists user memberships for this site
-
-##### Return:
-    [SiteUserMemberships]
 
 ---
 
@@ -271,18 +222,6 @@
 
 ##### Return:
     [\stdClass]
-
----
-
-### organizationIsMember
-##### Description:
-    Determines if an organization is a member of this site
-
-##### Parameters:
-    [string] $uuid UUID of organization to check for
-
-##### Return:
-    [bool] True if organization is a member of this site
 
 ---
 
@@ -340,7 +279,7 @@
     [string] $level Level to set service on site to
 
 ##### Return:
-    [\stdClass]
+    [Workflow]
 
 ##### Throws:
     TerminusException
