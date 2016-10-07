@@ -18,7 +18,7 @@ class SSHBaseCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new DummyCommand($this->getConfig());
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
 
         $this->site->expects($this->any())->method('get')

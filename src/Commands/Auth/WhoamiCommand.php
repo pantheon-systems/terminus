@@ -28,9 +28,8 @@ class WhoamiCommand extends TerminusCommand
      */
     public function whoAmI()
     {
-        $auth = new Auth();
-        if ($auth->loggedIn()) {
-            $user = $this->session()->getUser();
+        $user = $this->session()->getUser();
+        if ($user) {
             return new AssociativeList($user->fetch()->serialize());
         } else {
             $this->log()->notice('You are not logged in.');

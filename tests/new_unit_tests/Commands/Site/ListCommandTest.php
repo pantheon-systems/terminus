@@ -13,22 +13,13 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 class ListCommandTest extends CommandTestCase
 {
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @inheritdoc
      */
     protected function setup()
     {
         parent::setUp();
-        $this->session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $this->command = new ListCommand($this->getConfig());
-        $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
     }
@@ -55,8 +46,6 @@ class ListCommandTest extends CommandTestCase
             ->willReturn($this->sites);
         $this->sites->expects($this->never())
             ->method('filterByName');
-        $this->session->expects($this->never())
-            ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
         $this->site->expects($this->any())
@@ -97,8 +86,6 @@ class ListCommandTest extends CommandTestCase
             ->willReturn($this->sites);
         $this->sites->expects($this->never())
             ->method('filterByName');
-        $this->session->expects($this->never())
-            ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
         $this->site->expects($this->any())
@@ -139,8 +126,6 @@ class ListCommandTest extends CommandTestCase
             ->willReturn($this->sites);
         $this->sites->expects($this->never())
             ->method('filterByName');
-        $this->session->expects($this->never())
-            ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
         $this->site->expects($this->any())
@@ -184,8 +169,6 @@ class ListCommandTest extends CommandTestCase
             ->method('filterByName')
             ->with($this->equalTo($regex))
             ->willReturn($this->sites);
-        $this->session->expects($this->never())
-            ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
         $this->site->expects($this->any())
@@ -227,8 +210,6 @@ class ListCommandTest extends CommandTestCase
             ->willReturn($this->sites);
         $this->session->expects($this->never())
             ->method('filterByName');
-        $this->session->expects($this->never())
-            ->method('getUser');
         $this->sites->expects($this->once())
             ->method('filterByOwner')
             ->with($this->equalTo($user_id))
@@ -264,10 +245,8 @@ class ListCommandTest extends CommandTestCase
             'created' => '1984-07-28 16:40',
             'memberships' => 'org_id: org_url',
         ];
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $user->id = $user_id;
+
+        $this->user->id = $user_id;
 
         $this->site->memberships = ['org_id: org_url'];
         $this->sites->expects($this->once())
@@ -276,10 +255,6 @@ class ListCommandTest extends CommandTestCase
             ->willReturn($this->sites);
         $this->session->expects($this->never())
             ->method('filterByName');
-        $this->session->expects($this->once())
-            ->method('getUser')
-            ->with()
-            ->willReturn($user);
         $this->sites->expects($this->once())
             ->method('filterByOwner')
             ->with($this->equalTo($user_id))

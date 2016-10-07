@@ -18,7 +18,7 @@ class DeleteCommandTest extends MultidevCommandTest
 
         $this->command = new DeleteCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->environment->method('delete')->willReturn($this->workflow);
     }
 

@@ -25,7 +25,7 @@ class InfoCommandTest extends ConnectionCommandTest
         $this->command = new InfoCommand($this->getConfig());
 
         // use the basic mocked sites from CommandTestCase
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\User;
 use Terminus\Session;
 
 class Sites extends TerminusCollection
@@ -24,7 +25,12 @@ class Sites extends TerminusCollection
    */
     public function __construct(array $options = [])
     {
-        $this->user = Session::getUser();
+        // @TODO: HACK ALERT: Jury rigging DI into this model without breaking the old code. This should be replaced.
+        if (isset($options['user'])) {
+            $this->user = $options['user'];
+        } else {
+            $this->user = Session::getUser();
+        }
         parent::__construct($options);
     }
 

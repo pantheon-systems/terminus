@@ -17,7 +17,7 @@ class ListCommandTest extends WorkflowCommandTest
         parent::setUp();
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

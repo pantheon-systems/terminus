@@ -49,7 +49,8 @@ class ListCommand extends SiteCommand
      */
     public function index($options = ['team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
-        $this->sites->fetch(
+        $sites = $this->sites();
+        $sites->fetch(
             [
                 'org_id' => $options['org'],
                 'team_only' => $options['team'],
@@ -57,13 +58,13 @@ class ListCommand extends SiteCommand
         );
 
         if (!is_null($name = $options['name'])) {
-            $this->sites->filterByName($name);
+            $sites->filterByName($name);
         }
         if (!is_null($owner = $options['owner'])) {
             if ($owner == 'me') {
                 $owner = $this->session()->getUser()->id;
             }
-            $this->sites->filterByOwner($owner);
+            $sites->filterByOwner($owner);
         }
 
         $all_sites = array_map(
@@ -79,7 +80,7 @@ class ListCommand extends SiteCommand
                     'memberships'   => implode(',', $site->memberships),
                 ];
             },
-            $this->sites->all()
+            $sites->all()
         );
 
         if (empty($all_sites)) {

@@ -20,7 +20,7 @@ class ListCommandTest extends BackupCommandTest
         parent::setUp();
         $this->command = new ListCommand($this->sites);
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**

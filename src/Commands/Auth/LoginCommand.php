@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Auth;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Terminus\Exceptions\TerminusException;
 use Terminus\Models\Auth;
 
 class LoginCommand extends TerminusCommand
@@ -24,35 +25,36 @@ class LoginCommand extends TerminusCommand
      */
     public function logIn(array $options = ['machine-token' => null, 'email' => null,])
     {
-        $auth = new Auth();
-        $tokens = $auth->getAllSavedTokenEmails();
-        if (!is_null($token = $options['machine-token'])) {
-            $auth->logInViaMachineToken(compact('token'));
+        $session = $this->session();
+
+        if (isset($options['machine-token']) && !is_null($token = $options['machine-token'])) {
+            $session->logInViaMachineToken($token);
             $this->log()->notice('Logging in via machine token.');
-        } elseif (!is_null($email = $options['email']) && !$auth->tokenExistsForEmail($email)) {
-            $message = 'There are no saved tokens for %s.';
-            throw new \Exception(vsprintf($message, compact('email')), 1);
-        } elseif ((
-          (!is_null($email = $options['email']) || !empty($email = $this->config->get('user')))
-          && $auth->tokenExistsForEmail($email)
-        )
-        ) {
-            $auth->logInViaMachineToken(compact('email'));
-            $this->log()->notice('Logging in via machine token.');
-        } elseif (is_null($options['email']) && (count($tokens) == 1)) {
-            $email = array_shift($tokens);
-            $this->log()->notice('Found a machine token for {email}.', compact('email'));
-            $auth->logInViaMachineToken(compact('email'));
-            $this->log()->notice('Logging in via machine token.');
-        } else {
-            if (count($tokens) > 1) {
-                $message = "Tokens were saved for the following email addresses:\n"
-                  . implode("\n", $tokens) . "\n You may log in via `terminus auth:login <email>` , or you may ";
-            } else {
-                $message = "Please ";
-            }
-            $message .= "visit the dashboard to generate a machine token:\n {$auth->getMachineTokenCreationUrl()}";
-            throw new \Exception($message, 1);
+            return;
         }
+
+        $email = '';
+        $emails = $session->getAllSavedTokenEmails();
+        if (isset($options['email']) && !is_null($options['email'])) {
+            $email = $options['email'];
+        } else if (count($emails) == 1) {
+            $email = reset($emails);
+        }
+
+        if ($email) {
+            $session->logInViaSavedEmailMachineToken($email);
+            $this->log()->notice('Found a machine token for {email}.', compact('email'));
+            $this->log()->notice('Logging in via machine token.');
+            return;
+        }
+
+        if (count($emails) > 1) {
+            $message = "Tokens were saved for the following email addresses:\n"
+              . implode("\n", $emails) . "\n You may log in via `terminus auth:login <email>` , or you may ";
+        } else {
+            $message = "Please ";
+        }
+        $message .= "visit the dashboard to generate a machine token:\n {url}";
+        throw new TerminusException($message, ['url' => $session->getMachineTokenCreationUrl()]);
     }
 }

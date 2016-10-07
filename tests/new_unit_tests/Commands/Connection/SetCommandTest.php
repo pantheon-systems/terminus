@@ -23,7 +23,7 @@ class SetCommandTest extends ConnectionCommandTest
         $this->command = new SetCommand($this->getConfig());
 
         // use the basic mocks from CommandTestCase
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
     }
 

@@ -16,8 +16,8 @@ class CommitCommandTest extends EnvCommandTest
         parent::setUp();
         $this->command = new CommitCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
-        $this->env->id = 'dev';
+        $this->command->setSession($this->session);
+        $this->environment->id = 'dev';
     }
 
     /**
@@ -27,11 +27,11 @@ class CommitCommandTest extends EnvCommandTest
      */
     public function testCommit()
     {
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('diffstat')
             ->willReturn(['a', 'b']);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('commitChanges')
             ->willReturn($this->workflow)
             ->with('Custom message.');

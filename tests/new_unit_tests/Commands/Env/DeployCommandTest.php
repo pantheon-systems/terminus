@@ -16,7 +16,7 @@ class DeployCommandTest extends EnvCommandTest
         parent::setUp();
         $this->command = new DeployCommand($this->getConfig());
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
+        $this->command->setSession($this->session);
     }
 
     /**
@@ -26,13 +26,13 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeploy()
     {
-        $this->env->id = 'test';
+        $this->environment->id = 'test';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('deploy')
             ->willReturn($this->workflow)
             ->with([
@@ -66,13 +66,13 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeployNoCode()
     {
-        $this->env->id = 'test';
+        $this->environment->id = 'test';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(false);
 
-        $this->env->expects($this->never())
+        $this->environment->expects($this->never())
             ->method('deploy');
 
         $this->logger->expects($this->once())
@@ -89,13 +89,13 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeployLive()
     {
-        $this->env->id = 'live';
+        $this->environment->id = 'live';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('deploy')
             ->willReturn($this->workflow)
             ->with([

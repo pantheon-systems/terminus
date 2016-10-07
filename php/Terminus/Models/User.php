@@ -4,6 +4,7 @@ namespace Terminus\Models;
 
 use Terminus\Collections\Instruments;
 use Terminus\Collections\MachineTokens;
+use Terminus\Collections\Sites;
 use Terminus\Collections\SshKeys;
 use Terminus\Collections\UserOrganizationMemberships;
 use Terminus\Collections\UserSiteMemberships;
@@ -120,6 +121,18 @@ class User extends TerminusModel
             )
         );
         return $sites;
+    }
+
+    /**
+     * Get a site's collection owned by the user.
+     *
+     * This creates a weird circular dependency which should be eliminated once the old code no longer exists.
+     *
+     * @return \Terminus\Collections\Sites
+     */
+    public function sitesCollection()
+    {
+        return new Sites(['user' => $this]);
     }
 
   /**
