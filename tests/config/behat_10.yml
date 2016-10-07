@@ -6,7 +6,7 @@ default:
       contexts:
         - Pantheon\Terminus\FeatureTests\FeatureContext:
             parameters:
-              user_uuid:               '11111111-1111-1111-1111-111111111111'
+              user_id:                 '11111111-1111-1111-1111-111111111111'
               username:                'devuser@pantheon.io'
               host:                    'onebox'
               vcr_mode:                'none'
@@ -26,7 +26,7 @@ default:
         - Pantheon\Terminus\FeatureTests\FeatureContext:
             parameters:
               username:                'devuser@pantheon.io'
-              user_uuid:               '25069e79-eae7-4d41-8925-1f728a114cb8'
+              user_id:                 '25069e79-eae7-4d41-8925-1f728a114cb8'
               password:                'password1'
               host:                    'onebox'
               vcr_mode:                null

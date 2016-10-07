@@ -72,10 +72,6 @@ class FileCacheTest extends TerminusTest
         $data = $this->file_cache->getData($this->test_file_name);
         $this->assertEquals($stamp, $data);
         $this->resetOutputDestination($file_name);
-
-        //Trying to get data when the file is not there
-        $data = $this->file_cache->getData($this->test_file_name);
-        $this->assertFalse($data);
     }
 
     public function testGetRoot()

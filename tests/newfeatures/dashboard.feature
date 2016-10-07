@@ -15,7 +15,7 @@ Feature: Accessing the Dashboard
   @vcr site_dashboard
   Scenario: Printing out the main Dashboard URL
     When I run "terminus dashboard:view --print"
-    Then I should get: "https://[[host]]/users/[[user_uuid]]#sites/list"
+    Then I should get: "https://[[host]]/users/[[user_id]]#sites/list"
   
   @vcr site_dashboard
   Scenario: Printing out the site Dashboard URL for a specific environment

@@ -8,6 +8,9 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 use Terminus\Session;
 
+/**
+ * @TODO: Do not move this class to 1.x. It is becoming obsolete.
+ */
 class Auth extends TerminusModel
 {
   /**
@@ -67,11 +70,8 @@ class Auth extends TerminusModel
     {
         $session      = Session::instance()->getData();
         $is_logged_in = (
-        isset($session->session)
-        && (
-        (boolean)Config::get('test_mode')
-        || ($session->session_expire_time >= time())
-        )
+            isset($session->session)
+            && ((boolean)Config::get('test_mode') || ($session->expires_at >= time()))
         );
         return $is_logged_in;
     }
@@ -211,7 +211,7 @@ class Auth extends TerminusModel
   /**
    * Saves the session data to a cookie
    *
-   * @param \stdClass $data Session data to save
+   * @param object $data Session data to save
    * @return bool Always true
    */
     private function setInstanceData(\stdClass $data)
@@ -221,15 +221,10 @@ class Auth extends TerminusModel
         } else {
             $machine_token = $data->machine_token;
         }
-        $session = [
-        'user_uuid'           => $data->user_id,
-        'session'             => $data->session,
-        'session_expire_time' => $data->expires_at,
-        ];
         if ($machine_token && is_string($machine_token)) {
             $session['machine_token'] = $machine_token;
         }
-        Session::instance()->setData($session);
+        Session::instance()->setData((array)$data);
         return true;
     }
 }

@@ -123,7 +123,7 @@ abstract class TerminusTest extends \PHPUnit_Framework_TestCase
         // Set some dummy credentials
         Session::setData(
             (object)[
-              'user_uuid' => '0ffec038-4410-43d0-a404-46997f672d7a',
+              'user_id' => '0ffec038-4410-43d0-a404-46997f672d7a',
               'session' => $session_id,
               'session_expire_time' => strtotime('+8 days'),
               'email' => 'bensheldon+pantheontest@gmail.com',

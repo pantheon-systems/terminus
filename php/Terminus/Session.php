@@ -134,12 +134,10 @@ class Session
   /**
    * Returns a user with the current session user id
    *
-   * @return [user] $session user
+   * @return User
    */
     public static function getUser()
     {
-        $user_uuid = Session::getValue('user_uuid');
-        $user      = new User((object)array('id' => $user_uuid));
-        return $user;
+        return new User((object)['id' => Session::getValue('user_id'),]);
     }
 }

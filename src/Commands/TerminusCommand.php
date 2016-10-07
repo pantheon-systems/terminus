@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -12,7 +11,6 @@ use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
-use Terminus\Models\Auth;
 
 abstract class TerminusCommand implements
     IOAwareInterface,

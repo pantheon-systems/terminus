@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Auth;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Terminus\Models\Auth;
 
 class LogoutCommand extends TerminusCommand
 {
@@ -19,8 +18,7 @@ class LogoutCommand extends TerminusCommand
      */
     public function logOut()
     {
-        $auth = new Auth();
-        $auth->logOut();
+        $this->session()->destroy();
         $this->log()->notice('You have been logged out of Pantheon.');
     }
 }

@@ -7,6 +7,7 @@ use Terminus\Exceptions\TerminusException;
 
 /**
  * Saves machine tokens to the home directory for later use
+ * @TODO: Do not move this class to 1.x. It is becoming obsolete.
  */
 class TokensCache
 {
