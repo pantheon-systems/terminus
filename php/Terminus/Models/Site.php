@@ -174,17 +174,11 @@ class Site extends TerminusModel
     }
 
     /**
-     * Deletes site
-     *
-     * @return array
+     * Deletes the site represented by this object
      */
     public function delete()
     {
-        $response = $this->request->request(
-            'sites/' . $this->id,
-            ['method' => 'delete',]
-        );
-        return $response;
+        $this->request->request("sites/{$this->id}", ['method' => 'delete',]);
     }
 
     /**

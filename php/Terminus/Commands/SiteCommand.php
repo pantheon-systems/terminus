@@ -539,7 +539,7 @@ class SiteCommand extends TerminusCommand
             'Deleting {site} ...',
             array('site' => $site->get('name'))
         );
-        $response = $site->delete();
+        $site->delete();
 
         $this->log()->info('Deleted {site}!', array('site' => $site->get('name')));
     }
