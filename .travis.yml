@@ -46,11 +46,11 @@ before_script:
   - if [ $(git branch | sed -n -e 's/^\* \(.*\)/\1/p') == "master" ]; then ./scripts/build.sh; fi
 
 script:
-  - TERMINUS_TEST_MODE=1 vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
+  - vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
   # XDebug is needed for code coverage, but makes things slow. It's enabled
   # by default in Travis, we disable it here post-coverage run for speedy builds.
   - phpenv config-rm xdebug.ini
-  - TERMINUS_TEST_MODE=1 ./scripts/test.sh
+  - ./scripts/test.sh
 
 after_success:
   - php vendor/bin/coveralls -v -c tests/config/coveralls.xml

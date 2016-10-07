@@ -2,8 +2,8 @@
 
 namespace Terminus\UnitTests;
 
-require_once __DIR__ . '/../../php/boot-fs.php';
-require_once __DIR__ . '/../../php/boot-cl.php';
+require_once __DIR__ . '/../../../php/boot-fs.php';
+require_once __DIR__ . '/../../../php/boot-cl.php';
 
 /**
  * Testing class for boot-cl.php

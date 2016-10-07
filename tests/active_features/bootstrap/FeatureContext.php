@@ -654,7 +654,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
         }
 
         // Pass the cache directory to the command so that tests don't poison the user's cache.
-        $command = "TERMINUS_CACHE_DIR=$this->cache_dir $command";
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir $command";
 
         $command = preg_replace($regex, $terminus_cmd, $command);
 
