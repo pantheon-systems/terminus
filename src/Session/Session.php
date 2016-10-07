@@ -2,11 +2,16 @@
 
 namespace Pantheon\Terminus\Session;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Robo\Common\ConfigAwareTrait;
 use Terminus\Caches\FileCache;
 use Terminus\Models\User;
 
-class Session
+class Session implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var FileCache
      */
@@ -102,8 +107,7 @@ class Session
     public function getUser()
     {
         $user_uuid = $this->get('user_uuid');
-        // TODO: Remove this direct instantiation to make this more testable
-        $user = new User((object)array('id' => $user_uuid));
+        $user = $this->getContainer()->get(User::class, [(object)array('id' => $user_uuid)]);
         return $user;
     }
 }

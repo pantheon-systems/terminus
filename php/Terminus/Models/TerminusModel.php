@@ -2,10 +2,14 @@
 
 namespace Terminus\Models;
 
+use Pantheon\Terminus\Request\RequestAwareInterface;
+use Pantheon\Terminus\Request\RequestAwareTrait;
 use Terminus\Request;
 
-abstract class TerminusModel
+abstract class TerminusModel implements RequestAwareInterface
 {
+    use RequestAwareTrait;
+
   /**
    * @var string
    */
@@ -18,10 +22,7 @@ abstract class TerminusModel
    * @var object
    */
     protected $attributes;
-  /**
-   * @var Request
-   */
-    protected $request;
+    
   /**
    * @var string The URL at which to fetch this model's information
    */

@@ -2,8 +2,10 @@
 
 namespace Pantheon\Terminus\UnitTests\Session;
 
+use League\Container\Container;
 use Pantheon\Terminus\Session\Session;
 use Terminus\Caches\FileCache;
+use Terminus\Models\User;
 
 /**
  * Testing class for Pantheon\Terminus\Session\Session
@@ -68,17 +70,27 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         'abc' => 123
         ];
 
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $user = new User((object)array('id' => '123'));
+        $container->expects($this->once())
+            ->method('get')
+            ->with(User::class, [(object)array('id' => '123')])
+            ->willReturn($user);
+        
         $this->filecache->expects($this->once())
         ->method('getData')
         ->with('session')
-        ->willReturn(['user_uuid' => '123']);
+        ->willReturn((object)['user_uuid' => '123']);
 
         $this->session = new Session($this->filecache);
+        $this->session->setContainer($container);
 
-        // @TODO: Test mocking of new user (will require some sort of mockable factory rather than
-        // the direct use of new User() in Session)
-        $user = $this->session->getUser();
-        $this->assertInstanceOf('Terminus\Models\User', $user);
+        $out = $this->session->getUser();
+        $this->assertEquals($user, $out);
     }
 
   /**
