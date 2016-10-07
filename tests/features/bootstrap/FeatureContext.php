@@ -647,7 +647,7 @@ class FeatureContext implements Context
    */
     public function iRun($command)
     {
-        $command      = $this->_replacePlaceholders($command);
+        $command      = "TERMINUS_TEST_MODE=1 " . $this->_replacePlaceholders($command);
         $regex        = '/(?<!\.)terminus/';
         $terminus_cmd = sprintf('bin/terminus', $this->cliroot);
         if ($this->_cassette_name) {

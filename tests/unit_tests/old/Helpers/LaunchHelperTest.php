@@ -62,7 +62,7 @@ class LaunchHelperTest extends TerminusTest
 
         //Testing the command-line route
         $this->setOutputDestination($file_name);
-        $GLOBALS['argv'] = [__DIR__ . '/../../../php/boot-fs.php'];
+        $GLOBALS['argv'] = [__DIR__ . '/../../../../php/boot-fs.php'];
         $return = $this->launch_helper->launchSelf(
             ['command' => "art unicorn > $file_name"]
         );
