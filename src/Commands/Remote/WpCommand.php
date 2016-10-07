@@ -17,7 +17,10 @@ class WpCommand extends SSHBaseCommand
     /**
      * @inheritdoc
      */
-    protected $valid_frameworks = ['wordpress'];
+    protected $valid_frameworks = [
+        'wordpress',
+        'wordpress_network',
+    ];
 
     /**
      * @inheritdoc

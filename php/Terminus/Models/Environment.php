@@ -651,7 +651,7 @@ class Environment extends TerminusModel
                 'output'    => "Terminus is in test mode. "
                     . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
                     . "SSH Command: ${ssh_command}",
-                'exit_code' => 255
+                'exit_code' => 0
             ];
         }
 

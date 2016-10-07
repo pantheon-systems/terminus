@@ -741,14 +741,16 @@ class FeatureContext implements Context, SnippetAcceptingContext
      */
     public function shouldSeeATypeOfMessage($type, $message = null)
     {
-        $type_marker = "[$type]";
-        if (strpos($this->output, $type_marker) === false) {
-            throw new \Exception("Expected $type_marker in message: $this->output");
+        $expected_message = "[$type]";
+        if (!empty($message)) {
+            $expected_message .= " {$message}";
         }
 
-        if (!empty($message) and strpos($this->output, $message) === false) {
-            throw new \Exception("Expected '$message' in message: $this->output");
+        $compressed_output = preg_replace('/\s+/', ' ', $this->output);
+        if (strpos($compressed_output, $expected_message) === false) {
+            throw new \Exception("Expected $expected_message in message: $this->output");
         }
+
         return true;
     }
 

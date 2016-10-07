@@ -16,7 +16,9 @@ Feature: Running WP-CLI Commands on a Drupal Site
   @vcr remote-wp.yml
   Scenario: Running a WP-CLI command that is not permitted
     When I run: terminus wp [[test_site_name]].dev -- db query 'CHECK TABLE $(wp db tables | paste -s -d',');'
-    Then I should get:
-    """
-    That command is not available via Terminus. Please use the native wp command.
-    """
+    Then I should see an error message: That command is not available via Terminus. Please use the native wp command.
+
+  @vcr remote-drush.yml
+  Scenario: Running a WP-CLI command on a Drupal site is not possible
+    When I run: terminus wp [[test_site_name]].dev -- cli version
+    Then I should see an error message: The wp command is only available on sites running wordpress, wordpress_network. The framework for this site is drupal8.

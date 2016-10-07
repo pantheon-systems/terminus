@@ -106,7 +106,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // print_r([$framework,$this->valid_frameworks]);
         if (!in_array($framework, $this->valid_frameworks)) {
             throw new TerminusException(
-                "The {command} command is only available on a sites running {frameworks}. "
+                "The {command} command is only available on sites running {frameworks}. "
                 ."The framework for this site is {framework}.",
                 [
                     'command'    => $this->command,
