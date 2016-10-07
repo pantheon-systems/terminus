@@ -37,8 +37,7 @@ class LoginCommand extends TerminusCommand
         $emails = $session->getAllSavedTokenEmails();
         if (isset($options['email']) && !is_null($options['email'])) {
             $email = $options['email'];
-        }
-        else if (count($emails) == 1) {
+        } else if (count($emails) == 1) {
             $email = reset($emails);
         }
 

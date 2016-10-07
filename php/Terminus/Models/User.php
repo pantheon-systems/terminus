@@ -130,7 +130,8 @@ class User extends TerminusModel
      *
      * @return \Terminus\Collections\Sites
      */
-    public function sitesCollection() {
+    public function sitesCollection()
+    {
         return new Sites(['user' => $this]);
     }
 

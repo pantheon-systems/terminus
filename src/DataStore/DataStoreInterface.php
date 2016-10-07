@@ -51,5 +51,4 @@ interface DataStoreInterface
      * @return array A list of keys
      */
     public function keys($group = null);
-
 }

@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-
 use Pantheon\Terminus\Commands\Auth\WhoamiCommand;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;

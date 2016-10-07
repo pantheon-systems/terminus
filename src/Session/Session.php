@@ -183,8 +183,7 @@ class Session implements ConfigAwareInterface
         $saved_token = (array)$this->cache->get($email, 'tokens');
         if ($saved_token && $saved_token['token']) {
             $token = $saved_token['token'];
-        }
-        else {
+        } else {
             throw new TerminusException(
                 'There are no saved tokens for {email}.',
                 compact('email'),
@@ -271,5 +270,4 @@ class Session implements ConfigAwareInterface
         );
         return $url;
     }
-
 }

@@ -25,8 +25,6 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Terminus\Collections\Sites;
 
-
-
 // Initializing the Terminus application
 $config = new Config();
 $application = new Terminus('Terminus', $config->get('version'), $config);

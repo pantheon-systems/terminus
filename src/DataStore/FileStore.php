@@ -93,7 +93,8 @@ class FileStore implements DataStoreInterface
      * @param string $key The data key to be written or read
      * @return string A file path
      */
-    protected function getFileName($key, $group = null) {
+    protected function getFileName($key, $group = null)
+    {
         $key = $this->cleanKey($key);
         // If there is a group put the file in a directory with that name.
         if ($group) {
@@ -110,8 +111,8 @@ class FileStore implements DataStoreInterface
      * @param $key
      * @return mixed
      */
-    protected function cleanKey($key) {
+    protected function cleanKey($key)
+    {
         return preg_replace('/[^a-zA-Z0-9\-\_\@\.]/', '-', $key);
     }
-
 }

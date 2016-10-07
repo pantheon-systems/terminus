@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\DataStore;
 
-
 class FileStoreTest extends \PHPUnit_Framework_TestCase
 {
 

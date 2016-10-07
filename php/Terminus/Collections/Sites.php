@@ -28,8 +28,7 @@ class Sites extends TerminusCollection
         // @TODO: HACK ALERT: Jury rigging DI into this model without breaking the old code. This should be replaced.
         if (isset($options['user'])) {
             $this->user = $options['user'];
-        }
-        else {
+        } else {
             $this->user = Session::getUser();
         }
         parent::__construct($options);

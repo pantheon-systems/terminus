@@ -121,8 +121,6 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(array('log'))
             ->getMock();
-
-
     }
 
     /**
