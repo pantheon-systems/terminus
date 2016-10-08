@@ -11,5 +11,5 @@ Feature: Listing one's organizational memberships
     When I run "terminus org:list"
     Then I should get:
     """
-    [[organization_name]]
+    quack
     """
