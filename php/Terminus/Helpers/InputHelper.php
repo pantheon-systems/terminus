@@ -2,6 +2,7 @@
 
 namespace Terminus\Helpers;
 
+use Terminus\Collections\Plugins;
 use Terminus\Collections\Sites;
 use Terminus\Collections\Upstreams;
 use Terminus\Config;
@@ -628,6 +629,66 @@ class InputHelper extends TerminusHelper
         );
         return $version;
     }
+
+  /**
+   * Produces a menu to select a plugin
+   *
+   * @param array $arg_options Elements as follow:
+   *   array    args    Parameters from the command line
+   *   function filter  A function by which to filter plugins
+   *   string   key     Key to look for in args
+   *   string   message Prompt to STDOUT
+   * @return \stdClass An object representing the plugin desired
+   * @throws TerminusException
+   */
+  public function plugin(array $arg_options = []) {
+    $default_options = [
+      'args'    => [],
+      'filter'  => function($plugin) {
+        return true;
+      },
+      'key'     => 'plugin',
+      'message' => 'Select a plugin',
+    ];
+    $options = array_merge($default_options, $arg_options);
+    $plugins = new Plugins();
+    if (isset($options['args'][$options['key']])) {
+      $plugin = $plugins->get($options['args'][$options['key']]);
+    } else {
+      $plugin_choices = array_filter($plugins->all(), $options['filter']);
+      if (empty($plugin_choices)) {
+        throw new TerminusException(
+          'No plugins fit the necessary criteria.'
+        );
+      }
+      $choices = array_combine(
+        array_map(
+          function($plugin) {
+            return $plugin->id;
+          },
+          $plugin_choices
+        ),
+        array_map(
+          function($plugin) {
+            $plugin_name = $plugin->get('name');
+            return $plugin_name;
+          },
+          $plugin_choices
+        )
+      );
+      $plugin = $plugins->get(
+        $version = $this->menu(
+          [
+            'autoselect_solo' => false,
+            'choices'         => $choices,
+            'message'         => $options['message'],
+          ]
+        )
+      );
+    }
+
+    return $plugin;
+  }
 
   /**
    * Prompt the user for input

@@ -154,7 +154,8 @@ abstract class TerminusCollection
   /**
    * Retrieves collection data from the API
    *
-   * @param array $options params to pass to url request
+   * @param array $options Elements as follow
+   *        string[] fetch_args Arguments to send with the request
    * @return array
    */
     protected function getCollectionData($options = [])

@@ -1,0 +1,157 @@
+---
+all_aliases_plugin:
+  name: All Aliases Plugin
+  slug: all-aliases-plugin
+  description: Replaces sites aliases with an augmented version
+  author: Pantheon
+  author_url: https://pantheon.io
+  repo_url: https://github.com/pantheon-systems/all-aliases-plugin
+  archive_url: https://github.com/pantheon-systems/all-aliases-plugin/archive/master.zip
+  keywords:
+    - drush
+    - aliases
+backup_all:
+  name: Backup All
+  slug: backup-all
+  description: Back up all your sites with one command!
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/backup-all
+  archive_url: https://github.com/uberhacker/backup-all/archive/master.zip
+  keywords:
+    - backup
+filer:
+  name: Filer
+  slug: terminus-filer
+  description: Assists with opening Pantheon sites in many popular SFTP GUI clients
+  author: Sean E. Dietrich
+  author_url: https://github.com/sean-e-dietrich
+  repo_url: https://github.com/sean-e-dietrich/terminus-filer
+  archive_url: https://github.com/sean-e-dietrich/terminus-filer/archive/master.zip
+  keywords:
+    - SFTP
+lockr:
+  name: Lockr
+  slug: lockr-terminus
+  description: Help manage items in Lockr and the Drupal Key module
+  author: Lockr
+  author_url: https://github.com/lockr
+  repo_url: https://github.com/lockr/lockr-terminus
+  archive_url: https://github.com/lockr/lockr-terminus/archive/master.zip
+  keywords:
+    - Drupal
+    - Lockr
+mass_contrib_update:
+  name: Mass Contrib Update
+  slug: mcu
+  description: Perform Drupal contrib module or theme updates
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/mcu
+  archive_url: https://github.com/uberhacker/mcu/archive/master.zip
+  keywords:
+    - Drupal
+    - maintenance
+omniscient:
+  name: Omniscient
+  slug: terminus-omniscient
+  description: Enable New Relic Pro (for free) on all Pantheon sites you have access to
+  author: Brian Thompson
+  author_url: https://github.com/rvtraveller
+  repo_url: https://github.com/rvtraveller/terminus-omniscient
+  archive_url: https://github.com/rvtraveller/terminus-omniscient/archive/master.zip
+  keywords:
+    - New Relic
+    - monitoring
+pancakes:
+  name: Pancakes
+  slug: terminus-pancakes
+  description: Open any Pantheon site database using a SQL GUI client
+  author: Dave Wikoff
+  author_url: https://github.com/derimagia
+  repo_url: https://github.com/derimagia/terminus-pancakes
+  archive_url: https://github.com/derimagia/terminus-pancakes/archive/master.zip
+  keywords:
+    - database
+quicksilver:
+  name: Quicksilver
+  slug: terminus-quicksilver-plugin
+  description: Helpers for working with the Quicksilver examples
+  author: Pantheon
+  author_url: https://pantheon.io
+  repo_url: https://github.com/pantheon-systems/terminus-quicksilver-plugin
+  archive_url: https://github.com/pantheon-systems/terminus-quicksilver-plugin/archive/master.zip
+  keywords:
+    -
+secrets:
+  name: Secrets
+  slug: terminus-secrets-plugin
+  description: Helps with managing a private secrets.json file securely in your enironments
+  author: Pantheon
+  author_url: https://pantheon.io
+  repo_url: https://github.com/pantheon-systems/terminus-secrets-plugin
+  archive_url: https://github.com/pantheon-systems/terminus-secrets-plugin/archive/master.zip
+  keywords:
+    - security
+sillyart:
+  name: Sillyart
+  slug: silly-art
+  description: View silly ASCII artwork
+  author: Pi-Ron
+  author_url: https://github.com/pi-ron
+  repo_url: https://github.com/pi-ron/silly-art
+  archive_url: https://github.com/pi-ron/silly-art/archive/master.zip
+  keywords:
+    - entertainment
+terminus_plugin_example:
+  name: Terminus Plugin Example
+  slug: terminus-plugin-example
+  description: A simple plugin for Terminus-CLI to demonstrate how to add new commands
+  author: Pantheon
+  author_url: https://pantheon.io
+  repo_url: https://github.com/pantheon-systems/terminus-plugin-example
+  archive_url: https://github.com/pantheon-systems/terminus-plugin-example/archive/master.zip
+  keywords:
+    - example
+    - developer
+terminus_plugin_help:
+  name: Terminus Plugin Help
+  slug: tph
+  description: Get advanced help for plugins
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/tph
+  archive_url: https://github.com/uberhacker/tph/archive/master.zip
+  keywords:
+    - plugin
+terminus_plugin_manager:
+  name: Terminus Plugin Manager
+  slug: tpm
+  description: Manage all your Terminus plugins
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/tpm
+  archive_url: https://github.com/uberhacker/tpm/archive/master.zip
+  keywords:
+    - plugin
+terminus_plugin_search:
+  name: Terminus Plugin Search
+  slug: tps
+  description: Search for Terminus plugins
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/tps
+  archive_url: https://github.com/uberhacker/tps/archive/master.zip
+  keywords:
+    - plugin
+terminus_sites_status:
+  name: Terminus Sites Status
+  slug: tss
+  description: Reports the status of all available sites
+  author: Ed Reel
+  author_url: https://github.com/uberhacker
+  repo_url: https://github.com/uberhacker/tss
+  archive_url: https://github.com/uberhacker/tss/archive/master.zip
+  keywords:
+    - monitoring
+    - status
