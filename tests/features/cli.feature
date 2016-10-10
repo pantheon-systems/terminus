@@ -47,7 +47,7 @@ Feature: CLI Commands
     When I run "terminus cli session-dump"
     Then I should get:
     """
-    [user_uuid] => [[user_uuid]]
+    [user_id] => [[user_id]]
     """
 
   Scenario: Displaying the current Terminus version

@@ -22,6 +22,15 @@
 
 ---
 
+### serialize
+##### Description:
+    Get model data as AssociativeList
+
+##### Return:
+    [AssociativeList]
+
+---
+
 ### setRole
 ##### Description:
     Changes the role of the given member

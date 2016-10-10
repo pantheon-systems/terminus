@@ -30,7 +30,7 @@ class FileCacheTest extends TerminusTest
     {
         //Setting a file we know will have to be cleaned
         $home      = getenv('HOME');
-        $dir_name  = "$home/.terminus/cache";
+        $dir_name  = "$home/.terminus/testcache";
         $file_name = "$dir_name/" . $this->test_file_name;
         exec("touch -t 200401230000 $file_name");
         $old_count = count(scandir($dir_name));
@@ -48,7 +48,7 @@ class FileCacheTest extends TerminusTest
     {
         //Setting a file so we know something will be removed
         $home      = getenv('HOME');
-        $dir_name  = "$home/.terminus/cache";
+        $dir_name  = "$home/.terminus/testcache";
         $file_name = "$dir_name/" . $this->test_file_name;
         $this->setOutputDestination($file_name);
         $old_count = count(scandir($dir_name));
@@ -72,10 +72,6 @@ class FileCacheTest extends TerminusTest
         $data = $this->file_cache->getData($this->test_file_name);
         $this->assertEquals($stamp, $data);
         $this->resetOutputDestination($file_name);
-
-        //Trying to get data when the file is not there
-        $data = $this->file_cache->getData($this->test_file_name);
-        $this->assertInternalType('array', $data);
     }
 
     public function testGetRoot()
@@ -128,7 +124,7 @@ class FileCacheTest extends TerminusTest
     private function getFileName()
     {
         $home      = getenv('HOME');
-        $dir_name  = "$home/.terminus/cache";
+        $dir_name  = "$home/.terminus/testcache";
         $file_name = "$dir_name/" . $this->test_file_name;
         return $file_name;
     }

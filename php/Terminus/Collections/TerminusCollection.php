@@ -74,7 +74,7 @@ abstract class TerminusCollection
     {
         $results = $this->getCollectionData($options);
 
-        foreach ($results['data'] as $id => $model_data) {
+        foreach ($results as $id => $model_data) {
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
             }
@@ -170,7 +170,7 @@ abstract class TerminusCollection
             $results = $this->request->request($this->url, $args);
         }
 
-        return $results;
+        return $results['data'];
     }
 
   /**

@@ -10,16 +10,7 @@
 
 ---
 
-### fetch
-##### Description:
-    Fetches this object from Pantheon
-
-##### Parameters:
-    [array] $args Params to pass to request
-
-##### Return:
-    [TerminusModel] $this
-
+### __toString
 ---
 
 ### getStatus
