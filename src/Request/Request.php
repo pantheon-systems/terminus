@@ -254,5 +254,4 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
         );
         return $agent;
     }
-
 }

@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Session;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -69,8 +71,8 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
      */
     public function getUser()
     {
-        $user_uuid = $this->get('user_uuid');
-        $user = $this->getContainer()->get(User::class, [(object)array('id' => $user_uuid)]);
+        $user_id = $this->get('user_id');
+        $user = $this->getContainer()->get(User::class, [(object)array('id' => $user_id)]);
         return $user;
     }
 

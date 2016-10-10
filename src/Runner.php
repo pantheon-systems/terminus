@@ -4,9 +4,18 @@ namespace Pantheon\Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\Container;
+use League\Container\ContainerInterface;
+use Pantheon\Terminus\Request\Request;
+use Pantheon\Terminus\Request\RequestAwareInterface;
+use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareInterface;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Terminus\Caches\FileCache;
+use Terminus\Collections\Sites;
+use Terminus\Models\User;
 use VCR\VCR;
 
 class Runner
@@ -31,11 +40,10 @@ class Runner
      */
     public function __construct(Container $container = null)
     {
-        $commands_directory = __DIR__ . '/Commands';
-        $top_namespace = 'Pantheon\Terminus\Commands';
         $this->config = $container->get('config');
-        $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->commands[] = 'Pantheon\\Terminus\\Authorizer';
+
+        $this->configureContainer($container);
+
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
     }
@@ -72,6 +80,45 @@ class Runner
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
         return $discovery->discover($options['path'], $options['namespace']);
+    }
+
+    /**
+     * Register the necessary classes for Terminus
+     *
+     * @param \League\Container\ContainerInterface $container
+     */
+    private function configureContainer(ContainerInterface $container)
+    {
+        // Add the services.
+        $container->share('request', Request::class);
+        $container->inflector(RequestAwareInterface::class)
+            ->invokeMethod('setRequest', ['request']);
+
+        $container->share('fileCache', FileCache::class);
+
+        $container->share('session', Session::class)
+            ->withArgument('fileCache');
+        $container->inflector(SessionAwareInterface::class)
+            ->invokeMethod('setSession', ['session']);
+
+        // Add the models.
+        $container->add(User::class);
+
+        // Add the collections.
+        $container->share('sites', Sites::class);
+        $container->inflector(SiteAwareInterface::class)
+            ->invokeMethod('setSites', ['sites']);
+
+        // TODO: Add 21 more models and 18 collections :)
+
+        // Add the commands.
+        $factory = $container->get('commandFactory');
+        $factory->setIncludeAllPublicMethods(false);
+
+        $commands_directory = __DIR__ . '/Commands';
+        $top_namespace = 'Pantheon\Terminus\Commands';
+        $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        $this->commands[] = 'Pantheon\\Terminus\\Authorizer';
     }
 
     /**
