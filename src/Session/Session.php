@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Session;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -9,9 +11,10 @@ use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\User;
 
-class Session implements ConfigAwareInterface
+class Session implements ContainerAwareInterface, ConfigAwareInterface
 {
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * @var SavedTokens
@@ -64,13 +67,13 @@ class Session implements ConfigAwareInterface
 
     /**
      * Returns a user with the current session user id
-     *
-     * @return User A User object reperesenting the logged-in user
+     * @return \Terminus\Models\User [user] $session user
      */
     public function getUser()
     {
-        // TODO: Remove this direct instantiation to make this more testable
-        return new User((object)['id' => $this->get('user_id'),]);
+        $user_id = $this->get('user_id');
+        $user = $this->getContainer()->get(User::class, [(object)array('id' => $user_id)]);
+        return $user;
     }
 
     /**

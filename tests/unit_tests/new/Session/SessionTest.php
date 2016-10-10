@@ -2,13 +2,18 @@
 
 namespace Pantheon\Terminus\UnitTests\Session;
 
+use League\Container\Container;
+use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Caches\FileCache;
+use Terminus\Exceptions\TerminusException;
+use Terminus\Models\User;
 
 /**
  * Testing class for Pantheon\Terminus\Session\Session
  */
-class SessionTest extends \PHPUnit_Framework_TestCase
+class SessionTest extends CommandTestCase
 {
 
     protected $session;
@@ -28,8 +33,22 @@ class SessionTest extends \PHPUnit_Framework_TestCase
    */
     public function testSetGet()
     {
-        //$this->assertEquals('baz', $this->session->get('foo'));
-        //$this->assertEquals(123, $this->session->get('abc'));
+        $data = [
+            'foo' => 'bar',
+            'abc' => 123
+        ];
+        $this->filecache->expects($this->once())
+            ->method('getData')
+            ->with('session')
+            ->willReturn($data);
+
+        $this->session = new Session($this->filecache);
+
+        $this->assertEquals('bar', $this->session->get('foo'));
+        $this->assertEquals(123, $this->session->get('abc'));
+        
+        $this->setExpectedException(TerminusException::class);
+        $this->session->get('invalid');
     }
 
 
@@ -64,17 +83,27 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         'abc' => 123
         ];
 
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $user = new User((object)array('id' => '123'));
+        $container->expects($this->once())
+            ->method('get')
+            ->with(User::class, [(object)array('id' => '123')])
+            ->willReturn($user);
+        
         $this->filecache->expects($this->once())
         ->method('getData')
         ->with('session')
         ->willReturn(['user_id' => '123']);
 
         $this->session = new Session($this->filecache);
+        $this->session->setContainer($container);
 
-        // @TODO: Test mocking of new user (will require some sort of mockable factory rather than
-        // the direct use of new User() in Session)
-        $user = $this->session->getUser();
-        $this->assertInstanceOf('Terminus\Models\User', $user);
+        $out = $this->session->getUser();
+        $this->assertEquals($user, $out);
     }
 
   /**
@@ -87,5 +116,79 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         ->with('session');
 
         $this->session->destroy();
+    }
+
+    /**
+     * Test destroying the session
+     */
+    public function testIsActive()
+    {
+        $data = [
+            'user_id' => '1234',
+            'session' => '12345',
+            'expires_at' => time() + 100
+        ];
+        $this->filecache->expects($this->any())
+            ->method('getData')
+            ->with('session')
+            ->willReturn($data);
+
+        $this->session = new Session($this->filecache);
+
+        $this->assertEquals(true, $this->session->isActive());
+    }
+
+    /**
+     * Test destroying the session
+     */
+    public function testIsNotActive()
+    {
+        $data = [
+            'user_id' => '1234',
+            'session' => '12345',
+            'expires_at' => time() - 100
+        ];
+        $this->filecache->expects($this->once())
+            ->method('getData')
+            ->with('session')
+            ->willReturn($data);
+
+        $config =  $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->once())
+            ->method('get')
+            ->with('test_mode')
+            ->willReturn(false);
+        $this->session = new Session($this->filecache);
+        $this->session->setConfig($config);
+        $this->assertEquals(false, $this->session->isActive());
+    }
+
+    /**
+     * Test destroying the session
+     */
+    public function testIsActiveTestMode()
+    {
+        $data = [
+            'user_id' => '1234',
+            'session' => '12345',
+            'expires_at' => time() - 100
+        ];
+        $this->filecache->expects($this->once())
+            ->method('getData')
+            ->with('session')
+            ->willReturn($data);
+
+        $config =  $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->once())
+            ->method('get')
+            ->with('test_mode')
+            ->willReturn(true);
+        $this->session = new Session($this->filecache);
+        $this->session->setConfig($config);
+        $this->assertEquals(true, $this->session->isActive());
     }
 }

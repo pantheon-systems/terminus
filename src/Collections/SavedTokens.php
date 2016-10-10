@@ -41,8 +41,8 @@ class SavedTokens extends TerminusCollection
     public function create($token_string)
     {
         $token = new SavedToken((object)['token' => $token_string,], ['collection' => $this,]);
-        $session = $token->logIn();
-        $user = $session->getUser()->fetch();
+        $user = $token->logIn();
+        $user->fetch();
         $token->id = $user->get('email');
         $token->set('email', $user->get('email'));
         $token->saveToDir();
