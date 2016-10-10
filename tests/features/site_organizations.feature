@@ -9,7 +9,7 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_add
   Scenario: Adding a supporting organization to a site
-    When I run "terminus site organizations add --site=[[test_site_name]] --org=[[organization_name]]"
+    When I run "terminus site organizations add --site=[[test_site_name]] --org='[[organization_name]]'"
     Then I should get:
     """
     as a supporting organization
@@ -17,7 +17,7 @@ Feature: Managing site organizational memberships
 
   @vcr site_organizations_remove
   Scenario: Removing a supporting organization from a site
-    When I run "terminus site organizations remove --site=[[test_site_name]] --org=[[organization_name]]"
+    When I run "terminus site organizations remove --site=[[test_site_name]] --org='[[organization_name]]'"
     Then I should get:
     """
     Removed supporting organization

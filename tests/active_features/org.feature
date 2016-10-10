@@ -9,7 +9,9 @@ Feature: Listing one's organizational memberships
   @vcr organizations_list
   Scenario: List a user's organizational memberships
     When I run "terminus org:list"
-    Then I should get:
-    """
-    quack
-    """
+    Then I should get: "-------------------------------------- -------------------"
+    And I should get: "ID                                     Name"
+    And I should get: "-------------------------------------- -------------------"
+    And I should get: "c44e5de1-77b5-4151-b89f-9f548c5d909e   AnotherOrg"
+    And I should get: "11111111-1111-1111-1111-111111111111   Organization Name"
+    And I should get: "-------------------------------------- -------------------"

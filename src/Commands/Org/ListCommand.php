@@ -4,13 +4,9 @@ namespace Pantheon\Terminus\Commands\Org;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Lists the organizations of which the current user is a member
      *
