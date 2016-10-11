@@ -3,6 +3,7 @@
 namespace Terminus\UnitTests\Models;
 
 use Terminus\Collections\Sites;
+use Terminus\Config;
 use Terminus\UnitTests\TerminusTest;
 
 /**
@@ -68,18 +69,29 @@ class EnvironmentTest extends TerminusTest
         $connection_info = $env->connectionInfo();
 
         // SFTP Connection Info
+
         $sftp_user = "{$env->id}.{$site->id}";
         $sftp_host = "appserver.{$sftp_user}.drush.in";
         $sftp_port = "2222";
+
+        // HACK ALERT: Prevent local config overrides from breaking tests.
+        $config = new Config();
+        $host = $config->get('host');
+        if ($host == 'onebox') {
+            $sftp_user = "appserver.$sftp_user";
+            $sftp_host = $host;
+        }
 
         $sftp_info_expected = [
         'sftp_username' => $sftp_user,
         'sftp_host' => $sftp_host,
         'sftp_password' => 'Use your account password',
-        'sftp_url' => "sftp://{$env->id}.{$site->id}@{$sftp_host}:{$sftp_port}",
-        'sftp_command' => "sftp -o Port={$sftp_port} {$env->id}.{$site->id}@{$sftp_host}",
+        'sftp_url' => "sftp://{$sftp_user}@{$sftp_host}:{$sftp_port}",
+        'sftp_command' => "sftp -o Port={$sftp_port} {$sftp_user}@{$sftp_host}",
         ];
-        $this->assertArraySubset($sftp_info_expected, $connection_info);
+        foreach (array_keys($sftp_info_expected) as $key) {
+            $this->assertEquals($sftp_info_expected[$key], $connection_info[$key], "Failed to match key: $key");
+        }
 
         // Git Connection Info
         $git_user = "codeserver.{$env->id}.{$site->id}";
@@ -322,12 +334,21 @@ class EnvironmentTest extends TerminusTest
         $host = "appserver.{$user}.drush.in";
         $port = "2222";
 
+        // HACK ALERT: Prevent local config overrides from breaking tests.
+        $config = new Config();
+        $config_host = $config->get('host');
+        if ($config_host == 'onebox') {
+            $user = "appserver.$user";
+            $host = $config_host;
+        }
+
+
         $sftp_info_expected = [
         'username' => $user,
         'host' => $host,
         'password' => 'Use your account password',
-        'url' => "sftp://{$env->id}.{$site->id}@$host:$port",
-        'command' => "sftp -o Port=$port {$env->id}.{$site->id}@$host",
+        'url' => "sftp://{$user}@$host:$port",
+        'command' => "sftp -o Port=$port {$user}@$host",
         ];
         $this->assertArraySubset($sftp_info_expected, $connection_info);
         $this->setDummyCredentials();
