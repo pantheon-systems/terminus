@@ -2,79 +2,85 @@
 
 namespace Terminus\Collections;
 
+use Pantheon\Terminus\Request\RequestAwareInterface;
+use Pantheon\Terminus\Request\RequestAwareTrait;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Request;
 
-abstract class TerminusCollection
+abstract class TerminusCollection implements RequestAwareInterface
 {
-  /**
-   * @var array
-   */
+    use RequestAwareTrait;
+
+    /**
+     * @var array
+     */
     protected $args = [];
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     protected $collected_class = 'Terminus\Models\TerminusModel';
-  /**
-   * @var TerminusModel[]
-   */
+    /**
+     * @var TerminusModel[]
+     */
     protected $models = [];
-  /**
-   * @var boolean
-   */
+    /**
+     * @var boolean
+     */
     protected $paged = false;
 
-  /**
-   * Instantiates the collection, sets param members as properties
-   *
-   * @param array $options Options with which to configure this collection
-   */
+    /**
+     * Instantiates the collection, sets param members as properties
+     *
+     * @param array $options Options with which to configure this collection
+     *        array data Data with which to initialize the model members of this collection
+     */
     public function __construct(array $options = [])
     {
+        if (isset($options['data'])) {
+            $this->fetch($options['data']);
+        }
         $this->request = new Request();
     }
 
-  /**
-   * Adds a model to this collection
-   *
-   * @param object $model_data Data to feed into attributes of new model
-   * @param array  $options    Data to make properties of the new model
-   * @return TerminusModel
-   */
+    /**
+     * Adds a model to this collection
+     *
+     * @param object $model_data Data to feed into attributes of new model
+     * @param array  $options    Data to make properties of the new model
+     * @return TerminusModel
+     */
     public function add($model_data, array $options = [])
     {
-        $options = array_merge(
-            ['id' => $model_data->id, 'collection' => $this,],
-            $options
-        );
+        $options = array_merge(['collection' => $this,], $options);
         $model = new $this->collected_class($model_data, $options);
         $this->models[$model_data->id] = $model;
         return $model;
     }
 
-  /**
-   * Retrieves all models
-   * TODO: Remove automatic fetching and make fetches explicit
-   *
-   * @return TerminusModel[]
-   */
+    /**
+     * Retrieves all models
+     * TODO: Remove automatic fetching and make fetches explicit
+     *
+     * @return TerminusModel[]
+     */
     public function all()
     {
         $models = array_values($this->getMembers());
         return $models;
     }
 
-  /**
-   * Fetches model data from API and instantiates its model instances
-   *
-   * @param array $options params to pass to url request
-   * @return TerminusCollection $this
-   */
+    /**
+     * Fetches model data from API and instantiates its model instances
+     *
+     * @param array $options params to pass configure fetching
+     *        array $data Data to fill in the model members of this collection
+     * @return TerminusCollection $this
+     */
     public function fetch(array $options = [])
     {
-        $results = $this->getCollectionData($options);
+        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
 
-        foreach ($results as $id => $model_data) {
+        foreach ($data as $id => $model_data) {
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
             }
@@ -84,13 +90,13 @@ abstract class TerminusCollection
         return $this;
     }
 
-  /**
-   * Retrieves the model of the given ID
-   *
-   * @param string $id ID of desired model instance
-   * @return TerminusModel $this->models[$id]
-   * @throws TerminusException
-   */
+    /**
+     * Retrieves the model of the given ID
+     *
+     * @param string $id ID of desired model instance
+     * @return TerminusModel $this->models[$id]
+     * @throws TerminusException
+     */
     public function get($id)
     {
         $models = $this->getMembers();
@@ -104,11 +110,11 @@ abstract class TerminusCollection
         );
     }
 
-  /**
-   * List Model IDs
-   *
-   * @return string[] Array of all model IDs
-   */
+    /**
+     * List model IDs
+     *
+     * @return string[] Array of all model IDs
+     */
     public function ids()
     {
         $models = $this->getMembers();
@@ -116,15 +122,15 @@ abstract class TerminusCollection
         return $ids;
     }
 
-  /**
-   * Returns an array of data where the keys are the attribute $key and the
-   *   values are the attribute $value
-   *
-   * @param string $key   Name of attribute to make array keys
-   * @param mixed  $value Name(s) of attribute(s) to comprise array values
-   * @return array Array rendered as requested
-   *         $this->attribute->$key = $this->attribute->$value
-   */
+    /**
+     * Returns an array of data where the keys are the attribute $key and the
+     *   values are the attribute $value
+     *
+     * @param string $key   Name of attribute to make array keys
+     * @param mixed  $value Name(s) of attribute(s) to comprise array values
+     * @return array Array rendered as requested
+     *         $this->attribute->$key = $this->attribute->$value
+     */
     public function listing($key = 'id', $value = 'name')
     {
         $members = array_combine(
@@ -151,12 +157,12 @@ abstract class TerminusCollection
         return $members;
     }
 
-  /**
-   * Retrieves collection data from the API
-   *
-   * @param array $options params to pass to url request
-   * @return array
-   */
+    /**
+     * Retrieves collection data from the API
+     *
+     * @param array $options params to pass to url request
+     * @return object
+     */
     protected function getCollectionData($options = [])
     {
         $args = array_merge(['options' => ['method' => 'get',],], $this->args);
@@ -173,17 +179,17 @@ abstract class TerminusCollection
         return $results['data'];
     }
 
-  /**
-   * Returns an array of data where the keys are the attribute $key and the
-   *   values are the attribute $value, filtered by the given array
-   *
-   * @param array        $filters Attributes to match during filtration
-   *   e.g. array('category' => 'other')
-   * @param string       $key     Name of attribute to make array keys
-   * @param string|array $value   Name(s) of attribute to make array values
-   * @return array Array rendered as requested
-   *         $this->attribute->$key = $this->attribute->$value
-   */
+    /**
+     * Returns an array of data where the keys are the attribute $key and the
+     *   values are the attribute $value, filtered by the given array
+     *
+     * @param array        $filters Attributes to match during filtration
+     *   e.g. array('category' => 'other')
+     * @param string       $key     Name of attribute to make array keys
+     * @param string|array $value   Name(s) of attribute to make array values
+     * @return array Array rendered as requested
+     *         $this->attribute->$key = $this->attribute->$value
+     */
     public function getFilteredMemberList(
         array $filters,
         $key = 'id',
@@ -215,26 +221,26 @@ abstract class TerminusCollection
         return $member_list;
     }
 
-  /**
-   * Returns an array of data where the keys are the attribute $key and the
-   *   values are the attribute $value
-   *
-   * @param string $key   Name of attribute to make array keys
-   * @param string $value Name of attribute to make array values
-   * @return array Array rendered as requested
-   *         $this->attribute->$key = $this->attribute->$value
-   */
+    /**
+     * Returns an array of data where the keys are the attribute $key and the
+     *   values are the attribute $value
+     *
+     * @param string $key   Name of attribute to make array keys
+     * @param string $value Name of attribute to make array values
+     * @return array Array rendered as requested
+     *         $this->attribute->$key = $this->attribute->$value
+     */
     public function getMemberList($key = 'id', $value = 'name')
     {
         $member_list = $this->getFilteredMemberList([], $key, $value);
         return $member_list;
     }
 
-  /**
-   * Retrieves all members of this collection
-   *
-   * @return TerminusModel[]
-   */
+    /**
+     * Retrieves all members of this collection
+     *
+     * @return TerminusModel[]
+     */
     protected function getMembers()
     {
         if (empty($this->models)) {

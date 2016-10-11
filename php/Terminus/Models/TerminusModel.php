@@ -22,7 +22,7 @@ abstract class TerminusModel implements RequestAwareInterface
    * @var object
    */
     protected $attributes;
-    
+
   /**
    * @var string The URL at which to fetch this model's information
    */

@@ -50,10 +50,6 @@ class Site extends TerminusModel
      * @var array
      */
     private $features;
-    /**
-     * @var array
-     */
-    private $tags;
 
     /**
      * @inheritdoc
@@ -85,46 +81,6 @@ class Site extends TerminusModel
         'params' => ['instrument_id' => $uuid,],
         ];
         $workflow = $this->workflows->create('associate_site_instrument', $args);
-        return $workflow;
-    }
-
-    /**
-     * Adds a tag to the site
-     *
-     * @param string       $tag Name of tag to apply
-     * @param Organization $org Organization to add the tag association to
-     * @return array
-     */
-    public function addTag($tag, $org)
-    {
-        if ($this->hasTag($tag, $org)) {
-            $message  = 'This site already has the tag {tag} ';
-            $message .= 'associated with the organization {org}.';
-            throw new TerminusException(
-                $message,
-                ['tag' => $tag, 'org' => $org->id,]
-            );
-        }
-        $params   = [$tag => ['sites' => [$this->id,],],];
-        $response = $this->request->request(
-            sprintf('organizations/%s/tags', $org->id),
-            ['method' => 'put', 'form_params' => $params,]
-        );
-        return $response;
-    }
-
-    /**
-     * Creates a new site for migration
-     *
-     * @param string[] $product_id The uuid for the product to deploy.
-     * @return Workflow
-     */
-    public function deployProduct($product_id)
-    {
-        $workflow = $this->workflows->create(
-            'deploy_product',
-            ['params' => ['product_id' => $product_id,],]
-        );
         return $workflow;
     }
 
@@ -192,6 +148,21 @@ class Site extends TerminusModel
         $workflow = $this->workflows->create(
             'delete_environment_branch',
             ['params' => ['environment_id' => $branch,],]
+        );
+        return $workflow;
+    }
+
+    /**
+     * Creates a new site for migration
+     *
+     * @param string[] $product_id The uuid for the product to deploy.
+     * @return Workflow
+     */
+    public function deployProduct($product_id)
+    {
+        $workflow = $this->workflows->create(
+            'deploy_product',
+            ['params' => ['product_id' => $product_id,],]
         );
         return $workflow;
     }
@@ -354,27 +325,6 @@ class Site extends TerminusModel
     }
 
     /**
-     * Returns tags from the site/org join
-     * TODO: Move these into tags model/collection
-     *
-     * @param Organization $org UUID of organization site belongs to
-     * @return string[]
-     */
-    public function getTags($org)
-    {
-        if (isset($this->tags)) {
-            return $this->tags;
-        }
-        $org_site_member = new OrganizationSiteMemberships(
-            ['organization' => $org,]
-        );
-        $org_site_member->fetch();
-        $org  = $org_site_member->get($this->id);
-        $tags = $org->get('tags');
-        return $tags;
-    }
-
-    /**
      * Just the code branches
      *
      * @return array
@@ -386,20 +336,6 @@ class Site extends TerminusModel
         $data     = $this->request->request($path, $options);
         $branches = array_keys((array)$data['data']);
         return $branches;
-    }
-
-    /**
-     * Checks to see whether the site has a tag associated with the given org
-     *
-     * @param string $tag    Name of tag to check for
-     * @param string $org_id Organization with which this tag is associated
-     * @return bool
-     */
-    public function hasTag($tag, $org_id)
-    {
-        $tags    = $this->getTags($org_id);
-        $has_tag = in_array($tag, $tags);
-        return $has_tag;
     }
 
     /**
@@ -426,27 +362,6 @@ class Site extends TerminusModel
         $args     = ['site' => $this->id,];
         $workflow = $this->workflows->create('disassociate_site_instrument', $args);
         return $workflow;
-    }
-
-    /**
-     * Removes a tag to the site
-     *
-     * @param string       $tag Tag to remove
-     * @param Organization $org Organization to remove the tag association from
-     * @return array
-     */
-    public function removeTag($tag, $org)
-    {
-        $response = $this->request->request(
-            sprintf(
-                'organizations/%s/tags/%s/sites?entity=%s',
-                $org->id,
-                $tag,
-                $this->id
-            ),
-            ['method' => 'delete',]
-        );
-        return $response;
     }
 
     /**

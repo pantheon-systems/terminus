@@ -376,62 +376,60 @@ class InputHelper extends TerminusHelper
    * Input helper that provides interactive menu to select org name
    *
    * @param array $arg_options Elements as follow:
-   *        array  args       The args passed in from argv
-   *        string key        Args key to search for
-   *        string default    Returned if arg and stdin fail in interactive
-   *        array  allow_none True to permit no selection to be an option
+   *        array  args            The args passed in from argv
+   *        string key             Args key to search for
+   *        string default         Returned if arg and stdin fail in interactive
+   *        array  allow_none      True to permit no selection to be an option
+   *        bool   autoselect_solo Automatically selects the only member
    * @return string ID of selected organization
    * @throws TerminusException
   */
     public function orgId(array $arg_options = [])
     {
         $default_options = [
-        'args'       => [],
-        'key'        => 'org',
-        'default'    => null,
-        'allow_none' => true,
+            'args'            => [],
+            'key'             => 'org',
+            'default'         => null,
+            'allow_none'      => true,
+            'autoselect_solo' => true,
         ];
         $options         = array_merge($default_options, $arg_options);
 
         $arguments = $options['args'];
         $key       = $options['key'];
-        if (isset($arguments[$key]) && $this->isValidUuid($arguments[$key])) {
-            return $arguments[$key];
-        }
         $org_list  = $this->orgList($options);
         if (isset($arguments[$key])) {
-            if ($id = array_search($arguments[$key], $org_list)) {
+            if ($this->isValidUuid($arguments[$key])) {
+                return $arguments[$key];
+            } else if ($id = array_search($arguments[$key], $org_list)) {
                 return $id;
             }
-            return $arguments[$key];
-        } elseif (!empty($org = Config::get('org'))) {
+            throw new TerminusException('You are not a member of {org}.', ['org' => $arguments[$key],]);
+        }
+        if (!empty($org = Config::get('org'))) {
             return $org;
         }
-        if (count($org_list) == 0) {
+        if (empty($org_list)) {
             if ($options['allow_none']) {
                 return $options['default'];
             }
             throw new TerminusException('You are not a member of an organization.');
-        }
-        if (count($org_list) == 1) {
+        } else if ((count($org_list) == 1) && $options['autoselect_solo']) {
             $org_ids = array_keys($org_list);
-            $org     = array_shift($org_ids);
+            $org = array_shift($org_ids);
             return $org;
         }
-        // Include the Org ID in the output menu
-        $org_list_with_ids = [];
-        if ($options['allow_none']) {
-            $org_list_with_ids['-'] = 'None';
-        }
+        $org_list_with_id = [];
         foreach ($org_list as $id => $name) {
             $org_list_with_id[$id] = sprintf("%s (%s)", $name, $id);
         }
 
         $org = $this->menu(
             [
-            'choices' => $org_list_with_id,
-            'default' => false,
-            'message' => 'Choose an organization',
+                'choices' => $org_list_with_id,
+                'default' => false,
+                'message' => 'Choose an organization',
+                'autoselect_solo' => $options['autoselect_solo'],
             ]
         );
 

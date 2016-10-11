@@ -1863,7 +1863,9 @@ class SiteCommand extends TerminusCommand
     {
         $action = array_shift($args);
         $org = new Organization(
-            (object)['id' => $this->input()->orgId(['args' => $assoc_args,]),]
+            (object)['id' => $this->input()->orgId(
+                ['args' => $assoc_args, 'allow_none' => false, 'autoselect_solo' => false,]
+            ),]
         );
         $org_sites = $org->getSites();
         $org_site_list = array_combine(
@@ -1881,76 +1883,52 @@ class SiteCommand extends TerminusCommand
                 $org_sites
             )
         );
-        $site = $this->sites->get(
+        $org_site_membership = $org->site_memberships->get(
             $this->input()->siteName(
-                ['args' => $assoc_args, 'choices' => $org_site_list,]
+                ['args' => $assoc_args, 'choices' => $org_site_list, 'autoselect_solo' => false,]
             )
         );
+        $tags = $org_site_membership->tags;
 
         switch ($action) {
             case 'add':
-                $tag      = $this->input()->string(
-                    [
-                    'args'    => $assoc_args,
-                    'key'     => 'tag',
-                    'message' => 'Enter a tag to add',
-                    ]
+                $tag_string = $this->input()->string(
+                    ['args' => $assoc_args, 'key' => 'tag', 'message' => 'Enter a tag to add',]
                 );
-                $response = $site->addTag($tag, $org);
+                $tags->create($tag_string);
 
-                $context = array(
-                  'tag'  => $tag,
-                  'site' => $site->get('name')
+                $this->log()->info(
+                    'Tag "{tag}" has been added to {site}',
+                    ['tag' => $tag_string, 'site' => $org_site_membership->site->get('name'),]
                 );
-                if ($response['status_code'] == 200) {
-                        $this->log()->info(
-                            'Tag "{tag}" has been added to {site}',
-                            $context
-                        );
-                } else {
-                          $this->failure(
-                              'Tag "{tag}" could not be added to {site}',
-                              $context
-                          );
-                }
                 break;
             case 'remove':
-                $tags = $site->getTags($org);
-                if (count($tags) === 0) {
-                    $message  = 'This organization does not have any tags associated';
-                    $message .= ' with this site.';
-                    $this->failure($message);
-                } elseif (!isset($assoc_args['tag'])
-                || !in_array($assoc_args['tag'], $tags)
-                ) {
-                    $tag = $tags[$this->input()->menu(
-                        ['choices' => $tags, 'message' => 'Select a tag to delete',]
-                    )];
-                } else {
-                    $tag = $assoc_args['tag'];
+                $all_tags = $tags->ids();
+                if (empty($all_tags)) {
+                    $this->failure('This organization does not have any tags associated with this site.');
                 }
-                $response = $site->removeTag($tag, $org);
+                $tag = $tags->get(
+                    $this->input()->menu(
+                        [
+                            'args' => $assoc_args,
+                            'autoselect_solo' => false,
+                            'choices' => $all_tags,
+                            'key' => 'tag',
+                            'message' => 'Select a tag to delete',
+                            'return_value' => true,
+                        ]
+                    )
+                );
+                $tag->delete();
 
-                $context = [
-                'tag'  => $tag,
-                'site' => $site->get('name'),
-                ];
-                if ($response['status_code'] == 200) {
-                    $this->log()->info(
-                        'Tag "{tag}" has been removed from {site}',
-                        $context
-                    );
-                } else {
-                    $this->failure(
-                        'Tag "{tag}" could not be removed from {site}',
-                        $context
-                    );
-                }
+                $this->log()->info(
+                    'Tag "{tag}" has been removed from {site}',
+                    ['tag' => $tag->id, 'site' => $org_site_membership->site->get('name'),]
+                );
                 break;
             case 'list':
             default:
-                $tags = $site->getTags($org);
-                $this->output()->outputRecord(compact('tags'));
+                $this->output()->outputRecord($tags->ids());
                 break;
         }
     }
