@@ -33,7 +33,7 @@ class ListCommand extends TerminusCommand
      */
     public function listSSHKeys($options = ['format' => 'table', 'fields' => ''])
     {
-        $ssh_keys = $this->session()->getUser()->ssh_keys->all();
+        $ssh_keys = $this->session()->getUser()->getSshKeys()->all();
 
         $data = [];
         foreach ($ssh_keys as $id => $ssh_key) {

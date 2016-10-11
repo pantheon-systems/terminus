@@ -25,10 +25,10 @@ class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionA
     public function ensureLogin()
     {
         if (!$this->session()->isActive()) {
-            if (count($tokens = $this->session()->tokens->all()) == 1) {
+            if (count($tokens = $this->session()->getTokens()->all()) == 1) {
                 $token = array_shift($tokens);
-            } elseif (!empty($email = $this->config->get('user'))) {
-                $token = $this->session()->tokens->get($email);
+            } elseif (!empty($email = $this->getConfig()->get('user'))) {
+                $token = $this->session()->getTokens()->get($email);
             } else {
                 throw new \Exception(
                     'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'

@@ -5,16 +5,19 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Finder\Finder;
-use Terminus\Collections\TerminusCollection;
 use Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedTokens
  * @package Pantheon\Terminus\Collections
  */
-class SavedTokens extends TerminusCollection
+class SavedTokens extends TerminusCollection implements ConfigAwareInterface
 {
+    use ConfigAwareTrait;
+
     /**
      * @var Session
      */
@@ -40,7 +43,10 @@ class SavedTokens extends TerminusCollection
      */
     public function create($token_string)
     {
-        $token = new SavedToken((object)['token' => $token_string,], ['collection' => $this,]);
+        $token =  $this->getContainer()->get(
+            SavedToken::class,
+            [(object)['token' => $token_string,], ['collection' => $this,]]
+        );
         $user = $token->logIn();
         $user->fetch();
         $token->id = $user->get('email');
@@ -53,7 +59,8 @@ class SavedTokens extends TerminusCollection
      * Retrieves the model with site of the given email or machine token
      *
      * @param string $id Email or machine token to look up a saved token by
-     * @return SavedToken
+     * @return \Pantheon\Terminus\Models\SavedToken
+     * @throws \Terminus\Exceptions\TerminusException
      */
     public function get($id)
     {
@@ -76,8 +83,7 @@ class SavedTokens extends TerminusCollection
     protected function getCollectionData($options = [])
     {
         $finder = new Finder();
-        $config = new Config();
-        $iterator = $finder->files()->in($config->get('tokens_dir'));
+        $iterator = $finder->files()->in($this->getConfig()->get('tokens_dir'));
         $tokens = [];
         foreach ($iterator as $file) {
             $tokens[] = json_decode(file_get_contents($file->getRealPath()));

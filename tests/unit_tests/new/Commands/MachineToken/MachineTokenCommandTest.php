@@ -8,11 +8,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Psr\Log\NullLogger;
 use Terminus\Collections\MachineTokens;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 
-abstract class MachineTokenCommandTest extends \PHPUnit_Framework_TestCase
+abstract class MachineTokenCommandTest extends CommandTestCase
 {
     protected $session;
     protected $machine_tokens;
@@ -33,7 +34,10 @@ abstract class MachineTokenCommandTest extends \PHPUnit_Framework_TestCase
         $this->user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->user->machine_tokens = $this->machine_tokens;
+
+        $this->user->expects($this->any())
+            ->method('getMachineTokens')
+            ->willReturn($this->machine_tokens);
 
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()

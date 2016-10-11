@@ -24,7 +24,7 @@ class LoginCommand extends TerminusCommand
      */
     public function logIn(array $options = ['machine-token' => null, 'email' => null,])
     {
-        $tokens = $this->session()->tokens;
+        $tokens = $this->session()->getTokens();
 
         if (isset($options['machine-token']) && !is_null($token_string = $options['machine-token'])) {
             try {

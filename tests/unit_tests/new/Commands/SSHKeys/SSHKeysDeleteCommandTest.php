@@ -103,8 +103,7 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
             ->willReturn(
                 $token
             );
-
-
+        
         $this->setExpectedException(
             \Exception::class,
             'There was an problem deleting the SSH key.'

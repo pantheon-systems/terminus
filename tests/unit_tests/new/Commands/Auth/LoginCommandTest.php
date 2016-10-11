@@ -8,6 +8,7 @@ use Pantheon\Terminus\Models\SavedToken;
 
 class LoginCommandTest extends AuthTest
 {
+    protected $tokens;
     /**
      * @var SavedToken
      */
@@ -23,10 +24,18 @@ class LoginCommandTest extends AuthTest
         $this->token = $this->getMockBuilder(SavedToken::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->token->session = $this->session;
-        $this->session->tokens = $this->getMockBuilder(SavedTokens::class)
+
+        $this->token->expects($this->any())
+            ->method('session')
+            ->willReturn($this->session);
+
+        $this->tokens = $this->getMockBuilder(SavedTokens::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->session->expects($this->any())
+            ->method('getTokens')
+            ->willReturn($this->tokens);
 
         $this->command = new LoginCommand();
         $this->command->setConfig($this->config);
@@ -41,7 +50,7 @@ class LoginCommandTest extends AuthTest
     {
         $token_string = 'token_string';
 
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo($token_string))
             ->will($this->throwException(new \Exception));
@@ -51,7 +60,7 @@ class LoginCommandTest extends AuthTest
                 $this->equalTo('notice'),
                 $this->equalTo('Logging in via machine token.')
             );
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('create')
             ->with($this->equalTo($token_string));
 
@@ -66,7 +75,7 @@ class LoginCommandTest extends AuthTest
     {
         $email = "email@ddr.ess";
 
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->willReturn($this->token);
@@ -91,7 +100,7 @@ class LoginCommandTest extends AuthTest
     {
         $email = "email@ddr.ess";
 
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->token,]);
@@ -127,7 +136,7 @@ class LoginCommandTest extends AuthTest
      */
     public function testCannotLogInWithoutTokens()
     {
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('all')->willReturn([]);
 
         $out = $this->command->logIn();
@@ -142,10 +151,10 @@ class LoginCommandTest extends AuthTest
      */
     public function testCannotLogInWithoutIndicatingWhichToken()
     {
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('all')
             ->willReturn([$this->token, $this->token,]);
-        $this->session->tokens->expects($this->once())
+        $this->tokens->expects($this->once())
             ->method('ids')
             ->willReturn(['token1', 'token2',]);
 

@@ -9,7 +9,7 @@ use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Terminus\Caches\FileCache;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 
 class Session implements ContainerAwareInterface, ConfigAwareInterface
 {
@@ -38,7 +38,6 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
     {
         $this->cache = $file_cache;
         $this->data = (object)$this->cache->getData('session');
-        $this->tokens = new SavedTokens(['session' => $this,]);
     }
 
     /**
@@ -62,12 +61,12 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
         if (isset($this->data->$key)) {
             return $this->data->$key;
         }
-        throw new TerminusException('The {key} property cannot be found in the cache data.', compact('key'));
+        return null;
     }
 
     /**
      * Returns a user with the current session user id
-     * @return \Terminus\Models\User [user] $session user
+     * @return \Pantheon\Terminus\Models\User [user] $session user
      */
     public function getUser()
     {
@@ -98,5 +97,16 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
     {
         $this->cache->putData('session', $data);
         $this->data = (object)$data;
+    }
+
+    /**
+     * @return \Pantheon\Terminus\Collections\SavedTokens
+     */
+    public function getTokens()
+    {
+        if (empty($this->tokens)) {
+            $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,]]);
+        }
+        return $this->tokens;
     }
 }

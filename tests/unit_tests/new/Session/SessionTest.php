@@ -5,15 +5,13 @@ namespace Pantheon\Terminus\UnitTests\Session;
 use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Session\Session;
-use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Caches\FileCache;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 
 /**
  * Testing class for Pantheon\Terminus\Session\Session
  */
-class SessionTest extends CommandTestCase
+class SessionTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $session;
@@ -46,9 +44,7 @@ class SessionTest extends CommandTestCase
 
         $this->assertEquals('bar', $this->session->get('foo'));
         $this->assertEquals(123, $this->session->get('abc'));
-        
-        $this->setExpectedException(TerminusException::class);
-        $this->session->get('invalid');
+        $this->assertEquals(null, $this->session->get('invalid'));
     }
 
 
@@ -78,12 +74,6 @@ class SessionTest extends CommandTestCase
    */
     public function testGetUser()
     {
-        $data = [
-        'foo' => 'bar',
-        'abc' => 123
-        ];
-
-
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
