@@ -4,8 +4,8 @@ namespace Terminus\Models;
 
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Collections\Branches;
 use Terminus\Collections\Environments;
-use Terminus\Collections\OrganizationSiteMemberships;
 use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\SiteUserMemberships;
@@ -14,22 +14,33 @@ use Terminus\Collections\Workflows;
 class Site extends TerminusModel
 {
     /**
-     * @var array
-     * @todo Use Bindings collection?
-     */
-    public $bindings;
-    /**
      * @var SiteAuthorizations
      */
     public $authorizations;
+    /**
+     * @var Branches
+     */
+    public $branches;
     /**
      * @var Environments
      */
     public $environments;
     /**
+     * @var NewRelic
+     */
+    public $new_relic;
+    /**
      * @var SiteOrganizationMemberships
      */
     public $org_memberships;
+    /**
+     * @var Redis
+     */
+    public $redis;
+    /**
+     * @var Solr
+     */
+    public $solr;
     /**
      * @var Upstream
      */
@@ -61,8 +72,12 @@ class Site extends TerminusModel
 
         $params = ['site' => $this,];
         $this->authorizations = new SiteAuthorizations($params);
+        $this->branches = new Branches($params);
         $this->environments = new Environments($params);
+        $this->new_relic = new NewRelic(null, $params);
         $this->org_memberships = new SiteOrganizationMemberships($params);
+        $this->redis = new Redis(null, $params);
+        $this->solr = new Solr(null, $params);
         $this->user_memberships = new SiteUserMemberships($params);
         $this->workflows = new Workflows($params);
         $this->setUpstream($attributes);
@@ -71,17 +86,13 @@ class Site extends TerminusModel
     /**
      * Adds payment instrument of given site
      *
-     * @param string $uuid UUID of new payment instrument
+     * @param string $instrument_id UUID of new payment instrument
      * @return Workflow
      */
-    public function addInstrument($uuid)
+    public function addInstrument($instrument_id)
     {
-        $args     = [
-        'site'   => $this->id,
-        'params' => ['instrument_id' => $uuid,],
-        ];
-        $workflow = $this->workflows->create('associate_site_instrument', $args);
-        return $workflow;
+        $args = ['site' => $this->id, 'params' => compact('instrument_id'),];
+        return $this->workflows->create('associate_site_instrument', $args);
     }
 
     /**
@@ -91,178 +102,43 @@ class Site extends TerminusModel
      */
     public function completeMigration()
     {
-        $workflow = $this->workflows->create('complete_migration');
-        return $workflow;
+        return $this->workflows->create('complete_migration');
     }
 
     /**
      * Converges all bindings on a site
      *
-     * @return array
-     */
-    public function convergeBindings()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/converge',
-            ['method' => 'post']
-        );
-        return $response['data'];
-    }
-
-    /**
-     * Create a new branch
-     *
-     * @param string $branch Name of new branch
      * @return Workflow
      */
-    public function createBranch($branch)
+    public function converge()
     {
-        $path     = sprintf(
-            'sites/%s/code-branch',
-            $this->id
-        );
-        $options  = [
-        'form_params' => ['refspec' => sprintf('refs/heads/%s', $branch),],
-        'method'      => 'post',
-        ];
-        $response = $this->request->request($path, $options);
-        return $response['data'];
+        return $this->workflows->create('converge_site');
     }
 
     /**
      * Deletes the site represented by this object
+     *
+     * @return Workflow
      */
     public function delete()
     {
-        $this->request->request("sites/{$this->id}", ['method' => 'delete',]);
-    }
-
-    /**
-     * Delete a branch from site remove
-     *
-     * @param string $branch Name of branch to remove
-     * @return Workflow
-     */
-    public function deleteBranch($branch)
-    {
-        $workflow = $this->workflows->create(
-            'delete_environment_branch',
-            ['params' => ['environment_id' => $branch,],]
-        );
-        return $workflow;
+        $this->request()->request("sites/{$this->id}", ['method' => 'delete',]);
+        //TODO: Change this function to use a workflow. The workflow returned always gets 404 on status check.
+        //return $this->workflows->create('delete_site');
     }
 
     /**
      * Creates a new site for migration
      *
-     * @param string[] $product_id The uuid for the product to deploy.
+     * @param string $upstream_id The UUID for the product to deploy.
      * @return Workflow
      */
-    public function deployProduct($product_id)
+    public function deployProduct($upstream_id)
     {
-        $workflow = $this->workflows->create(
+        return $this->workflows->create(
             'deploy_product',
-            ['params' => ['product_id' => $product_id,],]
+            ['params' => ['product_id' => $upstream_id,],]
         );
-        return $workflow;
-    }
-
-    /**
-     * Disables New Relic
-     *
-     * @param object $site The site object
-     * @return bool
-     */
-    public function disableNewRelic($site)
-    {
-        if ($workflow = $site->workflows->create(
-            'disable_new_relic_for_site',
-            ['site' => $site->id,]
-        )) {
-            $workflow->wait();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Disables Redis caching
-     *
-     * @return array
-     */
-    public function disableRedis()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/settings',
-            ['method' => 'put', 'form_params' => ['allow_cacheserver' => false]]
-        );
-        $this->convergeBindings();
-        return $response['data'];
-    }
-
-    /**
-     * Disables Solr indexing
-     *
-     * @return array
-     */
-    public function disableSolr()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/settings',
-            ['method' => 'put', 'form_params' => ['allow_indexserver' => false]]
-        );
-        $this->convergeBindings();
-        return $response['data'];
-    }
-
-    /**
-     * Enables New Relic
-     *
-     * @param object $site The site object
-     * @return bool
-     */
-    public function enableNewRelic($site)
-    {
-        if ($workflow = $site->workflows->create(
-            'enable_new_relic_for_site',
-            ['site' => $site->id,]
-        )) {
-            $workflow->wait();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Enables Redis caching
-     *
-     * @return array
-     */
-    public function enableRedis()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/settings',
-            ['method' => 'put', 'form_params' => ['allow_cacheserver' => true]]
-        );
-        $this->convergeBindings();
-        return $response['data'];
-    }
-
-    /**
-     * Enables Solr indexing
-     *
-     * @return array
-     */
-    public function enableSolr()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/settings',
-            ['method' => 'put', 'form_params' => ['allow_indexserver' => true]]
-        );
-        $this->convergeBindings();
-        return $response['data'];
     }
 
     /**
@@ -288,9 +164,7 @@ class Site extends TerminusModel
     public function getFeature($feature)
     {
         if (!isset($this->features)) {
-            $response       = $this->request->request(
-                sprintf('sites/%s/features', $this->id)
-            );
+            $response = $this->request->request("sites/{$this->id}/features");
             $this->features = (array)$response['data'];
         }
         if (isset($this->features[$feature])) {
@@ -325,43 +199,13 @@ class Site extends TerminusModel
     }
 
     /**
-     * Just the code branches
+     * Removes this site's payment instrument
      *
-     * @return array
-     */
-    public function getTips()
-    {
-        $path     = sprintf('sites/%s/code-tips', $this->id);
-        $options  = ['method' => 'get',];
-        $data     = $this->request->request($path, $options);
-        $branches = array_keys((array)$data['data']);
-        return $branches;
-    }
-
-    /**
-     * Retrieve New Relic Info
-     *
-     * @return \stdClass
-     */
-    public function newRelic()
-    {
-        $response = $this->request->request(
-            'sites/' . $this->id . '/new-relic'
-        );
-        return $response['data'];
-    }
-
-    /**
-     * Removes payment instrument of given site
-     *
-     * @params string $uuid UUID of new payment instrument
      * @return Workflow
      */
     public function removeInstrument()
     {
-        $args     = ['site' => $this->id,];
-        $workflow = $this->workflows->create('disassociate_site_instrument', $args);
-        return $workflow;
+        return $this->workflows->create('disassociate_site_instrument', ['site' => $this->id,]);
     }
 
     /**
@@ -385,7 +229,7 @@ class Site extends TerminusModel
             'holder_id'     => $this->get('holder_id'),
             'owner'         => $this->get('owner'),
         ];
-        if ((boolean)$this->get('frozen')) {
+        if ($this->has('frozen')) {
             $data['frozen'] = true;
         }
         if (!is_null($data['php_version'])) {
@@ -398,49 +242,35 @@ class Site extends TerminusModel
     /**
      * Sets the site owner to the indicated team member
      *
-     * @param string $owner UUID of new owner of site
+     * @param User $user_id UUID of new owner of site
      * @return Workflow
      * @throws TerminusException
      */
-    public function setOwner($owner = null)
+    public function setOwner($user_id)
     {
-        $new_owner = $this->user_memberships->get($owner);
-        if ($new_owner == null) {
-            $message = 'The owner must be a team member. Add them with `site team`';
-            throw new TerminusException($message);
-        }
-        $workflow = $this->workflows->create(
-            'promote_site_user_to_owner',
-            ['params' => ['user_id' => $new_owner->id,],]
-        );
-        return $workflow;
+        return $this->workflows->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
     }
 
     /**
      * Update service level
      *
-     * @param string $level Level to set service on site to
+     * @param string $service_level Level to set service on site to
      * @return Workflow
      * @throws TerminusException
      */
-    public function updateServiceLevel($level)
+    public function updateServiceLevel($service_level)
     {
         try {
-            $workflow = $this->workflows->create(
+            return $this->workflows->create(
                 'change_site_service_level',
-                ['params' => ['service_level' => $level]]
+                ['params' => compact('service_level'),]
             );
         } catch (\Exception $e) {
-            if (strpos($e->getMessage(), '403') !== false) {
-                throw new TerminusException(
-                    'Instrument required to increase service level',
-                    [],
-                    1
-                );
+            if ($e->getCode() == '403') {
+                throw new TerminusException('An instrument is required to increase the service level of this site.');
             }
             throw $e;
         }
-        return $workflow;
     }
 
     /**

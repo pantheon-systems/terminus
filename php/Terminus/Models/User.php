@@ -61,6 +61,17 @@ class User extends TerminusModel
         $this->workflows        = new Workflows($params);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        $first_name = $this->get('profile')->firstname;
+        $last_name = $this->get('profile')->lastname;
+        $email = $this->get('email');
+        return "$first_name $last_name <$email>";
+    }
+
   /**
    * Retrieves Drush aliases for this user
    *
@@ -138,10 +149,10 @@ class User extends TerminusModel
         }
 
         $data = [
-        'firstname' => $first_name,
-        'lastname'  => $last_name,
-        'email' => $this->get('email'),
-        'id'  => $this->id,
+            'firstname' => $first_name,
+            'lastname'  => $last_name,
+            'email' => $this->get('email'),
+            'id'  => $this->id,
         ];
         return $data;
     }
