@@ -108,4 +108,16 @@ class Organization extends TerminusModel
         );
         return $users;
     }
+
+    /**
+     * Formats the Organization object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     *         string id   The UUID of the organization
+     *         string name The name of the organization
+     */
+    public function serialize()
+    {
+        return ['id' => $this->id, 'name' => $this->get('profile')->name,];
+    }
 }

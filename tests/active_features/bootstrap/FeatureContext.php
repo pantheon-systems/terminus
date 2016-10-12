@@ -640,9 +640,9 @@ class FeatureContext implements Context, SnippetAcceptingContext
     public function iRun($command)
     {
         $regex        = '/(?<!\.)terminus/';
-        $terminus_cmd = sprintf('bin/terminus.php', $this->cliroot);
+        $command = preg_replace($regex, sprintf('bin/terminus.php', $this->cliroot), $command);
+        $command = $this->replacePlaceholders($command);
 
-        $command      = $this->replacePlaceholders($command);
         if (isset($this->connection_info['host'])) {
             $command = "TERMINUS_HOST={$this->connection_info['host']} $command -vvv";
         }
@@ -655,8 +655,6 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
         // Pass the cache directory to the command so that tests don't poison the user's cache.
         $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir $command";
-
-        $command = preg_replace($regex, $terminus_cmd, $command);
 
         ob_start();
         passthru($command . ' 2>&1');
