@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "32f349ed83e53892935004e507878fbdd360e2f2"
+                "reference": "e180cc705a27c3d5999dba54b0137eb3779777fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/32f349ed83e53892935004e507878fbdd360e2f2",
-                "reference": "32f349ed83e53892935004e507878fbdd360e2f2",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/e180cc705a27c3d5999dba54b0137eb3779777fe",
+                "reference": "e180cc705a27c3d5999dba54b0137eb3779777fe",
                 "shasum": ""
             },
             "require": {
@@ -226,7 +226,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-10-05 16:47:33"
+            "time": "2016-10-10 16:22:54"
         },
         {
             "name": "container-interop/container-interop",
@@ -290,16 +290,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.2.1",
+            "version": "6.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "3f808fba627f2c5b69e2501217bf31af349c1427"
+                "reference": "ebf29dee597f02f09f4d5bbecc68230ea9b08f60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/3f808fba627f2c5b69e2501217bf31af349c1427",
-                "reference": "3f808fba627f2c5b69e2501217bf31af349c1427",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ebf29dee597f02f09f4d5bbecc68230ea9b08f60",
+                "reference": "ebf29dee597f02f09f4d5bbecc68230ea9b08f60",
                 "shasum": ""
             },
             "require": {
@@ -348,7 +348,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2016-07-15 17:22:37"
+            "time": "2016-10-08 15:01:37"
         },
         {
             "name": "guzzlehttp/promises",
@@ -1822,16 +1822,16 @@
     "packages-dev": [
         {
             "name": "beberlei/assert",
-            "version": "v2.6.4",
+            "version": "2.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "ebab3d93e5f8f1ef95e016970ef149b4ad5ac024"
+                "reference": "fbadde44717ea3eb98fba35425d49731185bf418"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/ebab3d93e5f8f1ef95e016970ef149b4ad5ac024",
-                "reference": "ebab3d93e5f8f1ef95e016970ef149b4ad5ac024",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/fbadde44717ea3eb98fba35425d49731185bf418",
+                "reference": "fbadde44717ea3eb98fba35425d49731185bf418",
                 "shasum": ""
             },
             "require": {
@@ -1839,14 +1839,10 @@
                 "php": ">=5.3"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "2.0.0-alpha",
                 "phpunit/phpunit": "@stable"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.5-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "Assert": "lib/"
@@ -1877,7 +1873,7 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2016-10-03 10:58:03"
+            "time": "2016-10-11 17:13:28"
         },
         {
             "name": "behat/behat",
