@@ -7,10 +7,8 @@
             Host: onebox
             Expect: null
             Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ba41b3e-6644-11e6-91ff-bc764e11bdd3:pGmjGpmznP926PwyDRjAm'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ba41b3e-6644-11e6-91ff-bc764e11bdd3:pGmjGpmznP926PwyDRjAm'
             verify: '1'
             method: post
             absolute_url: ''
@@ -24,11 +22,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:17 GMT'
+            Date: 'Tue, 16 Aug 2016 22:51:26 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 0e7f6ca0-6644-11e6-8f86-018f7b210ab3
+            X-Pantheon-Trace-Id: f535ebd0-6403-11e6-9844-1524ed28772c
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -36,7 +34,7 @@
             Pragma: no-cache
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
-        body: '{"session":"11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR","expires_at":1474054517,"user_id":"11111111-1111-1111-1111-111111111111"}'
+        body: '{"session": "11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O","expires_at":1473807086,"user_id":"11111111-1111-1111-1111-111111111111"}'
 -
     request:
         method: GET
@@ -46,8 +44,8 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
             verify: '1'
             method: get
             absolute_url: ''
@@ -60,11 +58,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:18 GMT'
+            Date: 'Tue, 16 Aug 2016 22:51:26 GMT'
             Content-Type: application/json
             Content-Length: '3327'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 0f117370-6644-11e6-8f86-018f7b210ab3
+            X-Pantheon-Trace-Id: f68d3e70-6403-11e6-9844-1524ed28772c
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -80,10 +78,10 @@
         headers:
             Host: onebox
             Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.11&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
             verify: '1'
             method: get
             absolute_url: ''
@@ -95,11 +93,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:18 GMT'
-            Content-Type: application/json
+            Date: 'Wed, 12 Oct 2016 05:37:37 GMT'
+            Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 0f979360-6644-11e6-ad69-5f4c0d99879d
+            X-Pantheon-Trace-Id: fbeee100-903d-11e6-a658-f96e185ab7fb
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -115,10 +113,10 @@
         headers:
             Host: onebox
             Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.11&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
             verify: '1'
             method: get
             absolute_url: ''
@@ -130,11 +128,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:19 GMT'
+            Date: 'Wed, 12 Oct 2016 05:37:38 GMT'
             Content-Type: application/json
-            Content-Length: '3486'
+            Content-Length: '3255'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 0fcfe170-6644-11e6-ad69-5f4c0d99879d
+            X-Pantheon-Trace-Id: fc62ff90-903d-11e6-a658-f96e185ab7fb
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -142,43 +140,7 @@
             Pragma: no-cache
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
-        body: '{"allow_cacheserver": true, "created": 1471385341, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "framework": "wordpress", "holder_id": "11111111-1111-1111-1111-111111111111", "holder_type": "user", "last_code_push": {"timestamp": "2016-08-19T19:05:16", "user_uuid": "11111111-1111-1111-1111-111111111111"}, "migration_completed_at": 1471632727, "migration_started_at": 1471634332, "name": "behat-tests", "owner": "11111111-1111-1111-1111-111111111111", "php_version": "55", "preferred_zone": "chios", "service_level": "free", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "e8fe8550-1ab9-4964-8838-2b9abdccf4bf", "branch": "master"}, "label": "behat tests", "id": "11111111-1111-1111-1111-111111111111", "holder": {"profile": {"utm_term": "", "invites_to_nonuser": 4, "seen_first_time_user_popover": true, "utm_content": "/", "experiments": {"welcome_video": "shown"}, "full_name": "Dev User", "pullFromLive": false, "utm_device": "", "initial_identity_strategy": null, "utm_campaign": "pantheon.io (organic)", "tracking_first_site_create": 1428723370, "verify": "037eadb020d51ccddba9e06a64908c98", "tracking_first_code_push": 1428811227, "google_adwords_account_registered_sent": 1428707350, "invites_to_user": 8, "utm_medium": "", "job_function": "developer", "tracking_first_workflow_in_live": 1428811293, "tracking_first_team_invite": 1436464837, "firstname": "Dev", "invites_to_site": 12, "lastname": "User", "pda_campaign": null, "utm_source": "https://www.bing.com/search?setmkt=en-US&q=pantheon+san+francisco", "google_adwords_pushed_code_sent": 1428811242, "last-org-spinup": "none", "web_services_business": null, "initial_identity_name": null, "guilty_of_abuse": null, "invites_sent": 12, "tracking_first_site_upgrade": 1437784612, "google_adwords_paid_for_site_sent": 1438018300, "modified": 1458174494, "maxdevsites": 2, "lead_type": "", "organization": " Pantheon Systems, Inc"}, "id": "11111111-1111-1111-1111-111111111111", "email": "devuser@pantheon.io"}, "settings": {"allow_domains": false, "max_num_cdes": 10, "stunnel": false, "replica_verification_strategy": "pt-heartbeat", "owner": "11111111-1111-1111-1111-111111111111", "secure_runtime_access": false, "pingdom": 0, "allow_indexserver": false, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "failover_appserver": 0, "migration_started_at": 1471634332, "migration_completed_at": 1471632727, "support_plan": "regular_support", "on_server_development": false, "drush_version": 5, "label": "behat tests", "appserver": 1, "allow_read_slaves": false, "indexserver": 1, "php_version": "55", "php_channel": "stable", "allow_cacheserver": true, "ssl_enabled": null, "min_backups": 0, "service_level": "free", "dedicated_ip": null, "dbserver": 1, "framework": "wordpress", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "e8fe8550-1ab9-4964-8838-2b9abdccf4bf", "branch": "master"}, "cacheserver": 1, "guilty_of_abuse": null, "preferred_zone": "chios", "pingdom_chance": 0, "holder_id": "11111111-1111-1111-1111-111111111111", "name": "behat-tests", "created": 1471385341, "max_backups": 0, "holder_type": "user", "number_allow_domains": 0, "pingdom_manually_enabled": false, "last_code_push": {"timestamp": "2016-08-19T19:05:16", "user_uuid": "11111111-1111-1111-1111-111111111111"}}, "base_domain": null, "attributes": {"label": "behat tests"}, "add_ons": [{"id": "NewRelic", "label": "New Relic"}]}'
--
-    request:
-        method: GET
-        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments'
-        headers:
-            Host: onebox
-            Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
-            Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
-            Accept: null
-    response:
-        status:
-            http_version: '1.1'
-            code: '200'
-            message: OK
-        headers:
-            Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:19 GMT'
-            Content-Type: application/json
-            Transfer-Encoding: chunked
-            Connection: keep-alive
-            X-Pantheon-Trace-Id: 101ec4c0-6644-11e6-ad69-5f4c0d99879d
-            X-Frame-Options: deny
-            Access-Control-Allow-Methods: GET
-            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            Cache-Control: no-cache
-            Pragma: no-cache
-            Vary: Accept-Encoding
-            Strict-Transport-Security: max-age=31536000
-        body: '{"dev": {"watchers": 1, "diffstat": {}, "on_server_development": false, "environment_created": 1471385341, "dns_zone": "pantheonsite.io", "randseed": "DAWMHE2LTF12P5H2DY3URABPX8N16US9", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "styx_cluster": "styx-03.pantheon.io"}, "test": {"environment_created": 1471385344, "dns_zone": "pantheonsite.io", "randseed": "2768L88WYTOBH0MIQPOB6KY42C3L4WZI", "target_ref": "refs/tags/pantheon_test_2", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "styx_cluster": "styx-03.pantheon.io"}, "live": {"environment_created": 1471385345, "dns_zone": "pantheonsite.io", "randseed": "0G8KI1O49B4E19HYWI5YUYREYHP0A4TJ", "target_ref": "refs/tags/pantheon_live_1", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "1fdf194d3d7a0c930a4f118e1398412765320328", "styx_cluster": "styx-02.pantheon.io"}}'
+        body: '{"allow_cacheserver": true, "created": 1476231626, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "framework": "wordpress", "holder_id": "11111111-1111-1111-1111-111111111111", "holder_type": "user", "last_code_push": {"timestamp": "2016-10-12T00:21:29", "user_uuid": null}, "name": "behat-tests", "owner": "11111111-1111-1111-1111-111111111111", "php_version": "55", "preferred_zone": "chios", "service_level": "free", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "e8fe8550-1ab9-4964-8838-2b9abdccf4bf", "branch": "master"}, "label": "A Whole New Site", "id": "11111111-1111-1111-1111-111111111111", "holder": {"profile": {"utm_term": "", "invites_to_nonuser": 4, "seen_first_time_user_popover": true, "utm_content": "/", "experiments": {"welcome_video": "shown"}, "full_name": "Dev User", "pullFromLive": false, "utm_device": "", "initial_identity_strategy": null, "utm_campaign": "pantheon.io (organic)", "tracking_first_site_create": 1428723370, "verify": "037eadb020d51ccddba9e06a64908c98", "tracking_first_code_push": 1428811227, "google_adwords_account_registered_sent": 1428707350, "invites_to_user": 9, "utm_medium": "", "job_function": "developer", "tracking_first_workflow_in_live": 1428811293, "tracking_first_team_invite": 1436464837, "firstname": "Dev", "invites_to_site": 13, "lastname": "User", "pda_campaign": null, "utm_source": "https://www.bing.com/search?setmkt=en-US&q=pantheon+san+francisco", "google_adwords_pushed_code_sent": 1428811242, "last-org-spinup": "none", "web_services_business": null, "initial_identity_name": null, "guilty_of_abuse": null, "invites_sent": 13, "tracking_first_site_upgrade": 1437784612, "google_adwords_paid_for_site_sent": 1438018300, "modified": 1458174494, "maxdevsites": 2, "lead_type": "", "organization": " Pantheon Systems, Inc"}, "id": "11111111-1111-1111-1111-111111111111", "email": "devuser@pantheon.io"}, "settings": {"allow_domains": false, "max_num_cdes": 10, "stunnel": false, "replica_verification_strategy": "pt-heartbeat", "owner": "11111111-1111-1111-1111-111111111111", "secure_runtime_access": false, "pingdom": 0, "allow_indexserver": false, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "failover_appserver": 0, "cacheserver": 1, "support_plan": "regular_support", "on_server_development": false, "drush_version": 5, "label": "A Whole New Site", "appserver": 1, "allow_read_slaves": false, "indexserver": 1, "php_version": "55", "php_channel": "stable", "allow_cacheserver": true, "ssl_enabled": null, "min_backups": 0, "service_level": "free", "dedicated_ip": null, "dbserver": 1, "framework": "wordpress", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "e8fe8550-1ab9-4964-8838-2b9abdccf4bf", "branch": "master"}, "guilty_of_abuse": null, "preferred_zone": "chios", "pingdom_chance": 0, "holder_id": "11111111-1111-1111-1111-111111111111", "name": "behat-tests", "created": 1476231626, "max_backups": 0, "holder_type": "user", "number_allow_domains": 0, "pingdom_manually_enabled": false, "last_code_push": {"timestamp": "2016-10-12T00:21:29", "user_uuid": null}}, "base_domain": null, "attributes": {"label": "A Whole New Site"}, "add_ons": []}'
 -
     request:
         method: PUT
@@ -187,10 +149,10 @@
             Host: onebox
             Expect: null
             Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.11&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
             verify: '1'
             method: put
             absolute_url: ''
@@ -204,11 +166,11 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:20 GMT'
-            Content-Type: application/json
+            Date: 'Wed, 12 Oct 2016 05:37:38 GMT'
+            Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 10872380-6644-11e6-ad69-5f4c0d99879d
+            X-Pantheon-Trace-Id: fca22b70-903d-11e6-a658-f96e185ab7fb
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
@@ -220,19 +182,21 @@
 -
     request:
         method: POST
-        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/converge'
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/workflows'
         headers:
             Host: onebox
-            Content-Length: '0'
+            Expect: null
             Accept-Encoding: null
-            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.11&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0ec7a254-6644-11e6-8d19-bc764e1141f9:CTCOOIz7h7V1reMXxf3SR'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
             verify: '1'
             method: post
             absolute_url: ''
+            json: ''
             Accept: null
+        body: '{"type":"converge_site","params":{}}'
     response:
         status:
             http_version: '1.1'
@@ -240,16 +204,51 @@
             message: Accepted
         headers:
             Server: nginx
-            Date: 'Fri, 19 Aug 2016 19:35:21 GMT'
-            Content-Type: application/json
+            Date: 'Wed, 12 Oct 2016 05:37:40 GMT'
+            Content-Type: 'application/json; charset=utf-8'
             Transfer-Encoding: chunked
             Connection: keep-alive
-            X-Pantheon-Trace-Id: 10cdf080-6644-11e6-8f86-018f7b210ab3
+            X-Pantheon-Trace-Id: fcdd86c0-903d-11e6-a658-f96e185ab7fb
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
             Cache-Control: no-cache
             Pragma: no-cache
-            x-pantheon-deprecated: 'Use converge_site workflow at /sites/*/workflows'
             Vary: Accept-Encoding
-        body: '{"user_id": "11111111-1111-1111-1111-111111111111", "site_id": "11111111-1111-1111-1111-111111111111", "trace_id": "10cdf080-6644-11e6-8f86-018f7b210ab3", "params": {}, "task_ids": ["111cce76-6644-11e6-9b41-bc764e1141f9", "111e3572-6644-11e6-9b41-bc764e1141f9", "111ede00-6644-11e6-9b41-bc764e1141f9", "11204178-6644-11e6-9b41-bc764e1141f9", "1120de4e-6644-11e6-9b41-bc764e1141f9", "11361b10-6644-11e6-9b41-bc764e1141f9", "113779d8-6644-11e6-9b41-bc764e1141f9", "1138572c-6644-11e6-9b41-bc764e1141f9", "11390a8c-6644-11e6-9b41-bc764e1141f9", "1139a690-6644-11e6-9b41-bc764e1141f9", "11508a0e-6644-11e6-9b41-bc764e1141f9", "115301a8-6644-11e6-9b41-bc764e1141f9", "11539a82-6644-11e6-9b41-bc764e1141f9", "11542a42-6644-11e6-9b41-bc764e1141f9", "115578fc-6644-11e6-9b41-bc764e1141f9", "1156605a-6644-11e6-9b41-bc764e1141f9"], "role": "owner", "type": "converge_site", "id": "10d5c86e-6644-11e6-9b41-bc764e1141f9", "key": "1471633200", "waiting_for_task_id": "111cce76-6644-11e6-9b41-bc764e1141f9", "environment_id": null, "keep_forever": false, "phase": "created", "queued_time": null, "run_time": null, "created_at": 1471635320.763403, "reason": "", "environment": null, "final_task_id": null, "result": null, "total_time": null, "active_description": "Bring environments to desired configuration state", "description": "Bring environments to desired configuration state", "step": 1, "has_operation_log_output": false, "number_of_tasks": 16, "trace_log_url": "https://app.logz.io/#/dashboard/kibana?kibanaRoute=discover%3F_a%3D(query:(query_string:(analyze_wildcard:!t,query:%27trace_id:10cdf080-6644-11e6-8f86-018f7b210ab3%27)))%26_g%3D(refreshInterval:(display:Off,pause:!f,value:0),time:(from:%272016-08-19T19:30:20.763403Z%27,mode:quick,to:%27now%27))", "user": {"user_id": "11111111-1111-1111-1111-111111111111", "created_at": 1428707345, "destination_organization_id": null, "is_registered": true, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io"}'
+        body: '{"params": {}, "role": "owner", "site_id": "11111111-1111-1111-1111-111111111111", "task_ids": ["fd0b4e16-903d-11e6-b783-bc764e10d7c2", "fd0c94ec-903d-11e6-b783-bc764e10d7c2", "fd0d3438-903d-11e6-b783-bc764e10d7c2", "fd180bc4-903d-11e6-b783-bc764e10d7c2", "fd1898dc-903d-11e6-b783-bc764e10d7c2", "fd378e9a-903d-11e6-b783-bc764e10d7c2", "fd38eb50-903d-11e6-b783-bc764e10d7c2", "fd3970c0-903d-11e6-b783-bc764e10d7c2", "fd3a06a2-903d-11e6-b783-bc764e10d7c2", "fd3a85be-903d-11e6-b783-bc764e10d7c2", "fd4c7576-903d-11e6-b783-bc764e10d7c2", "fd4dd0d8-903d-11e6-b783-bc764e10d7c2", "fd4f0ef8-903d-11e6-b783-bc764e10d7c2", "fd4f7b18-903d-11e6-b783-bc764e10d7c2", "fd5022fc-903d-11e6-b783-bc764e10d7c2", "fd509bb0-903d-11e6-b783-bc764e10d7c2"], "trace_id": "fcdd86c0-903d-11e6-a658-f96e185ab7fb", "type": "converge_site", "user_id": "11111111-1111-1111-1111-111111111111", "id": "fce1ef30-903d-11e6-b783-bc764e10d7c2", "key": "1476248400", "waiting_for_task_id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "environment_id": null, "keep_forever": false, "phase": "created", "queued_time": null, "run_time": null, "created_at": 1476250659.144888, "reason": "", "environment": null, "final_task_id": null, "result": null, "total_time": null, "active_description": "Bring environments to desired configuration state", "description": "Bring environments to desired configuration state", "step": 1, "has_operation_log_output": false, "number_of_tasks": 16, "trace_log_url": "https://app.logz.io/#/dashboard/kibana?kibanaRoute=discover%3F_a%3D(query:(query_string:(analyze_wildcard:!t,query:%27trace_id:fcdd86c0-903d-11e6-a658-f96e185ab7fb%27)))%26_g%3D(refreshInterval:(display:Off,pause:!f,value:0),time:(from:%272016-10-12T05:32:39.144888Z%27,mode:quick,to:%27now%27))", "user": {"user_id": "11111111-1111-1111-1111-111111111111", "created_at": 1428707345, "destination_organization_id": null, "is_registered": true, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"allow_concurrent": true, "environment": "test", "fn_name": "queue_jenkins_task", "params": {"host": "localhost", "task_type": "converge_hostname", "job_id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "hostname_id": "test-behat-tests.pantheonsite.io"}, "site_id": "11111111-1111-1111-1111-111111111111", "trace_id": "fcdd86c0-903d-11e6-a658-f96e185ab7fb", "workflow_id": "fce1ef30-903d-11e6-b783-bc764e10d7c2", "id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "key": "1476248400", "responses": [], "queued_time": null, "host": "localhost", "result": null, "phase": "created", "created_at": 1476250659.416015, "run_time": null, "total_time": null, "reason": "", "error_details": "", "internal_reason": "", "trace_log_url": "https://app.logz.io/#/dashboard/kibana?kibanaRoute=discover%3F_a%3D(query:(query_string:(analyze_wildcard:!t,query:%27trace_id:fcdd86c0-903d-11e6-a658-f96e185ab7fb%27)))%26_g%3D(refreshInterval:(display:Off,pause:!f,value:0),time:(from:%272016-10-12T05:32:39.416015Z%27,mode:quick,to:%27now%27))", "type": "converge_hostname", "build_url": null, "messages": {}}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/workflows/fce1ef30-903d-11e6-b783-bc764e10d7c2'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.11&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:02feae0e-903d-11e6-a80f-bc764e1022a9:cgeUKly27qX4r3X6pfW2O'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Wed, 12 Oct 2016 05:37:40 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: fdd13590-903d-11e6-a658-f96e185ab7fb
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"params": {}, "role": "owner", "site_id": "11111111-1111-1111-1111-111111111111", "started_at": 1476250659.958473, "task_ids": ["fd0b4e16-903d-11e6-b783-bc764e10d7c2", "fd0c94ec-903d-11e6-b783-bc764e10d7c2", "fd0d3438-903d-11e6-b783-bc764e10d7c2", "fd180bc4-903d-11e6-b783-bc764e10d7c2", "fd1898dc-903d-11e6-b783-bc764e10d7c2", "fd378e9a-903d-11e6-b783-bc764e10d7c2", "fd38eb50-903d-11e6-b783-bc764e10d7c2", "fd3970c0-903d-11e6-b783-bc764e10d7c2", "fd3a06a2-903d-11e6-b783-bc764e10d7c2", "fd3a85be-903d-11e6-b783-bc764e10d7c2", "fd4c7576-903d-11e6-b783-bc764e10d7c2", "fd4dd0d8-903d-11e6-b783-bc764e10d7c2", "fd4f0ef8-903d-11e6-b783-bc764e10d7c2", "fd4f7b18-903d-11e6-b783-bc764e10d7c2", "fd5022fc-903d-11e6-b783-bc764e10d7c2", "fd509bb0-903d-11e6-b783-bc764e10d7c2"], "trace_id": "fcdd86c0-903d-11e6-a658-f96e185ab7fb", "type": "converge_site", "user_id": "11111111-1111-1111-1111-111111111111", "id": "fce1ef30-903d-11e6-b783-bc764e10d7c2", "key": "11111111-1111-1111-1111-111111111111", "waiting_for_task_id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "environment_id": null, "keep_forever": false, "phase": "started", "queued_time": null, "run_time": null, "created_at": 1476250659.144888, "reason": "", "environment": null, "final_task_id": null, "result": "succeeded", "total_time": null, "active_description": "Bringing environments to desired configuration state", "description": "Bring environments to desired configuration state", "step": 1, "has_operation_log_output": false, "number_of_tasks": 16, "trace_log_url": "https://app.logz.io/#/dashboard/kibana?kibanaRoute=discover%3F_a%3D(query:(query_string:(analyze_wildcard:!t,query:%27trace_id:fcdd86c0-903d-11e6-a658-f96e185ab7fb%27)))%26_g%3D(refreshInterval:(display:Off,pause:!f,value:0),time:(from:%272016-10-12T05:32:39.144888Z%27,mode:quick,to:%27now%27))", "user": {"user_id": "11111111-1111-1111-1111-111111111111", "created_at": 1428707345, "destination_organization_id": null, "is_registered": true, "created_organization_id": null, "password": "SCRUBBED", "email": "devuser@pantheon.io"}, "user_email": "devuser@pantheon.io", "waiting_for_task": {"allow_concurrent": true, "environment": "test", "fn_name": "queue_jenkins_task", "params": {"host": "localhost", "task_type": "converge_hostname", "job_id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "hostname_id": "test-behat-tests.pantheonsite.io"}, "queued_at": 1476250659.958959, "responses": [{"code": 201, "body": "Successfully queued converge_hostname", "error_details": "", "internal_reason": ""}], "site_id": "11111111-1111-1111-1111-111111111111", "trace_id": "fcdd86c0-903d-11e6-a658-f96e185ab7fb", "workflow_id": "fce1ef30-903d-11e6-b783-bc764e10d7c2", "id": "fd0b4e16-903d-11e6-b783-bc764e10d7c2", "key": "1476248400", "queued_time": null, "host": "localhost", "result": null, "phase": "queued", "created_at": 1476250659.416015, "run_time": null, "total_time": null, "reason": "", "error_details": "", "internal_reason": "", "trace_log_url": "https://app.logz.io/#/dashboard/kibana?kibanaRoute=discover%3F_a%3D(query:(query_string:(analyze_wildcard:!t,query:%27trace_id:fcdd86c0-903d-11e6-a658-f96e185ab7fb%27)))%26_g%3D(refreshInterval:(display:Off,pause:!f,value:0),time:(from:%272016-10-12T05:32:39.416015Z%27,mode:quick,to:%27now%27))", "type": "converge_hostname", "build_url": null, "messages": {"2016-10-12T05:37:40.751997": {"message": "Successfully queued converge_hostname", "level": "INFO"}}}}'

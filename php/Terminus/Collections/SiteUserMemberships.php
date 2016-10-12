@@ -59,13 +59,13 @@ class SiteUserMemberships extends TerminusCollection
         $models     = $this->getMembers();
         $membership = null;
         if (isset($models[$id])) {
-            $membership = $models[$id];
+            return $models[$id];
         } else {
             foreach ($models as $model) {
                 $userdata = $model->get('user');
                 if (is_object($userdata)
-                && property_exists($userdata, 'email')
-                && ($userdata->email == $id)
+                    && property_exists($userdata, 'email')
+                    && ($userdata->email == $id)
                 ) {
                     return $model;
                 }

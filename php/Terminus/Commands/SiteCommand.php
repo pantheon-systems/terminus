@@ -284,13 +284,14 @@ class SiteCommand extends TerminusCommand
                 }
                 break;
             case 'branches':
-                $data = $site->getTips();
-                foreach ($data as $key => $value) {
-                    $data[$key] = ['title' => $value];
-                }
-                if (!empty($data)) {
-                    $this->output()->outputRecordList($data);
-                }
+                $branches = array_map(
+                    function ($branch) {
+                        return $branch->serialize();
+                    },
+                    $site->branches->all()
+                );
+                $labels = ['id' => 'ID', 'sha' => 'SHA',];
+                $this->output()->outputRecordList($branches, $labels);
                 break;
             case 'commit':
                 $env     = $site->environments->get(
@@ -305,10 +306,10 @@ class SiteCommand extends TerminusCommand
                 }
                 $message  = $this->input()->string(
                     [
-                    'args'    => $assoc_args,
-                    'key'     => 'message',
-                    'message' => 'Please enter a commit message.',
-                    'default' => 'Terminus commit.'
+                        'args'    => $assoc_args,
+                        'key'     => 'message',
+                        'message' => 'Please enter a commit message.',
+                        'default' => 'Terminus commit.'
                     ]
                 );
                 $workflow = $env->commitChanges($message);
@@ -523,13 +524,13 @@ class SiteCommand extends TerminusCommand
    */
     public function delete($args, $assoc_args)
     {
-        $site = $this->sites->get($this->input()->siteName(array('args' => $assoc_args)));
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
 
         $this->input()->confirm(
             [
-            'message' => 'Are you sure you want to delete %s?',
-            'context' => $site->get('name'),
-            'args'    => $assoc_args,
+                'message' => 'Are you sure you want to delete %s?',
+                'context' => $site->get('name'),
+                'args'    => $assoc_args,
             ]
         );
         $this->input()->confirm(
@@ -537,15 +538,15 @@ class SiteCommand extends TerminusCommand
         );
         $this->log()->info(
             'Deleting {site} ...',
-            array('site' => $site->get('name'))
+            ['site' => $site->get('name'),]
         );
         $site->delete();
 
-        $this->log()->info('Deleted {site}!', array('site' => $site->get('name')));
+        $this->log()->info('Deleted {site}!', ['site' => $site->get('name'),]);
     }
 
   /**
-   * Delete a git branch from site remote
+   * Delete a Git branch from site remote
    *
    * ## OPTIONS
    *
@@ -559,39 +560,36 @@ class SiteCommand extends TerminusCommand
    */
     public function deleteBranch($args, $assoc_args)
     {
-        $site     = $this->sites->get(
-            $this->input()->siteName(['args' => $assoc_args,])
-        );
-        $branches = array_diff(
-            (array)$site->getTips(),
-            ['master', 'live', 'test',]
-        );
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
+        $branches = array_diff($site->branches->ids(), ['master', 'live', 'test',]);
         if (empty($branches)) {
             $this->failure(
                 'The site {site} has no branches which may be deleted.',
                 ['site' => $site->get('name'),]
             );
         }
-        $branch   = $this->input()->menu(
-            [
-            'args'            => $assoc_args,
-            'autoselect_solo' => false,
-            'key'             => 'branch',
-            'label'           => 'Select the branch to delete',
-            'choices'         => $branches,
-            'return_value'    => true,
-            ]
+        $branch = $site->branches->get(
+            $this->input()->menu(
+                [
+                    'args'            => $assoc_args,
+                    'autoselect_solo' => false,
+                    'key'             => 'branch',
+                    'label'           => 'Select the branch to delete',
+                    'choices'         => $branches,
+                    'return_value'    => true,
+                ]
+            )
         );
 
         $message = 'Are you sure you want to delete the "%s" branch from %s?';
         $this->input()->confirm(
             [
-            'message' => $message,
-            'context' => [$branch, $site->get('name'),],
+                'message' => $message,
+                'context' => [$branch->id, $site->get('name'),],
             ]
         );
 
-        $workflow = $site->deleteBranch($branch);
+        $workflow = $branch->delete();
         $workflow->wait();
         $this->workflowOutput($workflow);
     }
@@ -1456,33 +1454,24 @@ class SiteCommand extends TerminusCommand
     public function newRelic($args, $assoc_args)
     {
         $action = array_shift($args);
-        $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
         switch ($action) {
             case 'enable':
-                $newrelic = $site->enableNewRelic($site);
-                if ($newrelic) {
-                    $this->log()->info('New Relic enabled.');
-                }
+                $workflow = $site->new_relic->enable();
+                $workflow->wait();
+                $this->log()->info('New Relic enabled.');
                 break;
             case 'disable':
-                $newrelic = $site->disableNewRelic($site);
-                if ($newrelic) {
-                    $this->log()->info('New Relic disabled.');
-                }
+                $workflow = $site->new_relic->disable();
+                $workflow->wait();
+                $this->log()->info('New Relic disabled.');
                 break;
             case 'status':
-                $newrelic = $site->newRelic();
-                if ($newrelic) {
-                    $data = [
-                    'name' => $newrelic->name,
-                    'status' => $newrelic->status,
-                    'subscribed' => $newrelic->subscription->starts_on,
-                    'state' => $newrelic->{'primary admin'}->state,
-                    ];
-                    $this->output()->outputRecord($data);
-                } else {
+                $data = $site->new_relic->fetch()->serialize();
+                if (empty($data)) {
                     $this->log()->info('New Relic disabled.');
                 }
+                $this->output()->outputRecord($data);
                 break;
         }
     }
@@ -1528,19 +1517,17 @@ class SiteCommand extends TerminusCommand
     public function redis($args, $assoc_args)
     {
         $action = array_shift($args);
-        $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
         switch ($action) {
             case 'enable':
-                $redis = $site->enableRedis();
-                if ($redis) {
-                    $this->log()->info('Redis enabled. Converging bindings...');
-                }
+                $site->redis->enable();
+                $site->converge()->wait();
+                $this->log()->info('Redis enabled. Converging bindings...');
                 break;
             case 'disable':
-                $redis       = $site->disableRedis();
-                if ($redis) {
-                    $this->log()->info('Redis disabled. Converging bindings...');
-                }
+                $site->redis->disable();
+                $site->converge()->wait();
+                $this->log()->info('Redis disabled. Converging bindings...');
                 break;
             case 'clear':
                 if (isset($assoc_args['env'])) {
@@ -1548,38 +1535,14 @@ class SiteCommand extends TerminusCommand
                 } else {
                     $environments = $site->environments->all();
                 }
-                $commands = array();
                 foreach ($environments as $environment) {
                     $connection_info = $environment->connectionInfo();
                     if (!isset($connection_info['redis_host'])) {
                         $this->failure('Redis cache is not enabled.');
+                        return;
                     }
-                    $args = [
-                    $environment->id,
-                    $site->id,
-                    $environment->id,
-                    $site->id,
-                    $connection_info['redis_host'],
-                    $connection_info['redis_port'],
-                    $connection_info['redis_password'],
-                    ];
-                    array_filter(
-                        $args,
-                        function ($a) {
-                            $escaped_arg = escapeshellarg($a);
-                            return $escaped_arg;
-                        }
-                    );
-                    $command  = 'ssh -p 2222 %s.%s@appserver.%s.%s.drush.in';
-                    $command .= ' "redis-cli -h %s -p %s -a %s flushall" 2> /dev/null';
-                    $commands[$environment->id] = vsprintf($command, $args);
-                }
-                foreach ($commands as $env => $command) {
-                    $this->log()->info('Clearing Redis on {env}.', compact('env'));
-                    exec($command, $stdout, $return);
-                    if (!empty($stdout)) {
-                        $this->log()->info($stdout[0]);
-                    }
+                    $this->log()->info('Clearing Redis on {env}.', ['env' => $environment->id,]);
+                    $site->redis->clear($environment);
                 }
                 break;
         }
@@ -1749,36 +1712,40 @@ class SiteCommand extends TerminusCommand
    */
     public function setOwner($args, $assoc_args)
     {
-        $site             = $this->sites->get(
-            $this->input()->siteName(array('args' => $assoc_args))
-        );
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
         $user_memberships = $site->user_memberships->all();
         if (count($user_memberships) <= 1) {
             throw new TerminusException(
                 'The new owner must be added with "{cmd}" before promoting.',
-                ['cmd' => 'terminus site team add-member'],
-                1
+                ['cmd' => 'terminus site team add-member',]
             );
         }
-        foreach ($user_memberships as $uuid => $user_membership) {
-            $user      = $user_membership->get('user');
-            $choices[$user->email] = sprintf(
-                '%s %s <%s>',
-                $user->profile->firstname,
-                $user->profile->lastname,
-                $user->email
-            );
-        }
-        $member      = $this->input()->menu(
-            [
-            'args'            => $assoc_args,
-            'autoselect_solo' => false,
-            'choices'         => $choices,
-            'key'             => 'member',
-            'message'         => 'Enter a tag to add',
-            ]
+        $choices = array_combine(
+            array_map(
+                function ($membership) {
+                    return $membership->user->get('email');
+                },
+                $user_memberships
+            ),
+            array_map(
+                function ($membership) {
+                    return $membership->user;
+                },
+                $user_memberships
+            )
         );
-        $workflow = $site->setOwner($member);
+        $member = $site->user_memberships->get(
+            $this->input()->menu(
+                [
+                    'args'            => $assoc_args,
+                    'autoselect_solo' => false,
+                    'choices'         => $choices,
+                    'key'             => 'member',
+                    'message'         => 'Select the new owner of this site',
+                ]
+            )
+        );
+        $workflow = $site->setOwner($member->id);
         $workflow->wait();
         $this->workflowOutput($workflow);
     }
@@ -1826,16 +1793,14 @@ class SiteCommand extends TerminusCommand
         $site   = $this->sites->get($this->input()->siteName(['args' => $assoc_args]));
         switch ($action) {
             case 'enable':
-                $solr = $site->enableSolr();
-                if ($solr) {
-                    $this->log()->info('Solr enabled. Converging bindings...');
-                }
+                $site->solr->enable();
+                $site->converge()->wait();
+                $this->log()->info('Solr enabled. Converging bindings...');
                 break;
             case 'disable':
-                $solr = $site->disableSolr();
-                if ($solr) {
-                    $this->log()->info('Solr disabled. Converging bindings...');
-                }
+                $site->solr->disable();
+                $site->converge()->wait();
+                $this->log()->info('Solr disabled. Converging bindings...');
                 break;
         }
     }
