@@ -35,7 +35,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
         if (!$env->hasDeployableCode()) {
-            $this->log()->info('There is nothing to deploy.');
+            $this->log()->notice('There is nothing to deploy.');
             return;
         }
 

@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
-use Pantheon\Terminus\Commands\Workflow\Info\InfoBaseCommand;
-
 class LogsCommand extends InfoBaseCommand
 {
     /**
@@ -11,21 +9,18 @@ class LogsCommand extends InfoBaseCommand
      *
      * @command workflow:info:logs
      *
-     * @param string $site_id Site name that the workflow is part of.
+     * @param string $site_id Name or ID of the site that the workflow is part of
+     * @option string $id The UUID of a specific workflow to show
      *
-     * @option string $workflow-id ID of the workflow to show.
-     * @option string $latest-with-logs Just show the latest workflow with logs.
-     *
-     * @usage terminus workflow:info:logs <site_name> <wf-id>
-     *   Show the workflow with id <wf-id> found on site <site_name>.
+     * @usage terminus workflow:info:logs <site_name> --id=<workflow_id>
+     *   Show infor about the the workflow with ID <workflow_id> found on site <site_name>.
+     * @usage terminus workflow:info:logs <site_name>
+     *   Show info about the most recent workflow found on site <site_name>.
      */
-    public function logs($site_id, $options = ['latest-with-logs' => false, 'workflow-id' => ''])
+    public function logs($site_id, $options = ['id' => null,])
     {
-        $workflow = $this->getWorkflow($site_id, $options);
-        if (!$workflow) {
-            return;
-        }
-        $operations = $workflow->operations();
+        $operations = $this->getWorkflow($site_id, $options['id'])->operations();
+
         if (count($operations)) {
             $output = '';
             foreach ($operations as $operation) {
@@ -38,11 +33,11 @@ class LogsCommand extends InfoBaseCommand
                 }
             }
             if (!$output) {
-                $this->log()->notice("Workflow operations did not contain any logs.");
+                $this->log()->notice('Workflow operations did not contain any logs.');
             }
             return $output;
         } else {
-            $this->log()->notice("Workflow does not contain any operations.");
+            $this->log()->notice('Workflow does not contain any operations.');
         }
     }
 }

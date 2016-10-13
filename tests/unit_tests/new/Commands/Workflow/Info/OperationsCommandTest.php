@@ -1,5 +1,5 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
+namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
@@ -22,23 +22,23 @@ class OperationsCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:info:operations command with latest-with-logs=true.
+     * Tests the workflow:info:operations command with the latest workflow
      */
     public function testLatestOperationsCommand()
     {
         $this->site->workflows->expects($this->once())
             ->method('fetch')
-            ->willReturn(null);
+            ->willReturn($this->site->workflows);
 
         $this->site->workflows->expects($this->once())
-            ->method('findLatestWithLogs')
-            ->willReturn($this->workflow);
+            ->method('all')
+            ->willReturn([$this->workflow,]);
 
         $this->workflow->expects($this->once())
             ->method('operations')
             ->willReturn([$this->operation]);
 
-        $out = $this->command->operations('mysite', ['latest-with-logs' => true, 'workflow-id' => null]);
+        $out = $this->command->operations('mysite', ['id' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
     }
 
@@ -48,14 +48,18 @@ class OperationsCommandTest extends WorkflowCommandTest
     public function testWorkflowIDOperationsCommand()
     {
         $this->site->workflows->expects($this->once())
-            ->method('add')
+            ->method('fetch')
+            ->willReturn($this->site->workflows);
+        $this->site->workflows->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('12345'))
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
             ->method('operations')
             ->willReturn([$this->operation]);
 
-        $out = $this->command->operations('mysite', ['latest-with-logs' => false, 'workflow-id' => '12345']);
+        $out = $this->command->operations('mysite', ['id' => '12345',]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
     }
 }

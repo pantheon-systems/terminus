@@ -644,7 +644,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {
-            $command = "TERMINUS_HOST={$this->connection_info['host']} $command -vvv";
+            $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
         }
         if (isset($this->cassette_name)) {
             $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";

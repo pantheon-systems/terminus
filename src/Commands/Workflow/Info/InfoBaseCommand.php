@@ -12,33 +12,23 @@ abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInter
 
     /**
      * Get the Workflow object.
+     *
+     * @param string $site_id     UUID or name of the site to get a workflow of
+     * @param string $workflow_id The UUID of a specific workflow to retrieve
+     * @return Workflow
      */
-    protected function getWorkflow($site_id, $options)
+    protected function getWorkflow($site_id, $workflow_id = null)
     {
-        if (!($options['workflow-id'] || $options['latest-with-logs'])) {
-            $this->log()->error('Required option missing: --workflow-id or --latest-with-logs.');
-            return;
-        }
         $site = $this->getSite($site_id);
+        $workflows = $site->workflows->fetch(['paged' => false,])->all();
 
-        if ($options['workflow-id']) {
-            $workflow_id = $options['workflow-id'];
-            $model_data  = (object)['id' => $workflow_id];
-            $workflow    = $site->workflows->add($model_data);
-        } elseif ($options['latest-with-logs']) {
-            $site->workflows->fetch(['paged' => false]);
-            $workflow = $site->workflows->findLatestWithLogs();
-            if (!$workflow) {
-                $this->log()->info('No recent workflow has logs');
-                return;
-            }
+        if (!is_null($workflow_id)) {
+            $workflow = $site->workflows->get($workflow_id);
+        } else {
+            $workflow = array_shift($workflows);
+            $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site_id,]);
         }
-        try {
-            $workflow->fetchWithLogs();
-        } catch (\Exception $e) {
-            $this->log()->error("Workflow was not found.");
-            return;
-        }
+        $workflow->fetchWithLogs();
         return $workflow;
     }
 }

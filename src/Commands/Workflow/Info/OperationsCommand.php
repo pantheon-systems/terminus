@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Commands\Workflow\Info\InfoBaseCommand;
 
 class OperationsCommand extends InfoBaseCommand
 {
@@ -12,11 +11,8 @@ class OperationsCommand extends InfoBaseCommand
      *
      * @command workflow:info:operations
      *
-     * @param string $site_id Site name that the workflow is part of.
-     *
-     * @option string $workflow-id ID of the workflow to show.
-     * @option string $latest-with-logs Just show the latest workflow with logs.
-     *
+     * @param string $site_id Name or ID of the site that the workflow is part of
+     * @option string $id UUID of the workflow to show
      * @return RowsOfFields
      *
      * @field-labels
@@ -25,16 +21,14 @@ class OperationsCommand extends InfoBaseCommand
      *   result: Result
      *   duration: Duration
      *
-     * @usage terminus workflow:info:operations <site_name> <wf-id>
-     *   Show the workflow with id <wf-id> found on site <site_name>.
+     * @usage terminus workflow:info:operations <site_name> <workflow_id>
+     *   Show the operations of the workflow with ID <workflow_id> found on site <site_name>.
+     * @usage terminus workflow:info:operations <site_name>
+     *   Show the operations of the most recent workflow found on site <site_name>.
      */
-    public function operations($site_id, $options = ['latest-with-logs' => false, 'workflow-id' => ''])
+    public function operations($site_id, $options = ['id' => null,])
     {
-        $workflow = $this->getWorkflow($site_id, $options);
-        if (!$workflow) {
-            return;
-        }
-        $operations = $workflow->operations();
+        $operations = $this->getWorkflow($site_id, $options['id'])->operations();
         if (count($operations)) {
             $operations_data = array_map(
                 function ($operation) {
@@ -47,7 +41,7 @@ class OperationsCommand extends InfoBaseCommand
             );
             return new RowsOfFields($operations_data);
         } else {
-            $this->log()->notice("Workflow does not contain any operations.");
+            $this->log()->notice('Workflow does not contain any operations.');
         }
     }
 }

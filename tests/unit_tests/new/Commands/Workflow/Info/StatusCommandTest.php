@@ -1,5 +1,5 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
+namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
@@ -22,40 +22,44 @@ class StatusCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:info:status command with latest-with-logs=true.
+     * Tests the workflow:info:status command with the latest workflow
      */
     public function testLatestStatusCommand()
     {
         $this->site->workflows->expects($this->once())
             ->method('fetch')
-            ->willReturn(null);
+            ->willReturn($this->site->workflows);
 
         $this->site->workflows->expects($this->once())
-            ->method('findLatestWithLogs')
-            ->willReturn($this->workflow);
+            ->method('all')
+            ->willReturn([$this->workflow,]);
 
         $this->workflow->expects($this->once())
             ->method('serialize')
             ->willReturn(['id' => '12345', 'details' => 'test']);
 
-        $out = $this->command->status('mysite', ['latest-with-logs' => true, 'workflow-id' => null]);
+        $out = $this->command->status('mysite', ['id' => null,]);
         $this->assertInstanceOf(AssociativeList::class, $out);
     }
 
     /**
-     * Tests the workflow:info:status command with workflow id.
+     * Tests the workflow:info:status command with workflow ID
      */
     public function testWorkflowIDStatusCommand()
     {
         $this->site->workflows->expects($this->once())
-            ->method('add')
+            ->method('fetch')
+            ->willReturn($this->site->workflows);
+        $this->site->workflows->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('12345'))
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
             ->method('serialize')
             ->willReturn(['id' => '12345', 'details' => 'test']);
 
-        $out = $this->command->status('mysite', ['latest-with-logs' => false, 'workflow-id' => '12345']);
+        $out = $this->command->status('mysite', ['id' => '12345',]);
         $this->assertInstanceOf(AssociativeList::class, $out);
     }
 }

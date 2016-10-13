@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
-use Pantheon\Terminus\Commands\Workflow\Info\InfoBaseCommand;
 
 class StatusCommand extends InfoBaseCommand
 {
@@ -12,11 +11,8 @@ class StatusCommand extends InfoBaseCommand
      *
      * @command workflow:info:status
      *
-     * @param string $site_id Site name that the workflow is part of.
-     *
-     * @option string $workflow-id ID of the workflow to show.
-     * @option string $latest-with-logs Just show the latest workflow with logs.
-     *
+     * @param string $site_id Name or ID of the site that the workflow is part of
+     * @option string $id UUID of the workflow to show
      * @return AssociativeList
      *
      * @field-labels
@@ -27,16 +23,14 @@ class StatusCommand extends InfoBaseCommand
      *   status: Status
      *   time: Time
      *
-     * @usage terminus workflow:info:status <site_name> <wf-id>
-     *   Show the workflow with id <wf-id> found on site <site_name>.
+     * @usage terminus workflow:info:operations <site_name> <workflow_id>
+     *   Show the status of the workflow with ID <workflow_id> found on site <site_name>.
+     * @usage terminus workflow:info:operations <site_name>
+     *   Show the status of the most recent workflow found on site <site_name>.
      */
-    public function status($site_id, $options = ['latest-with-logs' => false, 'workflow-id' => ''])
+    public function status($site_id, $options = ['id' => null,])
     {
-        $workflow = $this->getWorkflow($site_id, $options);
-        if (!$workflow) {
-            return;
-        }
-        $workflow_data = $workflow->serialize();
+        $workflow_data = $this->getWorkflow($site_id, $options['id'])->serialize();
         unset($workflow_data['operations']);
         return new AssociativeList($workflow_data);
     }

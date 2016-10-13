@@ -82,15 +82,12 @@ class Workflows extends TerminusCollection
    */
     public function allWithLogs()
     {
-        $workflows = $this->allFinished();
         $workflows = array_filter(
-            $workflows,
+            $this->allFinished(),
             function ($workflow) {
-                $has_logs = $workflow->get('has_operation_log_output');
-                return $has_logs;
+                return $workflow->get('has_operation_log_output');
             }
         );
-
         return $workflows;
     }
 
@@ -98,10 +95,9 @@ class Workflows extends TerminusCollection
    * Creates a new workflow and adds its data to the collection
    *
    * @param string $type    Type of workflow to create
-   * @param array  $options Additional information for the request, with the
-   *   following possible keys:
-   *   - environment: string
-   *   - params: associative array of parameters for the request
+   * @param array  $options Additional information for the request, with the following possible keys:
+   *    string environment Name of the new environment
+   *    array  params      Parameters for the request
    * @return Workflow $model
    */
     public function create($type, array $options = [])
@@ -112,11 +108,11 @@ class Workflows extends TerminusCollection
         $results = $this->request->request(
             $this->url,
             [
-            'method'      => 'post',
-            'form_params' => [
-            'type'   => $type,
-            'params' => (object)$params,
-            ],
+                'method'      => 'post',
+                'form_params' => [
+                    'type'   => $type,
+                    'params' => (object)$params,
+                ],
             ]
         );
 
