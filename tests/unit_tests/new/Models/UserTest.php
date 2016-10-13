@@ -10,7 +10,9 @@ use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Robo\Collection\Collection;
 
 class UserTest extends ModelTestCase
@@ -142,19 +144,28 @@ class UserTest extends ModelTestCase
         $memberships = [
             (object)[
                 'id' => '1',
-                'organization' => (object)[
+                'organization' => new Organization((object)[
                     'id' => 'org1',
                     'other' => 'abc'
-                ]
+                ])
             ],
             (object)[
                 'id' => '2',
-                'organization' => (object)[
+                'organization' => new Organization((object)[
                     'id' => 'org2',
                     'other' => 'cdf'
-                ]
+                ])
             ]
         ];
+        $membs = [];
+        foreach ($memberships as $i => $membership) {
+            $membs[$i] = $this->getMockBuilder(UserOrganizationMembership::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $membs[$i]->expects($this->any())
+                ->method('getOrganization')
+                ->willReturn($membership->organization);
+        }
         $orgs = [
             'org1' => $memberships[0]->organization,
             'org2' => $memberships[1]->organization
@@ -166,7 +177,7 @@ class UserTest extends ModelTestCase
 
         $orgmemberships ->expects($this->once())
             ->method('all')
-            ->willReturn($memberships);
+            ->willReturn($membs);
 
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()

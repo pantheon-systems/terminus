@@ -68,13 +68,13 @@ class User extends TerminusModel implements ContainerAwareInterface
         $organizations = array_combine(
             array_map(
                 function ($membership) {
-                    return $membership->organization->id;
+                    return $membership->getOrganization()->id;
                 },
                 $org_memberships
             ),
             array_map(
                 function ($membership) {
-                    return $membership->organization;
+                    return $membership->getOrganization();
                 },
                 $org_memberships
             )
