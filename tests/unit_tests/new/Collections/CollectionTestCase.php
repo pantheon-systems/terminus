@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
+use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Request\Request;
 
@@ -19,6 +20,10 @@ abstract class CollectionTestCase extends \PHPUnit_Framework_TestCase
      * @var Request
      */
     protected $request;
+    /**
+     * @var Container
+     */
+    protected $container;
 
     /**
      * @return Config
@@ -40,5 +45,8 @@ abstract class CollectionTestCase extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->request->method('getConfig')->willReturn($this->getConfig());
+        $this->container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

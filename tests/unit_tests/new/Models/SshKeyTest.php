@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Pantheon\Terminus\UnitTests\Model;
+namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Models\SshKey;

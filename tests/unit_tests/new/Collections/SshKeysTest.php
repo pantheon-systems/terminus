@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Pantheon\Terminus\UnitTests\Collection;
+namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Models\SshKey;
 use Terminus\Exceptions\TerminusException;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Pantheon\Terminus\UnitTests\Collection;
+namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\UserOwnedCollection;
 use Pantheon\Terminus\Models\User;
