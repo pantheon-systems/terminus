@@ -4,25 +4,26 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Session\SessionAwareTrait;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class SavedToken
  * @package Pantheon\Terminus\Models
  */
-class SavedToken extends TerminusModel
+class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigAwareInterface
 {
-    /**
-     * @var Session
-     */
-    public $session;
+    use SessionAwareTrait;
+    use ConfigAwareTrait;
+
     /**
      * @inheritdoc
      */
     public function __construct($attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
-        $this->session = $options['collection']->session;
     }
 
     /**
@@ -37,7 +38,7 @@ class SavedToken extends TerminusModel
             'method' => 'post',
         ];
         $response = $this->request->request('authorize/machine-token', $options);
-        $this->session->setData((array)$response['data']);
+        $this->session()->setData((array)$response['data']);
         return $this->session->getUser();
     }
 
@@ -47,8 +48,7 @@ class SavedToken extends TerminusModel
     public function saveToDir()
     {
         $this->set('date', time());
-        $config = new Config();
-        $token_path = $config->get('tokens_dir') . "/{$this->id}";
+        $token_path = $this->getConfig()->get('tokens_dir') . "/{$this->id}";
         file_put_contents($token_path, json_encode($this->attributes));
     }
 

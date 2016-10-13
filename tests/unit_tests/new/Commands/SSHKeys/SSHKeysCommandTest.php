@@ -3,9 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Session\Session;
-use Psr\Log\NullLogger;
 use Terminus\Collections\SshKeys;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 
 /**
  * @property \PHPUnit_Framework_MockObject_MockObject ssh_keys
@@ -33,7 +32,10 @@ abstract class SSHKeysCommandTest extends CommandTestCase
         $this->user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->user->ssh_keys = $this->ssh_keys;
+
+        $this->user->expects($this->any())
+            ->method('getSshKeys')
+            ->willReturn($this->ssh_keys);
 
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()

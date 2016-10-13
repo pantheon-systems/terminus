@@ -5,6 +5,21 @@ namespace Pantheon\Terminus;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\Container;
 use League\Container\ContainerInterface;
+use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\MachineTokens;
+use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\UserOrganizationMemberships;
+use Pantheon\Terminus\Collections\UserSiteMemberships;
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Instrument;
+use Pantheon\Terminus\Models\MachineToken;
+use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\Models\UserSiteMembership;
+use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
@@ -15,7 +30,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Caches\FileCache;
 use Terminus\Collections\Sites;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 use VCR\VCR;
 
 class Runner
@@ -101,15 +116,29 @@ class Runner
         $container->inflector(SessionAwareInterface::class)
             ->invokeMethod('setSession', ['session']);
 
-        // Add the models.
+        // Add the models and collections
         $container->add(User::class);
+        $container->add(SavedTokens::class);
+        $container->add(SavedToken::class);
+        $container->add(Instruments::class);
+        $container->add(Instrument::class);
+        $container->add(SshKeys::class);
+        $container->add(SshKey::class);
+        $container->add(Workflows::class);
+        $container->add(Workflow::class);
+        $container->add(WorkflowOperation::class);
+        $container->add(MachineTokens::class);
+        $container->add(MachineToken::class);
+        $container->add(UserSiteMemberships::class);
+        $container->add(UserSiteMembership::class);
+        $container->add(UserOrganizationMemberships::class);
+        $container->add(UserOrganizationMembership::class);
 
-        // Add the collections.
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
 
-        // TODO: Add 21 more models and 18 collections :)
+        // TODO: Add more models and collections
 
         // Add the commands.
         $factory = $container->get('commandFactory');

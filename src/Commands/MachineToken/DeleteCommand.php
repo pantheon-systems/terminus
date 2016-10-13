@@ -23,7 +23,7 @@ class DeleteCommand extends TerminusCommand
     public function delete($machine_token_id)
     {
         // Find the token. Will throw an exception if it doesn't exist.
-        $machine_token = $this->session()->getUser()->machine_tokens->get($machine_token_id);
+        $machine_token = $this->session()->getUser()->getMachineTokens()->get($machine_token_id);
         $name = $machine_token->get('device_name');
 
         $this->log()->notice('Deleting {token} ...', ['token' => $name]);
