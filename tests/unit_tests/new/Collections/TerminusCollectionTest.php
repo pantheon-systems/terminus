@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Collection;
+namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\TerminusCollection;
 use Pantheon\Terminus\Models\TerminusModel;
