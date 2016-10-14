@@ -10,22 +10,25 @@ Feature: View site workflow information
   @vcr workflows_list
   Scenario: List workflows
     When I run "terminus workflow:list [[test_site_name]]"
-    Then I should get:
-    """
-    Sync code on "dev"
-    """
+    Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Time
 
   @vcr workflows_show
   Scenario: Show a specific Workflow's status
     When I run "terminus workflow:info:status [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"
-    Then I should get: "Deploy a CMS (Drupal or Wordpress)"
-    And I should get: "succeeded"
+    Then I should see a table with rows like:
+    """
+    Workflow ID
+    Environment
+    Workflow
+    User
+    Status
+    Time
+    """
 
   @vcr workflows_show
   Scenario: Show a specific Workflow's operations
     When I run "terminus workflow:info:operations [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"
-    Then I should get: "Apply any hostname changes"
-    And I should get: "Take Screenshot"
+    Then I should see a table with the headers: Type, Operation, Description, Result, Duration
 
   @vcr workflows_show
   Scenario: Try show a Workflow that has no logs
