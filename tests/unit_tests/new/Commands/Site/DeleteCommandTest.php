@@ -6,7 +6,7 @@ use Pantheon\Terminus\Commands\Site\DeleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Site\DeleteCommand
+ * Test suite class for Pantheon\Terminus\Commands\Site\DeleteCommand
  */
 class DeleteCommandTest extends CommandTestCase
 {
