@@ -11,7 +11,6 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
 {
     use SiteAwareTrait;
 
-    const PROGRESS_FORMAT = " <bg=blue;fg=black> %message% </>\n <info>Progress: %bar% <info>%percent:3s%%</info> \n <info>Elapsed: %elapsed:6s% \n Estimated Time Remaining: %estimated:-6s%</info>";
     protected $operations = ['cloneFiles', 'cloneDatabase'];
     protected $origin_env;
     protected $site_name;
@@ -36,29 +35,34 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
              ->setOriginEnv(explode('.', $origin)[1])
              ->setTargetEnv($target)
              ->setOperations($this->filterOperations($options));
-        array_map(
-            [$this, 'doOperation'],
-            $this->getOperations()
-        );
+        $this->doOperations($this->getOperations());
     }
 
     /**
-     * Prepare operation and execute.
-     *
-     * @param $operation
+     * @param array $operations
      *
      * @return bool
      */
-    protected function doOperation($operation = '')
+    protected function doOperations(array $operations = [])
     {
         $site = $this->getSite($this->site_name);
+        $progress = $this->startProgressBar($operations);
 
-        $progress = $this->startProgressBar($operation);
-        $workflow = $this->triggerWorkflow($site, $operation);
+        $results = array_map(
+            function ($operation) use ($site, $progress) {
+                $workflow = $this->triggerWorkflow($site, $operation);
+                while (!$workflow->isFinished()) {
+                    $progress->setMessage("Running {$operation}...");
+                    $this->doWorkflow($workflow, $progress);
+                }
+                return $workflow->getMessage();
+            },
+            $operations
+        );
 
-        while (!$workflow->isFinished()) {
-            $this->doWorkflow($workflow, $progress);
-        }
+        $progress->setMessage(
+            ucfirst(mb_strtolower(implode(", ", $results)))
+        );
         $progress->finish();
         return true;
     }
@@ -89,10 +93,8 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
      */
     protected function startProgressBar($operation = '')
     {
-        ProgressBar::setFormatDefinition('minimal', self::PROGRESS_FORMAT);
         $progress = $this->io()->createProgressBar(100);
-        $progress->setFormat('minimal');
-        $progress->setMessage("Running {$operation}...");
+        $progress->setMessage('Setting up...');
         $progress->start();
         return $progress;
     }
@@ -103,14 +105,13 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
      * @param \Terminus\Models\Workflow $workflow
      * @param \Symfony\Component\Console\Helper\ProgressBar $progress
      *
-     * @return bool
+     * @return string
      */
     protected function doWorkflow(Workflow $workflow, ProgressBar $progress)
     {
         $workflow->fetch();
         $progress->advance(1);
-        sleep(1);
-        return true;
+        return $workflow->getMessage();
     }
 
     private function setOperations(array $operations = [])
