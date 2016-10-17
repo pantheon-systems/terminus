@@ -2,10 +2,12 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Terminus\Models\Organization;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 
-class UserOrganizationMembership extends TerminusModel
+class UserOrganizationMembership extends TerminusModel implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
     /**
      * @var Organization
      */
@@ -25,8 +27,17 @@ class UserOrganizationMembership extends TerminusModel
     {
         parent::__construct($attributes, $options);
         $this->user = $options['collection']->getUser();
-        // @TODO: Follow this dependency chain and invert it.
-        $this->organization = new Organization($attributes->organization);
-        $this->organization->memberships = [$this,];
+    }
+
+    /**
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        if (empty($this->organization)) {
+            $this->organization = $this->getContainer()->get(Organization::class, [$this->get('organization')]);
+            $this->organization->memberships = [$this,];
+        }
+        return $this->organization;
     }
 }

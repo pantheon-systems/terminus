@@ -7,6 +7,8 @@ use League\Container\Container;
 use League\Container\ContainerInterface;
 use Pantheon\Terminus\Collections\Instruments;
 use Pantheon\Terminus\Collections\MachineTokens;
+use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
+use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
@@ -14,6 +16,9 @@ use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Instrument;
 use Pantheon\Terminus\Models\MachineToken;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
@@ -133,6 +138,11 @@ class Runner
         $container->add(UserSiteMembership::class);
         $container->add(UserOrganizationMemberships::class);
         $container->add(UserOrganizationMembership::class);
+        $container->add(OrganizationSiteMemberships::class);
+        $container->add(OrganizationSiteMembership::class);
+        $container->add(OrganizationUserMemberships::class);
+        $container->add(OrganizationUserMembership::class);
+        $container->add(Organization::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
