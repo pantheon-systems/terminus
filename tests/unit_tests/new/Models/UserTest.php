@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -10,6 +9,7 @@ use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
@@ -39,6 +39,27 @@ class UserTest extends ModelTestCase
         $this->user->setRequest($this->request);
     }
 
+    public function testDashboardUrl()
+    {
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $config->expects($this->exactly(2))
+            ->method('get')
+            ->withConsecutive(
+                $this->equalTo('dashboard_protocol'),
+                $this->equalTo('dashboard_host')
+            )
+            ->willReturnOnConsecutiveCalls(
+                'https',
+                'dashboard.pantheon.io'
+            );
+        $this->user->setConfig($config);
+
+        $this->assertEquals('https://dashboard.pantheon.io/users/123#sites', $this->user->dashboardUrl());
+    }
+
     public function testGetAliases()
     {
 
@@ -59,7 +80,7 @@ class UserTest extends ModelTestCase
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        
+
         $classes = [
             Instruments::class,
             MachineTokens::class,
