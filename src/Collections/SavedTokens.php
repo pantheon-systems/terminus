@@ -78,6 +78,16 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface
     }
 
     /**
+     * Delete all of the saved tokens.
+     */
+    public function deleteAll()
+    {
+        foreach ($this->getMembers() as $token) {
+            $token->delete();
+        }
+    }
+    
+    /**
      * @inheritdoc
      */
     protected function getCollectionData($options = [])

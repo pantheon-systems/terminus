@@ -7,6 +7,7 @@ use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
+use Terminus\Exceptions\TerminusException;
 
 class SavedTokenTest extends ModelTestCase
 {
@@ -81,5 +82,97 @@ class SavedTokenTest extends ModelTestCase
         // Clean up
         unlink($file);
         rmdir($dir);
+    }
+
+    public function testDelete()
+    {
+        // Create a temp directory to write to.
+        // @TODO: Separate file writing so that this test can be run without writing to disk.
+        $dir = tempnam(sys_get_temp_dir(), 'savedtoken_');
+        unlink($dir);
+        mkdir($dir);
+
+        $attributes = ['email' => 'dev@example.com', 'token' => '123'];
+        $token = new SavedToken((object)$attributes);
+
+        $attributes = ['email' => 'dev2@example.com', 'token' => '234'];
+        $token2 = new SavedToken((object)$attributes);
+
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->any())
+            ->method('get')
+            ->with('tokens_dir')
+            ->willReturn($dir);
+
+        $token->setConfig($config);
+        $token2->setConfig($config);
+
+        $token->saveToDir();
+        $token2->saveToDir();
+
+        $file = "$dir/dev@example.com";
+        $file2 = "$dir/dev2@example.com";
+        $this->assertFileExists($file);
+        $this->assertFileExists($file2);
+        $token->delete();
+        $this->assertFileNotExists($file);
+        $this->assertFileExists($file2);
+
+        // Clean up
+        unlink($file2);
+        rmdir($dir);
+    }
+
+    public function testInvalidID()
+    {
+        $dir = tempnam(sys_get_temp_dir(), 'savedtoken_');
+        unlink($dir);
+        mkdir($dir);
+
+        $attributes = ['email' => '', 'token' => '123'];
+        $token = new SavedToken((object)$attributes);
+
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->once())
+            ->method('get')
+            ->with('tokens_dir')
+            ->willReturn($dir);
+
+        $token->setConfig($config);
+
+        $this->setExpectedException(TerminusException::class);
+
+        $token->saveToDir();
+
+
+        $this->assertEquals(['.', '..'], scandir($dir));
+
+        rmdir($dir);
+    }
+
+    public function testInvalidPath()
+    {
+        $dir = '';
+
+        $attributes = ['email' => 'dev@example.com', 'token' => '123'];
+        $token = new SavedToken((object)$attributes);
+
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $config->expects($this->once())
+            ->method('get')
+            ->with('tokens_dir')
+            ->willReturn($dir);
+
+        $token->setConfig($config);
+
+        $this->setExpectedException(TerminusException::class);
+
+        $token->saveToDir();
     }
 }

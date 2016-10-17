@@ -8,6 +8,7 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
+use Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedToken
@@ -48,8 +49,15 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
     public function saveToDir()
     {
         $this->set('date', time());
-        $token_path = $this->getConfig()->get('tokens_dir') . "/{$this->id}";
-        file_put_contents($token_path, json_encode($this->attributes));
+        file_put_contents($this->getPath(), json_encode($this->attributes));
+    }
+
+    /**
+     * Delete the token.
+     */
+    public function delete()
+    {
+        unlink($this->getPath());
     }
 
     /**
@@ -61,5 +69,22 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
             $data->id = $data->email;
         }
         return $data;
+    }
+
+    /**
+     * Get the path to save the token to.
+     *
+     * @return string The file path for the token file.
+     * @throws \Terminus\Exceptions\TerminusException
+     */
+    protected function getPath()
+    {
+        $path = $this->getConfig()->get('tokens_dir');
+        $id = $this->id;
+        // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
+        if (!$this->id || !$path) {
+            throw new TerminusException('Could not save the machine token.');
+        }
+        return "$path/$id";
     }
 }
