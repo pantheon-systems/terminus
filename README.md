@@ -32,7 +32,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 Run this in this in your terminal client:
 ```bash
-curl https://github.com/pantheon-systems/terminus/releases/download/0.13.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
+curl https://github.com/pantheon-systems/terminus/releases/download/0.x/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
 ```
 
 ####Installing with Composer
