@@ -144,7 +144,10 @@ class SavedTokenTest extends ModelTestCase
 
         $token->setConfig($config);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->setExpectedException(
+            TerminusException::class,
+            'Could not save the machine token because it is missing an ID'
+        );
 
         $token->saveToDir();
 
@@ -171,7 +174,10 @@ class SavedTokenTest extends ModelTestCase
 
         $token->setConfig($config);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->setExpectedException(
+            TerminusException::class,
+            'Could not save the machine token because the token path is mis-configured'
+        );
 
         $token->saveToDir();
     }

@@ -82,8 +82,11 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
         $path = $this->getConfig()->get('tokens_dir');
         $id = $this->id;
         // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
-        if (!$this->id || !$path) {
-            throw new TerminusException('Could not save the machine token.');
+        if (!$path) {
+            throw new TerminusException('Could not save the machine token because the token path is mis-configured.');
+        }
+        if (!$this->id) {
+            throw new TerminusException('Could not save the machine token because it is missing an ID');
         }
         return "$path/$id";
     }

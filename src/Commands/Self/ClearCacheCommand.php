@@ -10,12 +10,11 @@ class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterfa
 {
     use ContainerAwareTrait;
     /**
-     * Clears the local Terminus cache
+     * Clears the local Terminus session and all saved machine tokens
      *
      * @command self:clear-cache
      *
      * @usage terminus self:clear-cache
-     *   Clear the local Terminus cache, session and all saved tokens
      */
     public function clearCache()
     {
