@@ -42,4 +42,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(getenv('HOME'), $this->config->getHomeDir());
     }
+
+    public function testGetPhpAndOSInfo()
+    {
+        $this->assertEquals(PHP_VERSION, $this->config->get('php_version'));
+        $this->assertEquals(get_cfg_var('cfg_file_path'), $this->config->get('php_ini'));
+        $this->assertEquals(PHP_BINARY, $this->config->get('php'));
+        $this->assertEquals(php_uname('v'), $this->config->get('os_version'));
+    }
 }

@@ -3,6 +3,13 @@ Feature: CLI Commands
   As a user
   I need to be able to check and clear system files.
 
+  Scenario: Displaying Terminus information
+    When I run "terminus self:info"
+    Then I should get:
+    """
+    Terminus version
+    """
+
   @vcr self_clear_cache.yml
   Scenario: Deleting the Terminus cache
     Given I am authenticated
@@ -23,4 +30,3 @@ Feature: CLI Commands
     """
     Please visit the dashboard to generate a machine token:
     """
-

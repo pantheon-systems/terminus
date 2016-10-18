@@ -92,7 +92,10 @@ class Config extends \Robo\Config
         $this->importEnvironmentVariables();
         $this->config['root'] = $this->getTerminusRoot();
         $this->config['php'] = $this->getPhpBinary();
+        $this->config['php_version'] = PHP_VERSION;
+        $this->config['php_ini'] = get_cfg_var('cfg_file_path');
         $this->config['script'] = $this->getTerminusScript();
+        $this->config['os_version'] = php_uname('v');
 
         $file_config = Yaml::parse(
             file_get_contents($this->config['root'] . $this->config_path)
