@@ -8,7 +8,7 @@ fi
 
 for f in $( git diff-tree $TRAVIS_COMMIT --name-status -r | grep php | grep -v "^D" | awk '{print $2}') ; do php -l $f ; done
 
-vendor/bin/phpcs --standard=PSR2 --extensions=php --severity=1 -n tests/* bin/terminus.php src/* php/*
+vendor/bin/phpcs --standard=PSR2 --extensions=php --severity=1 -n tests/* bin/terminus src/* php/*
 vendor/bin/phpunit --colors=always -c tests/config/phpunit.xml.dist --debug
 
 # Run the functional tests

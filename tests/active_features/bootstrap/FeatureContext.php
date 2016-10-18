@@ -640,7 +640,7 @@ class FeatureContext implements Context, SnippetAcceptingContext
     public function iRun($command)
     {
         $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus.php', $this->cliroot), $command);
+        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {

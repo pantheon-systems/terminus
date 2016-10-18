@@ -5,7 +5,7 @@
   "homepage": "http://getpantheon.com",
   "license": "MIT",
   "bin": [
-    "bin/terminus.bat", "bin/terminus"
+    "bin/terminus-0x.bat", "bin/terminus-0x"
   ],
   "minimum-stability": "beta",
   "require": {
@@ -38,8 +38,8 @@
   },
   "scripts": {
       "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",
-      "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus.php src/* php/*",
-      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus.php src/* php/*",
+      "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/* php/*",
+      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/* php/*",
       "docs": "php utils/make-docs.php",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
       "test": "SHELL_INTERACTIVE=true ./scripts/test.sh"

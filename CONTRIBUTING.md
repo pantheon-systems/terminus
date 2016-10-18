@@ -12,7 +12,7 @@ Setting Up
 1. Clone this Git repository on your local machine.
 2. Install [Composer](https://getcomposer.org/) if you don't already have it.
 3. Run `composer install` to fetch all the dependencies.
-4. Run `./bin/terminus help` to test that everything was installed properly.
+4. Run `./bin/terminus-0x help` to test that everything was installed properly.
 
 Submitting Patches
 ------------------
