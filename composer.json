@@ -5,7 +5,7 @@
   "homepage": "http://getpantheon.com",
   "license": "MIT",
   "bin": [
-    "bin/terminus-0x.bat", "bin/terminus-0x"
+    "bin/terminus.bat", "bin/terminus"
   ],
   "minimum-stability": "beta",
   "require": {

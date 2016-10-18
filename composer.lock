@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8ef912f9b671a1736ad3e208a228b19a",
+    "hash": "ae41b1c227c4229f81fc2dc8bea5fa14",
     "content-hash": "950d846075d42de309f51895d852844d",
     "packages": [
         {
@@ -160,12 +160,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "e180cc705a27c3d5999dba54b0137eb3779777fe"
+                "reference": "857eb333c640746d89f8fd876e5cb1b1aefb3556"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/e180cc705a27c3d5999dba54b0137eb3779777fe",
-                "reference": "e180cc705a27c3d5999dba54b0137eb3779777fe",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/857eb333c640746d89f8fd876e5cb1b1aefb3556",
+                "reference": "857eb333c640746d89f8fd876e5cb1b1aefb3556",
                 "shasum": ""
             },
             "require": {
@@ -226,7 +226,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-10-10 16:22:54"
+            "time": "2016-10-18 18:57:28"
         },
         {
             "name": "container-interop/container-interop",
@@ -1064,23 +1064,23 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v1.6.1",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rmccue/Requests.git",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea"
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/6aac485666c2955077d77b796bbdd25f0013a4ea",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea",
+                "url": "https://api.github.com/repos/rmccue/Requests/zipball/87932f52ffad70504d93f04f15690cf16a089546",
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2"
             },
             "require-dev": {
-                "satooshi/php-coveralls": "dev-master"
+                "requests/test-server": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -1109,7 +1109,7 @@
                 "iri",
                 "sockets"
             ],
-            "time": "2014-05-18 04:59:02"
+            "time": "2016-10-13 00:11:37"
         },
         {
             "name": "symfony/console",
