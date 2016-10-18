@@ -1,5 +1,6 @@
-**The master branch now represents our Terminus 1.0 work in progress. For the current 0.x version, check out the 0.13.x branch:**
-[https://github.com/pantheon-systems/terminus/tree/0.13.x](https://github.com/pantheon-systems/terminus/tree/0.13.x)
+### This is not your grandma's Terminus.
+> Terminus' master branch now represents our Terminus 1.0 work in progress. For the current 0.x version, check out the 0.13.x branch:**
+>[https://github.com/pantheon-systems/terminus/tree/0.13.x](https://github.com/pantheon-systems/terminus/tree/0.13.x)
 
 
 Terminus
@@ -12,6 +13,7 @@ Terminus is Pantheon's Command Line Interface (CLI), providing equivalent functi
 
 If you would like to contribute, pull requests are welcome!
 
+
 Installation
 ------------
 
@@ -19,25 +21,17 @@ Installation
 - PHP version 5.5.9 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
+- [Composer](https://getcomposer.org/doc/00-intro.md)
 
-Once you have at least the requirements installed, you can install Terminus via Composer, cURL, or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
+Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
 **Optional but recommended:**
 - [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
 - [WP-CLI](http://wp-cli.org/) (Useful to run incompatible-with-Terminus WP-CLI commands)
-- [Composer](https://getcomposer.org/doc/00-intro.md)
 - [Git](https://help.github.com/articles/set-up-git/)
 
 > You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
 
-
-
-####Installing with cURL (recommended)
-
-Run this in this in your terminal client:
-```bash
-curl https://github.com/pantheon-systems/terminus/releases/download/0.13.3/terminus.phar -L -o /usr/local/bin/terminus && chmod +x /usr/local/bin/terminus
-```
 
 ####Installing with Composer
 
