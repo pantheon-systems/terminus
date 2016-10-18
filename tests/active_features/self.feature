@@ -1,0 +1,26 @@
+Feature: CLI Commands
+  In order to control Terminus
+  As a user
+  I need to be able to check and clear system files.
+
+  @vcr self_clear_cache.yml
+  Scenario: Deleting the Terminus cache
+    Given I am authenticated
+    And I have at least "1" saved machine tokens
+    When I run "terminus auth:whoami"
+    Then I should get:
+    """
+    [[username]]
+    """
+    And I run "terminus self:clear-cache"
+    Then I should get:
+    """
+    Your saved machine tokens have been deleted and you have been logged out.
+    """
+    And I run "terminus auth:whoami"
+    Then I should get: "You are not logged in."
+    And I run "terminus auth:login"
+    """
+    Please visit the dashboard to generate a machine token:
+    """
+
