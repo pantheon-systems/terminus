@@ -649,7 +649,7 @@ class FeatureContext implements Context
     {
         $command      = "TERMINUS_TEST_MODE=1 " . $this->_replacePlaceholders($command);
         $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
+        $command = preg_replace($regex, sprintf('bin/terminus-0x', $this->cliroot), $command);
 
         if ($this->_cassette_name) {
             $command = 'TERMINUS_VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
