@@ -5,12 +5,11 @@ Feature: List Backup Schedule for a Site
 
   Background: I am authenticated and have a site named [[test_site_name]]
     Given I am authenticated
-    And I list the sites
     And a site named "[[test_site_name]]"
 
   @vcr site_backups_get-schedule
   Scenario: Show the backup schedule for an environment
-    When I run "terminus backup:schedule:get --site=[[test_site_name]] --env=dev"
+    When I run "terminus backup:schedule:get [[test_site_name]].dev"
     Then I should get:
     """
     Friday
@@ -18,7 +17,7 @@ Feature: List Backup Schedule for a Site
 
   @vcr site_backups_get-schedule_none
   Scenario: Fail to show the backup schedule for an environment when none are scheduled
-    When I run "terminus backup:schedule:get --site=[[test_site_name]] --env=dev"
+    When I run "terminus backup:schedule:get [[test_site_name]].dev"
     Then I should get:
     """
     Backups are not currently scheduled to be run.
