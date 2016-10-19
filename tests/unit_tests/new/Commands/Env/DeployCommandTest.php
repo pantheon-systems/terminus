@@ -9,7 +9,7 @@ use Pantheon\Terminus\Commands\Env\DeployCommand;
 class DeployCommandTest extends EnvCommandTest
 {
     /**
-     * Setup the test fixture.
+     * Set up the test fixture.
      */
     protected function setUp()
     {
@@ -21,12 +21,14 @@ class DeployCommandTest extends EnvCommandTest
 
     /**
      * Tests the env:deploy command success with all parameters.
-     *
-     * @return void
      */
     public function testDeploy()
     {
         $this->env->id = 'test';
+
+        $this->env->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(true);
 
         $this->env->expects($this->once())
             ->method('hasDeployableCode')
@@ -61,12 +63,14 @@ class DeployCommandTest extends EnvCommandTest
 
     /**
      * Tests the env:deploy command where no code is deployable.
-     *
-     * @return void
      */
     public function testDeployNoCode()
     {
         $this->env->id = 'test';
+
+        $this->env->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(true);
 
         $this->env->expects($this->once())
             ->method('hasDeployableCode')
@@ -84,12 +88,14 @@ class DeployCommandTest extends EnvCommandTest
 
     /**
      * Tests the env:deploy command to live.
-     *
-     * @return void
      */
     public function testDeployLive()
     {
         $this->env->id = 'live';
+
+        $this->env->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(true);
 
         $this->env->expects($this->once())
             ->method('hasDeployableCode')
@@ -114,5 +120,28 @@ class DeployCommandTest extends EnvCommandTest
             'cc' => true,
             'updatedb' => true,
         ]);
+    }
+
+    /**
+     * Tests the env:deploy command when the environment is uninitialized
+     */
+    public function testDeployUninitialized()
+    {
+        $this->env->id = 'uninitialized';
+
+        $this->env->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(false);
+
+        $this->env->expects($this->once())
+            ->method('initializeBindings')
+            ->willReturn($this->workflow)
+            ->with();
+
+        $this->workflow->expects($this->once())
+            ->method('wait');
+
+        // Run the deploy.
+        $this->command->deploy('mysite.uninitialized');
     }
 }

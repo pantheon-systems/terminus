@@ -530,6 +530,10 @@ class Environment extends TerminusModel
    */
     public function isInitialized()
     {
+        // Only test or live environments can be uninitialized
+        if (!in_array($this->id, ['test', 'live',])) {
+            return true;
+        }
         // One can determine whether an environment has been initialized
         // by checking if it has code commits. Uninitialized environments do not.
         $commits     = $this->commits->all();
