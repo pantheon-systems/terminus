@@ -34,22 +34,26 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
     {
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
-        if (!$env->hasDeployableCode()) {
-            $this->log()->notice('There is nothing to deploy.');
-            return;
-        }
+        if ($env->isInitialized()) {
+            if (!$env->hasDeployableCode()) {
+                $this->log()->notice('There is nothing to deploy.');
+                return;
+            }
 
-        $params = [
-            'updatedb' => (integer)$options['updatedb'],
-            'clear_cache' => (integer)$options['cc'],
-            'annotation' => $options['note'],
-        ];
-        if ($env->id == 'test' && isset($options['sync-content'])) {
-            $params['clone_database'] = ['from_environment' => 'live',];
-            $params['clone_files'] = ['from_environment' => 'live',];
-        }
+            $params = [
+              'updatedb'    => (integer)$options['updatedb'],
+              'clear_cache' => (integer)$options['cc'],
+              'annotation'  => $options['note'],
+            ];
+            if ($env->id == 'test' && isset($options['sync-content'])) {
+                $params['clone_database'] = ['from_environment' => 'live',];
+                $params['clone_files']    = ['from_environment' => 'live',];
+            }
 
-        $workflow = $env->deploy($params);
+            $workflow = $env->deploy($params);
+        } else {
+            $workflow = $env->initializeBindings();
+        }
         $workflow->wait();
         return $workflow->getMessage();
     }
