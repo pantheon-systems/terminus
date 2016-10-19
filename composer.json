@@ -1,13 +1,15 @@
 {
   "name": "pantheon-systems/terminus",
   "description": "A command line interface for Pantheon",
+  "version": "1.0.0-alpha",
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
-  "homepage": "http://getpantheon.com",
+  "homepage": "https://pantheon.io",
   "license": "MIT",
   "bin": [
     "bin/terminus.bat", "bin/terminus"
   ],
-  "minimum-stability": "beta",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
     "consolidation/robo": "dev-master",
