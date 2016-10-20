@@ -224,38 +224,48 @@ class Backups extends TerminusCollection
   /**
    * Sets an environment's regular backup schedule
    *
-   * @param int $day_number A numerical of a day of the week
-   * @return bool True if operation was successful
+   * @param array $options Elements as follow:
+   *    string  day  A day of the week
+   *    integer hour Hour of the day to run the backups at, 1 = 01:00 24 = 00:00
+   * @return Workflow
    */
-    public function setBackupSchedule($day_number)
+    public function setBackupSchedule($options)
     {
-        $daily_ttl   = 691200;
-        $weekly_ttl  = 2764800;
-        $backup_hour = rand(1, 24);
-        $schedule    = [];
+        $daily_ttl = 691200;
+        $weekly_ttl = 2764800;
+        $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : rand(1, 24);
+        $day_number = (isset($options['day']) && $options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
+        $schedule = [];
         for ($day = 0; $day < 7; $day++) {
-            $schedule[$day] = (object)[
-            'hour' => $backup_hour,
-            'ttl'  => $daily_ttl,
-            ];
-            if ($day == $day_number) {
-                $schedule[$day]->ttl = $weekly_ttl;
-            }
+            $schedule[$day] = (object)['hour' => $backup_hour, 'ttl' => null,];
+            $schedule[$day]->ttl = ($day == $day_number) ? $weekly_ttl : $daily_ttl;
         }
         $schedule = (object)$schedule;
 
-        $path = sprintf(
-            'sites/%s/environments/%s/backups/schedule',
-            $this->environment->site->id,
-            $this->environment->id
+        $workflow = $this->environment->workflows->create(
+            'change_backup_schedule',
+            ['params' => ['backup_schedule' => $schedule,],]
         );
+        return $workflow;
+    }
 
-        $params = [
-        'method'      => 'put',
-        'form_params' => $schedule,
+    /**
+     * Retrieve an integer representing a the day of the week
+     *
+     * @param string $day The day of the week
+     * @return integer 0 = Sunday, 6 = Saturday
+     */
+    protected function getDayNumber($day)
+    {
+        $days = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
         ];
-
-        $this->request->request($path, $params);
-        return true;
+        return array_search(date('l', strtotime($day)), $days);
     }
 }

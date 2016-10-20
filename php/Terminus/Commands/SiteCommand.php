@@ -2419,21 +2419,15 @@ class SiteCommand extends TerminusCommand
    * Sets an environment's regular backup schedule
    *
    * @param array $assoc_args Parameters and flags from the command line
-   * @return void
    */
     private function setBackupSchedule($assoc_args)
     {
-        $site     = $this->sites->get(
-            $this->input()->siteName(array('args' => $assoc_args))
-        );
-        $env      = $site->environments->get(
-            $this->input()->env(
-                array('args' => $assoc_args, 'choices' => array('dev', 'live'))
-            )
-        );
-        $day      = $this->input()->day(array('args' => $assoc_args));
-        $schedule = $env->backups->setBackupSchedule($day);
-        $this->log()->info('Backup schedule successfully set.');
+        $site = $this->sites->get($this->input()->siteName(['args' => $assoc_args,]));
+        $env = $site->environments->get($this->input()->env(['args' => $assoc_args, 'choices' => ['dev', 'live',],]));
+        $day = $this->input()->day(['args' => $assoc_args,]);
+        $workflow = $env->backups->setBackupSchedule(['day' => $day,]);
+        $workflow->wait();
+        $this->workflowOutput($workflow);
     }
 
   /**

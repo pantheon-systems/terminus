@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;

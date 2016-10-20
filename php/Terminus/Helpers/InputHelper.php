@@ -159,38 +159,38 @@ class InputHelper extends TerminusHelper
    *        string key     Args key to search for
    *        string label   Prompt for STDOUT
    *        array  choices Menu options for the user, may be a collection
-   * @return int
+   * @return string
    */
     public function day(array $arg_options = [])
     {
         $default_options = [
-        'args' => [],
-        'key' => 'day',
-        'label' => 'Select a day',
-        'choices' => [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        ],
+            'args' => [],
+            'key' => 'day',
+            'label' => 'Select a day',
+            'choices' => [
+                'Sunday',
+                'Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+            ],
         ];
         $options         = array_merge($default_options, $arg_options);
         if (isset($options['args'][$options['key']])) {
-            $day        = date('l', strtotime($options['args'][$options['key']]));
-            $day_number = array_search($day, $options['choices']);
+            $day = date('l', strtotime($options['args'][$options['key']]));
         } else {
-            $day_number = $this->menu(
+            $day = $this->menu(
                 [
-                'choices' => $options['choices'],
-                'default' => 'Sunday',
-                'message' => $options['label'],
+                    'choices' => $options['choices'],
+                    'default' => 'Sunday',
+                    'message' => $options['label'],
+                    'return_value' => true,
                 ]
             );
         }
-        return $day_number;
+        return $day;
     }
 
   /**

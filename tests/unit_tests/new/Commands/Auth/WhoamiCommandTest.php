@@ -19,6 +19,7 @@ class WhoamiCommandTest extends AuthTest
         $this->command = new WhoamiCommand();
         $this->command->setConfig($this->config);
         $this->command->setLogger($this->logger);
+        $this->command->setSession($this->session);
     }
 
     /**
