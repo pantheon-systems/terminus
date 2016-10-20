@@ -1,19 +1,11 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\Backup\GetCommand
- */
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Collections\Sites;
-use Terminus\Collections\Backups;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\Environment;
 
 class GetCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -28,20 +20,20 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
      * @param string $file_or_element [filename.tgz|code|files|database|db] Filename or backup type
-     *
      * @return string
      *
-     * @example terminus backup:get awesome-site.dev awesome-site_dev_2016-08-18T23-16-20_UTC_code.tar.gz
-     * @example terminus backup:get awesome-site.dev code
-     *
+     * @usage terminus backup:get awesome-site.dev awesome-site_dev_2016-08-18T23-16-20_UTC_code.tar.gz
+     *     Returns the URL for the backup with the specified archive file name
+     * @usage terminus backup:get awesome-site.dev code
+     *     Returns the URL for the most recent code backup
+     * @usage terminus backup:get awesome-site.dev
+     *     Returns the URL for the most recent code backup of any type
      */
-    public function gotBackup(
-        $site_env,
-        $file_or_element
-    ) {
-        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+    public function getBackup($site_env, $file_or_element = null)
+    {
+        list($site, $env) = $this->getSiteEnv($site_env);
 
-        if (in_array($file_or_element, Backups::getValidElements())) {
+        if (in_array($file_or_element, $env->backups->getValidElements())) {
             if ($file_or_element == 'db') {
                 $backup_element = 'database';
             } else {
@@ -51,12 +43,8 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
             $backups = $env->backups->getFinishedBackups($backup_element);
             if (empty($backups)) {
                 throw new TerminusNotFoundException(
-                    "No backups available. Create one with `terminus backup:create {site}.{env}`",
-                    [
-                        'site' => $site->get('name'),
-                        'env'  => $env->id
-                    ],
-                    1
+                    'No backups available. Create one with `terminus backup:create {site}.{env}`',
+                    ['site' => $site->get('name'), 'env' => $env->id,]
                 );
             } else {
                 $backup = array_shift($backups);

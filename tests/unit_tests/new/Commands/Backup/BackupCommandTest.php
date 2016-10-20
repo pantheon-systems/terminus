@@ -3,12 +3,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
-use Pantheon\Terminus\Session\Session;
-use Psr\Log\NullLogger;
-use Terminus\Collections\Sites;
-use Terminus\Models\Site;
-use Terminus\Collections\Environments;
-use Terminus\Models\Environment;
 use Terminus\Collections\Backups;
 use Terminus\Models\Backup;
 
@@ -17,11 +11,14 @@ use Terminus\Models\Backup;
  */
 abstract class BackupCommandTest extends CommandTestCase
 {
-    protected $session;
-    protected $sites;
-    protected $user;
-    protected $logger;
-    protected $command;
+    /**
+     * @var Backup
+     */
+    protected $backup;
+    /**
+     * @var Backups
+     */
+    protected $backups;
 
     /**
      * Sets up the fixture, for example, open a network connection.

@@ -2,7 +2,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\GetCommand;
-use Pantheon\Terminus\Config;
 use Terminus\Exceptions\TerminusNotFoundException;
 
 /**
@@ -25,13 +24,16 @@ class GetCommandTest extends BackupCommandTest
 
     /**
      * Tests the backup:get command with file
-     *
-     * @return void
      */
-    public function testGotBackupWithFile()
+    public function testGetBackupWithFile()
     {
         $test_filename = 'test.tar.gz';
         $test_download_url = 'http://download';
+
+        $this->backups->expects($this->once())
+            ->method('getValidElements')
+            ->with()
+            ->willReturn([]);
 
         $this->backups->expects($this->once())
             ->method('getBackupByFileName')
@@ -42,17 +44,20 @@ class GetCommandTest extends BackupCommandTest
             ->method('getUrl')
             ->willReturn($test_download_url);
 
-        $output = $this->command->gotBackup('mysite.dev', $test_filename);
+        $output = $this->command->getBackup('mysite.dev', $test_filename);
         $this->assertEquals($output, $test_download_url);
     }
 
     /**
      * Tests the backup:get command with an element
-     *
-     * @return void
      */
-    public function testGotBackupWithElement()
+    public function testGetBackupWithElement()
     {
+        $this->backups->expects($this->once())
+            ->method('getValidElements')
+            ->with()
+            ->willReturn(['db', 'database', 'code', 'files',]);
+
         $this->backups->expects($this->once())
             ->method('getFinishedBackups')
             ->with('database')
@@ -62,23 +67,29 @@ class GetCommandTest extends BackupCommandTest
             ->method('getUrl')
             ->willReturn('http://download');
 
-        $output = $this->command->gotBackup('mysite.dev', 'db');
+        $output = $this->command->getBackup('mysite.dev', 'db');
         $this->assertEquals($output, 'http://download');
     }
 
     /**
      * Tests the backup:get command with file that doesn't exist
-     *
-     * @return void
      */
-    public function testGotBackupWithInvalidFile()
+    public function testGetBackupWithInvalidFile()
     {
+        $bad_file_name = 'no-file.tar.gz';
+
+        $this->backups->expects($this->once())
+            ->method('getValidElements')
+            ->with()
+            ->willReturn([]);
+
+        $this->backups->expects($this->once())
+            ->method('getBackupByFileName')
+            ->with($this->equalTo($bad_file_name))
+            ->will($this->throwException(new TerminusNotFoundException()));
+
         $this->setExpectedException(TerminusNotFoundException::class);
 
-        $this->backups
-            ->method('getBackupByFileName')
-            ->will($this->throwException(new TerminusNotFoundException));
-
-        $this->command->gotBackup('mysite.dev', 'no-file.tar.gz');
+        $this->command->getBackup('mysite.dev', 'no-file.tar.gz');
     }
 }

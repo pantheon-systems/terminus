@@ -10,10 +10,10 @@ Feature: Cancel a Backup Schedule for a Site
 
   @vcr site_backups_cancel-schedule
   Scenario: Cancel the backup schedule for an environment
-    When I run "terminus backup:schedule:set --site=[[test_site_name]] --env=dev --day=Fri"
-    And I run "terminus backup:schedule:cancel --site=[[test_site_name]] --env=dev"
-    And I run "terminus backup:schedule:get --site=[[test_site_name]] --env=dev"
-    Then I should not get:
-    """
-    Friday
-    """
+    When I run "terminus backup:schedule:set [[test_site_name]].dev --day=Fri"
+    Then I should get: "."
+    And I should get "Backup schedule successfully set."
+    When I run "terminus backup:schedule:cancel [test_site_name]].dev"
+    Then I should get: "Backup schedule successfully canceled."
+    When I run "terminus backup:schedule:get --site=[[test_site_name]] --env=dev"
+    Then I should not get: "Friday"

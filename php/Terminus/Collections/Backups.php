@@ -9,30 +9,18 @@ define('WEEKLY_BACKUP_TTL', 2764800);
 
 class Backups extends TerminusCollection
 {
-  /**
-   * Valid backup types
-   *
-   * @return String[] An array of valid elements
-   */
-    public static function getValidElements()
-    {
-        return ['code', 'files', 'database', 'db'];
-    }
-
-  /**
-   * @var Environment
-   */
+    /**
+     * @var Environment
+     */
     public $environment;
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     protected $collected_class = 'Terminus\Models\Backup';
 
-  /**
-   * Object constructor
-   *
-   * @param array $options Options to set as $this->key
-   */
+    /**
+     * @inheritdoc
+     */
     public function __construct($options = [])
     {
         parent::__construct($options);
@@ -44,11 +32,9 @@ class Backups extends TerminusCollection
         );
     }
 
-  /**
-   * Cancels an environment's regular backup schedule
-   *
-   * @return bool True if operation was successful
-   */
+    /**
+     * Cancels an environment's regular backup schedule
+     */
     public function cancelBackupSchedule()
     {
         $path_root = sprintf(
@@ -60,27 +46,26 @@ class Backups extends TerminusCollection
         for ($day = 0; $day < 7; $day++) {
             $this->request->request("$path_root/$day", $params);
         }
-        return true;
     }
 
-  /**
-   * Creates a backup
-   *
-   * @param array $arg_params Array of args to dictate backup choices,
-   *   which may have the following keys:
-   *   - type: string: Sort of operation to conduct (e.g. backup)
-   *   - keep-for: int: Days to keep the backup for
-   *   - element: string: Which aspect of the arg to back up
-   * @return Workflow
-   */
+    /**
+     * Creates a backup
+     *
+     * @param array $arg_params Array of args to dictate backup choices,
+     *   which may have the following keys:
+     *   - type: string: Sort of operation to conduct (e.g. backup)
+     *   - keep-for: int: Days to keep the backup for
+     *   - element: string: Which aspect of the arg to back up
+     * @return Workflow
+     */
     public function create(array $arg_params = [])
     {
         $default_params = [
-        'code'       => false,
-        'database'   => false,
-        'files'      => false,
-        'ttl'        => 31556736,
-        'entry_type' => 'backup',
+            'code'       => false,
+            'database'   => false,
+            'files'      => false,
+            'ttl'        => 31556736,
+            'entry_type' => 'backup',
         ];
         $params = array_merge($default_params, $arg_params);
 
@@ -111,13 +96,13 @@ class Backups extends TerminusCollection
         return $workflow;
     }
 
-  /**
-   * Fetches backup for a specified filename
-   *
-   * @param string $filename Name of the file name to filter by
-   * @return Backup
-   * @throws TerminusNotFoundException
-   */
+    /**
+     * Fetches backup for a specified filename
+     *
+     * @param string $filename Name of the file name to filter by
+     * @return Backup
+     * @throws TerminusNotFoundException
+     */
     public function getBackupByFileName($filename)
     {
         $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
@@ -133,12 +118,12 @@ class Backups extends TerminusCollection
         return $backup;
     }
 
-  /**
-   * Lists all backups for a specific element.
-   *
-   * @param string $element Name of the element type to filter by
-   * @return Backup[]
-   */
+    /**
+     * Lists all backups for a specific element.
+     *
+     * @param string $element Name of the element type to filter by
+     * @return Backup[]
+     */
     public function getBackupsByElement($element = null)
     {
         $backups = array_filter(
@@ -151,13 +136,13 @@ class Backups extends TerminusCollection
         return $backups;
     }
 
-  /**
-   * Retrieves an environment's regular backup schedule
-   *
-   * @return array $schedule Elements as follows:
-   *   - daily_backup_time: string
-   *   - weekly_backup_day: string
-   */
+    /**
+     * Retrieves an environment's regular backup schedule
+     *
+     * @return array $schedule Elements as follows:
+     *   - daily_backup_time: string
+     *   - weekly_backup_day: string
+     */
     public function getBackupSchedule()
     {
         $path     = sprintf(
@@ -188,15 +173,15 @@ class Backups extends TerminusCollection
         return $data;
     }
 
-  /**
-   * Filters the backups for only ones which have finished
-   *
-   * @param string $element Element requested (i.e. code, db, or files)
-   * @return Backup[] An array of Backup objects
-   */
-    public function getFinishedBackups($element)
+    /**
+     * Filters the backups for only ones which have finished
+     *
+     * @param string $element Element requested (i.e. code, db, or files)
+     * @return Backup[] An array of Backup objects
+     */
+    public function getFinishedBackups($element = null)
     {
-        if ($element != null) {
+        if (!is_null($element)) {
             $all_backups = $this->getBackupsByElement($element);
         } else {
             $all_backups = $this->all();
@@ -221,14 +206,24 @@ class Backups extends TerminusCollection
         return $backups;
     }
 
-  /**
-   * Sets an environment's regular backup schedule
-   *
-   * @param array $options Elements as follow:
-   *    string  day  A day of the week
-   *    integer hour Hour of the day to run the backups at, 1 = 01:00 24 = 00:00
-   * @return Workflow
-   */
+    /**
+     * Valid backup types
+     *
+     * @return string[] An array of valid elements
+     */
+    public function getValidElements()
+    {
+        return ['code', 'files', 'database', 'db',];
+    }
+
+    /**
+     * Sets an environment's regular backup schedule
+     *
+     * @param array $options Elements as follow:
+     *    string  day  A day of the week
+     *    integer hour Hour of the day to run the backups at, 1 = 01:00 24 = 00:00
+     * @return Workflow
+     */
     public function setBackupSchedule($options)
     {
         $daily_ttl = 691200;
