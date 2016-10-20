@@ -31,11 +31,6 @@ class GetCommandTest extends BackupCommandTest
         $test_download_url = 'http://download';
 
         $this->backups->expects($this->once())
-            ->method('getValidElements')
-            ->with()
-            ->willReturn([]);
-
-        $this->backups->expects($this->once())
             ->method('getBackupByFileName')
             ->with($test_filename)
             ->willReturn($this->backup);
@@ -44,7 +39,7 @@ class GetCommandTest extends BackupCommandTest
             ->method('getUrl')
             ->willReturn($test_download_url);
 
-        $output = $this->command->getBackup('mysite.dev', $test_filename);
+        $output = $this->command->getBackup('mysite.dev', ['file' => $test_filename,]);
         $this->assertEquals($output, $test_download_url);
     }
 
@@ -54,11 +49,6 @@ class GetCommandTest extends BackupCommandTest
     public function testGetBackupWithElement()
     {
         $this->backups->expects($this->once())
-            ->method('getValidElements')
-            ->with()
-            ->willReturn(['db', 'database', 'code', 'files',]);
-
-        $this->backups->expects($this->once())
             ->method('getFinishedBackups')
             ->with('database')
             ->willReturn([$this->backup]);
@@ -67,7 +57,7 @@ class GetCommandTest extends BackupCommandTest
             ->method('getUrl')
             ->willReturn('http://download');
 
-        $output = $this->command->getBackup('mysite.dev', 'db');
+        $output = $this->command->getBackup('mysite.dev', ['element' => 'db',]);
         $this->assertEquals($output, 'http://download');
     }
 
@@ -79,17 +69,12 @@ class GetCommandTest extends BackupCommandTest
         $bad_file_name = 'no-file.tar.gz';
 
         $this->backups->expects($this->once())
-            ->method('getValidElements')
-            ->with()
-            ->willReturn([]);
-
-        $this->backups->expects($this->once())
             ->method('getBackupByFileName')
             ->with($this->equalTo($bad_file_name))
             ->will($this->throwException(new TerminusNotFoundException()));
 
         $this->setExpectedException(TerminusNotFoundException::class);
 
-        $this->command->getBackup('mysite.dev', 'no-file.tar.gz');
+        $this->command->getBackup('mysite.dev', ['file' => $bad_file_name,]);
     }
 }

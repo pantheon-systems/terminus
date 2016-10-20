@@ -2235,7 +2235,6 @@ class SiteCommand extends TerminusCommand
         );
         if ($file) {
             $backup  = $env->backups->getBackupByFileName($file);
-            $element = $backup->getElement();
         } else {
             $element = $this->input()->backupElement(array('args' => $assoc_args));
             $latest  = (boolean)$this->input()->optional(

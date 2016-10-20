@@ -89,11 +89,30 @@ class Backups extends TerminusCollection
             unset($params['type']);
         }
 
-        $workflow = $this->environment->workflows->create(
-            'do_export',
-            compact('params')
-        );
-        return $workflow;
+        return $this->environment->workflows->create('do_export', compact('params'));
+    }
+
+    /**
+     * Fetches model data from API and instantiates its model instances
+     *
+     * @param array $options params to pass configure fetching
+     *        array $data Data to fill in the model members of this collection
+     * @return TerminusCollection $this
+     */
+    public function fetch(array $options = [])
+    {
+        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
+
+        foreach ($data as $id => $model_data) {
+            if (isset($model_data->filename)) {
+                if (!isset($model_data->id)) {
+                    $model_data->id = $id;
+                }
+                $this->add($model_data);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -107,15 +126,10 @@ class Backups extends TerminusCollection
     {
         $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
         try {
-            $backup = $this->get(array_shift($matches));
+            return $this->get(array_shift($matches));
         } catch (\Exception $e) {
-            throw new TerminusNotFoundException(
-                'Cannot find a backup named {filename}.',
-                compact('filename'),
-                1
-            );
+            throw new TerminusNotFoundException('Cannot find a backup named {filename}.', compact('filename'));
         }
-        return $backup;
     }
 
     /**
@@ -126,14 +140,12 @@ class Backups extends TerminusCollection
      */
     public function getBackupsByElement($element = null)
     {
-        $backups = array_filter(
+        return array_filter(
             $this->all(),
             function ($backup) use ($element) {
-                return $backup->getElement() == $element;
+                return $backup->get('type') == $element;
             }
         );
-
-        return $backups;
     }
 
     /**
@@ -221,15 +233,15 @@ class Backups extends TerminusCollection
      *
      * @param array $options Elements as follow:
      *    string  day  A day of the week
-     *    integer hour Hour of the day to run the backups at, 1 = 01:00 24 = 00:00
+     *    integer hour Hour of the day to run the backups at, 0 = 00:00 23 = 23:00
      * @return Workflow
      */
-    public function setBackupSchedule($options)
+    public function setBackupSchedule(array $options = ['day' => null, 'hour' => null,])
     {
         $daily_ttl = 691200;
         $weekly_ttl = 2764800;
-        $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : rand(1, 24);
-        $day_number = (isset($options['day']) && $options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
+        $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : null;
+        $day_number = isset($options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
         $schedule = [];
         for ($day = 0; $day < 7; $day++) {
             $schedule[$day] = (object)['hour' => $backup_hour, 'ttl' => null,];
@@ -252,15 +264,7 @@ class Backups extends TerminusCollection
      */
     protected function getDayNumber($day)
     {
-        $days = [
-            'Sunday',
-            'Monday',
-            'Tuesday',
-            'Wednesday',
-            'Thursday',
-            'Friday',
-            'Saturday',
-        ];
-        return array_search(date('l', strtotime($day)), $days);
+        $days_of_the_week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',];
+        return array_search(date('l', strtotime($day)), $days_of_the_week);
     }
 }

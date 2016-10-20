@@ -3,115 +3,87 @@
 namespace Terminus\Models;
 
 use Terminus\Config;
+use Terminus\Exceptions\TerminusException;
 
 class Backup extends TerminusModel
 {
-  /**
-   * @var environment
-   */
+    /**
+     * @var environment
+     */
     public $environment;
 
-  /**
-   * Object constructor
-   *
-   * @param object $attributes Attributes of this model
-   * @param array  $options    Options with which to configure this model
-   */
+    /**
+     * @inheritdoc
+     */
     public function __construct($attributes, array $options = [])
     {
         parent::__construct($attributes, $options);
         $this->environment = $options['collection']->environment;
     }
 
-  /**
-   * Determines whether the backup has been completed or not
-   *
-   * @return bool True if backup is completed.
-   */
+    /**
+     * Determines whether the backup has been completed or not
+     *
+     * @return boolean True if backup is completed.
+     */
     public function backupIsFinished()
     {
-        $is_finished = (
-        ($this->get('size') != 0)
-        && (
-        ($this->get('finish_time') != null)
-        || ($this->get('timestamp') != null)
-        )
+        return (
+            ($this->get('size') != 0)
+            && (
+                ($this->get('finish_time') != null)
+                || ($this->get('timestamp') != null)
+            )
         );
-        return $is_finished;
     }
 
-  /**
-   * Returns the bucket name for this backup
-   *
-   * @return string
-   */
+    /**
+     * Returns the bucket name for this backup
+     *
+     * @return string
+     */
     public function getBucket()
     {
-        $bucket = str_replace('_' . $this->getElement(), '', $this->id);
+        $bucket = 'pantheon-backups';
+        if (strpos(Config::get('host'), 'onebox') !== false) {
+            $bucket = "onebox-$bucket";
+        }
         return $bucket;
     }
 
-  /**
-   * Returns the date the backup was completed
-   *
-   * @return string Timestamp completion time or "Pending"
-   */
+    /**
+     * Returns the date the backup was completed
+     *
+     * @return string Timestamp completion time or "Pending"
+     */
     public function getDate()
     {
-        if ($this->get('finish_time') != null) {
+        if (!is_null($this->get('finish_time'))) {
             $datetime = $this->get('finish_time');
-        } elseif ($this->get('timestamp') != null) {
+        } elseif (!is_null($this->get('timestamp'))) {
             $datetime = $this->get('timestamp');
         } else {
             return 'Pending';
         }
-        $date = date(Config::get('date_format'), $datetime);
-        return $date;
+        return date(Config::get('date_format'), $datetime);
     }
 
-  /**
-   * Returns the element type of the backup
-   *
-   * @return string code, database, files, or null
-   */
-    public function getElement()
-    {
-        if ($this->get('filename') == null) {
-            return null;
-        }
-        preg_match(
-            '~(?:.*_|^)(.*)\.(?:tar|sql)\.gz(?:\.gpg)?$~',
-            $this->get('filename'),
-            $type_match
-        );
-        if (isset($type_match[1])) {
-            $type = $type_match[1];
-        } else {
-            return null;
-        }
-        return $type;
-    }
-
-  /**
-   * Returns the type of initiator of the backup
-   *
-   * @return string Either "manual" or "automated"
-   */
+    /**
+     * Returns the type of initiator of the backup
+     *
+     * @return string Either "manual" or "automated"
+     */
     public function getInitiator()
     {
-        $initiator = 'manual';
         preg_match("/.*_(.*)/", $this->get('folder'), $automation_match);
-        if (isset($automation_match[1]) && ($automation_match[1] == 'automated')) {
-            $initiator = 'automated';
-        }
-        return $initiator;
+        return (isset($automation_match[1]) && ($automation_match[1] == 'automated')) ? 'automated' : 'manual';
     }
 
-  /**
-   * Returns the size of the backup in MB
-   *
-   * @return string A number (int or float) followed by 'MB'.
-   */
+    /**
+     * Returns the size of the backup in MB
+     *
+     * @return string A number (an integer or a float) followed by 'MB'.
+     */
     public function getSizeInMb()
     {
         $size_string = '0';
@@ -126,22 +98,65 @@ class Backup extends TerminusModel
         return $size_string;
     }
 
-  /**
-   * Gets the URL of a backup
-   *
-   * @return string
-   */
+    /**
+     * Gets the URL of a backup
+     *
+     * @return string
+     */
     public function getUrl()
     {
-        $path     = sprintf(
+        $path = sprintf(
             'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
             $this->environment->site->id,
             $this->environment->id,
-            $this->getBucket(),
-            $this->getElement()
+            $this->get('folder'),
+            $this->get('type')
         );
         $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
         $response = $this->request->request($path, $options);
         return $response['data']->url;
+    }
+
+    /**
+     * Restores this backup
+     *
+     * @return Workflow
+     * @throws TerminusException
+     */
+    public function restore()
+    {
+        switch ($this->get('type')) {
+            case 'code':
+                $type = 'restore_code';
+                break;
+            case 'files':
+                $type = 'restore_files';
+                break;
+            case 'database':
+                $type = 'restore_database';
+                break;
+            default:
+                throw new TerminusException('This backup has no archive to restore.');
+                break;
+        }
+        $workflow = $this->environment->workflows->create(
+            $type,
+            [
+                'params' => [
+                    'key' => "{$this->environment->site->id}/{$this->environment->id}/{$this->get('filename')}",
+                    'bucket' => $this->getBucket(),
+                ],
+            ]
+        );
+        return $workflow;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function parseAttributes($data)
+    {
+        list($data->scheduled_for, $data->archive_type, $data->type) = explode('_', $data->id);
+        return $data;
     }
 }
