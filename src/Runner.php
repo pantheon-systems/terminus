@@ -66,6 +66,8 @@ class Runner
 
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
+
+        date_default_timezone_set($this->config->get('time_zone'));
     }
 
     /**
