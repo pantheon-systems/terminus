@@ -63,6 +63,7 @@ To install with Git and use Terminus HEAD, you should clone this repository and 
   ```bash
   cd /install/location
   git clone https://github.com/pantheon-systems/terminus.git terminus
+  git checkout 0.13.x
   ```
 Or replace /install/location with the directory to which you would like to install.
 
@@ -104,7 +105,7 @@ If you are planning to run WP-CLI or Drush commands through Terminus, please [up
 
 Tab completion
 --------------
-Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://github.com/pantheon-systems/terminus/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
+Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://raw.githubusercontent.com/pantheon-systems/terminus/blob/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
 
 ```bash
 source /FULL/PATH/TO/terminus-completion.bash
