@@ -1,7 +1,6 @@
 {
   "name": "pantheon-systems/terminus",
   "description": "A command line interface for Pantheon",
-  "version": "1.0.0-alpha",
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "https://pantheon.io",
   "license": "MIT",
@@ -12,7 +11,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
-    "consolidation/robo": "dev-master",
+    "consolidation/robo": "^1.0.0-RC3",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
@@ -58,7 +57,7 @@
   },
   "extra": {
     "branch-alias": {
-        "dev-master": "0.0.x-dev"
+        "dev-master": "1.x-dev"
     }
   }
 }
