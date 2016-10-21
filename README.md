@@ -1,4 +1,4 @@
-### This is not your grandma's Terminus.
+## This branch is the alpha release of Terminus 1.0.
 > Terminus' master branch now represents our Terminus 1.0 work in progress. For the current 0.x version, check out the 0.13.x branch: [https://github.com/pantheon-systems/terminus/tree/0.13.x](https://github.com/pantheon-systems/terminus/tree/0.13.x)
 
 
@@ -36,7 +36,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 Run this in your terminal client:
 ```
-composer require pantheon-systems/terminus
+cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo 'alias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
 ```
 
 ####Installing with [Homebrew](http://brew.sh/)(for Macs)

@@ -45,13 +45,14 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         parent::__construct($name, $data, $dataName);
         // Initializing the Terminus application
         $this->config = new Config();
+        $this->config->set('version', '1.0.0');
+        $this->config->set('time_zone', 'UTC');
         $this->application = new Terminus('Terminus', $this->config->get('version'), $this->config);
 
         // Configuring the dependency-injection container
         $input = new ArgvInput($_SERVER['argv']);
         $this->output = new NullOutput();
-        $roboConfig = new \Robo\Config();
-        $this->container = Robo::createDefaultContainer($input, $this->output, $this->application, $roboConfig);
+        $this->container = Robo::createDefaultContainer($input, $this->output, $this->application, $this->config);
 
         // Instantiating the Runner
         $this->runner = new Runner($this->container);

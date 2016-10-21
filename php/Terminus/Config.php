@@ -4,6 +4,7 @@ namespace Terminus;
 
 use Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
+use Terminus\Exceptions\TerminusException;
 
 class Config
 {
@@ -193,12 +194,12 @@ class Config
         if (file_exists("$current_dir/composer.json")) {
             return $current_dir;
         }
-        $dir = explode('/', $current_dir);
+        $dir = explode(DIRECTORY_SEPARATOR, $current_dir);
         array_pop($dir);
         if (empty($dir)) {
-            throw new TerminusError('Could not locate root to set TERMINUS_ROOT.');
+            throw new TerminusException('Could not locate root to set TERMINUS_ROOT.');
         }
-        $dir = implode('/', $dir);
+        $dir = implode(DIRECTORY_SEPARATOR, $dir);
         $root_dir = self::getTerminusRoot($dir);
         return $root_dir;
     }
@@ -220,7 +221,7 @@ class Config
         $debug           = debug_backtrace();
         $script_location = array_pop($debug);
         $script_name     = str_replace(
-            self::$config['root'] . '/',
+            self::$config['root'] . DIRECTORY_SEPARATOR,
             '',
             $script_location['file']
         );
