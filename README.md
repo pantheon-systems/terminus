@@ -1,4 +1,4 @@
-### This is not your grandma's Terminus.
+## This branch is the alpha release of Terminus 1.0.
 > Terminus' master branch now represents our Terminus 1.0 work in progress. For the current 0.x version, check out the 0.13.x branch: [https://github.com/pantheon-systems/terminus/tree/0.13.x](https://github.com/pantheon-systems/terminus/tree/0.13.x)
 
 
