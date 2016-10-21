@@ -25,6 +25,6 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->sites->get($sitename);
         $workflow = $site->setOwner($owner);
         $workflow->wait();
-        $this->log()->notice('Owner Changed');
+        $this->log()->notice('Promoted new owner');
     }
 }
