@@ -4,7 +4,6 @@ All notable changes to this project starting with the 0.6.0 release will be docu
 ## 0.13.x
 ### Changed
 - Branched 0.x from master, removed 1.x work.
-- 0.13.x versions will from now on carry the '0.x' tag.
 - The update helper now retrieves the latest-release data from the latest-release GitHub API. (#1316)
 
 ### Fixed
