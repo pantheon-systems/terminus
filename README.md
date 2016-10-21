@@ -36,7 +36,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 Run this in your terminal client:
 ```
-composer require pantheon-systems/terminus
+cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo 'alias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
 ```
 
 ####Installing with [Homebrew](http://brew.sh/)(for Macs)
