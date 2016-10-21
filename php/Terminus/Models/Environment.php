@@ -722,6 +722,34 @@ class Environment extends TerminusModel
         return $workflow;
     }
 
+    /**
+     * Remove a HTTPS certificate from the environment
+     *
+     * @return array $workflow
+     *
+     * @throws \Terminus\Exceptions\TerminusException
+     */
+    public function disableHttpsCertificate()
+    {
+        if (!$this->settings('ssl_enabled')) {
+            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
+        }
+        $response = $this->request->request(
+            "sites/{$this->site->id}/environments/{$this->id}/settings",
+            [
+                'method' => 'put',
+                'form_params' => [
+                    'ssl_enabled' => false,
+                    'dedicated_ip' => false,
+                ],
+            ]
+        );
+        if ($response['status_code'] !== 200) {
+            throw new TerminusException('There was an problem disabling https for this environment.');
+        }
+        return $this->convergeBindings();
+    }
+
   /**
    * Gives SFTP connection info for this environment
    *
