@@ -7,6 +7,9 @@ use Terminus\Exceptions\TerminusNotFoundException;
 define('DAILY_BACKUP_TTL', 691200);
 define('WEEKLY_BACKUP_TTL', 2764800);
 
+define('MONTH_BACKUP_TTL', 2592000);
+define('SIX_MONTH_BACKUP_TTL', 15552000);
+
 class Backups extends TerminusCollection
 {
   /**
@@ -79,7 +82,7 @@ class Backups extends TerminusCollection
         'code'       => false,
         'database'   => false,
         'files'      => false,
-        'ttl'        => 31556736,
+        'ttl'        => MONTH_BACKUP_TTL,
         'entry_type' => 'backup',
         ];
         $params = array_merge($default_params, $arg_params);
@@ -229,8 +232,8 @@ class Backups extends TerminusCollection
    */
     public function setBackupSchedule($day_number)
     {
-        $daily_ttl   = 691200;
-        $weekly_ttl  = 2764800;
+        $daily_ttl   = DAILY_BACKUP_TTL;
+        $weekly_ttl  = WEEKLY_BACKUP_TTL;
         $backup_hour = rand(1, 24);
         $schedule    = [];
         for ($day = 0; $day < 7; $day++) {
