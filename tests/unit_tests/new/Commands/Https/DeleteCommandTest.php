@@ -20,16 +20,24 @@ class DeleteCommandTest extends CommandTestCase
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->environment->expects($this->once())
-            ->method('disableHttpsCertificate')
+            ->method('disableHttpsCertificate');
+        $this->environment->expects($this->once())
+            ->method('convergeBindings')
             ->willReturn($workflow);
 
 
         // should display a notice about the mode switch
-        $this->logger->expects($this->once())
+        $this->logger->expects($this->at(0))
+            ->method('log')->with(
+                $this->equalTo('notice'),
+                $this->equalTo('HTTPS has been disabled and the environment\'s bindings will now be converged.')
+            );
+        $this->logger->expects($this->at(1))
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')
             );
+
 
         $command = new DeleteCommand();
         $command->setSites($this->sites);

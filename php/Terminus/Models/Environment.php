@@ -745,8 +745,7 @@ class Environment extends TerminusModel
                     ],
                 ]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new TerminusException('There was an problem disabling https for this environment.');
         }
     }
