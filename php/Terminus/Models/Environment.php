@@ -734,20 +734,21 @@ class Environment extends TerminusModel
         if (!$this->settings('ssl_enabled')) {
             throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
         }
-        $response = $this->request->request(
-            "sites/{$this->site->id}/environments/{$this->id}/settings",
-            [
-                'method' => 'put',
-                'form_params' => [
-                    'ssl_enabled' => false,
-                    'dedicated_ip' => false,
-                ],
-            ]
-        );
-        if ($response['status_code'] !== 200) {
+        try {
+            $this->request->request(
+                "sites/{$this->site->id}/environments/{$this->id}/settings",
+                [
+                    'method' => 'put',
+                    'form_params' => [
+                        'ssl_enabled' => false,
+                        'dedicated_ip' => false,
+                    ],
+                ]
+            );
+        }
+        catch (\Exception $e) {
             throw new TerminusException('There was an problem disabling https for this environment.');
         }
-        return $this->convergeBindings();
     }
 
   /**

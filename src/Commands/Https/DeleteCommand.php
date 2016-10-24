@@ -24,7 +24,13 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
     public function delete($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
-        $workflow = $env->disableHttpsCertificate();
+        // Push the settings change
+        $env->disableHttpsCertificate();
+        // Converge the environment bindings to get the settings to take effect.
+        $workflow = $env->convergeBindings();
+        $this->log()->notice("HTTPS has been disabled and the environment's bindings will now be converged.");
+
+        // Wait for the workflow to complete.
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.
         }
