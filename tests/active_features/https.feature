@@ -7,6 +7,14 @@ Feature: Set HTTPS Certificate
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
+  @vcr https_add.yml
+  Scenario: Set an HTTPS Certificate
+    When I run "terminus https:set [[test_site_name]].live --certificate=fake --private-key=fake"
+    Then I should get:
+    """
+    Converged loadbalancer
+    """
+
   @vcr https_delete.yml
   Scenario: Delete an HTTPS Certificate
     When I run "terminus https:delete [[test_site_name]].dev"
