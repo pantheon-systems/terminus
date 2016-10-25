@@ -16,6 +16,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      * @authorized
      *
      * @command https:delete
+     * @aliases https:disable
      *
      * @param string $site_env Site and environment in the form `site-name.env`.
      *
