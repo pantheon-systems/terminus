@@ -16,7 +16,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Fetch the download URL for a specific backup or latest backup
+     * Retrieve the regular backup of your site's environment
      *
      * @authorized
      *

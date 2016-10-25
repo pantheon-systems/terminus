@@ -51,43 +51,29 @@ class Backups extends TerminusCollection
     /**
      * Creates a backup
      *
-     * @param array $arg_params Array of args to dictate backup choices,
-     *   which may have the following keys:
-     *   - type: string: Sort of operation to conduct (e.g. backup)
-     *   - keep-for: int: Days to keep the backup for
-     *   - element: string: Which aspect of the arg to back up
+     * @param array $arg_options Elements as follow:
+     *   integer keep-for Days to keep the backup for
+     *   string  element  Which element of the site to back up (database, code, files, or null for all)
      * @return Workflow
      */
-    public function create(array $arg_params = [])
+    public function create(array $arg_options = [])
     {
-        $default_params = [
+        $default_options = ['element' => null, 'keep-for' => 365,];
+        $options = array_merge($default_options, $arg_options);
+
+        $params = [
             'code'       => false,
             'database'   => false,
             'files'      => false,
-            'ttl'        => 31556736,
             'entry_type' => 'backup',
         ];
-        $params = array_merge($default_params, $arg_params);
 
-        if (isset($params[$params['element']])) {
-            $params[$params['element']] = true;
+        if (!is_null($element = $options['element'])) {
+            $params[$element] = true;
         } else {
-            $params = array_merge(
-                $params,
-                ['code' => true, 'database' => true, 'files' => true,]
-            );
+            $params['code'] = $params['database'] = $params['files'] = true;
         }
-        unset($params['element']);
-
-        if (isset($params['keep-for'])) {
-            $params['ttl'] = ceil((integer)$params['keep-for'] * 86400);
-            unset($params['keep-for']);
-        }
-
-        if (isset($params['type'])) {
-            $params['entry_type'] = $params['type'];
-            unset($params['type']);
-        }
+        $params['ttl'] = ceil((integer)$options['keep-for'] * 86400);
 
         return $this->environment->workflows->create('do_export', compact('params'));
     }
@@ -165,8 +151,8 @@ class Backups extends TerminusCollection
         $response      = $this->request->request($path);
         $response_data = (array)$response['data'];
         $data          = [
-        'daily_backup_hour' => null,
-        'weekly_backup_day' => null,
+            'daily_backup_hour' => null,
+            'weekly_backup_day' => null,
         ];
 
         $schedule_sample = array_shift($response_data);
@@ -238,14 +224,12 @@ class Backups extends TerminusCollection
      */
     public function setBackupSchedule(array $options = ['day' => null, 'hour' => null,])
     {
-        $daily_ttl = 691200;
-        $weekly_ttl = 2764800;
         $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : null;
         $day_number = isset($options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
         $schedule = [];
         for ($day = 0; $day < 7; $day++) {
             $schedule[$day] = (object)['hour' => $backup_hour, 'ttl' => null,];
-            $schedule[$day]->ttl = ($day == $day_number) ? $weekly_ttl : $daily_ttl;
+            $schedule[$day]->ttl = ($day == $day_number) ? WEEKLY_BACKUP_TTL: DAILY_BACKUP_TTL;
         }
         $schedule = (object)$schedule;
 

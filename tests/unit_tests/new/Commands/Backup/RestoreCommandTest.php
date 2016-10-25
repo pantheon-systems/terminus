@@ -4,18 +4,12 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 use Pantheon\Terminus\Commands\Backup\RestoreCommand;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\Workflow;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Backup\RestoreCommand
  */
 class RestoreCommandTest extends BackupCommandTest
 {
-    /**
-     * @var Workflow
-     */
-    protected $workflow;
-
     /**
      * @inheritdoc
      */
@@ -25,10 +19,6 @@ class RestoreCommandTest extends BackupCommandTest
         $this->command = new RestoreCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
-
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     /**

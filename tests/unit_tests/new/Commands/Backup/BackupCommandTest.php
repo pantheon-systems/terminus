@@ -5,6 +5,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 use Terminus\Collections\Backups;
 use Terminus\Models\Backup;
+use Terminus\Models\Workflow;
 
 /**
  * @property \PHPUnit_Framework_MockObject_MockObject sites
@@ -19,6 +20,10 @@ abstract class BackupCommandTest extends CommandTestCase
      * @var Backups
      */
     protected $backups;
+    /**
+     * @var Workflow
+     */
+    protected $workflow;
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -35,6 +40,10 @@ abstract class BackupCommandTest extends CommandTestCase
         $this->environment->backups = $this->backups;
 
         $this->backup = $this->getMockBuilder(Backup::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

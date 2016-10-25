@@ -29,9 +29,9 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      *     Sets backups to occur at a random hour, with month-long TTL backup made on a random day
      * @usage terminus backup:schedule:set awesome-site.dev --day=<mon|Monday|etc>
      *     Sets backups to occur at a random hour, with month-long TTL backup made on Mondays
-     * @usage terminus backup:schedule:set awesome-site.dev --hour=hour_number
-     *     Sets backups to occur during the 14th hour UTCs, with month-long TTL backup made on a random day
-     * @usage terminus backup:schedule:set awesome-site.dev --day=<TUE|Tuesday|etc> --hour=hour_number
+     * @usage terminus backup:schedule:set awesome-site.dev --hour=14
+     *     Sets backups to occur during the 14th hour UTC, with month-long TTL backup made on a random day
+     * @usage terminus backup:schedule:set awesome-site.dev --day=<TUE|Tuesday|etc> --hour=14
      *     Sets backups to occur during the 14th hour UTC, with month-long TTL backup made on Tuesdays
      */
     public function setSchedule($site_env, $options = ['day' => null, 'hour' => null,])
