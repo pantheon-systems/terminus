@@ -36,7 +36,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $site_env,
         $options = ['certificate' => '', 'private-key' => '', 'intermediate-certificate' => '']
     ) {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getSiteEnv($site_env);
 
         $args = ['certificate' => 'cert', 'private-key' => 'key', 'intermediate-certificate' => 'intermediary'];
         $key = [];

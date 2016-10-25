@@ -23,7 +23,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function delete($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getSiteEnv($site_env);
         // Push the settings change
         $env->disableHttpsCertificate();
         // Converge the environment bindings to get the settings to take effect.
