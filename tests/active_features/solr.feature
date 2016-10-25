@@ -7,19 +7,24 @@ Feature: Using Solr
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[organization_name]]"
 
-  @vcr site_solr_enable
+  @vcr solr_enable.yml
   Scenario: Enabling Solr
-    When I run "terminus solr:enable --site=[[test_site_name]]"
+    When I run "terminus solr:enable [[test_site_name]]"
     Then I should get:
     """
-    Solr enabled. Converging bindings...
+    Solr enabled. Converging bindings."""
+    And I should get:
+    """
+    Brought environments to desired configuration state
     """
 
-  @vcr site_solr_disable
+  @vcr solr_disable.yml
   Scenario: Disabling Solr
-    When I run "terminus solr:disable --site=[[test_site_name]]"
+    When I run "terminus solr:disable [[test_site_name]]"
     Then I should get:
     """
-    Solr disabled. Converging bindings...
+    Solr disabled. Converging bindings."""
+    And I should get:
     """
-
+    Brought environments to desired configuration state
+    """
