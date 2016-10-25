@@ -9,30 +9,18 @@ define('WEEKLY_BACKUP_TTL', 2764800);
 
 class Backups extends TerminusCollection
 {
-  /**
-   * Valid backup types
-   *
-   * @return String[] An array of valid elements
-   */
-    public static function getValidElements()
-    {
-        return ['code', 'files', 'database', 'db'];
-    }
-
-  /**
-   * @var Environment
-   */
+    /**
+     * @var Environment
+     */
     public $environment;
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     protected $collected_class = 'Terminus\Models\Backup';
 
-  /**
-   * Object constructor
-   *
-   * @param array $options Options to set as $this->key
-   */
+    /**
+     * @inheritdoc
+     */
     public function __construct($options = [])
     {
         parent::__construct($options);
@@ -44,11 +32,9 @@ class Backups extends TerminusCollection
         );
     }
 
-  /**
-   * Cancels an environment's regular backup schedule
-   *
-   * @return bool True if operation was successful
-   */
+    /**
+     * Cancels an environment's regular backup schedule
+     */
     public function cancelBackupSchedule()
     {
         $path_root = sprintf(
@@ -60,104 +46,101 @@ class Backups extends TerminusCollection
         for ($day = 0; $day < 7; $day++) {
             $this->request->request("$path_root/$day", $params);
         }
-        return true;
     }
 
-  /**
-   * Creates a backup
-   *
-   * @param array $arg_params Array of args to dictate backup choices,
-   *   which may have the following keys:
-   *   - type: string: Sort of operation to conduct (e.g. backup)
-   *   - keep-for: int: Days to keep the backup for
-   *   - element: string: Which aspect of the arg to back up
-   * @return Workflow
-   */
-    public function create(array $arg_params = [])
+    /**
+     * Creates a backup
+     *
+     * @param array $arg_options Elements as follow:
+     *   integer keep-for Days to keep the backup for
+     *   string  element  Which element of the site to back up (database, code, files, or null for all)
+     * @return Workflow
+     */
+    public function create(array $arg_options = [])
     {
-        $default_params = [
-        'code'       => false,
-        'database'   => false,
-        'files'      => false,
-        'ttl'        => 31556736,
-        'entry_type' => 'backup',
+        $default_options = ['element' => null, 'keep-for' => 365,];
+        $options = array_merge($default_options, $arg_options);
+
+        $params = [
+            'code'       => false,
+            'database'   => false,
+            'files'      => false,
+            'entry_type' => 'backup',
         ];
-        $params = array_merge($default_params, $arg_params);
 
-        if (isset($params[$params['element']])) {
-            $params[$params['element']] = true;
+        if (!is_null($element = $options['element'])) {
+            $params[$element] = true;
         } else {
-            $params = array_merge(
-                $params,
-                ['code' => true, 'database' => true, 'files' => true,]
-            );
+            $params['code'] = $params['database'] = $params['files'] = true;
         }
-        unset($params['element']);
+        $params['ttl'] = ceil((integer)$options['keep-for'] * 86400);
 
-        if (isset($params['keep-for'])) {
-            $params['ttl'] = ceil((integer)$params['keep-for'] * 86400);
-            unset($params['keep-for']);
-        }
-
-        if (isset($params['type'])) {
-            $params['entry_type'] = $params['type'];
-            unset($params['type']);
-        }
-
-        $workflow = $this->environment->workflows->create(
-            'do_export',
-            compact('params')
-        );
-        return $workflow;
+        return $this->environment->workflows->create('do_export', compact('params'));
     }
 
-  /**
-   * Fetches backup for a specified filename
-   *
-   * @param string $filename Name of the file name to filter by
-   * @return Backup
-   * @throws TerminusNotFoundException
-   */
+    /**
+     * Fetches model data from API and instantiates its model instances
+     *
+     * @param array $options params to pass configure fetching
+     *        array $data Data to fill in the model members of this collection
+     * @return TerminusCollection $this
+     */
+    public function fetch(array $options = [])
+    {
+        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
+
+        foreach ($data as $id => $model_data) {
+            if (isset($model_data->filename)) {
+                if (!isset($model_data->id)) {
+                    $model_data->id = $id;
+                }
+                $this->add($model_data);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Fetches backup for a specified filename
+     *
+     * @param string $filename Name of the file name to filter by
+     * @return Backup
+     * @throws TerminusNotFoundException
+     */
     public function getBackupByFileName($filename)
     {
         $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
         try {
-            $backup = $this->get(array_shift($matches));
+            return $this->get(array_shift($matches));
         } catch (\Exception $e) {
-            throw new TerminusNotFoundException(
-                'Cannot find a backup named {filename}.',
-                compact('filename'),
-                1
-            );
+            throw new TerminusNotFoundException('Cannot find a backup named {filename}.', compact('filename'));
         }
-        return $backup;
     }
 
-  /**
-   * Lists all backups for a specific element.
-   *
-   * @param string $element Name of the element type to filter by
-   * @return Backup[]
-   */
+    /**
+     * Lists all backups for a specific element.
+     *
+     * @param string $element Name of the element type to filter by
+     * @return Backup[]
+     */
     public function getBackupsByElement($element = null)
     {
-        $backups = array_filter(
+        return array_filter(
             $this->all(),
             function ($backup) use ($element) {
-                return $backup->getElement() == $element;
+                return $backup->get('type') == $element;
             }
         );
-
-        return $backups;
     }
 
-  /**
-   * Retrieves an environment's regular backup schedule
-   *
-   * @return array $schedule Elements as follows:
-   *   - daily_backup_time: string
-   *   - weekly_backup_day: string
-   */
+    /**
+     * Retrieves an environment's regular backup schedule
+     *
+     * @return array $schedule Elements as follows:
+     *   - daily_backup_time: string
+     *   - weekly_backup_day: string
+     */
     public function getBackupSchedule()
     {
         $path     = sprintf(
@@ -168,8 +151,8 @@ class Backups extends TerminusCollection
         $response      = $this->request->request($path);
         $response_data = (array)$response['data'];
         $data          = [
-        'daily_backup_hour' => null,
-        'weekly_backup_day' => null,
+            'daily_backup_hour' => null,
+            'weekly_backup_day' => null,
         ];
 
         $schedule_sample = array_shift($response_data);
@@ -188,15 +171,15 @@ class Backups extends TerminusCollection
         return $data;
     }
 
-  /**
-   * Filters the backups for only ones which have finished
-   *
-   * @param string $element Element requested (i.e. code, db, or files)
-   * @return Backup[] An array of Backup objects
-   */
-    public function getFinishedBackups($element)
+    /**
+     * Filters the backups for only ones which have finished
+     *
+     * @param string $element Element requested (i.e. code, db, or files)
+     * @return Backup[] An array of Backup objects
+     */
+    public function getFinishedBackups($element = null)
     {
-        if ($element != null) {
+        if (!is_null($element)) {
             $all_backups = $this->getBackupsByElement($element);
         } else {
             $all_backups = $this->all();
@@ -221,41 +204,51 @@ class Backups extends TerminusCollection
         return $backups;
     }
 
-  /**
-   * Sets an environment's regular backup schedule
-   *
-   * @param int $day_number A numerical of a day of the week
-   * @return bool True if operation was successful
-   */
-    public function setBackupSchedule($day_number)
+    /**
+     * Valid backup types
+     *
+     * @return string[] An array of valid elements
+     */
+    public function getValidElements()
     {
-        $daily_ttl   = 691200;
-        $weekly_ttl  = 2764800;
-        $backup_hour = rand(1, 24);
-        $schedule    = [];
+        return ['code', 'files', 'database', 'db',];
+    }
+
+    /**
+     * Sets an environment's regular backup schedule
+     *
+     * @param array $options Elements as follow:
+     *    string  day  A day of the week
+     *    integer hour Hour of the day to run the backups at, 0 = 00:00 23 = 23:00
+     * @return Workflow
+     */
+    public function setBackupSchedule(array $options = ['day' => null, 'hour' => null,])
+    {
+        $backup_hour = (isset($options['hour']) && !is_null($options['hour'])) ? $options['hour'] : null;
+        $day_number = isset($options['day']) ? $this->getDayNumber($options['day']) : rand(0, 6);
+        $schedule = [];
         for ($day = 0; $day < 7; $day++) {
-            $schedule[$day] = (object)[
-            'hour' => $backup_hour,
-            'ttl'  => $daily_ttl,
-            ];
-            if ($day == $day_number) {
-                $schedule[$day]->ttl = $weekly_ttl;
-            }
+            $schedule[$day] = (object)['hour' => $backup_hour, 'ttl' => null,];
+            $schedule[$day]->ttl = ($day == $day_number) ? WEEKLY_BACKUP_TTL: DAILY_BACKUP_TTL;
         }
         $schedule = (object)$schedule;
 
-        $path = sprintf(
-            'sites/%s/environments/%s/backups/schedule',
-            $this->environment->site->id,
-            $this->environment->id
+        $workflow = $this->environment->workflows->create(
+            'change_backup_schedule',
+            ['params' => ['backup_schedule' => $schedule,],]
         );
+        return $workflow;
+    }
 
-        $params = [
-        'method'      => 'put',
-        'form_params' => $schedule,
-        ];
-
-        $this->request->request($path, $params);
-        return true;
+    /**
+     * Retrieve an integer representing a the day of the week
+     *
+     * @param string $day The day of the week
+     * @return integer 0 = Sunday, 6 = Saturday
+     */
+    protected function getDayNumber($day)
+    {
+        $days_of_the_week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',];
+        return array_search(date('l', strtotime($day)), $days_of_the_week);
     }
 }

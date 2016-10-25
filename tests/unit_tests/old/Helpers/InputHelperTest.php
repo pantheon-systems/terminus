@@ -35,9 +35,9 @@ class InputHelperTest extends TerminusTest
 
     public function testDay()
     {
-        $day = $this->inputter->day(['args' => ['day' => 'Monday',],]);
-        $this->assertInternalType('integer', $day);
-        $this->assertEquals(1, $day);
+        $day = $this->inputter->day(['args' => ['day' => 'mon',],]);
+        $this->assertInternalType('string', $day);
+        $this->assertEquals('Monday', $day);
     }
 
     public function testEnv()
