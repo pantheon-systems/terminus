@@ -17,6 +17,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @authorized
      *
      * @command env:view
+     * @aliases site:view view
      *
      * @param $site_env
      *  The site and environment to view in the form: <sitename>.<env>
