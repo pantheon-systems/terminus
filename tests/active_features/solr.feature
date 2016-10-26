@@ -12,7 +12,8 @@ Feature: Using Solr
     When I run "terminus solr:enable [[test_site_name]]"
     Then I should get:
     """
-    Solr enabled. Converging bindings."""
+    Solr enabled. Converging bindings.
+    """
     And I should get:
     """
     Brought environments to desired configuration state
@@ -23,7 +24,8 @@ Feature: Using Solr
     When I run "terminus solr:disable [[test_site_name]]"
     Then I should get:
     """
-    Solr disabled. Converging bindings."""
+    Solr disabled. Converging bindings.
+    """
     And I should get:
     """
     Brought environments to desired configuration state
