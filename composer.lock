@@ -42,16 +42,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.2.1",
+            "version": "6.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "3f808fba627f2c5b69e2501217bf31af349c1427"
+                "reference": "ebf29dee597f02f09f4d5bbecc68230ea9b08f60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/3f808fba627f2c5b69e2501217bf31af349c1427",
-                "reference": "3f808fba627f2c5b69e2501217bf31af349c1427",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/ebf29dee597f02f09f4d5bbecc68230ea9b08f60",
+                "reference": "ebf29dee597f02f09f4d5bbecc68230ea9b08f60",
                 "shasum": ""
             },
             "require": {
@@ -100,7 +100,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2016-07-15 17:22:37"
+            "time": "2016-10-08 15:01:37"
         },
         {
             "name": "guzzlehttp/promises",
@@ -606,23 +606,23 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v1.6.1",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rmccue/Requests.git",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea"
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/6aac485666c2955077d77b796bbdd25f0013a4ea",
-                "reference": "6aac485666c2955077d77b796bbdd25f0013a4ea",
+                "url": "https://api.github.com/repos/rmccue/Requests/zipball/87932f52ffad70504d93f04f15690cf16a089546",
+                "reference": "87932f52ffad70504d93f04f15690cf16a089546",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2"
             },
             "require-dev": {
-                "satooshi/php-coveralls": "dev-master"
+                "requests/test-server": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -651,7 +651,7 @@
                 "iri",
                 "sockets"
             ],
-            "time": "2014-05-18 04:59:02"
+            "time": "2016-10-13 00:11:37"
         },
         {
             "name": "symfony/console",
@@ -993,16 +993,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.26.1",
+            "version": "v1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "a09d8ee17ac1cfea29ed60c83960ad685c6a898d"
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/a09d8ee17ac1cfea29ed60c83960ad685c6a898d",
-                "reference": "a09d8ee17ac1cfea29ed60c83960ad685c6a898d",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
+                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
                 "shasum": ""
             },
             "require": {
@@ -1015,7 +1015,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.26-dev"
+                    "dev-master": "1.27-dev"
                 }
             },
             "autoload": {
@@ -1050,7 +1050,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-10-05 18:57:41"
+            "time": "2016-10-25 19:17:17"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1156,16 +1156,16 @@
     "packages-dev": [
         {
             "name": "beberlei/assert",
-            "version": "v2.6.4",
+            "version": "2.6.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "ebab3d93e5f8f1ef95e016970ef149b4ad5ac024"
+                "reference": "fbadde44717ea3eb98fba35425d49731185bf418"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/ebab3d93e5f8f1ef95e016970ef149b4ad5ac024",
-                "reference": "ebab3d93e5f8f1ef95e016970ef149b4ad5ac024",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/fbadde44717ea3eb98fba35425d49731185bf418",
+                "reference": "fbadde44717ea3eb98fba35425d49731185bf418",
                 "shasum": ""
             },
             "require": {
@@ -1173,14 +1173,10 @@
                 "php": ">=5.3"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "2.0.0-alpha",
                 "phpunit/phpunit": "@stable"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.5-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "Assert": "lib/"
@@ -1211,7 +1207,7 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2016-10-03 10:58:03"
+            "time": "2016-10-11 17:13:28"
         },
         {
             "name": "behat/behat",
@@ -1542,30 +1538,36 @@
         },
         {
             "name": "php-vcr/php-vcr",
-            "version": "1.2.8",
+            "version": "1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-vcr/php-vcr.git",
-                "reference": "0f1cb3e5537897b88b774fa2918d6c32d7d69139"
+                "reference": "c3559d359f4a4ceb45ee7f06e5eb23daf0ca66bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/0f1cb3e5537897b88b774fa2918d6c32d7d69139",
-                "reference": "0f1cb3e5537897b88b774fa2918d6c32d7d69139",
+                "url": "https://api.github.com/repos/php-vcr/php-vcr/zipball/c3559d359f4a4ceb45ee7f06e5eb23daf0ca66bd",
+                "reference": "c3559d359f4a4ceb45ee7f06e5eb23daf0ca66bd",
                 "shasum": ""
             },
             "require": {
-                "beberlei/assert": "2.*",
+                "beberlei/assert": "^2.0",
                 "ext-curl": "*",
-                "symfony/event-dispatcher": "~2.1|3.*",
-                "symfony/yaml": "2.*|3.*"
+                "symfony/event-dispatcher": "^2.4|^3.0",
+                "symfony/yaml": "~2.1|^3.0"
             },
             "require-dev": {
-                "lapistano/proxy-object": "dev-master",
-                "mikey179/vfsstream": "1.2.*",
-                "phpunit/phpunit": "3.*"
+                "lapistano/proxy-object": "dev-master#d7184a479f502d5a0f96d0bae73566dbb498da8f",
+                "mikey179/vfsstream": "^1.2",
+                "phpunit/phpunit": "^4.8|^5.0",
+                "sebastian/version": "^1.0.3|^2.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -1582,7 +1584,7 @@
                 }
             ],
             "description": "Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests.",
-            "time": "2016-01-25 13:30:31"
+            "time": "2016-10-26 19:12:48"
         },
         {
             "name": "php-vcr/phpunit-testlistener-vcr",

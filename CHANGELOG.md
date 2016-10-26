@@ -1,7 +1,7 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 0.13.x
+## 0.13.4
 ### Changed
 - Branched 0.x from master, removed 1.x work.
 - The update helper now retrieves the latest-release data from the latest-release GitHub API. (#1316)
