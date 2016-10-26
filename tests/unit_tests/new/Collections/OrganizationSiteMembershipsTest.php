@@ -7,6 +7,7 @@ use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 use Terminus\Models\Site;
 
 class OrganizationSiteMembershipsTest extends CollectionTestCase
@@ -71,6 +72,7 @@ class OrganizationSiteMembershipsTest extends CollectionTestCase
         $this->assertEquals($model_data['b'], $org_site_membership->get('Site B'));
         $this->assertEquals($model_data['a'], $org_site_membership->get('abc'));
         $this->assertEquals($model_data['c'], $org_site_membership->get('cde'));
+        $this->setExpectedException(TerminusNotFoundException::class);
         $this->assertEquals(null, $org_site_membership->get('invalid'));
 
 

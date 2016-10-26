@@ -45,8 +45,9 @@ class UserOrganizationMemberships extends TerminusCollection
             return $models[$id];
         }
         foreach ($models as $model) {
-            $organization = $model->organization;
-            if (in_array($id, [$organization->get('profile')->name, $organization->id,])) {
+            $org = $model->organization;
+            $org_profile = $org->get('profile');
+            if (in_array($id, [$org_profile->name, $org_profile->machine_name, $org->id,])) {
                 return $model;
             }
         }

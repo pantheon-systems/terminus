@@ -28,7 +28,9 @@ class OrganizationSiteMembership extends TerminusModel
         $this->organization = $options['collection']->organization;
         $this->site = new Site($attributes->site);
         $this->site->memberships = [$this,];
-        $this->tags = new Tags(['data' => (array)$attributes->tags, 'org_site_membership' => $this,]);
+        $this->site->tags = $this->tags = new Tags(
+            ['data' => (array)$attributes->tags, 'org_site_membership' => $this,]
+        );
     }
 
     /**
@@ -46,7 +48,7 @@ class OrganizationSiteMembership extends TerminusModel
      */
     public function delete()
     {
-        $workflow = $this->organization->workflows->create(
+        $workflow = $this->organization->getWorkflows()->create(
             'remove_organization_site_membership',
             ['params' => ['site_id' => $this->site->id,],]
         );

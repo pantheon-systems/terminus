@@ -9,7 +9,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Session\Session;
 use Terminus\Models\Environment;
-use Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Organization;
 use Terminus\Models\Site;
 
 class WorkflowTest extends ModelTestCase

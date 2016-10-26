@@ -81,8 +81,8 @@ class Sites extends TerminusCollection
     public function fetch(array $arg_options = [])
     {
         $default_options = [
-        'org_id'    => null,
-        'team_only' => false,
+            'org_id'    => null,
+            'team_only' => false,
         ];
         $options = array_merge($default_options, $arg_options);
 
@@ -121,16 +121,15 @@ class Sites extends TerminusCollection
   /**
    * Filters sites list by tag
    *
-   * @param string $tag    Tag to filter by
-   * @param string $org_id ID of an organization which has tagged sites
+   * @param string $tag A tag to filter by
    * @return Sites
    */
-    public function filterByTag($tag, $org_id)
+    public function filterByTag($tag)
     {
         $this->models = array_filter(
             $this->models,
-            function ($site) use ($tag, $org_id) {
-                return in_array($tag, $site->getTags($org_id));
+            function ($site) use ($tag) {
+                return $site->tags->has($tag);
             }
         );
         return $this;
