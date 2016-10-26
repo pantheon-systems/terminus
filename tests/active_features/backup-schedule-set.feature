@@ -5,14 +5,12 @@ Feature: Set a Backup Schedule for a Site
 
   Background: I am authenticated and have a site named [[test_site_name]]
     Given I am authenticated
-    And I list the sites
     And a site named "[[test_site_name]]"
 
-  @vcr site_backups_set-schedule
+  @vcr backup-schedule-set
   Scenario: Set the backup schedule for an environment
-    When I run "terminus site backups set-schedule --site=[[test_site_name]] --env=dev --day=Fri"
-    And I run "terminus site backups get-schedule --site=[[test_site_name]] --env=dev"
-    Then I should get:
-    """
-    Friday
-    """
+    When I run "terminus backup:schedule:set [[test_site_name]].test --day=Mon --hour=16"
+    Then I should get: "."
+    And I should get "Backup schedule successfully set."
+    When I run "terminus backup:schedule:get [[test_site_name]].test"
+    Then I should get: "Monday"
