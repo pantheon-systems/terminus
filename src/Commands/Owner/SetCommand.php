@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Owner;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Terminus\Exceptions\TerminusException;
 
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -23,8 +24,19 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     public function setOwner($sitename, $owner)
     {
         $site = $this->sites->get($sitename);
-        $workflow = $site->setOwner($owner);
+        $members = $site->user_memberships;
+        try{
+            $member = $members->get($owner);
+        } catch (TerminusException $e){
+            $this->log()->notice($e->getMessage());
+            $this->log()->notice("Cannot find site user with the name \"${owner}\"");
+            if ($e->getMessage() == "Cannot find site user with the name \"${owner}\""){
+                throw new TerminusException("The new owner must be added with \"terminus site team add-member\" before promoting");
+            } else {throw $e;}
+        }
+        $workflow = $site->setOwner($member->id);
         $workflow->wait();
+        // Cannot find site user with the name "cd44c555-de05-4f5e-9f28-0e66f649fe5e"
         $this->log()->notice('Promoted new owner');
     }
 }
