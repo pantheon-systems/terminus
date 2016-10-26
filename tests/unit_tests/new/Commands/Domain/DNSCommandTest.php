@@ -28,7 +28,8 @@ class DNSCommandTest extends DomainTest
     {
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
-        $dummy_data = ['domain',];
+        $this->hostname->id = 'domain_id';
+        $dummy_data = ['value' => 'value', 'type' => 'type',];
 
         $this->hostnames->expects($this->once())
             ->method('setHydration')
@@ -42,13 +43,13 @@ class DNSCommandTest extends DomainTest
         $this->hostname->expects($this->once())
             ->method('get')
             ->with($this->equalTo('dns_recommendations'))
-            ->willReturn([$dummy_data,]);
+            ->willReturn([(object)$dummy_data,]);
 
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->getRecommendations("$site_name.{$this->environment->id}");
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([$dummy_data,], $out->getArrayCopy());
+        $this->assertEquals([array_merge(['name' => $this->hostname->id,], $dummy_data),], $out->getArrayCopy());
     }
 }
