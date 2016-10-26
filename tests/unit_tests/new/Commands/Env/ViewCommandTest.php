@@ -6,23 +6,27 @@ use Pantheon\Terminus\Commands\Env\ViewCommand;
 
 class ViewCommandTest extends EnvCommandTest
 {
-    public function testView()
+
+    public function setUp()
     {
+        parent::setUp();
+
         $this->env->expects($this->any())
             ->method('domain')
             ->willReturn('dev-my-site.example.com');
 
-        $command = new ViewCommand();
-        $command->setSites($this->sites);
-        $url = $command->view('my-site.dev', ['print' => true]);
+        $this->command = new ViewCommand();
+        $this->command->setSites($this->sites);
+    }
+
+    public function testView()
+    {
+        $url = $this->command->view('my-site.dev', ['print' => true]);
         $this->assertEquals('http://dev-my-site.example.com/', $url);
     }
 
     public function testViewLocked()
     {
-        $this->env->expects($this->any())
-            ->method('domain')
-            ->willReturn('dev-my-site.example.com');
         $this->env->expects($this->any())
             ->method('get')
             ->with('lock')
@@ -34,9 +38,7 @@ class ViewCommandTest extends EnvCommandTest
                 ]
             );
 
-        $command = new ViewCommand();
-        $command->setSites($this->sites);
-        $url = $command->view('my-site.dev', ['print' => true]);
+        $url = $this->command->view('my-site.dev', ['print' => true]);
         $this->assertEquals('http://user:pass@dev-my-site.example.com/', $url);
     }
 }

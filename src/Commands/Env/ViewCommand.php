@@ -12,7 +12,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Output the url for an environment or open it in a browser.
+     * Output the URL for an environment or open it in a browser.
      *
      * @authorized
      *
@@ -21,12 +21,12 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @param $site_env
      *  The site and environment to view in the form: <sitename>.<env>
      * @option print
-     *  Output the URL only. Do not open the url in the default browser.
+     *  Output the URL only. Do not open the URL in the default browser.
      *
      * @usage: terminus env:view mysite.dev --print
-     *  Output the url of the environment dev of the site mysite
+     *  Output the URL of the environment dev of the site mysite
      * @usage: terminus env:view mysite.dev
-     *  Open the url of the environment dev of the site mysite in the default browser.
+     *  Open the URL of the environment dev of the site mysite in the default browser.
 
      * @return string
      * @throws \Terminus\Exceptions\TerminusException
