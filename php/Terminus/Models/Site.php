@@ -2,14 +2,14 @@
 
 namespace Terminus\Models;
 
-use Terminus\Config;
-use Terminus\Exceptions\TerminusException;
 use Terminus\Collections\Branches;
 use Terminus\Collections\Environments;
 use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\Workflows;
+use Terminus\Config;
+use Terminus\Exceptions\TerminusException;
 
 class Site extends TerminusModel
 {
@@ -113,6 +113,23 @@ class Site extends TerminusModel
     public function converge()
     {
         return $this->workflows->create('converge_site');
+    }
+
+    /**
+     * Provides Pantheon Dashboard URL for this site
+     *
+     * @return string
+     */
+    public function dashboardUrl()
+    {
+        $url = sprintf(
+            '%s://%s/sites/%s',
+            Config::get('dashboard_protocol'),
+            Config::get('dashboard_host'),
+            $this->id
+        );
+
+        return $url;
     }
 
     /**

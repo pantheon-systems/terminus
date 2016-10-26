@@ -35,7 +35,7 @@ class SiteTest extends ModelTestCase
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->model = new Site((object)['id' => 'site_id',]);
+        $this->model = new Site((object)['id' => 123,]);
         $this->model->workflows = $this->workflows;
         $this->model->setRequest($this->request);
     }
@@ -90,6 +90,14 @@ class SiteTest extends ModelTestCase
 
         $workflow = $this->model->converge();
         $this->assertEquals($workflow, $this->workflow);
+    }
+
+    /**
+     * Tests Site::dashboardUrl()
+     */
+    public function testDashboardUrl()
+    {
+        $this->assertEquals('https://dashboard.pantheon.io/sites/123', $this->model->dashboardUrl());
     }
 
     /**
