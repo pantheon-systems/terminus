@@ -9,11 +9,11 @@ Feature: Diffing environments
 
   @vcr site_code_diffstat
   Scenario: Looking for changes on the server
-    When I run "terminus env:diff dev --site=[[test_site_name]]"
+    When I run "terminus env:diffstat [[test_site_name]].dev"
     Then I should get: "Deletions"
     And I should not get: "No changes on the server."
 
   @vcr site_code_diffstat_empty
   Scenario: Looking for changes on the server when there are none
-    When I run "terminus env:diff dev --site=[[test_site_name]]"
+    When I run "terminus env:diffstat [[test_site_name]].dev"
     Then I should get: "No changes on server."
