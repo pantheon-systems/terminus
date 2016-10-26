@@ -11,7 +11,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     /**
-     * Changes Owner of a Site
+     * Changes Owner of a Site 
      *
      * @command set
      * @aliases owner:set
@@ -20,6 +20,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $sitename Name|UUID of a site to look up
      * @param string $owner The email of the user to set as the new owner
      * @usage terminus owner:set <site> <new_owner_email>
+     *   *Promotes user mentioned to the owner. Can use UUID, Email or Full Name. 
+     *     
      */
     public function setOwner($sitename, $owner)
     {
