@@ -24,12 +24,7 @@ class Hostnames extends TerminusCollection
     {
         parent::__construct($options);
         $this->environment = $options['environment'];
-        $this->url = sprintf(
-            'sites/%s/environments/%s/hostnames?hydrate=%s',
-            $this->environment->site->id,
-            $this->environment->id,
-            $this->hydrate
-        );
+        $this->setURL();
     }
 
     /**
@@ -58,6 +53,20 @@ class Hostnames extends TerminusCollection
     public function setHydration($value)
     {
         $this->hydrate = $value;
+        $this->setURL();
         return $this;
+    }
+
+    /**
+     * Sets the URL to fetch this collection
+     */
+    protected function setURL()
+    {
+        $this->url = sprintf(
+            'sites/%s/environments/%s/hostnames?hydrate=%s',
+            $this->environment->site->id,
+            $this->environment->id,
+            $this->hydrate
+        );
     }
 }

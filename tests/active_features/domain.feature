@@ -52,8 +52,8 @@ Feature: Adding domains to an environment
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
     When I run "terminus domain:dns [[test_site_name]].dev"
-    Then I should get: "------------- ---------------------------------"
-    And I should get: "Record Type   Value"
-    And I should get: "------------- ---------------------------------"
-    And I should get: "CNAME         dev-[[test_site_name]].[[php_site_domain]]"
-    And I should get: "------------- ---------------------------------"
+    Then I should get: "--------------------------------- ------------- ---------------------------------"
+    And I should get: "Name                              Record Type   Value"
+    And I should get: "--------------------------------- ------------- ---------------------------------"
+    And I should get: "dev-[[test_site_name]].[[php_site_domain]]   CNAME         dev-[[test_site_name]].[[php_site_domain]]"
+    And I should get: "--------------------------------- ------------- ---------------------------------"

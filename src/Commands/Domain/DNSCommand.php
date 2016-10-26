@@ -20,6 +20,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      * @return RowsOfFields
      *
      * @field-labels
+     *   name: Name
      *   type: Record Type
      *   value: Value
      *
@@ -29,12 +30,20 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
     public function getRecommendations($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $settings = array_map(
-            function ($domain) {
-                return (array)$domain->get('dns_recommendations')[0];
-            },
-            $env->hostnames->setHydration('recommendations')->all()
-        );
+        $domains = $env->hostnames->setHydration('recommendations')->all();
+        $settings = [];
+        foreach ($domains as $domain) {
+            $settings = array_merge(
+                $settings,
+                array_map(
+                    function ($recommendation) use ($domain) {
+                        $recommendation->name = $domain->id;
+                        return (array)$recommendation;
+                    },
+                    $domain->get('dns_recommendations')
+                )
+            );
+        }
         return new RowsOfFields($settings);
     }
 }
