@@ -11,6 +11,17 @@ use Terminus\Models\Branch;
 
 class DeleteCommandTest extends CommandTestCase
 {
+    protected $command;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->command = new DeleteCommand();
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+    }
+
     public function testDeleteBranch()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
@@ -48,38 +59,25 @@ class DeleteCommandTest extends CommandTestCase
                 $this->equalTo('successful workflow')
             );
 
-
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->deleteBranch('my-site', 'branch-name');
+        $this->command->deleteBranch('my-site', 'branch-name');
     }
 
     public function testMasterBranch()
     {
         $this->setExpectedException(TerminusException::class, 'You cannot delete the master branch');
 
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->deleteBranch('my-site', 'master');
+        $this->command->deleteBranch('my-site', 'master');
     }
     public function testTestBranch()
     {
         $this->setExpectedException(TerminusException::class, 'You cannot delete the test branch');
 
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->deleteBranch('my-site', 'test');
+        $this->command->deleteBranch('my-site', 'test');
     }
     public function testLiveBranch()
     {
         $this->setExpectedException(TerminusException::class, 'You cannot delete the live branch');
 
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->deleteBranch('my-site', 'live');
+        $this->command->deleteBranch('my-site', 'live');
     }
 }
