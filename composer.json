@@ -1,7 +1,6 @@
 {
   "name": "pantheon-systems/terminus",
   "description": "A command line interface for Pantheon",
-  "version": "1.0.0-alpha",
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "https://pantheon.io",
   "license": "MIT",
@@ -12,7 +11,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
-    "consolidation/robo": "dev-master",
+    "consolidation/robo": "^1.0.0-RC3",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
@@ -42,6 +41,7 @@
       "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/* php/*",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/* php/*",
+      "lint": "@cs",
       "docs": "php utils/make-docs.php",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
       "test": "SHELL_INTERACTIVE=true ./scripts/test.sh"
@@ -58,7 +58,7 @@
   },
   "extra": {
     "branch-alias": {
-        "dev-master": "0.0.x-dev"
+        "dev-master": "1.x-dev"
     }
   }
 }

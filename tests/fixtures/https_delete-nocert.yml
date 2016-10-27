@@ -1,0 +1,177 @@
+-
+    request:
+        method: POST
+        url: 'https://onebox/api/authorize/machine-token'
+        headers:
+            Host: onebox
+            Expect: null
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.13.3 (php_version=7.0.6&script=boot-fs.php)'
+            Content-type: application/json
+            verify: '1'
+            method: post
+            absolute_url: ''
+            json: terminus
+            Accept: null
+        body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Tue, 16 Aug 2016 22:51:26 GMT'
+            Content-Type: 'application/json; charset=utf-8'
+            Content-Length: '182'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: f535ebd0-6403-11e6-9844-1524ed28772c
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"session": "11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq","expires_at":1473807086,"user_id":"11111111-1111-1111-1111-111111111111"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/site-names/behat-tests'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/1.0.0-alpha (php_version=5.5.26&script=bin/terminus)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 21 Oct 2016 20:34:26 GMT'
+            Content-Type: application/json
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c256d820-97cd-11e6-ba93-85eff07488d9
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"id": "11111111-1111-1111-1111-111111111111", "name": "behat-tests"}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111?site_state=true'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/1.0.0-alpha (php_version=5.5.26&script=bin/terminus)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 21 Oct 2016 20:34:29 GMT'
+            Content-Type: application/json
+            Content-Length: '3159'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c3ced220-97cd-11e6-ba93-85eff07488d9
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"created": 1477079090, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "framework": "wordpress", "holder_id": "7249b1ca-0897-4e3b-bc16-f081fed63821", "holder_type": "organization", "instrument": "42396ca2-e932-47c1-99be-a60f48c22502", "last_code_push": {"timestamp": "2016-10-21T19:45:04", "user_uuid": null}, "name": "behat-tests", "organization": "7249b1ca-0897-4e3b-bc16-f081fed63821", "owner": "11111111-1111-1111-1111-111111111111", "php_version": "55", "preferred_zone": "onebox", "purchased_at": 1477079293, "service_level": "pro", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "4ccdd52d-330f-4e48-b01d-79f71397de15", "branch": "master"}, "label": "behat-tests", "id": "11111111-1111-1111-1111-111111111111", "holder": {"instrument": "42396ca2-e932-47c1-99be-a60f48c22502", "maxdevsites": "10", "name": "Another Test Org", "id": "7249b1ca-0897-4e3b-bc16-f081fed63821", "key": "7249b1ca-0897-4e3b-bc16-f081fed63821", "service_level": "enterprise", "org_logo_height": 85, "machine_name": "another-test-org", "org_logo_width": 85, "has_multidev": false, "support_plan": "regular_support", "show_org_name_header": "yes", "base_domain": null, "requires_onboarding": false, "has_change_management": false, "profile": {"machine_name": "another-test-org", "change_service_url": null, "name": "Another Test Org", "email_domain": null, "org_logo_width": 85, "org_logo_height": 85, "base_domain": null, "billing_url": null, "terms_of_service": null, "org_logo": null}, "use_org_instrument": true, "settings": {"service_level": "enterprise", "use_org_instrument": true, "show_org_name_header": "yes", "base_domain": null, "discoverable": false, "email_domain": null}}, "settings": {"allow_domains": true, "max_num_cdes": 10, "stunnel": false, "replica_verification_strategy": "pt-heartbeat", "owner": "11111111-1111-1111-1111-111111111111", "secure_runtime_access": false, "pingdom": 0, "allow_indexserver": false, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "failover_appserver": 0, "cacheserver": 1, "support_plan": "regular_support", "appserver": 1, "on_server_development": false, "drush_version": 5, "label": "behat-tests", "instrument": "42396ca2-e932-47c1-99be-a60f48c22502", "allow_read_slaves": false, "indexserver": 1, "php_version": "55", "php_channel": "stable", "allow_cacheserver": false, "ssl_enabled": null, "min_backups": 0, "service_level": "pro", "dedicated_ip": null, "dbserver": 1, "purchased_at": 1477079293, "framework": "wordpress", "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "4ccdd52d-330f-4e48-b01d-79f71397de15", "branch": "master"}, "guilty_of_abuse": null, "preferred_zone": "onebox", "pingdom_chance": 0, "holder_id": "7249b1ca-0897-4e3b-bc16-f081fed63821", "name": "behat-tests", "created": 1477079090, "max_backups": 7, "holder_type": "organization", "number_allow_domains": 200, "organization": "7249b1ca-0897-4e3b-bc16-f081fed63821", "pingdom_manually_enabled": false, "last_code_push": {"timestamp": "2016-10-21T19:45:04", "user_uuid": null}}, "base_domain": null, "attributes": {"label": "behat-tests"}, "add_ons": []}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/1.0.0-alpha (php_version=5.5.26&script=bin/terminus)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 21 Oct 2016 20:34:29 GMT'
+            Content-Type: application/json
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c3fb3950-97cd-11e6-ba93-85eff07488d9
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"live": {"environment_created": 1477079091, "dns_zone": "onebox.pantheonsite.io", "randseed": "BKU19TUGTDL10IW26T8R3BQYXEDM1ICI", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-devuser-onebox6.onebox.pantheon.io"}, "test": {"environment_created": 1477079091, "dns_zone": "onebox.pantheon.io", "randseed": "U7U2PSWWR5OP63RJK5W52L7K4UZ0WO1I", "lock": {"username": null, "password": null, "locked": false}, "styx_cluster": "styx-devuser-onebox6.onebox.pantheon.io"}, "dev": {"watchers": 1, "dedicated_ip": false, "diffstat": {}, "on_server_development": true, "environment_created": 1477079090, "dns_zone": "onebox.pantheonsite.io", "randseed": "9MFCV3O8UKEZ8O07D6C1GW8HL053QRV8", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "fa0dd988c2a337b5b544bef9fe75d22239a6133a", "ssl_enabled": false, "styx_cluster": "styx-devuser-onebox6.onebox.pantheon.io"}}'
+-
+    request:
+        method: GET
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments/dev/settings'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/1.0.0-alpha (php_version=5.5.26&script=bin/terminus)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:e0509b4c-97bc-11e6-af3a-bc764e10cbc8:IyAxuHjFsRMelKv1InUVq'
+            verify: ''
+            method: get
+            absolute_url: ''
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 21 Oct 2016 20:34:29 GMT'
+            Content-Type: application/json
+            Content-Length: '2244'
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: c42ef380-97cd-11e6-ba93-85eff07488d9
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"target_ref": "refs/heads/master", "diffstat": {}, "allow_domains": true, "upstream": {"url": "https://github.com/pantheon-systems/WordPress", "product_id": "4ccdd52d-330f-4e48-b01d-79f71397de15", "branch": "master"}, "site": "11111111-1111-1111-1111-111111111111", "stunnel": false, "replica_verification_strategy": "pt-heartbeat", "mysql": {"query_cache_size": 64, "innodb_buffer_pool_size": 512, "innodb_log_file_size": 50331648, "BlockIOWeight": 500, "MemoryLimit": 1024, "CPUShares": 750}, "owner": "11111111-1111-1111-1111-111111111111", "secure_runtime_access": false, "pingdom": 0, "allow_indexserver": false, "created_by_user_id": "11111111-1111-1111-1111-111111111111", "failover_appserver": 0, "cacheserver": 1, "support_plan": "regular_support", "instrument": "42396ca2-e932-47c1-99be-a60f48c22502", "on_server_development": true, "environment_created": 1477079090, "drush_version": 5, "redis": {"MemoryLimit": 256, "maxmemory": 241172480, "CPUShares": 32, "BlockIOWeight": 100}, "label": "behat-tests", "environment": "dev", "appserver": 1, "allow_read_slaves": false, "preferred_zone": "onebox", "php_version": "55", "php_channel": "stable", "allow_cacheserver": false, "ssl_enabled": false, "styx_cluster": "styx-devuser-onebox6.onebox.pantheon.io", "min_backups": 0, "service_level": "pro", "dedicated_ip": false, "dbserver": 1, "purchased_at": 1477079293, "framework": "wordpress", "watchers": 1, "max_num_cdes": 10, "guilty_of_abuse": null, "indexserver": 1, "dns_zone": "onebox.pantheonsite.io", "pingdom_chance": 0, "holder_id": "7249b1ca-0897-4e3b-bc16-f081fed63821", "name": "behat-tests", "created": 1477079090, "max_backups": 7, "php-fpm": {"fpm_max_children": 8, "opcache_revalidate_freq": 0, "BlockIOWeight": 300, "MemoryLimit": 768, "apc_shm_size": 256, "php_memory_limit": 256, "CPUShares": 750}, "randseed": "9MFCV3O8UKEZ8O07D6C1GW8HL053QRV8", "holder_type": "organization", "number_allow_domains": 200, "target_commit": "fa0dd988c2a337b5b544bef9fe75d22239a6133a", "organization": "7249b1ca-0897-4e3b-bc16-f081fed63821", "pingdom_manually_enabled": false, "nginx": {"sendfile": "off", "aio": "off", "worker_processes": 4, "directio": "off"}, "last_code_push": {"timestamp": "2016-10-21T19:45:04", "user_uuid": null}}'

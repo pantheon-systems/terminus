@@ -1,19 +1,11 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\Backup\GetCommand
- */
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Collections\Sites;
-use Terminus\Collections\Backups;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\Environment;
 
 class GetCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -27,46 +19,35 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup:get
      *
      * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-     * @param string $file_or_element [filename.tgz|code|files|database|db] Filename or backup type
+     * @option string $file [filename.tgz] Name of the backup archive file
+     * @option string $element [code|files|database|db] Backup type
+     * @throws TerminusNotFoundException
      *
-     * @return string
-     *
-     * @example terminus backup:get awesome-site.dev awesome-site_dev_2016-08-18T23-16-20_UTC_code.tar.gz
-     * @example terminus backup:get awesome-site.dev code
-     *
+     * @usage terminus backup:get awesome-site.dev
+     *     Returns the URL for the most recent backup of any type
+     * @usage terminus backup:get awesome-site.dev --file=2016-08-18T23-16-20_UTC_code.tar.gz
+     *     Returns the URL for the backup with the specified archive file name
+     * @usage terminus backup:get awesome-site.dev --element=code
+     *     Returns the URL for the most recent code backup
      */
-    public function gotBackup(
-        $site_env,
-        $file_or_element
-    ) {
-        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+    public function getBackup($site_env, array $options = ['file' => null, 'element' => null,])
+    {
+        list($site, $env) = $this->getSiteEnv($site_env);
 
-        if (in_array($file_or_element, Backups::getValidElements())) {
-            if ($file_or_element == 'db') {
-                $backup_element = 'database';
-            } else {
-                $backup_element = $file_or_element;
-            }
-
-            $backups = $env->backups->getFinishedBackups($backup_element);
+        if (isset($options['file']) && !is_null($file_name = $options['file'])) {
+            $backup = $env->backups->getBackupByFileName($file_name);
+        } else {
+            $element = ($options['element'] == 'db') ? 'database' : $options['element'];
+            $backups = $env->backups->getFinishedBackups($element);
             if (empty($backups)) {
                 throw new TerminusNotFoundException(
-                    "No backups available. Create one with `terminus backup:create {site}.{env}`",
-                    [
-                        'site' => $site->get('name'),
-                        'env'  => $env->id
-                    ],
-                    1
+                    'No backups available. Create one with `terminus backup:create {site}.{env}`',
+                    ['site' => $site->get('name'), 'env' => $env->id,]
                 );
-            } else {
-                $backup = array_shift($backups);
             }
-        } else {
-            $file = $file_or_element;
-            $backup = $env->backups->getBackupByFileName($file);
+            $backup = array_shift($backups);
         }
 
-        $url = $backup->getUrl();
-        return $url;
+        return $backup->getUrl();
     }
 }

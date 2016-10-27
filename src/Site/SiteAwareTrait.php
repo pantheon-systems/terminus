@@ -51,16 +51,15 @@ trait SiteAwareTrait
      *
      * @TODO This should be moved to the input/validation stage when that is available.
      *
-     * @param string $site_env_id The site/environment id in the form <site>[.<env>]
-     * @param string $default_env The default environment to use if none is specified.
-     * @return array The site and environment in an array.
+     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
+     * @param string  $default_env The default environment to use if none is specified
+     * @return array  The site and environment in an array.
      * @throws \Terminus\Exceptions\TerminusException
      */
     public function getSiteEnv($site_env_id, $default_env = null)
     {
-        $parts = explode('.', $site_env_id);
-        $site_id = $parts[0];
-        $env_id = !empty($parts[1]) ? $parts[1] : $default_env;
+        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
+        $env_id = !empty($env_id) ? $env_id : $default_env;
 
         if (empty($site_id) || empty($env_id)) {
             throw new TerminusException('The environment argument must be given as <site_name>.<environment>');
@@ -68,6 +67,25 @@ trait SiteAwareTrait
 
         $site = $this->getSite($site_id);
         $env = $site->environments->get($env_id);
+        return [$site, $env];
+    }
+
+    /**
+     * Get the site and environment with the given ids, if provided
+     *
+     * @param string $site_env_id The site/environment id in the form [<site>[.<env>]]
+     * @return array The site and environment in an array, if provided; may return [null, null]
+     */
+    public function getOptionalSiteEnv($site_env_id)
+    {
+        if (empty($site_env_id)) {
+            return [null, null];
+        }
+
+        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
+
+        $site = $this->getSite($site_id);
+        $env = !empty($env_id) ? $site->environments->get($env_id) : null;
         return [$site, $env];
     }
 }

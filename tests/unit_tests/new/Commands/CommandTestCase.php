@@ -58,7 +58,10 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * @var Site
      */
     protected $site;
-
+    /**
+     * @var Environment
+     */
+    protected $environment;
 
     /**
      * @return Terminus

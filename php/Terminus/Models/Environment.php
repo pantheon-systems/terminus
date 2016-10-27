@@ -278,6 +278,22 @@ class Environment extends TerminusModel
         return $number_of_commits;
     }
 
+    /**
+     * Provides Pantheon Dashboard URL for this environment
+     *
+     * @return string
+     */
+    public function dashboardUrl()
+    {
+        $url = sprintf(
+            '%s#%s',
+            $this->site->dashboardUrl(),
+            $this->id
+        );
+
+        return $url;
+    }
+
   /**
    * Gives database connection info for this environment
    *
@@ -720,6 +736,34 @@ class Environment extends TerminusModel
         $workflow_data = $response['data'];
         $workflow = new Workflow($workflow_data, ['environment' => $this,]);
         return $workflow;
+    }
+
+    /**
+     * Remove a HTTPS certificate from the environment
+     *
+     * @return array $workflow
+     *
+     * @throws \Terminus\Exceptions\TerminusException
+     */
+    public function disableHttpsCertificate()
+    {
+        if (!$this->settings('ssl_enabled')) {
+            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
+        }
+        try {
+            $this->request->request(
+                "sites/{$this->site->id}/environments/{$this->id}/settings",
+                [
+                    'method' => 'put',
+                    'form_params' => [
+                        'ssl_enabled' => false,
+                        'dedicated_ip' => false,
+                    ],
+                ]
+            );
+        } catch (\Exception $e) {
+            throw new TerminusException('There was an problem disabling https for this environment.');
+        }
     }
 
   /**
