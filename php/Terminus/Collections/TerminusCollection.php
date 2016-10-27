@@ -100,7 +100,7 @@ abstract class TerminusCollection implements RequestAwareInterface
     public function get($id)
     {
         $models = $this->getMembers();
-        if (isset($models[$id])) {
+        if ($this->has($id)) {
             return $models[$id];
         }
         throw new TerminusException(
@@ -111,15 +111,24 @@ abstract class TerminusCollection implements RequestAwareInterface
     }
 
     /**
+     * Checks the collection to see if a model of a given ID exists
+     *
+     * @param string $id The identifier for the model to be located
+     * @return boolean
+     */
+    public function has($id)
+    {
+        return array_key_exists($id, $this->models);
+    }
+
+    /**
      * List model IDs
      *
      * @return string[] Array of all model IDs
      */
     public function ids()
     {
-        $models = $this->getMembers();
-        $ids    = array_keys($models);
-        return $ids;
+        return array_keys($this->getMembers());
     }
 
     /**
