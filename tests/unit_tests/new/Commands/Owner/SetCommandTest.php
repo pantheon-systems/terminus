@@ -4,13 +4,15 @@ namespace Pantheon\Terminus\UnitTests\Commands\Owner;
 
 use Pantheon\Terminus\Commands\Owner\SetCommand;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Collections\SiteUserMemberships;
+use Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Models\Workflow;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand
+ * Test suite for class for Pantheon\Terminus\Commands\Owner\SetCommand
  */
-class ImportCommandTest extends CommandTestCase
+class SetCommandTest extends CommandTestCase
 {
 
     /**
@@ -37,16 +39,24 @@ class ImportCommandTest extends CommandTestCase
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
+            ->disableOriginalConstructor()->getMock();
+        $this->user_membership = $this->getMockBuilder(SiteUserMembership::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+   
+        $this->site->user_memberships->method('get')
+            ->willReturn($this->user_membership);
+
+        $this->site->expects($this->once())->method('setOwner')->willReturn($workflow);
 
         $workflow->expects($this->once())->method('wait')->willReturn(true);
 
-        $this->site->expects($this->once())->method('setOwner')
-            ->with($this->equalTo('a-valid-uuid'))->willReturn($workflow);
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Promoted new owner')
             );
-        $this->command->setOwner('dummy-site', 'a-valid-uuid');
+        $this->command->setOwner('dummy-site', 'a-valid-email');
     }
 }
