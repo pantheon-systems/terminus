@@ -37,6 +37,7 @@ class FilesCommandTest extends CommandTestCase
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
+            
         $workflow->expects($this->once())->method('wait')->willReturn(true);
 
         $this->environment->expects($this->once())->method('importFiles')
