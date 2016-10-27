@@ -31,7 +31,6 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
         // Wait for the workflow to complete.
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.
-            error_log('waiting...');
         }
         $this->log()->notice($workflow->getMessage());
     }
