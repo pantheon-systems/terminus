@@ -37,6 +37,6 @@ class SetCommandTest extends CommandTestCase
         $command = new SetCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->set('free', 'my-site');
+        $command->set('my-site', 'free');
     }
 }

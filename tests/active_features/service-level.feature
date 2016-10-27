@@ -9,7 +9,7 @@ Feature: Set a site's service level
 
   @vcr service_level_set.yml
   Scenario: Changing the service level
-    When I run "terminus service-level:set pro [[test_site_name]]"
+    When I run "terminus service-level:set [[test_site_name]] pro"
     Then I should get:
     """
     Changing site plan to "pro"
@@ -17,7 +17,7 @@ Feature: Set a site's service level
 
   @vcr service_level_set_fail.yml
   Scenario: Changing service level without payment method
-    When I run "terminus service-level:set pro [[test_site_name]]"
+    When I run "terminus service-level:set [[test_site_name]] pro"
     Then I should get:
     """
     needs to be paid for before the service level can be changed

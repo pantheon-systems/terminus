@@ -15,10 +15,10 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @command service-level:set
      *
-     * @param string $level The level to set the site to. Options are free, basic, pro, and business.
      * @param string $site_id The name of the site to set the service level for.
+     * @param string $level The level to set the site to. Options are free, basic, pro, and business.
      */
-    public function set($level, $site_id)
+    public function set($site_id, $level)
     {
         $site = $this->getSite($site_id);
         $workflow = $site->updateServiceLevel($level);
