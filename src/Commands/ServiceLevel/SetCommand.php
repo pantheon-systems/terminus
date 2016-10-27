@@ -13,6 +13,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Set a site's service level.
      *
+     * @authorized
+     *
      * @command service-level:set
      *
      * @param string $site_id The name of the site to set the service level for.
