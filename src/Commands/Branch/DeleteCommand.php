@@ -14,10 +14,12 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Delete a git branch from a site.
      *
+     * @authorized
+     *
      * @command branch:delete
      *
-     * @param string $branch_id The name of the branch to delete
      * @param string $site_id The name of the site to delete the branch from.
+     * @param string $branch_id The name of the branch to delete
      * @throws \Terminus\Exceptions\TerminusException
      */
     public function deleteBranch($site_id, $branch_id)
