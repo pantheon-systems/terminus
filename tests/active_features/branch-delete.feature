@@ -7,18 +7,22 @@ Feature: Deleting a site's branches
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_delete-branch
+  @vcr branch_delete.yml
   Scenario: Deleting a branch
-    When I run "terminus branch:delete multidev new_branch --site=[[test_site_name]] --yes"
+    When I run "terminus branch:delete new_branch [[test_site_name]]"
     Then I should get:
+    """
+    Deleting the new_branch branch of the site [[test_site_name]].
+    """
+    And I should get:
     """
     Deleted Multidev environment branch "new_branch"
     """
 
-  @vcr site_delete-branch_none
+  @vcr branch_delete_none.yml
   Scenario: Failing to delete branches when the site hasn't any
-    When I run "terminus branch:delete some_branch --site=[[test_site_name]] --yes"
+    When I run "terminus branch:delete some_branch [[test_site_name]]"
     Then I should get:
     """
-    The site [[test_site_name]] has no branches which may be deleted.
+    Could not find Terminus\Models\Branch "some_branch"
     """
