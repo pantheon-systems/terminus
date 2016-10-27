@@ -22,7 +22,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSite($site_id);
         $workflow = $site->updateServiceLevel($level);
-        $this->log()->notice('Setting plan of "{site}" to "{level}".', ['site' => $site_id, 'level' => $level]);
+        $this->log()->notice('Setting plan of "{site_id}" to "{level}".', compact('site_id', 'level'));
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.
         }

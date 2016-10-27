@@ -3,11 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\ServiceLevel;
 
 use Pantheon\Terminus\Commands\ServiceLevel\SetCommand;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 class SetCommandTest extends CommandTestCase
 {
-    public function setServiceLevelSet()
+    public function testServiceLevelSet()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -19,7 +20,8 @@ class SetCommandTest extends CommandTestCase
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Setting service level of "my-site" to "free".')
+                $this->equalTo('Setting plan of "{site_id}" to "{level}".'),
+                $this->equalTo(['site_id' => 'my-site', 'level' => 'free'])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
