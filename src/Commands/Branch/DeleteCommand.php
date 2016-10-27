@@ -20,7 +20,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_id The name of the site to delete the branch from.
      * @throws \Terminus\Exceptions\TerminusException
      */
-    public function deleteBranch($branch_id, $site_id)
+    public function deleteBranch($site_id, $branch_id)
     {
         $site = $this->getSite($site_id);
 

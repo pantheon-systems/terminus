@@ -52,7 +52,7 @@ class DeleteCommandTest extends CommandTestCase
         $command = new DeleteCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->deleteBranch('branch-name', 'my-site');
+        $command->deleteBranch('my-site', 'branch-name');
     }
 
     public function testMasterBranch()
@@ -62,7 +62,7 @@ class DeleteCommandTest extends CommandTestCase
         $command = new DeleteCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->deleteBranch('master', 'my-site');
+        $command->deleteBranch('my-site', 'master');
     }
     public function testTestBranch()
     {
@@ -71,7 +71,7 @@ class DeleteCommandTest extends CommandTestCase
         $command = new DeleteCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->deleteBranch('test', 'my-site');
+        $command->deleteBranch('my-site', 'test');
     }
     public function testLiveBranch()
     {
@@ -80,6 +80,6 @@ class DeleteCommandTest extends CommandTestCase
         $command = new DeleteCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->deleteBranch('live', 'my-site');
+        $command->deleteBranch('my-site', 'live');
     }
 }

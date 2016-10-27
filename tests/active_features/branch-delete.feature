@@ -9,7 +9,7 @@ Feature: Deleting a site's branches
 
   @vcr branch_delete.yml
   Scenario: Deleting a branch
-    When I run "terminus branch:delete new_branch [[test_site_name]]"
+    When I run "terminus branch:delete [[test_site_name]] new_branch"
     Then I should get:
     """
     Deleting the new_branch branch of the site [[test_site_name]].
@@ -21,7 +21,7 @@ Feature: Deleting a site's branches
 
   @vcr branch_delete_none.yml
   Scenario: Failing to delete branches when the site hasn't any
-    When I run "terminus branch:delete some_branch [[test_site_name]]"
+    When I run "terminus branch:delete [[test_site_name]] some_branch"
     Then I should get:
     """
     Could not find Terminus\Models\Branch "some_branch"
