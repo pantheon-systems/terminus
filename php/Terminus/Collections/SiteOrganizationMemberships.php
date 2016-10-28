@@ -61,4 +61,20 @@ class SiteOrganizationMemberships extends TerminusCollection
         }
         return null;
     }
+  /**
+   * Returns UUID of organization with given name
+   *
+   * @param string $value A name to search for
+   * @return SiteOrganizationMembership|null
+   */
+    public function getUUID($name)
+    {
+        foreach ($this->models as $org_member) {
+            $org = $org_member->getName();
+            if ($name == $org) {
+                return $org_member;
+            }
+        }
+        return null;
+    }
 }

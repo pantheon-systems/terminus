@@ -56,19 +56,14 @@ class SiteUserMemberships extends TerminusCollection
    */
     public function get($id)
     {
-        $models     = $this->getMembers();
-        $membership = null;
+        $models = $this->getMembers();
         if (isset($models[$id])) {
             return $models[$id];
-        } else {
-            foreach ($models as $model) {
-                $userdata = $model->get('user');
-                if (is_object($userdata)
-                    && property_exists($userdata, 'email')
-                    && ($userdata->email == $id)
-                ) {
-                    return $model;
-                }
+        }
+        foreach ($models as $model) {
+            $user_data = $model->get('user');
+            if (in_array($id, [$user_data->email, $user_data->profile->full_name])) {
+                return $model;
             }
         }
         throw new TerminusException(

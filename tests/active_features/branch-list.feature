@@ -7,7 +7,7 @@ Feature: Listing site branches
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_code_branches
+  @vcr branch_list.yml
   Scenario: Listing the branches of a site
-    When I run "terminus branch:list --site=[[test_site_name]]"
+    When I run "terminus branch:list [[test_site_name]]"
     Then I should get: "master"
