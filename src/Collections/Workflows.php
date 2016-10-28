@@ -75,7 +75,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
                     $owner->id
                 );
                 break;
-            case 'Terminus\Models\Organization':
+            case 'Pantheon\Terminus\Models\Organization':
                 $this->url = sprintf(
                     'users/%s/organizations/%s/workflows',
                     // @TODO: This should be passed in rather than read from the current session.

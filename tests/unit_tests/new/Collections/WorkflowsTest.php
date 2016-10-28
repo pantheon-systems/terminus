@@ -8,7 +8,7 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
 use Terminus\Models\Environment;
-use Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Organization;
 use Terminus\Models\Site;
 
 class WorkflowsTest extends CollectionTestCase

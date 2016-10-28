@@ -51,41 +51,32 @@ class ListCommand extends SiteCommand
     {
         $this->sites->fetch(
             [
-                'org_id' => $options['org'],
-                'team_only' => $options['team'],
+                'org_id' => isset($options['org']) ? $options['org'] : null,
+                'team_only' => isset($options['team']) ? $options['team'] : false,
             ]
         );
 
-        if (!is_null($name = $options['name'])) {
+        if (isset($options['name']) && !is_null($name = $options['name'])) {
             $this->sites->filterByName($name);
         }
-        if (!is_null($owner = $options['owner'])) {
+        if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
             if ($owner == 'me') {
                 $owner = $this->session()->getUser()->id;
             }
             $this->sites->filterByOwner($owner);
         }
 
-        $all_sites = array_map(
+        $sites = array_map(
             function ($site) {
-                $site_data = $site->serialize();
-                return [
-                    'name'          => $site_data['name'],
-                    'id'            => $site_data['id'],
-                    'service_level' => $site_data['service_level'],
-                    'framework'     => $site_data['framework'],
-                    'owner'         => $site_data['owner'],
-                    'created'       => $site_data['created'],
-                    'memberships'   => implode(',', $site->memberships),
-                ];
+                return $site->serialize();
             },
             $this->sites->all()
         );
 
-        if (empty($all_sites)) {
+        if (empty($sites)) {
             $this->log()->notice('You have no sites.');
         }
 
-        return new RowsOfFields($all_sites);
+        return new RowsOfFields($sites);
     }
 }

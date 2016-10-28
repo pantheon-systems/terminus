@@ -40,7 +40,7 @@ class OrganizationSiteMemberships extends TerminusCollection
    */
     public function create($site)
     {
-        $workflow = $this->organization->workflows->create(
+        $workflow = $this->organization->getWorkflows()->create(
             'add_organization_site_membership',
             ['params' => ['site_id' => $site->id, 'role' => 'team_member',],]
         );

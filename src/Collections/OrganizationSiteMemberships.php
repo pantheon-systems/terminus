@@ -2,10 +2,16 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Models\Organization;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 
-class OrganizationSiteMemberships extends TerminusCollection
+class OrganizationSiteMemberships extends TerminusCollection implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var Organization
      */
@@ -40,7 +46,7 @@ class OrganizationSiteMemberships extends TerminusCollection
      */
     public function create($site)
     {
-        $workflow = $this->organization->getWorkflows()->create(
+        $workflow = $this->getOrganization()->getWorkflows()->create(
             'add_organization_site_membership',
             ['params' => ['site_id' => $site->id, 'role' => 'team_member',],]
         );
@@ -52,20 +58,34 @@ class OrganizationSiteMemberships extends TerminusCollection
      *
      * @param string $id UUID or name of desired site membership instance
      * @return OrganizationSiteMembership
+     * @throws TerminusNotFoundException
      */
     public function get($id)
     {
         $models = $this->getMembers();
         if (isset($models[$id])) {
             return $models[$id];
-        } else {
-            foreach ($models as $key => $membership) {
-                if (in_array($id, [$membership->site->id, $membership->site->get('name')])) {
-                    return $membership;
-                }
+        }
+        foreach ($models as $key => $membership) {
+            if (in_array($id, [$membership->site->id, $membership->site->get('name')])) {
+                return $membership;
             }
         }
-        return null;
+        throw new TerminusNotFoundException(
+            'A site identified by {id} could not be found belonging to this organization.',
+            compact('id')
+        );
+    }
+
+    /**
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        if (empty($this->organization)) {
+            $this->organization = $this->getContainer()->get(Organization::class, [$this->get('organization')]);
+        }
+        return $this->organization;
     }
 
     /**
