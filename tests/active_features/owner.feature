@@ -11,10 +11,7 @@ Feature: Set a site's owner
   Scenario: Changing the site's owner to another team member
     Given "[[other_user]]" is a member of the team on "[[test_site_name]]"
     When I run "terminus owner:set [[test_site_name]] [[other_user]]"
-    Then I should get:
-    """
-    Promoted new owner
-    """
+    Then I should get: "Promoted Dev User to owner of [[test_site_name]]"
 
   @vcr site_set-owner_solo
   Scenario: Failing to change the site owner when there is only one team member
@@ -22,5 +19,5 @@ Feature: Set a site's owner
     When I run "terminus owner:set [[test_site_name]] [[other_user]]"
     Then I should get:
     """
-    The new owner must be added with "terminus site team add-member" before promoting
+    The new owner must be added with "terminus site:team:add" before promoting.
     """
