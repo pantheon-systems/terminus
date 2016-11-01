@@ -31,7 +31,6 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
             $member = $members->get($owner);
         } catch (TerminusException $e) {
             $this->log()->notice($e->getMessage());
-            $this->log()->notice("Cannot find site user with the name \"${owner}\"");
             if ($e->getMessage() == "Cannot find site user with the name \"${owner}\"") {
                 throw new TerminusException("The new owner must be added with \"terminus site team add-member\" before promoting");
             } else {
