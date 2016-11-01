@@ -99,16 +99,6 @@ Your dashboard password (input will not be shown)
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing Terminus.
 
-Tab completion
---------------
-Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://raw.githubusercontent.com/pantheon-systems/terminus/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
-
-```bash
-source /FULL/PATH/TO/terminus-completion.bash
-```
-
-(Don’t forget to run `source ~/.bash_profile` afterwards)
-
 Setting default user, site, environment, etc. and Dotenv
 --------------
 
