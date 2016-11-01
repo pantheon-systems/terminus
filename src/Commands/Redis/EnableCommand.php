@@ -9,7 +9,19 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 class EnableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
-    
+
+    /**
+     * Enable Redis caching for the a site.
+     *
+     * @authorized
+     *
+     * @command redis:enable
+     *
+     * @param string $site_id Name of the site to enable Redis for
+     *
+     * @usage terminus redis:enable my-site
+     *   Enable Redis caching for the site named 'my-site'.
+     */
     public function enableRedis($site_id)
     {
         $site = $this->getSite($site_id);

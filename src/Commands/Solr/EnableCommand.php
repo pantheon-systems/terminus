@@ -11,22 +11,22 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Enable Redis caching for the a site.
+     * Enable Solr indexing for the a site.
      *
      * @authorized
      *
-     * @command redis:enable
+     * @command solr:enable
      *
-     * @param string $site_id Name of the site to enable Redis for
+     * @param string $site_id Name of the site to enable Solr for
      *
-     * @usage terminus redis:enable my-site
-     *   Enable Redis caching for the site named 'my-site'.
+     * @usage terminus solr:enable my-site
+     *   Enable Solr indexing for the site named 'my-site'.
      */
     public function enable($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->redis->enable();
-        $this->log()->notice('Redis enabled. Converging bindings.');
+        $site->solr->enable();
+        $this->log()->notice('Solr enabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.
         while (!$workflow->checkProgress()) {

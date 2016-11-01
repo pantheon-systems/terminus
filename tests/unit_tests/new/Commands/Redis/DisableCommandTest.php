@@ -41,6 +41,6 @@ class DisableCommandTest extends CommandTestCase
         $command = new DisableCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->disable('mysite');
+        $command->disableRedis('mysite');
     }
 }

@@ -9,7 +9,7 @@ use Terminus\Models\Solr;
 
 class EnableCommandTest extends CommandTestCase
 {
-    public function testDisable()
+    public function testEnableSolr()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
