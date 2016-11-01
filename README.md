@@ -36,7 +36,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 Run this in your terminal client:
 ```
-cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo 'alias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
+cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo $'\nalias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
 ```
 
 ####Installing with [Homebrew](http://brew.sh/)(for Macs)
@@ -98,16 +98,6 @@ Your dashboard password (input will not be shown)
 [1969-07-21 02:56:00] [info] Saving session data
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing Terminus.
-
-Tab completion
---------------
-Terminus also comes with a tab completion script for Bash. Just download [terminus-completion.bash](https://raw.githubusercontent.com/pantheon-systems/terminus/master/utils/terminus-completion.bash) and source it from `~/.bash_profile`:
-
-```bash
-source /FULL/PATH/TO/terminus-completion.bash
-```
-
-(Don’t forget to run `source ~/.bash_profile` afterwards)
 
 Setting default user, site, environment, etc. and Dotenv
 --------------

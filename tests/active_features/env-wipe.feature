@@ -7,10 +7,14 @@ Feature: Wipe the content in a site's environment
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_wipe
+  @vcr env-wipe.yml
   Scenario: Wipe Environment
-    When I run "terminus env:wipe dev --site=[[test_site_name]] --yes"
+    When I run "terminus env:wipe [[test_site_name]].dev"
     Then I should get:
     """
-    Successfully wiped [[test_site_name]]-dev
+    Wiping the "dev" environment of "[[test_site_name]]"
+    """
+    And I should get:
+    """
+    Wiped files and database in "dev"
     """
