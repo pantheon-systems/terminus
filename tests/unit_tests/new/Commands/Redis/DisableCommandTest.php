@@ -1,15 +1,15 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Solr;
+namespace Pantheon\Terminus\UnitTests\Commands\Redis;
 
-use Pantheon\Terminus\Commands\Solr\EnableCommand;
+use Pantheon\Terminus\Commands\Redis\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Solr;
+use Terminus\Models\Redis;
 
-class EnableCommandTest extends CommandTestCase
+class DisableCommandTest extends CommandTestCase
 {
-    public function testEnableSolr()
+    public function testDisableRedis()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -18,11 +18,11 @@ class EnableCommandTest extends CommandTestCase
         $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
-        $this->site->solr = $this->getMockBuilder(Solr::class)
+        $this->site->redis = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->solr->expects($this->once())
-            ->method('enable');
+        $this->site->redis->expects($this->once())
+            ->method('disable');
         $this->site->expects($this->once())
             ->method('converge')
             ->willReturn($workflow);
@@ -30,7 +30,7 @@ class EnableCommandTest extends CommandTestCase
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Solr enabled. Converging bindings.')
+                $this->equalTo('Redis disabled. Converging bindings.')
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
@@ -38,9 +38,9 @@ class EnableCommandTest extends CommandTestCase
                 $this->equalTo('successful workflow')
             );
 
-        $command = new EnableCommand();
+        $command = new DisableCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->enable('mysite');
+        $command->disableRedis('mysite');
     }
 }
