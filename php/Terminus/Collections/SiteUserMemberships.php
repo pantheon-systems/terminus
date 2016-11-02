@@ -2,28 +2,28 @@
 
 namespace Terminus\Collections;
 
-use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 class SiteUserMemberships extends TerminusCollection
 {
-  /**
-   * @var Site
-   */
+    /**
+     * @var Site
+     */
     public $site;
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     protected $collected_class = 'Terminus\Models\SiteUserMembership';
-  /**
-   * @var boolean
-   */
+    /**
+     * @var boolean
+     */
     protected $paged = true;
 
-  /**
-   * Object constructor
-   *
-   * @param array $options Options to set as $this->key
-   */
+    /**
+     * Object constructor
+     *
+     * @param array $options Options to set as $this->key
+     */
     public function __construct($options = [])
     {
         parent::__construct($options);
@@ -31,13 +31,13 @@ class SiteUserMemberships extends TerminusCollection
         $this->url = "sites/{$this->site->id}/memberships/users";
     }
 
-  /**
-   * Adds this user as a member to the site
-   *
-   * @param string $email Email of team member to add
-   * @param string $role  Role to assign to the new user
-   * @return Workflow
-   **/
+    /**
+     * Adds this user as a member to the site
+     *
+     * @param string $email Email of team member to add
+     * @param string $role  Role to assign to the new user
+     * @return Workflow
+     **/
     public function create($email, $role)
     {
         $workflow = $this->site->workflows->create(
@@ -47,13 +47,13 @@ class SiteUserMemberships extends TerminusCollection
         return $workflow;
     }
 
-  /**
-   * Retrieves the membership of the given UUID or email
-   *
-   * @param string $id UUID or email of desired user
-   * @return SiteUserMembership
-   * @throws TerminusException
-   */
+    /**
+     * Retrieves the membership of the given UUID or email
+     *
+     * @param string $id UUID or email of desired user
+     * @return SiteUserMembership
+     * @throws TerminusNotFoundException
+     */
     public function get($id)
     {
         $models = $this->getMembers();
@@ -66,10 +66,6 @@ class SiteUserMemberships extends TerminusCollection
                 return $model;
             }
         }
-        throw new TerminusException(
-            'Cannot find site user with the name "{id}"',
-            compact('id'),
-            1
-        );
+        throw new TerminusNotFoundException('Cannot find site user with the name "{id}"', compact('id'));
     }
 }
