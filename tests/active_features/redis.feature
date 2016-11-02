@@ -7,19 +7,19 @@ Feature: Using Redis
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_redis_enable
+  @vcr redis-enable.yml
   Scenario: Enabling Redis
-    When I run "terminus redis:enable --site=[[test_site_name]]"
+    When I run "terminus redis:enable [[test_site_name]]"
     Then I should get:
     """
-    Redis enabled. Converging bindings...
+    Redis enabled. Converging bindings.
     """
 
-  @vcr site_redis_disable
+  @vcr redis-disable.yml
   Scenario: Disabling Redis
-    When I run "terminus redis:disable --site=[[test_site_name]]"
+    When I run "terminus redis:disable [[test_site_name]]"
     Then I should get:
     """
-    Redis disabled. Converging bindings...
+    Redis disabled. Converging bindings.
     """
 
