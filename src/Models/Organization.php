@@ -31,6 +31,16 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     private $features;
 
     /**
+     * Get the human-readable name of the organization.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->get('profile')->name;
+    }
+
+    /**
      * Returns a specific organization feature value
      *
      * @param string $feature Feature to check

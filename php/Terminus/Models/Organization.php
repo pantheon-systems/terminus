@@ -40,6 +40,16 @@ class Organization extends TerminusModel
         $this->workflows        = new Workflows($params);
     }
 
+    /**
+     * Get the human-readable name of the organization.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->get('profile')->name;
+    }
+
   /**
    * Returns a specific organization feature value
    *
@@ -118,6 +128,6 @@ class Organization extends TerminusModel
      */
     public function serialize()
     {
-        return ['id' => $this->id, 'name' => $this->get('profile')->name,];
+        return ['id' => $this->id, 'name' => $this->getName(),];
     }
 }
