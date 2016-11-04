@@ -15,7 +15,6 @@ default:
               other_user:              'otheruser@pantheon.io'
               php_site_domain:         'pantheonsite.io'
               instrument_label:        'Visa - 1111'
-              instrument_uuid:         '11111111-1111-1111-1111-111111111111'
               organization_name:       'Organization Name'
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'
