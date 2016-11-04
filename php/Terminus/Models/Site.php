@@ -84,6 +84,16 @@ class Site extends TerminusModel
     }
 
     /**
+     * Get the human-readable name of the site.
+     *
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->get('name');
+    }
+
+    /**
      * Adds payment instrument of given site
      *
      * @param string $instrument_id UUID of new payment instrument
