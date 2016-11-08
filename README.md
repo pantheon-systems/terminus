@@ -3,7 +3,7 @@
 
 
 Terminus
-============
+========
 
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus) [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
@@ -35,7 +35,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 ####Installing with Composer
 
 Run this in your terminal client:
-```
+```bash
 cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo $'\nalias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
 ```
 
@@ -100,14 +100,15 @@ Your dashboard password (input will not be shown)
 If you are planning to run WP-CLI or Drush commands through Terminus, please [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing Terminus.
 
 Setting default user, site, environment, etc. and Dotenv
---------------
+--------------------------------------------------------
 
 Terminus can use certain environment variables to set certain default values when invoking commands. For example, by exporting the environment variable `TERMINUS_SITE=<sitename>` Terminus will automatically dispatch all commands against that site allowing you to omit the `--site=<sitename>` in your commands. A list of available environment variables is listed in the [`.env-sample` file](https://github.com/pantheon-systems/terminus/blob/master/.env.example).
 
 Terminus also has built-in support for [PHP Dotenv](https://github.com/vlucas/phpdotenv), which provides an alternative to manually exporting environment variables. This involves defining environment variables within a `.env` file that Terminus will automatically use when invoked within that working directory.
 
 Support
-------------
+-------
+
 Please make ready the steps to reproduce the issue, outputs, pertinent information about your system, and what you believe the correct reaction of the system ought to be. Reporting of issues encountered should happen in one of two ways:
 
 **Information that helps us help you:**
@@ -129,17 +130,20 @@ If we cannot duplicate an issue, we cannot resolve it. Giving us as much informa
 Head over to [your support tickets in the Pantheon Dashboard](https://dashboard.pantheon.io/users/#support) and submit a new issue ticket. Please include the helpful information you have gathered.
 
 Contributions
-------------
+-------------
+
 See the [CONTRIBUTING](CONTRIBUTING.md) document.
 
 Credits
-------------
+-------
+
 * We have leaned heavily on the work of [WP-CLI](http://wp-cli.org/) in architecting this command line utility with an object-oriented structure.
 * We've also (obviously) been greatly inspired by [Drush](http://drush.ws/).
 
 Further Reading
-------------
+---------------
+
 * [Terminus' Wiki](https://github.com/pantheon-systems/terminus/wiki)
 * [Usage](https://github.com/pantheon-systems/terminus/wiki/Usage)
 
-If you are looking for the precursor to this project, which is now deprecated see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)
+If you are looking for the precursor to this project, which is now deprecated, see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)
