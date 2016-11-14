@@ -7,11 +7,11 @@
   "bin": [
     "bin/terminus.bat", "bin/terminus"
   ],
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
-    "consolidation/robo": "^1.0.0-RC3",
+    "consolidation/robo": "~1",
     "guzzlehttp/guzzle": "^6.2",
     "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
