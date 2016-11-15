@@ -3,7 +3,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Self\InfoCommand;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -45,7 +45,7 @@ class InfoCommandTest extends CommandTestCase
         }
         $command->setConfig($this->config);
         $info = $command->info();
-        $this->assertInstanceOf(AssociativeList::class, $info);
+        $this->assertInstanceOf(PropertyList::class, $info);
         $this->assertEquals($output_data, $info->getArrayCopy());
     }
 }

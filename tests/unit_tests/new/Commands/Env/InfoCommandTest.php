@@ -3,7 +3,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Env\InfoCommand;
 
 class InfoCommandTest extends EnvCommandTest
@@ -18,7 +18,7 @@ class InfoCommandTest extends EnvCommandTest
         $this->command = new InfoCommand();
         $this->command->setSites($this->sites);
         $out = $this->command->getInfo('mysite.dev');
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($data, $out->getArrayCopy());
     }
 }
