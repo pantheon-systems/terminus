@@ -11,7 +11,15 @@ use Terminus\Collections\Workflows;
  */
 abstract class WorkflowCommandTest extends CommandTestCase
 {
+    /**
+     * @var Workflow
+     */
     protected $workflow;
+
+    /*
+     * @var Workflows
+     */
+    protected $workflows;
 
     /**
      * Setup the test fixture.
@@ -20,9 +28,11 @@ abstract class WorkflowCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->workflows = $this->getMockBuilder(Workflows::class)
+        $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()

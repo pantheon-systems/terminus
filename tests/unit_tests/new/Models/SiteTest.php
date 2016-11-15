@@ -44,9 +44,10 @@ class SiteTest extends ModelTestCase
 
         $this->model = new Site((object)['id' => 123,]);
 
-        $this->model->workflows = $this->workflows;
+        $container->method('get')
+            ->with(Workflows::class, [['site' => $this->model]])
+            ->willReturn($this->workflows);
 
-        // @TODO: Add all of the mocked injected dependencies to the container.
         $this->model->setContainer($container);
 
         $this->model->setRequest($this->request);

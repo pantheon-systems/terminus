@@ -291,9 +291,9 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * Expose a protected method to testing
      * https://rjzaworski.com/2012/04/testing-protected-methods-in-php
      *
-     * @param mixed  $obj    Object containing the protected method to be called
+     * @param mixed $obj Object containing the protected method to be called
      * @param string $method Name of protected method
-     * @param array  $args   Method arguments
+     * @param array $args Method arguments
      *
      * @return mixed
      */
