@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\User;
+
 class UserOwnedCollection extends TerminusCollection
 {
     protected $user;
@@ -18,7 +20,7 @@ class UserOwnedCollection extends TerminusCollection
     }
 
     /**
-     * @return mixed
+     * @return User
      */
     public function getUser()
     {
@@ -26,7 +28,7 @@ class UserOwnedCollection extends TerminusCollection
     }
 
     /**
-     * @param mixed $user
+     * @param User $user
      */
     public function setUser($user)
     {
