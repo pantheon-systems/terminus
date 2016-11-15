@@ -1013,10 +1013,21 @@ class FeatureContext implements Context, SnippetAcceptingContext
 
     /**
      * @When /^This step is implemented I will test: (.*)$/
+     * @When /^this step is implemented I will test: (.*)$/
+     *
+     * @param string $description feature description of what is still pending
      */
-    public function thisStepIsImplementedIWillTestInvalidConnectionModes($pending)
+    public function thisStepIsPending($description)
     {
-        throw new PendingException("Testing $pending is pending.");
+        throw new PendingException("Testing $description is pending");
+    }
+
+    /**
+     * @When /^I enter: (.*)$/
+     */
+    public function iEnterInput()
+    {
+        throw new PendingException("Interactivity is not yet implemented");
     }
 
     /**
