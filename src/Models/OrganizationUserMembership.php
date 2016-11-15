@@ -42,24 +42,9 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        $workflow = $this->organization->workflows->create(
+        $workflow = $this->organization->getWorkflows()->create(
             'remove_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id,],]
-        );
-        return $workflow;
-    }
-
-    /**
-     * Sets the user's role within this organization
-     *
-     * @param string $role Role for this user to take in the organization
-     * @return Workflow
-     */
-    public function setRole($role)
-    {
-        $workflow = $this->organization->workflows->create(
-            'update_organization_user_membership',
-            ['params' => ['user_id' => $this->getUser()->id, 'role' => $role,],]
         );
         return $workflow;
     }
@@ -76,5 +61,36 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
             $this->user->memberships = [$this,];
         }
         return $this->user;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
+    {
+        $user = $this->getUser();
+        $profile = $user->get('profile');
+        return [
+            'id' => $user->id,
+            'first_name' => $profile->firstname,
+            'last_name' => $profile->lastname,
+            'email' => $user->get('email'),
+            'role' => $this->get('role'),
+        ];
+    }
+
+    /**
+     * Sets the user's role within this organization
+     *
+     * @param string $role Role for this user to take in the organization
+     * @return Workflow
+     */
+    public function setRole($role)
+    {
+        $workflow = $this->organization->getWorkflows()->create(
+            'update_organization_user_membership',
+            ['params' => ['user_id' => $this->getUser()->id, 'role' => $role,],]
+        );
+        return $workflow;
     }
 }

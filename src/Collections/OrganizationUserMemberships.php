@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 class OrganizationUserMemberships extends TerminusCollection
 {
@@ -52,7 +52,7 @@ class OrganizationUserMemberships extends TerminusCollection
    *
    * @param string $id Either a user ID, email address, or full name
    * @return OrganizationUserMembership
-   * @throws TerminusException
+   * @throws TerminusNotFoundException
    */
     public function get($id)
     {
@@ -61,15 +61,14 @@ class OrganizationUserMemberships extends TerminusCollection
             return $models[$id];
         }
         foreach ($models as $model) {
-            $user_data = $model->get('user');
-            if (in_array($id, [$user_data->get('email'), $user_data->get('profile')->full_name])) {
+            $user = $model->getUser();
+            if (in_array($id, [$user->id, $user->get('email'), $user->getProfile()->full_name])) {
                 return $model;
             }
         }
-        throw new TerminusException(
+        throw new TerminusNotFoundException(
             'An organization member identified by "{id}" could not be found.',
-            compact('id'),
-            1
+            compact('id')
         );
     }
 }

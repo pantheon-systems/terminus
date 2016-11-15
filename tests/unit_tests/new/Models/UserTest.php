@@ -213,4 +213,9 @@ class UserTest extends ModelTestCase
 
         $this->assertEquals($orgs, $this->user->getOrganizations());
     }
+
+    public function testGetProfile()
+    {
+        $this->assertEquals($this->user->getProfile(), $this->user_data['profile']);
+    }
 }
