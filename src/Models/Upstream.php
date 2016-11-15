@@ -50,7 +50,7 @@ class Upstream extends TerminusModel
      */
     public function getUpdates()
     {
-        return $this->request->request("sites/{$this->site->id}/code-upstream-updates");
+        return $this->request()->request("sites/{$this->site->id}/code-upstream-updates")['data'];
     }
 
     /**

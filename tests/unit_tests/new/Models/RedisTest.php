@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use Terminus\Collections\Workflows;
 use Terminus\Models\Environment;
-use Terminus\Models\Redis;
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Redis;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Terminus\Models\Redis

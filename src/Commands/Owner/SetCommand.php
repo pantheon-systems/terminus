@@ -27,7 +27,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->sites->get($site_name);
         try {
-            $user = $site->user_memberships->get($owner)->user;
+            $user = $site->getUserMemberships()->get($owner)->getUser();
         } catch (TerminusNotFoundException $e) {
             throw new TerminusNotFoundException(
                 'The new owner must be added with "terminus site:team:add" before promoting.'
@@ -36,7 +36,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $site->setOwner($user->id)->wait();
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
-            ['user' => $user->get('profile')->full_name, 'site' => $site->get('name'),]
+            ['user' => $user->getName(), 'site' => $site->getName(),]
         );
     }
 }

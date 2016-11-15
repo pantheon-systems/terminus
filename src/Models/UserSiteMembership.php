@@ -2,10 +2,13 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Terminus\Models\Site;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 
-class UserSiteMembership extends TerminusModel
+class UserSiteMembership extends TerminusModel implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * @var Site
      */
@@ -16,14 +19,17 @@ class UserSiteMembership extends TerminusModel
     public $user;
 
     /**
+     * @var \stdClass
+     */
+    protected $site_info;
+
+    /**
      * @inheritdoc
      */
     public function __construct($attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
-        // @TODO: Follow this dependency chain and invert it.
-        $this->site = new Site($attributes->site);
-        $this->site->memberships = [$this,];
+         $this->site_info = $attributes->site;
         $this->user = $options['collection']->getUser();
     }
 
@@ -33,5 +39,25 @@ class UserSiteMembership extends TerminusModel
     public function __toString()
     {
         return "{$this->user->id}: Team";
+    }
+
+    /**
+     * @return \Pantheon\Terminus\Models\Site
+     */
+    public function getSite()
+    {
+        if (!$this->site) {
+            $this->site = $this->getContainer()->get(Site::class, [$this->site_info]);
+            $this->site->memberships = [$this,];
+        }
+        return $this->site;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

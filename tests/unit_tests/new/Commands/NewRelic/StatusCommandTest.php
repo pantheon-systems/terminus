@@ -26,7 +26,7 @@ class StatusCommandTest extends NewRelicCommandTest
     {
         $data = ['name' => 'Name', 'status' => 'Status',];
 
-        $this->site->new_relic->expects($this->once())
+        $this->new_relic->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($data);

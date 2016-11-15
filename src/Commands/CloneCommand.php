@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\Commands;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Helper\ProgressBar;
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Workflow;
 
 abstract class CloneCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -79,7 +79,7 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
      */
     protected function triggerWorkflow(Site $site, $operation = '')
     {
-        return $site->environments
+        return $site->getEnvironments()
             ->get($this->target_env)
             ->$operation($this->origin_env);
     }

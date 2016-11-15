@@ -35,7 +35,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             function ($site) {
                 return $site->serialize();
             },
-            $this->getSite($site_id)->org_memberships->all()
+            $this->getSite($site_id)->getOrganizationMemberships()->all()
         );
 
         if (empty($orgs)) {

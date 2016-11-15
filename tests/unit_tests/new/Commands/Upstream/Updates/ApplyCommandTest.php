@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ApplyCommand;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 class ApplyCommandTest extends UpdatesCommandTest
 {
@@ -28,7 +28,7 @@ class ApplyCommandTest extends UpdatesCommandTest
             "update_log" => (object)[],
         ];
 
-        $this->site->upstream->method('getUpdates')
+        $this->upstream->method('getUpdates')
             ->willReturn($upstream);
 
         $this->logger->expects($this->once())
@@ -80,7 +80,7 @@ class ApplyCommandTest extends UpdatesCommandTest
                 ],
             ],
         ];
-        $this->site->upstream->method('getUpdates')
+        $this->upstream->method('getUpdates')
             ->willReturn($upstream);
 
         $workflow = $this->getMockBuilder(Workflow::class)

@@ -26,7 +26,7 @@ class DiffStatCommandTest extends EnvCommandTest
             ['file' => 'myfile.txt'] + $diffs['myfile.txt'],
             ['file' => 'another.txt'] + $diffs['another.txt'],
         ];
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('diffstat')
             ->willReturn($diffs);
         $out = $this->command->diffstat('mysite.dev');
@@ -42,7 +42,7 @@ class DiffStatCommandTest extends EnvCommandTest
                 $this->equalTo('No changes on server.')
             );
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('diffstat')
             ->willReturn([]);
         $out = $this->command->diffstat('mysite.dev');

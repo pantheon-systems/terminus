@@ -28,7 +28,7 @@ class RemoveCommandTest extends LockCommandTest
             ->disableOriginalConstructor()
             ->getMock();
         $site_name = 'site_name';
-        $this->env->id = 'env_id';
+        $this->environment->id = 'env_id';
         $this->lock->expects($this->once())
             ->method('remove')
             ->with()
@@ -46,10 +46,10 @@ class RemoveCommandTest extends LockCommandTest
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('{site}.{env} has been unlocked.'),
-                $this->equalTo(['site' => $site_name, 'env' => $this->env->id,])
+                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
             );
 
-        $out = $this->command->remove("$site_name.{$this->env->id}");
+        $out = $this->command->remove("$site_name.{$this->environment->id}");
         $this->assertNull($out);
     }
 }

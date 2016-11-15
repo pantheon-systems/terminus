@@ -11,7 +11,7 @@ class ViewCommandTest extends EnvCommandTest
     {
         parent::setUp();
 
-        $this->env->expects($this->any())
+        $this->environment->expects($this->any())
             ->method('domain')
             ->willReturn('dev-my-site.example.com');
 
@@ -27,7 +27,7 @@ class ViewCommandTest extends EnvCommandTest
 
     public function testViewLocked()
     {
-        $this->env->expects($this->any())
+        $this->environment->expects($this->any())
             ->method('get')
             ->with('lock')
             ->willReturn(

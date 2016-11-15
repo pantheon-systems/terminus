@@ -34,7 +34,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSite($site_id);
         $data = [];
-        foreach ($site->environments->all() as $env) {
+        foreach ($site->getEnvironments()->all() as $env) {
             $data[] = $env->serialize();
         }
         return new RowsOfFields($data);

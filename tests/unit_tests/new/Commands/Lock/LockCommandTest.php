@@ -24,8 +24,8 @@ abstract class LockCommandTest extends EnvCommandTest
         $this->lock = $this->getMockBuilder(Lock::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->env->id = 'env_id';
-        $this->env->expects($this->once())
+        $this->environment->id = 'env_id';
+        $this->environment->expects($this->once())
             ->method('getLock')
             ->with()
             ->willReturn($this->lock);

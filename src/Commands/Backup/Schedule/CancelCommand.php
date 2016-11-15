@@ -29,7 +29,7 @@ class CancelCommand extends TerminusCommand implements SiteAwareInterface
     public function cancelSchedule($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $env->backups->cancelBackupSchedule();
+        $env->getBackups()->cancelBackupSchedule();
         $this->log()->notice('Backup schedule successfully canceled.');
     }
 }

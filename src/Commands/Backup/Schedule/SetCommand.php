@@ -32,7 +32,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     public function setSchedule($site_env, $options = ['day' => null,])
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $env->backups->setBackupSchedule($options);
+        $env->getBackups()->setBackupSchedule($options);
         $this->log()->notice('Backup schedule successfully set.');
     }
 }

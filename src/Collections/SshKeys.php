@@ -33,7 +33,7 @@ class SshKeys extends UserOwnedCollection
             );
         }
         $response = $this->request->request(
-            'users/' . $this->user->id . '/keys',
+            'users/' . $this->getUser()->id . '/keys',
             [
                 'form_params' => rtrim(file_get_contents($key_file)),
                 'method' => 'post',
@@ -50,7 +50,7 @@ class SshKeys extends UserOwnedCollection
     public function deleteAll()
     {
         $response = $this->request->request(
-            'users/' . $this->user->id . '/keys',
+            'users/' . $this->getUser()->id . '/keys',
             ['method' => 'delete',]
         );
         return (array)$response['data'];

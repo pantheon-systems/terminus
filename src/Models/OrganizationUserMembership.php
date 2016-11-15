@@ -93,4 +93,12 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
         );
         return $workflow;
     }
+
+    /**
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
+    }
 }

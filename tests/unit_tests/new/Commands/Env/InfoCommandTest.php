@@ -11,7 +11,7 @@ class InfoCommandTest extends EnvCommandTest
     public function testGetInfo()
     {
         $data = ['foo' => 'bar', 'baz' => 'bop'];
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('serialize')
             ->willReturn($data);
 

@@ -6,24 +6,24 @@ use Terminus\Exceptions\TerminusNotFoundException;
 
 class OrganizationUserMemberships extends TerminusCollection
 {
-  /**
-   * @var Organization
-   */
+    /**
+     * @var Organization
+     */
     public $organization;
-  /**
-   * @var string
-   */
+    /**
+     * @var string
+     */
     protected $collected_class = 'Pantheon\Terminus\Models\OrganizationUserMembership';
-   /**
-    * @var boolean
-    */
+    /**
+     * @var boolean
+     */
     protected $paged = true;
 
-  /**
-   * Instantiates the collection, sets param members as properties
-   *
-   * @param array $options To be set to $this->key
-   */
+    /**
+     * Instantiates the collection, sets param members as properties
+     *
+     * @param array $options To be set to $this->key
+     */
     public function __construct(array $options = [])
     {
         parent::__construct($options);
@@ -31,13 +31,13 @@ class OrganizationUserMemberships extends TerminusCollection
         $this->url = "organizations/{$this->organization->id}/memberships/users";
     }
 
-  /**
-   * Adds a user to this organization
-   *
-   * @param string $uuid UUID of user user to add to this organization
-   * @param string $role Role to assign to the new member
-   * @return Workflow $workflow
-   */
+    /**
+     * Adds a user to this organization
+     *
+     * @param string $uuid UUID of user user to add to this organization
+     * @param string $role Role to assign to the new member
+     * @return Workflow $workflow
+     */
     public function create($uuid, $role)
     {
         $workflow = $this->organization->getWorkflows()->create(
@@ -47,13 +47,13 @@ class OrganizationUserMemberships extends TerminusCollection
         return $workflow;
     }
 
-  /**
-   * Retrieves models by either user ID, email address, or full name
-   *
-   * @param string $id Either a user ID, email address, or full name
-   * @return OrganizationUserMembership
-   * @throws TerminusNotFoundException
-   */
+    /**
+     * Retrieves models by either user ID, email address, or full name
+     *
+     * @param string $id Either a user ID, email address, or full name
+     * @return OrganizationUserMembership
+     * @throws TerminusNotFoundException
+     */
     public function get($id)
     {
         $models = $this->getMembers();
@@ -70,5 +70,13 @@ class OrganizationUserMemberships extends TerminusCollection
             'An organization member identified by "{id}" could not be found.',
             compact('id')
         );
+    }
+
+    /**
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 }

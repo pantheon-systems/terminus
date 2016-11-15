@@ -3,13 +3,14 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class WorkflowsTest extends CollectionTestCase
 {
@@ -98,7 +99,8 @@ class WorkflowsTest extends CollectionTestCase
     public function testGetOwnerObject()
     {
         $site = new Site((object)['id' => 'site_id']);
-        $env = new Environment((object)['id' => 'env_id'], ['collection' => (object)['site' => $site]]);
+        $environments = new Environments(['site' => $site]);
+        $env = new Environment((object)['id' => 'env_id'], ['collection' => $environments]);
         $user = new User((object)['id' => 'user_id']);
         $org = new Organization((object)['id' => 'org_id']);
 

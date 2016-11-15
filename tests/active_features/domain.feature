@@ -47,7 +47,10 @@ Feature: Adding domains to an environment
   Scenario: Failing to look up an invalid domain
     When I run "terminus domain:lookup invalid"
     Then I should get: "This operation may take a long time to run."
-    And I should get: "Could not locate an environment with the domain invalid."
+    And I should get:
+    """
+    Could not find Pantheon\Terminus\Models\Hostname "invalid"
+    """
 
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]

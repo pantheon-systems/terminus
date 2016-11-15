@@ -26,11 +26,11 @@ class OperationsCommandTest extends WorkflowCommandTest
      */
     public function testLatestOperationsCommand()
     {
-        $this->site->workflows->expects($this->once())
+        $this->workflows->expects($this->once())
             ->method('fetch')
-            ->willReturn($this->site->workflows);
+            ->willReturn($this->workflows);
 
-        $this->site->workflows->expects($this->once())
+        $this->workflows->expects($this->once())
             ->method('all')
             ->willReturn([$this->workflow,]);
 
@@ -47,10 +47,10 @@ class OperationsCommandTest extends WorkflowCommandTest
      */
     public function testWorkflowIDOperationsCommand()
     {
-        $this->site->workflows->expects($this->once())
+        $this->workflows->expects($this->once())
             ->method('fetch')
-            ->willReturn($this->site->workflows);
-        $this->site->workflows->expects($this->once())
+            ->willReturn($this->workflows);
+        $this->workflows->expects($this->once())
             ->method('get')
             ->with($this->equalTo('12345'))
             ->willReturn($this->workflow);

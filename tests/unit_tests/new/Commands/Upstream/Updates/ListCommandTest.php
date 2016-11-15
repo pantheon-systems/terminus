@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ListCommand;
+use Pantheon\Terminus\Models\Workflow;
 
 class ListCommandTest extends UpdatesCommandTest
 {
@@ -25,7 +26,7 @@ class ListCommandTest extends UpdatesCommandTest
             "ahead" => 1,
             "update_log" => (object)[],
         ];
-        $this->site->upstream->method('getUpdates')
+        $this->upstream->method('getUpdates')
             ->willReturn($upstream);
 
         $this->logger->expects($this->once())
@@ -78,7 +79,7 @@ class ListCommandTest extends UpdatesCommandTest
                 ],
             ],
         ];
-        $this->site->upstream->method('getUpdates')
+        $this->upstream->method('getUpdates')
             ->willReturn($upstream);
 
 

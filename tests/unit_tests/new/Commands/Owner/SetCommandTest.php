@@ -5,16 +5,18 @@ namespace Pantheon\Terminus\UnitTests\Commands\Owner;
 use Pantheon\Terminus\Commands\Owner\SetCommand;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\SiteUserMembership;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Owner\SetCommand
  */
 class SetCommandTest extends CommandTestCase
 {
+    protected $user_memberships;
+
     /**
      * @inheritdoc
      */
@@ -22,9 +24,11 @@ class SetCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
+        $this->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->site->method('getUserMemberships')->willReturn($this->user_memberships);
 
         $this->command = new SetCommand($this->getConfig());
         $this->command->setSites($this->sites);
@@ -46,19 +50,20 @@ class SetCommandTest extends CommandTestCase
         $user_membership = $this->getMockBuilder(SiteUserMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $user_membership->user = $this->getMockBuilder(User::class)
+        $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $user_membership->user->id = 'user_id';
+        $user->id = 'user_id';
+        $user_membership->method('getUser')->willReturn($user);
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->willReturn($user_membership);
 
         $this->site->expects($this->once())
             ->method('setOwner')
-            ->with($this->equalTo($user_membership->user->id))
+            ->with($this->equalTo($user->id))
             ->willReturn($workflow);
 
         $workflow->expects($this->once())
@@ -67,13 +72,11 @@ class SetCommandTest extends CommandTestCase
             ->willReturn(true);
 
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
+            ->method('getName')
             ->willReturn($site_name);
-        $user_membership->user->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)compact('full_name'));
+        $user->expects($this->once())
+            ->method('getName')
+            ->willReturn($full_name);
 
         $this->logger->expects($this->once())
             ->method('log')->with(
@@ -95,7 +98,7 @@ class SetCommandTest extends CommandTestCase
     {
         $email = 'a-valid-email';
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->will($this->throwException(new TerminusNotFoundException));
@@ -119,7 +122,7 @@ class SetCommandTest extends CommandTestCase
     {
         $email = 'a-valid-email';
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->will($this->throwException(new \Exception));

@@ -30,7 +30,7 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
     public function mergeToDev($site_env, $options = ['updatedb' => false,])
     {
         list($site, $env) = $this->getSiteEnv($site_env);
-        $workflow = $site->environments->get('dev')->mergeToDev(
+        $workflow = $site->getEnvironments()->get('dev')->mergeToDev(
             ['from_environment' => $env->id, 'updatedb' => $options['updatedb'],]
         );
         $workflow->wait();

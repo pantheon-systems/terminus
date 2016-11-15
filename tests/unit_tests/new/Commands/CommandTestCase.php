@@ -12,10 +12,10 @@ use Robo\Robo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Terminus\Collections\Environments;
-use Terminus\Collections\Sites;
-use Terminus\Models\Environment;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 use VCR\VCR;
 
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
@@ -62,6 +62,11 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * @var Environment
      */
     protected $environment;
+
+    /**
+     * @var Environments
+     */
+    protected $environments;
 
     /**
      * @return Terminus
@@ -266,12 +271,14 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->site->environments = $this->getMockBuilder(Environments::class)
+        $this->environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->site->environments->method('get')
+        $this->environments->method('get')
             ->willReturn($this->environment);
+
+        $this->site->method('getEnvironments')->willReturn($this->environments);
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
@@ -291,9 +298,9 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * Expose a protected method to testing
      * https://rjzaworski.com/2012/04/testing-protected-methods-in-php
      *
-     * @param mixed  $obj    Object containing the protected method to be called
+     * @param mixed $obj Object containing the protected method to be called
      * @param string $method Name of protected method
-     * @param array  $args   Method arguments
+     * @param array $args Method arguments
      *
      * @return mixed
      */

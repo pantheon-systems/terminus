@@ -2,11 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Terminus\Collections\Tags;
-use Terminus\Models\Organization;
-use Terminus\Models\OrganizationSiteMembership;
-use Terminus\Models\Site;
-use Terminus\Models\Tag;
+use Pantheon\Terminus\Collections\Tags;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Tag;
 
 /**
  * Testing class for Terminus\Models\Tag
@@ -25,9 +25,10 @@ class TagTest extends ModelTestCase
         $this->collection->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->collection->org_site_membership->site = $this->getMockBuilder(Site::class)
+        $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->collection->org_site_membership->method('getSite')->willReturn($this->site);
         $this->collection->org_site_membership->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -43,7 +44,7 @@ class TagTest extends ModelTestCase
     public function testDelete()
     {
         $this->model->id = 'tag_id';
-        $this->model->org_site_membership->site->id = 'site_uuid';
+        $this->site->id = 'site_uuid';
         $this->model->org_site_membership->organization->id = 'org_uuid';
         $this->request->expects($this->once())
             ->method('request')

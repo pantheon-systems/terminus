@@ -2,16 +2,24 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
-use Terminus\Models\WorkflowOperation;
-use Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\WorkflowOperation;
+use Pantheon\Terminus\Collections\Workflows;
 
 /**
  * Base testing class for Pantheon\Terminus\Commands\Workflow
  */
 abstract class WorkflowCommandTest extends CommandTestCase
 {
+    /**
+     * @var Workflow
+     */
     protected $workflow;
+
+    /*
+     * @var Workflows
+     */
+    protected $workflows;
 
     /**
      * Setup the test fixture.
@@ -20,9 +28,11 @@ abstract class WorkflowCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->workflows = $this->getMockBuilder(Workflows::class)
+        $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
