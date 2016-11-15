@@ -20,6 +20,7 @@ use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\UserSiteMembership;
@@ -145,6 +146,7 @@ class Runner
         $container->add(OrganizationUserMemberships::class);
         $container->add(OrganizationUserMembership::class);
         $container->add(Organization::class);
+        $container->add(Site::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
