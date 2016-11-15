@@ -29,7 +29,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
         if (in_array($branch_id, ['master', 'live', 'test'])) {
             throw new TerminusException('You cannot delete the {branch_id} branch.', compact('branch_id'));
         }
-        $branch = $site->branches->get($branch_id);
+        $branch = $site->getBranches()->get($branch_id);
 
         $workflow = $branch->delete();
 
