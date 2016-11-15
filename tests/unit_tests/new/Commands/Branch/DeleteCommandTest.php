@@ -5,9 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Branch;
 use Pantheon\Terminus\Commands\Branch\DeleteCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\Branches;
+use Pantheon\Terminus\Collections\Branches;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Branch;
+use Pantheon\Terminus\Models\Branch;
 
 class DeleteCommandTest extends CommandTestCase
 {
@@ -45,7 +45,9 @@ class DeleteCommandTest extends CommandTestCase
             ->with('branch-name')
             ->willReturn($branch);
 
-        $this->site->branches = $branches;
+        $this->site->expects($this->once())
+            ->method('getBranches')
+            ->willReturn($branches);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(

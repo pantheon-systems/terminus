@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Terminus\Models\Organization;
 use Terminus\Models\OrganizationSiteMembership;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 use Terminus\Collections\Tags;
 
 /**

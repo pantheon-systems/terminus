@@ -35,14 +35,14 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
         $finished = [];
 
         $this->log()->notice('Watching workflows...');
-        $site->workflows->fetchWithOperations();
+        $site->getWorkflows()->fetchWithOperations();
         while (true) {
-            $last_created_at  = $site->workflows->lastCreatedAt();
-            $last_finished_at = $site->workflows->lastFinishedAt();
+            $last_created_at  = $site->getWorkflows()->lastCreatedAt();
+            $last_finished_at = $site->getWorkflows()->lastFinishedAt();
             sleep(self::WORKFLOWS_WATCH_INTERVAL);
-            $site->workflows->fetchWithOperations();
+            $site->getWorkflows()->fetchWithOperations();
 
-            $workflows = $site->workflows->all();
+            $workflows = $site->getWorkflows()->all();
             foreach ($workflows as $workflow) {
                 if (($workflow->get('created_at') > $last_created_at)
                 && !in_array($workflow->id, $started)

@@ -36,7 +36,7 @@ class ListCommandTest extends TeamCommandTest
             ->method('get')
             ->will($this->onConsecutiveCalls($user, 'team_member', $user, 'team_member'));
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('all')
             ->willReturn([$this->user_membership, $this->user_membership]);
 

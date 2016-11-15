@@ -24,5 +24,5 @@ Feature: Deleting a site's branches
     When I run "terminus branch:delete [[test_site_name]] some_branch"
     Then I should get:
     """
-    Could not find Terminus\Models\Branch "some_branch"
+    Could not find Pantheon\Terminus\Models\Branch "some_branch"
     """

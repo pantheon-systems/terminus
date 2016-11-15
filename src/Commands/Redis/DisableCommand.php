@@ -25,7 +25,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     public function disableRedis($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->redis->disable();
+        $site->getRedis()->disable();
         $this->log()->notice('Redis disabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.

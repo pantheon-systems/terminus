@@ -94,7 +94,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
                     $this->id
                 );
                 break;
-            case 'Terminus\Models\Site':
+            case 'Pantheon\Terminus\Models\Site':
                 $this->site = $this->owner;
                 $this->url = sprintf(
                     'sites/%s/workflows/%s',

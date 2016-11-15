@@ -18,14 +18,15 @@ class DisableCommandTest extends CommandTestCase
         $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
-        $this->site->redis = $this->getMockBuilder(Redis::class)
+        $this->redis = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->redis->expects($this->once())
+        $this->redis->expects($this->once())
             ->method('disable');
         $this->site->expects($this->once())
             ->method('converge')
             ->willReturn($workflow);
+        $this->site->method('getRedis')->willReturn($this->redis);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
