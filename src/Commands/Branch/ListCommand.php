@@ -31,7 +31,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             function ($branch) {
                 return $branch->serialize();
             },
-            $site->branches->all()
+            $site->getBranches()->all()
         );
         return new RowsOfFields($branches);
     }

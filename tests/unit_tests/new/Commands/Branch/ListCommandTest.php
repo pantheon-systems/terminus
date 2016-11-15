@@ -26,12 +26,17 @@ class ListCommandTest extends CommandTestCase
                 ->willReturn($branch_info);
             $branches[] = $branch;
         }
-        $this->site->branches = $this->getMockBuilder(Branches::class)
+
+        $branches_collection = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->branches->expects($this->once())
+        $branches_collection->expects($this->once())
             ->method('all')
             ->willReturn($branches);
+
+        $this->site->expects($this->once())
+            ->method('getBranches')
+            ->willReturn($branches_collection);
 
         $command = new ListCommand();
         $command->setSites($this->sites);
