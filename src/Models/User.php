@@ -213,6 +213,14 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * @return object
+     */
+    public function getProfile()
+    {
+        return $this->get('profile');
+    }
+
+    /**
      * @return \Terminus\Collections\UserSiteMemberships
      */
     public function getSiteMemberships()
