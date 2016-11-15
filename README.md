@@ -1,6 +1,8 @@
 ## This branch is the alpha release of Terminus 1.0.
 > Terminus' master branch now represents our Terminus 1.0 work in progress. For the current 0.x version, check out the 0.13.x branch: [https://github.com/pantheon-systems/terminus/tree/0.13.x](https://github.com/pantheon-systems/terminus/tree/0.13.x)
 
+> Documentation for the alpha release of Terminus 1.0 can be found [here](https://terminusma-static-docs.pantheonsite.io/docs/). For the current 0.x version, visit [https://pantheon.io/docs](https://pantheon.io/docs).
+
 
 Terminus
 ========
@@ -91,7 +93,7 @@ Authentication
 
 To get started with Terminus, you must first authenticate:
 ```bash
-terminus auth login
+terminus auth:login
 Your email address?: user@pantheon.io
 Your dashboard password (input will not be shown)
 [1969-07-20 20:18:00] [info] Logging in as user@pantheon.io
