@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Auth;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 class WhoamiCommand extends TerminusCommand
@@ -23,13 +23,13 @@ class WhoamiCommand extends TerminusCommand
      *   Responds with the email of the logged-in user
      * @usage terminus auth:whoami --format=table
      *   Responds with the current session and user's data
-     * @return AssociativeList
+     * @return PropertyList
      */
     public function whoAmI()
     {
         if ($this->session()->isActive()) {
             $user = $this->session()->getUser();
-            return new AssociativeList($user->fetch()->serialize());
+            return new PropertyList($user->fetch()->serialize());
         } else {
             $this->log()->notice('You are not logged in.');
         }

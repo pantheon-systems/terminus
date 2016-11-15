@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Tag;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -22,7 +22,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_name The name or UUID of a site to list the tags of
      * @param string $organization The name or UUID of an organization which has tagged this site
      *
-     * @return AssociativeList
+     * @return PropertyList
      *
      * @usage terminus tag:list <site_name> <org_name>
      *    Lists the tags which the <org_name> organization has added to the <site_name> site
@@ -38,6 +38,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
                 ['org' => $org->get('profile')->name, 'site' => $site->get('name'),]
             );
         }
-        return new AssociativeList($tags);
+        return new PropertyList($tags);
     }
 }

@@ -24,10 +24,10 @@
 
 ### serialize
 ##### Description:
-    Get model data as AssociativeList
+    Get model data as PropertyList
 
 ##### Return:
-    [AssociativeList]
+    [PropertyList]
 
 ---
 

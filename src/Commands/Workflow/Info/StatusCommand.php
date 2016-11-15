@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 class StatusCommand extends InfoBaseCommand
 {
@@ -13,7 +13,7 @@ class StatusCommand extends InfoBaseCommand
      *
      * @param string $site_id Name or ID of the site that the workflow is part of
      * @option string $id UUID of the workflow to show
-     * @return AssociativeList
+     * @return PropertyList
      *
      * @field-labels
      *   id: Workflow ID
@@ -32,6 +32,6 @@ class StatusCommand extends InfoBaseCommand
     {
         $workflow_data = $this->getWorkflow($site_id, $options['id'])->serialize();
         unset($workflow_data['operations']);
-        return new AssociativeList($workflow_data);
+        return new PropertyList($workflow_data);
     }
 }

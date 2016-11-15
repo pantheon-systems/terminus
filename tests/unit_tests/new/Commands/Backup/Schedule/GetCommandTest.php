@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Backup\Schedule\GetCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 
@@ -43,7 +43,7 @@ class GetCommandTest extends BackupCommandTest
             ->method('log');
 
         $out = $this->command->getSchedule('mysite.scheduled');
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($out->getArrayCopy(), $schedule_info);
     }
 
@@ -71,7 +71,7 @@ class GetCommandTest extends BackupCommandTest
             );
 
         $out = $this->command->getSchedule('mysite.scheduled');
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($out->getArrayCopy(), $schedule_info);
     }
 }

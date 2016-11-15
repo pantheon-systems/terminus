@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Self;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 class InfoCommand extends TerminusCommand
@@ -27,7 +27,7 @@ class InfoCommand extends TerminusCommand
      * @usage terminus site:info --field=terminus_version --format=json
      * Outputs the Terminus version in JSON format
      *
-     * @return AssociativeList
+     * @return PropertyList
      */
     public function info()
     {
@@ -41,6 +41,6 @@ class InfoCommand extends TerminusCommand
             'terminus_version'    => $config->get('version'),
             'os_version'          => $config->get('os_version'),
         ];
-        return new AssociativeList($info);
+        return new PropertyList($info);
     }
 }
