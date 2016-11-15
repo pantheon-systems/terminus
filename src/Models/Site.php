@@ -89,7 +89,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->redis = new Redis(null, $params);
         $this->solr = new Solr(null, $params);
         $this->user_memberships = new SiteUserMemberships($params);
-        $this->workflows = new Workflows($params);
         $this->setUpstream($attributes);
     }
 
@@ -112,7 +111,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function addInstrument($instrument_id)
     {
         $args = ['site' => $this->id, 'params' => compact('instrument_id'),];
-        return $this->workflows->create('associate_site_instrument', $args);
+        return $this->getWorkflows()->create('associate_site_instrument', $args);
     }
 
     /**
@@ -122,7 +121,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function completeMigration()
     {
-        return $this->workflows->create('complete_migration');
+        return $this->getWorkflows()->create('complete_migration');
     }
 
     /**
@@ -132,7 +131,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function converge()
     {
-        return $this->workflows->create('converge_site');
+        return $this->getWorkflows()->create('converge_site');
     }
 
     /**
@@ -172,7 +171,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function deployProduct($upstream_id)
     {
-        return $this->workflows->create(
+        return $this->getWorkflows()->create(
             'deploy_product',
             ['params' => ['product_id' => $upstream_id,],]
         );
@@ -242,7 +241,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function removeInstrument()
     {
-        return $this->workflows->create('disassociate_site_instrument', ['site' => $this->id,]);
+        return $this->getWorkflows()->create('disassociate_site_instrument', ['site' => $this->id,]);
     }
 
     /**
@@ -291,7 +290,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function setOwner($user_id)
     {
-        return $this->workflows->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
+        return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
     }
 
     /**
@@ -304,7 +303,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function updateServiceLevel($service_level)
     {
         try {
-            return $this->workflows->create(
+            return $this->getWorkflows()->create(
                 'change_site_service_level',
                 ['params' => compact('service_level'),]
             );
@@ -357,5 +356,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
         }
         return $this->branches;
+    }
+
+    /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
+        }
+        return $this->workflows;
     }
 }
