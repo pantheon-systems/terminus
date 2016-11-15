@@ -10,9 +10,15 @@ Feature: Displaying environmental information
   @vcr site_environment-info
   Scenario: Checking environmental information
     When I run "terminus env:info [[test_site_name]].dev"
-    Then I should get:
+    Then I should see a table with rows like:
     """
-    dev
+      ID
+      Created
+      Domain
+      Locked
+      Initialized
+      Connection Mode
+      PHP Version
     """
 
   @vcr site_environment-info
