@@ -44,7 +44,7 @@ Feature: Displaying environmental information
     2) test
     3) live
     4) my-multidev
-    Enter site name or number:
+    Enter environment name or number:
     """
     When I enter: 1
     Then I should see a table with rows like:
@@ -68,7 +68,7 @@ Feature: Displaying environmental information
     2) test
     3) live
     4) my-multidev
-    Enter site name or number:
+    Enter environment name or number:
     """
     When I enter: dev
     Then I should see a table with rows like:
