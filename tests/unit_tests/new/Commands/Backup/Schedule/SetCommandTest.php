@@ -37,10 +37,7 @@ class SetCommandTest extends BackupCommandTest
     public function testSetBackupSchedule()
     {
         $this->environment->id = 'some_env';
-        $schedule_info = [
-            'hour' => '0',
-            'day' => 'Caturday',
-        ];
+        $schedule_info = ['day' => 'Caturday',];
 
         $this->backups->expects($this->once())
             ->method('setBackupSchedule')
