@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Auth\WhoamiCommand;
 use Terminus\Models\User;
 
@@ -52,7 +52,7 @@ class WhoamiCommandTest extends AuthTest
             ->method('log');
 
         $out = $this->command->whoAmI();
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 
     /**

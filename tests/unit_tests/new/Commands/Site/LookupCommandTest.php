@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\LookupCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
@@ -35,7 +35,7 @@ class LookupCommandTest extends CommandTestCase
             ->willReturn(['name' => $site_name, 'id' => 'site_id',]);
 
         $out = $this->command->lookup($site_name);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 
     /**
@@ -53,7 +53,7 @@ class LookupCommandTest extends CommandTestCase
             ->will($this->throwException(new \Exception('You are not authorized for this site.')));
 
         $out = $this->command->lookup($site_name);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 
     /**
@@ -71,6 +71,6 @@ class LookupCommandTest extends CommandTestCase
             ->will($this->throwException(new \Exception("A site named $site_name was not found.")));
 
         $out = $this->command->lookup($site_name);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 }

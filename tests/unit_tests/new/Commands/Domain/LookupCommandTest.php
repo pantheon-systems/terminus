@@ -69,7 +69,7 @@ class LookupCommandTest extends DomainTest
             ->willReturn(true);
 
         $out = $this->command->lookup($domain);
-        $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\AssociativeList', $out);
+        $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\PropertyList', $out);
 
         $array_out = $out->getArrayCopy();
         $this->assertEquals($array_out['site_id'], $this->site->id);

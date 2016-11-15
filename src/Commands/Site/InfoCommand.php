@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 /**
  * Class InfoCommand
@@ -40,10 +40,10 @@ class InfoCommand extends SiteCommand
      *   * Responds that you are forbidden if you access a site that exists
      *      but you do not have access to it
      *   * Responds that a site does not exist
-     * @return AssociativeList
+     * @return PropertyList
      */
     public function info($site)
     {
-        return new AssociativeList($this->sites->get($site)->serialize());
+        return new PropertyList($this->sites->get($site)->serialize());
     }
 }

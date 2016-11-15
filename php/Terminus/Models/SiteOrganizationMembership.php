@@ -2,7 +2,7 @@
 
 namespace Terminus\Models;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 class SiteOrganizationMembership extends TerminusModel
 {
@@ -46,9 +46,9 @@ class SiteOrganizationMembership extends TerminusModel
     }
 
     /**
-     * Get model data as AssociativeList
+     * Get model data as PropertyList
      *
-     * @return AssociativeList
+     * @return PropertyList
      */
     public function serialize()
     {
