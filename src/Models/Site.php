@@ -6,7 +6,7 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Terminus\Collections\Branches;
+use Pantheon\Terminus\Collections\Branches;
 use Terminus\Collections\Environments;
 use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
@@ -19,7 +19,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
-    
+
     /**
      * @var SiteAuthorizations
      */
@@ -79,7 +79,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
 
         $params = ['site' => $this,];
         $this->authorizations = new SiteAuthorizations($params);
-        $this->branches = new Branches($params);
         $this->environments = new Environments($params);
         $this->new_relic = new NewRelic(null, $params);
         $this->org_memberships = new SiteOrganizationMemberships($params);
@@ -250,25 +249,25 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function serialize()
     {
         $data = [
-            'id'            => $this->id,
-            'name'          => $this->get('name'),
-            'label'         => $this->get('label'),
-            'created'       => date(Config::get('date_format'), $this->get('created')),
-            'framework'     => $this->get('framework'),
-            'organization'  => $this->get('organization'),
+            'id' => $this->id,
+            'name' => $this->get('name'),
+            'label' => $this->get('label'),
+            'created' => date(Config::get('date_format'), $this->get('created')),
+            'framework' => $this->get('framework'),
+            'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
-            'upstream'      => (string)$this->upstream,
-            'php_version'   => $this->get('php_version'),
-            'holder_type'   => $this->get('holder_type'),
-            'holder_id'     => $this->get('holder_id'),
-            'owner'         => $this->get('owner'),
+            'upstream' => (string)$this->upstream,
+            'php_version' => $this->get('php_version'),
+            'holder_type' => $this->get('holder_type'),
+            'holder_id' => $this->get('holder_id'),
+            'owner' => $this->get('owner'),
         ];
         if ($this->has('frozen')) {
             $data['frozen'] = true;
         }
         if (!is_null($data['php_version'])) {
             $data['php_version'] = substr($data['php_version'], 0, 1)
-              . '.' . substr($data['php_version'], 1, 1);
+                . '.' . substr($data['php_version'], 1, 1);
         }
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());
@@ -337,9 +336,22 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $upstream_data = (object)[];
         if (isset($attributes->settings->upstream)) {
             $upstream_data = $attributes->settings->upstream;
-        } else if (isset($attributes->upstream)) {
-            $upstream_data = $attributes->upstream;
+        } else {
+            if (isset($attributes->upstream)) {
+                $upstream_data = $attributes->upstream;
+            }
         }
         $this->upstream = new Upstream($upstream_data, ['site' => $this,]);
+    }
+
+    /**
+     * @return Branches
+     */
+    public function getBranches()
+    {
+        if (empty($this->branches)) {
+            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
+        }
+        return $this->branches;
     }
 }

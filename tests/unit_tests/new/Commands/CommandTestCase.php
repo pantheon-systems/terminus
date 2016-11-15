@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Collections\Environments;
 use Terminus\Collections\Sites;
 use Terminus\Models\Environment;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 use VCR\VCR;
 
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase

@@ -5,6 +5,7 @@ namespace Pantheon\Terminus;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use League\Container\Container;
 use League\Container\ContainerInterface;
+use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Instruments;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
@@ -15,6 +16,7 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Branch;
 use Pantheon\Terminus\Models\Instrument;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Models\Organization;
@@ -150,6 +152,8 @@ class Runner
         $container->add(OrganizationUserMemberships::class);
         $container->add(OrganizationUserMembership::class);
         $container->add(Organization::class);
+        $container->add(Branches::class);
+        $container->add(Branch::class);
         $container->add(Site::class);
 
         $container->share('sites', Sites::class);

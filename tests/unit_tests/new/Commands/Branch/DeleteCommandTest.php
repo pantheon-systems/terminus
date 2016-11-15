@@ -45,7 +45,9 @@ class DeleteCommandTest extends CommandTestCase
             ->with('branch-name')
             ->willReturn($branch);
 
-        $this->site->branches = $branches;
+        $this->site->expects($this->once())
+            ->method('getBranches')
+            ->willReturn($branches);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(

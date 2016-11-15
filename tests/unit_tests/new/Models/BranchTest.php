@@ -2,14 +2,14 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Terminus\Collections\Branches;
+use Pantheon\Terminus\Collections\Branches;
 use Terminus\Collections\Workflows;
 use Terminus\Models\Branch;
 use Terminus\Models\Site;
 use Terminus\Models\Workflow;
 
 /**
- * Testing class for Terminus\Models\Branch
+ * Testing class for Pantheon\Terminus\Models\Branch
  */
 class BranchTest extends ModelTestCase
 {
