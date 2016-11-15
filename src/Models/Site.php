@@ -14,6 +14,10 @@ use Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\NewRelic;
+use Terminus\Models\Redis;
+use Terminus\Models\Solr;
+use Terminus\Models\Upstream;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
@@ -296,7 +300,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      *
      * @param string $service_level Level to set service on site to
      * @return Workflow
-     * @throws TerminusException
+     * @throws \Exception
      */
     public function updateServiceLevel($service_level)
     {

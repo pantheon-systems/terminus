@@ -2,10 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
+use League\Container\Container;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\Workflows;
 use Terminus\Models\Organization;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 use Terminus\Models\SiteOrganizationMembership;
 use Terminus\Models\Workflow;
 
@@ -29,14 +30,25 @@ class SiteTest extends ModelTestCase
     public function setUp()
     {
         parent::setUp();
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
+
         $this->model = new Site((object)['id' => 123,]);
+
         $this->model->workflows = $this->workflows;
+
+        // @TODO: Add all of the mocked injected dependencies to the container.
+        $this->model->setContainer($container);
+
         $this->model->setRequest($this->request);
     }
 
