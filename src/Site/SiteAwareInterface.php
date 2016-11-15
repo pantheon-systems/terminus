@@ -2,7 +2,8 @@
 
 namespace Pantheon\Terminus\Site;
 
-use Terminus\Collections\Sites;
+use Pantheon\Terminus\Session\SessionAwareInterface;
+use Pantheon\Terminus\Collections\Sites;
 
 /**
  * Provides an interface for commands that need access to one or more Pantheon sites.

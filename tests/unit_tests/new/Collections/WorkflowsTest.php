@@ -9,7 +9,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
 use Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class WorkflowsTest extends CollectionTestCase
 {

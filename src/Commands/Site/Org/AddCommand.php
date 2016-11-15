@@ -28,7 +28,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);
         
-        $workflow = $site->org_memberships->create($organization, 'team_member');
+        $workflow = $site->getOrganizationMemberships()->create($organization, 'team_member');
         $this->log()->notice(
             'Adding {org} as a supporting organization to {site}.',
             ['site' => $site->getName(), 'org' => $org->getName()]

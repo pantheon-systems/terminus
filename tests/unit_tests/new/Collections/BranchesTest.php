@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-use Terminus\Models\Site;
-use Terminus\Collections\Branches;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Collections\Branches;
 
 /**
  * Testing class for Terminus\Collections\Branches

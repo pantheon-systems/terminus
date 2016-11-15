@@ -26,7 +26,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     public function add($site_id, $member, $options = ['role' => 'team_member'])
     {
         $site = $this->getSite($site_id);
-        $team = $site->user_memberships;
+        $team = $site->getUserMemberships();
 
         if ((boolean)$site->getFeature('change_management')) {
             $role = $options['role'];
