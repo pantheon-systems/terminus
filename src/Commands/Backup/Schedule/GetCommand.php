@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Backup\Schedule;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -23,7 +23,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup:schedule:get
      *
      * @param string $site_env Site & environment to get the schedule of, in the format `site-name.env`.
-     * @return AssociativeList
+     * @return PropertyList
      *
      * @field-labels
      *    daily_backup_hour: Daily Backup Hour
@@ -42,6 +42,6 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
         if (is_null($schedule['daily_backup_hour'])) {
             $this->log()->notice('Backups are not currently scheduled to be run.');
         }
-        return new AssociativeList($schedule);
+        return new PropertyList($schedule);
     }
 }

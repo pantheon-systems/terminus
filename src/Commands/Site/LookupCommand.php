@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 /**
  * Class LookupCommand
@@ -27,11 +27,11 @@ class LookupCommand extends SiteCommand
      *   * Responds that you are forbidden if you access a site that exists
      *      but you do not have access to it
      *   * Responds that a site does not exist
-     * @return AssociativeList
+     * @return PropertyList
      */
     public function lookup($site_name)
     {
         $response = (array)$this->sites()->findUuidByName($site_name);
-        return new AssociativeList($response);
+        return new PropertyList($response);
     }
 }

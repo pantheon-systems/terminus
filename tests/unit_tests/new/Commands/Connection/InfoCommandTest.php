@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Connection\InfoCommand;
 use Prophecy\Prophet;
 use Terminus\Collections\Sites;
@@ -43,6 +43,6 @@ class InfoCommandTest extends ConnectionCommandTest
         $out = $this->command->connectionInfo('dummy-site.dev');
 
         // should return the correct type
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Connection;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -51,7 +51,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env_id Name of the environment to retrieve
      *
-     * @return AssociativeList
+     * @return PropertyList
      *
      * @usage connection:info awesome-site.dev --format=json
      *   Display connection information in json format
@@ -65,6 +65,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     {
         list(, $env) = $this->getSiteEnv($site_env_id);
 
-        return new AssociativeList($env->connectionInfo());
+        return new PropertyList($env->connectionInfo());
     }
 }

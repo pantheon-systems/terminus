@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Domain;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -18,7 +18,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      * @command domain:lookup
      *
      * @param string $domain The domain to search your site environments for
-     * @return AssociativeList
+     * @return PropertyList
      * @throws TerminusNotFoundException
      *
      * @field-labels
@@ -49,6 +49,6 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
                 compact('domain')
             );
         }
-        return new AssociativeList($env);
+        return new PropertyList($env);
     }
 }
