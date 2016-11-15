@@ -10,9 +10,15 @@ Feature: Displaying environmental information
   @vcr site_environment-info
   Scenario: Checking environmental information
     When I run "terminus env:info [[test_site_name]].dev"
-    Then I should get:
+    Then I should see a table with rows like:
     """
-    dev
+      ID
+      Created
+      Domain
+      Locked
+      Initialized
+      Connection Mode
+      PHP Version
     """
 
   @vcr site_environment-info
@@ -26,4 +32,52 @@ Feature: Displaying environmental information
     Then I should get:
     """
     The requested field, 'invalid', is not defined.
+    """
+
+  Scenario: Prompt for environment argument using a number
+    When this step is implemented I will test: environment selection interactivity by number
+    When I run: terminus env:info [[test_site_name]]
+    Then I should get:
+    """
+    Please choose an environment for this command:
+    1) dev
+    2) test
+    3) live
+    4) my-multidev
+    Enter environment name or number:
+    """
+    When I enter: 1
+    Then I should see a table with rows like:
+    """
+      ID
+      Created
+      Domain
+      Locked
+      Initialized
+      Connection Mode
+      PHP Version
+    """
+
+  Scenario: Prompt for environment argument using a name
+    When this step is implemented I will test: environment selection interactivity by name
+    When I run: terminus env:info [[test_site_name]]
+    Then I should get:
+    """
+    Please choose an environment for this command:
+    1) dev
+    2) test
+    3) live
+    4) my-multidev
+    Enter environment name or number:
+    """
+    When I enter: dev
+    Then I should see a table with rows like:
+    """
+      ID
+      Created
+      Domain
+      Locked
+      Initialized
+      Connection Mode
+      PHP Version
     """
