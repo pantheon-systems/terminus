@@ -1,14 +1,13 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Upstream;
+namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
-use Pantheon\Terminus\Commands\SiteCommandBase;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Terminus\Exceptions\TerminusException;
 
-abstract class UpstreamCommand extends TerminusCommand implements SiteAwareInterface
+abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 

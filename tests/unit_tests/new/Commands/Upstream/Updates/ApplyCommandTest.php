@@ -1,11 +1,11 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
-use Pantheon\Terminus\Commands\Upstream\UpdatesApplyCommand;
+use Pantheon\Terminus\Commands\Upstream\Updates\ApplyCommand;
 use Terminus\Models\Workflow;
 
-class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
+class ApplyCommandTest extends UpdatesCommandTest
 {
     protected $environment;
 
@@ -13,7 +13,7 @@ class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
     {
         parent::setUp();
 
-        $this->command = new UpdatesApplyCommand($this->getConfig());
+        $this->command = new ApplyCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
