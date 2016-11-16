@@ -33,7 +33,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function teamList($site_id)
     {
         $site = $this->getSite($site_id);
-        $user_memberships = $site->user_memberships->all();
+        $user_memberships = $site->getUserMemberships()->all();
         $data = [];
         foreach ($user_memberships as $user_membership) {
             $user = $user_membership->get('user');

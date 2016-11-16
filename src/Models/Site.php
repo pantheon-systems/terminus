@@ -10,7 +10,7 @@ use Pantheon\Terminus\Collections\Branches;
 use Terminus\Collections\Environments;
 use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
@@ -88,7 +88,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->org_memberships = new SiteOrganizationMemberships($params);
         $this->redis = new Redis(null, $params);
         $this->solr = new Solr(null, $params);
-        $this->user_memberships = new SiteUserMemberships($params);
         $this->setUpstream($attributes);
     }
 
@@ -315,6 +314,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
     }
 
+
     /**
      * Modify response data between fetch and assignment
      *
@@ -367,5 +367,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
         }
         return $this->workflows;
+    }
+
+    /**
+     * @return \Terminus\Collections\SiteUserMemberships
+     */
+    public function getUserMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
+        }
+        return $this->user_memberships;
     }
 }
