@@ -20,6 +20,8 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $member Email of the member to change.
      * @param string $role Role to designate the member as.
      *
+     * @return string
+     * @throws \Terminus\Exceptions\TerminusException
      * @usage terminus site:team:role my-site admin@agency.com admin
      *   Change `admin@agency.com` to be role `admin` on the site `my-site`.
      */
@@ -29,7 +31,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
         if (!(boolean)$site->getFeature('change_management')) {
             throw new TerminusException('This site does not have its change-management option enabled.');
         }
-        $team = $site->user_memberships;
+        $team = $site->getUserMemberships();
         $user = $team->get($member);
         $workflow = $user->setRole($role);
         return $workflow->getMessage();
