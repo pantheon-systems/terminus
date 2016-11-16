@@ -9,15 +9,15 @@ Feature: New Relic
 
   @vcr site_new-relic_status
   Scenario: Accessing New Relic data
-    When I run "terminus site new-relic:status --site=[[test_site_name]]"
-    Then I should get: "Subscribed"
+    When I run "terminus site new-relic:status [[test_site_name]]"
+    Then I should get: "fail"
 
   @vcr site_new-relic_enable
   Scenario: Enabling New Relic data
-    When I run "terminus site new-relic:enable --site=[[test_site_name]]"
-    Then I should get one of the following: "New Relic enabled., This site already has a Pantheon-created NewRelic account."
+    When I run "terminus site new-relic:enable [[test_site_name]]"
+    Then I should get one of the following: "fail, failo"
 
   @vcr site_new-relic_disable
   Scenario: Disabling New Relic data
-    When I run "terminus site new-relic:disable --site=[[test_site_name]]"
-    Then I should get: "New Relic disabled."
+    When I run "terminus site new-relic:disable [[test_site_name]]"
+    Then I should get: "fail"
