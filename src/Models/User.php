@@ -7,6 +7,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Instruments;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
@@ -240,6 +241,17 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->ssh_keys = $this->getContainer()->get(SshKeys::class, [['user' => $this,]]);
         }
         return $this->ssh_keys;
+    }
+
+    /**
+     * @return \Terminus\Collections\Upstreams
+     */
+    public function getUpstreams()
+    {
+        if (empty($this->upstreams)) {
+            $this->upstreams = $this->getContainer()->get(Upstreams::class, [['user' => $this,]]);
+        }
+        return $this->upstreams;
     }
 
     /**
