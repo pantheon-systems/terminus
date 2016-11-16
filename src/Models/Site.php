@@ -311,6 +311,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
     }
 
+
     /**
      * Modify response data between fetch and assignment
      *
