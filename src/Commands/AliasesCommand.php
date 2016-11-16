@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Terminus\Exceptions\TerminusException;
+
 class AliasesCommand extends TerminusCommand
 {
     /**
@@ -34,7 +36,8 @@ class AliasesCommand extends TerminusCommand
         if (is_null($location = $options['location'])) {
             $location = '~/.drush/pantheon.aliases.drushrc.php';
         }
-        $location = str_replace('~', $_SERVER['HOME'], $location);
+        $location = $config->fixDirectorySeparators(str_replace('~', $config->getHomeDir(), $location));
+        $config->ensureDirExists(dirname($location));
         if (file_put_contents($location, $aliases) !== false) {
             $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
         }

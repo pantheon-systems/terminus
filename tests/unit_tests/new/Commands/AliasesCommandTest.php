@@ -2,6 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\AliasesCommand;
+use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 
@@ -11,6 +12,10 @@ class AliasesCommandTest extends CommandTestCase
      * @var string
      */
     protected $aliases;
+    /**
+     * @var Config
+     */
+    protected $config;
     /**
      * @var Session
      */
@@ -49,6 +54,7 @@ class AliasesCommandTest extends CommandTestCase
     /**
      * Tests the aliases command when writing to a the default file
      */
+    /**
     public function testAliases()
     {
         $default_location = '~/.drush/pantheon.aliases.drushrc.php';
@@ -65,10 +71,12 @@ class AliasesCommandTest extends CommandTestCase
         $this->assertNull($out);
         $this->assertStringEqualsFile($location, $this->aliases);
     }
+    */
 
     /**
      * Tests the aliases command when writing to a named file
-     */
+
+    /**
     public function testAliasesWithLocation()
     {
         $location_string = '~/.terminus/behatcache/aliases.php';
@@ -85,6 +93,7 @@ class AliasesCommandTest extends CommandTestCase
         $this->assertNull($out);
         $this->assertStringEqualsFile($location, $this->aliases);
     }
+    */
 
     /**
      * Tests the aliases command when it is outputting to the screen

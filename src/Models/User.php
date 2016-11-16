@@ -155,7 +155,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     /**
      * Retrieves Drush aliases for this user
      *
-     * @return \stdClass
+     * @return string
      */
     public function getAliases()
     {
@@ -167,8 +167,6 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
 
     /**
      * Requests API data and populates $this->aliases
-     *
-     * @return void
      */
     private function fetchAliases()
     {
