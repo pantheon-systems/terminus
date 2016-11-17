@@ -9,20 +9,20 @@ use Terminus\Config;
 class Logger extends KLogger
 {
 
-  /**
-   * A list of fields not to display values for in output
-   * @var array
-   */
+    /**
+     * A list of fields not to display values for in output
+     * @var array
+     */
     private $blacklist = ['password', 'machine_token'];
 
-  /**
-   * Class constructor. Feeds in output destination from env vars
-   *
-   * @param array  $options           Options for operation of logger
-   *        [array] config Configuration options from Runner
-   * @param string $logDirectory      File path to the logging directory
-   * @param string $logLevelThreshold The LogLevel Threshold
-   */
+    /**
+     * Class constructor. Feeds in output destination from env vars
+     *
+     * @param array  $options           Options for operation of logger
+     *        [array] config Configuration options from Runner
+     * @param string $logDirectory      File path to the logging directory
+     * @param string $logLevelThreshold The LogLevel Threshold
+     */
     public function __construct(
         array $options = array(),
         $logDirectory = 'php://stderr',
@@ -47,18 +47,18 @@ class Logger extends KLogger
         parent::__construct($logDirectory, $logLevelThreshold, $options);
     }
 
-  /**
-    * Logs with an arbitrary level
-    *
-    * @param mixed  $level   PSR log level of message
-    * @param string $message Message to give
-    * @param array  $context Context of message
-    * @return void
-    */
+    /**
+     * Logs with an arbitrary level
+     *
+     * @param mixed  $level   PSR log level of message
+     * @param string $message Message to give
+     * @param array  $context Context of message
+     * @return void
+     */
     public function log($level, $message, array $context = array())
     {
         if (isset($this->logLevelThreshold)
-        && ($this->logLevels[$this->logLevelThreshold] < $this->logLevels[$level])
+            && ($this->logLevels[$this->logLevelThreshold] < $this->logLevels[$level])
         ) {
             return;
         }
@@ -79,12 +79,12 @@ class Logger extends KLogger
         $this->write($message);
     }
 
-  /**
-   * Returns the option with the key given
-   *
-   * @param string $key Key to look for in options property
-   * @return mixed
-   */
+    /**
+     * Returns the option with the key given
+     *
+     * @param string $key Key to look for in options property
+     * @return mixed
+     */
     public function getOptions($key = null)
     {
         $options = $this->options;
@@ -101,18 +101,18 @@ class Logger extends KLogger
         );
     }
 
-  /**
-    * Formats the message for logging.
-    *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
-    * @param  array  $context The context
-    * @return string
-    */
+    /**
+     * Formats the message for logging.
+     *
+     * @param  string $level   The Log Level of the message
+     * @param  string $message The message to log
+     * @param  array  $context The context
+     * @return string
+     */
     protected function formatMessage($level, $message, $context)
     {
         if (isset($this->options)
-        && in_array($this->options['logFormat'], array('bash', 'json'))
+            && in_array($this->options['logFormat'], array('bash', 'json'))
         ) {
             $parts   = $this->getMessageParts($level, $message);
             $message = $this->options['logFormat'];
@@ -123,8 +123,8 @@ class Logger extends KLogger
             $message = "[{$this->getTimestamp()}] [$level] $message";
         }
         if (isset($this->options)
-        && $this->options['appendContext']
-        && ! empty($context)
+            && $this->options['appendContext']
+            && ! empty($context)
         ) {
             $message .= PHP_EOL . $this->indent($this->contextToString($context));
         }
@@ -132,13 +132,13 @@ class Logger extends KLogger
         return $message . PHP_EOL;
     }
 
-  /**
-    * Formats the message for bash-type logging.
-    *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
-    * @return string
-    */
+    /**
+     * Formats the message for bash-type logging.
+     *
+     * @param  string $level   The Log Level of the message
+     * @param  string $message The message to log
+     * @return string
+     */
     private function formatBashMessages($level, $message)
     {
         $parts   = $this->getMessageParts($level, $message);
@@ -149,13 +149,13 @@ class Logger extends KLogger
         return $message;
     }
 
-  /**
-    * Formats the message for JSON-type logging.
-    *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
-    * @return string
-    */
+    /**
+     * Formats the message for JSON-type logging.
+     *
+     * @param  string $level   The Log Level of the message
+     * @param  string $message The message to log
+     * @return string
+     */
     private function formatJsonMessages($level, $message)
     {
         $parts   = $this->getMessageParts($level, $message);
@@ -163,43 +163,43 @@ class Logger extends KLogger
         return $message;
     }
 
-  /**
-    * Collects and formats the log message parts
-    *
-    * @param  string $level   The Log Level of the message
-    * @param  string $message The message to log
-    * @return array
-    */
+    /**
+     * Collects and formats the log message parts
+     *
+     * @param  string $level   The Log Level of the message
+     * @param  string $message The message to log
+     * @return array
+     */
     private function getMessageParts($level, $message)
     {
         $parts = array(
-        'date'          => $this->getTimestamp(),
-        'level'         => strtoupper($level),
-        //'priority'      => $this->logLevels[$level],
-        'message'       => $message,
-        //'context'       => json_encode($context),
+            'date'          => $this->getTimestamp(),
+            'level'         => strtoupper($level),
+            //'priority'      => $this->logLevels[$level],
+            'message'       => $message,
+            //'context'       => json_encode($context),
         );
         return $parts;
     }
 
-  /**
-   * Gets the correctly formatted Date/Time for the log entry.
-   *
-   * @return string $date
-   */
+    /**
+     * Gets the correctly formatted Date/Time for the log entry.
+     *
+     * @return string $date
+     */
     private function getTimestamp()
     {
         $date = date($this->options['dateFormat']);
         return $date;
     }
 
-  /**
-   * Interpolates context variables per the PSR spec
-   *
-   * @param string $message The message containing curly brace-enclosed keys
-   * @param array  $context The array containing substitutionary values
-   * @return string
-   */
+    /**
+     * Interpolates context variables per the PSR spec
+     *
+     * @param string $message The message containing curly brace-enclosed keys
+     * @param array  $context The array containing substitutionary values
+     * @return string
+     */
     private function interpolate($message, $context)
     {
         // build a replacement array with braces around the context keys
@@ -216,13 +216,13 @@ class Logger extends KLogger
         return $interpolated_string;
     }
 
-  /**
-   * Strips sensitive data out of the JSON printed in a request string
-   *
-   * @param array $request_data An array of request parameters to censor
-   * @param array $blacklist    Array of string keys to remove from request
-   * @return string Sensitive data-stripped version of $request_data
-   */
+    /**
+     * Strips sensitive data out of the JSON printed in a request string
+     *
+     * @param array $request_data An array of request parameters to censor
+     * @param array $blacklist    Array of string keys to remove from request
+     * @return string Sensitive data-stripped version of $request_data
+     */
     private function stripSensitiveData($request_data, $blacklist = [])
     {
         foreach ($request_data as $key => $value) {

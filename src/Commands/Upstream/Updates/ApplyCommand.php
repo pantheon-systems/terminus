@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class ApplyCommand extends UpdatesCommand
 {

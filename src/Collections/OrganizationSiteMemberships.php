@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\Collections;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Models\Organization;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class OrganizationSiteMemberships extends TerminusCollection
 {

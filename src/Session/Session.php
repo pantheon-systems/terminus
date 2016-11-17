@@ -8,7 +8,7 @@ use Pantheon\Terminus\Collections\SavedTokens;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Terminus\Caches\FileCache;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
 
 class Session implements ContainerAwareInterface, ConfigAwareInterface

@@ -31,14 +31,12 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Terminus\\UnitTests\\": "tests/unit_tests/old/",
-      "Terminus\\FeatureTests\\": "tests/features/bootstrap/",
-      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/new/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/active_features/bootstrap/"
+      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/feature_tests/bootstrap/"
     }
   },
   "scripts": {
-      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",
+      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/* php/*",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/* php/*",
       "lint": "@cs",

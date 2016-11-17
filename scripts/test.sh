@@ -13,14 +13,10 @@ vendor/bin/phpunit --colors=always -c tests/config/phpunit.xml.dist --debug
 
 # Run the functional tests
 behat_cmd="vendor/bin/behat --colors -c=tests/config/behat.yml --suite="
-behat_cmd_10="vendor/bin/behat --colors -c=tests/config/behat_10.yml --suite="
 if [ ! -z $1 ]; then
   behat_cmd+=$1
-  behat_cmd_10+=$1
 else
   behat_cmd+="default"
-  behat_cmd_10+="default"
 fi
 
 eval $behat_cmd
-eval $behat_cmd_10

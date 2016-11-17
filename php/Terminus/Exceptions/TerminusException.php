@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file Contains Terminus\Exceptions\TerminusException
- */
-
 namespace Terminus\Exceptions;
 
 /**
