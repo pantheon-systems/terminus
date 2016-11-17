@@ -110,16 +110,17 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getSites()
     {
         $site_memberships = $this->getSiteMemberships()->all();
+
         $sites = array_combine(
             array_map(
                 function ($membership) {
-                    return $membership->site->id;
+                    return $membership->getSite()->get('id');
                 },
                 $site_memberships
             ),
             array_map(
                 function ($membership) {
-                    return $membership->site;
+                    return $membership->getSite();
                 },
                 $site_memberships
             )
@@ -213,7 +214,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\UserSiteMemberships
+     * @return \Pantheon\Terminus\Collections\UserSiteMemberships
      */
     public function getSiteMemberships()
     {
@@ -235,7 +236,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Workflows
+     * @return Pantheon\Terminus\Collections\Workflows
      */
     public function getWorkflows()
     {

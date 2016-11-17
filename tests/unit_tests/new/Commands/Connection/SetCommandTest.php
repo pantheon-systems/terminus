@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Pantheon\Terminus\Commands\Connection\SetCommand;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Connection\SetCommand

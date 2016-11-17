@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Models;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Terminus\Collections\Tags;
-use Terminus\Models\Site;
 
 class OrganizationSiteMembership extends TerminusModel implements ContainerAwareInterface
 {

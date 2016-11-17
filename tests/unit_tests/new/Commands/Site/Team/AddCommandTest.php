@@ -26,7 +26,7 @@ class TeamCommandsTest extends TeamCommandTest
     public function testAddCommand()
     {
         $new_member = 'test@example.com';
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('create')
             ->willReturn($this->workflow)
             ->with($new_member, 'team_member');

@@ -83,7 +83,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
                     $owner->id
                 );
                 break;
-            case 'Terminus\Models\Site':
+            case 'Pantheon\Terminus\Models\Site':
                 $this->url = sprintf(
                     'sites/%s/workflows',
                     $owner->id

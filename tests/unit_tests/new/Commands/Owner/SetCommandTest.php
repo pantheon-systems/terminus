@@ -5,16 +5,18 @@ namespace Pantheon\Terminus\UnitTests\Commands\Owner;
 use Pantheon\Terminus\Commands\Owner\SetCommand;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\SiteUserMembership;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Owner\SetCommand
  */
 class SetCommandTest extends CommandTestCase
 {
+    protected $user_memberships;
+
     /**
      * @inheritdoc
      */
@@ -22,9 +24,11 @@ class SetCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
+        $this->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->site->method('getUserMemberships')->willReturn($this->user_memberships);
 
         $this->command = new SetCommand($this->getConfig());
         $this->command->setSites($this->sites);
@@ -51,7 +55,7 @@ class SetCommandTest extends CommandTestCase
             ->getMock();
         $user_membership->user->id = 'user_id';
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->willReturn($user_membership);
@@ -95,7 +99,7 @@ class SetCommandTest extends CommandTestCase
     {
         $email = 'a-valid-email';
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->will($this->throwException(new TerminusNotFoundException));
@@ -119,7 +123,7 @@ class SetCommandTest extends CommandTestCase
     {
         $email = 'a-valid-email';
 
-        $this->site->user_memberships->expects($this->once())
+        $this->user_memberships->expects($this->once())
             ->method('get')
             ->with($this->equalTo($email))
             ->will($this->throwException(new \Exception));

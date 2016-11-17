@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\Upstream\UpdatesApplyCommand;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 class UpstreamUpdatesApplyCommand extends UpstreamCommandTest
 {

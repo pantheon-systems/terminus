@@ -11,6 +11,8 @@ use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
@@ -23,6 +25,7 @@ use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\UserSiteMembership;
@@ -37,7 +40,6 @@ use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Caches\FileCache;
-use Terminus\Collections\Sites;
 use Pantheon\Terminus\Models\User;
 use VCR\VCR;
 
@@ -150,6 +152,8 @@ class Runner
         $container->add(Organization::class);
         $container->add(Branches::class);
         $container->add(Branch::class);
+        $container->add(SiteUserMemberships::class);
+        $container->add(SiteUserMembership::class);
         $container->add(Site::class);
 
         $container->share('sites', Sites::class);

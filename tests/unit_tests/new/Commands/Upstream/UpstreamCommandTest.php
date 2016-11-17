@@ -2,13 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-use Pantheon\Terminus\Session\Session;
-use Psr\Log\NullLogger;
-use Terminus\Collections\Sites;
-use Terminus\Collections\SshKeys;
-use Terminus\Models\Site;
 use Terminus\Models\Upstream;
-use Terminus\Models\User;
 
 abstract class UpstreamCommandTest extends CommandTestCase
 {
