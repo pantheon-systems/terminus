@@ -15,36 +15,36 @@ use Terminus\Outputters\StreamWriter;
 
 class Runner
 {
-  /**
-   * @var array
-   */
+    /**
+     * @var array
+     */
     private static $arguments;
-  /**
-   * @var array
-   */
+    /**
+     * @var array
+     */
     private static $assoc_args;
-  /**
-   * @var array
-   */
+    /**
+     * @var array
+     */
     private static $config = [];
-  /**
-   * @var Logger
-   */
+    /**
+     * @var Logger
+     */
     private static $logger;
-  /**
-   * @var Outputter
-   */
+    /**
+     * @var Outputter
+     */
     private static $outputter;
-  /**
-   * @var RootCommand
-   */
+    /**
+     * @var RootCommand
+     */
     private static $root_command;
 
-  /**
-   * Constructs object. Initializes config, colorization, loger, and outputter
-   *
-   * @param array $config Extra settings for the config property
-   */
+    /**
+     * Constructs object. Initializes config, colorization, loger, and outputter
+     *
+     * @param array $config Extra settings for the config property
+     */
     public function __construct(array $config = [])
     {
         if (!defined('Terminus')) {
@@ -52,16 +52,16 @@ class Runner
         }
     }
 
-  /**
-   * Identifies the command to be run
-   *
-   * @param array $args The non-hyphenated (--) terms from the CL
-   * @return array
-   *   0 => [Terminus\Dispatcher\RootCommand]
-   *   1 => [array] args
-   *   2 => [array] command path
-   * @throws TerminusException
-   */
+    /**
+     * Identifies the command to be run
+     *
+     * @param array $args The non-hyphenated (--) terms from the CL
+     * @return array
+     *   0 => [Terminus\Dispatcher\RootCommand]
+     *   1 => [array] args
+     *   2 => [array] command path
+     * @throws TerminusException
+     */
     public function findCommandToRun($args)
     {
         $command = $this->getRootCommand();
@@ -88,13 +88,13 @@ class Runner
         return $command_array;
     }
 
-  /**
-   * Retrieves and returns configuration options
-   *
-   * @param string $key Hash key of config option to retrieve
-   * @return mixed
-   * @throws TerminusException
-   */
+    /**
+     * Retrieves and returns configuration options
+     *
+     * @param string $key Hash key of config option to retrieve
+     * @return mixed
+     * @throws TerminusException
+     */
     public static function getConfig($key = null)
     {
         if (empty(self::$config)) {
@@ -113,11 +113,11 @@ class Runner
         );
     }
 
-  /**
-   * Retrieves the instantiated logger
-   *
-   * @return Logger $logger
-   */
+    /**
+     * Retrieves the instantiated logger
+     *
+     * @return Logger $logger
+     */
     public static function getLogger()
     {
         if (!isset(self::$logger)) {
@@ -126,11 +126,11 @@ class Runner
         return self::$logger;
     }
 
-  /**
-   * Retrieves the instantiated outputter
-   *
-   * @return OutputterInterface
-   */
+    /**
+     * Retrieves the instantiated outputter
+     *
+     * @return OutputterInterface
+     */
     public static function getOutputter()
     {
         if (!isset(self::$outputter)) {
@@ -139,24 +139,24 @@ class Runner
         return self::$outputter;
     }
 
-  /**
-   * Set the logger instance to a class property
-   *
-   * @param array $config Configuration options to send to the logger
-   * @return void
-   */
+    /**
+     * Set the logger instance to a class property
+     *
+     * @param array $config Configuration options to send to the logger
+     * @return void
+     */
     public static function setLogger($config)
     {
         self::$logger = new Logger(compact('config'));
     }
 
-  /**
-   * Set the outputter instance to a class property
-   *
-   * @param string $format      Type of formatter to set on outputter
-   * @param string $destination Where output will be written to
-   * @return void
-   */
+    /**
+     * Set the outputter instance to a class property
+     *
+     * @param string $format      Type of formatter to set on outputter
+     * @param string $destination Where output will be written to
+     * @return void
+     */
     public static function setOutputter($format, $destination)
     {
         // Pick an output formatter
@@ -175,11 +175,11 @@ class Runner
         );
     }
 
-  /**
-   * Runs the Terminus command
-   *
-   * @return void
-   */
+    /**
+     * Runs the Terminus command
+     *
+     * @return void
+     */
     public function run()
     {
         if (empty(self::$arguments)) {
@@ -212,11 +212,11 @@ class Runner
         $this->runCommand();
     }
 
-  /**
-   * Retrieves the root command from the Dispatcher
-   *
-   * @return \Terminus\Dispatcher\RootCommand
-   */
+    /**
+     * Retrieves the root command from the Dispatcher
+     *
+     * @return \Terminus\Dispatcher\RootCommand
+     */
     public function getRootCommand()
     {
         if (!isset(self::$root_command)) {
@@ -225,11 +225,11 @@ class Runner
         return self::$root_command;
     }
 
-  /**
-   * Retrieves and returns a list of plugin's base directories
-   *
-   * @return array
-   */
+    /**
+     * Retrieves and returns a list of plugin's base directories
+     *
+     * @return array
+     */
     private function getUserPlugins()
     {
         $out = [];
@@ -244,13 +244,13 @@ class Runner
         return $out;
     }
 
-  /**
-   * Includes every command file in the commands directory
-   *
-   * @param CompositeCommand $parent The parent command to add the new commands to
-   *
-   * @return void
-   */
+    /**
+     * Includes every command file in the commands directory
+     *
+     * @param CompositeCommand $parent The parent command to add the new commands to
+     *
+     * @return void
+     */
     private function loadAllCommands(CompositeCommand $parent)
     {
         // Create a list of directories where commands might live.
@@ -292,11 +292,11 @@ class Runner
         }
     }
 
-  /**
-   * Runs a command
-   *
-   * @return void
-   */
+    /**
+     * Runs a command
+     *
+     * @return void
+     */
     private function runCommand()
     {
         $args       = self::$arguments;
@@ -320,12 +320,12 @@ class Runner
         }
     }
 
-  /**
-   * Uses configurator, saves config data to it
-   *
-   * @param array $arg_config Config options with which to override defaults
-   * @return void
-   */
+    /**
+     * Uses configurator, saves config data to it
+     *
+     * @param array $arg_config Config options with which to override defaults
+     * @return void
+     */
     private static function setConfig($arg_config = [])
     {
         $configurator   = new Configurator();
@@ -349,11 +349,11 @@ class Runner
         self::$config = array_merge($configurator->toArray(), $config);
     }
 
-  /**
-   * Set the root command instance to a class property
-   *
-   * @return void
-   */
+    /**
+     * Set the root command instance to a class property
+     *
+     * @return void
+     */
     private function setRootCommand()
     {
         self::$root_command = new Dispatcher\RootCommand();

@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Multidev;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class CreateCommand extends TerminusCommand implements SiteAwareInterface
 {

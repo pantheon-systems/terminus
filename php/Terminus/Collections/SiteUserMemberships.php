@@ -2,7 +2,7 @@
 
 namespace Terminus\Collections;
 
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class SiteUserMemberships extends TerminusCollection
 {

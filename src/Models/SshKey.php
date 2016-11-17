@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class SshKey extends TerminusModel
 {

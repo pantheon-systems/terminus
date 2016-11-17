@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class OrganizationUserMemberships extends TerminusCollection
 {

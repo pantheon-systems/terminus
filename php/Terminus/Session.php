@@ -7,22 +7,22 @@ use Terminus\Models\User;
 
 class Session
 {
-  /**
-   * @var Session
-   */
+    /**
+     * @var Session
+     */
     public static $instance;
-  /**
-   * @var FileCache
-   */
+    /**
+     * @var FileCache
+     */
     protected static $cache;
-  /**
-   * @var object
-   */
+    /**
+     * @var object
+     */
     protected $data;
 
-  /**
-   * Instantiates object, sets session data
-   */
+    /**
+     * Instantiates object, sets session data
+     */
     public function __construct()
     {
         self::$cache = new FileCache();
@@ -35,23 +35,23 @@ class Session
         self::$instance = $this;
     }
 
-  /**
-   * Removes the session from the cache
-   *
-   * @return void
-   */
+    /**
+     * Removes the session from the cache
+     *
+     * @return void
+     */
     public static function destroy()
     {
         self::$cache->remove('session');
     }
 
-  /**
-   * Returns given data property or default if DNE.
-   *
-   * @param string $key     Name of property to return
-   * @param mixed  $default Default return value in case property DNE
-   * @return mixed
-   */
+    /**
+     * Returns given data property or default if DNE.
+     *
+     * @param string $key     Name of property to return
+     * @param mixed  $default Default return value in case property DNE
+     * @return mixed
+     */
     public function get($key = 'session', $default = false)
     {
         if (isset($this->data) && isset($this->data->$key)) {
@@ -60,23 +60,23 @@ class Session
         return $default;
     }
 
-  /**
-   * Retrieves session data
-   *
-   * @return object
-   */
+    /**
+     * Retrieves session data
+     *
+     * @return object
+     */
     public static function getData()
     {
         $session = Session::instance();
         return $session->data;
     }
 
-  /**
-   * Returns session data indicated by the key
-   *
-   * @param string $key Name of session property to retrieve
-   * @return mixed
-   */
+    /**
+     * Returns session data indicated by the key
+     *
+     * @param string $key Name of session property to retrieve
+     * @return mixed
+     */
     public static function getValue($key)
     {
         $session          = Session::instance();
@@ -84,11 +84,11 @@ class Session
         return $session_property;
     }
 
-  /**
-   * Returns self, instantiating self if necessary
-   *
-   * @return Session
-   */
+    /**
+     * Returns self, instantiating self if necessary
+     *
+     * @return Session
+     */
     public static function instance()
     {
         if (!self::$instance) {
@@ -97,25 +97,25 @@ class Session
         return self::$instance;
     }
 
-  /**
-   * Sets a keyed value to be part of the data property object
-   *
-   * @param string $key   Name of data property
-   * @param mixed  $value Value of property to set
-   * @return Session
-   */
+    /**
+     * Sets a keyed value to be part of the data property object
+     *
+     * @param string $key   Name of data property
+     * @param mixed  $value Value of property to set
+     * @return Session
+     */
     public function set($key, $value = null)
     {
         $this->data->$key = $value;
         return $this;
     }
 
-  /**
-   * Saves session data to cache
-   *
-   * @param array $data Session data to save
-   * @return void|bool
-   */
+    /**
+     * Saves session data to cache
+     *
+     * @param array $data Session data to save
+     * @return void|bool
+     */
     public static function setData($data)
     {
         if (empty($data)) {
@@ -131,11 +131,11 @@ class Session
         return true;
     }
 
-  /**
-   * Returns a user with the current session user id
-   *
-   * @return User
-   */
+    /**
+     * Returns a user with the current session user id
+     *
+     * @return User
+     */
     public static function getUser()
     {
         return new User((object)['id' => Session::getValue('user_id'),]);

@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Site;
 
 use Terminus\Collections\Sites;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Implements the SiteAwareInterface for dependency injection of the Sites collection.

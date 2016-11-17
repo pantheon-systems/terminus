@@ -21,14 +21,14 @@ use Terminus\Exceptions\TerminusException;
 class Request
 {
 
-  /**
-   * Download file from target URL
-   *
-   * @param string $url    URL to download from
-   * @param string $target Target file's name
-   * @return bool True if download succeeded
-   * @throws TerminusException
-   */
+    /**
+     * Download file from target URL
+     *
+     * @param string $url    URL to download from
+     * @param string $target Target file's name
+     * @return bool True if download succeeded
+     * @throws TerminusException
+     */
     public static function download($url, $target)
     {
         if (file_exists($target)) {
@@ -43,17 +43,17 @@ class Request
         return true;
     }
 
-  /**
-   * Make a request to the Dashbord's internal API
-   *
-   * @param string $path    API path (URL)
-   * @param array  $options Options for the request
-   *   [string] method GET is default
-   *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-   *     simple object) to be sent along with the request. Will be encoded as
-   *     JSON for you.
-   * @return array
-   */
+    /**
+     * Make a request to the Dashbord's internal API
+     *
+     * @param string $path    API path (URL)
+     * @param array  $options Options for the request
+     *   [string] method GET is default
+     *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
+     *     simple object) to be sent along with the request. Will be encoded as
+     *     JSON for you.
+     * @return array
+     */
     public function pagedRequest($path, array $options = [])
     {
         $limit = 100;
@@ -100,25 +100,25 @@ class Request
         return $return;
     }
 
-  /**
-   * Simplified request method for Pantheon API
-   *
-   * @param string $path        API path (URL)
-   * @param array  $arg_options Options for the request
-   *   [string] method        GET is default
-   *   [mixed]  data          Native PHP data structure (e.g. int, string
-   *     array, or simple object) to be sent along with the request. Will
-   *     be encoded as JSON for you.
-   *   [boolean] absolute_url True if URL passed is to be treated as absolute
-   * @return array
-   * @throws TerminusException
-   */
+    /**
+     * Simplified request method for Pantheon API
+     *
+     * @param string $path        API path (URL)
+     * @param array  $arg_options Options for the request
+     *   [string] method        GET is default
+     *   [mixed]  data          Native PHP data structure (e.g. int, string
+     *     array, or simple object) to be sent along with the request. Will
+     *     be encoded as JSON for you.
+     *   [boolean] absolute_url True if URL passed is to be treated as absolute
+     * @return array
+     * @throws TerminusException
+     */
     public function request($path, $arg_options = [])
     {
         $config = Config::getAll();
         $default_options = [
-        'method'       => 'get',
-        'absolute_url' => false,
+            'method'       => 'get',
+            'absolute_url' => false,
         ];
         $options = array_merge($default_options, $arg_options);
 
@@ -136,34 +136,34 @@ class Request
         $response = $this->send($url, $options['method'], $options);
 
         $data = [
-        'data'        => json_decode($response->getBody()->getContents()),
-        'headers'     => $response->getHeaders(),
-        'status_code' => $response->getStatusCode(),
+            'data'        => json_decode($response->getBody()->getContents()),
+            'headers'     => $response->getHeaders(),
+            'status_code' => $response->getStatusCode(),
         ];
         return $data;
     }
 
-  /**
-   * Sends a request to the API
-   *
-   * @param string $uri        URL for API request
-   * @param string $method     Request method (i.e. PUT, POST, DELETE, or GET)
-   * @param array  $arg_params Request parameters
-   * @return \Psr\Http\Message\ResponseInterface
-   */
+    /**
+     * Sends a request to the API
+     *
+     * @param string $uri        URL for API request
+     * @param string $method     Request method (i.e. PUT, POST, DELETE, or GET)
+     * @param array  $arg_params Request parameters
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     private function send($uri, $method, array $arg_params = [])
     {
         $host = Config::get('host');
         $extra_params = [
-        'headers'         => [
-        'User-Agent'    => $this->userAgent(),
-        'Content-type'  => 'application/json',
-        ],
-        RequestOptions::VERIFY => (strpos($host, 'onebox') === false),
+            'headers'         => [
+                'User-Agent'    => $this->userAgent(),
+                'Content-type'  => 'application/json',
+            ],
+            RequestOptions::VERIFY => (strpos($host, 'onebox') === false),
         ];
 
         if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
-        && $session = Session::instance()->get('session', false)
+            && $session = Session::instance()->get('session', false)
         ) {
             $extra_params['headers']['Authorization'] = "Bearer $session";
         }
@@ -176,8 +176,8 @@ class Request
 
         $client = new Client(
             [
-            'base_uri' => $this->getBaseUri(),
-            'cookies'  => $this->fillCookieJar($params),
+                'base_uri' => $this->getBaseUri(),
+                'cookies'  => $this->fillCookieJar($params),
             ]
         );
         unset($params['cookies']);
@@ -185,9 +185,9 @@ class Request
         Runner::getLogger()->debug(
             "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
             [
-            'params' => json_encode($params),
-            'uri'    => $uri,
-            'method' => $method,
+                'params' => json_encode($params),
+                'uri'    => $uri,
+                'method' => $method,
             ]
         );
 
@@ -200,12 +200,12 @@ class Request
         return $response;
     }
 
-  /**
-   * Sets up and fills a cookie jar
-   *
-   * @param array $params Request data to fill jar with
-   * @return \GuzzleHttp\Cookie\CookieJar $jar
-   */
+    /**
+     * Sets up and fills a cookie jar
+     *
+     * @param array $params Request data to fill jar with
+     * @return \GuzzleHttp\Cookie\CookieJar $jar
+     */
     private function fillCookieJar(array $params)
     {
         $jar     = new CookieJar();
@@ -217,11 +217,11 @@ class Request
         return $jar;
     }
 
-  /**
-   * Parses the base URI for requests
-   *
-   * @return string
-   */
+    /**
+     * Parses the base URI for requests
+     *
+     * @return string
+     */
     private function getBaseUri()
     {
         $config = Config::getAll();
@@ -234,11 +234,11 @@ class Request
         return $base_uri;
     }
 
-  /**
-   * Gives the user-agent string
-   *
-   * @return string
-   */
+    /**
+     * Gives the user-agent string
+     *
+     * @return string
+     */
     private function userAgent()
     {
         $config = Config::getAll();

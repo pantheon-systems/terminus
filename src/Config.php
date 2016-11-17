@@ -4,7 +4,7 @@ namespace Pantheon\Terminus;
 
 use Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class Config extends \Robo\Config
 {

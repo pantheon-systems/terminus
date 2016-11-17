@@ -10,11 +10,11 @@ class Configurator
     private $spec;
     private $special_flags = ['--no-cache-clear',];
 
-  /**
-   * Constructs configurator, configures
-   *
-   * @param string $path Path to configuration specification file
-   */
+    /**
+     * Constructs configurator, configures
+     *
+     * @param string $path Path to configuration specification file
+     */
     public function __construct($path = null)
     {
         if (is_null($path)) {
@@ -23,11 +23,11 @@ class Configurator
         $this->spec = include $path;
 
         $defaults = [
-        'runtime'  => false,
-        'file'     => false,
-        'synopsis' => '',
-        'default'  => null,
-        'multiple' => false,
+            'runtime'  => false,
+            'file'     => false,
+            'synopsis' => '',
+            'default'  => null,
+            'multiple' => false,
         ];
 
         foreach ($this->spec as $key => $details) {
@@ -36,12 +36,12 @@ class Configurator
         }
     }
 
-  /**
-   * Splits positional args from associative args.
-   *
-   * @param array $arguments Arguments to parse
-   * @return array
-   */
+    /**
+     * Splits positional args from associative args.
+     *
+     * @param array $arguments Arguments to parse
+     * @return array
+     */
     public function extractAssoc(array $arguments)
     {
         $positional_args = $assoc_args = [];
@@ -64,22 +64,22 @@ class Configurator
         return $array;
     }
 
-  /**
-   * Get configuration specification, i.e. list of accepted keys.
-   *
-   * @return array`
-   */
+    /**
+     * Get configuration specification, i.e. list of accepted keys.
+     *
+     * @return array`
+     */
     public function getSpec()
     {
         return $this->spec;
     }
 
-  /**
-   * Adds the given array to the config property array
-   *
-   * @param array $config Details to add to config
-   * @return void
-   */
+    /**
+     * Adds the given array to the config property array
+     *
+     * @param array $config Details to add to config
+     * @return void
+     */
     public function mergeArray($config)
     {
         foreach ($this->spec as $key => $details) {
@@ -96,12 +96,12 @@ class Configurator
         }
     }
 
-  /**
-   * Splits a list of arguments into positional, associative and config.
-   *
-   * @param array $arguments Arguments to parse
-   * @return array positional_args, assoc_args, runtime_config
-   */
+    /**
+     * Splits a list of arguments into positional, associative and config.
+     *
+     * @param array $arguments Arguments to parse
+     * @return array positional_args, assoc_args, runtime_config
+     */
     public function parseArgs($arguments)
     {
         list($positional_args, $mixed_args) = $this->extractAssoc($arguments);
@@ -110,22 +110,22 @@ class Configurator
         return $array;
     }
 
-  /**
-   * Returns the config property
-   *
-   * @return array
-   */
+    /**
+     * Returns the config property
+     *
+     * @return array
+     */
     public function toArray()
     {
         return $this->config;
     }
 
-  /**
-   * Puts the given value into an array, if it is not already
-   *
-   * @param mixed $val Value to put in an array
-   * @return array
-   */
+    /**
+     * Puts the given value into an array, if it is not already
+     *
+     * @param mixed $val Value to put in an array
+     * @return array
+     */
     private function arrayify($val)
     {
         if (!is_array($val)) {
@@ -134,12 +134,12 @@ class Configurator
         return $val;
     }
 
-  /**
-   * Separates assoc_args from runtime configuration
-   *
-   * @param array $mixed_args A mixture of runtime args and command args
-   * @return array [0] = assoc_args, [1] = runtime_config
-   */
+    /**
+     * Separates assoc_args from runtime configuration
+     *
+     * @param array $mixed_args A mixture of runtime args and command args
+     * @return array [0] = assoc_args, [1] = runtime_config
+     */
     private function unmixAssocArgs($mixed_args)
     {
         $assoc_args = $runtime_config = [];

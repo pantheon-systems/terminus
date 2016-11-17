@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class SshKeys extends UserOwnedCollection
 {

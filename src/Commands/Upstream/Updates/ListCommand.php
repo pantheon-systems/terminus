@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class ListCommand extends UpdatesCommand
 {

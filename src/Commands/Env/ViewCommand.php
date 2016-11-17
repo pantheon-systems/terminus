@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Env;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class ViewCommand extends TerminusCommand implements SiteAwareInterface
 {
