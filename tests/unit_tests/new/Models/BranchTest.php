@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\Branches;
-use Terminus\Collections\Workflows;
-use Terminus\Models\Branch;
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Branch;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Pantheon\Terminus\Models\Branch
@@ -41,7 +41,7 @@ class BranchTest extends ModelTestCase
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->workflows = $this->workflows;
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
         $this->collection = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();

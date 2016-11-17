@@ -11,7 +11,7 @@ use Terminus\Collections\Environments;
 use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
-use Terminus\Collections\Workflows;
+use Pantheon\Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
@@ -184,7 +184,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function fetch(array $options = [])
     {
-        $data = $this->request->request($this->url)['data'];
+        $data = $this->request()->request($this->url)['data'];
         $this->setUpstream($data);
         $this->attributes = (object)array_merge((array)$this->attributes, (array)$data);
         return $this;
@@ -199,7 +199,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getFeature($feature)
     {
         if (!isset($this->features)) {
-            $response = $this->request->request("sites/{$this->id}/features");
+            $response = $this->request()->request("sites/{$this->id}/features");
             $this->features = (array)$response['data'];
         }
         if (isset($this->features[$feature])) {

@@ -4,9 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Consolidation\OutputFormatters\StructuredData\AssociativeList;
 use Pantheon\Terminus\Commands\Connection\InfoCommand;
-use Prophecy\Prophet;
-use Terminus\Collections\Sites;
-use Terminus\Exceptions\TerminusException;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Connection\InfoCommand

@@ -3,13 +3,12 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
-use Pantheon\Terminus\Session\Session;
 use Psr\Log\NullLogger;
-use Terminus\Collections\Sites;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Models\Site;
 use Terminus\Collections\Environments;
 use Terminus\Models\Environment;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Base class for environment tests.

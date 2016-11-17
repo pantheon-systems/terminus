@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing base class for Pantheon\Terminus\Commands\Multidev\*

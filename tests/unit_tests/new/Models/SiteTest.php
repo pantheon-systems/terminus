@@ -4,11 +4,11 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
 use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Collections\Workflows;
+use Pantheon\Terminus\Collections\Workflows;
 use Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 use Terminus\Models\SiteOrganizationMembership;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Terminus\Models\Site

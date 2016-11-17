@@ -2,9 +2,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
-use Terminus\Models\WorkflowOperation;
-use Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\WorkflowOperation;
+use Pantheon\Terminus\Collections\Workflows;
 
 /**
  * Base testing class for Pantheon\Terminus\Commands\Workflow

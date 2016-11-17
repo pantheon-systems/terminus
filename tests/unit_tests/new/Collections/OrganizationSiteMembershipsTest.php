@@ -8,7 +8,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class OrganizationSiteMembershipsTest extends CollectionTestCase
 {

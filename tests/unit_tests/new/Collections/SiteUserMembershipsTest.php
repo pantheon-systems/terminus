@@ -7,7 +7,7 @@ use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\User;
-use Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Models\SiteUserMembership;
 
 class SiteUserMembershipsTest extends \PHPUnit_Framework_TestCase
 {

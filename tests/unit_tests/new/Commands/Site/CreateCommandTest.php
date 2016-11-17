@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Site\CreateCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite class for Pantheon\Terminus\Commands\Site\CreateCommand

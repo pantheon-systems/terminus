@@ -5,7 +5,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 use Terminus\Collections\Backups;
 use Terminus\Models\Backup;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * @property \PHPUnit_Framework_MockObject_MockObject sites

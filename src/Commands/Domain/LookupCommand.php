@@ -33,7 +33,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
     public function lookup($domain)
     {
         $this->log()->notice('This operation may take a long time to run.');
-        $sites = $this->sites->fetch()->all();
+        $sites = $this->sites()->fetch()->all();
         $environments = ['dev', 'test', 'live',];
         foreach ($sites as $site_id => $site) {
             foreach ($environments as $env_name) {

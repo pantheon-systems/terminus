@@ -33,4 +33,12 @@ trait SessionAwareTrait
     {
         return $this->session;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUser()
+    {
+        return $this->session()->getUser();
+    }
 }

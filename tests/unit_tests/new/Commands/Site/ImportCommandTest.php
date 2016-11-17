@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Import;
 
 use Pantheon\Terminus\Commands\Import\ImportCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand

@@ -20,6 +20,6 @@ Feature: Deleting a site's multidev environments
     When I run "terminus multidev:delete [[test_site_name]].invalid"
     Then I should get:
     """
-    Could not find Terminus\Models\Environment "invalid"
+    Could not find Panhteon\Terminus\Models\Environment "invalid"
     """
 

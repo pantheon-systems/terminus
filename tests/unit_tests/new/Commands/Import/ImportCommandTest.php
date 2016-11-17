@@ -3,9 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Import\ImportCommand;
-use Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand

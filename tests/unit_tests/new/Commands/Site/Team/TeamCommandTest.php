@@ -2,9 +2,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\SiteUserMemberships;
-use Terminus\Models\Workflow;
-use Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\SiteUserMembership;
 
 /**
  * Base testing class for Pantheon\Terminus\Commands\Site\Team
