@@ -17,7 +17,6 @@ use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
 use Terminus\Models\Redis;
 use Terminus\Models\Solr;
-use Terminus\Models\Upstream;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
