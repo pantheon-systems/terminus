@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Env\ListCommand;
-use Terminus\Collections\Environments;
-use Terminus\Models\Environment;
+use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Models\Environment;
 
 class ListCommandTest extends EnvCommandTest
 {
@@ -28,10 +28,7 @@ class ListCommandTest extends EnvCommandTest
                 ->willReturn($env);
             $envs[] = $mock;
         }
-        $this->site->environments = $this->getMockBuilder(Environments::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site->environments ->expects($this->once())
+        $this->environments->expects($this->once())
             ->method('all')
             ->willReturn($envs);
 

@@ -40,7 +40,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             function ($environment) {
                 return $environment->serialize();
             },
-            $this->sites->get($site_name)->environments->multidev()
+            $this->sites->get($site_name)->getEnvironments()->multidev()
         );
 
         if (empty($envs)) {

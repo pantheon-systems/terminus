@@ -7,12 +7,12 @@ use League\Container\ContainerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Collections\Branches;
-use Terminus\Collections\Environments;
-use Terminus\Collections\SiteAuthorizations;
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Terminus\Config;
+use Terminus\Collections\SiteAuthorizations;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
 
@@ -80,7 +80,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
 
         $params = ['site' => $this,];
         $this->authorizations = new SiteAuthorizations($params);
-        $this->environments = new Environments($params);
         $this->new_relic = new NewRelic(null, $params);
         $this->setUpstream($attributes);
     }
@@ -308,7 +307,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
     }
 
-
     /**
      * Modify response data between fetch and assignment
      *
@@ -364,7 +362,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\SiteUserMemberships
+     * @return SiteUserMemberships
      */
     public function getUserMemberships()
     {
@@ -405,5 +403,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,]]);
         }
         return $this->solr;
+    }
+
+    /**
+     * @return Environments
+     */
+    public function getEnvironments()
+    {
+        if (empty($this->environments)) {
+            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
+        }
+        return $this->environments;
     }
 }

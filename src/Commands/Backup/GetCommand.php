@@ -35,10 +35,10 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
         list($site, $env) = $this->getSiteEnv($site_env);
 
         if (isset($options['file']) && !is_null($file_name = $options['file'])) {
-            $backup = $env->backups->getBackupByFileName($file_name);
+            $backup = $env->getBackups()->getBackupByFileName($file_name);
         } else {
             $element = ($options['element'] == 'db') ? 'database' : $options['element'];
-            $backups = $env->backups->getFinishedBackups($element);
+            $backups = $env->getBackups()->getFinishedBackups($element);
             if (empty($backups)) {
                 throw new TerminusNotFoundException(
                     'No backups available. Create one with `terminus backup:create {site}.{env}`',

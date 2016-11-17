@@ -37,7 +37,7 @@ abstract class BackupCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->environment->backups = $this->backups;
+        $this->environment->method('getBackups')->willReturn($this->backups);
 
         $this->backup = $this->getMockBuilder(Backup::class)
             ->disableOriginalConstructor()

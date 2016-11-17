@@ -76,7 +76,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
 
         // Determine the url based on the workflow owner.
         switch (get_class($this->owner)) {
-            case 'Terminus\Models\Environment':
+            case 'Pantheon\Terminus\Models\Environment':
                 $this->environment = $this->owner;
                 $this->url = sprintf(
                     'sites/%s/workflows/%s',

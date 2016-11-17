@@ -19,7 +19,7 @@ class CreateCommandTest extends MultidevCommandTest
         $this->command = new CreateCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
-        $this->site->environments->method('create')->willReturn($this->workflow);
+        $this->environments->method('create')->willReturn($this->workflow);
     }
 
     /**

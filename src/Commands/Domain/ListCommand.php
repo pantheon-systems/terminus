@@ -36,7 +36,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
             function ($hostname) {
                 return $hostname->serialize();
             },
-            $env->hostnames->all()
+            $env->getHostnames()->all()
         );
         return new RowsOfFields($domains);
     }
