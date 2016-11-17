@@ -243,7 +243,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Upstreams
+     * @return Pantheon\Terminus\Collections\Workflows
      */
     public function getUpstreams()
     {
