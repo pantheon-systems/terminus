@@ -27,7 +27,7 @@ class InfoCommandTest extends LockCommandTest
         $data = ['locked' => 'true', 'username' => 'username', 'password' => 'password',];
 
         $site_name = 'site_name';
-        $this->env->id = 'env_id';
+        $this->environment->id = 'env_id';
         $this->lock->expects($this->once())
             ->method('serialize')
             ->with()
@@ -35,7 +35,7 @@ class InfoCommandTest extends LockCommandTest
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->info("$site_name.{$this->env->id}");
+        $out = $this->command->info("$site_name.{$this->environment->id}");
         $this->assertInstanceOf(AssociativeList::class, $out);
         $this->assertEquals($data, $out->getArrayCopy());
     }

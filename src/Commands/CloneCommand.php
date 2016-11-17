@@ -79,7 +79,7 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
      */
     protected function triggerWorkflow(Site $site, $operation = '')
     {
-        return $site->environments
+        return $site->getEnvironments()
             ->get($this->target_env)
             ->$operation($this->origin_env);
     }

@@ -40,7 +40,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
         if (isset($options['element']) && ($options['element'] == 'db')) {
             $options['element'] = 'database';
         }
-        $env->backups->create($options)->wait();
+        $env->getBackups()->create($options)->wait();
         $this->log()->notice('Created a backup of the {env} environment.', ['env' => $env->id,]);
     }
 }

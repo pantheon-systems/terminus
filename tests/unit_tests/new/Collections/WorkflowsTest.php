@@ -7,7 +7,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 

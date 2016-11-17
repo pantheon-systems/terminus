@@ -18,12 +18,12 @@ class WipeCommandTest extends EnvCommandTest
             ->with('name')
             ->willReturn('mysite');
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('get')
             ->with('id')
             ->willReturn('dev');
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('wipe')
             ->willReturn($this->workflow);
 

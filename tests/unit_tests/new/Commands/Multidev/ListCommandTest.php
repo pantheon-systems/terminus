@@ -27,7 +27,7 @@ class ListCommandTest extends MultidevCommandTest
      */
     public function testMultidevListEmpty()
     {
-        $this->site->environments->method('multidev')->willReturn([]);
+        $this->environments->method('multidev')->willReturn([]);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -52,7 +52,7 @@ class ListCommandTest extends MultidevCommandTest
           'initialized' => 'true',
         ];
 
-        $this->site->environments->method('multidev')
+        $this->environments->method('multidev')
           ->willReturn([$this->environment,]);
         $this->environment->method('serialize')
           ->willReturn($data);

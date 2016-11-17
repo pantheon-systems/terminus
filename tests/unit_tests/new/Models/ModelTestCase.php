@@ -45,4 +45,18 @@ abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
           ->getMock();
         $this->request->method('getConfig')->willReturn($this->getConfig());
     }
+
+    /**
+     * Set a mocked config param
+     *
+     * @param array $values An array of key/values
+     */
+    protected function configSet($values)
+    {
+        $this->config->method('get')->will(
+            $this->returnCallback(function ($arg) use ($values) {
+                return $values[$arg];
+            })
+        );
+    }
 }
