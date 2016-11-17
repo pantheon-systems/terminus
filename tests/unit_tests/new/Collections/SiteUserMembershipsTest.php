@@ -50,9 +50,9 @@ class SiteUserMembershipsTest extends \PHPUnit_Framework_TestCase
             $model_data[$i] = $this->getMockBuilder(SiteUserMembership::class)
                 ->disableOriginalConstructor()
                 ->getMock();
+
             $model_data[$i]->expects($this->any())
-                ->method('get')
-                ->with('user')
+                ->method('getUser')
                 ->willReturn(new User((object)$user));
         }
 
