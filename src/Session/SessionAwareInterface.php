@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Session;
 
+use Pantheon\Terminus\Models\User;
+
 /**
  * Interface SessionAwareInterface
  * @package Pantheon\Terminus\Session
@@ -25,4 +27,11 @@ interface SessionAwareInterface
      * @return Session
      */
     public function session();
+
+    /**
+     * Get the user model of the logged in user.
+     *
+     * @return User
+     */
+    public function getUser();
 }

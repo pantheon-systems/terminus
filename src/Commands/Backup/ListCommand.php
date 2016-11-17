@@ -10,8 +10,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Collections\Sites;
-use Terminus\Models\Environment;
 
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {

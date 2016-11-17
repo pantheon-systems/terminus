@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Collections\Environments;
-use Terminus\Collections\Sites;
+use Pantheon\Terminus\Collections\Sites;
 use Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use VCR\VCR;

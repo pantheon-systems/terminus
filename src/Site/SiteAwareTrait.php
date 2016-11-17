@@ -2,7 +2,8 @@
 
 namespace Pantheon\Terminus\Site;
 
-use Terminus\Collections\Sites;
+use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Collections\Sites;
 use Terminus\Exceptions\TerminusException;
 
 /**

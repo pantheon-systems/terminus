@@ -5,10 +5,10 @@ namespace Pantheon\Terminus\UnitTests\Commands\Owner;
 use Pantheon\Terminus\Commands\Owner\SetCommand;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\SiteUserMembership;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Owner\SetCommand

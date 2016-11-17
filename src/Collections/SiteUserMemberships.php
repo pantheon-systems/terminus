@@ -13,7 +13,7 @@ class SiteUserMemberships extends TerminusCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Terminus\Models\SiteUserMembership';
+    protected $collected_class = 'Pantheon\Terminus\Models\SiteUserMembership';
     /**
      * @var boolean
      */
@@ -61,8 +61,8 @@ class SiteUserMemberships extends TerminusCollection
             return $models[$id];
         }
         foreach ($models as $model) {
-            $user_data = $model->get('user');
-            if (in_array($id, [$user_data->get('email'), $user_data->get('profile')->full_name])) {
+            $user = $model->getUser();
+            if (in_array($id, [$user->get('email'), $user->get('profile')->full_name])) {
                 return $model;
             }
         }

@@ -11,6 +11,7 @@ use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Collections\Upstreams;
@@ -41,7 +42,6 @@ use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Caches\FileCache;
-use Terminus\Collections\Sites;
 use Pantheon\Terminus\Models\User;
 use VCR\VCR;
 
