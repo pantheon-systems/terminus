@@ -1,11 +1,11 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Upstream;
+namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Terminus\Exceptions\TerminusException;
 
-class UpdatesListCommand extends UpstreamCommand
+class ListCommand extends UpdatesCommand
 {
     /**
      * Lists all of the available upstream updates for a given site
@@ -13,7 +13,7 @@ class UpdatesListCommand extends UpstreamCommand
      * @authorized
      *
      * @command upstream:updates:list
-     * @aliases upstream-updates upstream:updates
+     * @aliases upstream:updates
      *
      * @param string $site_id Name of the site for which to check for updates.
      *

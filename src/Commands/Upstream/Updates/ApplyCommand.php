@@ -1,10 +1,10 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Upstream;
+namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
 use Terminus\Exceptions\TerminusException;
 
-class UpdatesApplyCommand extends UpstreamCommand
+class ApplyCommand extends UpdatesCommand
 {
 
     /**
@@ -16,18 +16,15 @@ class UpdatesApplyCommand extends UpstreamCommand
      *
      * @param string $site_env_id Name of the environment to retrieve
      *
-     * @return void
-     *
      * @throws TerminusException
      *
      * @usage terminus upstream:updates:apply <site-name>.<env>
-     *   Lists the available updates for the site called <site-name> and the environment <env>
+     *   Applies the available updates for the site called <site-name> and the environment <env>
      */
     public function applyUpstreamUpdates(
         $site_env_id,
         $options = ['updatedb' => true, 'accept-upstream' => true,]
     ) {
-
         list($site, $env) = $this->getSiteEnv($site_env_id, 'dev');
 
         if (in_array($env->id, ['test', 'live',])) {

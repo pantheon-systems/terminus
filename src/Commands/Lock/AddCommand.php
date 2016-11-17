@@ -12,6 +12,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Locks an environment with a username and password
+     * Note: The username and password are stored in plaintext format on the server.
      *
      * @authorized
      *

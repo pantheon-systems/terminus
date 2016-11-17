@@ -1,33 +1,66 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Upstream;
 
+use Pantheon\Terminus\Collections\Upstreams;
+use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
-use Psr\Log\NullLogger;
-use Terminus\Collections\Sites;
-use Terminus\Collections\SshKeys;
-use Terminus\Models\Site;
-use Terminus\Models\Upstream;
-use Terminus\Models\User;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 abstract class UpstreamCommandTest extends CommandTestCase
 {
+    /**
+     * @var string[]
+     */
+    protected $data;
+    /**
+     * @var Session
+     */
+    protected $session;
+    /**
+     * @var Upstream
+     */
+    protected $upstream;
+    /**
+     * @var Upstreams
+     */
     protected $upstreams;
-    protected $logger;
-    protected $command;
-    protected $site;
-    protected $sites;
+    /**
+     * @var User
+     */
+    protected $user;
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
-    protected function setUp()
+    public function setUp()
     {
-        parent::setUp();
-
-        $this->site->upstream = $this->getMockBuilder(Upstream::class)
+        $this->data = ['framework' => 'Framework', 'id' => 'upstream_id', 'name' => 'Upstream Name',];
+        $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->upstreams = $this->getMockBuilder(Upstreams::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->session->expects($this->once())
+            ->method('getUser')
+            ->with()
+            ->willReturn($this->user);
+        $this->user->expects($this->once())
+            ->method('getUpstreams')
+            ->with()
+            ->willReturn($this->upstreams);
+        $this->upstream->expects($this->any())
+            ->method('serialize')
+            ->with()
+            ->willReturn($this->data);
     }
 }

@@ -1,16 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
-use Pantheon\Terminus\Commands\Upstream\UpdatesListCommand;
+use Pantheon\Terminus\Commands\Upstream\Updates\ListCommand;
 
-class UpstreamUpdatesListCommandTest extends UpstreamCommandTest
+class ListCommandTest extends UpdatesCommandTest
 {
     public function setUp()
     {
         parent::setUp();
 
-        $this->command = new UpdatesListCommand($this->getConfig());
+        $this->command = new ListCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
