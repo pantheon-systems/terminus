@@ -1,7 +1,7 @@
 <?php
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\StatusCommand;
 
@@ -39,7 +39,7 @@ class StatusCommandTest extends WorkflowCommandTest
             ->willReturn(['id' => '12345', 'details' => 'test']);
 
         $out = $this->command->status('mysite', ['id' => null,]);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 
     /**
@@ -60,6 +60,6 @@ class StatusCommandTest extends WorkflowCommandTest
             ->willReturn(['id' => '12345', 'details' => 'test']);
 
         $out = $this->command->status('mysite', ['id' => '12345',]);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 }

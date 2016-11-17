@@ -7,6 +7,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Instruments;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
@@ -155,7 +156,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     /**
      * Retrieves Drush aliases for this user
      *
-     * @return \stdClass
+     * @return string
      */
     public function getAliases()
     {
@@ -167,8 +168,6 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
 
     /**
      * Requests API data and populates $this->aliases
-     *
-     * @return void
      */
     private function fetchAliases()
     {
@@ -180,7 +179,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return Instruments
      */
     public function getInstruments()
     {
@@ -191,7 +190,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return Instruments
      */
     public function getMachineTokens()
     {
@@ -202,7 +201,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\UserOrganizationMemberships
+     * @return UserOrganizationMemberships
      */
     public function getOrgMemberships()
     {
@@ -214,7 +213,15 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Pantheon\Terminus\Collections\UserSiteMemberships
+     * @return object
+     */
+    public function getProfile()
+    {
+        return $this->get('profile');
+    }
+
+    /**
+     * @return UserSiteMemberships
      */
     public function getSiteMemberships()
     {
@@ -225,7 +232,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\SshKeys
+     * @return SshKeys
      */
     public function getSshKeys()
     {
@@ -236,7 +243,18 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return Pantheon\Terminus\Collections\Workflows
+     * @return Upstreams
+     */
+    public function getUpstreams()
+    {
+        if (empty($this->upstreams)) {
+            $this->upstreams = $this->getContainer()->get(Upstreams::class, [['user' => $this,]]);
+        }
+        return $this->upstreams;
+    }
+
+    /**
+     * @return Workflows
      */
     public function getWorkflows()
     {

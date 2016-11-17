@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Tag;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Tag\ListCommand;
 
 /**
@@ -38,7 +38,7 @@ class ListCommandTest extends TagCommandTest
             ->method('log');
 
         $out = $this->command->listTags($this->site->id, $this->organization->id);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($out->getArrayCopy(), $tags);
     }
 
@@ -71,7 +71,7 @@ class ListCommandTest extends TagCommandTest
             );
 
         $out = $this->command->listTags($this->site->id, $this->organization->id);
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($out->getArrayCopy(), $tags);
     }
 }

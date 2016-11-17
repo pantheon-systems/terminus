@@ -196,7 +196,7 @@
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"change_backup_schedule","params":{"backup_schedule":{"0":{"hour":"16","ttl":691200},"1":{"hour":"16","ttl":2764800},"2":{"hour":"16","ttl":691200},"3":{"hour":"16","ttl":691200},"4":{"hour":"16","ttl":691200},"5":{"hour":"16","ttl":691200},"6":{"hour":"16","ttl":691200}}}}'
+        body: '{"type":"change_backup_schedule","params":{"backup_schedule":{"0":{"hour":null,"ttl":691200},"1":{"hour":null,"ttl":2764800},"2":{"hour":null,"ttl":691200},"3":{"hour":null,"ttl":691200},"4":{"hour":null,"ttl":691200},"5":{"hour":null,"ttl":691200},"6":{"hour":null,"ttl":691200}}}}'
     response:
         status:
             http_version: '1.1'

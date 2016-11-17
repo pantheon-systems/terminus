@@ -10,6 +10,7 @@ use Terminus\Collections\Hostnames;
 use Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
+use Terminus\Models\Lock;
 
 class Environment extends TerminusModel
 {
@@ -37,6 +38,10 @@ class Environment extends TerminusModel
    * @var Workflows
    */
     public $workflows;
+    /**
+     * @var Lock
+     */
+    protected $lock;
 
   /**
    * Object constructor
@@ -399,6 +404,19 @@ class Environment extends TerminusModel
         return $version;
     }
 
+    /**
+     * Returns the lock object associated with this environment
+     *
+     * @return Lock
+     */
+    public function getLock()
+    {
+        if (empty($this->lock)) {
+            $this->lock = new Lock($this->get('lock'), ['environment' => $this,]);
+        }
+        return $this->lock;
+    }
+
   /**
    * Returns the environment's name
    *
@@ -569,34 +587,6 @@ class Environment extends TerminusModel
     }
 
   /**
-   * Enable HTTP Basic Access authentication on the web environment
-   *
-   * @param array $params Elements as follow:
-   *        string username
-   *        string password
-   * @return Workflow
-   */
-    public function lock($params)
-    {
-        $workflow = $this->workflows->create(
-            'lock_environment',
-            compact('params')
-        );
-        return $workflow;
-    }
-
-  /**
-   * Get Info on an environment lock
-   *
-   * @return string
-   */
-    public function lockinfo()
-    {
-        $lock = $this->get('lock');
-        return $lock;
-    }
-
-  /**
    * Merge code from the Dev Environment into this Multidev Environment
    *
    * @param array $options Parameters to override defaults
@@ -694,7 +684,7 @@ class Environment extends TerminusModel
           'created' => date(Config::get('date_format'), $this->get('environment_created')),
           'domain' => $this->domain(),
           'onserverdev' => $this->get('on_server_development') ? 'true' : 'false',
-          'locked' => $this->get('lock')->locked ? 'true' : 'false',
+          'locked' => $this->getLock()->serialize()['locked'],
           'initialized' => $this->isInitialized() ? 'true' : 'false',
           'connection_mode' => $this->get('connection_mode'),
           'php_version' => $this->get('php_version'),
@@ -796,17 +786,6 @@ class Environment extends TerminusModel
         'command'  => $command,
         ];
         return $info;
-    }
-
-  /**
-   * Disable HTTP Basic Access authentication on the web environment
-   *
-   * @return Workflow
-   */
-    public function unlock()
-    {
-        $workflow = $this->workflows->create('unlock_environment');
-        return $workflow;
     }
 
   /**

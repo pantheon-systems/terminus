@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\InfoCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
@@ -35,6 +35,6 @@ class InfoCommandTest extends CommandTestCase
             ->method('log');
 
         $out = $this->command->info('my-site');
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
     }
 }
