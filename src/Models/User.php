@@ -243,7 +243,18 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return Pantheon\Terminus\Collections\Workflows
+     * @return \Terminus\Collections\Upstreams
+     */
+    public function getUpstreams()
+    {
+        if (empty($this->upstreams)) {
+            $this->upstreams = $this->getContainer()->get(Upstreams::class, [['user' => $this,]]);
+        }
+        return $this->upstreams;
+    }
+
+    /**
+     * @return \Pantheon\Terminus\Collections\Workflows
      */
     public function getWorkflows()
     {
