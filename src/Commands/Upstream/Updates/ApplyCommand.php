@@ -4,28 +4,36 @@ namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class ApplyCommand
+ * @package Pantheon\Terminus\Commands\Upstream\Updates
+ */
 class ApplyCommand extends UpdatesCommand
 {
 
     /**
-     * Applies the available upstream updates to the given site.
+     * Apply the available upstream updates to the given site's environment
      *
-     * @authorized
+     * @authorize
      *
      * @command upstream:updates:apply
      *
-     * @param string $site_env_id Name of the environment to retrieve
+     * @param string $site_env Site & environment to which to apply updates
+     * @option boolean $updatedb Run update.php after updating (Drupal only)
+     * @option boolean $accept-upstream Attempt to automatically resolve conflicts in favor of the upstream
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:apply <site-name>.<env>
-     *   Applies the available updates for the site called <site-name> and the environment <env>
+     * @usage terminus upstream:updates:apply <site>.<env>
+     *   Applies the available updates to the <env> environment of <site>
+     * @usage terminus upstream:updates:apply <site>.<env> --updatedb
+     *   Applies the available updates to the <env> environment of <site> and run update.php when finished
+     * @usage terminus upstream:updates:apply <site>.<env> --accept-upstream
+     *   Applies the available updates to the <env> environment of <site>, automatically resolving conflicts
      */
-    public function applyUpstreamUpdates(
-        $site_env_id,
-        $options = ['updatedb' => true, 'accept-upstream' => true,]
-    ) {
-        list($site, $env) = $this->getSiteEnv($site_env_id, 'dev');
+    public function applyUpstreamUpdates($site_env, $options = ['updatedb' => false, 'accept-upstream' => false,])
+    {
+        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
 
         if (in_array($env->id, ['test', 'live',])) {
             throw new TerminusException(
@@ -43,8 +51,8 @@ class ApplyCommand extends UpdatesCommand
             );
 
             $workflow = $env->applyUpstreamUpdates(
-                $options['updatedb'],
-                $options['accept-upstream']
+                isset($options['updatedb']) ? $options['updatedb'] : false,
+                isset($options['accept-upstream']) ? $options['accept-upstream'] : false
             );
 
             while (!$workflow->checkProgress()) {
@@ -52,7 +60,7 @@ class ApplyCommand extends UpdatesCommand
             }
             $this->log()->notice($workflow->getMessage());
         } else {
-            $this->log()->warning("There are no available updates for this site.");
+            $this->log()->warning('There are no available updates for this site.');
         }
     }
 }

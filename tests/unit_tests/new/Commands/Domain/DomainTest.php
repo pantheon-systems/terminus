@@ -3,9 +3,13 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\Hostnames;
-use Terminus\Models\Hostname;
+use Pantheon\Terminus\Collections\Hostnames;
+use Pantheon\Terminus\Models\Hostname;
 
+/**
+ * Class DomainTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
+ */
 abstract class DomainTest extends CommandTestCase
 {
     /**
@@ -18,7 +22,7 @@ abstract class DomainTest extends CommandTestCase
     protected $hostnames;
 
     /**
-     * Test Suite Setup
+     * @inheritdoc
      */
     protected function setUp()
     {

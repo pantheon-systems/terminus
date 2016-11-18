@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 use Pantheon\Terminus\Commands\Domain\DNSCommand;
 
 /**
+ * Class DNSCommandTest
  * Testing class for Pantheon\Terminus\Commands\Domain\DNSCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
  */
 class DNSCommandTest extends DomainTest
 {

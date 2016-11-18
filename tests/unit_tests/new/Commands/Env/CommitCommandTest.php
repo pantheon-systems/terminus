@@ -1,10 +1,13 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\CommitCommand;
 
 /**
+ * Class CommitCommandTest
  * Testing class for Pantheon\Terminus\Commands\Env\CommitCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
  */
 class CommitCommandTest extends EnvCommandTest
 {

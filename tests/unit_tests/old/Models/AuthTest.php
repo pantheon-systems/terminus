@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Models;
 
-use Terminus\Caches\TokensCache;
-use Terminus\Models\Auth;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Caches\TokensCache;
+use Pantheon\Terminus\Models\Auth;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Auth

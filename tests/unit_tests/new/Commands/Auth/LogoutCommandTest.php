@@ -4,6 +4,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Commands\Auth\LogoutCommand;
 
+/**
+ * Class LogoutCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Auth\LogoutCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
+ */
 class LogoutCommandTest extends AuthTest
 {
     /**
@@ -20,7 +25,7 @@ class LogoutCommandTest extends AuthTest
     }
 
     /**
-     * Exercises LogoutCommand::logOut
+     * Tests the auth:logout command
      */
     public function testLogInWithMachineToken()
     {

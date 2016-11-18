@@ -1,16 +1,35 @@
 <?php
 
+namespace Pantheon\Terminus\UnitTests\HTTPS;
 
-namespace Pantheon\Terminus\UnitTests\Https;
-
-use Pantheon\Terminus\Commands\Https\DeleteCommand;
+use Pantheon\Terminus\Commands\HTTPS\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
-class DeleteCommandTest extends CommandTestCase
+/**
+ * Class DeleteCommandTest
+ * Test suite for class for Pantheon\Terminus\Commands\HTTPS\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\HTTPS
+ */
+class RemoveCommandTest extends CommandTestCase
 {
-    public function testDelete()
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->command = new RemoveCommand();
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+    }
+
+    /**
+     * Tests the https:remove command
+     */
+    public function testRemove()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -38,23 +57,19 @@ class DeleteCommandTest extends CommandTestCase
                 $this->equalTo('successful workflow')
             );
 
-
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-        $command->setLogger($this->logger);
-        $command->delete('mysite.dev');
+        $this->command->remove('mysite.dev');
     }
 
-    public function testDeleteFailed()
+    /**
+     * Tests the https:remove command when it fails
+     */
+    public function testRemoveFailed()
     {
         $this->environment->expects($this->once())
             ->method('disableHttpsCertificate')
             ->will($this->throwException(new TerminusException('Could not delete')));
 
-        $command = new DeleteCommand();
-        $command->setSites($this->sites);
-
         $this->setExpectedException(TerminusException::class);
-        $command->delete('mysite.dev');
+        $this->command->remove('mysite.dev');
     }
 }

@@ -1,28 +1,33 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Https;
+namespace Pantheon\Terminus\Commands\HTTPS;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
-class DeleteCommand extends TerminusCommand implements SiteAwareInterface
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\HTTPS
+ */
+class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Delete or disable https for a site.
+     * Remove HTTPS from an environment
      *
-     * @authorized
+     * @authorize
      *
-     * @command https:delete
-     * @aliases https:disable
+     * @command https:remove
+     * @aliases https:disable https:rm
      *
-     * @param string $site_env Site and environment in the form `site-name.env`.
+     * @param string $site_env Site and environment in the form `site-name.env`
      *
-     * @usage terminus https:delete <site_name>.<env_name>
+     * @usage terminus https:remove <site>.<env>
+     *    Removes the SSL certificate from the <env> environment of <site>, if any were present
      */
-    public function delete($site_env)
+    public function remove($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
         // Push the settings change

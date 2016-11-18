@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 use Pantheon\Terminus\Commands\Remote\SSHBaseCommand;
 
 /**
+ * Class DummyCommand
  * DummyCommand to exercise with SSHBaseCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Remote
  */
 class DummyCommand extends SSHBaseCommand
 {

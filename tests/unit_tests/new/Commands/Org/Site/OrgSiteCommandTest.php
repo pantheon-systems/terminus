@@ -9,6 +9,10 @@ use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class OrgSiteCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Site
+ */
 abstract class OrgSiteCommandTest extends CommandTestCase
 {
     /**

@@ -4,12 +4,16 @@ namespace Pantheon\Terminus\Commands\Org\Team;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\Org\Team
+ */
 class RemoveCommand extends TerminusCommand
 {
     /**
-     * Removes a team member to an organization
+     * Remove a team member from an organization
      *
-     * @authorized
+     * @authorize
      *
      * @command org:team:remove
      *

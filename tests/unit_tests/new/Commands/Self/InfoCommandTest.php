@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
@@ -8,8 +7,16 @@ use Pantheon\Terminus\Commands\Self\InfoCommand;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class InfoCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Self\InfoCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Self
+ */
 class InfoCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the self:info command
+     */
     public function testInfo()
     {
         $command = new InfoCommand();

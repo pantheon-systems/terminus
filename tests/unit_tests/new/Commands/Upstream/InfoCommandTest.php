@@ -5,6 +5,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\Upstream;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Upstream\InfoCommand;
 
+/**
+ * Class InfoCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Upstream\InfoCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Upstream
+ */
 class InfoCommandTest extends UpstreamCommandTest
 {
     /**

@@ -1,22 +1,21 @@
 <?php
-/**
- * @file
- */
 
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Commands\SSHKey\ListCommand;
-use Pantheon\Terminus\Config;
-use Pantheon\Terminus\UnitTests\Commands\SSHKeysCommandTest;
-use Terminus\Collections\SshKeys;
-use Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\SshKey;
 
-class SSHKeysListCommandTest extends SSHKeysCommandTest
+/**
+ * Class ListCommandTest
+ * Testing class for Pantheon\Terminus\Commands\SSHKey\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\SSHKey
+ */
+class ListCommandTest extends SSHKeyCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -28,9 +27,7 @@ class SSHKeysListCommandTest extends SSHKeysCommandTest
     }
 
     /**
-     * Tests the ssh-key:list command when there are no tokens.
-     *
-     * @return void
+     * Tests the ssh-key:list command when there are no tokens
      */
     public function testSSHKeyListEmpty()
     {
@@ -42,17 +39,14 @@ class SSHKeysListCommandTest extends SSHKeysCommandTest
             ->with($this->equalTo('warning'), $this->equalTo('You have no ssh keys.'));
 
         $out = $this->command->listSSHKeys();
-        $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
+        $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals([], $out->getArrayCopy());
     }
 
-
     /**
-     * Tests the ssh-key:list command when there are tokens.
-     *
-     * @return void
+     * Tests the ssh-key:list command
      */
-    public function testSSHKeysListNotEmpty()
+    public function testSSHKeysList()
     {
         $keys = [
             [
@@ -87,7 +81,7 @@ class SSHKeysListCommandTest extends SSHKeysCommandTest
             ->method($this->anything());
 
         $out = $this->command->listSSHKeys();
-        $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
+        $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals($output, $out->getArrayCopy());
     }
 }

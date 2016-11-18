@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Models;
 
-use Terminus\Collections\Sites;
-use Terminus\Config;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Config;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Environment

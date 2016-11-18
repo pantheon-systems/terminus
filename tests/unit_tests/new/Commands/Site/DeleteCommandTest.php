@@ -6,15 +6,15 @@ use Pantheon\Terminus\Commands\Site\DeleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
+ * Class DeleteCommandTest
  * Test suite class for Pantheon\Terminus\Commands\Site\DeleteCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
 class DeleteCommandTest extends CommandTestCase
 {
 
     /**
-     * Test suite setup
-     *
-     * @return void
+     * @inheritdoc
      */
     protected function setup()
     {
@@ -37,7 +37,7 @@ class DeleteCommandTest extends CommandTestCase
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo("Deleted {site} from Pantheon"),
+                $this->equalTo('Deleted {site} from Pantheon'),
                 $this->equalTo(['site' => $site_name,])
             );
 

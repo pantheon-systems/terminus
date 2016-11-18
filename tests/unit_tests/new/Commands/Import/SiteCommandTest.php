@@ -2,34 +2,30 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
-use Pantheon\Terminus\Commands\Import\ImportCommand;
+use Pantheon\Terminus\Commands\Import\SiteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Import\ImportCommand
+ * Class SiteCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Import\SiteCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
-class ImportCommandTest extends CommandTestCase
+class SiteCommandTest extends CommandTestCase
 {
-
     /**
-     * Test suite setup
-     *
-     * @return void
+     * @inheritdoc
      */
     protected function setup()
     {
         parent::setUp();
-        $this->command = new ImportCommand($this->getConfig());
+        $this->command = new SiteCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
     
     /**
-     * Exercises site:import command with a valid url
-     *
-     * @return void
-     *
+     * Exercises site:import command with a valid URL
      */
     public function testSiteImportValidURL()
     {

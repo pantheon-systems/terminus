@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Outputters\BashFormatter;
-use Terminus\Outputters\JSONFormatter;
-use Terminus\Outputters\PrettyFormatter;
+use Pantheon\Terminus\Outputters\BashFormatter;
+use Pantheon\Terminus\Outputters\JSONFormatter;
+use Pantheon\Terminus\Outputters\PrettyFormatter;
 
 /**
  * Class TestOutputters

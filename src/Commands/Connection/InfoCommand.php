@@ -19,9 +19,10 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Retrieve connection info for a specific environment such as git, sftp, mysql, redis
      *
-     * @authorized
+     * @authorize
      *
      * @command connection:info
+     * @aliases connection
      *
      * @field-labels
      *   sftp_command: SFTP Command
@@ -46,23 +47,18 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *   redis_url: Redis URL
      *   redis_password: Redis Password
      * @default-fields *_command
+     * @return PropertyList
      *
      * @param string $site_env_id Name of the environment to retrieve
      *
-     * @return PropertyList
-     *
-     * @usage connection:info awesome-site.dev --format=json
-     *   Display connection information in json format
-     * @usage connection:info awesome-site.dev --field=mysql_command --format=string
-     *   Display connection information only for the given parameter
-     * @usage connection:info awesome-site.dev --fields='git_*'
-     *   Display all of the connection information fields related to git.
-     *
+     * @usage connection:info <site>.<env>
+     *   Display connection information about the <env> environment of <site>
+     * @usage connection:info <site>.<env> --fields='git_*'
+     *   Display all of the connection information fields related to Git for the <env> environment of <site>
      */
     public function connectionInfo($site_env_id)
     {
         list(, $env) = $this->getSiteEnv($site_env_id);
-
         return new PropertyList($env->connectionInfo());
     }
 }

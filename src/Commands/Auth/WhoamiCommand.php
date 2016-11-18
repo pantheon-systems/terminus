@@ -5,10 +5,14 @@ namespace Pantheon\Terminus\Commands\Auth;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class WhoamiCommand
+ * @package Pantheon\Terminus\Commands\Auth
+ */
 class WhoamiCommand extends TerminusCommand
 {
     /**
-     * Displays information about the user currently logged in
+     * Display information about the currently logged-in user
      *
      * @command auth:whoami
      * @aliases whoami
@@ -19,11 +23,12 @@ class WhoamiCommand extends TerminusCommand
      *   email: eMail
      *   id: ID
      * @default-string-field email
+     * @return PropertyList
+     *
      * @usage terminus auth:whoami
      *   Responds with the email of the logged-in user
      * @usage terminus auth:whoami --format=table
      *   Responds with the current session and user's data
-     * @return PropertyList
      */
     public function whoAmI()
     {

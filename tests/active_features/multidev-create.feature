@@ -10,8 +10,7 @@ Feature: Working with multidev environments
   @vcr site_create-env
   Scenario: Create a multidev environment
     When I run "terminus multidev:create [[test_site_name]].dev multidev"
-    Then I should get: "."
-    And I should get:
+    Then I should get:
     """
     Creating Multidev environment "multidev"
     """

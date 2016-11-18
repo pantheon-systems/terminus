@@ -1,14 +1,16 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
-use Terminus\Collections\Backups;
-use Terminus\Models\Backup;
+use Pantheon\Terminus\Collections\Backups;
+use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * @property \PHPUnit_Framework_MockObject_MockObject sites
+ * Class BackupCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup
  */
 abstract class BackupCommandTest extends CommandTestCase
 {
@@ -26,8 +28,7 @@ abstract class BackupCommandTest extends CommandTestCase
     protected $workflow;
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {

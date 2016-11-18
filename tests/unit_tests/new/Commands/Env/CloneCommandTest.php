@@ -1,10 +1,19 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
+/**
+ * Class CloneCommandTesto
+ * Testing class for Pantheon\Terminus\Commands\Env\CloneCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
+ */
 class CloneCommandTest extends EnvCommandTest
 {
     protected $command;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         parent::setUp();

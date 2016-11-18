@@ -2,7 +2,7 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Utils;
+use Pantheon\Terminus\Utils;
 
 /**
  * Testing class for Terminus\Utils

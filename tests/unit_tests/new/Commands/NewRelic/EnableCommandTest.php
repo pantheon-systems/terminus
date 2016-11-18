@@ -1,11 +1,15 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Pantheon\Terminus\Commands\NewRelic\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class EnableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\NewRelic\EnableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\NewRelic
+ */
 class EnableCommandTest extends NewRelicCommandTest
 {
     /**

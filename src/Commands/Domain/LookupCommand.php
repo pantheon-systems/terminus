@@ -8,6 +8,10 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class LookupCommand
+ * @package Pantheon\Terminus\Commands\Domain
+ */
 class LookupCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -15,16 +19,19 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Looks up which environment a given domain is associated with
      *
-     * @command domain:lookup
+     * @authorize
      *
-     * @param string $domain The domain to search your site environments for
-     * @return PropertyList
-     * @throws TerminusNotFoundException
+     * @command domain:lookup
      *
      * @field-labels
      *   site_id: Site ID
      *   site_name: Site Name
      *   env_id: Environment ID
+     * @return PropertyList
+     *
+     * @param string $domain The domain to search your site environments for
+     *
+     * @throws TerminusNotFoundException
      *
      * @usage terminus domain:lookup <domain_name>
      *    * If found, will return information about the environment with which this domain is associated

@@ -1,21 +1,23 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\Remove;
 
-use Pantheon\Terminus\Commands\Remote\WpCommand;
+use Pantheon\Terminus\Commands\Remote\WPCommand;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Class DrushCommandTest
- *
+ * Class WPCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Remote\WPCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Remote
  */
-class WpCommandTest extends CommandTestCase
+class WPCommandTest extends CommandTestCase
 {
-    protected $command;
-
-    public function testWpCommand()
+    /**
+     * Tests the wp command
+     */
+    public function testWPCommand()
     {
-        $command = $this->getMockBuilder(WpCommand::class)
+        $command = $this->getMockBuilder(WPCommand::class)
             ->disableOriginalConstructor()
             ->setMethods([
                 'prepareEnvironment',

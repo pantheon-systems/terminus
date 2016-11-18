@@ -6,7 +6,9 @@ use Pantheon\Terminus\Commands\Org\Team\RoleCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class RoleCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\Team\RoleCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
  */
 class RoleCommandTest extends OrgTeamCommandTest
 {

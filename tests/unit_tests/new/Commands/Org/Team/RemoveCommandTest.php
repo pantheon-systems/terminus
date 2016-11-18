@@ -6,7 +6,9 @@ use Pantheon\Terminus\Commands\Org\Team\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class RemoveCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\Team\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
  */
 class RemoveCommandTest extends OrgTeamCommandTest
 {

@@ -3,11 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\NewRelic;
+use Pantheon\Terminus\Models\NewRelic;
 
+/**
+ * Class NewRelicCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\NewRelic
+ */
 abstract class NewRelicCommandTest extends CommandTestCase
 {
-
     /**
      * @inheritdoc
      */

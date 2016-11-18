@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Org\Team;
 use Pantheon\Terminus\Commands\Org\Team\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\Team\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
  */
 class ListCommandTest extends OrgTeamCommandTest
 {

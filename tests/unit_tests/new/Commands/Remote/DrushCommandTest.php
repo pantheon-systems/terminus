@@ -6,13 +6,14 @@ use Pantheon\Terminus\Commands\Remote\DrushCommand;
 
 /**
  * Class DrushCommandTest
- *
+ * Testing class for Pantheon\Terminus\Commands\Remote\DrushCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Remote
  */
 class DrushCommandTest extends CommandTestCase
 {
-    protected $command;
-
+    /**
+     * Tests the drush command
+     */
     public function testDrushCommand()
     {
         $command = $this->getMockBuilder(DrushCommand::class)

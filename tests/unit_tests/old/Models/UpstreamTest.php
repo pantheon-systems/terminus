@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Models;
 
-use Terminus\Models\Site;
-use Terminus\Models\Upstream;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Models\Upstream

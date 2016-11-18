@@ -6,17 +6,21 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\PaymentMethod
+ */
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Removes the applied paynment method to the given site
+     * Remove the applied paynment method to the given site
      *
-     * @authorized
+     * @authorize
      *
      * @command payment-method:remove
-     * @aliases pm:remove, pm:rm
+     * @aliases pm:remove pm:rm
      *
      * @param string $site_name The name or UUID of the site to remove the payment method from
      *

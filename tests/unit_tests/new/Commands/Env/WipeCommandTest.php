@@ -1,27 +1,38 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\WipeCommand;
-use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class WipeCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Env\WipeCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
+ */
 class WipeCommandTest extends EnvCommandTest
 {
-    public function testWipeEnv()
+    /**
+     * Tests the env:wipe command
+     */
+    public function testWipe()
     {
-        $this->workflow->expects($this->once())->method('checkProgress')->willReturn(true);
-        $this->workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
+        $site_name = 'site_name';
+        $this->environment->id = 'env_id';
+        $message = 'successful workflow';
+
+        $this->workflow->expects($this->once())
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
+        $this->workflow->expects($this->once())
+            ->method('getMessage')
+            ->with()
+            ->willReturn($message);
 
         $this->site->expects($this->once())
             ->method('get')
-            ->with('name')
-            ->willReturn('mysite');
-
-        $this->environment->expects($this->once())
-            ->method('get')
-            ->with('id')
-            ->willReturn('dev');
+            ->with($this->equalTo('name'))
+            ->willReturn($site_name);
 
         $this->environment->expects($this->once())
             ->method('wipe')
@@ -30,18 +41,20 @@ class WipeCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Wiping the "{env}" environment of "{site_id}"'),
-                $this->equalTo(['site_id' => 'mysite', 'env' => 'dev'])
+                $this->equalTo('Wiping the "{env}" environment of "{site}"'),
+                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('successful workflow')
+                $this->equalTo($message)
             );
 
         $this->command = new WipeCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
-        $this->command->wipeEnv('mysite.dev');
+
+        $out = $this->command->wipe("$site_name.{$this->environment->id}");
+        $this->assertNull($out);
     }
 }

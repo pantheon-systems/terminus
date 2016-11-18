@@ -1,19 +1,18 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\ListCommand;
-use Pantheon\Terminus\Config;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup
  */
 class ListCommandTest extends BackupCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -25,8 +24,6 @@ class ListCommandTest extends BackupCommandTest
 
     /**
      * Tests the backup:list command without any elements
-     *
-     * @return void
      */
     public function testListBackups()
     {
@@ -39,8 +36,6 @@ class ListCommandTest extends BackupCommandTest
 
     /**
      * Tests the backup:list command with 'db' element
-     *
-     * @return void
      */
     public function testListBackupsWithDatabaseElement()
     {

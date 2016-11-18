@@ -8,7 +8,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class SSHBaseCommand
  * Base class for Terminus commands that deal with sending SSH commands
+ * @package Pantheon\Terminus\Commands\Remote
  */
 abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -18,23 +20,41 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @var string Name of the command to be run as it will be used on server
      */
     protected $command = '';
-
     /**
      * @var string[] A hash of commands which do not work using Terminus.
      *               The key is the native command, and the value is the Terminus equivalent which is optional.
      */
     protected $unavailable_commands = [];
-
+    /**
+     * @var array
+     */
     protected $valid_frameworks = [];
-
+    /**
+     * @var Site
+     */
     private $site;
+    /**
+     * @var Environment
+     */
     private $environment;
 
+    /**
+     * Define the environment and site properties
+     *
+     * @param string $site_env_id The site/env to retrieve in <site>.<env> format
+     */
     protected function prepareEnvironment($site_env_id)
     {
         list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
     }
 
+    /**
+     * Execute the command remotely
+     *
+     * @param array $command_args
+     * @return string
+     * @throws TerminusException
+     */
     protected function executeCommand(array $command_args)
     {
         $output = '';
@@ -63,6 +83,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         return rtrim($output);
     }
 
+    /**
+     * Validates the command as available
+     *
+     * @param array $command
+     * @return boolean
+     */
     protected function validateCommand(array $command)
     {
         $is_valid = true;
@@ -83,12 +109,23 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         return $is_valid;
     }
 
+    /**
+     * Validates that the environment's connection mode is appropriately set
+     *
+     * @param Site $site
+     * @param Environment $environment
+     */
     protected function validateEnvironment($site, $environment)
     {
         $this->validateConnectionMode($environment->get('connection_mode'));
         $this->validateFramework($site->get('framework'));
     }
 
+    /**
+     * Validates that the environment is using the correct connection mode
+     *
+     * @param string $mode
+     */
     protected function validateConnectionMode($mode)
     {
         if ($mode == 'git') {
@@ -101,9 +138,14 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
     }
 
+    /**
+     * Validates the framework being used
+     *
+     * @param string $framework
+     * @throws TerminusException
+     */
     protected function validateFramework($framework)
     {
-        // print_r([$framework,$this->valid_frameworks]);
         if (!in_array($framework, $this->valid_frameworks)) {
             throw new TerminusException(
                 "The {command} command is only available on sites running {frameworks}. "
@@ -117,6 +159,12 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
     }
 
+    /**
+     * Gets the command-line args
+     *
+     * @param string $command_args
+     * @return string
+     */
     private function getCommandLine($command_args)
     {
         array_unshift($command_args, $this->command);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\AliasesCommand;
@@ -6,6 +7,11 @@ use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 
+/**
+ * Class AliasesCommandTest
+ * Testing class for Pantheon\Terminus\Commands\AliasesCommand
+ * @package Pantheon\Terminus\UnitTests\Commands
+ */
 class AliasesCommandTest extends CommandTestCase
 {
     /**
@@ -25,6 +31,9 @@ class AliasesCommandTest extends CommandTestCase
      */
     protected $user;
 
+    /**
+     * @inheritdoc
+     */
     protected function setUp()
     {
         parent::setUp();

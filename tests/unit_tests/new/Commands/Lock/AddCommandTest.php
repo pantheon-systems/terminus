@@ -1,11 +1,15 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\Commands\Lock\AddCommand;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class AddCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Lock\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Lock
+ */
 class AddCommandTest extends LockCommandTest
 {
     /**

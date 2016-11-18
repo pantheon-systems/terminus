@@ -1,18 +1,19 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\CreateCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class CreateCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\CreateCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup
  */
 class CreateCommandTest extends BackupCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -46,7 +47,7 @@ class CreateCommandTest extends BackupCommandTest
                 $this->equalTo(['env' => $this->environment->id,])
             );
 
-        $out = $this->command->createBackup("mysite.{$this->environment->id}");
+        $out = $this->command->create("mysite.{$this->environment->id}");
         $this->assertNull($out);
     }
 
@@ -75,11 +76,8 @@ class CreateCommandTest extends BackupCommandTest
               $this->equalTo(['env' => $this->environment->id,])
           );
 
-        $out = $this->command->createBackup("mysite.{$this->environment->id}", $params);
+        $out = $this->command->create("mysite.{$this->environment->id}", $params);
         $this->assertNull($out);
-    }
-
-    /**
     }
 
     /**
@@ -107,7 +105,7 @@ class CreateCommandTest extends BackupCommandTest
                 $this->equalTo(['env' => $this->environment->id,])
             );
 
-        $out = $this->command->createBackup("mysite.{$this->environment->id}", $params);
+        $out = $this->command->create("mysite.{$this->environment->id}", $params);
         $this->assertNull($out);
     }
 
@@ -136,7 +134,7 @@ class CreateCommandTest extends BackupCommandTest
                 $this->equalTo(['env' => $this->environment->id,])
             );
 
-        $out = $this->command->createBackup("mysite.{$this->environment->id}", $params);
+        $out = $this->command->create("mysite.{$this->environment->id}", $params);
         $this->assertNull($out);
     }
 
@@ -160,7 +158,7 @@ class CreateCommandTest extends BackupCommandTest
 
         $this->setExpectedException(TerminusException::class);
 
-        $out = $this->command->createBackup("mysite.{$this->environment->id}");
+        $out = $this->command->create("mysite.{$this->environment->id}");
         $this->assertNull($out);
     }
 }

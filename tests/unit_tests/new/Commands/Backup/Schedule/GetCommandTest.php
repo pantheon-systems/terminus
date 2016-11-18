@@ -7,7 +7,9 @@ use Pantheon\Terminus\Commands\Backup\Schedule\GetCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 
 /**
+ * Class GetCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\GetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
  */
 class GetCommandTest extends BackupCommandTest
 {

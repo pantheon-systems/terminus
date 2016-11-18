@@ -7,11 +7,12 @@ use Pantheon\Terminus\Commands\Site\InfoCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
+ * Class InfoCommandTest
  * Test suite class for Pantheon\Terminus\Commands\Site\InfoCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
 class InfoCommandTest extends CommandTestCase
 {
-
     /**
      * @inheritdoc
      */

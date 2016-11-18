@@ -2,11 +2,20 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
+use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Upstream;
 
+/**
+ * Class UpdatesCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Upstream\Updates
+ */
 abstract class UpdatesCommandTest extends CommandTestCase
 {
+    /**
+     * @var Upstream
+     */
+    protected $upstream;
+
     /**
      * @inheritdoc
      */

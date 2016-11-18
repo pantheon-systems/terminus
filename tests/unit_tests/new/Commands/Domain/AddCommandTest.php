@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 use Pantheon\Terminus\Commands\Domain\AddCommand;
 
 /**
+ * Class AddCommandTest
  * Testing class for Pantheon\Terminus\Commands\Domain\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
  */
 class AddCommandTest extends DomainTest
 {

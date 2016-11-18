@@ -7,18 +7,20 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
+/**
+ * Class CodeLogCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Show an environment's code log.
+     * Show an environment's code log
+     *
+     * @authorize
      *
      * @command env:code-log
-     *
-     * @param string $site_env Site & environment to show log for.
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   time: Timestamp
@@ -26,9 +28,12 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      *   labels: Labels
      *   hash: Commit ID
      *   message: Message
+     * @return RowsOfFields
      *
-     * @usage terminus env:code-log my-site.dev
-     *   Show code log for the `dev` environment for site `my-site`.
+     * @param string $site_env Site & environment to show log for
+     *
+     * @usage terminus env:code-log <site>.<env>
+     *   Show code log for the <env> environment of <site>
      */
     public function codeLog($site_env)
     {

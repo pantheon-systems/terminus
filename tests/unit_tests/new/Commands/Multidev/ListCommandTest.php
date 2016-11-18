@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 use Pantheon\Terminus\Commands\Multidev\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Multidev\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Multidev
  */
 class ListCommandTest extends MultidevCommandTest
 {

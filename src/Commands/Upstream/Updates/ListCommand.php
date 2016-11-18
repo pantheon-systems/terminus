@@ -5,30 +5,33 @@ namespace Pantheon\Terminus\Commands\Upstream\Updates;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Upstream\Updates
+ */
 class ListCommand extends UpdatesCommand
 {
     /**
-     * Lists all of the available upstream updates for a given site
+     * List all of the available upstream updates for a given site
      *
-     * @authorized
+     * @authorize
      *
      * @command upstream:updates:list
      * @aliases upstream:updates
-     *
-     * @param string $site_id Name of the site for which to check for updates.
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   hash: Commit ID
      *   datetime: Timestamp
      *   message: Message
      *   author: Author
+     * @return RowsOfFields
+     *
+     * @param string $site_id Name of the site for which to check for updates.
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:list <site-name>
-     *   Lists the available updates for the site called <site-name>
+     * @usage terminus upstream:updates:list <site>
+     *   Lists the available updates for <site>
      */
     public function listUpstreamUpdates($site_id)
     {

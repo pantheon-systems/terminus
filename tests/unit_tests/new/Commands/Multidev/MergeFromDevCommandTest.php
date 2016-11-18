@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 use Pantheon\Terminus\Commands\Multidev\MergeFromDevCommand;
 
 /**
+ * Class MergeFromDevCommandTest
  * Testing class for Pantheon\Terminus\Commands\Multidev\MergeFromDevCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Multidev
  */
 class MergeFromDevCommandTest extends MultidevCommandTest
 {
@@ -30,11 +32,12 @@ class MergeFromDevCommandTest extends MultidevCommandTest
         $this->environment->id = 'multipass';
 
         $this->environment->expects($this->once())
-          ->method('mergeFromDev')
-          ->with($this->equalTo(['updatedb' => false,]));
+            ->method('mergeFromDev')
+            ->with($this->equalTo(['updatedb' => false,]));
         $this->workflow->expects($this->once())
-          ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(true);
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -58,8 +61,9 @@ class MergeFromDevCommandTest extends MultidevCommandTest
             ->method('mergeFromDev')
             ->with($this->equalTo(['updatedb' => true,]));
         $this->workflow->expects($this->once())
-            ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(true);
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -75,10 +79,9 @@ class MergeFromDevCommandTest extends MultidevCommandTest
     /**
      * Tests to ensure the multidev:merge-from-dev throws an error when the environment-creation operation fails
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage The dev environment could not be merged into {env}.
      */
-    public function testMergeFfromDevFailure()
+    public function testMergeFromDevFailure()
     {
         $this->environment->id = 'multipass';
 
@@ -86,8 +89,9 @@ class MergeFromDevCommandTest extends MultidevCommandTest
             ->method('mergeFromDev')
             ->with($this->equalTo(['updatedb' => false,]));
         $this->workflow->expects($this->once())
-            ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(false);
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
         $this->workflow->method('getMessage')->willReturn("The dev environment could not be merged into {env}.");
 
         $out = $this->command->mergeFromDev("site.{$this->environment->id}");

@@ -1,16 +1,18 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
-use Pantheon\Terminus\UnitTests\Commands\Site\Team\TeamCommandTest;
 use Pantheon\Terminus\Commands\Site\Team\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Site\Team\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site\Team
  */
 class ListCommandTest extends TeamCommandTest
 {
     /**
-     * Setup the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -21,13 +23,13 @@ class ListCommandTest extends TeamCommandTest
     }
 
     /**
-     * Tests the site:team:list command.
+     * Tests the site:team:list command
      */
     public function testListCommand()
     {
-        $user = new \stdClass();
+        $user = (object)[];
         $user->id = 'abcdef';
-        $user->profile = new \stdClass();
+        $user->profile = (object)[];
         $user->profile->firstname = 'Daisy';
         $user->profile->lastname = 'Duck';
         $user->email = 'daisy@duck.com';

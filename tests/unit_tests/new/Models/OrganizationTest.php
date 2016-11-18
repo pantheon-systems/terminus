@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class OrganizationTest extends ModelTestCase
 {

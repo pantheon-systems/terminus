@@ -7,19 +7,21 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Workflow
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * List workflows for a site
+     * List the workflows for a site
+     *
+     * @authorize
      *
      * @command workflow:list
      * @aliases workflows
-     *
-     * @param string $site_id Site name to list workflows for.
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   id: Workflow ID
@@ -28,9 +30,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *   user: User
      *   status: Status
      *   time: Time
+     * @return RowsOfFields
      *
-     * @usage terminus workflow:list my-site
-     *   List workflows for the site named `my-site`.
+     * @param string $site_id Site name to list the workflows of
+     *
+     * @usage terminus workflow:list <site>
+     *   Lists the workflows for <site>
      */
     public function wfList($site_id)
     {

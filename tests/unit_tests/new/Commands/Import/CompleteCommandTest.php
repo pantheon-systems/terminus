@@ -6,6 +6,11 @@ use Pantheon\Terminus\Commands\Import\CompleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class CompleteCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Import\CompleteCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
+ */
 class CompleteCommandTest extends CommandTestCase
 {
 

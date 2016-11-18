@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 use Pantheon\Terminus\Commands\Domain\RemoveCommand;
 
 /**
+ * Class RemoveCommandTest
  * Testing class for Pantheon\Terminus\Commands\Domain\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
  */
 class RemoveCommandTest extends DomainTest
 {

@@ -2,10 +2,13 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Domain\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Domain\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
  */
 class ListCommandTest extends DomainTest
 {
@@ -39,7 +42,7 @@ class ListCommandTest extends DomainTest
             ->willReturn($dummy_info);
 
         $out = $this->command->listDomains('site_name.env_id');
-        $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
+        $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
     }
 }

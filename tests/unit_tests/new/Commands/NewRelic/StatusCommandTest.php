@@ -1,11 +1,15 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\NewRelic\StatusCommand;
 
+/**
+ * Class StatusCommandTest
+ * Testing class for Pantheon\Terminus\Commands\NewRelic\StatusCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\NewRelic
+ */
 class StatusCommandTest extends NewRelicCommandTest
 {
     /**

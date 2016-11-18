@@ -1,11 +1,15 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Lock\InfoCommand;
 
+/**
+ * Class InfoCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Lock\InfoCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Lock
+ */
 class InfoCommandTest extends LockCommandTest
 {
     /**
@@ -19,6 +23,7 @@ class InfoCommandTest extends LockCommandTest
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
+
     /**
      * Tests the lock:info command
      */
@@ -36,7 +41,7 @@ class InfoCommandTest extends LockCommandTest
             ->method('log');
 
         $out = $this->command->info("$site_name.{$this->environment->id}");
-        $this->assertInstanceOf(AssociativeList::class, $out);
+        $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($data, $out->getArrayCopy());
     }
 }

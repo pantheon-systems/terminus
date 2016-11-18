@@ -8,7 +8,9 @@ use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
+ * Class ListCommandTest
  * Test suite class for Pantheon\Terminus\Commands\Site\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
 class ListCommandTest extends CommandTestCase
 {

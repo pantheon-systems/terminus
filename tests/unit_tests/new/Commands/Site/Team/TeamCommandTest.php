@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -7,15 +8,14 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\SiteUserMembership;
 
 /**
- * Base testing class for Pantheon\Terminus\Commands\Site\Team
+ * Class TeamCommandTest
+ * Abstract base testing class for Pantheon\Terminus\Commands\Site\Team
+ * @package Pantheon\Terminus\UnitTests\Commands\Site\Team
  */
 abstract class TeamCommandTest extends CommandTestCase
 {
-    protected $team;
-    protected $user_memberships;
-
     /**
-     * Setup the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {

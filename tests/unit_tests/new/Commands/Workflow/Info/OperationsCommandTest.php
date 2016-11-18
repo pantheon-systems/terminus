@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -6,12 +7,14 @@ use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand;
 
 /**
+ * Class OperationsCommandTest
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
 class OperationsCommandTest extends WorkflowCommandTest
 {
     /**
-     * Setup the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -43,7 +46,7 @@ class OperationsCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:info:operations command with workflow id.
+     * Tests the workflow:info:operations command with workflow ID
      */
     public function testWorkflowIDOperationsCommand()
     {

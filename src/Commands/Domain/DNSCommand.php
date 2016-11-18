@@ -7,25 +7,31 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DNSCommand
+ * @package Pantheon\Terminus\Commands\Domain
+ */
 class DNSCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Displays the recommended DNS settings for this environment
+     * Display the recommended DNS settings for this environment
+     *
+     * @authorize
      *
      * @command domain:dns
-     *
-     * @param string $site_env Site & environment to get DNS settings for, in the form `site-name.env`.
-     * @return RowsOfFields
      *
      * @field-labels
      *   name: Name
      *   type: Record Type
      *   value: Value
+     * @return RowsOfFields
      *
-     * @usage terminus domain:dns <site_name>.<env_id>
-     *     Displays the recommended DNS settings for the <site_name> site's <env_id> environment
+     * @param string $site_env Site & environment to get DNS settings for, in the form `site-name.env`.
+     *
+     * @usage terminus domain:dns <site>.<env>
+     *     Displays the recommended DNS settings for the <site> site's <env> environment
      */
     public function getRecommendations($site_env)
     {

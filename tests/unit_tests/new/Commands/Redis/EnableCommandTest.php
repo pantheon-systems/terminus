@@ -1,16 +1,23 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Redis;
 
 use Pantheon\Terminus\Commands\Redis\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Redis;
+use Pantheon\Terminus\Models\Redis;
 
+/**
+ * Class EnableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Redis\EnableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Redis
+ */
 class EnableCommandTest extends CommandTestCase
 {
-    public function testEnableRedis()
+    /**
+     * Tests the redis:enable command
+     */
+    public function testEnable()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -43,6 +50,6 @@ class EnableCommandTest extends CommandTestCase
         $command = new EnableCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->enableRedis('mysite');
+        $command->enable('mysite');
     }
 }

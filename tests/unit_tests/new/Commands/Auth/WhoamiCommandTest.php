@@ -4,8 +4,13 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Auth\WhoamiCommand;
-use Terminus\Models\User;
+use Pantheon\Terminus\Models\User;
 
+/**
+ * Class WhoamiCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Auth\WhoamiCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
+ */
 class WhoamiCommandTest extends AuthTest
 {
 
@@ -23,7 +28,7 @@ class WhoamiCommandTest extends AuthTest
     }
 
     /**
-     * Exercises WhoamiCommand::WhoAmI When the user is logged in
+     * Tests the auth:whoami command When the user is logged in
      */
     public function testWhoAmI()
     {
@@ -56,7 +61,7 @@ class WhoamiCommandTest extends AuthTest
     }
 
     /**
-     * Exercises WhoamiCommand::WhoAmI When the user is logged out
+     * Tests the auth:whoami command When the user is logged out
      */
     public function testWhoAmIWhenIAmLoggedOut()
     {

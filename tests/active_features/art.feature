@@ -16,23 +16,9 @@ Feature: ASCII Art display
     When I run "terminus art unicorn"
     Then I should get: "\"
 
-  Scenario: Display available art
-    When I run "terminus art"
-    Then I should get: ""
-    And I should get: "Available Art"
-    And I should get: "============="
-    And I should get: ""
-    And I should get: "* druplicon"
-    And I should get: "* fist"
-    And I should get: "* hello"
-    And I should get: "* rocket"
-    And I should get: "* unicorn"
-    And I should get: "* wordpress"
-
   Scenario: Display random art
     When I run "terminus art random"
     Then I should get one of the following: ">\/7, +?????????=., .xWWXo;;;;;,'., ......''......, (( )), Hello World!"
-
 
 
   Scenario: Fail to display non-existent artwork

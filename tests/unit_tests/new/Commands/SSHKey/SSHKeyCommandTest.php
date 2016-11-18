@@ -1,21 +1,31 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands;
+namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
-use Pantheon\Terminus\Session\Session;
-use Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * @property \PHPUnit_Framework_MockObject_MockObject ssh_keys
+ * Class SSHKeyCommandTest
+ * Testing class for Pantheon\Terminus\Commands\SSHKey\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\SSHKey
  */
-abstract class SSHKeysCommandTest extends CommandTestCase
+abstract class SSHKeyCommandTest extends CommandTestCase
 {
+    /**
+     * @var Session
+     */
     protected $session;
+    /**
+     * @var SSHKeys
+     */
     protected $ssh_keys;
+    /**
+     * @var User
+     */
     protected $user;
-    protected $logger;
-    protected $command;
 
     /**
      * Sets up the fixture, for example, open a network connection.

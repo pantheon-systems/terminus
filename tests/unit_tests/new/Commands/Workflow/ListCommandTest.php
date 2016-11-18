@@ -1,11 +1,13 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
-use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Workflow\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Workflow
  */
 class ListCommandTest extends WorkflowCommandTest
 {

@@ -2,16 +2,18 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\CodeLogCommand;
-use Terminus\Collections\Commits;
-use Terminus\Models\Commit;
+use Pantheon\Terminus\Collections\Commits;
+use Pantheon\Terminus\Models\Commit;
 
 /**
+ * Class CodeLogCommandTest
  * Testing class for Pantheon\Terminus\Commands\Env\CodeLogCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
  */
 class CodeLogCommandTest extends EnvCommandTest
 {
     /**
-     * Sets up the test fixtures.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -45,9 +47,7 @@ class CodeLogCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:log command success with all parameters.
-     *
-     * @return void
+     * Tests the env:log command success with all parameters
      */
     public function testLog()
     {
@@ -71,9 +71,7 @@ class CodeLogCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:deploy command where no log is available.
-     *
-     * @return void
+     * Tests the env:deploy command where no log is available
      */
     public function testDeployNoCode()
     {

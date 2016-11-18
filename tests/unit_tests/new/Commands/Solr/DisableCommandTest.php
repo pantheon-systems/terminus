@@ -5,10 +5,18 @@ namespace Pantheon\Terminus\UnitTests\Commands\Solr;
 use Pantheon\Terminus\Commands\Solr\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Solr;
+use Pantheon\Terminus\Models\Solr;
 
+/**
+ * Class DisableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Solr\DisableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Solr
+ */
 class DisableCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the solr:disable command
+     */
     public function testDisable()
     {
         $workflow = $this->getMockBuilder(Workflow::class)

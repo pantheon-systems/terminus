@@ -3,11 +3,11 @@
 namespace Pantheon\Terminus\Commands\Remote;
 
 /**
- * Command to proxy WP-CLI commands on an Environment using SSH
- *
+ * Class WPCommand
+ * A command to proxy WP-CLI commands on an environment using SSH
  * @package Pantheon\Terminus\Commands\Remote
  */
-class WpCommand extends SSHBaseCommand
+class WPCommand extends SSHBaseCommand
 {
     /**
      * @inheritdoc
@@ -30,17 +30,19 @@ class WpCommand extends SSHBaseCommand
     ];
 
     /**
-     * Run arbitrary WP-CLI commands on a site environment
+     * Run an arbitrary WP-CLI commands on a site's environment
+     *
+     * @authorize
      *
      * @command remote:wp
      * @aliases wp
      *
-     * @authenticated
-     *
      * @param string $site_env_id Name of the environment to run the WP-CLI command on.
      * @param array $wp_command WP-CLI command to invoke on the environment
-     *
      * @return string Output of the given WP-CLI command executed on the site environment
+     *
+     * @usage terminus wp <site>.<env> -- <command>
+     *    Runs the WP-CLI command <command> on the <env> environment of <site>
      */
     public function wpCommand($site_env_id, array $wp_command)
     {

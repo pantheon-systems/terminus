@@ -3,10 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Tag;
 
 use Pantheon\Terminus\Commands\Tag\RemoveCommand;
-use Terminus\Models\Tag;
+use Pantheon\Terminus\Models\Tag;
 
 /**
+ * Class RemoveCommandTest
  * Testing class for Pantheon\Terminus\Commands\Tag\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Tag
  */
 class RemoveCommandTest extends TagCommandTest
 {

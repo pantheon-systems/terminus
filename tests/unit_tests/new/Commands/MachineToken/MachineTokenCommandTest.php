@@ -1,18 +1,17 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\UnitTests\Commands\Auth\MachineTokenCommandTest
- */
-
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
+use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Psr\Log\NullLogger;
-use Terminus\Collections\MachineTokens;
-use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Collections\MachineTokens;
 
+/**
+ * Class MachineTokenCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
+ */
 abstract class MachineTokenCommandTest extends CommandTestCase
 {
     protected $session;
@@ -22,8 +21,7 @@ abstract class MachineTokenCommandTest extends CommandTestCase
     protected $command;
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {

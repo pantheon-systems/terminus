@@ -3,12 +3,12 @@
 namespace Terminus\UnitTests;
 
 use Symfony\Component\Yaml\Yaml;
-use Terminus\Config;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Models\Auth;
-use Terminus\Loggers\Logger;
-use Terminus\Runner;
-use Terminus\Session;
+use Pantheon\Terminus\Config;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Auth;
+use Pantheon\Terminus\Loggers\Logger;
+use Pantheon\Terminus\Runner;
+use Pantheon\Terminus\Session;
 
 /**
  * A base file for 0.x unit tests

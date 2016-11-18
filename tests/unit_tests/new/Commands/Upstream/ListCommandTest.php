@@ -5,6 +5,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\Upstream;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Upstream\ListCommand;
 
+/**
+ * Class ListCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Upstream\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Upstream
+ */
 class ListCommandTest extends UpstreamCommandTest
 {
     /**

@@ -1,14 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\UnitTests\Commands\Env\EnvCommandTest;
-use Terminus\Models\Lock;
+use Pantheon\Terminus\Models\Lock;
 
+/**
+ * Class LockCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Lock
+ */
 abstract class LockCommandTest extends EnvCommandTest
 {
-
     /**
      * @var Lock
      */

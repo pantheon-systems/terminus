@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -7,7 +8,9 @@ use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Collections\Workflows;
 
 /**
+ * Class WorkflowCommandTest
  * Base testing class for Pantheon\Terminus\Commands\Workflow
+ * @package Pantheon\Terminus\UnitTests\Commands\Workflow
  */
 abstract class WorkflowCommandTest extends CommandTestCase
 {

@@ -3,8 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DiffStatCommand;
-use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class DiffStatCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Env\DiffStatCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
+ */
 class DiffStatCommandTest extends EnvCommandTest
 {
     public function setUp()

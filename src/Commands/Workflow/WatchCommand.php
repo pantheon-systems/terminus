@@ -2,11 +2,14 @@
 
 namespace Pantheon\Terminus\Commands\Workflow;
 
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class WatchCommand
+ * @package Pantheon\Terminus\Commands\Workflow
+ */
 class WatchCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -14,14 +17,16 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     const WORKFLOWS_WATCH_INTERVAL = 5;
 
     /**
-     * Streams new and finished workflows to the console
+     * Stream new and finished workflows of the given site to the console
+     *
+     * @authorize
      *
      * @command workflow:watch
      *
-     * @param string $site_id Site name to watch workflows on.
+     * @param string $site_id Site name or UUID to watch the workflows of
      *
-     * @usage terminus workflow:watch <site_name>
-     *   Watch workflows on site <site_name>
+     * @usage terminus workflow:watch <site>
+     *   Watches the workflows of <site> until stopped
      */
     public function watch($site_id)
     {

@@ -8,7 +8,9 @@ use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class RemoveCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\Site\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Site
  */
 class RemoveCommandTest extends OrgSiteCommandTest
 {

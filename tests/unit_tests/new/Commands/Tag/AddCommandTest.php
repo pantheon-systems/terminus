@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Tag;
 use Pantheon\Terminus\Commands\Tag\AddCommand;
 
 /**
+ * Class AddCommandTest
  * Testing class for Pantheon\Terminus\Commands\Tag\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Tag
  */
 class AddCommandTest extends TagCommandTest
 {

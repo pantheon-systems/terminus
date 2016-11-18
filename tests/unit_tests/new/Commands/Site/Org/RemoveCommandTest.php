@@ -5,9 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site\Org;
 use Pantheon\Terminus\Commands\Site\Org\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\Org\Site\OrgSiteCommandTest;
-use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
 
+/**
+ * Class RemoveCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Site\Org\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site\Org
+ */
 class RemoveCommandTest extends OrgSiteCommandTest
 {
     protected $org_memberships;
@@ -38,7 +43,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
         $this->command->setSession($this->session);
     }
 
-    public function testRemoveOrg()
+    public function testRemove()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -70,6 +75,6 @@ class RemoveCommandTest extends OrgSiteCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')
             );
-        $this->command->removeOrgFromSite('my-site', 'org_id');
+        $this->command->remove('my-site', 'org_id');
     }
 }

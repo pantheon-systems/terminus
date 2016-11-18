@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Helpers;
 
-use Terminus\Commands\ArtCommand;
-use Terminus\Helpers\InputHelper;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Commands\ArtCommand;
+use Pantheon\Terminus\Helpers\InputHelper;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Helpers\Input

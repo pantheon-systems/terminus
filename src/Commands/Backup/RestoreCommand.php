@@ -8,14 +8,18 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class RestoreCommand
+ * @package Pantheon\Terminus\Commands\Backup
+ */
 class RestoreCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Restores a specific backup or a latest backup
+     * Restore a specific backup or the latest backup
      *
-     * @authorized
+     * @authorize
      *
      * @command backup:restore
      *
@@ -24,12 +28,12 @@ class RestoreCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $element [code|files|database|db] Backup type
      * @throws TerminusException
      *
-     * @usage terminus backup:restore awesome-site.dev
-     *     Restores the most recent backup of any type to the dev environment of awesome-site
-     * @usage terminus backup:restore awesome-site.dev --file=awesome-site_dev_2016-08-18T23-16-20_UTC_code.tar.gz
-     *     Restores backup with the specified archive file name to awesome-site's dev environment
-     * @usage terminus backup:restore awesome-site.dev --element=code
-     *     Restores the most recent code backup for the dev environment of awesome-site
+     * @usage terminus backup:restore <site>.<env>
+     *     Restores the most recent backup of any type to the <env> environment of <site>
+     * @usage terminus backup:restore <site>.<env> --file=<backup>
+     *     Restores backup with the specified archive file name, <backup>, to the <env> environment of <site>
+     * @usage terminus backup:restore <site>.<env> --element=<element>
+     *     Restores the most recent <element> backup for the <env> environment of <site>
      */
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => null,])
     {

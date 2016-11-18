@@ -1,15 +1,18 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
 
 /**
+ * Class DeployCommandTest
  * Testing class for Pantheon\Terminus\Commands\Env\DeployCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
  */
 class DeployCommandTest extends EnvCommandTest
 {
     /**
-     * Set up the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -20,7 +23,7 @@ class DeployCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:deploy command success with all parameters.
+     * Tests the env:deploy command success with all parameters
      */
     public function testDeploy()
     {
@@ -50,19 +53,19 @@ class DeployCommandTest extends EnvCommandTest
             ]);
 
         $this->workflow->expects($this->once())
-            ->method('wait');
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         // Run the deploy.
-        $this->command->deploy('mysite.test', [
-            'sync-content' => true,
-            'note' => 'Deploy from Terminus',
-            'cc' => false,
-            'updatedb' => false,
-        ]);
+        $this->command->deploy(
+            'mysite.test',
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'cc' => false, 'updatedb' => false,]
+        );
     }
 
     /**
-     * Tests the env:deploy command where no code is deployable.
+     * Tests the env:deploy command where no code is deployable
      */
     public function testDeployNoCode()
     {
@@ -87,7 +90,7 @@ class DeployCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:deploy command to live.
+     * Tests the env:deploy command to live
      */
     public function testDeployLive()
     {
@@ -111,15 +114,15 @@ class DeployCommandTest extends EnvCommandTest
             ]);
 
         $this->workflow->expects($this->once())
-            ->method('wait');
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         // Run the deploy.
-        $this->command->deploy('mysite.live', [
-            'sync-content' => true,
-            'note' => 'Deploy from Terminus',
-            'cc' => true,
-            'updatedb' => true,
-        ]);
+        $this->command->deploy(
+            'mysite.live',
+            ['sync-content' => true, 'note' => 'Deploy from Terminus', 'cc' => true, 'updatedb' => true,]
+        );
     }
 
     /**
@@ -139,7 +142,9 @@ class DeployCommandTest extends EnvCommandTest
             ->with();
 
         $this->workflow->expects($this->once())
-            ->method('wait');
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy('mysite.uninitialized');

@@ -2,20 +2,26 @@
 
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
+/**
+ * Class LogsCommand
+ * @package Pantheon\Terminus\Commands\Workflow\Info
+ */
 class LogsCommand extends InfoBaseCommand
 {
     /**
-     * Show all details for a workflow including operations.
+     * Show all details for a workflow, including operations
+     *
+     * @authorize
      *
      * @command workflow:info:logs
      *
-     * @param string $site_id Name or ID of the site that the workflow is part of
+     * @param string $site_id Name or UUID of the site that the workflow belongs to
      * @option string $id The UUID of a specific workflow to show
      *
-     * @usage terminus workflow:info:logs <site_name> --id=<workflow_id>
-     *   Show infor about the the workflow with ID <workflow_id> found on site <site_name>.
+     * @usage terminus workflow:info:logs <site_name> --id=<workflow>
+     *   Shows info about the the workflow identified by <workflow> found on <site>
      * @usage terminus workflow:info:logs <site_name>
-     *   Show info about the most recent workflow found on site <site_name>.
+     *   Shows info about the most recent workflow found on <site>
      */
     public function logs($site_id, $options = ['id' => null,])
     {

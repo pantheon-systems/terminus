@@ -10,10 +10,12 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\Tags;
+use Pantheon\Terminus\Collections\Tags;
 
 /**
+ * Class TagCommandTest
  * Abstract testing class for Pantheon\Terminus\Commands\Tag\*Command
+ * @package Pantheon\Terminus\UnitTests\Commands\Tag
  */
 abstract class TagCommandTest extends CommandTestCase
 {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
@@ -6,12 +7,14 @@ use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\StatusCommand;
 
 /**
+ * Class StatusCommandTest
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\StatusCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
 class StatusCommandTest extends WorkflowCommandTest
 {
     /**
-     * Setup the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {

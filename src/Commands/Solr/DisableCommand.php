@@ -6,21 +6,25 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DisableCommand
+ * @package Pantheon\Terminus\Commands\Solr
+ */
 class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Disable Solr indexing for the a site.
+     * Disable Solr indexing on a site
      *
-     * @authorized
+     * @authorize
      *
      * @command solr:disable
      *
-     * @param string $site_id Name of the site to disable Solr for
+     * @param string $site_id Name of the site to disable Solr on
      *
-     * @usage terminus solr:disable my-site
-     *   Disable Solr indexing for the site named 'my-site'.
+     * @usage terminus solr:disable <site>
+     *   Disables Solr indexing on <site>
      */
     public function disable($site_id)
     {

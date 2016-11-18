@@ -11,7 +11,9 @@ use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class SetCommandTest
  * Test suite for class for Pantheon\Terminus\Commands\Owner\SetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Owner
  */
 class SetCommandTest extends CommandTestCase
 {

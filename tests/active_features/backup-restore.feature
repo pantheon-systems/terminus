@@ -10,11 +10,9 @@ Feature: Restore a backup for a site
   @vcr backup-restore.yml
   Scenario: Restore the latest code backup
     When I run "terminus backup:restore [[test_site_name]].dev --element=code"
-    Then I should get: "."
-    And I should get: "Restored the backup to dev."
+    Then I should get: "Restored the backup to dev."
 
   @vcr backup-restore.yml
   Scenario: Restore a specific backup referenced by filename
     When I run "terminus backup:restore [[test_site_name]].dev --file=[[test_site_name]]_dev_2016-10-25T19-13-37_UTC_files.tar.gz"
-    Then I should get: "."
-    And I should get: "Restored the backup to dev."
+    Then I should get: "Restored the backup to dev."

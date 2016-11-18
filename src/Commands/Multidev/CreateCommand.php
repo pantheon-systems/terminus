@@ -7,34 +7,35 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class CreateCommand
+ * @package Pantheon\Terminus\Commands\Multidev
+ */
 class CreateCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Creates a multidev environment by duplicating another environment
+     * Create a multidev environment by duplicating another environment
      *
-     * @authorized
+     * @authorize
      *
      * @command multidev:create
      * @aliases env:create
      *
-     * @param string $site_env Site & environment to copy from, in the form `site-name.env`.
+     * @param string $site_env Site & environment to copy from, in the form `site-name.env`
      * @param string $multidev Name of the new multidev environment being created
      *
-     * @usage terminus multidev:create awesome-site.dev new-environment
-     *   Creates a new multidev environment named new-environment from the dev environment of awesome-site
+     * @usage terminus multidev:create <site>.<env> <multidev>
+     *   Creates a new multidev environment named <multidev> from the <env> environment of <site>
      */
-    public function createMultidev($site_env, $multidev)
+    public function create($site_env, $multidev)
     {
         list($site, $env) = $this->getSiteEnv($site_env, 'dev');
         $workflow = $site->getEnvironments()->create($multidev, $env);
-        $workflow->wait();
-        $message = $workflow->getMessage();
-        if ($workflow->isSuccessful()) {
-            $this->log()->notice($message);
-        } else {
-            throw new TerminusException($message);
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
         }
+        $this->log()->notice($workflow->getMessage());
     }
 }

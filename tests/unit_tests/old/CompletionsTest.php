@@ -2,7 +2,7 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Completions;
+use Pantheon\Terminus\Completions;
 
 /**
  * Testing class for Terminus\Completions

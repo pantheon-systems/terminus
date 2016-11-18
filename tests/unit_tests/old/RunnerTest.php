@@ -2,7 +2,7 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Runner;
+use Pantheon\Terminus\Runner;
 
 class RunnerTest extends TerminusTest
 {

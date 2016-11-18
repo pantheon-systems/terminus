@@ -6,6 +6,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 use Pantheon\Terminus\Commands\Lock\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class RemoveCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Lock\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Lock
+ */
 class RemoveCommandTest extends LockCommandTest
 {
     /**

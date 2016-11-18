@@ -6,7 +6,9 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Tag\ListCommand;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Tag\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Tag
  */
 class ListCommandTest extends TagCommandTest
 {

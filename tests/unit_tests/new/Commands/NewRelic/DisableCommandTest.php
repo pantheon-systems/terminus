@@ -5,6 +5,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 use Pantheon\Terminus\Commands\NewRelic\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class DisableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\NewRelic\DisableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\NewRelic
+ */
 class DisableCommandTest extends NewRelicCommandTest
 {
     /**

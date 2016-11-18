@@ -9,7 +9,7 @@ Feature: Set HTTPS Certificate
 
   @vcr https_add.yml
   Scenario: Set an HTTPS Certificate
-    When I run "terminus https:set [[test_site_name]].live --certificate=fake --private-key=fake"
+    When I run "terminus https:set [[test_site_name]].live fake fake"
     Then I should get:
     """
     Converged loadbalancer
@@ -17,7 +17,7 @@ Feature: Set HTTPS Certificate
 
   @vcr https_delete.yml
   Scenario: Delete an HTTPS Certificate
-    When I run "terminus https:delete [[test_site_name]].dev"
+    When I run "terminus https:remove [[test_site_name]].dev"
     Then I should get:
     """
     Converged containers on "dev"
@@ -25,7 +25,7 @@ Feature: Set HTTPS Certificate
 
   @vcr https_delete-nocert.yml
   Scenario: Delete a non-existant HTTPS Certificate
-    When I run "terminus https:delete [[test_site_name]].dev"
+    When I run "terminus https:remove [[test_site_name]].dev"
     Then I should get:
     """
     The dev environment does not have https enabled

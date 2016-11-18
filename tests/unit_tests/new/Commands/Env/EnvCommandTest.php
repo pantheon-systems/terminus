@@ -11,7 +11,9 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Base class for environment tests.
+ * Class EnvCommandTest
+ * Base class for the environment tests
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
  */
 abstract class EnvCommandTest extends CommandTestCase
 {
@@ -22,7 +24,7 @@ abstract class EnvCommandTest extends CommandTestCase
     protected $workflow;
 
     /**
-     * Setup the fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {

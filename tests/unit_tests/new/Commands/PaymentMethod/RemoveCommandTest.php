@@ -6,9 +6,13 @@ use Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class RemoveCommandTest
+ * Test suite for class for Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\PaymentMethod
+ */
 class RemoveCommandTest extends CommandTestCase
 {
-
     /**
      * @inheritdoc
      */

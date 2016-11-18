@@ -1,19 +1,21 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Commands\MachineToken\ListCommand;
 use Pantheon\Terminus\Config;
-use Terminus\Collections\MachineTokens;
-use Terminus\Models\MachineToken;
+use Pantheon\Terminus\Collections\MachineTokens;
+use Pantheon\Terminus\Models\MachineToken;
 
 /**
+ * Class MachineTokensListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
  */
 class MachineTokensListCommandTest extends MachineTokenCommandTest
 {
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -25,9 +27,7 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
     }
 
     /**
-     * Tests the machine-token:list command when there are no tokens.
-     *
-     * @return void
+     * Tests the machine-token:list command when there are no tokens
      */
     public function testMachineTokenListEmpty()
     {
@@ -44,9 +44,7 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
     }
 
     /**
-     * Tests the machine-token:list command when there are tokens.
-     *
-     * @return void
+     * Tests the machine-token:list command when there are tokens
      */
     public function testMachineTokenListNotEmpty()
     {

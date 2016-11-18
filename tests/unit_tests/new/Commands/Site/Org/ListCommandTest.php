@@ -4,10 +4,15 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site\Org;
 
 use Pantheon\Terminus\Commands\Site\Org\ListCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
+/**
+ * Class ListCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Site\Org\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site\Org
+ */
 class ListCommandTest extends CommandTestCase
 {
     protected $org_memberships;
@@ -29,6 +34,9 @@ class ListCommandTest extends CommandTestCase
         $this->command->setLogger($this->logger);
     }
 
+    /**
+     * Tests site:org:list
+     */
     public function testListOrgs()
     {
         $data = [
@@ -55,6 +63,9 @@ class ListCommandTest extends CommandTestCase
         $this->assertEquals($data, $out->getArrayCopy());
     }
 
+    /**
+     * Tests site:org:list when there aren't any
+     */
     public function testListOrgsNone()
     {
         $this->org_memberships->expects($this->once())

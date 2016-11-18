@@ -8,6 +8,10 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class UpstreamCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Upstream
+ */
 abstract class UpstreamCommandTest extends CommandTestCase
 {
     /**

@@ -5,7 +5,9 @@ use Pantheon\Terminus\Commands\Backup\GetCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
+ * Class GetCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\GetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup
  */
 class GetCommandTest extends BackupCommandTest
 {

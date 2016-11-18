@@ -8,25 +8,26 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class ImportCommand
+ * Class SiteCommand
  * @package Pantheon\Terminus\Commands\Import
  */
-class ImportCommand extends TerminusCommand implements SiteAwareInterface
+class SiteCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Imports a site archive onto a Pantheon site
+     * Import a site archive onto a Pantheon site
      *
-     * @authorized
+     * @authorize
      *
-     * @command import
-     * @aliases site:import
+     * @command import:site
+     * @aliases site:import import
      *
      * @option string $site Name of the site to import to
-     * @option string $url  URL at which the import archive exists
-     * @usage terminus import <site_name> <archive_url>
-     *   Imports the file at the archive URL to the site named.
+     * @option string $url URL at which the import archive exists
+     *
+     * @usage terminus import <site> <archive_url>
+     *   Imports the file at <archive_url> to the site named <site>
      */
     public function import($sitename, $url)
     {

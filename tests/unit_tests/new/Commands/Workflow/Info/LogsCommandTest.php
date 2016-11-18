@@ -1,16 +1,19 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
 
 /**
+ * Class LogsCommandTest
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\LogsCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
 class LogsCommandTest extends WorkflowCommandTest
 {
     /**
-     * Setup the test fixture.
+     * @inheritdoc
      */
     protected function setUp()
     {
@@ -21,7 +24,7 @@ class LogsCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:info:logs command with the lastest workflow.
+     * Tests the workflow:info:logs command with the latest workflow
      */
     public function testLatestLogsCommand()
     {
@@ -42,7 +45,7 @@ class LogsCommandTest extends WorkflowCommandTest
     }
 
     /**
-     * Tests the workflow:info:logs command with workflow ID.
+     * Tests the workflow:info:logs command with workflow ID
      */
     public function testWorkflowIDLogsCommand()
     {

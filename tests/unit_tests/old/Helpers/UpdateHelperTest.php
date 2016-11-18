@@ -2,10 +2,10 @@
 
 namespace Terminus\UnitTests\Helpers;
 
-use Terminus\Commands\ArtCommand;
-use Terminus\Caches\FileCache;
-use Terminus\Helpers\UpdateHelper;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Commands\ArtCommand;
+use Pantheon\Terminus\Caches\FileCache;
+use Pantheon\Terminus\Helpers\UpdateHelper;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Helpers\UpdateHelper

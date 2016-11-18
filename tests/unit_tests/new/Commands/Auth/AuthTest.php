@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class AuthTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
+ */
 abstract class AuthTest extends CommandTestCase
 {
     /**

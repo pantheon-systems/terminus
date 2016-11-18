@@ -18,6 +18,10 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use VCR\VCR;
 
+/**
+ * Class CommandTestCase
+ * @package Pantheon\Terminus\UnitTests\Commands
+ */
 abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
 {
     /**

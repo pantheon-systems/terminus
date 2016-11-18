@@ -6,7 +6,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
  * SSHBaseCommand Test Suite
- *
+ * Testing class for Pantheon\Terminus\Commands\Remote\SSHBaseCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Remote
  */
 class SSHBaseCommandTest extends CommandTestCase

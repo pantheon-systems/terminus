@@ -7,8 +7,16 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Models\Branch;
 
+/**
+ * Class ListCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Branch\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Branch
+ */
 class ListCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the branch:list command
+     */
     public function testListBranches()
     {
         $branches_info = [

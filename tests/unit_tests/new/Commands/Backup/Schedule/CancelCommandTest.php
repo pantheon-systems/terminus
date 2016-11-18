@@ -6,11 +6,12 @@ use Pantheon\Terminus\Commands\Backup\Schedule\CancelCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 
 /**
+ * Class CancelCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\CancelCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
  */
 class CancelCommandTest extends BackupCommandTest
 {
-
     /**
      * @inheritdoc
      */

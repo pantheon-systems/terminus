@@ -4,11 +4,15 @@ namespace Pantheon\Terminus\Commands\Auth;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class LogoutCommand
+ * @package Pantheon\Terminus\Commands\Auth
+ */
 class LogoutCommand extends TerminusCommand
 {
 
     /**
-     * Logs the currently logged-in user out of Pantheon
+     * Log the currently logged-in user out of Pantheon
      *
      * @command auth:logout
      * @aliases logout

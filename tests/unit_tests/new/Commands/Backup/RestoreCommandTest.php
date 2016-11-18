@@ -6,7 +6,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
+ * Class RestoreCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\RestoreCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup
  */
 class RestoreCommandTest extends BackupCommandTest
 {

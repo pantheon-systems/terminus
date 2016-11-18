@@ -6,21 +6,25 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class EnableCommand
+ * @package Pantheon\Terminus\Commands\NewRelic
+ */
 class EnableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Enable New Relic on a site
+     * Enable New Relic for a site
      *
-     * @authorized
+     * @authorize
      *
      * @command new-relic:enable
      *
      * @param string $site_id Name of the site to enable New Relic on
      *
-     * @usage terminus new-relic:enable my-site
-     *   Enables New Relic for the site named 'my-site'.
+     * @usage terminus new-relic:enable <site>
+     *   Enables New Relic for <site>
      */
     public function enable($site_id)
     {

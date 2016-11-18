@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Caches;
 
-use Terminus\Caches\TokensCache;
-use Terminus\Config;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Caches\TokensCache;
+use Pantheon\Terminus\Config;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Caches\TokensCache

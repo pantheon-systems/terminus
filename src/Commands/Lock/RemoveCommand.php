@@ -6,19 +6,26 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\Lock
+ */
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Removes an environment lock
+     * Remove the lock from an environment
      *
-     * @authorized
+     * @authorize
      *
      * @command lock:remove
      * @aliases lock:rm
      *
      * @param string $site_env The site/environment to unlock
+     *
+     * @usage terminus lock:remove <site>.<env>
+     *    Removes the lock on the <env> environment of <site>, if any is present
      */
     public function remove($site_env)
     {

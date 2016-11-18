@@ -2,7 +2,7 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Session;
+use Pantheon\Terminus\Session;
 
 /**
  * Testing class for Terminus\Session

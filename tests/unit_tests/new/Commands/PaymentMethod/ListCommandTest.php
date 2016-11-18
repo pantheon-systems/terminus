@@ -10,6 +10,11 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class ListCommandTest
+ * Testing class for Pantheon\Terminus\Commands\PaymentMethod\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\PaymentMethod
+ */
 class ListCommandTest extends CommandTestCase
 {
     /**

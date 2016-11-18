@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
 
 /**
+ * Class DeleteCommandTest
  * Testing class for Pantheon\Terminus\Commands\Multidev\DeleteCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Multidev
  */
 class DeleteCommandTest extends MultidevCommandTest
 {

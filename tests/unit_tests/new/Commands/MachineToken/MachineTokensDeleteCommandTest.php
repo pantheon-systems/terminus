@@ -3,18 +3,18 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Terminus\Models\MachineToken;
 
 /**
+ * Class MachineTokenDeleteCommandTest
  * Testing class for Pantheon\Terminus\Commands\Auth\LoginCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
  */
 class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {

@@ -5,11 +5,19 @@ namespace Pantheon\Terminus\UnitTests\Commands\Redis;
 use Pantheon\Terminus\Commands\Redis\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Redis;
+use Pantheon\Terminus\Models\Redis;
 
+/**
+ * Class DisableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Redis\DisableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Redis
+ */
 class DisableCommandTest extends CommandTestCase
 {
-    public function testDisableRedis()
+    /**
+     * Tests the redis:disable command
+     */
+    public function testDisable()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -42,6 +50,6 @@ class DisableCommandTest extends CommandTestCase
         $command = new DisableCommand();
         $command->setSites($this->sites);
         $command->setLogger($this->logger);
-        $command->disableRedis('mysite');
+        $command->disable('mysite');
     }
 }

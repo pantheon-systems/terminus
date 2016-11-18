@@ -5,10 +5,18 @@ namespace Pantheon\Terminus\UnitTests\Commands\Solr;
 use Pantheon\Terminus\Commands\Solr\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Solr;
+use Pantheon\Terminus\Models\Solr;
 
+/**
+ * Class EnableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Solr\EnableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Solr
+ */
 class EnableCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the solr:enable command
+     */
     public function testEnableSolr()
     {
         $workflow = $this->getMockBuilder(Workflow::class)

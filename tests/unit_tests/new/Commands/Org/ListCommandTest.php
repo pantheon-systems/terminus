@@ -3,13 +3,15 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Org;
 
 use Pantheon\Terminus\Commands\Org\ListCommand;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Models\Organization;
-use Terminus\Models\User;
 
 /**
+ * Class ListCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org
  */
 class ListCommandTest extends CommandTestCase
 {

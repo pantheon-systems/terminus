@@ -2,9 +2,9 @@
 
 namespace Terminus\UnitTests\Helpers;
 
-use Terminus\Commands\ArtCommand;
-use Terminus\Helpers\TemplateHelper;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Commands\ArtCommand;
+use Pantheon\Terminus\Helpers\TemplateHelper;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Helpers\TemplateHelper

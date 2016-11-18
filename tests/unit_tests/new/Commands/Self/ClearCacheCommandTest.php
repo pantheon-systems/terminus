@@ -8,8 +8,16 @@ use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class ClearCacheCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Self\ClearCacheCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Self
+ */
 class ClearCacheCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the self:clear-cache commadn
+     */
     public function testClearCache()
     {
         $this->session = $this->getMockBuilder(Session::class)

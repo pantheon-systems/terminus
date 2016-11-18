@@ -6,8 +6,16 @@ use Pantheon\Terminus\Commands\ServiceLevel\SetCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
+/**
+ * Class SetCommandTest
+ * Testing class for Pantheon\Terminus\Commands\ServiceLevel\SetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\ServiceLevel
+ */
 class SetCommandTest extends CommandTestCase
 {
+    /**
+     * Tests the service-level:set command
+     */
     public function testServiceLevelSet()
     {
         $workflow = $this->getMockBuilder(Workflow::class)

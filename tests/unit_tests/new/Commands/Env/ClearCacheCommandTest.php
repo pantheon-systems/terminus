@@ -6,6 +6,11 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 use Pantheon\Terminus\Commands\Env\ClearCacheCommand;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class ClearCacheCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Env\ClearCacheCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Env
+ */
 class ClearCacheCommandTest extends EnvCommandTest
 {
     /**

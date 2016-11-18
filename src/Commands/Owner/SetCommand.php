@@ -7,21 +7,26 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class SetCommand
+ * @package Pantheon\Terminus\Commands\Owner
+ */
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Changes owner of a site
+     * Change the owner of a site
+     *
+     * @authorize
      *
      * @command owner:set
-     * @authorized
      *
      * @param string $site_name The name or UUID of a site to assign a new owner to
-     * @param string $owner The email of the user to set as the new owner
+     * @param string $owner The UUID, email, or full name of the user to set as the site's new owner
      *
      * @usage terminus owner:set <site> <new_owner>
-     *    Promotes user mentioned to the owner. Can use UUID, email or full name.
+     *    Promotes <new_owner> to be the owner of <site>
      */
     public function setOwner($site_name, $owner)
     {

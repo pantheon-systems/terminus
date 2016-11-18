@@ -7,27 +7,33 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Domain
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Lists the domains attached to an environment
+     * List the domains attached to an environment
+     *
+     * @authorize
      *
      * @command domain:list
      * @alias domains
-     *
-     * @param string $site_env Site & environment to list the attached domains of, in the form `site-name.env`.
-     * @return RowsOfFields
      *
      * @field-labels
      *   domain: Domain
      *   dns_zone_name: DNS Zone Name
      *   key: Key
      *   deletable: Is Deletable
+     * @return RowsOfFields
      *
-     * @usage terminus domain:list <site_name>.<env_id>
-     *     Lists the domains attached to the <site name> site's <env_id> environment
+     * @param string $site_env Site & environment to list the attached domains of, in the form `site-name.env`.
+     *
+     * @usage terminus domain:list <site>.<env>
+     *     Lists the domains attached to the <site> site's <env> environment
      */
     public function listDomains($site_env)
     {

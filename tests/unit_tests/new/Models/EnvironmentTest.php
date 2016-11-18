@@ -11,8 +11,8 @@ use Pantheon\Terminus\Models\Lock;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Terminus;
-use Terminus\Collections\Commits;
-use Terminus\Models\Commit;
+use Pantheon\Terminus\Collections\Commits;
+use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 class EnvironmentTest extends ModelTestCase

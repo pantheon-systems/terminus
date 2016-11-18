@@ -4,16 +4,17 @@ namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Connection\InfoCommand;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Connection\InfoCommand
+ * Class InfoCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Connection\InfoCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Connection
  */
-class InfoCommandTest extends ConnectionCommandTest
+class InfoCommandTest extends CommandTestCase
 {
     /**
-     * Test suite setup
-     *
-     * @return void
+     * @inheritdoc
      */
     protected function setup()
     {
@@ -27,8 +28,6 @@ class InfoCommandTest extends ConnectionCommandTest
 
     /**
      * Ensure connection:info delegates to the Environment::connectionInfo()
-     *
-     * @return void
      */
     public function testConnectionInfo()
     {

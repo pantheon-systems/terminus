@@ -7,18 +7,21 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Site\Team
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * List team members for a site.
+     * List team members for a site
+     *
+     * @authorize
      *
      * @command site:team:list
-     *
-     * @param string $site_id Site name to list team members for.
-     *
-     * @return RowsOfFields
+     * @aliases site:team
      *
      * @field-labels
      *   first: First name
@@ -26,9 +29,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *   email: Email
      *   role: Role
      *   uuid: User ID
+     * @return RowsOfFields
      *
-     * @usage terminus site:team:list my-site
-     *   List team members for the site named `my-site`.
+     * @param string $site_id Site name to list team members for.
+     *
+     * @usage terminus site:team:list <site>
+     *   Lists team members for <site>
      */
     public function teamList($site_id)
     {

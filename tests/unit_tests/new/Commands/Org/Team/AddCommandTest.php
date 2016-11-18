@@ -6,7 +6,9 @@ use Pantheon\Terminus\Commands\Org\Team\AddCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class AddCommandTest
  * Testing class for Pantheon\Terminus\Commands\Org\Team\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
  */
 class AddCommandTest extends OrgTeamCommandTest
 {

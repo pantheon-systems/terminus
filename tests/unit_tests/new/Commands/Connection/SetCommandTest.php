@@ -3,18 +3,19 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Pantheon\Terminus\Commands\Connection\SetCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Test suite for class for Pantheon\Terminus\Commands\Connection\SetCommand
+ * Class SetCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Connection\SetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Connection
  */
-class SetCommandTest extends ConnectionCommandTest
+class SetCommandTest extends CommandTestCase
 {
     /**
-     * Test suite setup
-     *
-     * @return void
+     * @inheritdoc
      */
     protected function setup()
     {
@@ -29,8 +30,6 @@ class SetCommandTest extends ConnectionCommandTest
 
     /**
      * Exercises connection:set git mode
-     *
-     * @return void
      */
     public function testConnectionSetSuccess()
     {
@@ -59,8 +58,6 @@ class SetCommandTest extends ConnectionCommandTest
 
     /**
      * Exercises connection:set git mode
-     *
-     * @return void
      */
     public function testConnectionSetNoOp()
     {
@@ -80,8 +77,6 @@ class SetCommandTest extends ConnectionCommandTest
 
     /**
      * Exercises connection:set with invalid test environment
-     *
-     * @return void
      */
     public function testConnectionSetInvalidTestEnv()
     {
@@ -98,8 +93,6 @@ class SetCommandTest extends ConnectionCommandTest
 
     /**
      * Exercises connection:set with invalid live environment
-     *
-     * @return void
      */
     public function testConnectionSetInvalidLiveEnv()
     {

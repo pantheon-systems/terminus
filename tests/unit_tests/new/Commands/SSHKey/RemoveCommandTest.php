@@ -1,35 +1,33 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands;
 
-use Pantheon\Terminus\Commands\SSHKey\DeleteCommand;
-use Pantheon\Terminus\Config;
+namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
+
+use Pantheon\Terminus\Commands\SSHKey\RemoveCommand;
+use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Terminus\Models\SshKey;
 
 /**
- * Testing class for Pantheon\Terminus\Commands\SSHKeysDeleteCommand
+ * Class RemoveCommandTest
+ * Testing class for Pantheon\Terminus\Commands\SSHKey\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\SSHKey
  */
-class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
+class RemoveCommandTest extends SSHKeyCommandTest
 {
-
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * @inheritdoc
      */
     protected function setUp()
     {
         parent::setUp();
 
-        $this->command = new DeleteCommand($this->getConfig());
+        $this->command = new RemoveCommand($this->getConfig());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
     }
 
 
     /**
-     * Tests the ssh-keys:delete command.
-     *
-     * @return void
+     * Tests the ssh-keys:delete command
      */
     public function testSSHKeysDelete()
     {
@@ -43,7 +41,6 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
                 ['status_code' => 200]
             );
 
-
         $this->ssh_keys->expects($this->exactly(2))
             ->method('get')
             ->with($this->equalTo('79e7e210bdf335bb8651a46b9a8417ab'))
@@ -51,15 +48,15 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
                 $token
             );
 
+        $out = $this->command->delete('79e7e210bdf335bb8651a46b9a8417ab');
+        $this->assertNull($out);
 
-        $this->command->delete('79e7e210bdf335bb8651a46b9a8417ab');
-        $this->command->delete('79:e7:e2:10:bd:f3:35:bb:86:51:a4:6b:9a:84:17:ab');
+        $out2 = $this->command->delete('79:e7:e2:10:bd:f3:35:bb:86:51:a4:6b:9a:84:17:ab');
+        $this->assertNull($out2);
     }
 
     /**
-     * Tests the ssh-keys:delete command when there are no tokens.
-     *
-     * @return void
+     * Tests the ssh-keys:delete command when there are no tokens
      */
     public function testSSHKeysDeleteNonExistant()
     {
@@ -78,13 +75,12 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
 
         $this->setExpectedException(TerminusException::class);
 
-        $this->command->delete('123');
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
     }
 
     /**
-     * Tests the ssh-keys:delete command when the API fails.
-     *
-     * @return void
+     * Tests the ssh-keys:delete command when the API fails
      */
     public function testSSHKeysDeleteAPIFailure()
     {
@@ -109,6 +105,7 @@ class SSHKeysDeleteCommandTest extends SSHKeysCommandTest
             'There was an problem deleting the SSH key.'
         );
 
-        $this->command->delete('123');
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Terminus\UnitTests\Caches;
 
-use Terminus\Caches\FileCache;
-use Terminus\UnitTests\TerminusTest;
+use Pantheon\Terminus\Caches\FileCache;
+use Pantheon\Terminus\UnitTests\TerminusTest;
 
 /**
  * Testing class for Terminus\Caches\FileCache

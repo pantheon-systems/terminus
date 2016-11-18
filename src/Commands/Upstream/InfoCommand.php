@@ -5,10 +5,14 @@ namespace Pantheon\Terminus\Commands\Upstream;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class InfoCommand
+ * @package Pantheon\Terminus\Commands\Upstream
+ */
 class InfoCommand extends TerminusCommand
 {
     /**
-     * Gives information about the asked-about upstream
+     * Print information about the given upstream
      *
      * @command upstream:info
      * @aliases upstream
@@ -24,8 +28,10 @@ class InfoCommand extends TerminusCommand
      *   upstream: URL
      *   author: Author
      *   description: Description
-     *
      * @return PropertyList
+     *
+     * @usage terminus upstream:info <upstream>
+     *    Displays information about the upstream identified by <upstream>
      */
     public function info($upstream)
     {

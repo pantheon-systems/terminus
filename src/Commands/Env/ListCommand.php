@@ -7,6 +7,10 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -14,9 +18,10 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * List a site's environments
      *
-     * @authorized
+     * @authorize
      *
      * @command env:list
+     * @aliases envs
      *
      * @field-labels
      *   id: ID
@@ -25,10 +30,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *   connection_mode: Connection Mode
      *   locked: Locked
      *   initialized: Initialized
+     * @return RowsOfFields
      *
-     * @param string $site_id The site to the environments for
+     * @param string $site_id The site to list the environments of
      *
-     * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+     * @usage env:list <site>
+     *    Lists all environments for the site named <site>
      */
     public function listEnvs($site_id)
     {

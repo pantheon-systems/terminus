@@ -7,11 +7,12 @@ use Pantheon\Terminus\Commands\Site\LookupCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
+ * Class LookupCommandTest
  * Test suite class for Pantheon\Terminus\Commands\Site\LookupCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
 class LookupCommandTest extends CommandTestCase
 {
-
     /**
      * @inheritdoc
      */

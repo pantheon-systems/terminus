@@ -7,7 +7,9 @@ use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class SetCommandTest
  * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\SetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
  */
 class SetCommandTest extends BackupCommandTest
 {

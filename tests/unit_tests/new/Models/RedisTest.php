@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Terminus\Collections\Workflows;
-use Terminus\Models\Environment;
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;

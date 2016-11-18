@@ -6,7 +6,9 @@ use Pantheon\Terminus\Commands\Domain\LookupCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
+ * Class LookupCommandTest
  * Testing class for Pantheon\Terminus\Commands\Domain\LookupCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Domain
  */
 class LookupCommandTest extends DomainTest
 {

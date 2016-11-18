@@ -3,22 +3,21 @@
 namespace Pantheon\Terminus\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 class DeleteCommand extends TerminusCommand
 {
     /**
-     * Removes a machine token from the logged-in user's account
+     * Remove a machine token from the logged-in user's account
      *
-     * @authorized
+     * @authorize
      *
      * @command machine-token:delete
      * @aliases mt:delete
      *
      * @param string $machine_token_id The ID of the machine token to be deleted
      *
-     * @usage terminus machine-token:delete <machine_token_id>
-     *   Removes the given machine token from the user's account
+     * @usage terminus machine-token:delete <machine_token>
+     *   Removes the machine token identified by <machine_token> from the logged-in user's account
      */
     public function delete($machine_token_id)
     {

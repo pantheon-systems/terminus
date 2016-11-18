@@ -2,8 +2,8 @@
 
 namespace Terminus\UnitTests;
 
-use Terminus\Dispatcher;
-use Terminus\Dispatcher\RootCommand;
+use Pantheon\Terminus\Dispatcher;
+use Pantheon\Terminus\Dispatcher\RootCommand;
 
 /**
  * Testing class for Terminus\Dispatcher

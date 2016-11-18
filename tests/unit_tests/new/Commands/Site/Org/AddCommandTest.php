@@ -5,8 +5,13 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site\Org;
 use Pantheon\Terminus\Commands\Site\Org\AddCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\Org\Site\OrgSiteCommandTest;
-use Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 
+/**
+ * Class AddCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Site\Org\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Site\Org
+ */
 class AddCommandTest extends OrgSiteCommandTest
 {
     protected $org_memberships;
@@ -37,7 +42,7 @@ class AddCommandTest extends OrgSiteCommandTest
         $this->command->setSession($this->session);
     }
 
-    public function testAddOrg()
+    public function testAdd()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -62,6 +67,6 @@ class AddCommandTest extends OrgSiteCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')
             );
-        $this->command->addOrgToSite('my-site', 'org_id');
+        $this->command->add('my-site', 'org_id');
     }
 }

@@ -6,6 +6,11 @@ use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\Auth\LoginCommand;
 use Pantheon\Terminus\Models\SavedToken;
 
+/**
+ * Class LoginCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Auth\LoginCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Auth
+ */
 class LoginCommandTest extends AuthTest
 {
     protected $tokens;
@@ -44,7 +49,7 @@ class LoginCommandTest extends AuthTest
     }
 
     /**
-     * Exercsies LoginCommand::logIn where the machine token is explicitly given
+     * Tests the auth:login command where the machine token is explicitly given
      */
     public function testLogInWithMachineToken()
     {
@@ -69,7 +74,7 @@ class LoginCommandTest extends AuthTest
     }
 
     /**
-     * Exercises LoginCommand::logIn where the email address referencing a saved machine token is given
+     * Tests the auth:login command where the email address referencing a saved machine token is given
      */
     public function testLogInWithEmail()
     {
@@ -94,7 +99,7 @@ class LoginCommandTest extends AuthTest
     }
 
     /**
-     * Exercises LoginCommand::logIn when no info is given but a single machine token has been saved
+     * Tests the auth:login command when no info is given but a single machine token has been saved
      */
     public function testLogInWithSoloSavedToken()
     {
@@ -129,7 +134,7 @@ class LoginCommandTest extends AuthTest
     }
 
     /**
-     * Exercises LoginCommand::logIn when no data was given and there are no saved machine tokens
+     * Tests the auth:login command when no data was given and there are no saved machine tokens
      *
      * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage Please visit the dashboard to generate a machine token:
@@ -144,7 +149,7 @@ class LoginCommandTest extends AuthTest
     }
 
     /**
-     * Exercises LoginCommand::logIn when no data was given and there are multiple saved machine tokens
+     * Tests the auth:login command when no data was given and there are multiple saved machine tokens
      *
      * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage Tokens were saved for the following email addresses:
