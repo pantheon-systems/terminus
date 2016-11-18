@@ -25,7 +25,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     public function enableRedis($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->redis->enable();
+        $site->getRedis()->enable();
         $this->log()->notice('Redis enabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.

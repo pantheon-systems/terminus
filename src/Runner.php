@@ -24,6 +24,7 @@ use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
+use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteUserMembership;
@@ -159,6 +160,7 @@ class Runner
         $container->add(SiteUserMemberships::class);
         $container->add(SiteUserMembership::class);
         $container->add(Site::class);
+        $container->add(Redis::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
