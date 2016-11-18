@@ -25,7 +25,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     public function disable($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->solr->disable();
+        $site->getSolr()->disable();
         $this->log()->notice('Solr disabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.

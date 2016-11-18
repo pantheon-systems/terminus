@@ -18,14 +18,15 @@ class EnableCommandTest extends CommandTestCase
         $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
-        $this->site->solr = $this->getMockBuilder(Solr::class)
+        $this->solr = $this->getMockBuilder(Solr::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->solr->expects($this->once())
+        $this->solr->expects($this->once())
             ->method('enable');
         $this->site->expects($this->once())
             ->method('converge')
             ->willReturn($workflow);
+        $this->site->method('getSolr')->willReturn($this->solr);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
