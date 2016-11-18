@@ -25,7 +25,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     public function enable($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->solr->enable();
+        $site->getSolr()->enable();
         $this->log()->notice('Solr enabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.
