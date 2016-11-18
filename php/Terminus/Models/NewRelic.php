@@ -1,5 +1,5 @@
 <?php
--kjs
+
 namespace Terminus\Models;
 
 use Terminus\Config;
