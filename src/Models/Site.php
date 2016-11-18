@@ -84,7 +84,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->authorizations = new SiteAuthorizations($params);
         $this->environments = new Environments($params);
         $this->new_relic = new NewRelic(null, $params);
-        $this->org_memberships = new SiteOrganizationMemberships($params);
         $this->setUpstream($attributes);
     }
 
@@ -212,7 +211,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function getOrganizations()
     {
-        $memberships = $this->org_memberships->all();
+        $memberships = $this->getOrganizationMemberships()->all();
         $orgs = array_combine(
             array_map(
                 function ($membership) {
@@ -375,6 +374,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
         }
         return $this->user_memberships;
+    }
+    
+    /**
+     * @return \Terminus\Collections\SiteOrganizationMemberships
+     */
+    public function getOrganizationMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,]]);
+        }
+        return $this->org_memberships;
     }
 
     /**

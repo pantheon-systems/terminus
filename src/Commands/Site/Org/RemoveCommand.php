@@ -32,7 +32,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);
 
-        if ($membership = $site->org_memberships->get($organization)) {
+        if ($membership = $site->getOrganizationMemberships()->get($organization)) {
             $workflow = $membership->delete();
             $this->log()->notice(
                 'Removing {org} as a supporting organization from {site}.',
