@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
 
 use Pantheon\Terminus\Commands\Backup\Schedule\SetCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\SetCommand

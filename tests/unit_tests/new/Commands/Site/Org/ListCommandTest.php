@@ -10,6 +10,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 class ListCommandTest extends CommandTestCase
 {
+    protected $org_memberships;
+
     /**
      * @inheritdoc
      */
@@ -17,9 +19,10 @@ class ListCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
+        $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site->method('getOrganizationMemberships')->willReturn($this->org_memberships);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setSites($this->sites);
@@ -43,10 +46,9 @@ class ListCommandTest extends CommandTestCase
             $memberships[] = $mock;
         }
 
-        $this->site->org_memberships->expects($this->once())
+        $this->org_memberships->expects($this->once())
             ->method('all')
             ->willReturn($memberships);
-
 
         $out = $this->command->listOrgs('my-site');
         $this->assertInstanceOf(RowsOfFields::class, $out);
@@ -55,7 +57,7 @@ class ListCommandTest extends CommandTestCase
 
     public function testListOrgsNone()
     {
-        $this->site->org_memberships->expects($this->once())
+        $this->org_memberships->expects($this->once())
             ->method('all')
             ->willReturn([]);
 

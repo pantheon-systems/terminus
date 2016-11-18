@@ -25,11 +25,11 @@ class ListCommandTest extends WorkflowCommandTest
      */
     public function testListCommand()
     {
-        $this->site->workflows->expects($this->once())
+        $this->workflows->expects($this->once())
             ->method('fetch')
             ->willReturn(null);
 
-        $this->site->workflows->expects($this->once())
+        $this->workflows->expects($this->once())
             ->method('all')
             ->willReturn([$this->workflow]);
 

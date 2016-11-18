@@ -111,16 +111,17 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getSites()
     {
         $site_memberships = $this->getSiteMemberships()->all();
+
         $sites = array_combine(
             array_map(
                 function ($membership) {
-                    return $membership->site->id;
+                    return $membership->getSite()->get('id');
                 },
                 $site_memberships
             ),
             array_map(
                 function ($membership) {
-                    return $membership->site;
+                    return $membership->getSite();
                 },
                 $site_memberships
             )
@@ -178,7 +179,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return Instruments
      */
     public function getInstruments()
     {
@@ -189,7 +190,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return Instruments
      */
     public function getMachineTokens()
     {
@@ -200,7 +201,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\UserOrganizationMemberships
+     * @return UserOrganizationMemberships
      */
     public function getOrgMemberships()
     {
@@ -220,7 +221,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\UserSiteMemberships
+     * @return UserSiteMemberships
      */
     public function getSiteMemberships()
     {
@@ -231,7 +232,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\SshKeys
+     * @return SshKeys
      */
     public function getSshKeys()
     {
@@ -242,7 +243,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Upstreams
+     * @return Upstreams
      */
     public function getUpstreams()
     {
@@ -253,7 +254,7 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Workflows
+     * @return Workflows
      */
     public function getWorkflows()
     {
