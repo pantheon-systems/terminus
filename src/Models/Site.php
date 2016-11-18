@@ -15,7 +15,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
-use PantheonTerminus\Models\Redis;
+use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Solr;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
