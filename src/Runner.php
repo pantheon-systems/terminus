@@ -11,6 +11,7 @@ use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\SshKeys;
@@ -26,6 +27,7 @@ use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Models\Upstream;
@@ -158,6 +160,8 @@ class Runner
         $container->add(Branch::class);
         $container->add(SiteUserMemberships::class);
         $container->add(SiteUserMembership::class);
+        $container->add(SiteOrganizationMemberships::class);
+        $container->add(SiteOrganizationMembership::class);
         $container->add(Site::class);
 
         $container->share('sites', Sites::class);
