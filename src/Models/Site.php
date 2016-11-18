@@ -16,7 +16,7 @@ use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
 use Terminus\Models\Redis;
-use Terminus\Models\Solr;
+use Pantheon\Terminus\Models\Solr;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
@@ -85,7 +85,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->environments = new Environments($params);
         $this->new_relic = new NewRelic(null, $params);
         $this->redis = new Redis(null, $params);
-        $this->solr = new Solr(null, $params);
         $this->setUpstream($attributes);
     }
 
@@ -388,4 +387,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
         return $this->org_memberships;
     }
+
+    /**
+     * @return \Terminus\Models\Solr
+     */
+    public function getSolr()
+    {
+        if (empty($this->solr)) {
+            $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,]]);
+        }
+        return $this->solr;
+    }
+
 }

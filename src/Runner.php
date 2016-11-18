@@ -29,6 +29,7 @@ use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\Models\Solr;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
@@ -163,6 +164,7 @@ class Runner
         $container->add(SiteOrganizationMemberships::class);
         $container->add(SiteOrganizationMembership::class);
         $container->add(Site::class);
+        $container->add(Solr::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)

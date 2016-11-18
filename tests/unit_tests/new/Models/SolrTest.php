@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Terminus\Models\Site;
-use Terminus\Models\Solr;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Solr;
 
 /**
  * Testing class for Terminus\Models\Solr
