@@ -81,7 +81,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->url = "sites/{$this->id}?site_state=true";
 
         $params = ['site' => $this,];
-        $this->authorizations = new SiteAuthorizations($params);
         $this->environments = new Environments($params);
         $this->new_relic = new NewRelic(null, $params);
         $this->setUpstream($attributes);
@@ -407,5 +406,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,]]);
         }
         return $this->solr;
+    }
+
+    /**
+     * @return SiteAuthorizations
+     */
+    public function getAuthorizations()
+    {
+        if (empty($this->authorizations)) {
+            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class, [null, ['site' => $this,]]);
+        }
+        return $this->authorizations;
     }
 }

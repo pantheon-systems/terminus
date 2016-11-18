@@ -11,6 +11,7 @@ use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\Collections\SiteAuthorizations;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
@@ -28,6 +29,7 @@ use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteAuthorization;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\Solr;
@@ -47,6 +49,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Terminus\Caches\FileCache;
 use Pantheon\Terminus\Models\User;
+
+
 use VCR\VCR;
 
 class Runner
@@ -167,6 +171,9 @@ class Runner
         $container->add(Site::class);
         $container->add(Redis::class);
         $container->add(Solr::class);
+        $container->add(SiteAuthorizations::class);
+        $container->add(SiteAuthorization::class);
+
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
