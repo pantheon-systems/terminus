@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
-use Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;

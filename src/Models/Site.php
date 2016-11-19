@@ -9,14 +9,12 @@ use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Collections\Branches;
 use Terminus\Collections\Environments;
 use Terminus\Collections\SiteAuthorizations;
-use Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Models\NewRelic;
-use Pantheon\Terminus\Models\Redis;
-use Pantheon\Terminus\Models\Solr;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
@@ -377,7 +375,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
     
     /**
-     * @return \Terminus\Collections\SiteOrganizationMemberships
+     * @return SiteOrganizationMemberships
      */
     public function getOrganizationMemberships()
     {
@@ -388,7 +386,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Pantheon\Terminus\Models\Redis
+     * @return Redis
      */
     public function getRedis()
     {
