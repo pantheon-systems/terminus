@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Environment;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 class Hostnames extends TerminusCollection
 {
@@ -65,5 +66,21 @@ class Hostnames extends TerminusCollection
             $this->environment->id,
             $this->hydrate
         );
+    }
+
+    /**
+     * Does the hostnames collection contain the given domain.
+     *
+     * @param $domain
+     * @return bool True if the domain exists in the collection.
+     */
+    public function has($domain) {
+        try {
+            $this->get($domain);
+            return true;
+        }
+        catch (TerminusNotFoundException $e) {
+            return false;
+        }
     }
 }

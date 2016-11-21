@@ -747,26 +747,6 @@ class EnvironmentTest extends ModelTestCase
     public function testWake()
     {
         // @TODO: Test this when hostnames is testable
-
-
-
-        $on_stats = function (TransferStats $stats) {
-            $this->transfertime = $stats->getTransferTime();
-        };
-        $hostnames = $this->getHostnames()->ids();
-        $target = array_pop($hostnames);
-        $healthc = "http://$target/pantheon_healthcheck";
-        $response = $this->request()->request($healthc, compact('on_stats'));
-        $return_data = [
-            'success' => ($response['status_code'] === 200),
-            'time' => $this->transfertime,
-            'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
-            'response' => $response,
-            'target' => $target,
-        ];
-
-        return $return_data;
-
     }
 
     public function testWipe()
