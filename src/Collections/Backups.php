@@ -4,44 +4,27 @@ namespace Pantheon\Terminus\Collections;
 
 use Terminus\Exceptions\TerminusNotFoundException;
 
-class Backups extends TerminusCollection
+class Backups extends EnvironmentOwnedCollection
 {
     const DAILY_BACKUP_TTL = 691200;
     const WEEKLY_BACKUP_TTL = 2764800;
 
-    /**
-     * @var Environment
-     */
-    public $environment;
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\Backup';
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->environment = $options['environment'];
-        $this->url = sprintf(
-            'sites/%s/environments/%s/backups/catalog',
-            $this->environment->site->id,
-            $this->environment->id
-        );
-    }
+    protected $url = 'sites/{site_id}/environments/{environment_id}/backups/catalog';
 
     /**
      * Cancels an environment's regular backup schedule
      */
     public function cancelBackupSchedule()
     {
-        $path_root = sprintf(
-            'sites/%s/environments/%s/backups/schedule',
-            $this->environment->site->id,
-            $this->environment->id
-        );
+        $path_root = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/backups/schedule');
         $params = ['method' => 'delete',];
         for ($day = 0; $day < 7; $day++) {
             $this->request()->request("$path_root/$day", $params);
@@ -75,7 +58,7 @@ class Backups extends TerminusCollection
         }
         $params['ttl'] = ceil((integer)$options['keep-for'] * 86400);
 
-        return $this->environment->getWorkflows()->create('do_export', compact('params'));
+        return $this->getEnvironment()->getWorkflows()->create('do_export', compact('params'));
     }
 
     /**
@@ -143,11 +126,8 @@ class Backups extends TerminusCollection
      */
     public function getBackupSchedule()
     {
-        $path     = sprintf(
-            'sites/%s/environments/%s/backups/schedule',
-            $this->environment->site->id,
-            $this->environment->id
-        );
+        $path = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/backups/schedule');
+
         $response      = $this->request->request($path);
         $response_data = (array)$response['data'];
         $data          = [
@@ -233,7 +213,7 @@ class Backups extends TerminusCollection
         }
         $schedule = (object)$schedule;
 
-        $workflow = $this->environment->getWorkflows()->create(
+        $workflow = $this->getEnvironment()->getWorkflows()->create(
             'change_backup_schedule',
             ['params' => ['backup_schedule' => $schedule,],]
         );

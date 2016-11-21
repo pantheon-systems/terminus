@@ -7,32 +7,22 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
 
-class SiteOrganizationMemberships extends TerminusCollection
+class SiteOrganizationMemberships extends SiteOwnedCollection
 {
-    /**
-     * @var Site
-     */
-    public $site;
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\SiteOrganizationMembership';
+
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/memberships/organizations';
+
     /**
      * @var boolean
      */
     protected $paged = true;
-
-    /**
-     * Object constructor
-     *
-     * @param array $options Options to set as $this->key
-     */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->site = $options['site'];
-        $this->url = "sites/{$this->site->id}/memberships/organizations";
-    }
 
     /**
      * Adds this org as a member to the site
@@ -43,7 +33,7 @@ class SiteOrganizationMemberships extends TerminusCollection
      **/
     public function create($name, $role)
     {
-        $workflow = $this->site->getWorkflows()->create(
+        $workflow = $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
             ['params' => ['organization_name' => $name, 'role' => $role,],]
         );

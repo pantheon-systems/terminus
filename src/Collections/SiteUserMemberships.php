@@ -4,32 +4,22 @@ namespace Pantheon\Terminus\Collections;
 
 use Terminus\Exceptions\TerminusNotFoundException;
 
-class SiteUserMemberships extends TerminusCollection
+class SiteUserMemberships extends SiteOwnedCollection
 {
-    /**
-     * @var Site
-     */
-    public $site;
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\SiteUserMembership';
+
+    /**
+     * @var string
+     */
+    protected $url = 'users/{site_id}/memberships/users';
+
     /**
      * @var boolean
      */
     protected $paged = true;
-
-    /**
-     * Object constructor
-     *
-     * @param array $options Options to set as $this->key
-     */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->site = $options['site'];
-        $this->url = "sites/{$this->site->id}/memberships/users";
-    }
 
     /**
      * Adds this user as a member to the site

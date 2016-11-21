@@ -4,28 +4,19 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Environment;
 
-class Environments extends TerminusCollection
+class Environments extends SiteOwnedCollection
 {
-    /**
-     * @var Site
-     */
-    public $site;
+
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\Environment';
 
     /**
-     * Object constructor
-     *
-     * @param array $options Options to set as $this->key
+     * @var string
      */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->site = $options['site'];
-        $this->url = "sites/{$this->site->id}/environments";
-    }
+    protected $url = 'users/{site_id}/environments';
+
 
     /**
      * Creates a multidev environment
@@ -36,7 +27,7 @@ class Environments extends TerminusCollection
      */
     public function create($to_env_id, Environment $from_env)
     {
-        $workflow = $this->site->getWorkflows()->create(
+        $workflow = $this->getSite()->getWorkflows()->create(
             'create_cloud_development_environment',
             [
                 'params' => [

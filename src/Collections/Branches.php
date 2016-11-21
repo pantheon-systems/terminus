@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
-class Branches extends TerminusCollection
+class Branches extends SiteOwnedCollection
 {
     /**
      * @var Site
@@ -14,14 +14,9 @@ class Branches extends TerminusCollection
     protected $collected_class = 'Pantheon\Terminus\Models\Branch';
 
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->site = $options['site'];
-        $this->url = "sites/{$this->site->id}/code-tips";
-    }
+    protected $url = 'sites/{site_id}/code-tips';
 
     /**
      * @inheritdoc

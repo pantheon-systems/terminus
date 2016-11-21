@@ -5,29 +5,22 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Models\Environment;
 use Terminus\Exceptions\TerminusNotFoundException;
 
-class Hostnames extends TerminusCollection
+class Hostnames extends EnvironmentOwnedCollection
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\Hostname';
+
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/environments/{environment_id}/hostnames';
+
     /**
      * @var mixed Use to hydrate the data with additional information
      */
     protected $hydrate = false;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($options = [])
-    {
-        parent::__construct($options);
-        $this->environment = $options['environment'];
-    }
 
     /**
      * Adds a hostname to the environment
@@ -37,12 +30,8 @@ class Hostnames extends TerminusCollection
      */
     public function create($hostname)
     {
-        $url = sprintf(
-            'sites/%s/environments/%s/hostnames/%s',
-            $this->environment->site->id,
-            $this->environment->id,
-            rawurlencode($hostname)
-        );
+        $url = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/hostnames/');
+        $url .= rawurlencode($hostname);
         $this->request->request($url, ['method' => 'put',]);
     }
 
@@ -60,12 +49,7 @@ class Hostnames extends TerminusCollection
 
     public function getUrl()
     {
-        return sprintf(
-            'sites/%s/environments/%s/hostnames?hydrate=%s',
-            $this->environment->site->id,
-            $this->environment->id,
-            $this->hydrate
-        );
+        return parent::getUrl() . '?hydrate=' . $this->hydrate;
     }
 
     /**
