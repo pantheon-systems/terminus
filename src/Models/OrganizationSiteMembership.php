@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Terminus\Collections\Tags;
+use Pantheon\Terminus\Collections\Tags;
 
 class OrganizationSiteMembership extends TerminusModel implements ContainerAwareInterface
 {
@@ -22,6 +22,15 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
      * @var Tags
      */
     public $tags;
+    /**
+     * @var \stdClass
+     */
+    protected $site_data;
+    /**
+     * @var \stdClass
+     */
+    protected $tags_data;
+
 
     /**
      * @inheritdoc
@@ -30,12 +39,8 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
     {
         parent::__construct($attributes, $options);
         $this->organization = $options['collection']->organization;
-        // @TODO: Convert Site and use the container to instantiate.
-        $this->site = new Site($attributes->site);
-        $this->site->memberships = [$this,];
-        $this->site->tags = new Tags(
-            ['data' => (array)$attributes->tags, 'org_site_membership' => $this,]
-        );
+        $this->site_data = $attributes->site;
+        $this->tags_data = $attributes->tags;
     }
 
     /**
@@ -53,22 +58,28 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        $workflow = $this->getOrganization()->getWorkflows()->create(
+        $workflow = $this->organization->getWorkflows()->create(
             'remove_organization_site_membership',
-            ['params' => ['site_id' => $this->site->id,],]
+            ['params' => ['site_id' => $this->getSite()->get('id'),],]
         );
         return $workflow;
     }
 
     /**
-     * @return Organization
+     * @return Site
      */
-    public function getOrganization()
+    public function getSite()
     {
-        if (empty($this->organization)) {
-            $this->organization = $this->getContainer()->get(Organization::class, [$this->get('organization')]);
-            $this->organization->memberships = [$this,];
+        if (!$this->site) {
+            $this->site = $this->getContainer()->get(Site::class, [$this->site_data]);
+            $this->site->memberships = [$this,];
+            $this->site->tags = $this->getContainer()->get(
+                Tags::class,
+                [
+                    ['data' => (array)$this->tags_data, 'org_site_membership' => $this,]
+                ]
+            );
         }
-        return $this->organization;
+        return $this->site;
     }
 }

@@ -3,9 +3,12 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
+use League\Container\Container;
+use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 class OrganizationSiteMembershipTest extends ModelTestCase
@@ -22,8 +25,21 @@ class OrganizationSiteMembershipTest extends ModelTestCase
     
     public function testDelete()
     {
-        $org = new Organization((object)['id' => '123', 'profile' => (object)['name' => 'My Org']]);
-        $org->workflows = $this->getMockBuilder(Workflows::class)
+        $site_data = ['site_id' => '123'];
+        $container = new Container();
+
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->method('get')->with('id')->willReturn('123');
+        $container->add(Site::class, $site);
+        $container->add(Tags::class);
+
+        $org = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -31,18 +47,20 @@ class OrganizationSiteMembershipTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $org->workflows->expects($this->once())
+        $workflows ->expects($this->once())
             ->method('create')
             ->with(
                 'remove_organization_site_membership',
                 ['params' => ['site_id' => '123']]
             )
             ->willReturn($wf);
+        $org->method('getWorkflows')->willReturn($workflows);
 
         $org_site = new OrganizationSiteMembership(
-            (object)['site' => (object)['id' => '123'], 'tags' => (object)[]],
+            (object)['site' => (object)$site_data, 'tags' => (object)[]],
             ['collection' => (object)['organization' => $org]]
         );
+        $org_site->setContainer($container);
         $out = $org_site->delete();
         $this->assertEquals($wf, $out);
     }

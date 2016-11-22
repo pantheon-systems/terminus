@@ -14,8 +14,9 @@ abstract class UpdatesCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->site->upstream = $this->getMockBuilder(Upstream::class)
+        $this->upstream = $this->getMockBuilder(Upstream::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site->method('getUpstream')->willReturn($this->upstream);
     }
 }

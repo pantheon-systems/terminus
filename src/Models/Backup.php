@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Models;
 
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Terminus\Config;
 use Terminus\Exceptions\TerminusException;
 
 class Backup extends TerminusModel implements ConfigAwareInterface

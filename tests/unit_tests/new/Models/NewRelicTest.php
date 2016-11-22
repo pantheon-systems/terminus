@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Terminus\Collections\Workflows;
-use Terminus\Models\NewRelic;
-use Terminus\Models\Site;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\NewRelic;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Terminus\Models\NewRelic
@@ -40,9 +40,10 @@ class NewRelicTest extends ModelTestCase
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->workflows = $this->workflows;
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
         $this->model = new NewRelic(null, ['site' => $this->site,]);
         $this->model->setRequest($this->request);
+        $this->model->setConfig($this->config);
     }
 
     /**
@@ -88,6 +89,7 @@ class NewRelicTest extends ModelTestCase
      */
     public function testSerialize()
     {
+        $this->config->method('get')->with('date_format')->willReturn('Y-m-d H:i:s');
         $attributes = (object)[
             'name' => 'site_name',
             'status' => 'new_relic_status',
@@ -110,6 +112,6 @@ class NewRelicTest extends ModelTestCase
             ->willReturn(['data' => $attributes,]);
 
         $data = $this->model->fetch()->serialize();
-        $this->assertEquals($data, $desired_data);
+        $this->assertEquals($desired_data, $data);
     }
 }

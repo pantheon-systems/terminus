@@ -5,7 +5,7 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Pantheon\Terminus\Models\Site;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 abstract class CloneCommand extends TerminusCommand implements SiteAwareInterface
 {

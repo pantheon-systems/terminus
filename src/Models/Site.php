@@ -11,20 +11,13 @@ use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
-use Terminus\Config;
-use Terminus\Collections\SiteAuthorizations;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Models\NewRelic;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
 
-    /**
-     * @var SiteAuthorizations
-     */
-    public $authorizations;
     /**
      * @var Branches
      */
@@ -50,9 +43,9 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public $solr;
     /**
-     * @var Upstream
+     * @var \stdClass
      */
-    public $upstream;
+    protected $upstream_data;
     /**
      * @var SiteUserMemberships
      */
@@ -79,8 +72,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->url = "sites/{$this->id}?site_state=true";
 
         $params = ['site' => $this,];
-        $this->authorizations = new SiteAuthorizations($params);
-        $this->new_relic = new NewRelic(null, $params);
         $this->setUpstream($attributes);
     }
 
@@ -135,8 +126,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     {
         $url = sprintf(
             '%s://%s/sites/%s',
-            Config::get('dashboard_protocol'),
-            Config::get('dashboard_host'),
+            $this->getConfig()->get('dashboard_protocol'),
+            $this->getConfig()->get('dashboard_host'),
             $this->id
         );
 
@@ -251,7 +242,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
-            'upstream' => (string)$this->upstream,
+            'upstream' => (string)$this->getUpstream(),
             'php_version' => $this->get('php_version'),
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
@@ -307,6 +298,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
     }
 
+
     /**
      * Modify response data between fetch and assignment
      *
@@ -336,7 +328,14 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
                 $upstream_data = $attributes->upstream;
             }
         }
-        $this->upstream = new Upstream($upstream_data, ['site' => $this,]);
+        $this->upstream_data = $upstream_data;
+    }
+
+    /**
+     * @return Upstream
+     */
+    public function getUpstream() {
+        return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
     }
 
     /**
@@ -414,5 +413,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
         }
         return $this->environments;
+    }
+
+    /**
+     * @return NewRelic
+     */
+    public function getNewRelic()
+    {
+        if (empty($this->new_relic)) {
+            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,]]);
+        }
+        return $this->new_relic;
     }
 }

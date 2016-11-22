@@ -20,6 +20,7 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
@@ -33,6 +34,7 @@ use Pantheon\Terminus\Models\Hostname;
 use Pantheon\Terminus\Models\Instrument;
 use Pantheon\Terminus\Models\Lock;
 use Pantheon\Terminus\Models\MachineToken;
+use Pantheon\Terminus\Models\NewRelic;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
@@ -43,6 +45,7 @@ use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\Solr;
 use Pantheon\Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\Tag;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
@@ -189,6 +192,9 @@ class Runner
         $container->add(Hostname::class);
         $container->add(Commits::class);
         $container->add(Commit::class);
+        $container->add(NewRelic::class);
+        $container->add(Tags::class);
+        $container->add(Tag::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)

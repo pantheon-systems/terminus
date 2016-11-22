@@ -7,7 +7,6 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Session;
 
 class Workflow extends TerminusModel implements ContainerAwareInterface, SessionAwareInterface
 {

@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Terminus\Collections\Upstreams;
 use Terminus\Models\Organization;
 
@@ -9,8 +11,10 @@ use Terminus\Models\Organization;
  * Class CreateCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class CreateCommand extends SiteCommand
+class CreateCommand extends SiteCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Creates a site
      *
@@ -36,12 +40,12 @@ class CreateCommand extends SiteCommand
         ];
 
         // Locate upstream
-        $upstreams = new Upstreams();
+        $upstreams = $this->getContainer()->get(Upstreams::class);
         $upstream = $upstreams->get($upstream_id);
 
         // Locate organization
         if (!is_null($id = $options['org'])) {
-            $org = new Organization((object)compact('id'));
+            $org = $this->getContainer()->get(Organization::class, [(object)compact('id')]);
             $org->fetch();
             $workflow_options['organization_id'] = $org->id;
         }

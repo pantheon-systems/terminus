@@ -8,6 +8,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -45,7 +46,12 @@ class SiteTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->container->add(Workflows::class, $this->workflows);
+        $this->container->add(Upstream::class, $this->upstream);
 
         $this->model = new Site((object)['id' => 123,]);
 
@@ -253,6 +259,7 @@ class SiteTest extends ModelTestCase
      */
     public function testSerialize()
     {
+        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
         $data = (object)[
             'id' => $this->model->id,
             'name' => 'site name',
@@ -275,7 +282,7 @@ class SiteTest extends ModelTestCase
             'framework' => 'framework name',
             'organization' => 'organization name',
             'service_level' => 'service level',
-            'upstream' => ': ',
+            'upstream' => '***UPSTREAM***',
             'php_version' => '7.5',
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
@@ -289,7 +296,7 @@ class SiteTest extends ModelTestCase
             ->willReturn(compact('data'));
 
         $returned_data = $this->model->fetch()->serialize();
-        $this->assertEquals($returned_data, $expected_data);
+        $this->assertEquals($expected_data, $returned_data);
     }
 
     /**
