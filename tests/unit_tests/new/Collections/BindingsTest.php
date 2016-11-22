@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Environment;
@@ -31,7 +30,7 @@ class BindingsTest extends CollectionTestCase
                     'type' => 'fileserver',
                     'fqdn' => 'valhalla4.cluster.panth.io',
                 ],
-            '0bc33e0b7b37462cad40e081d5173721' =>
+                '0bc33e0b7b37462cad40e081d5173721' =>
                 (object)[
                     'access_key' => '6da9cc4b98554574b9d0e1fe43e57314',
                     'binding_created' => 1471385341,
@@ -53,7 +52,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => '17fbb90d-7844-404d-9e49-3b034a0cc088.panth.io',
                     'fqdn' => '17fbb90d-7844-404d-9e49-3b034a0cc088.panth.io',
                 ],
-            'c31cecd9e55f474cb80b25951473688e' =>
+                'c31cecd9e55f474cb80b25951473688e' =>
                 (object)[
                     'binding_created' => 1471385342,
                     'cached_at' => 1471595493,
@@ -76,7 +75,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => 'b18e3a08-8ba3-4c98-815a-fc18158fd314.panth.io',
                     'fqdn' => 'b18e3a08-8ba3-4c98-815a-fc18158fd314.panth.io',
                 ],
-            'b849d36fc4d5476cba555c34fbbd8c38' =>
+                'b849d36fc4d5476cba555c34fbbd8c38' =>
                 (object)[
                     'binding_created' => 1471385345,
                     'cached_at' => 1471527886,
@@ -98,7 +97,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => 'aab3fa62-13e5-41dd-a8a6-f10afd142c30.panth.io',
                     'fqdn' => 'aab3fa62-13e5-41dd-a8a6-f10afd142c30.panth.io',
                 ],
-            '69189ea7f4c44ad98e5433e85ab0e76b' =>
+                '69189ea7f4c44ad98e5433e85ab0e76b' =>
                 (object)[
                     'binding_created' => 1471385346,
                     'cached_at' => 1471594339,
@@ -120,7 +119,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => 'a528426d-f124-44f2-b662-dd558df57b5e.panth.io',
                     'fqdn' => 'a528426d-f124-44f2-b662-dd558df57b5e.panth.io',
                 ],
-            'ffb86439e04a4739ac49a41a7021dcfb' =>
+                'ffb86439e04a4739ac49a41a7021dcfb' =>
                 (object)[
                     'access_key' => '5873e31554fc419281a9991b124e2980',
                     'binding_created' => 1471385341,
@@ -141,7 +140,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => '098311de-5761-4036-9696-2073a04aa21b.panth.io',
                     'fqdn' => '098311de-5761-4036-9696-2073a04aa21b.panth.io',
                 ],
-            'd9eee142f9414e4eaf79e4190e433c39' =>
+                'd9eee142f9414e4eaf79e4190e433c39' =>
                 (object)[
                     'access_key' => '44cd377aeb2d4b9395031ec1aa95eada',
                     'binding_created' => 1471385345,
@@ -163,7 +162,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => 'ece44d39-1d2f-4c12-b3f7-bc9f9241225e.panth.io',
                     'fqdn' => 'ece44d39-1d2f-4c12-b3f7-bc9f9241225e.panth.io',
                 ],
-            '34bc64f2b779461d805fcbb8675866c8' =>
+                '34bc64f2b779461d805fcbb8675866c8' =>
                 (object)[
                     'access_key' => 'c0a1a7c8327f47a1bca96aab68b54676',
                     'binding_created' => 1471385344,
@@ -185,7 +184,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => 'e46ff168-8fe3-4a8a-abc2-3b50e08ddc92.panth.io',
                     'fqdn' => 'e46ff168-8fe3-4a8a-abc2-3b50e08ddc92.panth.io',
                 ],
-            '1ede71b414a9452380e5952ca061fbc0' =>
+                '1ede71b414a9452380e5952ca061fbc0' =>
                 (object)[
                     'binding_created' => 1471385345,
                     'client' => 'fusedav-release',
@@ -199,7 +198,7 @@ class BindingsTest extends CollectionTestCase
                     'type' => 'fileserver',
                     'fqdn' => 'valhalla4.cluster.panth.io',
                 ],
-            '947f61aec1c347669a8002f10ccfa6ca' =>
+                '947f61aec1c347669a8002f10ccfa6ca' =>
                 (object)[
                     'binding_created' => 1471385343,
                     'client' => 'fusedav-release',
@@ -215,7 +214,7 @@ class BindingsTest extends CollectionTestCase
                     'type' => 'fileserver',
                     'fqdn' => 'valhalla4.cluster.panth.io',
                 ],
-            '2e6413eea72d48faab414ff9d6027452' =>
+                '2e6413eea72d48faab414ff9d6027452' =>
                 (object)[
                     'binding_created' => 1470329762,
                     'cached_at' => 1473337382,
@@ -235,7 +234,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => '6159bd13-ed38-48b3-ac41-699b2369cdbd.panth.io',
                     'fqdn' => '6159bd13-ed38-48b3-ac41-699b2369cdbd.panth.io',
                 ],
-            '9f12ce4891a54a69887628170e4dbfd9' =>
+                '9f12ce4891a54a69887628170e4dbfd9' =>
                 (object)[
                     'binding_created' => 1470329766,
                     'cached_at' => 1473337276,
@@ -255,7 +254,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => '6159bd13-ed38-48b3-ac41-699b2369cdbd.panth.io',
                     'fqdn' => '6159bd13-ed38-48b3-ac41-699b2369cdbd.panth.io',
                 ],
-            '929553873fd74e4ebe17010ac521b1ce' =>
+                '929553873fd74e4ebe17010ac521b1ce' =>
                 (object)[
                     'binding_created' => 1470329764,
                     'cached_at' => 1473370391,
@@ -275,7 +274,7 @@ class BindingsTest extends CollectionTestCase
                     'ideal_fqdn' => '106e9705-522d-4e24-9ea1-ee66307b052e.panth.io',
                     'fqdn' => '106e9705-522d-4e24-9ea1-ee66307b052e.panth.io',
                 ],
-            '01862c1dc3924fef971a40d30369deff' =>
+                '01862c1dc3924fef971a40d30369deff' =>
                 (object)[
                     'binding_created' => 1470329760,
                     'cached_at' => 1473336876,

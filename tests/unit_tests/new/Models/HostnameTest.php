@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-
 use Behat\Testwork\Environment\Environment;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Hostname;
@@ -18,7 +17,8 @@ class HostnameTest extends ModelTestCase
         $this->hostname = $this->_createHostname(['id' => 'dev.example.com']);
     }
 
-    protected function _createHostname($attr) {
+    protected function _createHostname($attr)
+    {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -39,7 +39,8 @@ class HostnameTest extends ModelTestCase
         return $hostname;
     }
 
-    public function testDelete() {
+    public function testDelete()
+    {
         $this->request->expects($this->once())
             ->method('request')
             ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'delete']);
@@ -47,7 +48,8 @@ class HostnameTest extends ModelTestCase
         $this->hostname->delete();
     }
     
-    public function testSerialize() {
+    public function testSerialize()
+    {
         $data = [
             'dns_zone_name' => 'pantheonsite.io',
             'environment' => 'live',

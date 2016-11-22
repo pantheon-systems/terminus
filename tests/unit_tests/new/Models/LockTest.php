@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Lock;
@@ -26,7 +25,8 @@ class LockTest extends ModelTestCase
         $this->lock = $this->_getLock(['locked' => false]);
     }
 
-    protected function _getLock($attr) {
+    protected function _getLock($attr)
+    {
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -39,7 +39,8 @@ class LockTest extends ModelTestCase
         return $lock;
     }
 
-    public function testAdd() {
+    public function testAdd()
+    {
         $params = ['username' => 'dev', 'password' => '123'];
         $this->workflows->expects($this->once())
             ->method('create')
@@ -50,14 +51,16 @@ class LockTest extends ModelTestCase
         $this->assertEquals($this->workflow, $wf);
     }
 
-    public function testIsLocked() {
+    public function testIsLocked()
+    {
         $this->assertFalse($this->lock->isLocked());
 
         $lock = $this->_getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
         $this->assertTrue($lock->isLocked());
     }
 
-    public function testSerialize() {
+    public function testSerialize()
+    {
         $expected = [
             'locked' => 'false',
             'username' => null,
@@ -77,7 +80,8 @@ class LockTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testRemove() {
+    public function testRemove()
+    {
         $this->workflows->expects($this->once())
             ->method('create')
             ->with('unlock_environment')

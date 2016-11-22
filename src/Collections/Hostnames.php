@@ -74,12 +74,12 @@ class Hostnames extends TerminusCollection
      * @param $domain
      * @return bool True if the domain exists in the collection.
      */
-    public function has($domain) {
+    public function has($domain)
+    {
         try {
             $this->get($domain);
             return true;
-        }
-        catch (TerminusNotFoundException $e) {
+        } catch (TerminusNotFoundException $e) {
             return false;
         }
     }

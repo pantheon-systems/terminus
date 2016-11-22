@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Hostnames;
 use Pantheon\Terminus\Collections\Workflows;
@@ -64,4 +63,3 @@ class HostnamesTest extends CollectionTestCase
         $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->hostnames->getUrl());
     }
 }
-

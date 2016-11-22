@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Backup;
@@ -36,7 +35,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 33333110,
                     'timestamp' => 1471562190,
                 ],
-            '1471562156_backup_manifest' =>
+                '1471562156_backup_manifest' =>
                 (object)[
                     'total_dirs' => 0,
                     'total_size' => 0,
@@ -50,7 +49,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 0,
                     'timestamp' => 1471562160,
                 ],
-            '1471562156_backup_files' =>
+                '1471562156_backup_files' =>
                 (object)[
                     'task_id' => 'b79ca7fe-6599-11e6-84b4-bc764e1141f9',
                     'finish_time' => 1471562160.4710801,
@@ -64,7 +63,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 168,
                     'timestamp' => 1471562160,
                 ],
-            '1471562156_backup_database' =>
+                '1471562156_backup_database' =>
                 (object)[
                     'task_id' => 'b78fe4f6-6599-11e6-84b4-bc764e1141f9',
                     'finish_time' => 1471562159.6410241,
@@ -78,7 +77,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 833,
                     'timestamp' => 1471562159,
                 ],
-            '1471562156_backup_code' =>
+                '1471562156_backup_code' =>
                 (object)[
                     'task_id' => 'b78dee76-6599-11e6-84b4-bc764e1141f9',
                     'finish_time' => 1471562166.041888,
@@ -92,7 +91,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 33358038,
                     'timestamp' => 1471562166,
                 ],
-            '1471562114_backup_manifest' =>
+                '1471562114_backup_manifest' =>
                 (object)[
                     'total_dirs' => 0,
                     'total_size' => 0,
@@ -106,7 +105,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 0,
                     'timestamp' => 1471562119,
                 ],
-            '1471562114_backup_files' =>
+                '1471562114_backup_files' =>
                 (object)[
                     'task_id' => '9e8f4a5a-6599-11e6-977c-bc764e105ecb',
                     'finish_time' => null,
@@ -120,7 +119,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 169,
                     'timestamp' => null,
                 ],
-            '1471562114_backup_database' =>
+                '1471562114_backup_database' =>
                 (object)[
                     'task_id' => '9e6f55d8-6599-11e6-977c-bc764e105ecb',
                     'finish_time' => 1471562120.2322991,
@@ -134,7 +133,7 @@ class BackupsTest extends CollectionTestCase
                     'size' => 0,
                     'timestamp' => 1471562120,
                 ],
-            '1471562114_backup_code' =>
+                '1471562114_backup_code' =>
                 (object)[
                     'task_id' => '9e6d6e76-6599-11e6-977c-bc764e105ecb',
                     'finish_time' => 1471562126.0202169,
@@ -153,7 +152,8 @@ class BackupsTest extends CollectionTestCase
         $this->backups = $this->_createBackups();
     }
 
-    protected function _createBackups() {
+    protected function _createBackups()
+    {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -175,7 +175,8 @@ class BackupsTest extends CollectionTestCase
         return $backups;
     }
 
-    protected function _createBackupsWithModels() {
+    protected function _createBackupsWithModels()
+    {
         $backups = $this->_createBackups();
         $this->request->expects($this->once())
             ->method('request')
@@ -204,7 +205,8 @@ class BackupsTest extends CollectionTestCase
         return $backups;
     }
 
-    public function testCancelBackupSchedule() {
+    public function testCancelBackupSchedule()
+    {
         for ($i = 0; $i < 7; $i++) {
             $this->request->expects($this->at($i))
                 ->method('request')
@@ -214,7 +216,8 @@ class BackupsTest extends CollectionTestCase
         $this->backups->cancelBackupSchedule();
     }
 
-    public function testCreate() {
+    public function testCreate()
+    {
         $backups = $this->_createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
@@ -286,16 +289,17 @@ class BackupsTest extends CollectionTestCase
 
         $actual = $backups->create(['element' => 'files', 'keep-for' => 5]);
         $this->assertEquals($this->workflow, $actual);
-
     }
 
-    public function testFetch() {
+    public function testFetch()
+    {
 
         $backups = $this->_createBackupsWithModels();
         $this->assertEquals($backups, $backups->fetch());
     }
 
-    public function testGetBackupByFileName() {
+    public function testGetBackupByFileName()
+    {
         $backups = $this->_createBackupsWithModels();
 
         $id = '1471562156_backup_code';
@@ -311,7 +315,8 @@ class BackupsTest extends CollectionTestCase
         $this->assertNull($out);
     }
 
-    public function testGetBackupsByElement() {
+    public function testGetBackupsByElement()
+    {
         $backups = $this->_createBackupsWithModels();
         $out = $backups->getBackupsByElement('code');
         $this->assertEquals(3, count($out));
@@ -332,39 +337,40 @@ class BackupsTest extends CollectionTestCase
         }
     }
 
-    public function testGetBackupSchedule() {
+    public function testGetBackupSchedule()
+    {
         $schedule = (object)([
             '0' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
                 ]),
-            '1' =>
+                '1' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
                 ]),
-            '2' =>
+                '2' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
                 ]),
-            '3' =>
+                '3' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
                 ]),
-            '4' =>
+                '4' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
                 ]),
-            '5' =>
+                '5' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 2764800,
                 ]),
-            '6' =>
+                '6' =>
                 (object)([
                     'hour' => 16,
                     'ttl' => 691200,
@@ -384,7 +390,8 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetFinishedBackups() {
+    public function testGetFinishedBackups()
+    {
         $backups = $this->_createBackupsWithModels();
 
         $out = $backups->getFinishedBackups();
@@ -414,16 +421,17 @@ class BackupsTest extends CollectionTestCase
             $this->assertTrue($backup->backupIsFinished());
             $this->assertEquals('database', $backup->get('type'));
         }
-
     }
 
-    public function testGetValidElements() {
+    public function testGetValidElements()
+    {
         $expected = ['code', 'files', 'database', 'db',];
         $actual = $this->backups->getValidElements();
         $this->assertEquals($expected, $actual);
     }
 
-    public function testSetBackupSchedule() {
+    public function testSetBackupSchedule()
+    {
         $backups = $this->_createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
@@ -469,4 +477,3 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($this->workflow, $actual);
     }
 }
-

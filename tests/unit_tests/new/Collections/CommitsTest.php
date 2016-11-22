@@ -3,14 +3,14 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Environment;
 
 class CommitsTest extends CollectionTestCase
 {
 
-    public function testGetURL() {
+    public function testGetURL()
+    {
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()
             ->getMock();

@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Environment;
@@ -17,11 +16,10 @@ class BackupTest extends ModelTestCase
     public function setUp()
     {
         parent::setUp();
-
-
     }
 
-    protected function _getBackup($attr = []) {
+    protected function _getBackup($attr = [])
+    {
         if (empty($attr['id'])) {
             $attr['id'] = 'scheduledfor_archivetype_type';
         }
@@ -46,7 +44,8 @@ class BackupTest extends ModelTestCase
         return $backup;
     }
 
-    public function testBackupIsFinished() {
+    public function testBackupIsFinished()
+    {
         $backup = $this->_getBackup(['size' => 12345, 'finish_time' => 123456]);
         $this->assertTrue($backup->backupIsFinished());
 
@@ -63,7 +62,8 @@ class BackupTest extends ModelTestCase
         $this->assertFalse($backup->backupIsFinished());
     }
 
-    public function testGetBucket() {
+    public function testGetBucket()
+    {
         $backup = $this->_getBackup();
 
         $expected = 'pantheon-backups';
@@ -76,7 +76,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetDate() {
+    public function testGetDate()
+    {
         $this->configSet(['date_format' => 'Y-m-d']);
         $expected = '2016-11-21';
 
@@ -95,7 +96,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetInitiator() {
+    public function testGetInitiator()
+    {
         $backup = $this->_getBackup(['folder' => 'xyz_automated']);
         $expected = 'automated';
         $actual = $backup->getInitiator();
@@ -107,7 +109,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetSizeInMb() {
+    public function testGetSizeInMb()
+    {
         $backup = $this->_getBackup(['size' => 0]);
         $expected = '0';
         $actual = $backup->getSizeInMb();
@@ -126,7 +129,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetUrl() {
+    public function testGetUrl()
+    {
         $expected = '**URL**';
         $this->request->expects($this->once())
             ->method('request')
@@ -140,7 +144,8 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $backup->getUrl());
     }
 
-    public function testRestore() {
+    public function testRestore()
+    {
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
