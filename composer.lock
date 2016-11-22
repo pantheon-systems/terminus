@@ -4,25 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c553348165d5e0393f493c7c7024c9fe",
-    "content-hash": "4308e952eb47ecfe7651616c83786d2d",
+    "hash": "b0c46a7e912ffba31807a7d332b31d19",
+    "content-hash": "02513e899153f363e49b081c1554fa08",
     "packages": [
         {
             "name": "consolidation/annotated-command",
-            "version": "2.0.3",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "0bcb15e86b8bfbb1972fc6bc31b7d9c3fa40285d"
+                "reference": "1f3ca24774f770d6b948398cd1cf57b93bd8513f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/0bcb15e86b8bfbb1972fc6bc31b7d9c3fa40285d",
-                "reference": "0bcb15e86b8bfbb1972fc6bc31b7d9c3fa40285d",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/1f3ca24774f770d6b948398cd1cf57b93bd8513f",
+                "reference": "1f3ca24774f770d6b948398cd1cf57b93bd8513f",
                 "shasum": ""
             },
             "require": {
-                "consolidation/output-formatters": "~2|~3",
+                "consolidation/output-formatters": "^3.1",
                 "php": ">=5.4.0",
                 "phpdocumentor/reflection-docblock": "^2.0|^3.0.2",
                 "psr/log": "~1",
@@ -57,7 +57,7 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2016-11-14 23:51:12"
+            "time": "2016-11-18 17:56:41"
         },
         {
             "name": "consolidation/log",
@@ -108,16 +108,16 @@
         },
         {
             "name": "consolidation/output-formatters",
-            "version": "3.0.1",
+            "version": "3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "31aac0f6ffd76833a70a12ba7fb3e428f78b55ef"
+                "reference": "1e6c6ab49904a31c310940ec4efccf5f36e386e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/31aac0f6ffd76833a70a12ba7fb3e428f78b55ef",
-                "reference": "31aac0f6ffd76833a70a12ba7fb3e428f78b55ef",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/1e6c6ab49904a31c310940ec4efccf5f36e386e4",
+                "reference": "1e6c6ab49904a31c310940ec4efccf5f36e386e4",
                 "shasum": ""
             },
             "require": {
@@ -153,26 +153,26 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2016-11-14 18:44:33"
+            "time": "2016-11-18 23:04:31"
         },
         {
             "name": "consolidation/robo",
-            "version": "1.0.4",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "bfe2246358298d7839114612f84bcfdca3c14066"
+                "reference": "fb2d7617e498709ef6a49212c352a98ddea37661"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/bfe2246358298d7839114612f84bcfdca3c14066",
-                "reference": "bfe2246358298d7839114612f84bcfdca3c14066",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/fb2d7617e498709ef6a49212c352a98ddea37661",
+                "reference": "fb2d7617e498709ef6a49212c352a98ddea37661",
                 "shasum": ""
             },
             "require": {
-                "consolidation/annotated-command": "^2.0.1",
+                "consolidation/annotated-command": "^2.1",
                 "consolidation/log": "~1",
-                "consolidation/output-formatters": "^2.1.2|~3",
+                "consolidation/output-formatters": "^3.1",
                 "league/container": "^2.2",
                 "php": ">=5.5.0",
                 "symfony/console": "~2.8|~3.0",
@@ -230,7 +230,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2016-11-15 19:24:36"
+            "time": "2016-11-18 20:28:41"
         },
         {
             "name": "container-interop/container-interop",
@@ -356,16 +356,16 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "c10d860e2a9595f8883527fa0021c7da9e65f579"
+                "reference": "2693c101803ca78b27972d84081d027fca790a1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/c10d860e2a9595f8883527fa0021c7da9e65f579",
-                "reference": "c10d860e2a9595f8883527fa0021c7da9e65f579",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/2693c101803ca78b27972d84081d027fca790a1e",
+                "reference": "2693c101803ca78b27972d84081d027fca790a1e",
                 "shasum": ""
             },
             "require": {
@@ -403,7 +403,7 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2016-05-18 16:56:05"
+            "time": "2016-11-18 17:47:58"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1622,16 +1622,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.27.0",
+            "version": "v1.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97"
+                "reference": "60ae30368f7ac50a95de032f16c1e882b0f69813"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
-                "reference": "3c6c0033fd3b5679c6e1cb60f4f9766c2b424d97",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/60ae30368f7ac50a95de032f16c1e882b0f69813",
+                "reference": "60ae30368f7ac50a95de032f16c1e882b0f69813",
                 "shasum": ""
             },
             "require": {
@@ -1644,7 +1644,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.27-dev"
+                    "dev-master": "1.28-dev"
                 }
             },
             "autoload": {
@@ -1679,7 +1679,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2016-10-25 19:17:17"
+            "time": "2016-11-17 17:46:53"
         },
         {
             "name": "victorjonsson/markdowndocs",
@@ -2885,16 +2885,16 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "1.2.0",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22"
+                "reference": "ce2bda23a56456f19e35d98241446b581f648c14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/937efb279bd37a375bcadf584dec0726f84dbf22",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/ce2bda23a56456f19e35d98241446b581f648c14",
+                "reference": "ce2bda23a56456f19e35d98241446b581f648c14",
                 "shasum": ""
             },
             "require": {
@@ -2945,7 +2945,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2015-07-26 15:48:44"
+            "time": "2016-11-17 14:39:37"
         },
         {
             "name": "sebastian/diff",
@@ -3749,6 +3749,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "consolidation/robo": 20,
         "php-vcr/phpunit-testlistener-vcr": 0
     },
     "prefer-stable": true,
