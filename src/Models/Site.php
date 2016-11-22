@@ -71,7 +71,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         parent::__construct($attributes, $options);
         $this->url = "sites/{$this->id}?site_state=true";
 
-        $params = ['site' => $this,];
         $this->setUpstream($attributes);
     }
 
@@ -298,7 +297,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         }
     }
 
-
     /**
      * Modify response data between fetch and assignment
      *
@@ -334,7 +332,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     /**
      * @return Upstream
      */
-    public function getUpstream() {
+    public function getUpstream()
+    {
         return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
     }
 

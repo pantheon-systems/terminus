@@ -20,6 +20,5 @@ abstract class NewRelicCommandTest extends CommandTestCase
             ->getMock();
 
         $this->site->method('getNewRelic')->willReturn($this->new_relic);
-
     }
 }
