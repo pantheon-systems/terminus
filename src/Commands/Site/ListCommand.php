@@ -49,7 +49,7 @@ class ListCommand extends SiteCommand
      */
     public function index($options = ['team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
-        $this->sites->fetch(
+        $this->sites()->fetch(
             [
                 'org_id' => isset($options['org']) ? $options['org'] : null,
                 'team_only' => isset($options['team']) ? $options['team'] : false,

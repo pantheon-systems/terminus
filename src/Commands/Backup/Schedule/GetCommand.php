@@ -38,7 +38,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
     public function getSchedule($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $schedule = $env->backups->getBackupSchedule();
+        $schedule = $env->getBackups()->getBackupSchedule();
         if (is_null($schedule['daily_backup_hour'])) {
             $this->log()->notice('Backups are not currently scheduled to be run.');
         }

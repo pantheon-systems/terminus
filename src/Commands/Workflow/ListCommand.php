@@ -35,21 +35,23 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function wfList($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->workflows->fetch(['paged' => false]);
-        $workflows = $site->workflows->all();
+        $site->getWorkflows()->fetch(['paged' => false]);
+        $workflows = $site->getWorkflows()->all();
 
         $data = [];
         foreach ($workflows as $workflow) {
-            $workflow_data = $workflow->serialize();
-            unset($workflow_data['operations']);
-            $data[] = $workflow_data;
+            foreach ($workflows as $workflow) {
+                $workflow_data = $workflow->serialize();
+                unset($workflow_data['operations']);
+                $data[] = $workflow_data;
+            }
+            if (count($data) == 0) {
+                $this->log()->warning(
+                    'No workflows have been run on {site}.',
+                    ['site' => $site->get('name')]
+                );
+            }
+            return new RowsOfFields($data);
         }
-        if (count($data) == 0) {
-            $this->log()->warning(
-                'No workflows have been run on {site}.',
-                ['site' => $site->get('name')]
-            );
-        }
-        return new RowsOfFields($data);
     }
 }

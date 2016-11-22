@@ -24,7 +24,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     public function add($site_env, $domain)
     {
         list($site, $env) = $this->getSiteEnv($site_env);
-        $env->hostnames->create($domain);
+        $env->getHostnames()->create($domain);
         $this->log()->notice(
             'Added {domain} to {site}.{env}',
             ['domain' => $domain, 'site' => $site->get('name'), 'env' => $env->id,]

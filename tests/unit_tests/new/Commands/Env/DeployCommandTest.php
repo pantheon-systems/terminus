@@ -24,17 +24,17 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeploy()
     {
-        $this->env->id = 'test';
+        $this->environment->id = 'test';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('isInitialized')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('deploy')
             ->willReturn($this->workflow)
             ->with([
@@ -66,17 +66,17 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeployNoCode()
     {
-        $this->env->id = 'test';
+        $this->environment->id = 'test';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('isInitialized')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(false);
 
-        $this->env->expects($this->never())
+        $this->environment->expects($this->never())
             ->method('deploy');
 
         $this->logger->expects($this->once())
@@ -91,17 +91,17 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeployLive()
     {
-        $this->env->id = 'live';
+        $this->environment->id = 'live';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('isInitialized')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('hasDeployableCode')
             ->willReturn(true);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('deploy')
             ->willReturn($this->workflow)
             ->with([
@@ -127,13 +127,13 @@ class DeployCommandTest extends EnvCommandTest
      */
     public function testDeployUninitialized()
     {
-        $this->env->id = 'uninitialized';
+        $this->environment->id = 'uninitialized';
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('isInitialized')
             ->willReturn(false);
 
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('initializeBindings')
             ->willReturn($this->workflow)
             ->with();

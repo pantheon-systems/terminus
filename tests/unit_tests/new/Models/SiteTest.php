@@ -2,12 +2,13 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Terminus\Collections\SiteOrganizationMemberships;
-use Terminus\Collections\Workflows;
-use Terminus\Models\Organization;
-use Terminus\Models\Site;
-use Terminus\Models\SiteOrganizationMembership;
-use Terminus\Models\Workflow;
+use League\Container\Container;
+use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Testing class for Terminus\Models\Site
@@ -24,19 +25,32 @@ class SiteTest extends ModelTestCase
     protected $workflows;
 
     /**
+     * @var Container
+     */
+    protected $container;
+
+    /**
      * @inheritdoc
      */
     public function setUp()
     {
         parent::setUp();
+
+        $this->container = new Container();
+
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->container->add(Workflows::class, $this->workflows);
+
         $this->model = new Site((object)['id' => 123,]);
-        $this->model->workflows = $this->workflows;
+
+        $this->model->setContainer($this->container);
+
         $this->model->setRequest($this->request);
     }
 
@@ -200,15 +214,17 @@ class SiteTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $org_membership->organization->id = 'organization_id';
-        $this->model->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
+        $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->model->org_memberships->expects($this->once())
+        $this->org_memberships->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$org_membership,]);
 
+        $this->container->add(SiteOrganizationMemberships::class, $this->org_memberships);
+        
         $data = [$org_membership->organization->id => $org_membership->organization,];
 
         $orgs = $this->model->getOrganizations();

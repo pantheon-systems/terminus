@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ListCommand;
+use Pantheon\Terminus\Models\Workflow;
 
 class ListCommandTest extends UpdatesCommandTest
 {

@@ -5,7 +5,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 use Terminus\Collections\Backups;
 use Terminus\Models\Backup;
-use Terminus\Models\Workflow;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * @property \PHPUnit_Framework_MockObject_MockObject sites
@@ -37,7 +37,7 @@ abstract class BackupCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->environment->backups = $this->backups;
+        $this->environment->method('getBackups')->willReturn($this->backups);
 
         $this->backup = $this->getMockBuilder(Backup::class)
             ->disableOriginalConstructor()
