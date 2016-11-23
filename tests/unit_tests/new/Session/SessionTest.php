@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Session;
 
 use League\Container\Container;
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Caches\FileCache;
 use Pantheon\Terminus\Models\User;
 
 /**
@@ -19,16 +19,16 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->filecache = $this->getMockBuilder(FileCache::class)
-        ->disableOriginalConstructor()
-        ->getMock();
+        $this->filecache = $this->getMockBuilder(FileStore::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->session = new Session($this->filecache);
     }
 
-  /**
-   * Test getting and setting data
-   */
+    /**
+     * Test getting and setting data
+     */
     public function testSetGet()
     {
         $data = [
@@ -36,7 +36,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
             'abc' => 123
         ];
         $this->filecache->expects($this->once())
-            ->method('getData')
+            ->method('get')
             ->with('session')
             ->willReturn($data);
 
@@ -48,19 +48,19 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     }
 
 
-  /**
-   * Test getting and setting data
-   */
+    /**
+     * Test getting and setting data
+     */
     public function testSetData()
     {
         $data = [
-        'foo' => 'bar',
-        'abc' => 123
+            'foo' => 'bar',
+            'abc' => 123
         ];
 
         $this->filecache->expects($this->once())
-        ->method('putData')
-        ->with('session', $data);
+            ->method('set')
+            ->with('session', $data);
 
         $this->session->setData($data);
 
@@ -69,9 +69,9 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-  /**
-   * Test getting and setting data
-   */
+    /**
+     * Test getting and setting data
+     */
     public function testGetUser()
     {
         $container = $this->getMockBuilder(Container::class)
@@ -83,11 +83,11 @@ class SessionTest extends \PHPUnit_Framework_TestCase
             ->method('get')
             ->with(User::class, [(object)array('id' => '123')])
             ->willReturn($user);
-        
+
         $this->filecache->expects($this->once())
-        ->method('getData')
-        ->with('session')
-        ->willReturn(['user_id' => '123']);
+            ->method('get')
+            ->with('session')
+            ->willReturn(['user_id' => '123']);
 
         $this->session = new Session($this->filecache);
         $this->session->setContainer($container);
@@ -96,14 +96,14 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($user, $out);
     }
 
-  /**
-   * Test destroying the session
-   */
+    /**
+     * Test destroying the session
+     */
     public function testDestroy()
     {
         $this->filecache->expects($this->once())
-        ->method('remove')
-        ->with('session');
+            ->method('remove')
+            ->with('session');
 
         $this->session->destroy();
     }
@@ -119,7 +119,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
             'expires_at' => time() + 100
         ];
         $this->filecache->expects($this->any())
-            ->method('getData')
+            ->method('get')
             ->with('session')
             ->willReturn($data);
 
@@ -139,11 +139,11 @@ class SessionTest extends \PHPUnit_Framework_TestCase
             'expires_at' => time() - 100
         ];
         $this->filecache->expects($this->once())
-            ->method('getData')
+            ->method('get')
             ->with('session')
             ->willReturn($data);
 
-        $config =  $this->getMockBuilder(Config::class)
+        $config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $config->expects($this->once())
@@ -166,11 +166,11 @@ class SessionTest extends \PHPUnit_Framework_TestCase
             'expires_at' => time() - 100
         ];
         $this->filecache->expects($this->once())
-            ->method('getData')
+            ->method('get')
             ->with('session')
             ->willReturn($data);
 
-        $config =  $this->getMockBuilder(Config::class)
+        $config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $config->expects($this->once())
