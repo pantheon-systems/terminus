@@ -6,7 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Connection\InfoCommand;
 use Prophecy\Prophet;
 use Terminus\Collections\Sites;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Test suite for class for Pantheon\Terminus\Commands\Connection\InfoCommand

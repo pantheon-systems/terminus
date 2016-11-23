@@ -75,7 +75,7 @@ class MergeFromDevCommandTest extends MultidevCommandTest
     /**
      * Tests to ensure the multidev:merge-from-dev throws an error when the environment-creation operation fails
      *
-     * @expectedException \Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage The dev environment could not be merged into {env}.
      */
     public function testMergeFfromDevFailure()

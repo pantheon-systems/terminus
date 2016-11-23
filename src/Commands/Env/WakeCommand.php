@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Env;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class WakeCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -20,7 +20,7 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env The site and environment to wake.
      *
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function wakeEnv($site_env)
     {

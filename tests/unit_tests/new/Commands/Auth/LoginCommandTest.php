@@ -131,7 +131,7 @@ class LoginCommandTest extends AuthTest
     /**
      * Exercises LoginCommand::logIn when no data was given and there are no saved machine tokens
      *
-     * @expectedException \Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage Please visit the dashboard to generate a machine token:
      */
     public function testCannotLogInWithoutTokens()
@@ -146,7 +146,7 @@ class LoginCommandTest extends AuthTest
     /**
      * Exercises LoginCommand::logIn when no data was given and there are multiple saved machine tokens
      *
-     * @expectedException \Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage Tokens were saved for the following email addresses:
      */
     public function testCannotLogInWithoutIndicatingWhichToken()

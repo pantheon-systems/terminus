@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Site;
 
 use Terminus\Collections\Sites;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Implements the SiteAwareInterface for dependency injection of the Sites collection.
@@ -54,7 +54,7 @@ trait SiteAwareTrait
      * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
      * @param string  $default_env The default environment to use if none is specified
      * @return array  The site and environment in an array.
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function getSiteEnv($site_env_id, $default_env = null)
     {

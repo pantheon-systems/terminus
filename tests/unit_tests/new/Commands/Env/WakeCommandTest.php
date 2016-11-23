@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\WakeCommand;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class WakeCommandTest extends EnvCommandTest
 {

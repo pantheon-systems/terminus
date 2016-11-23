@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Import\ImportCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Models\Workflow;
 

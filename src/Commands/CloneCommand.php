@@ -75,7 +75,7 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
      * @param string $operation
      *
      * @return \Terminus\Models\Workflow
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function triggerWorkflow(Site $site, $operation = '')
     {

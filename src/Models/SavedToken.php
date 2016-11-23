@@ -8,7 +8,7 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedToken
@@ -75,7 +75,7 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
      * Get the path to save the token to.
      *
      * @return string The file path for the token file.
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     protected function getPath()
     {

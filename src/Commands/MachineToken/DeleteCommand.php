@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class DeleteCommand extends TerminusCommand
 {

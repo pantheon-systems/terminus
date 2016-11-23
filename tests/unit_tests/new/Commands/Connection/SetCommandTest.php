@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Pantheon\Terminus\Commands\Connection\SetCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Terminus\Models\Workflow;
 
 /**

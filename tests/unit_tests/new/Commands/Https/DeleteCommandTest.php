@@ -6,7 +6,7 @@ namespace Pantheon\Terminus\UnitTests\Https;
 use Pantheon\Terminus\Commands\Https\DeleteCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class DeleteCommandTest extends CommandTestCase
 {

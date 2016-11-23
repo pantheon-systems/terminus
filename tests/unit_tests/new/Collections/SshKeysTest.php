@@ -4,7 +4,7 @@
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Models\SshKey;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class SshKeysTest extends UserOwnedCollectionTest
 {

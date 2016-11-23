@@ -7,7 +7,7 @@ use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class SavedTokenTest extends ModelTestCase
 {

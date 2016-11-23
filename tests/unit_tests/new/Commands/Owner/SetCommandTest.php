@@ -6,7 +6,7 @@ use Pantheon\Terminus\Commands\Owner\SetCommand;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Terminus\Collections\SiteUserMemberships;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Terminus\Models\SiteUserMembership;
 use Terminus\Models\Workflow;
 

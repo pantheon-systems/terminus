@@ -6,7 +6,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Request\Request;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class MachineTokenTest extends ModelTestCase
 {

@@ -6,7 +6,7 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Terminus\Session;
 
 class Workflow extends TerminusModel implements ContainerAwareInterface, SessionAwareInterface
@@ -260,7 +260,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * period to prevent flooding the API with requests.
      *
      * @return bool Whether the workflow is finished or not
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function checkProgress()
     {
@@ -282,7 +282,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * Get the success message of a workflow or throw an exception of the workflow failed.
      *
      * @return string The message to output to the user
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function getMessage()
     {
