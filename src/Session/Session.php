@@ -5,25 +5,25 @@ namespace Pantheon\Terminus\Session;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
+use Pantheon\Terminus\DataStore\DataStoreInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Terminus\Caches\FileCache;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
 
-class Session implements ContainerAwareInterface, ConfigAwareInterface
+class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
+    use DataStoreAwareTrait;
 
     /**
      * @var SavedTokens
      */
     public $tokens;
-    /**
-     * @var FileCache
-     */
-    protected $cache;
+
     /**
      * @var object
      */
@@ -32,12 +32,11 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
     /**
      * Instantiates object, sets session data, instantiates a SavedTokens instance
      *
-     * @param FileCache $file_cache A file cache object
+     * @param DataStoreInterface $data_store An object to persist the session data.
      */
-    public function __construct($file_cache)
+    public function __construct(DataStoreInterface $data_store)
     {
-        $this->cache = $file_cache;
-        $this->data = (object)$this->cache->getData('session');
+        $this->setDataStore($data_store);
     }
 
     /**
@@ -45,7 +44,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
      */
     public function destroy()
     {
-        $this->cache->remove('session');
+        $this->getDataStore()->remove('session');
         $this->data = (object)[];
     }
 
@@ -95,7 +94,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
      */
     public function setData($data)
     {
-        $this->cache->putData('session', $data);
+        $this->getDataStore()->set('session', $data);
         $this->data = (object)$data;
     }
 
@@ -108,5 +107,14 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface
             $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,]]);
         }
         return $this->tokens;
+    }
+
+    /**
+     * @param DataStoreInterface $data_store
+     */
+    public function setDataStore(DataStoreInterface $data_store)
+    {
+        $this->data_store = $data_store;
+        $this->data = (object)$data_store->get('session');
     }
 }

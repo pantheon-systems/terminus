@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
@@ -14,10 +16,11 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class SavedToken
  * @package Pantheon\Terminus\Models
  */
-class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigAwareInterface
+class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
 {
     use SessionAwareTrait;
     use ConfigAwareTrait;
+    use DataStoreAwareTrait;
 
     /**
      * @inheritdoc
@@ -48,8 +51,12 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
      */
     public function saveToDir()
     {
+        if (!$this->id) {
+            throw new TerminusException('Could not save the machine token because it is missing an ID');
+        }
+
         $this->set('date', time());
-        file_put_contents($this->getPath(), json_encode($this->attributes));
+        $this->getDataStore()->set($this->id, $this->attributes);
     }
 
     /**
@@ -57,7 +64,7 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
      */
     public function delete()
     {
-        unlink($this->getPath());
+        $this->getDataStore()->remove($this->id);
     }
 
     /**
@@ -69,25 +76,5 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
             $data->id = $data->email;
         }
         return $data;
-    }
-
-    /**
-     * Get the path to save the token to.
-     *
-     * @return string The file path for the token file.
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    protected function getPath()
-    {
-        $path = $this->getConfig()->get('tokens_dir');
-        $id = $this->id;
-        // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
-        if (!$path) {
-            throw new TerminusException('Could not save the machine token because the token path is mis-configured.');
-        }
-        if (!$this->id) {
-            throw new TerminusException('Could not save the machine token because it is missing an ID');
-        }
-        return "$path/$id";
     }
 }

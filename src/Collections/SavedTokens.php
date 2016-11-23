@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
 use Robo\Common\ConfigAwareTrait;
@@ -14,9 +16,10 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class SavedTokens
  * @package Pantheon\Terminus\Collections
  */
-class SavedTokens extends TerminusCollection implements ConfigAwareInterface
+class SavedTokens extends TerminusCollection implements ConfigAwareInterface, DataStoreAwareInterface
 {
     use ConfigAwareTrait;
+    use DataStoreAwareTrait;
 
     /**
      * @var Session
@@ -47,6 +50,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface
             SavedToken::class,
             [(object)['token' => $token_string,], ['collection' => $this,]]
         );
+        $token->setDataStore($this->getDataStore());
         $user = $token->logIn();
         $user->fetch();
         $token->id = $user->get('email');
@@ -54,6 +58,21 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface
         $token->saveToDir();
         $this->models[$token->id] = $token;
     }
+
+    /**
+     * Adds a model to this collection
+     *
+     * @param object $model_data Data to feed into attributes of new model
+     * @param array $options Data to make properties of the new model
+     * @return TerminusModel
+     */
+    public function add($model_data, array $options = [])
+    {
+        $model = parent::add($model_data, $options);
+        $model->setDataStore($this->getDataStore());
+        return $model;
+    }
+
 
     /**
      * Retrieves the model with site of the given email or machine token
@@ -92,11 +111,9 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface
      */
     protected function getCollectionData($options = [])
     {
-        $finder = new Finder();
-        $iterator = $finder->files()->in($this->getConfig()->get('tokens_dir'));
         $tokens = [];
-        foreach ($iterator as $file) {
-            $tokens[] = json_decode(file_get_contents($file->getRealPath()));
+        foreach ($this->getDataStore()->keys() as $key) {
+            $tokens[] = $this->getDataStore()->get($key);
         }
         return $tokens;
     }

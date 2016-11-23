@@ -25,6 +25,7 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Branch;
@@ -60,7 +61,6 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Terminus\Caches\FileCache;
 use VCR\VCR;
 
 class Runner
@@ -141,12 +141,15 @@ class Runner
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
 
-        $container->share('fileCache', FileCache::class);
-
-        $container->share('session', Session::class)
-            ->withArgument('fileCache');
+        $session_store = new FileStore($this->config->get('cache_dir'));
+        $session = new Session($session_store);
+        $container->share('session', $session);
         $container->inflector(SessionAwareInterface::class)
             ->invokeMethod('setSession', ['session']);
+
+        $token_store = new FileStore($this->config->get('tokens_dir'));
+        $container->inflector(SavedTokens::class)
+            ->invokeMethod('setDataStore', [$token_store]);
 
         // Add the models and collections
         $container->add(User::class);
@@ -199,8 +202,6 @@ class Runner
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
-
-        // TODO: Add more models and collections
 
         // Add the commands.
         $factory = $container->get('commandFactory');

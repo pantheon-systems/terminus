@@ -4,6 +4,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Config;
+use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
@@ -12,17 +13,28 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class SavedTokenTest extends ModelTestCase
 {
 
-    public function testConstuct()
+    protected $token;
+    protected $data_store;
+
+    public function setUp()
     {
-        $token = new SavedToken((object)['email' => 'dev@example.com']);
-        $this->assertEquals('dev@example.com', $token->id);
+        parent::setUp();
+
+        $this->data_store = $this->getMockBuilder(FileStore::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->token = new SavedToken((object)['email' => 'dev@example.com', 'token' => '123']);
+        $this->token ->setDataStore($this->data_store);
     }
 
+    public function testConstruct()
+    {
+        $this->assertEquals('dev@example.com', $this->token->id);
+    }
 
     public function testLogIn()
     {
-        $token = new SavedToken((object)['token' => '123']);
-
         $session_data = ['session' => '123', 'expires_at' => 12345];
         $this->request->expects($this->once())
             ->method('request')
@@ -44,141 +56,52 @@ class SavedTokenTest extends ModelTestCase
             ->method('getUser')
             ->willReturn($user);
 
-        $token->setRequest($this->request);
-        $token->setSession($session);
-        $out = $token->logIn();
+        $this->token->setRequest($this->request);
+        $this->token->setSession($session);
+        $out = $this->token->logIn();
         $this->assertEquals($user, $out);
     }
 
     public function testSaveToDir()
     {
-        // Create a temp directory to write to.
-        // @TODO: Separate file writing so that this test can be run without writing to disk.
-        $dir = tempnam(sys_get_temp_dir(), 'savedtoken_');
-        unlink($dir);
-        mkdir($dir);
+        $this->data_store->expects($this->once())
+            ->method('set')
+            ->with(
+                'dev@example.com',
+                (object)[
+                    'email' => 'dev@example.com',
+                    'id' => 'dev@example.com',
+                    'token' => '123',
+                    'date' => time()
+                ]
+            );
 
-        $attributes = ['email' => 'dev@example.com', 'token' => '123'];
-        $token = new SavedToken((object)$attributes);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $config->expects($this->once())
-            ->method('get')
-            ->with('tokens_dir')
-            ->willReturn($dir);
-
-        $token->setConfig($config);
-
-        $token->saveToDir();
-        $file = "$dir/dev@example.com";
-        $this->assertFileExists($file);
-        $file_attributes = json_decode(file_get_contents($file));
-        foreach ($attributes as $key => $val) {
-            $this->assertEquals($val, $file_attributes->{$key}, 'Mismatch on key ' . $key);
-        }
-
-        // Clean up
-        unlink($file);
-        rmdir($dir);
+        $this->token->saveToDir();
     }
 
     public function testDelete()
     {
-        // Create a temp directory to write to.
-        // @TODO: Separate file writing so that this test can be run without writing to disk.
-        $dir = tempnam(sys_get_temp_dir(), 'savedtoken_');
-        unlink($dir);
-        mkdir($dir);
 
-        $attributes = ['email' => 'dev@example.com', 'token' => '123'];
-        $token = new SavedToken((object)$attributes);
+        $this->data_store->expects($this->once())
+            ->method('remove')
+            ->with('dev@example.com');
 
-        $attributes = ['email' => 'dev2@example.com', 'token' => '234'];
-        $token2 = new SavedToken((object)$attributes);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $config->expects($this->any())
-            ->method('get')
-            ->with('tokens_dir')
-            ->willReturn($dir);
-
-        $token->setConfig($config);
-        $token2->setConfig($config);
-
-        $token->saveToDir();
-        $token2->saveToDir();
-
-        $file = "$dir/dev@example.com";
-        $file2 = "$dir/dev2@example.com";
-        $this->assertFileExists($file);
-        $this->assertFileExists($file2);
-        $token->delete();
-        $this->assertFileNotExists($file);
-        $this->assertFileExists($file2);
-
-        // Clean up
-        unlink($file2);
-        rmdir($dir);
+        $this->token->delete();
     }
 
     public function testInvalidID()
     {
-        $dir = tempnam(sys_get_temp_dir(), 'savedtoken_');
-        unlink($dir);
-        mkdir($dir);
+        $this->token = new SavedToken((object)['email' => '', 'token' => '123']);
+        $this->token ->setDataStore($this->data_store);
 
-        $attributes = ['email' => '', 'token' => '123'];
-        $token = new SavedToken((object)$attributes);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $config->expects($this->once())
-            ->method('get')
-            ->with('tokens_dir')
-            ->willReturn($dir);
-
-        $token->setConfig($config);
+        $this->data_store->expects($this->never())
+            ->method('remove');
 
         $this->setExpectedException(
             TerminusException::class,
             'Could not save the machine token because it is missing an ID'
         );
 
-        $token->saveToDir();
-
-
-        $this->assertEquals(['.', '..'], scandir($dir));
-
-        rmdir($dir);
-    }
-
-    public function testInvalidPath()
-    {
-        $dir = '';
-
-        $attributes = ['email' => 'dev@example.com', 'token' => '123'];
-        $token = new SavedToken((object)$attributes);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $config->expects($this->once())
-            ->method('get')
-            ->with('tokens_dir')
-            ->willReturn($dir);
-
-        $token->setConfig($config);
-
-        $this->setExpectedException(
-            TerminusException::class,
-            'Could not save the machine token because the token path is mis-configured'
-        );
-
-        $token->saveToDir();
+        $this->token->saveToDir();
     }
 }
