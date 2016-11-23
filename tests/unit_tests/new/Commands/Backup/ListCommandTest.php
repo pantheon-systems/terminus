@@ -3,7 +3,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\ListCommand;
 use Pantheon\Terminus\Config;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Backup\ListCommand

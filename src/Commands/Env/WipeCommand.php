@@ -19,7 +19,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env The id of the site environment to wipe.
      *
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function wipeEnv($site_env)
     {

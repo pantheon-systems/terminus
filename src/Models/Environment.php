@@ -12,7 +12,7 @@ use Pantheon\Terminus\Collections\Hostnames;
 use Pantheon\Terminus\Collections\Workflows;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class Environment extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {

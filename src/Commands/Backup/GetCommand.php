@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Backup;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class GetCommand extends TerminusCommand implements SiteAwareInterface
 {

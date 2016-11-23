@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class Sites extends TerminusCollection implements SessionAwareInterface
 {

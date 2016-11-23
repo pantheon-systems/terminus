@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\Auth;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class LoginCommand extends TerminusCommand
 {

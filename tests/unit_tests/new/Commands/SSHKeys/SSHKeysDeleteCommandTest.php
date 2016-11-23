@@ -3,7 +3,7 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\SSHKey\DeleteCommand;
 use Pantheon\Terminus\Config;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Terminus\Models\SshKey;
 
 /**

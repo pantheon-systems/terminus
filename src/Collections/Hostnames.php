@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Environment;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class Hostnames extends EnvironmentOwnedCollection
 {

@@ -13,7 +13,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Terminus;
 use Terminus\Collections\Commits;
 use Terminus\Models\Commit;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class EnvironmentTest extends ModelTestCase
 {

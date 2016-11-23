@@ -2,7 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\CreateCommand;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Backup\CreateCommand

@@ -2,8 +2,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\RestoreCommand;
-use Terminus\Exceptions\TerminusException;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Backup\RestoreCommand

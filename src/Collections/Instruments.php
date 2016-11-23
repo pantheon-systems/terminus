@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Terminus\Exceptions\TerminusException;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 class Instruments extends UserOwnedCollection
 {
