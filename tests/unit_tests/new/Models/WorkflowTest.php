@@ -4,13 +4,14 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Session\Session;
-use Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class WorkflowTest extends ModelTestCase
 {
@@ -76,7 +77,8 @@ class WorkflowTest extends ModelTestCase
         $data = ['id' => 'workflow_id'];
 
         $site = new Site((object)['id' => 'site_id']);
-        $env = new Environment((object)['id' => 'env_id'], ['collection' => (object)['site' => $site]]);
+        $environments = new Environments(['site' => $site]);
+        $env = new Environment((object)['id' => 'env_id'], ['collection' => $environments]);
         $user = new User((object)['id' => 'user_id']);
         $org = new Organization((object)['id' => 'org_id']);
 

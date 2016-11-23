@@ -28,7 +28,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
     public function createMultidev($site_env, $multidev)
     {
         list($site, $env) = $this->getSiteEnv($site_env, 'dev');
-        $workflow = $site->environments->create($multidev, $env);
+        $workflow = $site->getEnvironments()->create($multidev, $env);
         $workflow->wait();
         $message = $workflow->getMessage();
         if ($workflow->isSuccessful()) {

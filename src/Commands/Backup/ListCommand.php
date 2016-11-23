@@ -10,8 +10,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Collections\Sites;
-use Terminus\Models\Environment;
 
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -58,7 +56,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
                 $backup_element = $element;
         }
 
-        $backups = $env->backups->getFinishedBackups($backup_element);
+
+        $backups = $env->getBackups()->getFinishedBackups($backup_element);
+
         $data = [];
         foreach ($backups as $id => $backup) {
             $data[] = [

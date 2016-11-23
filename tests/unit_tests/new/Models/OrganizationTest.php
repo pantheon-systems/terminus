@@ -7,6 +7,8 @@ use League\Container\Container;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
 use Terminus\Models\Site;
 
@@ -56,9 +58,13 @@ class OrganizationTest extends ModelTestCase
                 "role" => "team_member",
             ],
         ];
-        $sites = [];
-        foreach ($model_data as $model) {
-            $sites[$model->site->id] = $model->site;
+        $models = $sites = [];
+        foreach ($model_data as $id => $data) {
+            $models[$id] = $this->getMockBuilder(OrganizationSiteMembership::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $models[$id]->method('getSite')->willReturn($data->site);
+            $sites[$data->site->id] = $data->site;
         }
         $org_site_membership = $this->getMockBuilder(OrganizationSiteMemberships::class)
             ->setMethods(['getMembers'])
@@ -67,7 +73,7 @@ class OrganizationTest extends ModelTestCase
 
         $org_site_membership->expects($this->any())
             ->method('getMembers')
-            ->willReturn($model_data);
+            ->willReturn($models);
 
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
@@ -93,12 +99,13 @@ class OrganizationTest extends ModelTestCase
             'b' => ['id' => 'bcd', 'email' => 'b@example.com', 'profile' => (object)['full_name' => 'User B']],
             'c' => ['id' => 'cde', 'email' => 'c@example.com', 'profile' => (object)['full_name' => 'User C']],
         ];
-        $users = [];
+        $model_data = $users = [];
         foreach ($user_data as $i => $user) {
             $model_data[$i] = $this->getMockBuilder(OrganizationUserMembership::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $model_data[$i]->user = $users[$user['id']] = new User((object)$user);
+            $users[$user['id']] = new User((object)$user);
+            $model_data[$i]->method('getUser')->willReturn($users[$user['id']]);
         }
 
         $org_user_membership = $this->getMockBuilder(OrganizationUserMemberships::class)

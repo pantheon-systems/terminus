@@ -35,7 +35,7 @@ class EnableCommandTest extends NewRelicCommandTest
             ->with()
             ->willReturn('successful workflow');
 
-        $this->site->new_relic->expects($this->once())
+        $this->new_relic->expects($this->once())
             ->method('enable')
             ->with();
         $this->site->expects($this->once())

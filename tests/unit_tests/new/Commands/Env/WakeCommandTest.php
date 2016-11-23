@@ -11,7 +11,7 @@ class WakeCommandTest extends EnvCommandTest
 {
     public function testWakeEnv()
     {
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('wake')
             ->willReturn(['success' => true, 'target' => 'dev', 'time' => 1, 'styx' => 'yep!']);
 
@@ -30,7 +30,7 @@ class WakeCommandTest extends EnvCommandTest
 
     public function testWakeFail()
     {
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('wake')
             ->willReturn(['success' => false, 'target' => 'dev']);
 
@@ -44,7 +44,7 @@ class WakeCommandTest extends EnvCommandTest
 
     public function testWakeNoStyx()
     {
-        $this->env->expects($this->once())
+        $this->environment->expects($this->once())
             ->method('wake')
             ->willReturn(['success' => true, 'target' => 'dev']);
 

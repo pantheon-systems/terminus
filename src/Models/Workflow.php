@@ -7,7 +7,6 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Terminus\Exceptions\TerminusException;
-use Terminus\Session;
 
 class Workflow extends TerminusModel implements ContainerAwareInterface, SessionAwareInterface
 {
@@ -76,7 +75,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
 
         // Determine the url based on the workflow owner.
         switch (get_class($this->owner)) {
-            case 'Terminus\Models\Environment':
+            case 'Pantheon\Terminus\Models\Environment':
                 $this->environment = $this->owner;
                 $this->url = sprintf(
                     'sites/%s/workflows/%s',
@@ -94,7 +93,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
                     $this->id
                 );
                 break;
-            case 'Terminus\Models\Site':
+            case 'Pantheon\Terminus\Models\Site':
                 $this->site = $this->owner;
                 $this->url = sprintf(
                     'sites/%s/workflows/%s',

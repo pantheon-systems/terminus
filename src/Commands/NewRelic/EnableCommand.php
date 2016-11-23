@@ -25,7 +25,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     public function enable($site_id)
     {
         $site = $this->getSite($site_id);
-        $site->new_relic->enable();
+        $site->getNewRelic()->enable();
         $this->log()->notice('New Relic enabled. Converging bindings.');
         $workflow = $site->converge();
         // Wait for the workflow to complete.

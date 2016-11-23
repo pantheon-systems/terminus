@@ -20,7 +20,7 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function getUpstreamUpdates($site)
     {
-        $upstream = $site->upstream->getUpdates();
+        $upstream = $site->getUpstream()->getUpdates();
 
         if (empty($upstream)) {
             $message = 'There was a problem checking your upstream status. Please try again.';
@@ -39,6 +39,7 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     protected function getUpstreamUpdatesLog($site)
     {
         $upstream = $this->getUpstreamUpdates($site);
+
         if (!empty($upstream->update_log)) {
             return (array)$upstream->update_log;
         }

@@ -6,9 +6,10 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Terminus\Exceptions\TerminusException;
 use Terminus\Exceptions\TerminusNotFoundException;
-use Terminus\Models\Site;
+use Pantheon\Terminus\Models\Site;
 
 class OrganizationSiteMembershipsTest extends CollectionTestCase
 {
@@ -55,6 +56,13 @@ class OrganizationSiteMembershipsTest extends CollectionTestCase
                 "role" => "team_member",
             ],
         ];
+        $models = [];
+        foreach ($model_data as $id => $data) {
+            $models[$id] = $this->getMockBuilder(OrganizationSiteMembership::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $models[$id]->method('getSite')->willReturn($data->site);
+        }
 
         $org_site_membership = $this->getMockBuilder(OrganizationSiteMemberships::class)
             ->setMethods(['getMembers'])
@@ -63,15 +71,15 @@ class OrganizationSiteMembershipsTest extends CollectionTestCase
 
         $org_site_membership->expects($this->any())
             ->method('getMembers')
-            ->willReturn($model_data);
+            ->willReturn($models);
 
-        $this->assertEquals($model_data['a'], $org_site_membership->get('a'));
-        $this->assertEquals($model_data['b'], $org_site_membership->get('b'));
-        $this->assertEquals($model_data['c'], $org_site_membership->get('c'));
-        $this->assertEquals($model_data['a'], $org_site_membership->get('Site A'));
-        $this->assertEquals($model_data['b'], $org_site_membership->get('Site B'));
-        $this->assertEquals($model_data['a'], $org_site_membership->get('abc'));
-        $this->assertEquals($model_data['c'], $org_site_membership->get('cde'));
+        $this->assertEquals($models['a'], $org_site_membership->get('a'));
+        $this->assertEquals($models['b'], $org_site_membership->get('b'));
+        $this->assertEquals($models['c'], $org_site_membership->get('c'));
+        $this->assertEquals($models['a'], $org_site_membership->get('Site A'));
+        $this->assertEquals($models['b'], $org_site_membership->get('Site B'));
+        $this->assertEquals($models['a'], $org_site_membership->get('abc'));
+        $this->assertEquals($models['c'], $org_site_membership->get('cde'));
         $this->setExpectedException(TerminusNotFoundException::class);
         $this->assertEquals(null, $org_site_membership->get('invalid'));
 

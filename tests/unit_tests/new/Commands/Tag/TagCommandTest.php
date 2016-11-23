@@ -54,11 +54,11 @@ abstract class TagCommandTest extends CommandTestCase
         $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->org_site_membership->site = $this->site;
         $this->tags = $this->getMockBuilder(Tags::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->site->tags = $this->tags;
+        $this->org_site_membership->method('getSite')->willReturn($this->site);
 
         $this->session->expects($this->once())
             ->method('getUser')

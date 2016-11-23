@@ -30,7 +30,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function listTags($site_name, $organization)
     {
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
-        $site = $org->getSiteMemberships()->get($site_name)->site;
+        $site = $org->getSiteMemberships()->get($site_name)->getSite();
         $tags = $site->tags->ids();
         if (empty($tags)) {
             $this->log()->notice(

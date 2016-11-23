@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Terminus\Session;
 
 class Workflows extends TerminusCollection implements SessionAwareInterface
 {
@@ -68,7 +67,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
         // Determine the url based on the workflow owner.
         $owner = $this->getOwnerObject();
         switch (get_class($owner)) {
-            case 'Terminus\Models\Environment':
+            case 'Pantheon\Terminus\Models\Environment':
                 $this->url = sprintf(
                     'sites/%s/environments/%s/workflows',
                     $owner->site->id,
@@ -83,7 +82,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
                     $owner->id
                 );
                 break;
-            case 'Terminus\Models\Site':
+            case 'Pantheon\Terminus\Models\Site':
                 $this->url = sprintf(
                     'sites/%s/workflows',
                     $owner->id

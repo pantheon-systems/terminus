@@ -40,4 +40,12 @@ class UserOrganizationMembership extends TerminusModel implements ContainerAware
         }
         return $this->organization;
     }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

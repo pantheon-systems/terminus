@@ -10,6 +10,8 @@ use Terminus\Models\SiteOrganizationMembership;
 
 class RemoveCommandTest extends OrgSiteCommandTest
 {
+    protected $org_memberships;
+
     /**
      * @inheritdoc
      */
@@ -17,9 +19,10 @@ class RemoveCommandTest extends OrgSiteCommandTest
     {
         parent::setUp();
 
-        $this->site->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
+        $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site->method('getOrganizationMemberships')->willReturn($this->org_memberships);
 
         $this->organization->expects($this->any())
             ->method('getName')
@@ -51,7 +54,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->method('delete')
             ->willReturn($workflow);
 
-        $this->site->org_memberships->expects($this->once())
+        $this->org_memberships->expects($this->once())
             ->method('get')
             ->with('org_id')
             ->willReturn($membership);

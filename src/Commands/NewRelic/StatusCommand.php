@@ -32,6 +32,6 @@ class StatusCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function status($site_id)
     {
-        return new PropertyList($this->getSite($site_id)->new_relic->serialize());
+        return new PropertyList($this->getSite($site_id)->getNewRelic()->serialize());
     }
 }

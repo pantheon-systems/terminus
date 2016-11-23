@@ -30,7 +30,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
     public function getRecommendations($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $domains = $env->hostnames->setHydration('recommendations')->all();
+        $domains = $env->getHostnames()->setHydration('recommendations')->all();
         $settings = [];
         foreach ($domains as $domain) {
             $settings = array_merge(

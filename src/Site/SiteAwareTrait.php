@@ -2,7 +2,9 @@
 
 namespace Pantheon\Terminus\Site;
 
-use Terminus\Collections\Sites;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\Collections\Sites;
 use Terminus\Exceptions\TerminusException;
 
 /**
@@ -66,7 +68,7 @@ trait SiteAwareTrait
         }
 
         $site = $this->getSite($site_id);
-        $env = $site->environments->get($env_id);
+        $env = $site->getEnvironments()->get($env_id);
         return [$site, $env];
     }
 
@@ -85,7 +87,7 @@ trait SiteAwareTrait
         list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
 
         $site = $this->getSite($site_id);
-        $env = !empty($env_id) ? $site->environments->get($env_id) : null;
+        $env = !empty($env_id) ? $site->getEnvironments()->get($env_id) : null;
         return [$site, $env];
     }
 }

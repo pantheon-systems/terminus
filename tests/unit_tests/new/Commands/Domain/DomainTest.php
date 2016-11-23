@@ -24,9 +24,11 @@ abstract class DomainTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->environment->hostnames = $this->hostnames = $this->getMockBuilder(Hostnames::class)
+        $this->hostnames = $this->getMockBuilder(Hostnames::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->environment->method('getHostnames')->willReturn($this->hostnames);
+
         $this->hostname = $this->getMockBuilder(Hostname::class)
             ->disableOriginalConstructor()
             ->getMock();

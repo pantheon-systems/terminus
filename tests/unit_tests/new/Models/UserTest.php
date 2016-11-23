@@ -11,8 +11,10 @@ use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\Models\UserSiteMembership;
 use Robo\Collection\Collection;
 
 class UserTest extends ModelTestCase
@@ -33,6 +35,7 @@ class UserTest extends ModelTestCase
             'profile' => (object)[
                 'firstname' => 'Peter',
                 'lastname' => 'Pantheor',
+                'full_name' => 'Peter Pantheor',
             ]
         ];
         $this->user = new User((object)$this->user_data);
@@ -110,6 +113,7 @@ class UserTest extends ModelTestCase
     {
         $expected = array_merge($this->user_data, (array)$this->user_data['profile']);
         unset($expected['profile']);
+        unset($expected['full_name']);
 
         $data = $this->user->serialize();
         $this->assertEquals($expected, $data);
@@ -117,7 +121,7 @@ class UserTest extends ModelTestCase
 
     public function testGetSites()
     {
-        $memberships = [
+        $memberships_data = [
             (object)[
                 'id' => '1',
                 'site' => (object)[
@@ -133,10 +137,24 @@ class UserTest extends ModelTestCase
                 ]
             ]
         ];
-        $sites = [
-            'site1' => $memberships[0]->site,
-            'site2' => $memberships[1]->site
-        ];
+
+        $memberships = [];
+        foreach ($memberships_data as $membership_data) {
+            $membership = $this->getMockBuilder(UserSiteMembership::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $site = $this->getMockBuilder(Site::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+            $site->method('get')
+                ->with('id')
+                ->willReturn($membership_data->site->id);
+
+            $membership->method('getSite')
+                ->willReturn($site);
+            $memberships[] = $membership;
+            $sites[$membership_data->site->id] = $site;
+        }
 
         $sitememberships = $this->getMockBuilder(UserSiteMemberships::class)
             ->disableOriginalConstructor()
@@ -217,5 +235,10 @@ class UserTest extends ModelTestCase
     public function testGetProfile()
     {
         $this->assertEquals($this->user->getProfile(), $this->user_data['profile']);
+    }
+
+    public function testGetName()
+    {
+        $this->assertEquals($this->user_data['profile']->full_name, $this->user->getName());
     }
 }
