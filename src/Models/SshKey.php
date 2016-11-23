@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class SshKey extends TerminusModel
 {
@@ -26,7 +26,7 @@ class SshKey extends TerminusModel
     /**
      * Deletes a specific SSH key
      * @return array
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function delete()
     {

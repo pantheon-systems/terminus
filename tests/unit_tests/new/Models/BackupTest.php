@@ -7,7 +7,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class BackupTest extends ModelTestCase
 {

@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class AliasesCommand extends TerminusCommand
 {

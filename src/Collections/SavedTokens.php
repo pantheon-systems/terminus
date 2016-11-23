@@ -8,7 +8,7 @@ use Pantheon\Terminus\Session\Session;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Finder\Finder;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedTokens
@@ -60,7 +60,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface
      *
      * @param string $id Email or machine token to look up a saved token by
      * @return \Pantheon\Terminus\Models\SavedToken
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function get($id)
     {

@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Env;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class ViewCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -28,9 +28,8 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      *  Output the URL of the environment dev of the site mysite
      * @usage: terminus env:view mysite.dev
      *  Open the URL of the environment dev of the site mysite in the default browser.
-
-     * @return string
-     * @throws \Terminus\Exceptions\TerminusException
+ * @return string
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function view($site_env, $options = ['print' => false,])
     {

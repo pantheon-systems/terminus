@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Pantheon\Terminus\Commands\Domain\LookupCommand;
-use Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Testing class for Pantheon\Terminus\Commands\Domain\LookupCommand

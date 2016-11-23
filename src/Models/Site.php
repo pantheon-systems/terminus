@@ -11,7 +11,7 @@ use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {

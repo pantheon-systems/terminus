@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Site\Org;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -22,8 +22,8 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site The UUID or name of the site to be remove the organization from
      * @param string $organization The name or UUID of the organization to remove
      *
-     * @throws \Terminus\Exceptions\TerminusException
-     * @throws \Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
      * @usage terminus site:org:remove <site> <organization>
      *   Removes <organization> as a supporting organization of <site>
      */

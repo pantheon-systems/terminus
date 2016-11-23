@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Site\Team;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 class RoleCommand extends TerminusCommand implements SiteAwareInterface
 {
@@ -21,7 +21,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $role Role to designate the member as.
      *
      * @return string
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      * @usage terminus site:team:role my-site admin@agency.com admin
      *   Change `admin@agency.com` to be role `admin` on the site `my-site`.
      */

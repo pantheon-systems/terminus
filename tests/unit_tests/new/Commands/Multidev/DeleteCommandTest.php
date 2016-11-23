@@ -75,7 +75,7 @@ class DeleteCommandTest extends MultidevCommandTest
     /**
      * Tests to ensure the multidev:create throws an error when the environment-creation operation fails
      *
-     * @expectedException \Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
      * @expectedExceptionMessage The {env} environment could not be deleted.
      */
     public function testMultidevDeleteFailure()
