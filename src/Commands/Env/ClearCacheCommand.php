@@ -6,6 +6,10 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ClearCacheCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -13,12 +17,15 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Clears the cache on an environment
      *
-     * @authorized
+     * @authorize
      *
      * @command env:clear-cache
      * @aliases env:cc
      *
      * @param string $site_env The site and environment to clear the cache of
+     *
+     * @usage terminus env:clear-cache <site>.<env>
+     *    Clears the cache of the <env> environment of <site>
      */
     public function clearCache($site_env)
     {

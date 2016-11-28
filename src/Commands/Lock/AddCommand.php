@@ -6,21 +6,28 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class AddCommand
+ * @package Pantheon\Terminus\Commands\Lock
+ */
 class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Locks an environment with a username and password
+     * Lock an environment with a username and password
      * Note: The username and password are stored in plaintext format on the server.
      *
-     * @authorized
+     * @authorize
      *
      * @command lock:add
      *
      * @param string $site_env The site/environment to lock
      * @param string $username Username for the environment lock
      * @param string $password Password for the environment lock
+     *
+     * @usage terminus lock:add <site>.<env> <username> <password>
+     *    Locks the <env> environment of <site> with the username <username> and the password <password>
      */
     public function add($site_env, $username, $password)
     {

@@ -6,23 +6,28 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\Tag
+ */
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Removes a tag from a site by an organization
+     * Remove a tag placed on a site by an organization
      *
-     * @authorized
+     * @authorize
      *
      * @command tag:remove
+     * @aliases tag:rm
      *
      * @param string $site_name The name or UUID of a site to remove the tag from
      * @param string $organization The name or UUID of an organization which has tagged this site
      * @param string $tag The tag to remove from the site
      *
-     * @usage terminus tag:remove <site_name> <org_name> <tag>
-     *    Removes the <tag> tag from the <site_name> site by the <org_name> organization
+     * @usage terminus tag:remove <site> <org> <tag>
+     *    Removes the <tag> tag from the <site> site by the <org> organization
      */
     public function remove($site_name, $organization, $tag)
     {

@@ -6,21 +6,25 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class EnableCommand
+ * @package Pantheon\Terminus\Commands\Solr
+ */
 class EnableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Enable Solr indexing for the a site.
+     * Enable Solr indexing on a site
      *
-     * @authorized
+     * @authorize
      *
      * @command solr:enable
      *
-     * @param string $site_id Name of the site to enable Solr for
+     * @param string $site_id Name of the site to enable Solr on
      *
-     * @usage terminus solr:enable my-site
-     *   Enable Solr indexing for the site named 'my-site'.
+     * @usage terminus solr:enable <site>
+     *   Enables Solr indexing for <site>
      */
     public function enable($site_id)
     {

@@ -6,19 +6,23 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class SetCommand
+ * @package Pantheon\Terminus\Commands\ServiceLevel
+ */
 class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Set a site's service level.
+     * Set a site's service level
      *
-     * @authorized
+     * @authorize
      *
      * @command service-level:set
      *
-     * @param string $site_id The name of the site to set the service level for.
-     * @param string $level The level to set the site to. Options are free, basic, pro, and business.
+     * @param string $site_id The name of the site to set the service level of
+     * @param string $level [free|basic|pro|business] The service level to set the site to
      */
     public function set($site_id, $level)
     {

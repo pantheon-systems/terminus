@@ -11,9 +11,12 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
 class InfoCommand extends SiteCommand
 {
     /**
-     * Gets full site information
+     * Get information about a site
+     *
+     * @authorize
      *
      * @command site:info
+     * @aliases site
      *
      * @field-labels
      *   id: ID
@@ -28,19 +31,12 @@ class InfoCommand extends SiteCommand
      *   holder_type: Holder Type
      *   holder_id: Holder ID
      *   owner: Owner
-     * @param string $site Name|UUID of a site to look up
+     * @return PropertyList
+     *
+     * @param string $site The name or UUID of a site to retrieve information on
      *
      * @usage terminus site:info <site>
-     *   * Responds with the table view of site information
-     *   * Responds that you are forbidden if you access a site that exists
-     *      but you do not have access to it
-     *   * Responds that a site does not exist
-     * @usage terminus site:info --field=<field>
-     *   * Responds with the single field of site information requested
-     *   * Responds that you are forbidden if you access a site that exists
-     *      but you do not have access to it
-     *   * Responds that a site does not exist
-     * @return PropertyList
+     *   Responds with the table view of information about <site>
      */
     public function info($site)
     {

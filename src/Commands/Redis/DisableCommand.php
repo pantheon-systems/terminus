@@ -6,23 +6,27 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DisableCommand
+ * @package Pantheon\Terminus\Commands\Redis
+ */
 class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Disable Redis caching for the a site.
+     * Disable Redis caching on a site
      *
-     * @authorized
+     * @authorize
      *
      * @command redis:disable
      *
-     * @param string $site_id Name of the site to disable Redis for
+     * @param string $site_id Name of the site to disable Redis on
      *
-     * @usage terminus redis:disable my-site
-     *   Disable redis caching for the site named 'my-site'.
+     * @usage terminus redis:disable <site>
+     *   Disable Redis caching for <site>
      */
-    public function disableRedis($site_id)
+    public function disable($site_id)
     {
         $site = $this->getSite($site_id);
         $site->getRedis()->disable();

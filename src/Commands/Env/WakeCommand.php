@@ -7,27 +7,34 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class WakeCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class WakeCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Pings a site to ensure it responds
+     * Ping a site to ensure it responds
      *
-     * @authorized
+     * @authorize
      *
      * @command env:wake
      *
-     * @param string $site_env The site and environment to wake.
+     * @param string $site_env The site and environment to wake
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws TerminusException
+     *
+     * @usage terminus env:wake <site>.<env>
+     *    Pings the <env> environment of <site> to ensure it is active
      */
-    public function wakeEnv($site_env)
+    public function wake($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
         $data = $env->wake();
 
-        // @TODO: Move the excetions up the chain to the `wake` function. (One env is ported over).
+        // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
         if (empty($data['success'])) {
             throw new TerminusException('Could not reach {target}', $data);
         }

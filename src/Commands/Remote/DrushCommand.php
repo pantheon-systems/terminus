@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\Commands\Remote;
 
 /**
- * Command to proxy drush commands on an Environment using SSH
- *
+ * Class DrushCommand
+ * A command to proxy Drush commands on an environment using SSH
  * @package Pantheon\Terminus\Commands\Remote
  */
 class DrushCommand extends SSHBaseCommand
@@ -31,17 +31,19 @@ class DrushCommand extends SSHBaseCommand
     ];
 
     /**
-     * Run arbitrary drush commands on a site environment
+     * Run an arbitrary Drush command on a site's environment
+     *
+     * @authorize
      *
      * @command remote:drush
-     * @aliases   drush
-     *
-     * @authenticated
+     * @aliases drush
      *
      * @param string $site_env_id Name of the environment to run the drush command on.
      * @param array $drush_command Drush command to invoke on the environment
-     *
      * @return string Output of the given drush command executed on the site environment
+     *
+     * @usage terminus drush <site>.<env> -- <command>
+     *    Runs the Drush command <command> on the <env> environment of <site>
      */
     public function drushCommand($site_env_id, array $drush_command)
     {

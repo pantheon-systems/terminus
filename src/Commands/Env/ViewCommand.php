@@ -12,24 +12,23 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Output the URL for an environment or open it in a browser.
+     * Print the URL for an environment or open it in a browser
      *
-     * @authorized
+     * @authorize
      *
      * @command env:view
-     * @aliases site:view view
+     * @aliases site:view
      *
-     * @param $site_env
-     *  The site and environment to view in the form: <sitename>.<env>
-     * @option print
-     *  Output the URL only. Do not open the URL in the default browser.
+     * @param string $site_env The site and environment to view in the form: <sitename>.<env>
+     * @option boolean $print Output the URL only. Do not open the URL in the default browser.
+     * @return string
      *
-     * @usage: terminus env:view mysite.dev --print
-     *  Output the URL of the environment dev of the site mysite
-     * @usage: terminus env:view mysite.dev
-     *  Open the URL of the environment dev of the site mysite in the default browser.
- * @return string
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @usage: terminus env:view <site>.<env> --print
+     *    Outputs the URL of the <env> environment of <site>
+     * @usage: terminus env:view <site>.<env>
+     *    Opens the URL of the <dev> environment of <site> in your default browser
+     *
+     * @throws TerminusException
      */
     public function view($site_env, $options = ['print' => false,])
     {

@@ -9,15 +9,15 @@ namespace Pantheon\Terminus\Commands\Site;
 class DeleteCommand extends SiteCommand
 {
     /**
-     * Deletes a site from Pantheon
+     * Delete a site from Pantheon
      *
-     * @authorized
+     * @authorize
      *
      * @command site:delete
      *
      * @param string $site_name Name of the site to delete
-     * @usage terminus site:delete <site_name>
-     *   Deletes the named site from Pantheon
+     * @usage terminus site:delete <site>
+     *   Deletes the site named <site> from Pantheon
      */
     public function delete($site_name)
     {

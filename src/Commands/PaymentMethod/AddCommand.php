@@ -2,24 +2,27 @@
 
 namespace Pantheon\Terminus\Commands\PaymentMethod;
 
-use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class AddCommand
+ * @package Pantheon\Terminus\Commands\PaymentMethod
+ */
 class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Applies a payment method attached to your account to the given site
+     * Apply a payment method attached to your account to the given site
      *
-     * @authorized
+     * @authorize
      *
      * @command payment-method:add
      * @aliases pm:add
      *
-     * @param string $site_name The name or UUID of the site to attach a paymnent method to
+     * @param string $site_name The name or UUID of the site to attach a payment method to
      * @param string $payment_method The label or UUID of the payment method to apply to the site
      *
      * @usage terminus payment-method:add <site> <method>

@@ -7,14 +7,18 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Org\Site
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Lists the organizations of which the current user is a member
+     * List the sites belonging to a given organization
      *
-     * @authorized
+     * @authorize
      *
      * @command org:site:list
      * @aliases org:sites
@@ -27,13 +31,15 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *   owner: Owner
      *   created: Created
      *   tags: Tags
+     * @return RowsOfFields
      *
      * @param string $organization The name or UUID of the organization to list the sites of
      * @option string $tag A tag by which to filter the list of sites
-     * @return RowsOfFields
      *
      * @usage terminus org:site:list <organization>
      *   Displays a list of the sites belonging to the <organization> organization
+     * @usage terminus org:site:list <organization> --tag=<tag>
+     *   Displays a list of the sites belonging to the <organization> organization, filtered by the tag <tag>
      */
     public function listSites($organization, $options = ['tag' => null,])
     {

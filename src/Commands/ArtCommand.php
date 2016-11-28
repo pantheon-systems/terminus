@@ -14,7 +14,7 @@ use Symfony\Component\Finder\Finder;
 class ArtCommand extends TerminusCommand
 {
     /**
-     * @var string name of the file.
+     * @var string Name of the file
      */
     protected $filename;
 
@@ -25,8 +25,10 @@ class ArtCommand extends TerminusCommand
      *
      * @param string $name Name of the artwork to select
      *
-     * @usage terminus art rocket
-     *   Displays the rocket artwork
+     * @usage terminus art <artwork>
+     *   Displays the <artwork> artwork
+     * @usage terminus art
+     *   Displays a random artwork
      */
     public function art($name = '')
     {
@@ -88,7 +90,7 @@ class ArtCommand extends TerminusCommand
      *
      * @param $name
      *
-     * @return \Pantheon\Terminus\Commands\ArtCommand
+     * @return ArtCommand
      *
      */
     protected function formatFilename($name)

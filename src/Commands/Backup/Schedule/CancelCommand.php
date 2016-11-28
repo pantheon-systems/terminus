@@ -15,16 +15,16 @@ class CancelCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Cancels a regular backup schedule
+     * Cancel a regular backup schedule
      *
-     * @authorized
+     * @authorize
      *
      * @command backup:schedule:cancel
      *
      * @param string $site_env Site & environment to cancel the schedule of, in the format `site-name.env`.
      *
-     * @usage terminus backup:schedule:cancel awesome-site.dev
-     *     Cancels this environment's regular backup schedule
+     * @usage terminus backup:schedule:cancel <site>.<env>
+     *     Cancels this environment's regular backup schedule for the <env> environment of <site>
      */
     public function cancelSchedule($site_env)
     {

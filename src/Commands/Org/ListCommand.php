@@ -5,12 +5,16 @@ namespace Pantheon\Terminus\Commands\Org;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Org
+ */
 class ListCommand extends TerminusCommand
 {
     /**
-     * Lists the organizations of which the current user is a member
+     * List the organizations of which the current user is a member
      *
-     * @authorized
+     * @authorize
      *
      * @command org:list
      * @aliases orgs
@@ -18,7 +22,6 @@ class ListCommand extends TerminusCommand
      * @field-labels
      *   id: ID
      *   name: Name
-     *
      * @return RowsOfFields
      *
      * @usage terminus org:list

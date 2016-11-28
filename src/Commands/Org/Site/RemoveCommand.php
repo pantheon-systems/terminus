@@ -6,14 +6,18 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class RemoveCommand
+ * @package Pantheon\Terminus\Commands\Org\Site
+ */
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Removes a site to an organization
+     * Remove a site from an organization
      *
-     * @authorized
+     * @authorize
      *
      * @command org:site:remove
      * @aliases org:site:rm

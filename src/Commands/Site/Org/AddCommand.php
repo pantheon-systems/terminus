@@ -6,24 +6,28 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class AddCommand
+ * @package Pantheon\Terminus\Commands\Site\Org
+ */
 class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Adds a supporting organization to a site.
+     * Add a supporting organization to a site
      *
-     * @authorized
+     * @authorize
      *
      * @command site:org:add
      *
-     * @param string $site The UUID or name of the site to add the org to
+     * @param string $site The UUID or name of the site to add the organization to
      * @param string $organization The name or UUID of the organization to add to the site
      *
      * @usage terminus site:org:add <organization> <site>
      *   Adds the <organization> organization to <site> as a supporting organization.
      */
-    public function addOrgToSite($site, $organization)
+    public function add($site, $organization)
     {
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);

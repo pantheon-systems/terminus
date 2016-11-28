@@ -7,14 +7,18 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Tag
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Lists the tags which an organization has added to a site
+     * List the tags which an organization has added to a site
      *
-     * @authorized
+     * @authorize
      *
      * @command tag:list
      * @aliases tags
@@ -24,8 +28,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @return PropertyList
      *
-     * @usage terminus tag:list <site_name> <org_name>
-     *    Lists the tags which the <org_name> organization has added to the <site_name> site
+     * @usage terminus tag:list <site> <org>
+     *    Lists the tags which the <org> organization has added to the <site> site
      */
     public function listTags($site_name, $organization)
     {

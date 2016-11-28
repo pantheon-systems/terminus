@@ -1,28 +1,27 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\SSHKey\AddCommand
- */
-
 
 namespace Pantheon\Terminus\Commands\SSHKey;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class AddCommand
+ * @package Pantheon\Terminus\Commands\SSHKey
+ */
 class AddCommand extends TerminusCommand
 {
 
     /**
-     * Add a SSH key to your account
+     * Add a SSH key to the logged-in user's account
      *
-     * @authorized
+     * @authorize
      *
      * @command ssh-key:add
      *
      * @param string $file The path to the SSH public key file to use
      *
-     * @usage terminus ssh-key:add ~/.ssh/id_rsa.pub
-     *   Adds the public key at the given file path to your account
+     * @usage terminus ssh-key:add <file_path>
+     *   Adds the public key at the given file path <file_path> to your account
      */
     public function add($file)
     {

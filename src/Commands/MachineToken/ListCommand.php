@@ -5,21 +5,24 @@ namespace Pantheon\Terminus\Commands\MachineToken;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\MachineToken
+ */
 class ListCommand extends TerminusCommand
 {
     /**
-     * Lists the IDs and labels of machine tokens belonging to the logged-in user
+     * List the IDs and labels of machine tokens belonging to the logged-in user
      *
-     * @authorized
+     * @authorize
      *
      * @command machine-token:list
      * @aliases machine-tokens mt:list mts
      *
-     * @return RowsOfFields
-     *
      * @field-labels
      *   id: ID
      *   device_name: Device Name
+     * @return RowsOfFields
      *
      * @usage terminus machine-token:list
      *   Lists your user's machine tokens
