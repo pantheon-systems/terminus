@@ -10,7 +10,6 @@ require(TERMINUS_ROOT . '/vendor/autoload.php');
  * Recursively ensures that the location to write a file to exists
  *
  * @param string $filename Name of the file to be created
- * @return void
  */
 function ensureDestinationExists($filename)
 {

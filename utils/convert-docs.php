@@ -5,7 +5,6 @@
  * @usage "php utils/convert-docs.php man-src/*.txt"
  *
  * @param string $path Path to file to convert
- * @return void
  */
 function convertFile($path)
 {
