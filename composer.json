@@ -13,34 +13,26 @@
     "php": ">=5.5.9",
     "consolidation/robo": "^1.0.5",
     "guzzlehttp/guzzle": "^6.2",
-    "katzgrau/klogger": "^1.2",
     "psy/psysh": "^0.7",
-    "ramsey/array_column": "^1.1",
-    "rmccue/requests": "^1.6",
     "symfony/finder": "~2.7|^3.1",
     "symfony/yaml": "~2.1|^3.1",
-    "twig/twig": "^1.0",
-    "vlucas/phpdotenv": "^2.3",
-    "wp-cli/php-cli-tools": "~0.11.1"
+    "vlucas/phpdotenv": "^2.3"
   },
   "autoload": {
     "psr-4": {
-      "Terminus\\": ["php/", "php/Terminus/"],
       "Pantheon\\Terminus\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Terminus\\UnitTests\\": "tests/unit_tests/old/",
-      "Terminus\\FeatureTests\\": "tests/features/bootstrap/",
-      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/new/",
-      "Pantheon\\Terminus\\FeatureTests\\": "tests/active_features/bootstrap/"
+      "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
+      "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     }
   },
   "scripts": {
-      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat_10.yml --suite=default",
-      "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/* php/*",
-      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/* php/*",
+      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
+      "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/*",
+      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/*",
       "lint": "@cs",
       "docs": "php utils/make-docs.php",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
