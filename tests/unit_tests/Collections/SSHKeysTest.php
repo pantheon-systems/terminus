@@ -2,18 +2,18 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-use Pantheon\Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\SSHKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class SshKeysTest
- * Testing class for Pantheon\Terminus\Collections\SshKeys
+ * Class SSHKeysTest
+ * Testing class for Pantheon\Terminus\Collections\SSHKeys
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-class SshKeysTest extends UserOwnedCollectionTest
+class SSHKeysTest extends UserOwnedCollectionTest
 {
     protected $url = 'users/USERID/keys';
-    protected $class = 'Pantheon\Terminus\Collections\SshKeys';
+    protected $class = 'Pantheon\Terminus\Collections\SSHKeys';
 
     public function testAddKey()
     {
@@ -64,10 +64,10 @@ class SshKeysTest extends UserOwnedCollectionTest
         foreach ($data as $id => $key) {
             $options['id'] = $id;
             $model_data = (object)['id' => $id, 'key' => $key];
-            $model = $models[$i] = new SshKey($model_data, $options);
+            $model = $models[$i] = new SSHKey($model_data, $options);
             $this->container->expects($this->at($i++))
                 ->method('get')
-                ->with(SshKey::class, [$model_data, $options])
+                ->with(SSHKey::class, [$model_data, $options])
                 ->willReturn($model);
         }
 

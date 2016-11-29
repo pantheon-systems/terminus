@@ -5,10 +5,10 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class SshKeys
+ * Class SSHKeys
  * @package Pantheon\Terminus\Collections
  */
-class SshKeys extends UserOwnedCollection
+class SSHKeys extends UserOwnedCollection
 {
     /**
      * @var string
@@ -18,7 +18,7 @@ class SshKeys extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SshKey';
+    protected $collected_class = 'Pantheon\Terminus\Models\SSHKey';
 
     /**
      * Adds an SSH key to the user's Pantheon account
@@ -64,7 +64,7 @@ class SshKeys extends UserOwnedCollection
      * Fetches model data from API and instantiates its model instances
      *
      * @param array $options params to pass to url request
-     * @return SshKeys $this
+     * @return SSHKeys $this
      */
     public function fetch(array $options = [])
     {

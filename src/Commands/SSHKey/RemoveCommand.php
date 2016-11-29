@@ -28,7 +28,7 @@ class RemoveCommand extends TerminusCommand
         // Remove ':' to allow the id to be specified in ssh thumbnail format.
         $ssh_key_id = str_replace(':', '', $ssh_key_id);
         // Find the key. Will throw an exception if it doesn't exist.
-        $key = $this->session()->getUser()->getSshKeys()->get($ssh_key_id);
+        $key = $this->session()->getUser()->getSSHKeys()->get($ssh_key_id);
         $context = ['key' => $key->id,];
 
         $this->log()->notice('Deleting SSH key {key} ...', $context);

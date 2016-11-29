@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Commands\SSHKey\ListCommand;
-use Pantheon\Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\SSHKey;
 
 /**
  * Class ListCommandTest
@@ -70,11 +70,11 @@ class ListCommandTest extends SSHKeyCommandTest
                 'comment' => 'dev@baz.bar'
             ]
         ];
-        $collection = new SshKeys(['user' => $this->user]);
+        $collection = new SSHKeys(['user' => $this->user]);
         $this->ssh_keys->method('all')
             ->willReturn([
-                new SshKey((object)$keys[0], ['collection' => $collection]),
-                new SshKey((object)$keys[1], ['collection' => $collection])
+                new SSHKey((object)$keys[0], ['collection' => $collection]),
+                new SSHKey((object)$keys[1], ['collection' => $collection])
             ]);
 
         $this->logger->expects($this->never())
