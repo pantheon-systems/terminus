@@ -7,7 +7,7 @@ Feature: Set a Backup Schedule for a Site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr backup-schedule-set
+  @vcr backup-schedule-set.yml
   Scenario: Set the backup schedule for an environment
     When I run "terminus backup:schedule:set [[test_site_name]].test --day=Mon"
     Then I should get "Backup schedule successfully set."

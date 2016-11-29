@@ -7,7 +7,7 @@ Feature: Create a new backup for a site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_backup_create.yml
+  @vcr backup-create.yml
   Scenario: Create a new backup of the entire environment
     When I run "terminus backup:create [[test_site_name]].dev"
     Then I should get "."
@@ -17,7 +17,7 @@ Feature: Create a new backup for a site
     Created a backup of the dev environment
     """
 
-  @vcr site_backup_create.yml
+  @vcr backup-create.yml
   Scenario: Create a new backup of a specific element of the environment
     When I run "terminus backup:create [[test_site_name]].dev --element=database"
     Then I should get "."
@@ -27,7 +27,7 @@ Feature: Create a new backup for a site
     Created a backup of the dev environment
     """
 
-  @vcr site_backup_create.yml
+  @vcr backup-create.yml
   Scenario: Create a new backup of the environment with a specific preservation
     When I run "terminus backup:create [[test_site_name]].dev --keep-for=90"
     Then I should get "."

@@ -6,7 +6,7 @@ Feature: Listing one's organizational memberships
   Background: I am authenticated
     Given I am authenticated
 
-  @vcr organizations_list
+  @vcr org-list.yml
   Scenario: List a user's organizational memberships
     When I run "terminus org:list"
     Then I should get: "-------------------------------------- -------------------"

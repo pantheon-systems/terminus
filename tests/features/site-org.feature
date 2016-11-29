@@ -32,7 +32,7 @@ Feature: Managing site organizational memberships
     Removed supporting organization
     """
 
-  @vcr site_organizations_list
+  @vcr site-org-list.yml
   Scenario: Listing the supporting organizations of a site
     When I run "terminus site:org:list [[test_site_name]]"
     Then I should get one of the following: "[[organization_name]], This site has no supporting organizations"

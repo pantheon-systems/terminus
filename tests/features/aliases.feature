@@ -6,17 +6,17 @@ Feature: Gathering sites' aliases
   Background: I am authenticated
     Given I am authenticated
 
-  @vcr sites_aliases
+  @vcr aliases.yml
   Scenario: Generating aliases with printout
     When I run "terminus aliases"
     Then I should get: "/.drush/pantheon.aliases.drushrc.php"
 
-  @vcr sites_aliases
+  @vcr aliases.yml
   Scenario: Generating aliases with printout
     When I run "terminus aliases --location=[[cache_dir]]/aliases.php"
     Then I should get: "/aliases.php"
 
-  @vcr sites_aliases
+  @vcr aliases.yml
   Scenario: Generating aliases with printout
     When I run "terminus aliases --print"
     Then I should get:

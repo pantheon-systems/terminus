@@ -7,7 +7,7 @@ Feature: View site information
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_info
+  @vcr site-info.yml
   Scenario: Site Info
     When I run "terminus site:info [[test_site_name]]"
     Then I should see a table with rows like:
@@ -26,7 +26,7 @@ Feature: View site information
       Owner
     """
 
-  @vcr site_owner
+  @vcr site-info-owner.yml
   Scenario: Site info for a specific field
     When I run "terminus site:info [[test_site_name]] --field=id"
     Then I should get: "11111111-1111-1111-1111-111111111111"

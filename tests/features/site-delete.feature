@@ -7,7 +7,7 @@ Feature: Deleting a site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_delete
+  @vcr site-delete.yml
   Scenario: Delete Site
     When I run "terminus site:delete [[test_site_name]]"
     Then I should get: "Deleted [[test_site_name]] from Pantheon"

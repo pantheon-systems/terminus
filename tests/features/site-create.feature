@@ -6,7 +6,7 @@ Feature: Create a site
   Background: I am authenticated
     Given I am authenticated
 
-  @vcr sites_create
+  @vcr site-create.yml
   Scenario: Create Site
     When I run "terminus site:create [[test_site_name]] [[test_site_name]] e8fe8550-1ab9-4964-8838-2b9abdccf4bf"
     Then I should get: "Creating a new site..."
