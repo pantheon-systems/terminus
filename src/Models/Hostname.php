@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Hostname
+ * @package Pantheon\Terminus\Models
+ */
 class Hostname extends TerminusModel
 {
     /**

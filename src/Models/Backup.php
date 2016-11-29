@@ -6,6 +6,10 @@ use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Backup
+ * @package Pantheon\Terminus\Models
+ */
 class Backup extends TerminusModel implements ConfigAwareInterface
 {
     use ConfigAwareTrait;

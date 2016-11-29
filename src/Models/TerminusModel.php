@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Models;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
+/**
+ * Class TerminusModel
+ * @package Pantheon\Terminus\Models
+ */
 abstract class TerminusModel implements RequestAwareInterface
 {
     use RequestAwareTrait;

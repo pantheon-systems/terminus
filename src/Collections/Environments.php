@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Environment;
 
+/**
+ * Class Environments
+ * @package Pantheon\Terminus\Collections
+ */
 class Environments extends SiteOwnedCollection
 {
 

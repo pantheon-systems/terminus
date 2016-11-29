@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\DataStore;
 
 /**
  * Interface DataStoreInterface
+ * @package Pantheon\Terminus\DataStore
  */
 interface DataStoreInterface
 {

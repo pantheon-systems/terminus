@@ -2,9 +2,12 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class Hostnames
+ * @package Pantheon\Terminus\Collections
+ */
 class Hostnames extends EnvironmentOwnedCollection
 {
     /**

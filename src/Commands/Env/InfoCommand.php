@@ -7,16 +7,21 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class InfoCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Shows environment information for a site
+     * Show information about an environment
      *
-     * @authorized
+     * @authorize
      *
      * @command env:info
+     * @aliases env
      *
      * @field-labels
      *   id: ID
@@ -27,13 +32,16 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *   connection_mode: Connection Mode
      *   php_version: PHP Version
      *   drush_version: Drush Version
+     * @return PropertyList
      *
-     * @param string $site_env The site and environment to find the info for.
-     * @return \Consolidation\OutputFormatters\StructuredData\PropertyList
+     * @param string $site_env The site and environment to retrieve information about
+     *
+     * @usage env:info <site>.<env>
+     *    Gives information about the <env> environment of <site>
      */
-    public function getInfo($site_env)
+    public function info($site_env)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getSiteEnv($site_env);
         return new PropertyList($env->serialize());
     }
 }

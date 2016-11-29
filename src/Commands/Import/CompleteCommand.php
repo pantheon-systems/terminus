@@ -6,21 +6,26 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class CompleteCommand
+ * @package Pantheon\Terminus\Commands\Import
+ */
 class CompleteCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Informs Pantheon that your manual site importation has been completed
+     * Inform Pantheon that your manual site importation has been completed
      *
-     * @authorized
+     * @authorize
      *
      * @command import:complete
      * @aliases site:import:complete
      *
-     * @option string $site_name Name of the site to mark as having completed importation
-     * @usage terminus import:complete <site_name>
-     *   Marks the <site_name> site's import as complete
+     * @param string $site_name Name of the site to mark as having completed importation
+     *
+     * @usage terminus import:complete <site>
+     *   Marks the <site> site's import as complete
      */
     public function complete($site_name)
     {

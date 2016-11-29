@@ -2,19 +2,23 @@
 
 namespace Pantheon\Terminus\Commands\Lock;
 
-use Consolidation\OutputFormatters\StructuredData\AssociativeList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class InfoCommand
+ * @package Pantheon\Terminus\Commands\Lock
+ */
 class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Retrieves information about an environment lock
+     * Retrieve information about an environment lock
      *
-     * @authorized
+     * @authorize
      *
      * @command lock:info
      * @aliases lock
@@ -23,14 +27,16 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *   locked: Locked?
      *   username: Username
      *   password: Password
+     * @return PropertyList
      *
      * @param string $site_env The site/environment to retrieve lock information about
      *
-     * @return AssociativeList
+     * @usage terminus lock:info <site>.<env>
+     *    Displays information about the lock status of the <env> environment of <site>
      */
     public function info($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        return new AssociativeList($env->getLock()->serialize());
+        return new PropertyList($env->getLock()->serialize());
     }
 }

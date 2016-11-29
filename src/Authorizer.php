@@ -9,6 +9,10 @@ use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 
+/**
+ * Class Authorizer
+ * @package Pantheon\Terminus
+ */
 class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionAwareInterface
 {
     use ConfigAwareTrait;

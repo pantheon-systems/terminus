@@ -7,27 +7,30 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DiffStatCommand
+ * @package Pantheon\Terminus\Commands\Env
+ */
 class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Show a statistical summary of the uncommitted code on an environment.
+     * Show a statistical summary of the uncommitted code on an environment
      *
      * @command env:diffstat
      *
-     * @param string $site_env Site and environment to show diff statistics for.
-     *
-     * @return RowsOfFields
+     * @param string $site_env Site and environment to show diff statistics for
      *
      * @field-labels
      *   file: File
      *   status: Status
      *   deletions: Deletions
      *   additions: Additions
+     * @return RowsOfFields
      *
-     * @usage terminus env:diffstat my-site.dev
-     *   Show diff statistics for the `dev` environment for site `my-site`.
+     * @usage terminus env:diffstat <site>.<env>
+     *   Shows the diff statistics for the <env> environment of <site>
      */
     public function diffstat($site_env)
     {

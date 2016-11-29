@@ -6,12 +6,16 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class InfoBaseCommand
+ * @package Pantheon\Terminus\Commands\Workflow\Info
+ */
 abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Get the Workflow object.
+     * Get the Workflow object
      *
      * @param string $site_id     UUID or name of the site to get a workflow of
      * @param string $workflow_id The UUID of a specific workflow to retrieve

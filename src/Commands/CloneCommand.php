@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -7,11 +8,19 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
+/***
+ * Class CloneCommand
+ * @package Pantheon\Terminus\Commands
+ * TODO: Simplify this and its child class
+ */
 abstract class CloneCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
-    protected $operations = ['cloneFiles', 'cloneDatabase'];
+    /**
+     * @var string[]
+     */
+    protected $operations = ['cloneFiles', 'cloneDatabase',];
     protected $origin_env;
     protected $site_name;
     protected $target_env;
@@ -19,14 +28,11 @@ abstract class CloneCommand extends TerminusCommand implements SiteAwareInterfac
     /**
      * Clone database and/or files from one environment to another.
      *
-     * @authorized
-     *
-     * @param $origin
-     * @param $target
-     *
-     * @param array $options
-     *
-     * @return void
+     * @param $origin Name of the site and environment to clone from
+     * @param $target Name of the target environment
+     * @param boolean[] $options Options as follow:
+     *  option boolean $db-only Set to only clone the database
+     *  option boolean $files-only Set to only clone files
      */
     public function invokeClone($origin, $target, array $options = [])
     {

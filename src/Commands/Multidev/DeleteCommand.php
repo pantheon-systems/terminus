@@ -7,25 +7,29 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class DeleteCommand
+ * @package Pantheon\Terminus\Commands\Multidev
+ */
 class DeleteCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Deletes a multidev environment
+     * Delete a multidev environment
      *
-     * @authorized
+     * @authorize
      *
      * @command multidev:delete
      * @aliases env:delete
      *
-     * @param string $site_env Site & environment to delete, in the form `site-name.env`.
-     * @option boolean $delete-branch Used to delete the branch of the same name
+     * @param string $site_env Site & environment to delete, in the form `site-name.env`
+     * @option boolean $delete-branch Set to delete the branch of the same name
      *
-     * @usage terminus multidev:delete awesome-site.multidev-env
-     *   Deletes the multidev-env from awesome-site
+     * @usage terminus multidev:delete <site>.<multidev>
+     *   Deletes the <multidev> environment from <site>
      * @usage terminus multidev:delete awesome-site.multidev-env --delete-branch
-     *   Deletes the multidev-env from awesome-site and deletes the branch of the same name from the remote repository
+     *   Deletes the <multidev> environment from <site> and deletes its branch from the repository
      */
     public function deleteMultidev($site_env, $options = ['delete-branch' => false,])
     {

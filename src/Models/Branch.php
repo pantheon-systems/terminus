@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Branch
+ * @package Pantheon\Terminus\Models
+ */
 class Branch extends TerminusModel
 {
     /**

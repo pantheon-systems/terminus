@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Environment;
 
+/**
+ * Class Bindings
+ * @package Pantheon\Terminus\Collections
+ */
 class Bindings extends EnvironmentOwnedCollection
 {
     /**

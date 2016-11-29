@@ -18,20 +18,21 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Set git or sftp connection mode on a site's dev or multidev environment
      *
-     * @authorized
+     * @authorize
      *
      * @command connection:set
      *
-     * @param string $site_env_id Name of the environment to set. Note that you cannot change 'test' or 'live'.
-     * @param string $mode Connection mode, one of: <git|sftp>
-     *
-     * @return bool
+     * @param string $site_env Name of the environment to set. Note that you cannot change 'test' or 'live'.
+     * @param string $mode [git|sftp] The connection mode to set
      *
      * @throws TerminusException
+     *
+     * @usage terminus connection:set <site>.<env> <mode>
+     *    Sets the connection mode of the <env> environment of <site> to <mode>
      */
-    public function connectionSet($site_env_id, $mode)
+    public function connectionSet($site_env, $mode)
     {
-        list(, $env) = $this->getSiteEnv($site_env_id);
+        list(, $env) = $this->getSiteEnv($site_env);
 
         if (in_array($env->id, ['test', 'live',])) {
             throw new TerminusException(
@@ -43,15 +44,11 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $workflow = $env->changeConnectionMode($mode);
         if (is_string($workflow)) {
             $this->log()->notice($workflow);
-
-            return false;
         } else {
             while (!$workflow->checkProgress()) {
                 // TODO: (ajbarry) Add workflow progress output
             }
             $this->log()->notice($workflow->getMessage());
         }
-
-        return true;
     }
 }

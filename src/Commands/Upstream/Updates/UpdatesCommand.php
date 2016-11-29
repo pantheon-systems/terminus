@@ -7,6 +7,10 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class UpdatesCommand
+ * @package Pantheon\Terminus\Commands\Upstream\Updates
+ */
 abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
@@ -14,25 +18,22 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Return the upstream for the given site
      *
-     * @param $site
+     * @param Site $site
      * @return object The upstream information
      * @throws TerminusException
      */
     protected function getUpstreamUpdates($site)
     {
-        $upstream = $site->getUpstream()->getUpdates();
-
-        if (empty($upstream)) {
-            $message = 'There was a problem checking your upstream status. Please try again.';
-            throw new TerminusException($message);
+        if (empty($upstream = $site->getUpstream()->getUpdates())) {
+            throw new TerminusException('There was a problem checking your upstream status. Please try again.');
         }
         return $upstream;
     }
 
     /**
-     * Get the list of upstream updates for a site.
+     * Get the list of upstream updates for a site
      *
-     * @param $site
+     * @param Site $site
      * @return array The list of updates
      * @throws TerminusException
      */

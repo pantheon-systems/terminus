@@ -8,6 +8,10 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Workflow
+ * @package Pantheon\Terminus\Models
+ */
 class Workflow extends TerminusModel implements ContainerAwareInterface, SessionAwareInterface
 {
     use ContainerAwareTrait;

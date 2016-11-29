@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class UserOrganizationMemberships
+ * @package Pantheon\Terminus\Collections
+ */
 class UserOrganizationMemberships extends UserOwnedCollection
 {
     /**

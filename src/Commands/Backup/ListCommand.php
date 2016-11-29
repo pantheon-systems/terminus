@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\Backup\ListCommand
- */
 
 namespace Pantheon\Terminus\Commands\Backup;
 
@@ -11,38 +7,39 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\Backup
+ */
 class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Lists the Backups for a given Site and Environment
+     * List the backups for a given site and environment
      *
-     * @authorized
+     * @authorize
      *
      * @command backup:list
      * @aliases backups
-     *
-     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-*    * @param string $element [code|files|database|db] Only show backups of a certain type
-     * @param array $options [format=<table|csv|yaml|json>]
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   file: Filename
      *   size: Size
      *   date: Date
      *   initiator: Initiator
+     * @return RowsOfFields
      *
-     * @example terminus backup:list awesome-site.dev database --format=json
+     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
+     * @param string $element [code|files|database|db] Only show backups of a certain type
      *
+     * @usage terminus backup:list <site>.<env>
+     *     Lists all backups made of <site>'s <env> environment
+     * @usage terminus backup:list <site>.<env> --element=<element>
+     *     Lists all <element> backups made of <site>'s <env> environment
      */
-    public function listBackups(
-        $site_env,
-        $element = 'all',
-        $options = ['format' => 'table']
-    ) {
+    public function listBackups($site_env, $element = 'all')
+    {
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
         switch ($element) {

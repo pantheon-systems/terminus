@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+/**
+ * Class MachineTokens
+ * @package Pantheon\Terminus\Collections
+ */
 class MachineTokens extends UserOwnedCollection
 {
     /**

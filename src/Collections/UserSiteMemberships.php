@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+/**
+ * Class UserSiteMemberships
+ * @package Pantheon\Terminus\Collections
+ */
 class UserSiteMemberships extends UserOwnedCollection
 {
 

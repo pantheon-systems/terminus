@@ -3,9 +3,8 @@
 namespace Pantheon\Terminus\Session;
 
 /**
- * Provides the basic properties needed to fulfill the SessionAwareInterface.
- *
  * Class SessionAwareTrait
+ * Provides the basic properties needed to fulfill the SessionAwareInterface.
  * @package Pantheon\Terminus\Session
  */
 trait SessionAwareTrait

@@ -38,7 +38,7 @@ Once you have at least the requirements installed, you can install Terminus via 
 
 Run this in your terminal client:
 ```bash
-cd $HOME ; mkdir terminus1x ; cd terminus1x ; echo '{"minimum-stability": "dev", "prefer-stable": true}' > composer.json ; composer require pantheon-systems/terminus dev-master ; echo $'\nalias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
+cd $HOME ; mkdir terminus1x ; cd terminus1x ; composer require pantheon-systems/terminus dev-master ; echo $'\nalias terminus1x=$HOME/terminus1x/vendor/bin/terminus'>>$HOME/.bash_profile ; source $HOME/.bash_profile
 ```
 
 ####Installing with [Homebrew](http://brew.sh/)(for Macs)
@@ -93,11 +93,8 @@ Authentication
 
 To get started with Terminus, you must first authenticate:
 ```bash
-terminus auth:login
-Your email address?: user@pantheon.io
-Your dashboard password (input will not be shown)
-[1969-07-20 20:18:00] [info] Logging in as user@pantheon.io
-[1969-07-21 02:56:00] [info] Saving session data
+terminus auth:login --machine_token=xxxxxxxx
+ [notice] Loggin in via machine token
 ```
 If you are planning to run WP-CLI or Drush commands through Terminus, please [upload an SSH key](https://pantheon.io/docs/ssh-keys/#add-your-ssh-key-to-pantheon) for the user that will be executing Terminus.
 
@@ -139,13 +136,9 @@ See the [CONTRIBUTING](CONTRIBUTING.md) document.
 Credits
 -------
 
-* We have leaned heavily on the work of [WP-CLI](http://wp-cli.org/) in architecting this command line utility with an object-oriented structure.
-* We've also (obviously) been greatly inspired by [Drush](http://drush.ws/).
-
 Further Reading
 ---------------
 
-* [Terminus' Wiki](https://github.com/pantheon-systems/terminus/wiki)
-* [Usage](https://github.com/pantheon-systems/terminus/wiki/Usage)
+Docs coming soon
 
 If you are looking for the precursor to this project, which is now deprecated, see [https://github.com/pantheon-systems/terminus-deprecated](https://github.com/pantheon-systems/terminus-deprecated)

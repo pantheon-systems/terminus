@@ -3,14 +3,12 @@
 namespace Pantheon\Terminus\Site;
 
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Implements the SiteAwareInterface for dependency injection of the Sites collection.
- *
  * Class SiteAwareTrait
+ * Implements the SiteAwareInterface for dependency injection of the Sites collection.
  * @package Pantheon\Terminus\Site
  */
 trait SiteAwareTrait

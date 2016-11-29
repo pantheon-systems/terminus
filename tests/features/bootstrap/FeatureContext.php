@@ -1,160 +1,168 @@
 <?php
 
-namespace Terminus\FeatureTests;
+namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
+ * Class FeatureContext
  * Features context for Behat feature testing
+ * @package Pantheon\Terminus\FeatureTests
  */
 class FeatureContext implements Context
 {
     public $cliroot = '';
-    private $_cache_file_name;
-    private $_parameters;
-    private $_output;
-    private $_start_time;
+    private $cache_file_name;
+    private $cache_token_dir;
+    private $parameters;
+    private $output;
+    private $start_time;
 
-  /**
-  * Initializes context
-  *
-  * @param [array] $parameters Parameters from the Behat YAML config file
-  * @return [void]
-  */
+    /**
+     * Initializes context
+     *
+     * @param [array] $parameters Parameters from the Behat YAML config file
+     * @return [void]
+     */
     public function __construct($parameters)
     {
         date_default_timezone_set('UTC');
         $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
-        $this->_parameters      = $parameters;
-        $this->_start_time      = time();
-        $this->_cache_file_name = $_SERVER['HOME'] . '/.terminus/cache/session';
-        $this->_connection_info = array(
-        'username' => $parameters['username'],
-        'password' => $parameters['password'],
-        'host'     => $parameters['host']
-        );
+        $this->parameters      = $parameters;
+        $this->start_time      = time();
+        $this->connection_info = ['host' => $parameters['host'], 'machine_token' => $parameters['machine_token'],];
+
+        $this->cache_dir = $parameters['cache_dir'];
+        $this->cache_token_dir = $this->cache_dir . "/tokens";
     }
 
-  /**
-    * Ensures the user has access to the given payment instrument
-    * @Given /^a payment instrument with uuid "([^"]*)"$/
-    *
-    * @param [string] $instrument_uuid UUID of a payment instrument
-    * @return [void]
-    */
+    /**
+     * Ensures the user has access to the given payment instrument
+     * @Given /^a payment instrument with uuid "([^"]*)"$/
+     *
+     * @param [string] $instrument_uuid UUID of a payment instrument
+     * @return [void]
+     */
     public function aPaymentInstrumentWithUuid($instrument_uuid)
     {
-        $instruments = $this->iRun('terminus instruments list');
+        $instruments = $this->iRun('terminus upstream:list');
         try {
-            $uuid = new PyStringNode(
-                $this->_replacePlaceholders($instrument_uuid)
-            );
+            $uuid = new PyStringNode($this->replacePlaceholders($instrument_uuid));
             $this->iShouldGet($uuid);
         } catch (\Exception $e) {
-            throw new \Exception(
-                "Your user does not have access to instrument $instrument_uuid."
-            );
+            throw new \Exception("Your user does not have access to instrument $instrument_uuid.");
         }
     }
 
-  /**
-   * Ensures a site of the given name exists
-   * @Given /^a site named "([^"]*)"$/
-   * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
-   *
-   * @param [string] $site Name of site to ensure exists
-   * @return [boolean] Always true, else errs
-   */
+    /**
+     * Ensures a site of the given name exists
+     *
+     * @Given /^a site named "([^"]*)"$/
+     * @Given /^a site named: (.*)$/
+     *
+     * @param string $site Name of site to ensure exists
+     * @return boolean Always true, else errs
+     * @throws \Exception
+     */
     public function aSiteNamed($site)
     {
-        $output = json_decode($this->iRun("terminus site lookup --site=$site --format=json"));
-        if (!isset($output->name)) {
-            throw new \Exception("Cannot find a site named $site.");
+        try {
+            $this->iRun("terminus site:lookup $site");
+        } catch (TerminusException $e) {
+            throw new \Exception("Your user does not have a site named $site.");
         }
         return true;
     }
 
-  /**
-  * @BeforeScenario
-  * Runs before each scenario
-  *
-  * @param [ScenarioEvent] $event Feature information from Behat
-  * @return [void]
-  */
-    public function before($event)
+    /**
+     * Ensures a site of the given name exists and belongs to given org
+     * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
+     *
+     * @param [string] $site Name of site to ensure exists
+     * @param [string] $org  Name or UUID of organization to ensure ownership
+     * @return [boolean] Always true, else errs
+     */
+    public function aSiteNamedBelongingTo($site, $org)
     {
-        $this->_setCassetteName($event);
+        $output = $this->iGetInfoForTheSite($site);
+        if (!$this->checkResult($site, $output)) {
+            $this->iCreateSiteNamed('Drupal 7', $site, $org);
+            $recurse = $this->aSiteNamedBelongingTo($site, $org);
+            return $recurse;
+        }
+        return true;
     }
 
-  /**
-   * Changes or displays mode, given or not, of given site
-   * @Given /^the connection mode of "([^"]*)" is "([^"]*)"$/
-   * @When /^I set the connection mode on "([^"]*)" to "([^"]*)"$/
-   * @When /^I check the connection mode on "([^"]*)"$/
-   *
-   * @param [string] $site Site to change or view connection mode of
-   * @param [string] $mode If set, changes mode to given. Else, displays mode
-   * @return [void]
-   */
-    public function connectionMode($site, $mode = false)
+    /**
+     * @BeforeScenario
+     * Runs before each scenario
+     *
+     * @param [ScenarioEvent] $event Feature information from Behat
+     * @return [void]
+     */
+    public function before($event)
     {
-        $command = "terminus site connection-mode --env=dev --site=$site";
-        if ($mode !== false) {
-            $command .= " --set=$mode";
+        $this->setCassetteName($event);
+    }
+
+    /**
+     * Changes or displays mode, given or not, of given site
+     * @Given /^the connection mode of "([^"]*)" is "([^"]*)"$/
+     * @When /^I set the connection mode on "([^"]*)" to "([^"]*)"$/
+     * @When /^I check the connection mode on "([^"]*)"$/
+     *
+     * @param [string] $site Site to change or view connection mode of
+     * @param [string] $mode If set, changes mode to given. Else, displays mode
+     * @return [void]
+     */
+    public function connectionMode($site, $mode = null)
+    {
+        if (is_null($mode)) {
+            $command = "terminus site env:info dev --site=$site --field=connection_mode";
+        } else {
+            $command = "terminus connection:set $mode --site=$site --env=dev";
         }
         $this->iRun($command);
     }
 
-  /**
-    * Uses Drush to activate a Drupal site
-    * @When /^I activate the Drupal site at "([^"]*)"$/
-    *
-    * @param [string] $site Name of the site to activate
-    * @return [void]
-    */
-    public function iActivateTheDrupalSite($site)
-    {
-        $instruments = $this->iRun("terminus drush --command='site-install -y' --site=$site");
-    }
-
-  /**
-   * Adds given hostname to given site's given environment
-   * @When /^I add hostname "([^"]*)" to the "([^"]*)" environment of "([^"]*)"$/
-   *
-   * @param [string] $hostname Hostname to add
-   * @param [string] $env      Environment on which to add hostname
-   * @param [string] $site     Site on which to add hostname
-   * @return [void]
-   */
+    /**
+     * Adds given hostname to given site's given environment
+     * @When /^I add hostname "([^"]*)" to the "([^"]*)" environment of "([^"]*)"$/
+     *
+     * @param [string] $hostname Hostname to add
+     * @param [string] $env      Environment on which to add hostname
+     * @param [string] $site     Site on which to add hostname
+     * @return [void]
+     */
     public function iAddHostnameToTheEnvironmentOf($hostname, $env, $site)
     {
-        $this->iRun(
-            "terminus site hostnames add --site=$site --env=$env --hostname=$hostname"
-        );
+        $this->iRun("terminus domain:add $hostname --site=$site --env=$env");
     }
 
-  /**
-   * Adds $email user from $site
-   * @When /^I add "([^"]*)" to the team on "([^"]*)"$/
-   *
-   * @param [string] $email Email address of user to add
-   * @param [string] $site  Name of the site on which to operate
-   * @return [void]
-   */
+    /**
+     * Adds $email user from $site
+     * @When /^I add "([^"]*)" to the team on "([^"]*)"$/
+     *
+     * @param [string] $email Email address of user to add
+     * @param [string] $site  Name of the site on which to operate
+     * @return [void]
+     */
     public function iAddToTheTeamOn($email, $site)
     {
-        $this->iRun("terminus site team add-member --site=$site --member=$email");
+        $this->iRun("terminus site:team:add $site $email");
     }
 
-  /**
-   * @When /^I am prompted to "([^"]*)" on "([^"]*)" at "([^"]*)"$/
-   *
-   * @param [string] $prompt To be output before entering any key
-   * @param [string] $site   Site about which prompt is regarding
-   * @param [string] $url    URL to open after prompt
-   * @return [void]
-   */
+    /**
+     * @When /^I am prompted to "([^"]*)" on "([^"]*)" at "([^"]*)"$/
+     *
+     * @param [string] $prompt To be output before entering any key
+     * @param [string] $site   Site about which prompt is regarding
+     * @param [string] $url    URL to open after prompt
+     * @return [void]
+     */
     public function iAmPrompted(
         $prompt,
         $site,
@@ -162,269 +170,225 @@ class FeatureContext implements Context
     ) {
         echo $prompt . PHP_EOL;
         echo 'Then press any key.';
-        $site      = $this->_replacePlaceholders($site);
+        $site      = $this->replacePlaceholders($site);
         $site_info = $this->iGetInfoForTheSite($site, $return_hash = true);
-        $url       = $this->_replacePlaceholders($url, $site_info);
-        $this->_openInBrowser($url);
+        $url       = $this->replacePlaceholders($url, $site_info);
+        $this->openInBrowser($url);
         $line = trim(fgets(STDIN));
     }
 
-  /**
-   * Logs in user with username and password set in behat.yml
-   * And a blank slate cache
-   * @Given /^I am authenticated$/
-   *
-   * @return [void]
-   */
+    /**
+     * Logs in user with username and password set in behat.yml
+     * And a blank slate cache
+     * @Given /^I am authenticated$/
+     *
+     * @return [void]
+     */
     public function iAmAuthenticated()
     {
         $this->iLogIn();
     }
 
-  /**
-   * Attaches a given organization as payee of given site
-   * @When /^I attach the instrument "([^"]*)" to site "([^"]*)"$/
-   *
-   * @param [string] $uuid UUID of organization to attach as payee
-   * @param [string] $site Name of site on which to attach
-   * @return [void]
-   */
+    /**
+     * Attaches a given organization as payee of given site
+     * @When /^I attach the instrument "([^"]*)" to site "([^"]*)"$/
+     *
+     * @param [string] $uuid UUID of organization to attach as payee
+     * @param [string] $site Name of site on which to attach
+     * @return [void]
+     */
     public function iAttachTheInstrument($uuid, $site)
     {
-        $this->iRun(
-            "terminus site set-instrument --site=$site --instrument=$uuid"
-        );
+        $this->iRun("terminus payment-method:set $uuid --site=$site");
     }
 
-  /**
-   * @Given /^I check the list of environments on "([^"]*)"$/
-   *
-   * @param [string] $site Site to check environments of
-   * @return [string] $environments Environment list
-   */
+    /**
+     * @Given /^I check the list of environments on "([^"]*)"$/
+     *
+     * @param [string] $site Site to check environments of
+     * @return [string] $environments Environment list
+     */
     public function iCheckTheListOfEnvironmentsOn($site)
     {
-        $environments = $this->iRun("terminus site environments --site=$site");
+        $environments = $this->iRun("terminus env:list --site=$site");
         return $environments;
     }
 
-  /**
-   * Checks to see if a URL is valid
-   * @Then /^I check the URL "([^"]*)" for validity$/
-   *
-   * @param [string] $url URL to check for validity
-   * @return [void]
-   */
+    /**
+     * Checks to see if a URL is valid
+     * @Then /^I check the URL "([^"]*)" for validity$/
+     *
+     * @param [string] $url URL to check for validity
+     * @return [void]
+     */
     public function iCheckTheUrlForValidity($url)
     {
-        $url = $this->_replacePlaceholders($url);
+        $url = $this->replacePlaceholders($url);
         if (filter_var($url, FILTER_VALIDATE_URL) === false) {
             throw new \Exception("$url URL is not valid.");
         }
     }
 
-  /**
-   * Checks which user Terminus is operating as
-   * @Given /^I check the user I am logged in as$/
-   *
-   * @return [void]
-   */
+    /**
+     * Checks which user Terminus is operating as
+     * @Given /^I check the user I am logged in as$/
+     *
+     * @return [void]
+     */
     public function iCheckTheUserAmLoggedInAs()
     {
-        $this->iRun('terminus auth whoami');
+        $this->iRun('terminus auth:whoami');
     }
 
-  /**
-   * Clears site caches
-   * @When /^I clear the caches on the "([^"]*)" environment of "([^"]*)"$/
-   *
-   * @param [string] $env  Environment on which to clear caches
-   * @param [string] $site Site on which to clear caches
-   * @return [void]
-   */
+    /**
+     * Clears site caches
+     * @When /^I clear the caches on the "([^"]*)" environment of "([^"]*)"$/
+     *
+     * @param [string] $env  Environment on which to clear caches
+     * @param [string] $site Site on which to clear caches
+     * @return [void]
+     */
     public function iClearTheCaches($env, $site)
     {
-        $this->iRun("terminus site clear-cache --site=$site --env=$env");
+        $this->iRun("terminus env:clear-cache $env --site=$site");
     }
 
-  /**
-    * @When /^I clone the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
-    *
-    * @param [string] $from_env Environment to clone from
-    * @param [string] $to_env   Environment to clone into
-    * @param [string] $site     Site on which to clone an environment
-    * @return [void]
-    */
+    /**
+     * @When /^I clone the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
+     *
+     * @param [string] $from_env Environment to clone from
+     * @param [string] $to_env   Environment to clone into
+     * @param [string] $site     Site on which to clone an environment
+     * @return [void]
+     */
     public function iCloneTheEnvironment($from_env, $to_env, $site)
     {
-        $this->iRun(
-            "terminus site clone-content --site=$site
-      --from-env=$from_env --to-env=$to_env --yes"
-        );
+        $this->iRun("terminus env:clone --site=$site --from-env=$from_env --to-env=$to_env --yes");
     }
 
-  /**
-   * Commits changes to given site's given env with given message
-   * @When /^I commit changes to the "([^"]*)" environment of "([^"]*)" with message "([^"]*)"$/
-   *
-   * @param [string] $env     Name of environment on which to commit
-   * @param [string] $site    Name of site on which to commit
-   * @param [string] $message Message for commit
-   * @return [void]
-   */
+    /**
+     * Commits changes to given site's given env with given message
+     * @When /^I commit changes to the "([^"]*)" environment of "([^"]*)" with message "([^"]*)"$/
+     *
+     * @param [string] $env     Name of environment on which to commit
+     * @param [string] $site    Name of site on which to commit
+     * @param [string] $message Message for commit
+     * @return [void]
+     */
     public function iCommitChanges($env, $site, $message)
     {
-        $this->iRun(
-            "terminus site code commit --site=$site --env=$env --message="
-            . '"' . $message . '" --yes'
-        );
+        $this->iRun("terminus env:commit $env --site=$site --message=" . '"' . $message . '" --yes');
     }
 
-  /**
-   * Creates a site for the given name
-   * @When /^I create a "([^"]*)" site named "([^"]*)"$/
-   *
-   * @param [string] $upstream Which upstream to use as new site's source
-   * @param [string] $name     Name of site to create
-   * @param [string] $org      Name or UUID of organization to own the new site
-   * @return [void]
-   */
+    /**
+     * Creates a site for the given name
+     * @When /^I create a "([^"]*)" site named "([^"]*)"$/
+     *
+     * @param [string] $upstream Which upstream to use as new site's source
+     * @param [string] $name     Name of site to create
+     * @param [string] $org      Name or UUID of organization to own the new site
+     * @return [void]
+     */
     public function iCreateSiteNamed($upstream, $name, $org = false)
     {
         $append_org = '';
         if ($org !== false) {
             $append_org = '--org=' . $org;
         }
-        $this->iRun(
-            "terminus sites create --site=$name --label=$name --upstream=\"$upstream\" $append_org"
-        );
+        $this->iRun("terminus site:create $name --label=$name --upstream=\"$upstream\" $append_org");
     }
 
-  /**
-   * Creates a multidev env of given name on given site cloning given env
-   * @When /^I create multidev environment "([^"]*)" from "([^"]*)" on "([^"]*)"$/
-   *
-   * @param [string] $multidev Name of new multidev environment
-   * @param [string] $env      Name of environment to copy
-   * @param [string] $site     Name of site on which to create multidev env
-   * @return [void]
-   */
+    /**
+     * Creates a multidev env of given name on given site cloning given env
+     * @When /^I create multidev environment "([^"]*)" from "([^"]*)" on "([^"]*)"$/
+     *
+     * @param [string] $multidev Name of new multidev environment
+     * @param [string] $env      Name of environment to copy
+     * @param [string] $site     Name of site on which to create multidev env
+     * @return [void]
+     */
     public function iCreateMultidevEnv($multidev, $env, $site)
     {
-        $this->iRun(
-            "terminus site create-env --site=$site --env=$multidev --from-env=$env"
-        );
+        $this->iRun("terminus multidev:create --site=$site --to-env=$multidev --from-env=$env");
     }
 
-  /**
-   * Deletes a site of the given name
-   * @When /^I delete the site named "([^"]*)"$/
-   *
-   * @param [string] $site Name of site to delete
-   * @return [void]
-   */
+    /**
+     * Deletes a site of the given name
+     * @When /^I delete the site named "([^"]*)"$/
+     *
+     * @param [string] $site Name of site to delete
+     * @return [void]
+     */
     public function iDeleteTheSiteNamed($site)
     {
-        $this->iRun("terminus site delete --site=$site --yes");
+        $this->iRun("terminus site:delete $site --yes");
     }
 
-  /**
-    * @Given /^I deploy the "([^"]*)" environment from "([^"]*)" of "([^"]*)" with the message "([^"]*)"$/
-    *
-    * @param [string] $env     Name of environment to deploy
-    * @param [string] $from    Name of environment to deploy from
-    * @param [string] $site    Name of site on which to deploy environment
-    * @param [string] $message Commit message for the log
-    * @return [void]
-    */
+    /**
+     * @Given /^I deploy the "([^"]*)" environment from "([^"]*)" of "([^"]*)" with the message "([^"]*)"$/
+     *
+     * @param [string] $env     Name of environment to deploy
+     * @param [string] $from    Name of environment to deploy from
+     * @param [string] $site    Name of site on which to deploy environment
+     * @param [string] $message Commit message for the log
+     * @return [void]
+     */
     public function iDeployTheEnvironmentOf($env, $from, $site, $message)
     {
-        $this->iRun(
-            "terminus site deploy
-      --site=$site --env=$env --from=$from --note=$note"
-        );
+        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$note");
     }
 
-  /**
-   * Intentionally expires the user's session
-   * @When /^I expire my session$/
-   *
-   * @return [void]
-   */
+    /**
+     * Intentionally expires the user's session
+     * @When /^I expire my session$/
+     *
+     * @return [void]
+     */
     public function iExpireMySession()
     {
-        $session = json_decode(file_get_contents($this->_cache_file_name));
+        $session = json_decode(file_get_contents($this->cache_file_name));
         $session->session_expire_time = -386299860;
-        file_put_contents($this->_cache_file_name, $session);
+        file_put_contents($this->cache_file_name, $session);
     }
 
-  /**
-   * Queries for info for a given site
-   * @Given /^I get info for the "([^"]*)" environment of "([^"]*)"$/
-   *
-   * @param [string]  $env         Environment to get info on
-   * @param [string]  $site        Site to get info on
-   * @param [boolean] $return_hash Returns values usable array form
-   * @return [string] Output from command run
-   */
-    public function iGetInfoForTheEnvironmentOf($env, $site, $return_hash =
-    false)
+    /**
+     * Queries for info for a given site
+     * @Given /^I get info for the "([^"]*)" environment of "([^"]*)"$/
+     *
+     * @param [string] $env  Environment to get info on
+     * @param [string] $site Site to get info on
+     * @return [string] Output from command run
+     */
+    public function iGetInfoForTheEnvironmentOf($env, $site)
     {
-        $return = $this->iRun(
-            "terminus site environment-info --site=$site --env=$env --format=bash"
-        );
-        if (!$return_hash) {
-            return $return;
-        }
-
-        $return_array = array();
-        $return_lines = explode("\n", $return);
-        foreach ($return_lines as $line) {
-            $line_components = explode(" ", $line);
-            $index  = $line_components[0];
-            $values = array_splice($line_components, 1);
-            $return_array[$index] = $values;
-        }
-        return $return_array;
+        $return = json_decode($this->iRun("terminus env:info $env --site=$site --env=$env --format=json"));
+        return $return;
     }
 
-  /**
-   * Queries for info for a given site
-   * @Given /^I get info for the site "([^"]*)"$/
-   *
-   * @param [string]  $site        Site to get info on
-   * @param [boolean] $return_hash Returns values usable array form
-   * @return [string] Output from command run
-   */
-    public function iGetInfoForTheSite($site, $return_hash = false)
+    /**
+     * Queries for info for a given site
+     * @Given /^I get info for the site "([^"]*)"$/
+     *
+     * @param [string] $site Site to get info on
+     * @return [string] Output from command run
+     */
+    public function iGetInfoForTheSite($site)
     {
-        $return = $this->iRun("terminus site info --site=$site --format=bash");
-        if (!$return_hash) {
-            return $return;
-        }
-
-        $return_array = array();
-        $return_lines = explode("\n", $return);
-        foreach ($return_lines as $line) {
-            $line_components = explode(" ", $line);
-            $index  = $line_components[0];
-            $values = array_splice($line_components, 1);
-            $return_array[$index] = $values;
-        }
-        return $return_array;
+        $return = $this->iRun("terminus site:info $site");
+        return $return;
     }
 
-  /**
-   * Checks which user Terminus is operating as
-   * @Given /^I have at least "([^"]*)" site$/
-   * @Given /^I have at least "([^"]*)" sites$/
-   *
-   * @param [integer] $min The minimum number of sites to have
-   * @return [boolean] $has_the_min
-   */
+    /**
+     * Checks which user Terminus is operating as
+     * @Given /^I have at least "([^"]*)" site$/
+     * @Given /^I have at least "([^"]*)" sites$/
+     *
+     * @param [integer] $min The minimum number of sites to have
+     * @return [boolean] $has_the_min
+     */
     public function iHaveAtLeastSite($min)
     {
-        $sites       = json_decode($this->iRun('terminus sites list --format=json'));
+        $sites       = json_decode($this->iRun('terminus site:list --format=json'));
         $has_the_min = ($min <= count($sites));
         if (!$has_the_min) {
             throw new \Exception(count($sites) . ' sites found.');
@@ -432,18 +396,55 @@ class FeatureContext implements Context
         return $has_the_min;
     }
 
-  /**
-   * Checks which user Terminus is operating as
-   * @Given /^I have "([^"]*)" site$/
-   * @Given /^I have "([^"]*)" sites$/
-   * @Given /^I have no sites$/
-   *
-   * @param [integer] $num The number of sites to have
-   * @return [boolean] $has_amount
-   */
+    /**
+     * Removes all machine tokens from the running machine
+     * @Given I have no saved machine tokens
+     *
+     * @return boolean
+     */
+    public function iHaveNoSavedMachineTokens()
+    {
+        $this->iRun("rm {$this->cache_token_dir}/*");
+        return true;
+    }
+
+    /**
+     * Ensures at least X machine tokens exist in the tokens directory
+     * @Given I have at least :num_tokens saved machine tokens
+     *
+     * @param integer $num_tokens Number of tokens to ensure exist
+     * @return boolean
+     */
+    public function iHaveSavedMachineTokens($num_tokens)
+    {
+        switch ($num_tokens) {
+            case 0:
+                break;
+            case 1:
+                $this->iLogIn();
+                break;
+            default:
+                $this->iLogIn();
+                for ($i = 1; $i <= $num_tokens; $i++) {
+                    $this->iRun("cp {$this->cache_token_dir}/[[username]]$i");
+                }
+                break;
+        }
+        return true;
+    }
+
+    /**
+     * Checks which user Terminus is operating as
+     * @Given /^I have "([^"]*)" site$/
+     * @Given /^I have "([^"]*)" sites$/
+     * @Given /^I have no sites$/
+     *
+     * @param [integer] $num The number of sites to have
+     * @return [boolean] $has_amount
+     */
     public function iHaveSites($num = 0)
     {
-        $sites      = json_decode($this->iRun('terminus sites list --format=json'));
+        $sites      = json_decode($this->iRun('terminus site:list --format=json'));
         $has_amount = ($num === count($sites));
         if (!$has_amount) {
             throw new \Exception(count($sites) . ' sites found.');
@@ -451,292 +452,359 @@ class FeatureContext implements Context
         return $has_amount;
     }
 
-  /**
-    * @When /^I initialize the "([^"]*)" environment on "([^"]*)"$/
-    *
-    * @param [string] $env  Name of environment to initialize
-    * @param [string] $site Name of site on which to initialize environment
-    * @return [void]
-    */
+    /**
+     * @When /^I initialize the "([^"]*)" environment on "([^"]*)"$/
+     *
+     * @param [string] $env  Name of environment to initialize
+     * @param [string] $site Name of site on which to initialize environment
+     * @return [void]
+     */
     public function iInitializeTheEnvironmentOn($env, $site)
     {
-        $this->iRun("terminus site init-env --site=$site --env=$env");
+        $this->iRun("terminus env:deploy $env --site=$site");
     }
 
-  /**
-   * Installs given module to given Drupal site
-   * @When /^I install the module "([^"]*)" to "([^"]*)"$/
-   *
-   * @param [string] $module Name of Drupal module to install
-   * @param [string] $site   Name of the site to which to install
-   * @return [void]
-   */
+    /**
+     * Installs given module to given Drupal site
+     * @When /^I install the module "([^"]*)" to "([^"]*)"$/
+     *
+     * @param [string] $module Name of Drupal module to install
+     * @param [string] $site   Name of the site to which to install
+     * @return [void]
+     */
     public function iInstallTheModuleTo($module, $site)
     {
         $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
     }
 
-  /**
-   * Lists all hostnames of the given site's given environment
-   * @Given /^I list the hostnames on the "([^"]*)" environment of "([^"]*)"$/
-   *
-   * @param [string] $env  Environment to list hostnames of
-   * @param [string] $site Name of the site to list the hostnames of
-   * @return [void]
-   */
+    /**
+     * Lists all hostnames of the given site's given environment
+     * @Given /^I list the hostnames on the "([^"]*)" environment of "([^"]*)"$/
+     *
+     * @param [string] $env  Environment to list hostnames of
+     * @param [string] $site Name of the site to list the hostnames of
+     * @return [void]
+     */
     public function iListTheHostnamesOn($env, $site)
     {
-        $this->iRun("terminus site hostnames list --site=$site --env=$env");
+        $this->iRun("terminus domain:list --site=$site --env=$env");
     }
 
-  /**
-   * Checks the
-   * @Given /^I check the payment instrument of "([^"]*)"$/
-   *
-   * @param [string] $site Name of site to check payment instrument of
-   * @return [void]
-   */
+    /**
+     * Checks the
+     * @Given /^I check the payment instrument of "([^"]*)"$/
+     *
+     * @param [string] $site Name of site to check payment instrument of
+     * @return [void]
+     */
     public function iCheckThePaymentInstrumentOfSite($site)
     {
-        $this->iRun("terminus site set-instrument --site=$site");
+        $this->iRun("terminus payment-method:info --site=$site");
     }
 
-  /**
-   * Lists all sites user is on the team of
-   * @When /^I list the sites$/
-   *
-   * @return [void]
-   */
+    /**
+     * Lists all sites user is on the team of
+     * @When /^I list the sites$/
+     *
+     * @return [void]
+     */
     public function iListTheSites()
     {
-        $this->iRun('terminus sites list');
+        $this->iRun('terminus site:list');
     }
 
-  /**
-   * Lists team members
-   * @Given /^I list the team members on "([^"]*)"$/
-   *
-   * @param [string] $site Name of site of which to retrieve team members
-   * @return [void]
-   */
+    /**
+     * Lists team members
+     * @Given /^I list the team members on "([^"]*)"$/
+     *
+     * @param [string] $site Name of site of which to retrieve team members
+     * @return [void]
+     */
     public function iListTheTeamMembersOn($site)
     {
-        $this->iRun("terminus site team list --site=$site");
+        $this->iRun("terminus site:team:list $site");
     }
 
-  /**
-   * List the backups of the given environment of the given site
-   * @When /^I list the backups of the "([^"]*)" environment of "([^"]*)"$/
-   *
-   * @param [string] $env  Environment of which to list the backups
-   * @param [string] $site Site of which to list the backups
-   * @return [string] Output to the CL
-   */
+    /**
+     * List the backups of the given environment of the given site
+     * @When /^I list the backups of the "([^"]*)" environment of "([^"]*)"$/
+     *
+     * @param [string] $env  Environment of which to list the backups
+     * @param [string] $site Site of which to list the backups
+     * @return [string] Output to the CL
+     */
     public function iListTheBackupsOf($env, $site)
     {
-        $return = $this->iRun("terminus site backups list --site=$site --env=$env");
+        $return = $this->iRun("terminus backup:list --site=$site --env=$env");
         return $return;
     }
 
-  /**
-   * Logs in user
-   * @When /^I log in via machine token "([^"]*)"$/
-   * @When /^I log in via machine token$/
-   * @When /^I log in$/
-   *
-   * @param [string] $token A Pantheon machine token
-   * @return [void]
-   */
-    public function iLogIn(
-        $token = '[[machine_token]]'
-    ) {
-        $this->iRun("terminus auth login --machine-token=$token");
-        $this->iShouldNotGet('The provided machine token is not valid.');
+    /**
+     * Logs in user
+     * @When /^I log in via machine token "([^"]*)"$/
+     * @When /^I log in via machine token$/
+     * @When /^I log in$/
+     *
+     * @param [string] $token A Pantheon machine token
+     * @return [void]
+     */
+    public function iLogIn($token = '[[machine_token]]')
+    {
+        $this->iRun("terminus auth:login --machine-token=$token");
     }
 
-  /**
-   * Logs in user
-   * @When /^I log in as "([^"]*)" with password "([^"]*)"$/
-   *
-   * @param [string] $username Pantheon username for login
-   * @param [string] $password Password for username
-   * @return [void]
-   */
-    public function iLogInViaUsernameAndPassword(
-        $username = '[[username]]',
-        $password = '[[password]]'
-    ) {
-        $this->iRun("terminus auth login $username --password=$password");
+    /**
+     * Logs in a user with a locally saved machine token
+     * @When /^I log in as "([^"]*)"$/
+     *
+     * @param [string] $email An email address
+     * @return [void]
+     */
+    public function iLogInAs($email = '[[username]]')
+    {
+        $this->iRun("terminus auth:login --email=$email");
     }
 
-  /**
-   * Logs user out
-   * @When /^I log out$/
-   * @Given /^I am not authenticated$/
-   *
-   * @return [void]
-   */
+    /**
+     * Logs user out
+     * @When /^I log out$/
+     * @Given /^I am not authenticated$/
+     *
+     * @return [void]
+     */
     public function iLogOut()
     {
-        $this->iRun("terminus auth logout");
+        $this->iRun("terminus auth:logout");
     }
 
-  /**
-   * Makes a backup of given elements of given site's given environment
-   * @When /^I back up "([^"]*)" elements of the "([^"]*)" environment of "([^"]*)"/
-   * @When /^I back up the "([^"]*)" element of the "([^"]*)" environment of "([^"]*)"/
-   *
-   * @param [string] $elements Elements to back up
-   * @param [string] $env      Environment to back up
-   * @param [string] $site     Name of the site to back up
-   * @return [void]
-   */
+    /**
+     * Makes a backup of given elements of given site's given environment
+     * @When /^I back up "([^"]*)" elements of the "([^"]*)" environment of "([^"]*)"/
+     * @When /^I back up the "([^"]*)" element of the "([^"]*)" environment of "([^"]*)"/
+     *
+     * @param [string] $elements Elements to back up
+     * @param [string] $env      Environment to back up
+     * @param [string] $site     Name of the site to back up
+     * @return [void]
+     */
     public function iMakeBackupElementsOfTheEnvironment($elements, $env, $site)
     {
-        $this->iRun(
-            "terminus site backups create --site=$site --env=$env --element=$elements"
-        );
+        $this->iRun("terminus backup:create --site=$site --env=$env --element=$elements");
     }
 
-  /**
-   * @When /^I merge the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
-   *
-   * @param [string] $from_env Environment to merge from
-   * @param [string] $to_env   Environment to merge into
-   * @param [string] $site     Name of site on which to merge environments
-   * @return [void]
-   */
+    /**
+     * @When /^I merge the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
+     *
+     * @param [string] $from_env Environment to merge from
+     * @param [string] $to_env   Environment to merge into
+     * @param [string] $site     Name of site on which to merge environments
+     * @return [void]
+     */
     public function iMergeTheEnvironment($from_env, $to_env, $site)
     {
         $this->setTestStatus('pending');
     }
 
-  /**
-   * Removes $email user from $site
-   * @When /^I remove "([^"]*)" from the team on "([^"]*)"$/
-   *
-   * @param [string] $email Email address of user to add
-   * @param [string] $site  Name of the site on which to operate
-   * @return [void]
-   */
+    /**
+     * Removes $email user from $site
+     * @When /^I remove "([^"]*)" from the team on "([^"]*)"$/
+     *
+     * @param [string] $email Email address of user to add
+     * @param [string] $site  Name of the site on which to operate
+     * @return [void]
+     */
     public function iRemoveFromTheTeamOn($email, $site)
     {
-        $this->iRun(
-            "terminus site team remove-member --site=$site --member=$email"
-        );
+        $this->iRun("terminus site:team:remove $site $email");
     }
 
-  /**
-   * @Given /^I restore the "([^"]*)" environment of "([^"]*)" from backup$/
-   *
-   * @param [string] $env  Environment to restore from backup
-   * @param [string] $site Site to restore from backup
-   * @return [void]
-   */
+    /**
+     * @Given /^I restore the "([^"]*)" environment of "([^"]*)" from backup$/
+     *
+     * @param [string] $env  Environment to restore from backup
+     * @param [string] $site Site to restore from backup
+     * @return [void]
+     */
     public function iRestoreTheEnvironmentOfFromBackup($env, $site)
     {
         $this->setTestStatus('pending');
     }
 
-  /**
-   * @When /^I run "([^"]*)"$/
-   * Runs command and saves output
-   *
-   * @param [string] $command To be entered as CL stdin
-   * @return [string] Returns output of command run
-   */
+    /**
+     * @When /^I run "([^"]*)"$/
+     * @When /^I run: (.*)$/
+     * Runs command and saves output
+     *
+     * @param [string] $command To be entered as CL stdin
+     * @return [string] Returns output of command run
+     */
     public function iRun($command)
     {
-        $command      = "TERMINUS_TEST_MODE=1 " . $this->_replacePlaceholders($command);
         $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus-0x', $this->cliroot), $command);
+        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
+        $command = $this->replacePlaceholders($command);
 
-        if ($this->_cassette_name) {
-            $command = 'TERMINUS_VCR_CASSETTE=' . $this->_cassette_name . ' ' . $command;
+        if (isset($this->connection_info['host'])) {
+            $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
         }
-        if (isset($this->_parameters['vcr_mode'])) {
-            $command = 'TERMINUS_VCR_MODE=' . $this->_parameters['vcr_mode']
-            . ' ' . $command;
+        if (isset($this->cassette_name)) {
+            $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
         }
-        if (isset($this->_connection_info['host'])) {
-            $command = 'TERMINUS_HOST=' . $this->_connection_info['host']
-            . ' ' . $command;
+        if (!empty($mode = $this->parameters['vcr_mode'])) {
+            $command = "TERMINUS_VCR_MODE=$mode $command";
         }
+
+        // Pass the cache directory to the command so that tests don't poison the user's cache.
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir $command";
 
         ob_start();
         passthru($command . ' 2>&1');
-        $this->_output = ob_get_clean();
-        return $this->_output;
+        $this->output = ob_get_clean();
+
+        return $this->output;
     }
 
-  /**
-   * @Then /^I should get:$/
-   * @Then /^I should get "([^"]*)"$/
-   * @Then /^I should get: "([^"]*)"$/
-   * Checks the output for the given string
-   *
-   * @param [string] $string Content which ought not be in the output
-   * @return [boolean] $i_have_this True if $string exists in output
-   * @throws Exception
-   */
+    /**
+     * @Then /^I should get:$/
+     * @Then /^I should get "([^"]*)"$/
+     * @Then /^I should get: "([^"]*)"$/
+     * Checks the output for the given string
+     *
+     * @param [string] $string Content which ought not be in the output
+     * @return [boolean] $i_have_this True if $string exists in output
+     * @throws Exception
+     */
     public function iShouldGet($string)
     {
         $i_have_this = $this->iShouldGetOneOfTheFollowing($string);
         return $i_have_this;
     }
 
-  /**
-   * @Then /^I should get a valid UUID/
-   * Checks the output for a valid UUID
-   *
-   * @return bool
-   * @throws Exception
-   */
+    /**
+     * Checks the output for a table with the given headers
+     *
+     * @Then /^I should see a table with the headers$/
+     * @Then /^I should see a table with the headers: ([^"]*)$/
+     * @Then /^I should see a table with the headers: "([^"]*)"$/
+     *
+     * @param string $headers Comma separated row values to match
+     * @return boolean true if $headers exists in output
+     *
+     * @throws \Exception
+     */
+    public function shouldSeeATableWithHeaders($headers)
+    {
+        $table_headers = explode(',', $headers);
+        foreach ($table_headers as $column) {
+            if (!$this->checkResult(trim((string)$column), $this->output)) {
+                throw new \Exception("Expected table headers to include: '{$column}' in table:\n{$this->output}\n");
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the output for a table with the given row values
+     *
+     * @Then /^I should see a table with rows like:$/
+     * @Then /^I should see a table with rows like"([^"]*)"$/
+     * @Then /^I should see a table with rows like: "([^"]*)"$/
+     *
+     * @param $rows string newline separated row values to match
+     * @return boolean true if all of the rows are present in the output
+     * @throws \Exception
+     */
+    public function shouldSeeATableWithRows($rows)
+    {
+        $lines = explode("\n", $rows);
+        foreach ($lines as $line) {
+            if (!$this->checkResult(trim((string)$line), $this->output)) {
+                throw new \Exception("Expected the row '{$line}' in table:\n{$this->output}\n");
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the output for a type of message. Message to match is optional.
+     *
+     * @Then /^I should see a[n]? (notice|warning|error) message$/
+     * @Then /^I should see a[n]? (notice|warning|error) message: (.*)$/
+     *
+     * @param $type string One of the standard logging levels
+     * @param $message string Optional message to match in the output
+     * @return bool True if message is the correct type and exists in output if given
+     * @throws \Exception
+     */
+    public function shouldSeeATypeOfMessage($type, $message = null)
+    {
+        $expected_message = "[$type]";
+        if (!empty($message)) {
+            $expected_message .= " {$message}";
+        }
+
+        $compressed_output = preg_replace('/\s+/', ' ', $this->output);
+        if (strpos($compressed_output, $expected_message) === false) {
+            throw new \Exception("Expected $expected_message in message: $this->output");
+        }
+
+        return true;
+    }
+
+    /**
+     * @Then /^I should get a valid UUID/
+     * Checks the output for a valid UUID
+     *
+     * @return bool
+     * @throws Exception
+     */
     public function iShouldGetValidUuid()
     {
         preg_match(
             '/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/',
-            $this->_output,
+            $this->output,
             $matches
         );
         if (empty($matches)
-        && ($this->_output != '11111111-1111-1111-1111-111111111111')
+        && ($this->output != '11111111-1111-1111-1111-111111111111')
         ) {
-            throw new \Exception($this->_output . ' is not a valid UUID.');
+            throw new \Exception($this->output . ' is not a valid UUID.');
         }
         return true;
     }
 
-  /**
-   * @Then /^I should get one of the following:$/
-   * @Then /^I should get one of the following "([^"]*)"$/
-   * @Then /^I should get one of the following: "([^"]*)"$/
-   * Checks the output for the given substrings, comma-separated
-   *
-   * @param [array] $list_string Content which ought to be in the output
-   * @return [boolean] True if a $string exists in output
-   * @throws Exception
-    */
+    /**
+     * @Then /^I should get one of the following:$/
+     * @Then /^I should get one of the following "([^"]*)"$/
+     * @Then /^I should get one of the following: "([^"]*)"$/
+     * Checks the output for the given substrings, comma-separated
+     *
+     * @param [array] $list_string Content which ought to be in the output
+     * @return [boolean] True if a $string exists in output
+     * @throws Exception
+      */
     public function iShouldGetOneOfTheFollowing($list_string)
     {
         $strings  = explode(',', $list_string);
         foreach ($strings as $string) {
-            if ($this->_checkResult(trim((string)$string), $this->_output)) {
+            if ($this->checkResult(trim((string)$string), $this->output)) {
                 return true;
             }
         }
-        throw new \Exception("Actual output:\n" . $this->_output);
+        throw new \Exception("Actual output:\n" . $this->output);
     }
 
-  /**
-   * @Then /^I should not get one of the following:$/
-   * @Then /^I should not get one of the following "([^"]*)"$/
-   * @Then /^I should not get one of the following: "([^"]*)"$/
-   * Checks the output for the given substrings, comma-separated
-   *
-   * @param [array] $list_string Content which ought not be in the output
-   * @return [boolean] True if a $string does not exist in output
-    */
+    /**
+     * @Then /^I should not get one of the following:$/
+     * @Then /^I should not get one of the following "([^"]*)"$/
+     * @Then /^I should not get one of the following: "([^"]*)"$/
+     * Checks the output for the given substrings, comma-separated
+     *
+     * @param [array] $list_string Content which ought not be in the output
+     * @return [boolean] True if a $string does not exist in output
+      */
     public function iShouldNotGetOneOfTheFollowing($list_string)
     {
         try {
@@ -744,37 +812,37 @@ class FeatureContext implements Context
         } catch (\Exception $e) {
             return true;
         }
-        throw new \Exception("Actual output:\n" . $this->_output);
+        throw new \Exception("Actual output:\n" . $this->output);
     }
 
-  /**
-   * Checks for backups made since the test started running
-   * @Then /^I should have a new backup$/
-   *
-   * @return [boolean] True if new backup exists
-   */
+    /**
+     * Checks for backups made since the test started running
+     * @Then /^I should have a new backup$/
+     *
+     * @return [boolean] True if new backup exists
+     */
     public function iShouldHaveNewBackup()
     {
         $regex = "/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/";
-        preg_match_all($regex, $this->_output, $matches);
+        preg_match_all($regex, $this->output, $matches);
         foreach ($matches[0] as $date) {
-            if ($this->_start_time < strtotime($date)) {
+            if ($this->start_time < strtotime($date)) {
                 return true;
             }
         }
         throw new \Exception('No new backups were created.' . PHP_EOL);
     }
 
-  /**
-   * Checks the number of records returned against a given quantity
-   * @Then /^I should have "([^"]*)" records$/
-   *
-   * @param [integer] $number Number of records to check for
-   * @return [void]
-   */
+    /**
+     * Checks the number of records returned against a given quantity
+     * @Then /^I should have "([^"]*)" records$/
+     *
+     * @param [integer] $number Number of records to check for
+     * @return [void]
+     */
     public function iShouldHaveRecords($number)
     {
-        preg_match("/.*(\[{.*}\]).*/", str_replace("\n", '', $this->_output), $matches);
+        preg_match("/.*(\[.*\]).*/", str_replace("\n", '', $this->output), $matches);
         $records = json_decode($matches[1]);
         if ((integer)$number != count($records)) {
             throw new \Exception("Wanted $number records, got " . count($records) . '.');
@@ -782,94 +850,96 @@ class FeatureContext implements Context
         return true;
     }
 
-  /**
-   * Ensures that you do not recieve param $string as result
-   * @Then /^I should not get:$/
-   * @Then /^I should not get: "([^"]*)"$/
-   *
-   * @param [string] $string Content which ought not be in the output
-   * @return [boolean] True if $string does not exist in output
-   */
+    /**
+     * Ensures that you do not recieve param $string as result
+     * @Then /^I should not get:$/
+     * @Then /^I should not get: "([^"]*)"$/
+     *
+     * @param [string] $string Content which ought not be in the output
+     * @return [boolean] True if $string does not exist in output
+     */
     public function iShouldNotGet($string)
     {
-        if ($this->_checkResult((string)$string, $this->_output)) {
-            throw new \Exception("Actual output:\n" . $this->_output);
+        if ($this->checkResult((string)$string, $this->output)) {
+            throw new \Exception("Actual output:\n" . $this->output);
         }
         return true;
     }
 
-  /**
-   * Ensures that a user is not on a site's team
-   * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
-   *
-   * @param [string] $member Email address of the member on the team of
-   * @param [string] $site   Site which the member should be on the team of
-   * @return [boolean] True if $member does exists in output
-   */
+    /**
+     * Ensures that a user is not on a site's team
+     * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
+     *
+     * @param [string] $member Email address of the member on the team of
+     * @param [string] $site   Site which the member should be on the team of
+     * @return [boolean] True if $member does exists in output
+     */
     public function isMemberOfTheTeamOn($member, $site)
     {
-        $this->iRun("terminus site team list --site=$site");
+        $this->iRun("terminus site:team:list $site");
         $is_member = $this->iShouldGet($member);
         return $is_member;
     }
 
-  /**
-   * Ensures that a user is not on a site's team
-   * @Given /^"([^"]*)" is not a member of the team on "([^"]*)"$/
-   *
-   * @param [string] $member Email address of the member not on the team
-   * @param [string] $site   Site which the member should not be on the team of
-   * @return [boolean] True if $member does not exist in output
-   */
+    /**
+     * Ensures that a user is not on a site's team
+     * @Given /^"([^"]*)" is not a member of the team on "([^"]*)"$/
+     *
+     * @param [string] $member Email address of the member not on the team
+     * @param [string] $site   Site which the member should not be on the team of
+     * @return [boolean] True if $member does not exist in output
+     */
     public function isNotMemberOfTheTeamOn($member, $site)
     {
-        $this->iRun("terminus site team list --site=$site");
+        $this->iRun("terminus site:team:list $site");
         $is_not_member = $this->iShouldNotGet($member);
         return $is_not_member;
     }
 
-  /**
-   * Ensures there is no site with the given name. Loops until this is so
-   * @Given /^no site named "([^"]*)"$/
-   *
-   * @param [string] $site Name of site to ensure does not exist
-   * @return [boolean] Always returns true
-   */
+    /**
+     * Ensures there is no site with the given name. Loops until this is so
+     * @Given /^no site named "([^"]*)"$/
+     *
+     * @param [string] $site Name of site to ensure does not exist
+     * @return [boolean] Always returns true
+     */
     public function noSiteNamed($site)
     {
-        $output = json_decode($this->iRun("terminus site lookup --site=$site --format=json"));
-        if (isset($output->name)) {
-            throw new \Exception("Found a site named $site.");
+        try {
+            $this->aSiteNamed($site);
+        } catch (\Exception $e) {
+            return true;
         }
-        return true;
+        throw new \Exception("A site named $site was found.");
     }
 
-  /**
-   * Gets or sets service level
-   * @When /^I set the service level of "([^"]*)" to "([^"]*)"$/
-   * @Given /^I check the service level of "([^"]*)"$/
-   * @Given /^the service level of "([^"]*)" is "([^"]*)"$/
-   *
-   * @param [string] $site          Name of site to work on
-   * @param [string] $service_level If not false, will set service level to this
-   * @return [void]
-   */
-    public function serviceLevel($site, $service_level = false)
+    /**
+     * Gets or sets service level
+     * @When /^I set the service level of "([^"]*)" to "([^"]*)"$/
+     * @Given /^I check the service level of "([^"]*)"$/
+     * @Given /^the service level of "([^"]*)" is "([^"]*)"$/
+     *
+     * @param [string] $site          Name of site to work on
+     * @param [string] $service_level If not false, will set service level to this
+     * @return [void]
+     */
+    public function serviceLevel($site, $service_level = null)
     {
-        $command = "terminus site set-service-level --site=$site";
-        if ($service_level !== false) {
-            $command .= " --set=$service_level";
+        if (is_null($service_level)) {
+            $command = "terminus site:info $site --field=service_level";
+        } else {
+            $command = "terminus service-level:set $service_level --site=$site";
         }
         $this->iRun($command);
     }
 
-  /**
-   * Automatically assigns pass/fail/skip to the test result
-   * @Then /^I "([^"]*)" the test$/
-   *
-   * @param [string] $status Status to assign to the test
-   * @return [boolean] Always true, else errs
-   */
+    /**
+     * Automatically assigns pass/fail/skip to the test result
+     * @Then /^I "([^"]*)" the test$/
+     *
+     * @param [string] $status Status to assign to the test
+     * @return [boolean] Always true, else errs
+     */
     public function setTestStatus($status)
     {
         if ($status == 'pending') {
@@ -878,27 +948,27 @@ class FeatureContext implements Context
         throw new \Exception("Test explicitly set to $status");
     }
 
-  /**
-   * Checks the the haystack for the needle
-   *
-   * @param [string] $needle   That which is searched for
-   * @param [string] $haystack That which is searched inside
-   * @return [boolean] $result True if $nededle was found in $haystack
-   */
-    private function _checkResult($needle, $haystack)
+    /**
+     * Checks the the haystack for the needle
+     *
+     * @param [string] $needle   That which is searched for
+     * @param [string] $haystack That which is searched inside
+     * @return [boolean] $result True if $nededle was found in $haystack
+     */
+    private function checkResult($needle, $haystack)
     {
-        $needle = $this->_replacePlaceholders($needle);
-        $result = preg_match("#" . preg_quote($needle . "#s"), $haystack);
+        $needle = $this->replacePlaceholders($needle);
+        $result = preg_match("#" . preg_quote($needle, '#') . '#s', $haystack);
         return $result;
     }
 
-  /**
-   * Returns tags in easy-to-use array format.
-   *
-   * @param [ScenarioEvent] $event Feature information from Behat
-   * @return $tags [array] An array of strings corresponding to tags
-   */
-    private function _getTags($event)
+    /**
+     * Returns tags in easy-to-use array format.
+     *
+     * @param [ScenarioEvent] $event Feature information from Behat
+     * @return $tags [array] An array of strings corresponding to tags
+     */
+    private function getTags($event)
     {
         $unformatted_tags = $event->getScenario()->getTags();
         $tags = array();
@@ -918,54 +988,74 @@ class FeatureContext implements Context
         return $tags;
     }
 
-  /**
-   * Opens param $url in the default browser
-   *
-   * @param [string] $url URL to open in browser
-   * @return [void]
-   */
-    private function _openInBrowser($url)
+    /**
+     * Opens param $url in the default browser
+     *
+     * @param [string] $url URL to open in browser
+     * @return [void]
+     */
+    private function openInBrowser($url)
     {
-        $url = $this->_replacePlaceholders($url);
+        $url = $this->replacePlaceholders($url);
         switch (php_uname('s')) {
-            case "Linux":
-                $cmd = "xdg-open";
-                break;
             case "Darwin":
                 $cmd = "open";
                 break;
             case "Windows NT":
                 $cmd = "start";
                 break;
+            case "Linux":
+            default:
+                $cmd = "xdg-open";
+                break;
         }
         exec("$cmd $url");
     }
 
-  /**
-   * Reads one line from STDIN
-   *
-   * @return [string] $line
-   */
-    private function _read()
+    /**
+     * @When /^This step is implemented I will test: (.*)$/
+     * @When /^this step is implemented I will test: (.*)$/
+     *
+     * @param string $description feature description of what is still pending
+     */
+    public function thisStepIsPending($description)
+    {
+        throw new PendingException("Testing $description is pending");
+    }
+
+    /**
+     * @When /^I enter: (.*)$/
+     */
+    public function iEnterInput()
+    {
+        throw new PendingException("Interactivity is not yet implemented");
+    }
+
+    /**
+     * Reads one line from STDIN
+     *
+     * @return [string] $line
+     */
+    private function read()
     {
         $line = trim(fgets(STDIN));
         return $line;
     }
 
-  /**
-   * Exchanges values in given string with square brackets for values
-   * in $this->_parameters
-   *
-   * @param [string] $string       The string to perform replacements on
-   * @param [array]  $replacements Used to replace with non-parameters
-   * @return [string] $string The modified param string
-   */
-    private function _replacePlaceholders($string, $replacements = array())
+    /**
+     * Exchanges values in given string with square brackets for values
+     * in $this->parameters
+     *
+     * @param [string] $string       The string to perform replacements on
+     * @param [array]  $replacements Used to replace with non-parameters
+     * @return [string] $string The modified param string
+     */
+    private function replacePlaceholders($string, $replacements = array())
     {
         $regex = '~\[\[(.*?)\]\]~';
         preg_match_all($regex, $string, $matches);
         if (empty($replacements)) {
-            $replacements = $this->_parameters;
+            $replacements = $this->parameters;
         }
 
         foreach ($matches[1] as $id => $replacement_key) {
@@ -981,19 +1071,40 @@ class FeatureContext implements Context
         return $string;
     }
 
-  /**
-   * Sets $this->_cassette_name and returns name of the cassette to be used.
-   *
-   * @param [array] $event Feature information from Behat
-   * @return [string] Of scneario name, lowercase, with underscores and suffix
-   */
-    private function _setCassetteName($event)
+    /**
+     * Sets $this->cassette_name and returns name of the cassette to be used.
+     *
+     * @param [array] $event Feature information from Behat
+     * @return [string] Of scneario name, lowercase, with underscores and suffix
+     */
+    private function setCassetteName($event)
     {
-        $tags = $this->_getTags($event);
-        $this->_cassette_name = false;
+        $tags = $this->getTags($event);
+        $this->cassette_name = false;
         if (isset($tags['vcr'])) {
-            $this->_cassette_name = $tags['vcr'];
+            $this->cassette_name = $tags['vcr'];
         }
-        return $this->_cassette_name;
+        return $this->cassette_name;
+    }
+
+    /**
+     * @Then I should see a progress bar with the message: :message
+     */
+    public function iShouldSeeAProgressBarWithTheMessage($message)
+    {
+        mb_substr_count(
+            $this->output,
+            $message
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%'
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%'
+        ) == 1;
     }
 }

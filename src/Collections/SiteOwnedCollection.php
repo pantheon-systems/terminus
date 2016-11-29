@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\Site;
 
+/**
+ * Class SiteOwnedCollection
+ * @package Pantheon\Terminus\Collections
+ */
 class SiteOwnedCollection extends TerminusCollection
 {
     /**

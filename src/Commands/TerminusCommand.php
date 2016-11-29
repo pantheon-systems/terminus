@@ -13,6 +13,10 @@ use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 
+/**
+ * Class TerminusCommand
+ * @package Pantheon\Terminus\Commands
+ */
 abstract class TerminusCommand implements
     IOAwareInterface,
     LoggerAwareInterface,

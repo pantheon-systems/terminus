@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Instrument
+ * @package Pantheon\Terminus\Models
+ */
 class Instrument extends TerminusModel
 {
     /**

@@ -6,21 +6,25 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class DisableCommand
+ * @package Pantheon\Terminus\Commands\NewRelic
+ */
 class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Disable New Relic for the a site
+     * Disable New Relic for a site
      *
-     * @authorized
+     * @authorize
      *
      * @command new-relic:disable
      *
      * @param string $site_id Name of the site to disable New Relic on
      *
-     * @usage terminus new-relic:disable my-site
-     *   Disables New Relic for the site named 'my-site'.
+     * @usage terminus new-relic:disable <site>
+     *   Disables New Relic for <site>
      */
     public function disable($site_id)
     {

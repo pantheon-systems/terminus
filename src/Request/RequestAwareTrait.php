@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Request;
 
+/**
+ * Class RequestAwareTrait
+ * @package Pantheon\Terminus\Request
+ */
 trait RequestAwareTrait
 {
     /**

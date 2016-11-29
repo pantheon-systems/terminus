@@ -3,10 +3,13 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class SiteOrganizationMemberships
+ * @package Pantheon\Terminus\Collections
+ */
 class SiteOrganizationMemberships extends SiteOwnedCollection
 {
     /**

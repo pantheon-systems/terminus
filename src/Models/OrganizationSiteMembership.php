@@ -6,6 +6,10 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Tags;
 
+/**
+ * Class OrganizationSiteMembership
+ * @package Pantheon\Terminus\Models
+ */
 class OrganizationSiteMembership extends TerminusModel implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

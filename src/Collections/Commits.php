@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+/**
+ * Class Commits
+ * @package Pantheon\Terminus\Collections
+ */
 class Commits extends EnvironmentOwnedCollection
 {
 

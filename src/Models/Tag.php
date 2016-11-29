@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Tag
+ * @package Pantheon\Terminus\Models
+ */
 class Tag extends TerminusModel
 {
     /**

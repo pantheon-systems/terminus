@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\DataStore;
 
+/**
+ * Interface DataStoreAwareInterface
+ * @package Pantheon\Terminus\DataStore
+ */
 interface DataStoreAwareInterface
 {
     /***

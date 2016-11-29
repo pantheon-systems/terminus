@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class Backups
+ * @package Pantheon\Terminus\Collections
+ */
 class Backups extends EnvironmentOwnedCollection
 {
     const DAILY_BACKUP_TTL = 691200;

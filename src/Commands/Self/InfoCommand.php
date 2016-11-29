@@ -5,10 +5,14 @@ namespace Pantheon\Terminus\Commands\Self;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class InfoCommand
+ * @package Pantheon\Terminus\Commands\Self
+ */
 class InfoCommand extends TerminusCommand
 {
     /**
-     * Print various data about the CLI environment.
+     * Print various data about the CLI environment
      *
      * @command self:info
      *
@@ -20,14 +24,10 @@ class InfoCommand extends TerminusCommand
      *   terminus_path: Terminus root dir
      *   terminus_version: Terminus version
      *   os_version: Operating system
+     * @return PropertyList
      *
      * @usage terminus self:info
-     * @usage terminus site:info --field=<field>
-     * Responds with the single field of terminus information
-     * @usage terminus site:info --field=terminus_version --format=json
-     * Outputs the Terminus version in JSON format
-     *
-     * @return PropertyList
+     *    Responds with information about the currently running Terminus application
      */
     public function info()
     {

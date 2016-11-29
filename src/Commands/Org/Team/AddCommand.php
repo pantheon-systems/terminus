@@ -4,21 +4,25 @@ namespace Pantheon\Terminus\Commands\Org\Team;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class AddCommand
+ * @package Pantheon\Terminus\Commands\Org\Team
+ */
 class AddCommand extends TerminusCommand
 {
     /**
-     * Adds a team member to an organization
+     * Add a team member to an organization
      *
-     * @authorized
+     * @authorize
      *
      * @command org:team:add
      *
      * @param string $organization The name or UUID of the organization to add a team to
      * @param string $email The email address of the new team member to be added to this organization
-     * @param string $role The role to assign to this member. Options are unprivileged, admin, team_member, and developer.
+     * @param string $role [admin|unprivileged|team_member|developer] The role to assign to this member
      *
-     * @usage terminus org:team:add <organization> <email>
-     *   Adds the person with the address <email> to the team of the <organization> organization
+     * @usage terminus org:team:add <organization> <email> <role>
+     *   Adds the person with the address <email> to the team of the <organization> organization with the role <role>.
      */
     public function add($organization, $email, $role)
     {

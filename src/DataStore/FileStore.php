@@ -2,8 +2,12 @@
 
 namespace Pantheon\Terminus\DataStore;
 
-use Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class FileStore
+ * @package Pantheon\Terminus\DataStore
+ */
 class FileStore implements DataStoreInterface
 {
     /**

@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\Tag;
 
+/**
+ * Class Tags
+ * @package Pantheon\Terminus\Collections
+ */
 class Tags extends TerminusCollection
 {
     /**

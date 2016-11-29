@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Lock
+ * @package Pantheon\Terminus\Models
+ */
 class Lock extends TerminusModel
 {
     /**

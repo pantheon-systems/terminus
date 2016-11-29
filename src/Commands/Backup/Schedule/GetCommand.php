@@ -18,22 +18,22 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Retrieve the regular backup of your site's environment
      *
-     * @authorized
+     * @authorize
      *
      * @command backup:schedule:get
-     *
-     * @param string $site_env Site & environment to get the schedule of, in the format `site-name.env`.
-     * @return PropertyList
      *
      * @field-labels
      *    daily_backup_hour: Daily Backup Hour
      *    weekly_backup_day: Weekly Backup Day
      * @default-string-field weekly_backup_day
+     * @return PropertyList
      *
-     * @usage terminus backup:schedule:get awesome-site.dev
-     *     Responds with the day of the week backups are scheduled for
+     * @param string $site_env Site & environment to get the schedule of, in the format `site-name.env`.
+     *
+     * @usage terminus backup:schedule:get <site>.<env>
+     *     Responds with the day of the week backups are scheduled for on the <env> environment of <site>
      * @usage terminus backup:schedule:get awesome-site.dev --format=table
-     *     Responds with the day of the week and hour of the day backups are scheduled for
+     *     Responds with the day of the week and hour of the day backups are scheduled for on <site>.<env>
      */
     public function getSchedule($site_env)
     {

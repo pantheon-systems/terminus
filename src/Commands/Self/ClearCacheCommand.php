@@ -6,15 +6,22 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class ClearCacheCommand
+ * @package Pantheon\Terminus\Commands\Self
+ */
 class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
     /**
-     * Clears the local Terminus session and all saved machine tokens
+     * Clear the local Terminus session and all saved machine tokens
      *
      * @command self:clear-cache
+     * @aliases self:cc
      *
      * @usage terminus self:clear-cache
+     *    Removes all Terminus cached data
      */
     public function clearCache()
     {

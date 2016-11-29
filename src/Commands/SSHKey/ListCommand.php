@@ -1,44 +1,42 @@
 <?php
-/**
- * @file
- * Contains Pantheon\Terminus\Commands\SSHKey\ListCommand
- */
-
 
 namespace Pantheon\Terminus\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
+/**
+ * Class ListCommand
+ * @package Pantheon\Terminus\Commands\SSHKey
+ */
 class ListCommand extends TerminusCommand
 {
 
     /**
-     * Lists the IDs and labels of SSH Keys belonging to the logged-in user
+     * List the IDs and labels of SSH Keys belonging to the logged-in user
      *
-     * @authorized
+     * @authorize
      *
      * @command ssh-key:list
      * @aliases ssh-keys
-     *
-     * @return RowsOfFields
      *
      * @field-labels
      *   id: ID
      *   hex: Fingerprint
      *   comment: Description
+     * @return RowsOfFields
      *
-     * @example terminus ssh-key:list
-     *
+     * @usage terminus ssh-key:list
+     *    Lists the saved SSH keys belonging to the logged-in user
      */
-    public function listSSHKeys($options = ['format' => 'table', 'fields' => ''])
+    public function listSSHKeys()
     {
         $ssh_keys = $this->session()->getUser()->getSshKeys()->all();
 
         $data = [];
         foreach ($ssh_keys as $id => $ssh_key) {
             $data[] = array(
-                'id' => $ssh_key->get('id'),
+                'id' => $ssh_key->id,
                 'hex' => $ssh_key->getHex(),
                 'comment' => $ssh_key->getComment(),
             );

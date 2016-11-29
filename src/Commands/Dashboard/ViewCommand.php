@@ -6,27 +6,35 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
+/**
+ * Class ViewCommand
+ * @package Pantheon\Terminus\Commands\Dashboard
+ */
 class ViewCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Open the Pantheon site dashboard in a browser
+     * Print the URL to the Pantheon site dashboard or open it in a browser
+     *
+     * @authorize
      *
      * @command dashboard:view
      * @aliases dashboard
      *
-     * @option string $site_env Site & environment to deploy to, in the form `site-name.env`
-     * @option boolean $print Don't try to open the link, just output it
+     * @option string $site_env Site & environment to open the Dashboard to, in the form `site-name.env`
+     * @option boolean $print Set to print out the Dashboard URL instead of opening it
+     *
+     * @return string|null
      *
      * @usage terminus dashboard
-     *   Opens browser to user's account on Pantheon Dashboard
+     *   Opens browser to the user's account on the Pantheon Dashboard
      * @usage terminus dashboard --print
-     *   Prints url for user's account on Pantheon Dashboard
-     * @usage terminus dashboard my-awesome-site
-     *   Opens browser to site on Pantheon Dashboard
-     * @usage terminus dashboard my-awesome-site.env-name
-     *   Opens browser to specific site environment on Pantheon Dashboard
+     *   Prints the URL for the user's account on the Pantheon Dashboard
+     * @usage terminus dashboard <site>
+     *   Opens browser to the <site> on the Pantheon Dashboard
+     * @usage terminus dashboard <site>.<env>
+     *   Opens browser to <site>'s <env> environment on the Pantheon Dashboard
      */
     public function view($site_env = null, $options = ['print' => false,])
     {
@@ -43,16 +51,9 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         list($site, $env) = $this->getOptionalSiteEnv($site_env);
-        if (isset($site)) {
-            if (isset($env)) {
-                $url = $env->dashboardUrl();
-            } else {
-                $url = $site->dashboardUrl();
-            }
-        } else {
-            $url = $this->session()->getUser()->dashboardUrl();
-        }
-
+        $url = isset($site)
+            ? isset($env) ? $env->dashboardUrl() : $site->dashboardUrl()
+            : $this->session()->getUser()->dashboardUrl();
         if ($options['print']) {
             return $url;
         } else {

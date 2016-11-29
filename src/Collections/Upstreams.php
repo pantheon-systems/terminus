@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class Upstreams
+ * @package Pantheon\Terminus\Collections
+ */
 class Upstreams extends UserOwnedCollection
 {
     /**
