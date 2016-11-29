@@ -4,24 +4,24 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Hostname;
+use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class HostnameTest
- * Testing class for Pantheon\Terminus\Models\Hostname
+ * Class DomainTest
+ * Testing class for Pantheon\Terminus\Models\Domain
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class HostnameTest extends ModelTestCase
+class DomainTest extends ModelTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        $this->hostname = $this->_createHostname(['id' => 'dev.example.com']);
+        $this->domain = $this->_createDomain(['id' => 'dev.example.com']);
     }
 
-    protected function _createHostname($attr)
+    protected function _createDomain($attr)
     {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -37,10 +37,10 @@ class HostnameTest extends ModelTestCase
         $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
 
-        $hostname = new Hostname((object)$attr, ['collection' => (object)['environment' => $this->environment]]);
+        $domain = new Domain((object)$attr, ['collection' => (object)['environment' => $this->environment]]);
 
-        $hostname->setRequest($this->request);
-        return $hostname;
+        $domain->setRequest($this->request);
+        return $domain;
     }
 
     public function testDelete()
@@ -49,7 +49,7 @@ class HostnameTest extends ModelTestCase
             ->method('request')
             ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'delete']);
 
-        $this->hostname->delete();
+        $this->domain->delete();
     }
     
     public function testSerialize()
@@ -63,7 +63,7 @@ class HostnameTest extends ModelTestCase
             'key' => 'live-mysite.pantheonsite.io',
             'deletable' => false,
         ];
-        $hostname = $this->_createHostname($data);
+        $domain = $this->_createDomain($data);
 
         $expected = [
             'domain' => 'live-mysite.pantheonsite.io',
@@ -73,7 +73,7 @@ class HostnameTest extends ModelTestCase
             'key' =>  'live-mysite.pantheonsite.io',
             'deletable' => false,
         ];
-        $actual = $hostname->serialize();
+        $actual = $domain->serialize();
         $this->assertEquals($expected, $actual);
     }
 }

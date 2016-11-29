@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Behat\Gherkin\Node\PyStringNode;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -108,20 +107,6 @@ class FeatureContext implements Context
             $command = "terminus connection:set $mode --site=$site --env=dev";
         }
         $this->iRun($command);
-    }
-
-    /**
-     * Adds given hostname to given site's given environment
-     * @When /^I add hostname "([^"]*)" to the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $hostname Hostname to add
-     * @param [string] $env      Environment on which to add hostname
-     * @param [string] $site     Site on which to add hostname
-     * @return [void]
-     */
-    public function iAddHostnameToTheEnvironmentOf($hostname, $env, $site)
-    {
-        $this->iRun("terminus domain:add $hostname --site=$site --env=$env");
     }
 
     /**
@@ -444,19 +429,6 @@ class FeatureContext implements Context
     public function iInstallTheModuleTo($module, $site)
     {
         $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
-    }
-
-    /**
-     * Lists all hostnames of the given site's given environment
-     * @Given /^I list the hostnames on the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $env  Environment to list hostnames of
-     * @param [string] $site Name of the site to list the hostnames of
-     * @return [void]
-     */
-    public function iListTheHostnamesOn($env, $site)
-    {
-        $this->iRun("terminus domain:list --site=$site --env=$env");
     }
 
     /**

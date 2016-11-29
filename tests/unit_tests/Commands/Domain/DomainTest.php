@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Hostnames;
-use Pantheon\Terminus\Models\Hostname;
+use Pantheon\Terminus\Collections\Domains;
+use Pantheon\Terminus\Models\Domain;
 
 /**
  * Class DomainTest
@@ -13,13 +13,13 @@ use Pantheon\Terminus\Models\Hostname;
 abstract class DomainTest extends CommandTestCase
 {
     /**
-     * @var Hostname
+     * @var Domain
      */
-    protected $hostname;
+    protected $domain;
     /**
-     * @var Hostnames
+     * @var Domains
      */
-    protected $hostnames;
+    protected $domains;
 
     /**
      * @inheritdoc
@@ -28,12 +28,12 @@ abstract class DomainTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->hostnames = $this->getMockBuilder(Hostnames::class)
+        $this->domains = $this->getMockBuilder(Domains::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->environment->method('getHostnames')->willReturn($this->hostnames);
+        $this->environment->method('getDomains')->willReturn($this->domains);
 
-        $this->hostname = $this->getMockBuilder(Hostname::class)
+        $this->domain = $this->getMockBuilder(Domain::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

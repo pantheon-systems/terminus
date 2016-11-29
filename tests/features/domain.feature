@@ -49,7 +49,7 @@ Feature: Adding domains to an environment
     Then I should get: "This operation may take a long time to run."
     And I should get:
     """
-    Could not find Pantheon\Terminus\Models\Hostname "invalid"
+    Could not find Pantheon\Terminus\Models\Domain "invalid"
     """
 
   @vcr domain-dns.yml

@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\Models;
 
 /**
- * Class Hostname
+ * Class Domain
  * @package Pantheon\Terminus\Models
  */
-class Hostname extends TerminusModel
+class Domain extends TerminusModel
 {
     /**
      * @var Environment
@@ -26,7 +26,7 @@ class Hostname extends TerminusModel
     }
 
     /**
-     * Delete a hostname from an environment
+     * Delete a domain from an environment
      *
      * @return array
      */
@@ -43,7 +43,7 @@ class Hostname extends TerminusModel
     }
 
     /**
-     * Formats Hostname object into an associative array for output
+     * Formats Domain object into an associative array for output
      *
      * @return array $data associative array of data for output
      */

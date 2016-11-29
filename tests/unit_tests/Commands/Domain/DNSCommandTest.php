@@ -30,19 +30,19 @@ class DNSCommandTest extends DomainTest
     {
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
-        $this->hostname->id = 'domain_id';
+        $this->domain->id = 'domain_id';
         $dummy_data = ['value' => 'value', 'type' => 'type',];
 
-        $this->hostnames->expects($this->once())
+        $this->domains->expects($this->once())
             ->method('setHydration')
             ->with($this->equalTo('recommendations'))
-            ->willReturn($this->hostnames);
-        $this->hostnames->expects($this->once())
+            ->willReturn($this->domains);
+        $this->domains->expects($this->once())
             ->method('all')
             ->with()
-            ->willReturn([$this->hostname,]);
+            ->willReturn([$this->domain,]);
 
-        $this->hostname->expects($this->once())
+        $this->domain->expects($this->once())
             ->method('get')
             ->with($this->equalTo('dns_recommendations'))
             ->willReturn([(object)$dummy_data,]);
@@ -52,6 +52,6 @@ class DNSCommandTest extends DomainTest
 
         $out = $this->command->getRecommendations("$site_name.{$this->environment->id}");
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([array_merge(['name' => $this->hostname->id,], $dummy_data),], $out->getArrayCopy());
+        $this->assertEquals([array_merge(['name' => $this->domain->id,], $dummy_data),], $out->getArrayCopy());
     }
 }

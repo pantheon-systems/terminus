@@ -22,12 +22,12 @@ class PaymentMethods extends UserOwnedCollection
     protected $collected_class = 'Pantheon\Terminus\Models\PaymentMethod';
 
     /**
-     * Retrieves a payment payment_method object by either its UUID or its label
+     * Retrieves a payment method object by either its UUID or its label
      *
      * @param string $id The identifier for the payment method requested
      * @return PaymentMethod
-     * @throws TerminusException When there is more than one matching payment_method
-     * @throws TerminusNotFoundException When there are no matching payment_methods
+     * @throws TerminusException When there is more than one matching payment method
+     * @throws TerminusNotFoundException When there are no matching payment methods
      */
     public function get($id)
     {
@@ -43,7 +43,7 @@ class PaymentMethods extends UserOwnedCollection
         );
         if (empty($matches)) {
             throw new TerminusNotFoundException(
-                'Could not locate an payment_method identified by {id} on this account.',
+                'Could not locate a payment method identified by {id} on this account.',
                 compact('id')
             );
         } else if (count($matches) > 1) {

@@ -2,29 +2,30 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-use Pantheon\Terminus\Collections\Hostnames;
+use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class HostnamesTest
- * Testing class for Pantheon\Terminus\Collections\Hostnames
+ * Class DomainsTest
+ * Testing class for Pantheon\Terminus\Collections\Domains
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-class HostnamesTest extends CollectionTestCase
+class DomainsTest extends CollectionTestCase
 {
+    protected $domains;
     protected $environment;
-    protected $hostnames;
+    protected $workflows;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->hostnames = $this->_createHostnames();
+        $this->domains = $this->_createDomains();
     }
 
-    protected function _createHostnames()
+    protected function _createDomains()
     {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -41,10 +42,10 @@ class HostnamesTest extends CollectionTestCase
         $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
 
-        $hostnames = new Hostnames(['environment' => $this->environment]);
-        $hostnames->setRequest($this->request);
-        $hostnames->setContainer($this->container);
-        return $hostnames;
+        $domains = new Domains(['environment' => $this->environment]);
+        $domains->setRequest($this->request);
+        $domains->setContainer($this->container);
+        return $domains;
     }
 
     public function testCreate()
@@ -53,14 +54,14 @@ class HostnamesTest extends CollectionTestCase
             ->method('request')
             ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'put']);
 
-        $this->hostnames->create('dev.example.com');
+        $this->domains->create('dev.example.com');
     }
 
     public function testSetHydration()
     {
-        $this->hostnames->setHydration('test');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=test', $this->hostnames->getUrl());
-        $this->hostnames->setHydration('');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->hostnames->getUrl());
+        $this->domains->setHydration('test');
+        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=test', $this->domains->getUrl());
+        $this->domains->setHydration('');
+        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->domains->getUrl());
     }
 }

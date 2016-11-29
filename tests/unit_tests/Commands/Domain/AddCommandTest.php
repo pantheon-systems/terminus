@@ -37,7 +37,7 @@ class AddCommandTest extends DomainTest
             ->with($this->equalTo('name'))
             ->willReturn($site_name);
 
-        $this->hostnames->expects($this->once())
+        $this->domains->expects($this->once())
             ->method('create')
             ->with($this->equalTo($domain));
         $this->logger->expects($this->once())

@@ -39,10 +39,10 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     {
         list(, $env) = $this->getSiteEnv($site_env);
         $domains = array_map(
-            function ($hostname) {
-                return $hostname->serialize();
+            function ($domain) {
+                return $domain->serialize();
             },
-            $env->getHostnames()->all()
+            $env->getDomains()->all()
         );
         return new RowsOfFields($domains);
     }
