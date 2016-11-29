@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Request;
 
+/**
+ * Interface RequestAwareInterface
+ * @package Pantheon\Terminus\Request
+ */
 interface RequestAwareInterface
 {
     /**

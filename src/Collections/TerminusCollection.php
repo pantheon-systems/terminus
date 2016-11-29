@@ -9,6 +9,10 @@ use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Request;
 
+/**
+ * Class TerminusCollection
+ * @package Pantheon\Terminus\Collections
+ */
 abstract class TerminusCollection implements RequestAwareInterface, ContainerAwareInterface
 {
     use RequestAwareTrait;

@@ -1,12 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Environment;
 
+/**
+ * Class BindingsTest
+ * Testing class for Pantheon\Terminus\Collections\Bindings
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class BindingsTest extends CollectionTestCase
 {
     protected $bindings_data;

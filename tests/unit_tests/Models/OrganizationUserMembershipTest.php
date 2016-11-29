@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -10,6 +9,11 @@ use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class OrganizationUserMembershipTest
+ * Testing class for Pantheon\Terminus\Models\OrganizationUserMembership
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class OrganizationUserMembershipTest extends \PHPUnit_Framework_TestCase
 {
     public function testDelete()

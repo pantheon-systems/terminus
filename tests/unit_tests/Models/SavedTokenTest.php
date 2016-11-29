@@ -1,15 +1,18 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Pantheon\Terminus\Config;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class SavedTokenTest
+ * Testing class for Pantheon\Terminus\Models\SavedToken
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class SavedTokenTest extends ModelTestCase
 {
 

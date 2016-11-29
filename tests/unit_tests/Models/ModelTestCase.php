@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Request\Request;
 
+/**
+ * Class ModelTestCase
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
 {
     /**

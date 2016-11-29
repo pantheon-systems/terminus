@@ -2,12 +2,14 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class OrganizationSiteMemberships
+ * @package Pantheon\Terminus\Collections
+ */
 class OrganizationSiteMemberships extends TerminusCollection
 {
     /**

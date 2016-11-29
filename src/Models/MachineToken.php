@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class MachineToken
+ * @package Pantheon\Terminus\Models
+ */
 class MachineToken extends TerminusModel
 {
 

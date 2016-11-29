@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
@@ -11,6 +10,11 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\Site;
 
+/**
+ * Class OrganizationSiteMembershipsTest
+ * Testing class for Pantheon\Terminus\Collections\OrganizationSiteMemberships
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class OrganizationSiteMembershipsTest extends CollectionTestCase
 {
     public function testCreate()

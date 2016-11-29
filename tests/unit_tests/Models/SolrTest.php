@@ -6,7 +6,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Solr;
 
 /**
- * Testing class for Terminus\Models\Solr
+ * Class SolrTest
+ * Testing class for Pantheon\Terminus\Models\Solr
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class SolrTest extends ModelTestCase
 {

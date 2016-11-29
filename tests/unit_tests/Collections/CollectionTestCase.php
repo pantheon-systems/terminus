@@ -6,6 +6,10 @@ use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Request\Request;
 
+/**
+ * Class CollectionTestCase
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 abstract class CollectionTestCase extends \PHPUnit_Framework_TestCase
 {
     /**

@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Pantheon\Terminus\Config;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
-use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Robo\Common\ConfigAwareTrait;

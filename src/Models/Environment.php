@@ -14,6 +14,10 @@ use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Environment
+ * @package Pantheon\Terminus\Models
+ */
 class Environment extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;

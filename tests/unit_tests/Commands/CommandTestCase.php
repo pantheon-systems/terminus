@@ -5,10 +5,10 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
-use Pantheon\Terminus\Terminus;
 use Psr\Log\NullLogger;
 use ReflectionMethod;
 use Robo\Robo;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -231,7 +231,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         }
 
         if (!$this->app) {
-            $this->app = new Terminus('Terminus', $this->config->get('version'), $this->config);
+            $this->app = new Application('Terminus', $this->config->get('version'));
         }
 
         if (!$this->container) {

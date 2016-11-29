@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\DataStore;
 
+/**
+ * Class DataStoreAwareTrait
+ * @package Pantheon\Terminus\DataStore
+ */
 trait DataStoreAwareTrait
 {
     /**

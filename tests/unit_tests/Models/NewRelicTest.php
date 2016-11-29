@@ -8,7 +8,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Testing class for Terminus\Models\NewRelic
+ * Class NewRelicTest
+ * Testing class for Pantheon\Terminus\Models\NewRelic
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class NewRelicTest extends ModelTestCase
 {

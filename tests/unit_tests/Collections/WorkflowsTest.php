@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\Environments;
@@ -12,6 +11,10 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 
+/**
+ * Class WorkflowsTest
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class WorkflowsTest extends CollectionTestCase
 {
 

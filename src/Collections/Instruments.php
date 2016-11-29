@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
+/**
+ * Class Instruments
+ * @package Pantheon\Terminus\Collections
+ */
 class Instruments extends UserOwnedCollection
 {
     /**

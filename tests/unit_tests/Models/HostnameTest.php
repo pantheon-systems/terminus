@@ -1,13 +1,17 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Behat\Testwork\Environment\Environment;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Hostname;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class HostnameTest
+ * Testing class for Pantheon\Terminus\Models\Hostname
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class HostnameTest extends ModelTestCase
 {
     public function setUp()

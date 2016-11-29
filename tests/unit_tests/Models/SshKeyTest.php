@@ -1,12 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\SshKeys;
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class SshKeyTest
+ * Testing class for Pantheon\Terminus\Models\SshKey
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class SshKeyTest extends ModelTestCase
 {
     public function testDelete()

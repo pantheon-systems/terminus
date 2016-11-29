@@ -13,6 +13,10 @@ use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
 
+/**
+ * Class Session
+ * @package Pantheon\Terminus\Session
+ */
 class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
 {
     use ConfigAwareTrait;

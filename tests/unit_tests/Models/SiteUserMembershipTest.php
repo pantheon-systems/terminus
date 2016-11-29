@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -10,6 +9,11 @@ use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class SiteUserMembershipTest
+ * Testing class for Pantheon\Terminus\Models\SiteUserMembership
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
 {
     protected $workflow;

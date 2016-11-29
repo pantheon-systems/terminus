@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 
+/**
+ * Class Workflows
+ * @package Pantheon\Terminus\Collections
+ */
 class Workflows extends TerminusCollection implements SessionAwareInterface
 {
     use SessionAwareTrait;

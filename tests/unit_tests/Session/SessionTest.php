@@ -9,7 +9,9 @@ use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Models\User;
 
 /**
+ * Class SessionTest
  * Testing class for Pantheon\Terminus\Session\Session
+ * @package Pantheon\Terminus\UnitTests\Session
  */
 class SessionTest extends \PHPUnit_Framework_TestCase
 {

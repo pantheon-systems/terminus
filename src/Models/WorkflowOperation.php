@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class WorkflowOperation
+ * @package Pantheon\Terminus\Models
+ */
 class WorkflowOperation extends TerminusModel
 {
 

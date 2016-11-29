@@ -6,9 +6,12 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
-use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 
+/**
+ * Class Organization
+ * @package Pantheon\Terminus\Models
+ */
 class Organization extends TerminusModel implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

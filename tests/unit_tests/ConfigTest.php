@@ -5,7 +5,9 @@ namespace Pantheon\Terminus\UnitTests;
 use Pantheon\Terminus\Config;
 
 /**
+ * Class ConfigTest
  * Testing class for Pantheon\Terminus\Config
+ * @package Pantheon\Terminus\UnitTests
  */
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {

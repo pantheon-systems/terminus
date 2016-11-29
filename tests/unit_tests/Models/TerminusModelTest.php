@@ -3,8 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Models\TerminusModel;
-use Pantheon\Terminus\Request\Request;
 
+/**
+ * Class TerminusModelTest
+ * Testing class for Pantheon\Terminus\Models\TerminusModel
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class TerminusModelTest extends ModelTestCase
 {
     public function testConstructGetSet()

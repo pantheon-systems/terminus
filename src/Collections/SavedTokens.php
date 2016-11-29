@@ -2,14 +2,12 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Config;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Session\Session;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Symfony\Component\Finder\Finder;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**

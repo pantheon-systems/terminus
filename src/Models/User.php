@@ -14,6 +14,10 @@ use Pantheon\Terminus\Collections\Workflows;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
+/**
+ * Class User
+ * @package Pantheon\Terminus\Models
+ */
 class User extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
     use ConfigAwareTrait;

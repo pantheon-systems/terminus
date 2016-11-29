@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use Pantheon\Terminus\Collections\TerminusCollection;
 use Pantheon\Terminus\Models\TerminusModel;
 
+/**
+ * Class TerminusCollectionTest
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class TerminusCollectionTest extends CollectionTestCase
 {
     public function testAdd()

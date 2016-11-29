@@ -9,7 +9,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Tag;
 
 /**
- * Testing class for Terminus\Models\Tag
+ * Class TagTest
+ * Testing class for Pantheon\Terminus\Models\Tag
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class TagTest extends ModelTestCase
 {

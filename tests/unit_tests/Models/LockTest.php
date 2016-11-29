@@ -1,12 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Lock;
 
+/**
+ * Class LockTest
+ * Testing class for Pantheon\Terminus\Models\Lock
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class LockTest extends ModelTestCase
 {
     protected $workflow;

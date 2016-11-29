@@ -5,14 +5,16 @@ namespace Pantheon\Terminus\UnitTests;
 use League\Container\Container;
 use Pantheon\Terminus\Config;
 use Pantheon\Terminus\Runner;
-use Pantheon\Terminus\Terminus;
 use Robo\Robo;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
+ * Class RunnerTest
  * Testing class for Pantheon\Terminus\Terminus
+ * @package Pantheon\Terminus\UnitTests
  */
 class RunnerTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +49,7 @@ class RunnerTest extends \PHPUnit_Framework_TestCase
         $this->config = new Config();
         $this->config->set('version', '1.0.0');
         $this->config->set('time_zone', 'UTC');
-        $this->application = new Terminus('Terminus', $this->config->get('version'), $this->config);
+        $this->application = new Application('Terminus', $this->config->get('version'));
 
         // Configuring the dependency-injection container
         $input = new ArgvInput($_SERVER['argv']);

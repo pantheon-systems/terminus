@@ -6,6 +6,10 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Sites
+ * @package Pantheon\Terminus\Collections
+ */
 class Sites extends TerminusCollection implements SessionAwareInterface
 {
     use SessionAwareTrait;

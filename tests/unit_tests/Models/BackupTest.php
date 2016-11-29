@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\Workflows;
@@ -9,6 +8,11 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class BackupTest
+ * Testing class for Pantheon\Terminus\Models\Backup
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class BackupTest extends ModelTestCase
 {
     protected $environment;

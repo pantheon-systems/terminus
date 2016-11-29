@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -10,11 +9,15 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Lock;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Terminus;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class EnvironmentTest
+ * Testing class for Pantheon\Terminus\Models\Environment
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class EnvironmentTest extends ModelTestCase
 {
     /**

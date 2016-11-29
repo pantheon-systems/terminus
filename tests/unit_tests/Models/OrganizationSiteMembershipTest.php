@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -11,6 +10,11 @@ use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
+/**
+ * Class OrganizationSiteMembershipTest
+ * Testing class for Pantheon\Terminus\Models\Organization
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class OrganizationSiteMembershipTest extends ModelTestCase
 {
     public function testToString()

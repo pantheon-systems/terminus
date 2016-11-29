@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
@@ -9,6 +8,11 @@ use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
 
+/**
+ * Class OrganizationUserMembershipsTest
+ * Testing class for Pantheon\Terminus\Collections\OrganizationUserMemberships
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class OrganizationUserMembershipsTest extends CollectionTestCase
 {
     public function testCreate()

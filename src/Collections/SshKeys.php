@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class SshKeys
+ * @package Pantheon\Terminus\Collections
+ */
 class SshKeys extends UserOwnedCollection
 {
     /**

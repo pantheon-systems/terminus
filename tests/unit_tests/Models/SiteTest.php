@@ -12,7 +12,9 @@ use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Testing class for Terminus\Models\Site
+ * Class SiteTest
+ * Testing class for Pantheon\Terminus\Models\Site
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class SiteTest extends ModelTestCase
 {

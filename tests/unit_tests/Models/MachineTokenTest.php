@@ -1,13 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
-use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class MachineTokenTest
+ * Testing class for Pantheon\Terminus\Models\MachineToken
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class MachineTokenTest extends ModelTestCase
 {
     public function testDelete()

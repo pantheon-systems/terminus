@@ -1,11 +1,15 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Models\SshKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class SshKeysTest
+ * Testing class for Pantheon\Terminus\Collections\SshKeys
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class SshKeysTest extends UserOwnedCollectionTest
 {
     protected $url = 'users/USERID/keys';

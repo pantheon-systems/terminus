@@ -9,7 +9,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Testing class for Terminus\Models\Redis
+ * Class RedisTest
+ * Testing class for Pantheon\Terminus\Models\Redis
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class RedisTest extends ModelTestCase
 {

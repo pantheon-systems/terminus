@@ -10,7 +10,9 @@ use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Models\Tag;
 
 /**
- * Testing class for Terminus\Collections\Tags
+ * Class TagsTest
+ * Testing class for Pantheon\Terminus\Collections\Tags
+ * @package Pantheon\Terminus\UnitTests\Collections
  */
 class TagsTest extends CollectionTestCase
 {

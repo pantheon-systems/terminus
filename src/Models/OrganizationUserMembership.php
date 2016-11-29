@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Models;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 
+/**
+ * Class OrganizationUserMembership
+ * @package Pantheon\Terminus\Models
+ */
 class OrganizationUserMembership extends TerminusModel implements ContainerAwareInterface
 {
     use ContainerAwareTrait;

@@ -13,6 +13,10 @@ use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Site
+ * @package Pantheon\Terminus\Models
+ */
 class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface
 {
     use ConfigAwareTrait;

@@ -4,6 +4,10 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Models\User;
 
+/**
+ * Class UserOwnedCollection
+ * @package Pantheon\Terminus\Collections
+ */
 class UserOwnedCollection extends TerminusCollection
 {
     protected $user;

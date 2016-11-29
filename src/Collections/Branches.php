@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Collections;
 
+/**
+ * Class Branches
+ * @package Pantheon\Terminus\Collections
+ */
 class Branches extends SiteOwnedCollection
 {
     /**

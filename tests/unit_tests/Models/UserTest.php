@@ -15,8 +15,12 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\UserSiteMembership;
-use Robo\Collection\Collection;
 
+/**
+ * Class UserTest
+ * Testing class for Pantheon\Terminus\Models\User
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class UserTest extends ModelTestCase
 {
     /**

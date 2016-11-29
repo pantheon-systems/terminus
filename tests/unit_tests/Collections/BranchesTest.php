@@ -6,7 +6,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Collections\Branches;
 
 /**
- * Testing class for Terminus\Collections\Branches
+ * Class BranchesTest
+ * Testing class for Pantheon\Terminus\Collections\Branches
+ * @package Pantheon\Terminus\UnitTests\Collections
  */
 class BranchesTest extends CollectionTestCase
 {

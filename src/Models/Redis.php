@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Redis
+ * @package Pantheon\Terminus\Models
+ */
 class Redis extends TerminusModel
 {
     /**

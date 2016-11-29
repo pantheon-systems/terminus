@@ -227,7 +227,7 @@ class ListCommandTest extends CommandTestCase
             ->method('fetch')
             ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
             ->willReturn($this->sites);
-        $this->session->expects($this->never())
+        $this->sites->expects($this->never())
             ->method('filterByName');
         $this->session->expects($this->never())
             ->method('getUser');
@@ -276,7 +276,7 @@ class ListCommandTest extends CommandTestCase
             ->method('fetch')
             ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
             ->willReturn($this->sites);
-        $this->session->expects($this->never())
+        $this->sites->expects($this->never())
             ->method('filterByName');
         $this->session->expects($this->once())
             ->method('getUser')

@@ -9,7 +9,9 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
+ * Class BranchTest
  * Testing class for Pantheon\Terminus\Models\Branch
+ * @package Pantheon\Terminus\UnitTests\Models
  */
 class BranchTest extends ModelTestCase
 {

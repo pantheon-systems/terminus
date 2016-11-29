@@ -4,6 +4,11 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Models\WorkflowOperation;
 
+/**
+ * Class WorkflowOperationTest
+ * Testing class for Pantheon\Terminus\Models\WorkflowOperation
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class WorkflowOperationTest extends ModelTestCase
 {
     public function testDescription()

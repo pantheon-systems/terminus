@@ -6,6 +6,10 @@ use Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class Config
+ * @package Pantheon\Terminus
+ */
 class Config extends \Robo\Config
 {
     /**

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -12,6 +11,11 @@ use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Site;
 
+/**
+ * Class OrganizationTest
+ * Testing class for Pantheon\Terminus\Models\Organization
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class OrganizationTest extends ModelTestCase
 {
     public function testGetFeature()

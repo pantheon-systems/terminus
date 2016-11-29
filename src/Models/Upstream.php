@@ -2,6 +2,10 @@
 
 namespace Pantheon\Terminus\Models;
 
+/**
+ * Class Upstream
+ * @package Pantheon\Terminus\Models
+ */
 class Upstream extends TerminusModel
 {
     /**

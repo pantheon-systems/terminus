@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
@@ -13,6 +12,11 @@ use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Site;
 
+/**
+ * Class WorkflowTest
+ * Testing class for Pantheon\Terminus\Models\Workflow
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class WorkflowTest extends ModelTestCase
 {
 

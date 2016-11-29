@@ -5,6 +5,10 @@ namespace Pantheon\Terminus\Models;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
+/**
+ * Class NewRelic
+ * @package Pantheon\Terminus\Models
+ */
 class NewRelic extends TerminusModel implements ConfigAwareInterface
 {
     use ConfigAwareTrait;

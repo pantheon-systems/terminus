@@ -6,9 +6,8 @@ use Pantheon\Terminus\Models\User;
 
 /**
  * Interface SessionAwareInterface
- * @package Pantheon\Terminus\Session
- *
  * Provides an interface for direct injection of the session helper.
+ * @package Pantheon\Terminus\Session
  */
 interface SessionAwareInterface
 {

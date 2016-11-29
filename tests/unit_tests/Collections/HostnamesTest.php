@@ -1,16 +1,17 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Hostnames;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
+/**
+ * Class HostnamesTest
+ * Testing class for Pantheon\Terminus\Collections\Hostnames
+ * @package Pantheon\Terminus\UnitTests\Collections
+ */
 class HostnamesTest extends CollectionTestCase
 {
     protected $environment;
