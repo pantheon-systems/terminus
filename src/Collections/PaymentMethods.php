@@ -6,10 +6,10 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Class Instruments
+ * Class PaymentMethods
  * @package Pantheon\Terminus\Collections
  */
-class Instruments extends UserOwnedCollection
+class PaymentMethods extends UserOwnedCollection
 {
     /**
      * @var string
@@ -19,31 +19,31 @@ class Instruments extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Instrument';
+    protected $collected_class = 'Pantheon\Terminus\Models\PaymentMethod';
 
     /**
-     * Retrieves a payment instrument object by either its UUID or its label
+     * Retrieves a payment payment_method object by either its UUID or its label
      *
      * @param string $id The identifier for the payment method requested
-     * @return Instrument
-     * @throws TerminusException When there is more than one matching instrument
-     * @throws TerminusNotFoundException When there are no matching instruments
+     * @return PaymentMethod
+     * @throws TerminusException When there is more than one matching payment_method
+     * @throws TerminusNotFoundException When there are no matching payment_methods
      */
     public function get($id)
     {
-        $instruments = $this->models;
-        if (isset($instruments[$id])) {
-            return $instruments[$id];
+        $payment_methods = $this->models;
+        if (isset($payment_methods[$id])) {
+            return $payment_methods[$id];
         }
         $matches = array_filter(
-            $instruments,
-            function ($instrument) use ($id) {
-                return ($instrument->get('label') == $id);
+            $payment_methods,
+            function ($payment_method) use ($id) {
+                return ($payment_method->get('label') == $id);
             }
         );
         if (empty($matches)) {
             throw new TerminusNotFoundException(
-                'Could not locate an instrument identified by {id} on this account.',
+                'Could not locate an payment_method identified by {id} on this account.',
                 compact('id')
             );
         } else if (count($matches) > 1) {

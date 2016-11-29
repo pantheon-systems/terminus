@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\PaymentMethods;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Collections\Upstreams;
@@ -29,11 +29,11 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     protected $aliases;
     /**
-     * @var Instruments
+     * @var PaymentMethods
      */
-    protected $instruments;
+    protected $payment_methods;
     /**
-     * @var Instruments
+     * @var PaymentMethods
      */
     protected $machine_tokens;
     /**
@@ -183,18 +183,18 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return Pantheon\Terminus\Collections\PaymentMethods
      */
-    public function getInstruments()
+    public function getPaymentMethods()
     {
-        if (empty($this->instruments)) {
-            $this->instruments = $this->getContainer()->get(Instruments::class, [['user' => $this,]]);
+        if (empty($this->payment_methods)) {
+            $this->payment_methods = $this->getContainer()->get(PaymentMethods::class, [['user' => $this,]]);
         }
-        return $this->instruments;
+        return $this->payment_methods;
     }
 
     /**
-     * @return \Terminus\Collections\Instruments
+     * @return \Terminus\Collections\PaymentMethods
      */
     public function getMachineTokens()
     {

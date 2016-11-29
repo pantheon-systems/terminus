@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\PaymentMethods;
 use Pantheon\Terminus\Commands\PaymentMethod\ListCommand;
-use Pantheon\Terminus\Models\Instrument;
+use Pantheon\Terminus\Models\PaymentMethod;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -26,9 +26,9 @@ class ListCommandTest extends CommandTestCase
      */
     protected $user;
     /**
-     * @var Instruments
+     * @var PaymentMethods
      */
-    protected $instruments;
+    protected $payment_methods;
 
     /**
      * @inheritdoc
@@ -43,7 +43,7 @@ class ListCommandTest extends CommandTestCase
         $this->user = $this->getMockBuilder(User::class)
           ->disableOriginalConstructor()
           ->getMock();
-        $this->instruments = $this->getMockBuilder(Instruments::class)
+        $this->payment_methods = $this->getMockBuilder(PaymentMethods::class)
           ->disableOriginalConstructor()
           ->getMock();
 
@@ -52,13 +52,13 @@ class ListCommandTest extends CommandTestCase
             ->with()
             ->willReturn($this->user);
         $this->user->expects($this->once())
-            ->method('getInstruments')
+            ->method('getPaymentMethods')
             ->with()
-            ->willReturn($this->instruments);
-        $this->instruments->expects($this->once())
+            ->willReturn($this->payment_methods);
+        $this->payment_methods->expects($this->once())
             ->method('fetch')
             ->with()
-            ->willReturn($this->instruments);
+            ->willReturn($this->payment_methods);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -70,20 +70,20 @@ class ListCommandTest extends CommandTestCase
      */
     public function testListPaymentMethods()
     {
-        $data = ['id' => 'instrument_id', 'label' => 'Card - 1111',];
+        $data = ['id' => 'payment_method_id', 'label' => 'Card - 1111',];
 
-        $instrument = $this->getMockBuilder(Instrument::class)
+        $payment_method = $this->getMockBuilder(PaymentMethod::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $instrument->expects($this->once())
+        $payment_method->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($data);
 
-        $this->instruments->expects($this->once())
+        $this->payment_methods->expects($this->once())
             ->method('all')
             ->with()
-            ->willReturn([$instrument,]);
+            ->willReturn([$payment_method,]);
         $this->logger->expects($this->never())
             ->method('log');
 
@@ -99,7 +99,7 @@ class ListCommandTest extends CommandTestCase
      */
     public function testListPaymentMethodsEmpty()
     {
-        $this->instruments->expects($this->once())
+        $this->payment_methods->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([]);
@@ -107,7 +107,7 @@ class ListCommandTest extends CommandTestCase
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('There are no instruments attached to this account.')
+                $this->equalTo('There are no payment methods attached to this account.')
             );
 
         $out = $this->command->listPaymentMethods();

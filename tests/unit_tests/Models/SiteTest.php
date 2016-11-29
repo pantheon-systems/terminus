@@ -63,11 +63,11 @@ class SiteTest extends ModelTestCase
     }
 
     /**
-     * Tests Site::addInstrument($instrument_id)
+     * Tests Site::addPaymentMethod($payment_method_id)
      */
-    public function testAddInstrument()
+    public function testAddPaymentMethod()
     {
-        $instrument_id = 'instrument_id';
+        $payment_method_id = 'payment_method_id';
 
         $this->workflows->expects($this->once())
             ->method('create')
@@ -76,13 +76,13 @@ class SiteTest extends ModelTestCase
                 $this->equalTo(
                     [
                         'site' => $this->model->id,
-                        'params' => compact('instrument_id'),
+                        'params' => ['instrument_id' => $payment_method_id,],
                     ]
                 )
             )
             ->willReturn($this->workflow);
 
-        $workflow = $this->model->addInstrument($instrument_id);
+        $workflow = $this->model->addPaymentMethod($payment_method_id);
         $this->assertEquals($workflow, $this->workflow);
     }
 
@@ -241,9 +241,9 @@ class SiteTest extends ModelTestCase
     }
 
     /**
-     * Tests Site::removeInstrument()
+     * Tests Site::removePaymentMethod()
      */
-    public function testRemoveInstrument()
+    public function testRemovePaymentMethod()
     {
         $this->workflows->expects($this->once())
             ->method('create')
@@ -253,7 +253,7 @@ class SiteTest extends ModelTestCase
             )
             ->willReturn($this->workflow);
 
-        $workflow = $this->model->removeInstrument();
+        $workflow = $this->model->removePaymentMethod();
         $this->assertEquals($workflow, $this->workflow);
     }
 

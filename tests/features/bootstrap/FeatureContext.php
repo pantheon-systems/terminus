@@ -40,24 +40,6 @@ class FeatureContext implements Context
     }
 
     /**
-     * Ensures the user has access to the given payment instrument
-     * @Given /^a payment instrument with uuid "([^"]*)"$/
-     *
-     * @param [string] $instrument_uuid UUID of a payment instrument
-     * @return [void]
-     */
-    public function aPaymentInstrumentWithUuid($instrument_uuid)
-    {
-        $instruments = $this->iRun('terminus upstream:list');
-        try {
-            $uuid = new PyStringNode($this->replacePlaceholders($instrument_uuid));
-            $this->iShouldGet($uuid);
-        } catch (\Exception $e) {
-            throw new \Exception("Your user does not have access to instrument $instrument_uuid.");
-        }
-    }
-
-    /**
      * Ensures a site of the given name exists
      *
      * @Given /^a site named "([^"]*)"$/
@@ -187,19 +169,6 @@ class FeatureContext implements Context
     public function iAmAuthenticated()
     {
         $this->iLogIn();
-    }
-
-    /**
-     * Attaches a given organization as payee of given site
-     * @When /^I attach the instrument "([^"]*)" to site "([^"]*)"$/
-     *
-     * @param [string] $uuid UUID of organization to attach as payee
-     * @param [string] $site Name of site on which to attach
-     * @return [void]
-     */
-    public function iAttachTheInstrument($uuid, $site)
-    {
-        $this->iRun("terminus payment-method:set $uuid --site=$site");
     }
 
     /**
@@ -488,18 +457,6 @@ class FeatureContext implements Context
     public function iListTheHostnamesOn($env, $site)
     {
         $this->iRun("terminus domain:list --site=$site --env=$env");
-    }
-
-    /**
-     * Checks the
-     * @Given /^I check the payment instrument of "([^"]*)"$/
-     *
-     * @param [string] $site Name of site to check payment instrument of
-     * @return [void]
-     */
-    public function iCheckThePaymentInstrumentOfSite($site)
-    {
-        $this->iRun("terminus payment-method:info --site=$site");
     }
 
     /**

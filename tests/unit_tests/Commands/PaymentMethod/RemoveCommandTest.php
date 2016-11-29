@@ -37,7 +37,7 @@ class RemoveCommandTest extends CommandTestCase
             ->getMock();
 
         $this->site->expects($this->once())
-            ->method('removeInstrument')
+            ->method('removePaymentMethod')
             ->with()
             ->willReturn($workflow);
         $workflow->expects($this->once())

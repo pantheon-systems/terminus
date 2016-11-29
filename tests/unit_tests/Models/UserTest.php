@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
-use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\PaymentMethods;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
@@ -89,7 +89,7 @@ class UserTest extends ModelTestCase
             ->getMock();
 
         $classes = [
-            Instruments::class,
+            PaymentMethods::class,
             MachineTokens::class,
             UserOrganizationMemberships::class,
             UserSiteMemberships::class,
@@ -105,7 +105,7 @@ class UserTest extends ModelTestCase
 
         $this->user->setContainer($container);
 
-        $this->user->getInstruments();
+        $this->user->getPaymentMethods();
         $this->user->getMachineTokens();
         $this->user->getOrgMemberships();
         $this->user->getSiteMemberships();
