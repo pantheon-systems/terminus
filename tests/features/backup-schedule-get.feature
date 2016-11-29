@@ -7,7 +7,7 @@ Feature: List Backup Schedule for a Site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_backups_get-schedule
+  @vcr backup-schedule-get.yml
   Scenario: Show the backup schedule for an environment
     When I run "terminus backup:schedule:get [[test_site_name]].dev"
     Then I should get:
@@ -15,7 +15,7 @@ Feature: List Backup Schedule for a Site
     Friday
     """
 
-  @vcr site_backups_get-schedule_none
+  @vcr backup-schedule-get-none.yml
   Scenario: Fail to show the backup schedule for an environment when none are scheduled
     When I run "terminus backup:schedule:get [[test_site_name]].dev"
     Then I should get:

@@ -7,7 +7,7 @@ Feature: Working with multidev environments
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_create-env
+  @vcr multidev-create.yml
   Scenario: Create a multidev environment
     When I run "terminus multidev:create [[test_site_name]].dev multidev"
     Then I should get:

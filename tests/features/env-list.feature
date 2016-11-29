@@ -7,7 +7,7 @@ Feature: Listing a site's environments
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_environments
+  @vcr env-list.yml
   Scenario: Listing all environments belonging to a site
     When I run "terminus env:list [[test_site_name]]"
     Then I should get: "Domain"

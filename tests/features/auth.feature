@@ -3,13 +3,13 @@ Feature: Authorization command
   As a user
   I need to be able to log in to the system.
 
-  @vcr auth_login
+  @vcr auth-login.yml
   Scenario: Logging in
     Given I am not authenticated
     When I run "terminus auth:login --machine-token=[[machine_token]]"
     Then I should get: "Logging in via machine token."
 
-  @vcr auth_login_machine-token_invalid
+  @vcr auth-login-machine-token-invalid.yml
   Scenario: Failing to log in via invalid machine token
     Given I am not authenticated
     When I run "terminus auth:login --machine-token=invalid"
@@ -41,7 +41,7 @@ Feature: Authorization command
     Please visit the dashboard to generate a machine token:
     """
 
-  @vcr auth_logout
+  @vcr auth-logout.yml
   Scenario: Logging out
     Given I am authenticated
     When I run "terminus auth:logout"
@@ -50,7 +50,7 @@ Feature: Authorization command
     You have been logged out of Pantheon.
     """
 
-  @vcr auth_whoami
+  @vcr auth-whoami.yml
   Scenario: Check Which User I Am
     Given I am authenticated
     When I run "terminus auth:whoami"
@@ -59,7 +59,7 @@ Feature: Authorization command
     [[username]]
     """
 
-  @vcr auth_whoami
+  @vcr auth-whoami.yml
   Scenario: Check which user I am by ID
     Given I am authenticated
     When I run "terminus auth:whoami --fields=id"
@@ -72,7 +72,7 @@ Feature: Authorization command
     [[username]]
     """
 
-  @vcr auth_whoami
+  @vcr auth-whoami.yml
   Scenario: Displaying fields in a session in a table
     Given I am authenticated
     When I run "terminus auth:whoami --format=table --fields=email,id"

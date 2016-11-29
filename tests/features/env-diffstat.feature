@@ -7,13 +7,13 @@ Feature: Diffing environments
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_code_diffstat
+  @vcr env-diffstat.yml
   Scenario: Looking for changes on the server
     When I run "terminus env:diffstat [[test_site_name]].dev"
     Then I should get: "Deletions"
     And I should not get: "No changes on the server."
 
-  @vcr site_code_diffstat_empty
+  @vcr env-diffstat-empty.yml
   Scenario: Looking for changes on the server when there are none
     When I run "terminus env:diffstat [[test_site_name]].dev"
     Then I should get: "No changes on server."

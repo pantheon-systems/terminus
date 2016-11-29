@@ -7,7 +7,7 @@ Feature: Displaying environmental information
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_environment-info
+  @vcr env-info.yml
   Scenario: Checking environmental information
     When I run "terminus env:info [[test_site_name]].dev"
     Then I should see a table with rows like:
@@ -21,12 +21,12 @@ Feature: Displaying environmental information
       PHP Version
     """
 
-  @vcr site_environment-info
+  @vcr env-info.yml
   Scenario: Checking an information field of an environment
     When I run "terminus env:info [[test_site_name]].dev --field=connection_mode"
     Then I should get one of the following: "git, sftp"
 
-  @vcr site_environment-info
+  @vcr env-info.yml
   Scenario: Failing to check an invalid field
     When I run "terminus env:info [[test_site_name]].dev --field=invalid"
     Then I should get:

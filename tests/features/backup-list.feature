@@ -7,13 +7,13 @@ Feature: List Backups for a Site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_backups_list
+  @vcr backup-list.yml
   Scenario: Show all backups for an environment
     When I run "terminus backup:list [[test_site_name]].dev --format=json"
     Then I should have "7" records
     And I should get: "code.tar.gz"
 
-  @vcr site_backups_list
+  @vcr backup-list.yml
   Scenario: Filter backups by element
     When I run "terminus backup:list [[test_site_name]].dev db --format=json"
     Then I should have "2" records

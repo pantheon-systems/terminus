@@ -7,7 +7,7 @@ Feature: Complete site migration
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_complete-migration
+  @vcr site-import-complete.yml
   Scenario: Complete a site migration
     When I run "terminus site:import:complete [[test_site_name]]"
     Then I should get: "The import of [[test_site_name]] has been marked as complete."

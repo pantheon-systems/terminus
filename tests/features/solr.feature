@@ -7,7 +7,7 @@ Feature: Using Solr
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[organization_name]]"
 
-  @vcr solr_enable.yml
+  @vcr solr-enable.yml
   Scenario: Enabling Solr
     When I run "terminus solr:enable [[test_site_name]]"
     Then I should get:
@@ -19,7 +19,7 @@ Feature: Using Solr
     Brought environments to desired configuration state
     """
 
-  @vcr solr_disable.yml
+  @vcr solr-disable.yml
   Scenario: Disabling Solr
     When I run "terminus solr:disable [[test_site_name]]"
     Then I should get:

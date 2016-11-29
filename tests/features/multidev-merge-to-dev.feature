@@ -7,7 +7,7 @@ Feature: Merging into dev from an environment
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_merge-to-dev
+  @vcr multidev-merge-to-dev.yml
   Scenario: Merge a multidev to dev environment
     When I run "terminus multidev:merge-to-dev [[test_site_name]].multidev"
     Then I should get:

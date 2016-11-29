@@ -6,7 +6,7 @@ Feature: Listing upstreams
   Background: I am logged in and have a site named [[test_site_name]]
     Given I am authenticated
 
-  @vcr upstreams_list
+  @vcr upstream-list.yml
   Scenario: List all my upstreams
     When I run "terminus upstream:list"
     Then I should get: "-------------------------------------- --------------------------------------------- ------------ ------------- -----------"
@@ -50,7 +50,7 @@ Feature: Listing upstreams
     And I should get: "21e1fada-199c-492b-97bd-0b36b53a9da0   Drupal 7                                      vanilla      core          drupal"
     And I should get: "-------------------------------------- --------------------------------------------- ------------ ------------- -----------"
 
-  @vcr upstreams_list
+  @vcr upstream-list.yml
   Scenario: Get info on an upstream
     When I run "terminus upstream:info WordPress"
     Then I should get: "------------- -------------------------------------------------------------------------------"
