@@ -83,30 +83,30 @@ class SSHBaseCommandTest extends CommandTestCase
 
         $this->assertEquals('', $output);
     }
-
-    public function testValidateConnectionMode()
-    {
-        // should log error message
-        $this->logger->expects($this->once())
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->stringContains('This environment is in read-only Git mode.')
-            );
-
-        $this->protectedMethodCall($this->command, 'validateConnectionMode', ['git']);
-    }
-
-    public function testValidateFrameworkValid()
-    {
-        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-a']);
-    }
-
-    /**
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The dummy command is only available on sites running framework-a, framework-b.
-     */
-    public function testValidateFrameworkInvalid()
-    {
-        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-invalid']);
-    }
+//
+//    public function testValidateConnectionMode()
+//    {
+//        // should log error message
+//        $this->logger->expects($this->once())
+//            ->method('log')->with(
+//                $this->equalTo('notice'),
+//                $this->stringContains('This environment is in read-only Git mode.')
+//            );
+//
+//        $this->protectedMethodCall($this->command, 'validateConnectionMode', ['git']);
+//    }
+//
+//    public function testValidateFrameworkValid()
+//    {
+//        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-a']);
+//    }
+//
+//    /**
+//     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+//     * @expectedExceptionMessage The dummy command is only available on sites running framework-a, framework-b.
+//     */
+//    public function testValidateFrameworkInvalid()
+//    {
+//        $this->protectedMethodCall($this->command, 'validateFramework', ['framework-invalid']);
+//    }
 }

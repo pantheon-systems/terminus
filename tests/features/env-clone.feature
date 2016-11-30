@@ -9,18 +9,28 @@ Feature: Cloning site content
 
   @vcr env-clone.yml
   Scenario: Site Clone Environment
-    When I run "terminus --no-ansi env:clone [[test_site_name]].test dev --yes"
-    Then I should see a progress bar with the message: 'setting up...'
-    Then I should see a progress bar with the message: 'Cloned files from "live" to "dev", cloned database from "live" to "dev"'
+    When I run "terminus env:clone-content [[test_site_name]].test dev"
+    Then I should get:
+    """
+    Cloned files from "test" to "dev"
+    """
+    Then I should get:
+    """
+    Cloned database from "test" to "dev"
+    """
 
   @vcr env-clone.yml
   Scenario: Site Clone Files Only
-    When I run "terminus --no-ansi env:clone [[test_site_name]].test dev --files-only --yes"
-    Then I should see a progress bar with the message: 'setting up...'
-    Then I should see a progress bar with the message: 'Cloned files from "live" to "dev"'
+    When I run "terminus env:clone-content [[test_site_name]].test dev --files-only"
+    Then I should get:
+    """
+    Cloned files from "test" to "dev"
+    """
 
   @vcr env-clone.yml
   Scenario: Site Clone Files Only
-    When I run "terminus --no-ansi env:clone [[test_site_name]].test dev --db-only --yes"
-    Then I should see a progress bar with the message: 'setting up...'
-    Then I should see a progress bar with the message: 'Cloned database from "live" to "dev"'
+    When I run "terminus env:clone-content [[test_site_name]].test dev --db-only"
+    Then I should get:
+    """
+    Cloned database from "test" to "dev"
+    """
