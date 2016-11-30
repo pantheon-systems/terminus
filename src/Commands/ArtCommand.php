@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -108,12 +109,12 @@ class ArtCommand extends TerminusCommand
      *
      * @param $name
      * @return string
-     * @throws \Exception
+     * @throws TerminusNotFoundException
      */
     protected function retrieveArt($name)
     {
         if (!file_exists($this->filename)) {
-            throw new \Exception("There is no source for the requested {$name} artwork.", 1);
+            throw new TerminusNotFoundException("There is no source for the requested {name} artwork.", ['name' => $name]);
         }
         return base64_decode(file_get_contents($this->filename));
     }
