@@ -199,7 +199,7 @@ class Config extends \Robo\Config
         $dir = explode('/', $current_dir);
         array_pop($dir);
         if (empty($dir)) {
-            throw new TerminusError('Could not locate root to set TERMINUS_ROOT.');
+            throw new TerminusException('Could not locate root to set TERMINUS_ROOT.');
         }
         $dir = implode('/', $dir);
         $root_dir = $this->getTerminusRoot($dir);
