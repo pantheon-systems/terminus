@@ -40,10 +40,10 @@ class LookupCommandTest extends DomainTest
             ->with()
             ->willReturn([$this->site,]);
 
-        $this->hostnames->expects($this->any())
+        $this->domains->expects($this->any())
             ->method('fetch')
             ->with()
-            ->willReturn($this->hostnames);
+            ->willReturn($this->domains);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -65,7 +65,7 @@ class LookupCommandTest extends DomainTest
             ->with($this->equalTo('name'))
             ->willReturn($this->site_name);
 
-        $this->hostnames->expects($this->any())
+        $this->domains->expects($this->any())
             ->method('has')
             ->with($this->equalTo($domain))
             ->willReturn(true);
@@ -86,7 +86,7 @@ class LookupCommandTest extends DomainTest
     {
         $domain = 'some.domain';
 
-        $this->hostnames->expects($this->any())
+        $this->domains->expects($this->any())
             ->method('has')
             ->with($this->equalTo($domain))
             ->willReturn(false);

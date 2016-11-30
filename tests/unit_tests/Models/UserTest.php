@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
-use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\PaymentMethods;
 use Pantheon\Terminus\Collections\MachineTokens;
-use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
@@ -89,11 +89,11 @@ class UserTest extends ModelTestCase
             ->getMock();
 
         $classes = [
-            Instruments::class,
+            PaymentMethods::class,
             MachineTokens::class,
             UserOrganizationMemberships::class,
             UserSiteMemberships::class,
-            SshKeys::class,
+            SSHKeys::class,
             Workflows::class
         ];
         foreach ($classes as $i => $class) {
@@ -105,11 +105,11 @@ class UserTest extends ModelTestCase
 
         $this->user->setContainer($container);
 
-        $this->user->getInstruments();
+        $this->user->getPaymentMethods();
         $this->user->getMachineTokens();
         $this->user->getOrgMemberships();
         $this->user->getSiteMemberships();
-        $this->user->getSshKeys();
+        $this->user->getSSHKeys();
         $this->user->getWorkflows();
     }
 

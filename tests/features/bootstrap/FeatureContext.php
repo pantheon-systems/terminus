@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Behat\Gherkin\Node\PyStringNode;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -37,24 +36,6 @@ class FeatureContext implements Context
 
         $this->cache_dir = $parameters['cache_dir'];
         $this->cache_token_dir = $this->cache_dir . "/tokens";
-    }
-
-    /**
-     * Ensures the user has access to the given payment instrument
-     * @Given /^a payment instrument with uuid "([^"]*)"$/
-     *
-     * @param [string] $instrument_uuid UUID of a payment instrument
-     * @return [void]
-     */
-    public function aPaymentInstrumentWithUuid($instrument_uuid)
-    {
-        $instruments = $this->iRun('terminus upstream:list');
-        try {
-            $uuid = new PyStringNode($this->replacePlaceholders($instrument_uuid));
-            $this->iShouldGet($uuid);
-        } catch (\Exception $e) {
-            throw new \Exception("Your user does not have access to instrument $instrument_uuid.");
-        }
     }
 
     /**
@@ -129,20 +110,6 @@ class FeatureContext implements Context
     }
 
     /**
-     * Adds given hostname to given site's given environment
-     * @When /^I add hostname "([^"]*)" to the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $hostname Hostname to add
-     * @param [string] $env      Environment on which to add hostname
-     * @param [string] $site     Site on which to add hostname
-     * @return [void]
-     */
-    public function iAddHostnameToTheEnvironmentOf($hostname, $env, $site)
-    {
-        $this->iRun("terminus domain:add $hostname --site=$site --env=$env");
-    }
-
-    /**
      * Adds $email user from $site
      * @When /^I add "([^"]*)" to the team on "([^"]*)"$/
      *
@@ -187,19 +154,6 @@ class FeatureContext implements Context
     public function iAmAuthenticated()
     {
         $this->iLogIn();
-    }
-
-    /**
-     * Attaches a given organization as payee of given site
-     * @When /^I attach the instrument "([^"]*)" to site "([^"]*)"$/
-     *
-     * @param [string] $uuid UUID of organization to attach as payee
-     * @param [string] $site Name of site on which to attach
-     * @return [void]
-     */
-    public function iAttachTheInstrument($uuid, $site)
-    {
-        $this->iRun("terminus payment-method:set $uuid --site=$site");
     }
 
     /**
@@ -475,31 +429,6 @@ class FeatureContext implements Context
     public function iInstallTheModuleTo($module, $site)
     {
         $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
-    }
-
-    /**
-     * Lists all hostnames of the given site's given environment
-     * @Given /^I list the hostnames on the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $env  Environment to list hostnames of
-     * @param [string] $site Name of the site to list the hostnames of
-     * @return [void]
-     */
-    public function iListTheHostnamesOn($env, $site)
-    {
-        $this->iRun("terminus domain:list --site=$site --env=$env");
-    }
-
-    /**
-     * Checks the
-     * @Given /^I check the payment instrument of "([^"]*)"$/
-     *
-     * @param [string] $site Name of site to check payment instrument of
-     * @return [void]
-     */
-    public function iCheckThePaymentInstrumentOfSite($site)
-    {
-        $this->iRun("terminus payment-method:info --site=$site");
     }
 
     /**

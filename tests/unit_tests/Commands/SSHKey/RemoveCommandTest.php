@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
 use Pantheon\Terminus\Commands\SSHKey\RemoveCommand;
-use Pantheon\Terminus\Models\SshKey;
+use Pantheon\Terminus\Models\SSHKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
@@ -31,7 +31,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
      */
     public function testSSHKeysDelete()
     {
-        $token = $this->getMockBuilder(SshKey::class)
+        $token = $this->getMockBuilder(SSHKey::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -60,7 +60,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
      */
     public function testSSHKeysDeleteNonExistant()
     {
-        $token = $this->getMockBuilder(SshKey::class)
+        $token = $this->getMockBuilder(SSHKey::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -84,7 +84,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
      */
     public function testSSHKeysDeleteAPIFailure()
     {
-        $token = $this->getMockBuilder(SshKey::class)
+        $token = $this->getMockBuilder(SSHKey::class)
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -31,13 +31,13 @@ class ListCommandTest extends DomainTest
     {
         $dummy_info = ['domain' => 'domain', 'zone' => 'zone',];
 
-        $this->hostnames->expects($this->once())
+        $this->domains->expects($this->once())
             ->method('all')
             ->with()
-            ->willReturn([$this->hostname, $this->hostname,]);
+            ->willReturn([$this->domain, $this->domain,]);
         $this->logger->expects($this->never())
             ->method('log');
-        $this->hostname->expects($this->any())
+        $this->domain->expects($this->any())
             ->method('serialize')
             ->willReturn($dummy_info);
 

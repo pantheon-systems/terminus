@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 
-use Pantheon\Terminus\Collections\Instruments;
+use Pantheon\Terminus\Collections\PaymentMethods;
 use Pantheon\Terminus\Commands\PaymentMethod\AddCommand;
-use Pantheon\Terminus\Models\Instrument;
+use Pantheon\Terminus\Models\PaymentMethod;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
@@ -26,13 +26,13 @@ class AddCommandTest extends CommandTestCase
      */
     protected $user;
     /**
-     * @var Instrument
+     * @var PaymentMethod
      */
-    protected $instrument;
+    protected $payment_method;
     /**
-     * @var Instruments
+     * @var PaymentMethods
      */
-    protected $instruments;
+    protected $payment_methods;
 
     /**
      * @inheritdoc
@@ -47,26 +47,26 @@ class AddCommandTest extends CommandTestCase
         $this->user = $this->getMockBuilder(User::class)
           ->disableOriginalConstructor()
           ->getMock();
-        $this->instruments = $this->getMockBuilder(Instruments::class)
+        $this->payment_methods = $this->getMockBuilder(PaymentMethods::class)
           ->disableOriginalConstructor()
           ->getMock();
-        $this->instrument = $this->getMockBuilder(Instrument::class)
+        $this->payment_method = $this->getMockBuilder(PaymentMethod::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->instrument->id = 'instrument_id';
+        $this->payment_method->id = 'payment_method_id';
 
         $this->session->expects($this->once())
             ->method('getUser')
             ->with()
             ->willReturn($this->user);
         $this->user->expects($this->once())
-            ->method('getInstruments')
+            ->method('getPaymentMethods')
             ->with()
-            ->willReturn($this->instruments);
-        $this->instruments->expects($this->once())
+            ->willReturn($this->payment_methods);
+        $this->payment_methods->expects($this->once())
             ->method('fetch')
             ->with()
-            ->willReturn($this->instruments);
+            ->willReturn($this->payment_methods);
 
         $this->command = new AddCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -80,27 +80,27 @@ class AddCommandTest extends CommandTestCase
     public function testAdd()
     {
         $site_name = 'site_name';
-        $instrument_label = 'instrument_label';
+        $payment_method_label = 'payment_method_label';
 
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->instruments->expects($this->once())
+        $this->payment_methods->expects($this->once())
             ->method('get')
-            ->with($this->equalTo($instrument_label))
-            ->willReturn($this->instrument);
+            ->with($this->equalTo($payment_method_label))
+            ->willReturn($this->payment_method);
         $this->site->expects($this->once())
-            ->method('addInstrument')
-            ->with($this->equalTo($this->instrument->id))
+            ->method('addPaymentMethod')
+            ->with($this->equalTo($this->payment_method->id))
             ->willReturn($workflow);
         $workflow->expects($this->once())
             ->method('wait')
             ->with();
-        $this->instrument->expects($this->once())
+        $this->payment_method->expects($this->once())
             ->method('get')
             ->with($this->equalTo('label'))
-            ->willReturn($instrument_label);
+            ->willReturn($payment_method_label);
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))
@@ -110,10 +110,10 @@ class AddCommandTest extends CommandTestCase
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('{method} has been applied to the {site} site.'),
-                $this->equalTo(['method' => $instrument_label, 'site' => $site_name,])
+                $this->equalTo(['method' => $payment_method_label, 'site' => $site_name,])
             );
 
-        $out = $this->command->add($site_name, $instrument_label);
+        $out = $this->command->add($site_name, $payment_method_label);
         $this->assertNull($out);
     }
 }

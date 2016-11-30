@@ -8,7 +8,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
-use Pantheon\Terminus\Collections\Hostnames;
+use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
@@ -36,9 +36,9 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public $commits;
     /**
-     * @var Hostnames
+     * @var Domains
      */
-    public $hostnames;
+    public $domains;
     /**
      * @var Site
      */
@@ -804,8 +804,8 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $on_stats = function (TransferStats $stats) {
             $this->transfertime = $stats->getTransferTime();
         };
-        $hostnames = $this->getHostnames()->ids();
-        $target = array_pop($hostnames);
+        $domains = $this->getDomains()->ids();
+        $target = array_pop($domains);
         $healthc = "http://$target/pantheon_healthcheck";
         $response = $this->request()->request($healthc, compact('on_stats'));
         $return_data = [
@@ -864,14 +864,14 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
-     * @return Hostnames
+     * @return Domains
      */
-    public function getHostnames()
+    public function getDomains()
     {
-        if (empty($this->hostnames)) {
-            $this->hostnames = $this->getContainer()->get(Hostnames::class, [['environment' => $this,]]);
+        if (empty($this->domains)) {
+            $this->domains = $this->getContainer()->get(Domains::class, [['environment' => $this,]]);
         }
-        return $this->hostnames;
+        return $this->domains;
     }
 
     /**

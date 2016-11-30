@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
-use Pantheon\Terminus\Collections\SshKeys;
+use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -35,7 +35,7 @@ abstract class SSHKeyCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->ssh_keys = $this->getMockBuilder(SshKeys::class)
+        $this->ssh_keys = $this->getMockBuilder(SSHKeys::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -44,7 +44,7 @@ abstract class SSHKeyCommandTest extends CommandTestCase
             ->getMock();
 
         $this->user->expects($this->any())
-            ->method('getSshKeys')
+            ->method('getSSHKeys')
             ->willReturn($this->ssh_keys);
 
         $this->session = $this->getMockBuilder(Session::class)

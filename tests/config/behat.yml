@@ -14,7 +14,7 @@ default:
               test_site_name:          'behat-tests'
               other_user:              'otheruser@pantheon.io'
               php_site_domain:         'pantheonsite.io'
-              instrument_label:        'Visa - 1111'
+              payment_method_label:        'Visa - 1111'
               organization_name:       'Organization Name'
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'

@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\Models;
 
 /**
- * Class Instrument
+ * Class PaymentMethod
  * @package Pantheon\Terminus\Models
  */
-class Instrument extends TerminusModel
+class PaymentMethod extends TerminusModel
 {
     /**
      * @inheritdoc

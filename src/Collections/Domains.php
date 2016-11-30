@@ -5,15 +5,15 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Class Hostnames
+ * Class Domains
  * @package Pantheon\Terminus\Collections
  */
-class Hostnames extends EnvironmentOwnedCollection
+class Domains extends EnvironmentOwnedCollection
 {
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Hostname';
+    protected $collected_class = 'Pantheon\Terminus\Models\Domain';
 
     /**
      * @var string
@@ -26,15 +26,15 @@ class Hostnames extends EnvironmentOwnedCollection
     protected $hydrate = false;
 
     /**
-     * Adds a hostname to the environment
+     * Adds a domain to the environment
      *
-     * @param string $hostname Hostname to add to environment
+     * @param string $domain Domain to add to environment
      * @return array
      */
-    public function create($hostname)
+    public function create($domain)
     {
         $url = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/hostnames/');
-        $url .= rawurlencode($hostname);
+        $url .= rawurlencode($domain);
         $this->request->request($url, ['method' => 'put',]);
     }
 
@@ -42,7 +42,7 @@ class Hostnames extends EnvironmentOwnedCollection
      * Changes the value of the hydration property
      *
      * @param mixed $value Value to set the hydration property to
-     * @return Hostnames
+     * @return Domains
      */
     public function setHydration($value)
     {
@@ -56,7 +56,7 @@ class Hostnames extends EnvironmentOwnedCollection
     }
 
     /**
-     * Does the hostnames collection contain the given domain.
+     * Does the Domains collection contain the given domain?
      *
      * @param $domain
      * @return bool True if the domain exists in the collection.

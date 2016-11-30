@@ -5,10 +5,10 @@ namespace Pantheon\Terminus\Models;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class SshKey
+ * Class SSHKey
  * @package Pantheon\Terminus\Models
  */
-class SshKey extends TerminusModel
+class SSHKey extends TerminusModel
 {
     /**
      * @var User

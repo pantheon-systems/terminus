@@ -33,10 +33,10 @@ class ListCommand extends TerminusCommand
             function ($method) {
                 return $method->serialize();
             },
-            $this->session()->getUser()->getInstruments()->fetch()->all()
+            $this->session()->getUser()->getPaymentMethods()->fetch()->all()
         );
         if (empty($methods)) {
-            $this->log()->notice('There are no instruments attached to this account.');
+            $this->log()->notice('There are no payment methods attached to this account.');
         }
         return new RowsOfFields($methods);
     }

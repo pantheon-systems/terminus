@@ -37,11 +37,11 @@ class RemoveCommandTest extends DomainTest
             ->with($this->equalTo('name'))
             ->willReturn($site_name);
 
-        $this->hostnames->expects($this->once())
+        $this->domains->expects($this->once())
             ->method('get')
             ->with($this->equalTo($domain))
-            ->willReturn($this->hostname);
-        $this->hostname->expects($this->once())
+            ->willReturn($this->domain);
+        $this->domain->expects($this->once())
             ->method('delete')
             ->with();
         $this->logger->expects($this->once())

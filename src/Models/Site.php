@@ -79,7 +79,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Get the human-readable name of the site.
+     * Get the human-readable name of the site
      *
      * @return mixed
      */
@@ -89,14 +89,14 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Adds payment instrument of given site
+     * Add a payment method to the given site
      *
-     * @param string $instrument_id UUID of new payment instrument
+     * @param string $payment_method_id UUID of new payment method
      * @return Workflow
      */
-    public function addInstrument($instrument_id)
+    public function addPaymentMethod($payment_method_id)
     {
-        $args = ['site' => $this->id, 'params' => compact('instrument_id'),];
+        $args = ['site' => $this->id, 'params' => ['instrument_id' => $payment_method_id,],];
         return $this->getWorkflows()->create('associate_site_instrument', $args);
     }
 
@@ -221,11 +221,11 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Removes this site's payment instrument
+     * Remove this site's payment method
      *
      * @return Workflow
      */
-    public function removeInstrument()
+    public function removePaymentMethod()
     {
         return $this->getWorkflows()->create('disassociate_site_instrument', ['site' => $this->id,]);
     }
@@ -295,7 +295,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             );
         } catch (\Exception $e) {
             if ($e->getCode() == '403') {
-                throw new TerminusException('An instrument is required to increase the service level of this site.');
+                throw new TerminusException('A payment method is required to increase the service level of this site.');
             }
             throw $e;
         }
