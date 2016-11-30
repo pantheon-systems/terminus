@@ -7,13 +7,13 @@ Feature: Listing a site's environments
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_environments
+  @vcr env-list.yml
   Scenario: Failing to list multidevs when there aren't any
     When I run "terminus multidev:list [[test_site_name]] --format=json"
     Then I should get: "You have no multidev environments"
     And I should get: "[]"
 
-  @vcr site_info
+  @vcr site-info.yml
   Scenario: Listing all multidev environments belonging to a site
     When I run "terminus multidev:list [[test_site_name]]"
     Then I should get: "---------- --------------------- -------------------------------------- --------------- --------- --------------"

@@ -7,7 +7,7 @@ Feature: Clearing a site's cache
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_clear-cache
+  @vcr env-cache-clear.yml
   Scenario: Clear the dev environment's cache
     When I run "terminus env:clear-cache [[test_site_name]].dev"
     Then I should get: "Caches cleared on [[test_site_name]].dev."

@@ -7,7 +7,7 @@ Feature: Import a a site and its content onto Pantheon
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_import
+  @vcr import.yml
   Scenario: Importing a site archive onto Pantheon
     When I run "terminus import:site [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz"
     Then I should get "."
@@ -16,7 +16,7 @@ Feature: Import a a site and its content onto Pantheon
     Imported site onto Pantheon
     """
 
-  @vcr site_import-content_files
+  @vcr import-files.yml
   Scenario: Import files into the site
     When I run "terminus import:files [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/files.tar.gz"
     Then I should get "."
@@ -25,7 +25,7 @@ Feature: Import a a site and its content onto Pantheon
     Imported files to [[test_site_name]].dev.
     """
 
-  @vcr site_import-content_database
+  @vcr import-database.yml
   Scenario: Import database into the site
     When I run "terminus import:database [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/database.tar.gz"
     Then I should get "."

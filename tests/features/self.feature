@@ -10,7 +10,7 @@ Feature: CLI Commands
     Terminus version
     """
 
-  @vcr self_clear_cache.yml
+  @vcr self-env-cache-clear.yml
   Scenario: Deleting the Terminus cache
     Given I am authenticated
     And I have at least "1" saved machine tokens

@@ -7,22 +7,22 @@ Feature: Tagging organizational sites
     Given I am authenticated
     And a site named "[[test_site_name]]" belonging to "[[organization_name]]"
 
-  @vcr site_tags_add
+  @vcr tag-add.yml
   Scenario: Adding a tag
     When I run "terminus tag:add [[test_site_name]] '[[organization_name]]' testtag"
     Then I should get: "[[organization_name]] has tagged [[test_site_name]] with testtag."
 
-  @vcr site_tags_list
+  @vcr tag-list.yml
   Scenario: Listing a site's tags
     When I run "terminus tag:list [[test_site_name]] '[[organization_name]]'"
     Then I should get: "- testtag"
 
-  @vcr site_tags_remove
+  @vcr tag-remove.yml
   Scenario: Removing a tag
     When I run "terminus tag:remove [[test_site_name]] '[[organization_name]]' testtag"
     Then I should get: "[[organization_name]] has removed the testtag tag from [[test_site_name]]."
 
-  @vcr site_tags_list_empty
+  @vcr tag-site-list-empty.yml
   Scenario: Failing to list a site's tags because it hasn't any
     When I run "terminus tag:list [[test_site_name]] '[[organization_name]]'"
     Then I should get: "[[organization_name]] does not have any tags for [[test_site_name]]."

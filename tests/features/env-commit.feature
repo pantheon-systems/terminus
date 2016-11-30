@@ -7,7 +7,7 @@ Feature: Committing code to an environment's branch
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_code_commit
+  @vcr env-commit.yml
   Scenario: Committing a change
     When I run "terminus env:commit [[test_site_name]].dev --message='Behat test commit'"
     And I run "terminus env:code-log [[test_site_name]].dev"

@@ -8,7 +8,7 @@ Feature: Update a site with all its upstream's updates
     And a site named "[[test_site_name]]"
     And the connection mode of "[[test_site_name]]" is "git"
 
-  @vcr site_upstream-updates
+  @vcr upstream-updates.yml
   Scenario: Check for upstream updates and there aren't any
     When I run "terminus upstream:updates:list [[test_site_name]]"
     Then I should get: "There are no available updates for this site."
@@ -16,7 +16,7 @@ Feature: Update a site with all its upstream's updates
     And I should get: "Commit ID   Timestamp   Message   Author"
     And I should get: "----------- ----------- --------- --------"
 
-  @vcr upstream-updates-list.yml
+  @vcr upstream-update-list.yml
   Scenario: Check for upstream updates and there are some
     When I run "terminus upstream:updates:list [[test_site_name]]"
     Then I should get: "------------------------------------------ --------------------- -------------------------------------------------------------------------------------------------------------------------------------------- ---------------------"

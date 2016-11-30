@@ -7,7 +7,7 @@ Feature: New Relic
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_new-relic_status
+  @vcr new-relic-status.yml
   Scenario: Accessing New Relic data
     When I run "terminus new-relic:status [[test_site_name]]"
     Then I should get: "--------------- --"
@@ -17,13 +17,13 @@ Feature: New Relic
     And I should get: "State"
     And I should get: "--------------- --"
 
-  @vcr site_new-relic_enable
+  @vcr new-relic-enable.yml
   Scenario: Enabling New Relic data
     When I run "terminus new-relic:enable [[test_site_name]]"
     Then I should get: "New Relic enabled. Converging bindings."
     And I should get: "Brought environments to desired configuration state"
 
-  @vcr site_new-relic_disable
+  @vcr new-relic-disable.yml
   Scenario: Disabling New Relic data
     When I run "terminus new-relic:disable [[test_site_name]]"
     Then I should get: "New Relic disabled. Converging bindings."

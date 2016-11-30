@@ -7,7 +7,7 @@ Feature: Set a site's service level
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr service_level_set.yml
+  @vcr service-level-set.yml
   Scenario: Changing the service level
     When I run "terminus service-level:set [[test_site_name]] pro"
     Then I should get:
@@ -15,7 +15,7 @@ Feature: Set a site's service level
     Changing site plan to "pro"
     """
 
-  @vcr service_level_set_fail.yml
+  @vcr service-level-set-fail.yml
   Scenario: Changing service level without payment method
     When I run "terminus service-level:set [[test_site_name]] pro"
     Then I should get:

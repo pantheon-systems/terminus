@@ -7,12 +7,12 @@ Feature: View site workflow information
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr workflows_list
+  @vcr workflow-list.yml
   Scenario: List workflows
     When I run "terminus workflow:list [[test_site_name]]"
     Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Time
 
-  @vcr workflows_show
+  @vcr workflow-info-status.yml
   Scenario: Show a specific Workflow's status
     When I run "terminus workflow:info:status [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"
     Then I should see a table with rows like:
@@ -25,17 +25,17 @@ Feature: View site workflow information
     Time
     """
 
-  @vcr workflows_show
+  @vcr workflow-info-status.yml
   Scenario: Show a specific Workflow's operations
     When I run "terminus workflow:info:operations [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"
     Then I should see a table with the headers: Type, Operation, Description, Result, Duration
 
-  @vcr workflows_show
+  @vcr workflow-info-status.yml
   Scenario: Try show a Workflow that has no logs
     When I run "terminus workflow:info:logs [[test_site_name]] --id=11111111-1111-1111-1111-111111111111"
     Then I should see a notice message: Workflow operations did not contain any logs.
 
-  @vcr quicksilver_workflows_show.yml
+  @vcr quicksilver-workflow-info-status.yml
   Scenario: Show the most recent set of logs for a workflow that has logs
     When I run "terminus workflow:info:logs [[test_site_name]]"
     Then I should get: "Showing latest workflow on behat-tests."

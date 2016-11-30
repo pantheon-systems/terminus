@@ -7,7 +7,7 @@ Feature: Set HTTPS Certificate
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr https_add.yml
+  @vcr https-add.yml
   Scenario: Set an HTTPS Certificate
     When I run "terminus https:set [[test_site_name]].live fake fake"
     Then I should get:
@@ -15,7 +15,7 @@ Feature: Set HTTPS Certificate
     Converged loadbalancer
     """
 
-  @vcr https_delete.yml
+  @vcr https-delete.yml
   Scenario: Delete an HTTPS Certificate
     When I run "terminus https:remove [[test_site_name]].dev"
     Then I should get:
@@ -23,7 +23,7 @@ Feature: Set HTTPS Certificate
     Converged containers on "dev"
     """
 
-  @vcr https_delete-nocert.yml
+  @vcr https-delete-nocert.yml
   Scenario: Delete a non-existant HTTPS Certificate
     When I run "terminus https:remove [[test_site_name]].dev"
     Then I should get:

@@ -4,7 +4,7 @@ Feature: Waking a site
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr site_wake
+  @vcr env-wake.yml
   Scenario: Waking a site
     When I run "terminus env:wake [[test_site_name]].dev"
     Then I should get:

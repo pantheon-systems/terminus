@@ -6,7 +6,7 @@ Feature: Listing sites
   Background: I am authenticated
     Given I am authenticated
 
-  @vcr sites_list_empty
+  @vcr site-list-empty.yml
   Scenario: Listing a user's sites when they haven't any
     When I run "terminus site:list"
     Then I should get: "You have no sites."
@@ -14,7 +14,7 @@ Feature: Listing sites
     And I should get: "Name   ID   Service Level   Framework   Owner   Created   Memberships"
     And I should get: "------ ---- --------------- ----------- ------- --------- -------------"
 
-  @vcr sites_list
+  @vcr site-list.yml
   Scenario: Listing a user's sites
     Given a site named "[[test_site_name]]"
     When I run "terminus site:list --owner=me"
@@ -24,7 +24,7 @@ Feature: Listing sites
     And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   free            wordpress   11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team"
     And I should get: "------------- -------------------------------------- --------------- ----------- -------------------------------------- --------------------- --------------------------------------------"
 
-  @vcr sites_list
+  @vcr site-list.yml
   Scenario: Filter sites list by name
     Given a site named "[[test_site_name]]"
     When I run "terminus site:list --name=[[test_site_name]]"
@@ -34,7 +34,7 @@ Feature: Listing sites
     And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   free            wordpress   11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team"
     And I should get: "------------- -------------------------------------- --------------- ----------- -------------------------------------- --------------------- --------------------------------------------"
 
-  @vcr sites_list
+  @vcr site-list.yml
   Scenario: Filter sites list by name, excluding the test site
     Given a site named "[[test_site_name]]"
     When I run "terminus site:list --name=missing"

@@ -6,7 +6,7 @@ Feature: Machine tokens command
   Background: I am logged in
     Given I am authenticated
 
-  @vcr machine-tokens_list
+  @vcr machine-token-list.yml
   Scenario: List the machine tokens
     When I run "terminus machine-token:list"
     Then I should get:
@@ -14,7 +14,7 @@ Feature: Machine tokens command
     [[machine_token_id]]
     """
 
-  @vcr machine-tokens_delete
+  @vcr machine-token-delete.yml
   Scenario: Delete machine token
     When I run "terminus machine-token:delete [[machine_token_id]]"
     Then I should get:
