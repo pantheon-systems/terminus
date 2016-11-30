@@ -1,17 +1,17 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
+namespace Pantheon\Terminus\UnitTests\Commands\Backup\Automatic;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Commands\Backup\Schedule\GetCommand;
+use Pantheon\Terminus\Commands\Backup\Automatic\InfoCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 
 /**
- * Class GetCommandTest
- * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\GetCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
+ * Class InfoCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Backup\Automatic\GetCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Automatic
  */
-class GetCommandTest extends BackupCommandTest
+class InfoCommandTest extends BackupCommandTest
 {
 
     /**
@@ -20,15 +20,15 @@ class GetCommandTest extends BackupCommandTest
     protected function setUp()
     {
         parent::setUp();
-        $this->command = new GetCommand($this->sites);
+        $this->command = new InfoCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
     }
 
     /**
-     * Tests the backup:schedule:get command when the schedule is set
+     * Tests the backup:automatic:info command when the schedule is set
      */
-    public function testGetBackupSchedule()
+    public function testAutomaticBackupSchedule()
     {
         $this->environment->id = 'scheduled';
         $schedule_info = [
@@ -50,9 +50,9 @@ class GetCommandTest extends BackupCommandTest
     }
 
     /**
-     * Tests the backup:schedule:get command when the schedule is not set
+     * Tests the backup:automatic:info command when the schedule is not set
      */
-    public function testGetBackupScheduleNotSet()
+    public function testAutomaticBackupScheduleNotSet()
     {
         $this->environment->id = 'scheduled';
         $schedule_info = [
