@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use League\Container\Container;
 use League\Container\ContainerInterface;
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
@@ -25,6 +24,8 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Config\BaseConfig;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Binding;
@@ -58,16 +59,18 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Robo\Robo;
 use Robo\Runner as RoboRunner;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VCR\VCR;
 
 /**
- * Class Runner
+ * Class Terminus
  * @package Pantheon\Terminus
  */
-class Runner
+class Terminus
 {
     /**
      * @var \Robo\Runner
@@ -85,18 +88,23 @@ class Runner
     /**
      * Object constructor
      *
-     * @param Container $container Container The dependency injection container
+     * @param \Pantheon\Terminus\Config $config
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function __construct(Container $container = null)
+    public function __construct(Config $config, InputInterface $input = null, OutputInterface $output = null)
     {
-        $this->config = $container->get('config');
+        $this->config = $config;
+
+        $application = new Application('Terminus', $config->get('version'));
+        $container = Robo::createDefaultContainer($input, $output, $application, $config);
 
         $this->configureContainer($container);
 
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
 
-        date_default_timezone_set($this->config->get('time_zone'));
+        date_default_timezone_set($config->get('time_zone'));
     }
 
     /**
