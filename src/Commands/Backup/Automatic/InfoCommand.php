@@ -32,7 +32,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage terminus backup:automatic:info <site>.<env>
      *     Responds with the day of the week backups are scheduled for on the <env> environment of <site>
-     * @usage terminus backup:automatic:info awesome-site.dev --format=table
+     * * @usage terminus backup:automatic:info <site>.<env> --format=table
      *     Responds with the day of the week and hour of the day backups are scheduled for on <site>.<env>
      */
     public function getSchedule($site_env)
