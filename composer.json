@@ -40,6 +40,7 @@
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
+    "rmccue/requests": "^1.7",
     "phpunit/phpcov": "^2.0",
     "phpunit/phpunit": "^4.0",
     "php-vcr/php-vcr": "^1.3",

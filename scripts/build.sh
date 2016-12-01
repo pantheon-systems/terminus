@@ -2,20 +2,31 @@
 
 set -ex
 
-TERMINUS_BIN_DIR=${TERMINUS_BIN_DIR-builds}
+CREATED_PHAR='terminus.phar'
+BUILD_DIR="$PWD/builds"
+DESTINATION="$BUILD_DIR/$CREATED_PHAR"
 
-# Regenerate the internal documentation
-php utils/make-docs.php
-# Install Composer nearby for use
-curl -sS https://getcomposer.org/installer | php -- --filename=$TERMINUS_BIN_DIR/composer.phar
+if ! type 'composer' > /dev/null; then
+    echo 'You need to install Composer before you can build using this script.'
+    exit
+fi
+
 # Remove dev packages for massive PHAR size reduction
-php $TERMINUS_BIN_DIR/composer.phar install --no-dev
-# the Behat test suite will pick up the executable found in $TERMINUS_BIN_DIR
-mkdir -p $TERMINUS_BIN_DIR
-php -dphar.readonly=0 utils/make-phar.php terminus.phar --quiet
-mv terminus.phar $TERMINUS_BIN_DIR/terminus.phar
-cp $TERMINUS_BIN_DIR/terminus.phar $TERMINUS_BIN_DIR/terminus
-chmod +x $TERMINUS_BIN_DIR/terminus.phar
-chmod +x $TERMINUS_BIN_DIR/terminus
-php $TERMINUS_BIN_DIR/composer.phar update
-rm $TERMINUS_BIN_DIR/composer.phar
+composer install --no-dev
+
+# Ensure the destination directory exists
+mkdir -p $BUILD_DIR
+
+# Make the PHAR file
+php -dphar.readonly=0 utils/make-phar.php $CREATED_PHAR $*
+
+# Move the PHAR file to the builds directory
+mv -f $CREATED_PHAR $DESTINATION
+
+# Set the file permission for the new PHAR file
+chmod +x $DESTINATION
+
+# Restore the dev packages
+composer install
+
+echo "Created PHAR file at $DESTINATION"

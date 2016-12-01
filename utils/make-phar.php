@@ -16,55 +16,41 @@ define('BE_QUIET', in_array('--quiet', $argv));
 /**
  * Adds a file to the PHAR
  *
- * @param [Phar]   $phar Phar archive resource
- * @param [string] $path Path to the file to add
- * @return [void]
+ * @param Phar   $phar Phar archive resource
+ * @param string $path Path to the file to add
+ * @param array $options Options to alter the file being added
+ *      integer offset The number of lines to skip at the beginning of the file
  */
-function addFile($phar, $path)
+function addFile($phar, $path, $options = ['offset' => 0,])
 {
     $key = str_replace('./', '', $path);
-
     if (!BE_QUIET) {
         echo "$key - $path\n";
     }
-
-    $phar[ $key ] = file_get_contents($path);
+    $file_contents = file_get_contents($path);
+    if (isset($options['offset']) && (boolean)$options['offset']) {
+        $file_contents = implode("\n", array_slice(explode("\n", $file_contents), $options['offset']));
+    }
+    $phar[$key] = $file_contents;
 }
 
 $phar = new Phar(DEST_PATH, 0, 'terminus.phar');
 
 $phar->startBuffering();
 
-// PHP files
 $finder = new Finder();
-$finder
-    ->files()
+$finder->files()
     ->ignoreVCS(true)
     ->in('./assets')
-    ->in('./php')
-    ->in('./vendor')
     ->in('./config')
-    ->exclude('test')
-    ->exclude('tests')
-    ->exclude('Tests')
-    ->exclude('php-cli-tools/examples');
+    ->in('./src')
+    ->in('./vendor');
 
 foreach ($finder as $file) {
     addFile($phar, $file);
 }
 
-// Non-PHP Files
-$finder = new Finder();
-$finder
-    ->files()
-    ->ignoreVCS(true)
-    ->ignoreDotFiles(false)
-    ->in('./templates');
-
-foreach ($finder as $file) {
-    addFile($phar, $file);
-}
-
+addFile($phar, './bin/terminus', ['offset' => 1,]);
 addFile($phar, './vendor/autoload.php');
 addFile($phar, './vendor/rmccue/requests/library/Requests/Transport/cacert.pem');
 
@@ -73,7 +59,9 @@ $phar->setStub(
 #!/usr/bin/env php
 <?php
 Phar::mapPhar();
-include 'phar://terminus.phar/php/boot-phar.php';
+\$phar = 'phar://terminus.phar';
+define('TERMINUS_ROOT', \$phar);
+include "\$phar/bin/terminus";
 __HALT_COMPILER();
 ?>
 EOB
@@ -81,4 +69,4 @@ EOB
 
 $phar->stopBuffering();
 
-echo "Generated " . DEST_PATH . "\n";
+echo "Generated " . DEST_PATH . PHP_EOL;
