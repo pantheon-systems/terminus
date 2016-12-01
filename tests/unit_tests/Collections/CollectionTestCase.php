@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use League\Container\Container;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Request\Request;
 
 /**

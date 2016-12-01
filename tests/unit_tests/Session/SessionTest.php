@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Session;
 
 use League\Container\Container;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Models\User;

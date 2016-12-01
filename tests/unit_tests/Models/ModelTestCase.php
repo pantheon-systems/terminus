@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Request\Request;
 
 /**
