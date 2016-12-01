@@ -1,16 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
+namespace Pantheon\Terminus\UnitTests\Commands\Backup\Automatic;
 
-use Pantheon\Terminus\Commands\Backup\Schedule\CancelCommand;
+use Pantheon\Terminus\Commands\Backup\Automatic\DisableCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 
 /**
- * Class CancelCommandTest
- * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\CancelCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
+ * Class DisableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Backup\Automatic\DisableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Automatic
  */
-class CancelCommandTest extends BackupCommandTest
+class DisableCommandTest extends BackupCommandTest
 {
     /**
      * @inheritdoc
@@ -18,15 +18,15 @@ class CancelCommandTest extends BackupCommandTest
     protected function setUp()
     {
         parent::setUp();
-        $this->command = new CancelCommand($this->sites);
+        $this->command = new DisableCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
     }
 
     /**
-     * Tests the backup:schedule:cancel command
+     * Tests the backup:automatic:disable command
      */
-    public function testCancelBackupSchedule()
+    public function testDisableBackupSchedule()
     {
         $this->environment->id = 'scheduled';
 
@@ -41,7 +41,7 @@ class CancelCommandTest extends BackupCommandTest
                 $this->equalTo('Backup schedule successfully canceled.')
             );
 
-        $out = $this->command->cancelSchedule('mysite.scheduled');
+        $out = $this->command->disableSchedule('mysite.scheduled');
         $this->assertNull($out);
     }
 }
