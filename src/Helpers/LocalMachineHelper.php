@@ -19,7 +19,8 @@ class LocalMachineHelper
      * @param string $cmd The command to execute
      * @return string The last line of the output of the executed command.
      */
-    public function exec($cmd) {
+    public function exec($cmd)
+    {
         return exec($cmd);
     }
 
@@ -29,7 +30,8 @@ class LocalMachineHelper
      * @param string $cmd The command to execute
      * @return array The command output and exit_code.
      */
-    public function execRaw($cmd) {
+    public function execRaw($cmd)
+    {
         $exit_code = null;
         ob_start();
         passthru($cmd, $exit_code);
@@ -44,7 +46,8 @@ class LocalMachineHelper
      * @param $url
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    public function openUrl($url) {
+    public function openUrl($url)
+    {
         // Otherwise attempt to launch it.
         $cmd = '';
         switch (php_uname('s')) {
