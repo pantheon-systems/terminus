@@ -1,17 +1,17 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Backup\Schedule;
+namespace Pantheon\Terminus\UnitTests\Commands\Backup\Automatic;
 
-use Pantheon\Terminus\Commands\Backup\Schedule\SetCommand;
+use Pantheon\Terminus\Commands\Backup\Automatic\EnableCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class SetCommandTest
- * Testing class for Pantheon\Terminus\Commands\Backup\Schedule\SetCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Backup\Schedule
+ * Class EnableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Backup\Automatic\EnableCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Backup\Automatic
  */
-class SetCommandTest extends BackupCommandTest
+class EnableCommandTest extends BackupCommandTest
 {
     /**
      * @var Workflow
@@ -24,7 +24,7 @@ class SetCommandTest extends BackupCommandTest
     protected function setUp()
     {
         parent::setUp();
-        $this->command = new SetCommand($this->sites);
+        $this->command = new EnableCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
 
@@ -34,9 +34,9 @@ class SetCommandTest extends BackupCommandTest
     }
 
     /**
-     * Tests the backup:schedule:set command
+     * Tests the backup:automatic:enable command
      */
-    public function testSetBackupSchedule()
+    public function testSetAutomaticSchedule()
     {
         $this->environment->id = 'some_env';
         $schedule_info = ['day' => 'Caturday',];
@@ -53,7 +53,7 @@ class SetCommandTest extends BackupCommandTest
                 $this->equalTo('Backup schedule successfully set.')
             );
 
-        $out = $this->command->setSchedule('mysite.some_env', $schedule_info);
+        $out = $this->command->enableSchedule('mysite.some_env', $schedule_info);
         $this->assertNull($out);
     }
 }

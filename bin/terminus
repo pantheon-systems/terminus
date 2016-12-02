@@ -21,20 +21,19 @@ if ($phar_path) {
 }
 
 use Pantheon\Terminus\Config;
-use Pantheon\Terminus\Runner;
-use Robo\Robo;
-use Symfony\Component\Console\Application;
+use Pantheon\Terminus\Terminus;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-// Configuring the dependency-injection container
+// Create the input and output objects for Terminus to run against.
 $input = new ArgvInput($_SERVER['argv']);
 $output = new ConsoleOutput();
+// Create a config object.
 $config = new Config();
-$application = new Application('Terminus', $config->get('version'));
-$container = Robo::createDefaultContainer($input, $output, $application, $config);
 
 // Running Terminus
-$runner = new Runner($container);
-$status_code = $runner->run($input, $output);
+// @TODO: Figure out if and why we need to pass input/output twice and define what happens if we
+// use different objects for each call.
+$terminus = new Terminus($config, $input, $output);
+$status_code = $terminus->run($input, $output);
 exit($status_code);
