@@ -2,7 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
 

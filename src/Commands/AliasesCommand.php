@@ -35,7 +35,7 @@ class AliasesCommand extends TerminusCommand
             $location = '~/.drush/pantheon.aliases.drushrc.php';
         }
         $config = $this->getConfig();
-        $location = $config->fixDirectorySeparators(str_replace('~', $config->getHomeDir(), $location));
+        $location = $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $location));
         $config->ensureDirExists(dirname($location));
         if (file_put_contents($location, $aliases) !== false) {
             $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);

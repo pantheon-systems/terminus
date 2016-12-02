@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Commands\MachineToken\ListCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 

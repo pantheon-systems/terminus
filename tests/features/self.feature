@@ -30,3 +30,10 @@ Feature: CLI Commands
     """
     Please visit the dashboard to generate a machine token:
     """
+
+  Scenario: Dumping Terminus configuration
+    When I run "terminus self:config:dump"
+    Then I should get:
+    """
+      key: tokens_dir
+    """

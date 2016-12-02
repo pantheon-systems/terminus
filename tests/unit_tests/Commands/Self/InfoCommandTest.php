@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Self\InfoCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

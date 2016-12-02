@@ -19,6 +19,8 @@ class ArtCommandTest extends CommandTestCase
     protected function setUp()
     {
         parent::setUp();
+
+        $this->config->set('assets_dir', 'assets');
         $this->command = new ArtCommand();
         $this->command->setConfig($this->config);
         $this->output = $this->getMockBuilder(OutputInterface::class)

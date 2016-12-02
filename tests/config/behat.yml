@@ -19,4 +19,4 @@ default:
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
-              cache_dir:                '~/.terminus/behatcache'
+              cache_dir:                '/tmp/.terminus/cache'
