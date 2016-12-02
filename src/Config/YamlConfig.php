@@ -17,9 +17,7 @@ class YamlConfig extends TerminusConfig
     public function __construct($yml_path)
     {
         $this->setSourceName($yml_path);
-        $file_config = Yaml::parse(
-            file_get_contents($yml_path)
-        );
+        $file_config = file_exists($yml_path) ? Yaml::parse(file_get_contents($yml_path)) : [];
         $this->fromArray($file_config);
     }
 }
