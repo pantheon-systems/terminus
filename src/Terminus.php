@@ -27,6 +27,7 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Config\BaseConfig;
 use Pantheon\Terminus\DataStore\FileStore;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Branch;
@@ -210,6 +211,10 @@ class Terminus
         $container->add(NewRelic::class);
         $container->add(Tags::class);
         $container->add(Tag::class);
+
+        // Add Helpers
+        $container->add(LocalMachineHelper::class);
+
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
