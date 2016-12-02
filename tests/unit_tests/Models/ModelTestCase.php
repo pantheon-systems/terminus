@@ -59,7 +59,7 @@ abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->config->method('get')->will(
             $this->returnCallback(function ($arg) use ($values) {
-                return $values[$arg];
+                return isset($values[$arg]) ? $values[$arg] : null;
             })
         );
     }
