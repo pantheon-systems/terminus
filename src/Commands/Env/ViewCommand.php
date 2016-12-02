@@ -2,14 +2,18 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
-class ViewCommand extends TerminusCommand implements SiteAwareInterface
+class ViewCommand extends TerminusCommand implements SiteAwareInterface, ContainerAwareInterface
 {
     use SiteAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * Print the URL for an environment or open it in a browser
@@ -49,24 +53,8 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
             return $url;
         }
 
-        // Otherwise attempt to launch it.
-        $cmd = '';
-        switch (php_uname('s')) {
-            case 'Linux':
-                $cmd = 'xdg-open';
-                break;
-            case 'Darwin':
-                $cmd = 'open';
-                break;
-            case 'Windows NT':
-                $cmd = 'start';
-                break;
-        }
-        if (!$cmd) {
-            throw new TerminusException("Terminus is unable to open a browser on this OS");
-        }
-        $command = sprintf('%s %s', $cmd, $url);
-        exec($command);
+        $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
+
         return $url;
     }
 }
