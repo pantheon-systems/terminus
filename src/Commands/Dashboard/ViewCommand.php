@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Dashboard;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,9 +13,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ViewCommand
  * @package Pantheon\Terminus\Commands\Dashboard
  */
-class ViewCommand extends TerminusCommand implements SiteAwareInterface
+class ViewCommand extends TerminusCommand implements SiteAwareInterface, ContainerAwareInterface
 {
     use SiteAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * Print the URL to the Pantheon site dashboard or open it in a browser
@@ -38,18 +42,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function view($site_env = null, $options = ['print' => false,])
     {
-        switch (php_uname('s')) {
-            case 'Linux':
-                $cmd = 'xdg-open';
-                break;
-            case 'Darwin':
-                $cmd = 'open';
-                break;
-            case 'Windows NT':
-                $cmd = 'start';
-                break;
-        }
-
         list($site, $env) = $this->getOptionalSiteEnv($site_env);
         $url = isset($site)
             ? isset($env) ? $env->dashboardUrl() : $site->dashboardUrl()
@@ -57,8 +49,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
         if ($options['print']) {
             return $url;
         } else {
-            $command = sprintf('%s %s', $cmd, $url);
-            exec($command);
+            $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
         }
     }
 }

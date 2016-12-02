@@ -10,6 +10,7 @@ use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -188,20 +189,17 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function commitChanges($commit = null)
     {
-        // @TODO: Remove passthru from this function to make it testable.
-        // One idea might be to move this discovery to Config (which can then be mocked in tests).
-        ob_start();
-        passthru('git config user.email');
-        $git_email = ob_get_clean();
-        ob_start();
-        passthru('git config user.name');
-        $git_user = ob_get_clean();
+        $local = $this->getContainer()->get(LocalMachineHelper::class);
+
+        $git_email = $local->exec('git config user.email');
+        $git_user = $local->exec('git config user.name');
 
         $params = [
             'message' => $commit,
             'committer_name' => $git_user,
             'committer_email' => $git_email,
         ];
+
         $workflow = $this->getWorkflows()->create(
             'commit_and_push_on_server_changes',
             compact('params')
@@ -671,10 +669,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             ];
         }
 
-        ob_start();
-        passthru($ssh_command, $exit_code);
-        $response = ['output' => ob_get_clean(), 'exit_code' => $exit_code,];
-
+        $response = $this->getContainer()->get(LocalMachineHelper::class)->execRaw($ssh_command);
         return $response;
     }
 
