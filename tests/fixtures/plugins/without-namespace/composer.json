@@ -1,0 +1,9 @@
+{
+    "description": "An test Terminus command with no namespacing",
+    "type": "terminus-plugin",
+    "extra": {
+        "terminus": {
+            "compatible-version": "1.*"
+        }
+    }
+}

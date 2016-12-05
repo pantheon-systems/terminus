@@ -1,0 +1,10 @@
+{
+    "name": "orgnanme/wrong-type",
+    "description": "An test Terminus command",
+    "type": "foo",
+    "extra": {
+        "terminus": {
+            "compatible-version": "1.*"
+        }
+    }
+}
