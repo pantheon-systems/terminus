@@ -25,7 +25,7 @@ class FileStore implements DataStoreInterface
      *
      * @param string $key A key
      * @return mixed The value fpr the given key or null.
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function get($key)
     {
@@ -44,11 +44,11 @@ class FileStore implements DataStoreInterface
      *
      * @param string $key A key
      * @param mixed $data Data to save to the store
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function set($key, $data)
     {
-        $path = $this->getFileName($key);
+        $path = $this->getFileName($key, true);
         file_put_contents($path, json_encode($data));
     }
 
@@ -57,7 +57,7 @@ class FileStore implements DataStoreInterface
      *
      * @param string $key A key
      * @return bool Whether a value exists with the given key
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function has($key)
     {
@@ -69,11 +69,11 @@ class FileStore implements DataStoreInterface
      * Remove value from the store
      *
      * @param string $key A key
-     * @throws \Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
     public function remove($key)
     {
-        $path = $this->getFileName($key);
+        $path = $this->getFileName($key, true);
         if (file_exists($path)) {
             unlink($path);
         }
@@ -95,18 +95,17 @@ class FileStore implements DataStoreInterface
      * @return string A file path
      * @throws TerminusException
      */
-    protected function getFileName($key)
+    protected function getFileName($key, $writable = false)
     {
         $key = $this->cleanKey($key);
 
-        // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
-        if (!$this->directory) {
-            throw new TerminusException('Could not save data to a file because the path setting is mis-configured.');
+        if ($writable) {
+            $this->ensureDirectoryWritable();
         }
+
         if (!$key) {
             throw new TerminusException('Could not save data to a file because it is missing an ID');
         }
-
         return $this->directory . '/' . $key;
     }
 
@@ -121,5 +120,27 @@ class FileStore implements DataStoreInterface
     protected function cleanKey($key)
     {
         return preg_replace('/[^a-zA-Z0-9\-\_\@\.]/', '-', $key);
+    }
+
+    /**
+     * Check that the directory is writable and create it if we can.
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    protected function ensureDirectoryWritable()
+    {
+        // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
+        if (!$this->directory) {
+            throw new TerminusException('Could not save data to a file because the path setting is mis-configured.');
+        }
+
+        $writable = is_dir($this->directory) || (!file_exists($this->directory) && @mkdir($this->directory, 0777, true));
+        $writable = $writable && is_writable($this->directory);
+        if (!$writable) {
+            throw new TerminusException(
+                'Could not save data to a file because the path {path} cannot be written to.',
+                ['path' => $this->directory]
+            );
+        }
     }
 }

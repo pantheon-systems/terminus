@@ -60,6 +60,7 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Robo\Config;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
 use Symfony\Component\Console\Application;
@@ -89,7 +90,7 @@ class Terminus
     /**
      * Object constructor
      *
-     * @param \Pantheon\Terminus\Config $config
+     * @param \Robo\Config $config
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */

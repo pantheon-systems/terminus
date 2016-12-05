@@ -16,18 +16,16 @@ TERMINUS_PROTOCOL:      'https'
 TERMINUS_SSH_HOST:      null
 
 # User Prompts
-DASHBOARD_HOST:         'dashboard.pantheon.io'
-DASHBOARD_PROTOCOL:     'https'
+TERMINUS_DASHBOARD_HOST:     'dashboard.pantheon.io'
+TERMINUS_DASHBOARD_PROTOCOL: 'https'
 
 # Localization
 TERMINUS_DATE_FORMAT:   'Y-m-d H:i:s'
 TERMINUS_TIME_ZONE:     'UTC'
 
 # File Storage
-TERMINUS_CACHE_DIR:     '~/.terminus/cache'
-TERMINUS_CONFIG_DIR:    '~/terminus'
+TERMINUS_CACHE_DIR:     '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
 TERMINUS_LOG_DIR:       '/tmp'
-TERMINUS_PLUGINS_DIR:   '[[ TERMINUS_CONFIG_DIR ]]/plugins'
 TERMINUS_TOKENS_DIR:    '[[ TERMINUS_CACHE_DIR ]]/tokens'
 TERMINUS_ASSETS_DIR:    '[[ TERMINUS_ROOT ]]/assets'
 TERMINUS_TEMPLATES_DIR: '[[ TERMINUS_ROOT ]]/templates'

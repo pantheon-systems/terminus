@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Pantheon\Terminus\Commands\AliasesCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests;
+namespace Pantheon\Terminus\UnitTests\Config;
 
-use Pantheon\Terminus\Config;
+use Pantheon\Terminus\Config\DefaultsConfig;
 
 /**
  * Class ConfigTest
  * Testing class for Pantheon\Terminus\Config
  * @package Pantheon\Terminus\UnitTests
  */
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class DefaultsConfigTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Config
@@ -22,19 +22,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function __construct($name = null, array $data = [], $dataName = null)
     {
         parent::__construct($name, $data, $dataName);
-        $this->config = new Config();
-    }
-
-    /**
-     * Tests the get function
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage No configuration setting for DNE found.
-     */
-    public function testGet()
-    {
-        $this->assertTrue((boolean)$this->config->get('test_mode'));
-        $this->config->get('DNE');
+        $this->config = new DefaultsConfig();
     }
 
     /**
@@ -42,7 +30,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHomeDir()
     {
-        $this->assertEquals(getenv('HOME'), $this->config->getHomeDir());
+        // This test doesn't test across all platforms.
+        if (getenv('HOME')) {
+            $this->assertEquals(getenv('HOME'), $this->config->get('user_home'));
+        }
     }
 
     public function testGetPhpAndOSInfo()
@@ -51,5 +42,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(get_cfg_var('cfg_file_path'), $this->config->get('php_ini'));
         $this->assertEquals(PHP_BINARY, $this->config->get('php'));
         $this->assertEquals(php_uname('v'), $this->config->get('os_version'));
+    }
+
+    public function testGetTerminusRoot()
+    {
+        $this->assertEquals(getcwd(), $this->config->get('root'));
     }
 }

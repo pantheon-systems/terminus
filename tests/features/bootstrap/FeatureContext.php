@@ -584,7 +584,7 @@ class FeatureContext implements Context
         }
 
         // Pass the cache directory to the command so that tests don't poison the user's cache.
-        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir $command";
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir $command";
 
         ob_start();
         passthru($command . ' 2>&1');
