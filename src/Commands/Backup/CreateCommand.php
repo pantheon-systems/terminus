@@ -15,24 +15,24 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Create a backup of the specified environment
+     * Creates a backup of a specific site and environment.
      *
      * @authorize
      *
      * @command backup:create
      *
-     * @param string $site_env Site & environment to make a backup of, in the form `site-name.env`.
-     * @option string $element [code|files|database|db] Create a backup of just the code, files, or database
-     * @option integer $keep-for Set to retain the backup for a specific number of days
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @option string $element [code|files|database|db] Element to be backed up
+     * @option integer $keep-for Retention period, in days, to retain backup
      *
      * @usage terminus backup:create <site>.<env>
-     *    Creates a backup of the <env> environment of <site>
+     *    Creates a backup of <site>'s <env> environment.
      * @usage terminus backup:create <site>.<env> --element=<element>
-     *    Creates a backup of the <env> environment of <site>'s <element>
+     *    Creates a backup of <site>'s <env> environment's <element>.
      * @usage terminus backup:create <site>.<env> --keep-for=<days>
-     *    Creates a backup of the <env> environment of <site> and retains it for <days> days
+     *    Creates a backup of <site>'s <env> environment and retains it for <days> days.
      * @usage terminus backup:create <site>.<env> --element=<element> --keep-for=<days>
-     *    Creates a backup of awesome-site's live environment's <element> and retain it for <days> days
+     *    Creates a backup of <site>'s <env> environment's <element> and retains it for <days> days.
      */
     public function create($site_env, $options = ['element' => null, 'keep-for' => 365,])
     {
