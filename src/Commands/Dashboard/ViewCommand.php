@@ -19,26 +19,26 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
     use ContainerAwareTrait;
 
     /**
-     * Print the URL to the Pantheon site dashboard or open it in a browser
+     * Displays the URL for the Pantheon Dashboard or opens the Dashboard in a browser.
      *
      * @authorize
      *
      * @command dashboard:view
      * @aliases dashboard
      *
-     * @option string $site_env Site & environment to open the Dashboard to, in the form `site-name.env`
-     * @option boolean $print Set to print out the Dashboard URL instead of opening it
+     * @option string $site_env Site & environment in the format `site-name.env`
+     * @option boolean $print Print URL only
      *
      * @return string|null
      *
      * @usage terminus dashboard
-     *   Opens browser to the user's account on the Pantheon Dashboard
+     *     Opens browser to user's account on the Pantheon Dashboard.
      * @usage terminus dashboard --print
-     *   Prints the URL for the user's account on the Pantheon Dashboard
+     *     Prints the URL for user's account on the Pantheon Dashboard.
      * @usage terminus dashboard <site>
-     *   Opens browser to the <site> on the Pantheon Dashboard
+     *     Opens browser to <site> on the Pantheon Dashboard.
      * @usage terminus dashboard <site>.<env>
-     *   Opens browser to <site>'s <env> environment on the Pantheon Dashboard
+     *     Opens browser to <site>'s <env> environment on the Pantheon Dashboard.
      */
     public function view($site_env = null, $options = ['print' => false,])
     {
