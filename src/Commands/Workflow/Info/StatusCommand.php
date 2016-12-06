@@ -23,9 +23,9 @@ class StatusCommand extends InfoBaseCommand
      *   workflow: Workflow
      *   user: User
      *   status: Status
-     *   time: Time
      *   started_at: Started At
      *   finished_at: Finished At
+     *   time: Time Elapsed
      * @return PropertyList
      *
      * @param string $site_id Name or ID of the site that the workflow is part of
