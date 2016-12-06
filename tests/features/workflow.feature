@@ -10,7 +10,7 @@ Feature: View site workflow information
   @vcr workflow-list.yml
   Scenario: List workflows
     When I run "terminus workflow:list [[test_site_name]]"
-    Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Time
+    Then I should see a table with the headers: Workflow ID, Environment, Workflow, User, Status, Started At, Finished At, Time Elapsed
 
   @vcr workflow-info-status.yml
   Scenario: Show a specific Workflow's status
