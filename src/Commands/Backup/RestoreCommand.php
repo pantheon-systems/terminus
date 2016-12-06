@@ -17,23 +17,23 @@ class RestoreCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Restore a specific backup or the latest backup
+     * Restores a specific backup or the latest backup.
      *
      * @authorize
      *
      * @command backup:restore
      *
-     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-     * @option string $file [filename.tgz] Name of the backup archive file
-     * @option string $element [code|files|database|db] Backup type
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @option string $file [filename.tgz] Name of backup file
+     * @option string $element [code|files|database|db] Backup element
      * @throws TerminusException
      *
      * @usage terminus backup:restore <site>.<env>
-     *     Restores the most recent backup of any type to the <env> environment of <site>
+     *     Restores the most recent backup of any type to <site>'s <env> environment.
      * @usage terminus backup:restore <site>.<env> --file=<backup>
-     *     Restores backup with the specified archive file name, <backup>, to the <env> environment of <site>
+     *     Restores backup with the <backup> file name to <site>'s <env> environment.
      * @usage terminus backup:restore <site>.<env> --element=<element>
-     *     Restores the most recent <element> backup for the <env> environment of <site>
+     *     Restores the most recent <element> backup to <site>'s <env> environment.
      */
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => null,])
     {

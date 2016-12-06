@@ -16,7 +16,8 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Retrieve the regular backup of your site's environment
+     * Displays the hour when daily backups are created and the day of the week when weekly backups are created.
+     *
      *
      * @authorize
      *
@@ -28,12 +29,12 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @default-string-field weekly_backup_day
      * @return PropertyList
      *
-     * @param string $site_env Site & environment to get the schedule of, in the format `site-name.env`.
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus backup:automatic:info <site>.<env>
-     *     Responds with the day of the week backups are scheduled for on the <env> environment of <site>
-     * * @usage terminus backup:automatic:info <site>.<env> --format=table
-     *     Responds with the day of the week and hour of the day backups are scheduled for on <site>.<env>
+     *     Displays the day when <site>'s <env> environment's weekly backup is created'.
+     * @usage terminus backup:automatic:info <site>.<env> --format=table
+     *     Displays the hour of <site>'s <env> environment's daily backups (retained for one week) and the day on which its weekly backups (retained for one month) are made.
      */
     public function getSchedule($site_env)
     {
