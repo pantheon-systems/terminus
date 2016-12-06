@@ -9,6 +9,7 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
+use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Common\ConfigAwareTrait;
@@ -40,6 +41,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * @var Domains
      */
     public $domains;
+    /**
+     * @var Loadbalancers
+     */
+    public $loadbalancers;
     /**
      * @var Site
      */
@@ -387,6 +392,34 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * Remove a HTTPS certificate from the environment
+     *
+     * @return array $workflow
+     *
+     * @throws TerminusException
+     */
+    public function disableHttpsCertificate()
+    {
+        if (!$this->settings('ssl_enabled')) {
+            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
+        }
+        try {
+            $this->request()->request(
+                "sites/{$this->site->id}/environments/{$this->id}/settings",
+                [
+                    'method' => 'put',
+                    'form_params' => [
+                        'ssl_enabled' => false,
+                        'dedicated_ip' => false,
+                    ],
+                ]
+            );
+        } catch (\Exception $e) {
+            throw new TerminusException('There was an problem disabling https for this environment.');
+        }
+    }
+
+    /**
      * Generate environment URL
      *
      * @return string
@@ -730,34 +763,6 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
-     * Remove a HTTPS certificate from the environment
-     *
-     * @return array $workflow
-     *
-     * @throws TerminusException
-     */
-    public function disableHttpsCertificate()
-    {
-        if (!$this->settings('ssl_enabled')) {
-            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
-        }
-        try {
-            $this->request()->request(
-                "sites/{$this->site->id}/environments/{$this->id}/settings",
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            );
-        } catch (\Exception $e) {
-            throw new TerminusException('There was an problem disabling https for this environment.');
-        }
-    }
-
-    /**
      * Gives SFTP connection info for this environment
      *
      * @return array
@@ -867,6 +872,17 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             $this->domains = $this->getContainer()->get(Domains::class, [['environment' => $this,]]);
         }
         return $this->domains;
+    }
+
+    /**
+     * @return Loadbalancers
+     */
+    public function getLoadbalancers()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(Loadbalancers::class, [['environment' => $this,]]);
+        }
+        return $this->workflows;
     }
 
     /**
