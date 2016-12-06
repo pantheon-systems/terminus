@@ -15,19 +15,19 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Set up a week-long TTL backups to be made daily and a month-long TTL to be made weekly
+     * Enables automatic daily backups that are retained for one week and weekly backups retained for one month.
      *
      * @authorize
      *
      * @command backup:automatic:enable
      *
-     * @param string $site_env Site & environment to set the schedule of, in the format `site-name.env`.
+     * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $day Day of the week to make the month-long backup in any format recognized by PHP strtotime
      *
      * @usage terminus backup:automatic:enable <site>.<env>
-     *     Sets backups to occur at a random hour, with month-long TTL backup made on a random day
+     *     Enables automatic daily backups of <site>'s <env> environment that are retained for one week and weekly backups that are retained for one month.
      * @usage terminus backup:automatic:enable <site>.<env> --day=<day>
-     *     Sets backups to occur at a random hour, with month-long TTL backup made on <day>
+     *     Enables automatic daily backups of <site>'s <env> environment that are retained for one week and weekly backups on <day> that are retained for one month.
      */
     public function enableSchedule($site_env, $options = ['day' => null,])
     {

@@ -12,13 +12,13 @@ class LogoutCommand extends TerminusCommand
 {
 
     /**
-     * Log the currently logged-in user out of Pantheon
+     * Logs out the currently logged-in user.
      *
      * @command auth:logout
      * @aliases logout
      *
      * @usage terminus auth:logout
-     *   Logs you out of Pantheon by removing your saved session
+     *     Logs out of Pantheon and removes saved session.
      */
     public function logOut()
     {

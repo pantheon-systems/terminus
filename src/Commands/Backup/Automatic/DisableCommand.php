@@ -15,16 +15,16 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Disable a regular backup schedule
+     * Disables automatic backups.
      *
      * @authorize
      *
      * @command backup:automatic:disable
      *
-     * @param string $site_env Site & environment to disable the schedule of, in the format `site-name.env`.
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus backup:automatic:disable <site>.<env>
-     *    Disables the regular backup schedule for the <env> environment of <site>.
+     *    Disables the regular backup schedule for <site>'s <env> environment.
      */
     public function disableSchedule($site_env)
     {

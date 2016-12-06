@@ -16,23 +16,23 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Fetch the download URL for a specific backup or latest backup
+     * Displays the download URL for a specific backup or latest backup.
      *
      * @authorize
      *
      * @command backup:get
      *
-     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-     * @option string $file [filename.tgz] Name of the backup archive file
-     * @option string $element [code|files|database|db] Specify an element to back up
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @option string $file [filename.tgz] Name of backup file
+     * @option string $element [code|files|database|db] Backup element to retrieve
      * @throws TerminusNotFoundException
      *
      * @usage terminus backup:get <site>.<env>
-     *     Returns the URL for the most recent backup of any type in the <env> environment of <site>
+     *     Displays the URL for the most recent backup of any type in <site>'s <env> environment.
      * @usage terminus backup:get awesome-site.dev --file=2016-08-18T23-16-20_UTC_code.tar.gz
-     *     Returns the URL for the backup with the specified archive file name in the <env> environment of <site>
+     *     Displays the URL for the backup with the specified file name in <site>'s <env> environment.
      * @usage terminus backup:get awesome-site.dev --element=code
-     *     Returns the URL for the most recent code backup in the <env> environment of <site>
+     *     Displays the URL for the most recent code backup in <site>'s <env> environment.
      */
     public function getBackup($site_env, array $options = ['file' => null, 'element' => null,])
     {
