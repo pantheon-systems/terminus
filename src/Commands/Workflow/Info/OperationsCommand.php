@@ -12,6 +12,7 @@ class OperationsCommand extends InfoBaseCommand
 {
     /**
      * Show operation data for a workflow
+     * Note: Operation descriptions only exist for Quicksilver operations and the column will be otherwise blank.
      *
      * @authorize
      *
@@ -23,9 +24,9 @@ class OperationsCommand extends InfoBaseCommand
      *
      * @field-labels
      *   type: Type
-     *   description: Operation Description
      *   result: Result
      *   duration: Duration
+     *   description: Operation Description
      *
      * @usage terminus workflow:info:operations <site> --id=<workflow>
      *   Shows the operations of the workflow identified by <workflow> found on <site>
