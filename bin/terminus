@@ -35,6 +35,7 @@ $output = new ConsoleOutput();
 // Create a config object.
 $config = new DefaultsConfig();
 $config->extend(new YamlConfig($config->get('root') . '/config/constants.yml'));
+$config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.yml'));
 $config->extend(new DotEnvConfig(getcwd()));
 $config->extend(new EnvConfig());
 
