@@ -22,7 +22,9 @@ Feature: View site workflow information
     Workflow
     User
     Status
-    Time
+    Started At
+    Finished At
+    Time Elapsed
     """
 
   @vcr workflow-info-status.yml
