@@ -29,9 +29,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *   workflow: Workflow
      *   user: User
      *   status: Status
-     *   time: Time
      *   started_at: Started At
      *   finished_at: Finished At
+     *   time: Time Elapsed
      * @return RowsOfFields
      *
      * @param string $site_id Site name to list the workflows of
