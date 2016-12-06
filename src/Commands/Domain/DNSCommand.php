@@ -16,22 +16,22 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Display the recommended DNS settings for this environment
+     * Displays recommended DNS settings for the environment.
      *
      * @authorize
      *
      * @command domain:dns
      *
      * @field-labels
-     *   name: Name
-     *   type: Record Type
-     *   value: Value
+     *     name: Name
+     *     type: Record Type
+     *     value: Value
      * @return RowsOfFields
      *
-     * @param string $site_env Site & environment to get DNS settings for, in the form `site-name.env`.
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus domain:dns <site>.<env>
-     *     Displays the recommended DNS settings for the <site> site's <env> environment
+     *     Displays recommended DNS settings for <site>'s <env> environment.
      */
     public function getRecommendations($site_env)
     {
