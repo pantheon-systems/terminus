@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the Git branches for a site
+     * Displays list of git branches for a site.
      *
      * @authorize
      *
@@ -24,14 +24,14 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases branches
      *
      * @field-labels
-     *   id: ID
-     *   sha: SHA
+     *     id: ID
+     *     sha: SHA
      * @return RowsOfFields
      *
-     * @param string $site_id The name of the site to list the branches of
+     * @param string $site_id Site name
      *
      * @usage terminus branch:list <site>
-     *    Lists the Git branches on the Pantheon remote associated with <site>
+     *     Displays a list of Git branches within <site>'s Pantheon remote repository.
      */
     public function listBranches($site_id)
     {
