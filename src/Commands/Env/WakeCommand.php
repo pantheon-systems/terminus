@@ -16,18 +16,19 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Ping a site to ensure it responds
+     * Wakes the environment by pinging it.
+     * Note: Development environments and Sandbox sites will automatically sleep after a period of inactivity.
      *
      * @authorize
      *
      * @command env:wake
      *
-     * @param string $site_env The site and environment to wake
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @throws TerminusException
      *
      * @usage terminus env:wake <site>.<env>
-     *    Pings the <env> environment of <site> to ensure it is active
+     *    Wakes <site>'s <env> environment by pinging it.
      */
     public function wake($site_env)
     {
