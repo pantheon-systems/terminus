@@ -16,19 +16,19 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Set git or sftp connection mode on a site's dev or multidev environment
+     * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).
      *
      * @authorize
      *
      * @command connection:set
      *
-     * @param string $site_env Name of the environment to set. Note that you cannot change 'test' or 'live'.
-     * @param string $mode [git|sftp] The connection mode to set
+     * @param string $site_env Site & development environment (excludes Test and Live) in the format `site-name.env`
+     * @param string $mode [git|sftp] Connection mode
      *
      * @throws TerminusException
      *
      * @usage terminus connection:set <site>.<env> <mode>
-     *    Sets the connection mode of the <env> environment of <site> to <mode>
+     *     Sets the connection mode of <site>'s <env> environment to <mode>.
      */
     public function connectionSet($site_env, $mode)
     {
