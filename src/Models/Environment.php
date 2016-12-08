@@ -680,11 +680,12 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * Sends a command to an environment via SSH.
      *
      * @param string $command The command to be run on the platform
+     * @param callable $callback An anonymous function to run while waiting for the command to finish
      * @return string[] $response Elements as follow:
      *         string output    The output from the command run
      *         string exit_code The status code returned by the command run
      */
-    public function sendCommandViaSsh($command)
+    public function sendCommandViaSsh($command, $callback = null)
     {
         $sftp = $this->sftpConnectionInfo();
         $ssh_command = vsprintf(
@@ -702,7 +703,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             ];
         }
 
-        $response = $this->getContainer()->get(LocalMachineHelper::class)->execRaw($ssh_command);
+        $response = $this->getContainer()->get(LocalMachineHelper::class)->execInteractive($ssh_command, $callback);
         return $response;
     }
 

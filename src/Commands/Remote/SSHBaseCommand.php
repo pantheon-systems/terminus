@@ -6,6 +6,8 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Exceptions\TerminusProcessException;
+use Symfony\Component\Process\Process;
 
 /**
  * Class SSHBaseCommand
@@ -53,7 +55,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      *
      * @param array $command_args
      * @return string
-     * @throws TerminusException
+     * @throws TerminusProcessException
      */
     protected function executeCommand(array $command_args)
     {
@@ -64,11 +66,17 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($this->validateCommand($command_args)) {
             $command_line = $this->getCommandLine($command_args);
 
-            $result = $this->environment->sendCommandViaSsh($command_line);
+            $output = $this->output();
+            $result = $this->environment->sendCommandViaSsh(
+                $command_line,
+                function ($type, $buffer) use ($output) {
+                    $output->writeln($buffer);
+                }
+            );
             $output = $result['output'];
-            $exit   = $result['exit_code'];
+            $exit = $result['exit_code'];
 
-            $this->log()->info('Command: {site}.{env} -- {command} [Exit: {exit}]', [
+            $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
                 'site'    => $this->site->get('name'),
                 'env'     => $this->environment->id,
                 'command' => escapeshellarg($command_line),
@@ -76,7 +84,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             ]);
 
             if ($exit != 0) {
-                throw new TerminusException($output);
+                throw new TerminusProcessException($output);
             }
         }
 
