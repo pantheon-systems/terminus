@@ -16,24 +16,24 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Show an environment's code log
+     * Displays the code log for the environment.
      *
      * @authorize
      *
      * @command env:code-log
      *
      * @field-labels
-     *   time: Timestamp
-     *   author: Author
-     *   labels: Labels
-     *   hash: Commit ID
-     *   message: Message
+     *     time: Timestamp
+     *     author: Author
+     *     labels: Labels
+     *     hash: Commit ID
+     *     message: Message
      * @return RowsOfFields
      *
-     * @param string $site_env Site & environment to show log for
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus env:code-log <site>.<env>
-     *   Show code log for the <env> environment of <site>
+     *     Displays the code log for <site>'s <env> environment.
      */
     public function codeLog($site_env)
     {
