@@ -16,22 +16,22 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Displays HTTPS information about an environment.
+     * Displays HTTPS configuration for the environment.
      *
      * @authorize
      *
      * @command https:info
      *
      * @field-labels
-     *    enabled: Enabled?
-     *    ipv4: IPV4
-     *    ipv6: IPV6
+     *     enabled: Enabled?
+     *     ipv4: IPv4
+     *     ipv6: IPv6
      * @return PropertyList
      *
-     * @param string $site_env Site and environment in the form `site-name.env`
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus https:info <site>.<env>
-     *     Displays information about the HTTPS status of <site>'s <env> environment.
+     *     Displays HTTPS configuration for <site>'s <env> environment.
      */
     public function info($site_env)
     {
