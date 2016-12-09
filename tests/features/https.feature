@@ -36,8 +36,8 @@ Feature: Set HTTPS Certificate
     When I run "terminus https:info [[test_site_name]].live"
     Then I should get: "---------- -----------------------------------------"
     And I should get: "Enabled?   true"
-    And I should get: "IPV4       161.47.18.130"
-    And I should get: "IPV6       2001:4801:7905:0100:aff8:a2d8:0000:0df0"
+    And I should get: "IPv4       161.47.18.130"
+    And I should get: "IPv6       2001:4801:7905:0100:aff8:a2d8:0000:0df0"
     And I should get: "---------- -----------------------------------------"
 
 
@@ -46,7 +46,6 @@ Feature: Set HTTPS Certificate
     When I run "terminus https:info [[test_site_name]].dev"
     Then I should get: "---------- -------"
     And I should get: "Enabled?   false"
-    And I should get: "IPV4"
-    And I should get: "IPV6"
+    And I should get: "IPv4"
+    And I should get: "IPv6"
     And I should get: "---------- -------"
-

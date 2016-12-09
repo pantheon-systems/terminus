@@ -15,17 +15,17 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Remove HTTPS from an environment
+     * Disables HTTPS and removes the SSL certificate from the environment.
      *
      * @authorize
      *
      * @command https:remove
      * @aliases https:disable https:rm
      *
-     * @param string $site_env Site and environment in the form `site-name.env`
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus https:remove <site>.<env>
-     *    Removes the SSL certificate from the <env> environment of <site>, if any were present
+     *     Disables HTTPS and removes the SSL certificate from <site>'s <env> environment.
      */
     public function remove($site_env)
     {
