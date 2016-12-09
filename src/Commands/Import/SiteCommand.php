@@ -16,18 +16,18 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Import a site archive onto a Pantheon site
+     *  Imports a site archive (code, database, and files) to the site.
      *
      * @authorize
      *
      * @command import:site
      * @aliases site:import import
      *
-     * @option string $site Name of the site to import to
-     * @option string $url URL at which the import archive exists
+     * @option string $site Site name
+     * @option string $url Publicly accessible URL of the site archive
      *
      * @usage terminus import <site> <archive_url>
-     *   Imports the file at <archive_url> to the site named <site>
+     *   Imports the site archive at <archive_url> to <site>.
      */
     public function import($sitename, $url)
     {

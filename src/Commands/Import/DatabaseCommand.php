@@ -11,18 +11,18 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Import a database archive into a Pantheon environment
+     * Imports a database archive to the environment.
      *
      * @authorize
      *
      * @command import:database
      * @aliases import:db
      *
-     * @param string $site_env Site & environment to import a database to, in the form `site-name.env`
-     * @param string $url URL at which the import archive exists
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param string $url Publicly accessible URL of the database archive
      *
      * @usage terminus import:database <site>.<env> <archive_url>
-     *   Imports the database in the archive at <archive_url> to the <env> environment of the <site> site
+     *     Imports the database archive at <archive_url> to <site>'s <env> environment.
      */
     public function import($site_env, $url)
     {

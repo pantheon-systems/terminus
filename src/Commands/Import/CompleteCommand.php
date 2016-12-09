@@ -15,17 +15,17 @@ class CompleteCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Inform Pantheon that your manual site importation has been completed
+     * Finalizes the Pantheon import process.
      *
      * @authorize
      *
      * @command import:complete
      * @aliases site:import:complete
      *
-     * @param string $site_name Name of the site to mark as having completed importation
+     * @param string $site_name Site name
      *
      * @usage terminus import:complete <site>
-     *   Marks the <site> site's import as complete
+     *     Finalizes <site>'s Pantheon import process.
      */
     public function complete($site_name)
     {
