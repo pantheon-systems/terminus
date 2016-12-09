@@ -24,8 +24,8 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup:automatic:info
      *
      * @field-labels
-     *    daily_backup_hour: Daily Backup Hour
-     *    weekly_backup_day: Weekly Backup Day
+     *     daily_backup_hour: Daily Backup Hour
+     *     weekly_backup_day: Weekly Backup Day
      * @default-string-field weekly_backup_day
      * @return PropertyList
      *
