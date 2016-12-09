@@ -1,16 +1,17 @@
 <?php
 
+
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
-use Pantheon\Terminus\Commands\Lock\AddCommand;
+use Pantheon\Terminus\Commands\Lock\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class AddCommandTest
- * Testing class for Pantheon\Terminus\Commands\Lock\AddCommand
+ * Class DisableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Lock\DisableCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Lock
  */
-class AddCommandTest extends LockCommandTest
+class DisableCommandTest extends LockCommandTest
 {
     /**
      * @inheritdoc
@@ -19,25 +20,23 @@ class AddCommandTest extends LockCommandTest
     {
         parent::setUp();
 
-        $this->command = new AddCommand($this->getConfig());
+        $this->command = new DisableCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
     /**
-     * Tests the lock:add command
+     * Tests the lock:disable command
      */
-    public function testAdd()
+    public function testDisable()
     {
-        $username = 'username';
-        $password = 'password';
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
         $this->lock->expects($this->once())
-            ->method('add')
-            ->with($this->equalTo(['username' => $username, 'password' => $password,]))
+            ->method('disable')
+            ->with()
             ->willReturn($workflow);
         $workflow->expects($this->once())
             ->method('checkProgress')
@@ -51,11 +50,11 @@ class AddCommandTest extends LockCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('{site}.{env} has been locked.'),
+                $this->equalTo('{site}.{env} has been unlocked.'),
                 $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
             );
 
-        $out = $this->command->add("$site_name.{$this->environment->id}", $username, $password);
+        $out = $this->command->disable("$site_name.{$this->environment->id}");
         $this->assertNull($out);
     }
 }
