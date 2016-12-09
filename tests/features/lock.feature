@@ -9,10 +9,10 @@ Feature: Locking and unlocking a site
 
   @vcr lock-add-remove.yml
   Scenario: Locking and unlocking an environment
-    When I run "terminus lock:add [[test_site_name]].dev pantheon password"
+    When I run "terminus lock:enable [[test_site_name]].dev pantheon password"
     Then I should get: "[[test_site_name]].dev has been locked."
 
-    When I run "terminus lock:remove [[test_site_name]].dev"
+    When I run "terminus lock:disable [[test_site_name]].dev"
     Then I should get: "[[test_site_name]].dev has been unlocked."
 
   @vcr lock-info.yml

@@ -16,7 +16,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Retrieve information about an environment lock
+     * Displays HTTP basic authentication status and configuration for the environment.
      *
      * @authorize
      *
@@ -24,15 +24,15 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases lock
      *
      * @field-labels
-     *   locked: Locked?
-     *   username: Username
-     *   password: Password
+     *     locked: Locked?
+     *     username: Username
+     *     password: Password
      * @return PropertyList
      *
-     * @param string $site_env The site/environment to retrieve lock information about
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage terminus lock:info <site>.<env>
-     *    Displays information about the lock status of the <env> environment of <site>
+     *     Displays HTTP basic authentication status and configuration for <site>'s <env> environment.
      */
     public function info($site_env)
     {

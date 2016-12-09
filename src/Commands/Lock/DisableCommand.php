@@ -7,30 +7,29 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class RemoveCommand
+ * Class DisableCommand
  * @package Pantheon\Terminus\Commands\Lock
  */
-class RemoveCommand extends TerminusCommand implements SiteAwareInterface
+class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Remove the lock from an environment
+     * Disables HTTP basic authentication on the environment.
      *
      * @authorize
      *
-     * @command lock:remove
-     * @aliases lock:rm
+     * @command lock:disable
      *
-     * @param string $site_env The site/environment to unlock
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus lock:remove <site>.<env>
-     *    Removes the lock on the <env> environment of <site>, if any is present
+     * @usage terminus lock:disable <site>.<env>
+     *     Disables HTTP basic authentication on <site>'s <env> environment.
      */
-    public function remove($site_env)
+    public function disable($site_env)
     {
         list($site, $env) = $this->getSiteEnv($site_env);
-        $workflow = $env->getLock()->remove();
+        $workflow = $env->getLock()->disable();
         while (!$workflow->checkProgress()) {
             // @TODO: Remove Symfony progress bar to indicate that something is happening.
         }

@@ -1,17 +1,16 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
-use Pantheon\Terminus\Commands\Lock\RemoveCommand;
+use Pantheon\Terminus\Commands\Lock\EnableCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class RemoveCommandTest
- * Testing class for Pantheon\Terminus\Commands\Lock\RemoveCommand
+ * Class EnableCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Lock\EnableCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Lock
  */
-class RemoveCommandTest extends LockCommandTest
+class EnableCommandTest extends LockCommandTest
 {
     /**
      * @inheritdoc
@@ -20,23 +19,25 @@ class RemoveCommandTest extends LockCommandTest
     {
         parent::setUp();
 
-        $this->command = new RemoveCommand($this->getConfig());
+        $this->command = new EnableCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
     /**
-     * Tests the lock:remove command
+     * Tests the lock:enable command
      */
-    public function testRemove()
+    public function testEnable()
     {
+        $username = 'username';
+        $password = 'password';
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
         $this->lock->expects($this->once())
-            ->method('remove')
-            ->with()
+            ->method('enable')
+            ->with($this->equalTo(['username' => $username, 'password' => $password,]))
             ->willReturn($workflow);
         $workflow->expects($this->once())
             ->method('checkProgress')
@@ -50,11 +51,11 @@ class RemoveCommandTest extends LockCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('{site}.{env} has been unlocked.'),
+                $this->equalTo('{site}.{env} has been locked.'),
                 $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
             );
 
-        $out = $this->command->remove("$site_name.{$this->environment->id}");
+        $out = $this->command->enable("$site_name.{$this->environment->id}", $username, $password);
         $this->assertNull($out);
     }
 }

@@ -30,7 +30,7 @@ class Lock extends TerminusModel
      *        string password
      * @return Workflow
      */
-    public function add($params)
+    public function enable($params)
     {
         return $this->environment->getWorkflows()->create('lock_environment', compact('params'));
     }
@@ -62,7 +62,7 @@ class Lock extends TerminusModel
      *
      * @return Workflow
      */
-    public function remove()
+    public function disable()
     {
         return $this->environment->getWorkflows()->create('unlock_environment');
     }
