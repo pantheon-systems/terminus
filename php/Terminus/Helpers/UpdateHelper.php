@@ -8,8 +8,24 @@ use Terminus\Request;
 
 class UpdateHelper extends TerminusHelper
 {
+    protected $update_notice = <<<EOT
+A new Terminus version v{new_version} is available. You are currently using version v{old_version}. 
 
-  /**
+PLEASE NOTE:
+Terminus version v1.0 and later introduces a new command line and argument structure that is
+incompatible with any custom scripts that use terminus or older plugins that you may be using.
+
+PLEASE CONSIDER THE IMPACT TO YOUR AUTOMATION SCRIPTS AND PLUGIN DEPENDENCIES BEFORE UPGRADING.
+
+Terminus users will benefit from the new simplified and consistent command structure we have
+created for you in v1.0. We have prepared an upgrade guide to assist you in learning the
+differences and improvements we have made to Terminus:
+{{guide_url}}
+EOT;
+
+    protected $guide_url = 'https://pantheon.io/docs/terminus/commands/compare/';
+
+   /**
    * Retrieves current version number from repository and saves it to the cache
    *
    * @return string The version number
@@ -44,10 +60,13 @@ class UpdateHelper extends TerminusHelper
         ) {
             try {
                 $current_version = $this->getCurrentVersion();
-                if (version_compare($current_version, Config::get('version'), '>')) {
+                $my_version = Config::get('version');
+                if (version_compare($current_version, $my_version, '>')) {
                     $this->command->log()->info(
-                        'An update to Terminus is available. Please update to {version}.',
-                        ['version' => $current_version]
+                        $this->update_notice,
+                        ['new_version' => $current_version,
+                         'old_version' => $my_version,
+                         'guide_url' => $this->guide_url]
                     );
                 }
             } catch (\Exception $e) {
