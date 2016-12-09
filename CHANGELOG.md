@@ -1,6 +1,17 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 0.13.6 - 2016-12-13
+### Changed
+- Users are notified of impending Terminus release via update notification with the following message:
+  NOTICE:
+  Terminus version v1.0 and later introduces a new command line and argument structure that is incompatible with any custom scripts that use terminus or older plugins that you may be using.
+
+  PLEASE CONSIDER THE IMPACT TO YOUR AUTOMATION SCRIPTS AND PLUGIN DEPENDENCIES BEFORE UPGRADING TO TERMINUS v1.0
+
+  Terminus users will benefit from the new simplified and consistent command structure in v1.0 We have prepared an upgrade guide to assist you in learning the differences and improvements:
+  https://pantheon.io/docs/terminus/commands/compare/
+
 ## 0.13.5
 - Rerelease of 0.13.4
 

@@ -1,10 +1,9 @@
 language: php
 
 branches:
-  # Only test the master branch and SemVer tags.
+  # This branch of terminus is maintenance mode and not actively developed
   only:
-    - master
-    - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
+    - 0.13.x
 
 php:
   - 5.5

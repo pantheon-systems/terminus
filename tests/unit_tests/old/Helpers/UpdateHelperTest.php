@@ -2,8 +2,8 @@
 
 namespace Terminus\UnitTests\Helpers;
 
-use Terminus\Commands\ArtCommand;
 use Terminus\Caches\FileCache;
+use Terminus\Commands\ArtCommand;
 use Terminus\Helpers\UpdateHelper;
 use Terminus\UnitTests\TerminusTest;
 
@@ -50,7 +50,7 @@ class UpdateHelperTest extends TerminusTest
         $this->update_helper->checkForUpdate();
         $file_contents = explode("\n", file_get_contents($log_file));
         $this->assertFalse(
-            strpos(array_pop($file_contents), 'An update to Terminus is available.')
+            strpos(array_pop($file_contents), 'A new Terminus version')
         );
         $this->resetOutputDestination($log_file);
     }
