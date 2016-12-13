@@ -26,7 +26,6 @@ TERMINUS_TIME_ZONE:     'UTC'
 # File Storage
 TERMINUS_CACHE_DIR:     '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
 TERMINUS_PLUGINS_DIR:   '[[ TERMINUS_USER_HOME ]]/.terminus/plugins'
-TERMINUS_LOG_DIR:       '/tmp'
 TERMINUS_TOKENS_DIR:    '[[ TERMINUS_CACHE_DIR ]]/tokens'
 TERMINUS_ASSETS_DIR:    '[[ TERMINUS_ROOT ]]/assets'
 TERMINUS_TEMPLATES_DIR: '[[ TERMINUS_ROOT ]]/templates'
