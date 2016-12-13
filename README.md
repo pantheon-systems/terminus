@@ -1,8 +1,8 @@
 Terminus
 ============
 
-[![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus) [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
-[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
+[![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=0.13.x)](https://travis-ci.org/pantheon-systems/terminus) [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
+[![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=0.13.x)](https://coveralls.io/github/pantheon-systems/terminus?branch=0.13.x)
 
 Terminus is Pantheon's Command Line Interface (CLI), providing equivalent functionality to the Pantheon Web Dashboard and easier scripting.
 
