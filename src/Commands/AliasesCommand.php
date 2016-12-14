@@ -1,6 +1,7 @@
 <?php
 
 namespace Pantheon\Terminus\Commands;
+use Symfony\Component\Filesystem\Filesystem;
 
 class AliasesCommand extends TerminusCommand
 {
