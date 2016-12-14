@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the sites belonging to a given organization
+     * Displays the list of sites associated with an organization.
      *
      * @authorize
      *
@@ -24,22 +24,22 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases org:sites
      *
      * @field-labels
-     *   name: Name
-     *   id: ID
-     *   service_level: Service Level
-     *   framework: Framework
-     *   owner: Owner
-     *   created: Created
-     *   tags: Tags
+     *     name: Name
+     *     id: ID
+     *     service_level: Service Level
+     *     framework: Framework
+     *     owner: Owner
+     *     created: Created
+     *     tags: Tags
      * @return RowsOfFields
      *
-     * @param string $organization The name or UUID of the organization to list the sites of
-     * @option string $tag A tag by which to filter the list of sites
+     * @param string $organization Organization name or ID
+     * @option string $tag Tag name to filter
      *
      * @usage terminus org:site:list <organization>
-     *   Displays a list of the sites belonging to the <organization> organization
+     *     Displays the list of sites associated with <organization>.
      * @usage terminus org:site:list <organization> --tag=<tag>
-     *   Displays a list of the sites belonging to the <organization> organization, filtered by the tag <tag>
+     *     Displays the list of sites associated with <organization> that have the <tag> tag.
      */
     public function listSites($organization, $options = ['tag' => null,])
     {

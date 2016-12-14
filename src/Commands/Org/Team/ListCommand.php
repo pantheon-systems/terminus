@@ -12,7 +12,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class ListCommand extends TerminusCommand
 {
     /**
-     * List the team members of a given organization
+     * Displays the list of users associated with an organization.
      *
      * @authorize
      *
@@ -20,17 +20,17 @@ class ListCommand extends TerminusCommand
      * @aliases org:team
      *
      * @field-labels
-     *   id: ID
-     *   first_name: First Name
-     *   last_name: Last Name
-     *   email: Email
-     *   role: Role
-     *
-     * @param string $organization The name or UUID of the organization to list the team members of
+     *     id: ID
+     *     first_name: First Name
+     *     last_name: Last Name
+     *     email: Email
+     *     role: Role
      * @return RowsOfFields
      *
+     * @param string $organization Organization name or ID
+     *
      * @usage terminus org:team:list <organization>
-     *   Displays a list of the team members belonging to the <organization> organization
+     *     Displays the list of users associated with <organization>.
      */
     public function listTeam($organization)
     {
