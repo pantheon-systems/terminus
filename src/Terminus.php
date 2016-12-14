@@ -122,6 +122,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         ]);
         $hooks = [
             'Pantheon\Terminus\Hooks\Authorizer',
+            'Pantheon\Terminus\Hooks\SiteEnvLookup',
         ];
         $this->commands = array_merge($commands, $hooks);
     }
