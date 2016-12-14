@@ -188,7 +188,9 @@ class Terminus implements ConfigAwareInterface
         $commands_directory = __DIR__ . '/Commands';
         $top_namespace = 'Pantheon\Terminus\Commands';
         $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
+        // List our hook commandfiles
         $this->commands[] = 'Pantheon\\Terminus\\Authorizer';
+        $this->commands[] = 'Pantheon\\Terminus\\SiteEnvLookup';
     }
 
     /**

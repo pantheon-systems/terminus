@@ -34,6 +34,7 @@ class DrushCommand extends SSHBaseCommand
      * Run an arbitrary Drush command on a site's environment
      *
      * @authorize
+     * @site-env
      *
      * @command remote:drush
      * @aliases drush
