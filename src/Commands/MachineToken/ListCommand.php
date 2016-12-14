@@ -12,7 +12,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class ListCommand extends TerminusCommand
 {
     /**
-     * List the IDs and labels of machine tokens belonging to the logged-in user
+     * Lists the currently logged-in user's machine tokens.
      *
      * @authorize
      *
@@ -25,11 +25,10 @@ class ListCommand extends TerminusCommand
      * @return RowsOfFields
      *
      * @usage terminus machine-token:list
-     *   Lists your user's machine tokens
+     *   Lists the currently logged-in user's machine tokens.
      */
     public function listTokens()
     {
-
         $machine_tokens = $this->session()->getUser()->getMachineTokens()->all();
         $data = array();
         foreach ($machine_tokens as $id => $machine_token) {

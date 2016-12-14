@@ -7,17 +7,17 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class DeleteCommand extends TerminusCommand
 {
     /**
-     * Remove a machine token from the logged-in user's account
+     * Deletes a currently logged-in user's machine token.
      *
      * @authorize
      *
      * @command machine-token:delete
      * @aliases mt:delete
      *
-     * @param string $machine_token_id The ID of the machine token to be deleted
+     * @param string $machine_token_id Machine Token ID
      *
      * @usage terminus machine-token:delete <machine_token>
-     *   Removes the machine token identified by <machine_token> from the logged-in user's account
+     *   Deletes the currently logged-in user's machine token, <machine_token>.
      */
     public function delete($machine_token_id)
     {
