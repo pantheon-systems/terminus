@@ -12,7 +12,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the multidev environments belonging to the given site
+     * Lists a site's Multidev environments.
      *
      * @authorize
      *
@@ -20,18 +20,18 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases multidevs
      *
      * @field-labels
-     *   id: ID/Name
-     *   created: Created
-     *   domain: Domain
-     *   onserverdev: OnServer Dev?
-     *   locked: Locked?
-     *   initialized: Initialized?
+     *     id: Name
+     *     created: Created
+     *     domain: Domain
+     *     onserverdev: OnServer Dev?
+     *     locked: Locked?
+     *     initialized: Initialized?
      * @return RowsOfFields
      *
-     * @param string $site_name Name of the site to list multidev environments of
+     * @param string $site_name Site name
      *
-     * @usage terminus multidev:list awesome-site
-     *   Display a list of multidev environments on awesome-site
+     * @usage terminus multidev:list <site>
+     *     Lists <site>'s Multidev environments.
      */
     public function listMultidevs($site_name)
     {
