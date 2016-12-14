@@ -589,6 +589,15 @@ class FeatureContext implements Context
         ob_start();
         passthru($command . ' 2>&1');
         $this->output = ob_get_clean();
+        
+        // Terminus commands might complete their tasks even with PHP warnings
+        // or notices. But those should still trigger test failures.
+        if ($this->checkResult("PHP Warning:", $this->output)) {
+            throw new \Exception("The Terminus command generated a PHP Warning:\n{$this->output}\n");
+        }
+        if ($this->checkResult("PHP Notice:", $this->output)) {
+            throw new \Exception("The Terminus command generated a PHP Notice:\n{$this->output}\n");
+        }
 
         return $this->output;
     }
