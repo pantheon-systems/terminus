@@ -30,19 +30,19 @@ class WPCommand extends SSHBaseCommand
     ];
 
     /**
-     * Run an arbitrary WP-CLI commands on a site's environment
+     * Runs a WP-CLI command remotely on a site's environment.
      *
      * @authorize
      *
      * @command remote:wp
      * @aliases wp
      *
-     * @param string $site_env_id Name of the environment to run the WP-CLI command on.
-     * @param array $wp_command WP-CLI command to invoke on the environment
-     * @return string Output of the given WP-CLI command executed on the site environment
+     * @param string $site_env_id Site & environment in the format `site-name.env`
+     * @param array $wp_command WP-CLI command
+     * @return string Command output
      *
      * @usage terminus wp <site>.<env> -- <command>
-     *    Runs the WP-CLI command <command> on the <env> environment of <site>
+     *     Runs the Drush command <command> remotely on <site>'s <env> environment.
      */
     public function wpCommand($site_env_id, array $wp_command)
     {
