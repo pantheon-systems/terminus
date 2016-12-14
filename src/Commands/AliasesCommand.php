@@ -36,7 +36,7 @@ class AliasesCommand extends TerminusCommand
         }
         $config = $this->getConfig();
         $location = $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $location));
-        $config->ensureDirExists(dirname($location));
+        $config->ensureDirExists(dirname($location), $location);
         if (file_put_contents($location, $aliases) !== false) {
             $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
         }
