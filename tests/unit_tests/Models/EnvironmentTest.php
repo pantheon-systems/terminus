@@ -626,7 +626,7 @@ class EnvironmentTest extends ModelTestCase
     {
         $expected = ['output' => 'Hello, World!', 'exit_code' => 0];
         $this->local_machine->expects($this->at(0))
-            ->method('execRaw')
+            ->method('execInteractive')
             ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "AddressFamily inet" \'echo "Hello, World!"\'')
             ->willReturn($expected);
 
