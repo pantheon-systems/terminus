@@ -16,23 +16,23 @@ class StatusCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Retrieve the New Relic status of a site
+     * Displays New Relic configuration.
      *
      * @authorize
      *
      * @command new-relic:status
      *
      * @field-labels
-     *   name: Name
-     *   status: Status
-     *   subscribed: Subscribed On
-     *   state: State
+     *     name: Name
+     *     status: Status
+     *     subscribed: Subscribed On
+     *     state: State
      * @return PropertyList
      *
-     * @param string $site_id Name of the site to check New Relic status on
+     * @param string $site_id Site name
      *
      * @usage terminus new-relic:status <site>
-     *   Checks the New Relic status of <site>
+     *     Displays New Relic configuration for <site>.
      */
     public function status($site_id)
     {
