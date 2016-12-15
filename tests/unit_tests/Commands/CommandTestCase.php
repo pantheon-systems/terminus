@@ -53,6 +53,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      * @var Environments
      */
     protected $environments;
+    protected $site2;
 
     /**
      * @return Config
@@ -129,6 +130,15 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             ->willReturn($this->environment);
 
         $this->site->method('getEnvironments')->willReturn($this->environments);
+        $this->site->id = 'abc';
+
+        $this->site2 = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site2->id = 'def';
+
+
+
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()

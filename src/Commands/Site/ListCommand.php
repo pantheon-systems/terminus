@@ -70,12 +70,7 @@ class ListCommand extends SiteCommand
             $this->sites->filterByOwner($owner);
         }
 
-        $sites = array_map(
-            function ($site) {
-                return $site->serialize();
-            },
-            $this->sites->all()
-        );
+        $sites = $this->sites->serialize();
 
         if (empty($sites)) {
             $this->log()->notice('You have no sites.');

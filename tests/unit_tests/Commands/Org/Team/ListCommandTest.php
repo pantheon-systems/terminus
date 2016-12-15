@@ -30,11 +30,9 @@ class ListCommandTest extends OrgTeamCommandTest
     {
         $org_name = 'org_name';
         $this->org_user_memberships->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
             ->willReturn([]);
-        $this->org_user_membership->expects($this->never())
-            ->method('serialize');
         $this->organization->expects($this->once())
             ->method('get')
             ->with($this->equalTo('profile'))
@@ -59,25 +57,24 @@ class ListCommandTest extends OrgTeamCommandTest
     public function testOrgTeamListNotEmpty()
     {
         $data = [
-            'id' => 'user_id',
-            'first_name' => 'Dev',
-            'last_name' => 'User',
-            'email' => 'devuser@pantheon.io',
-            'role' => 'team_role',
+            'user_id' => [
+                'id' => 'user_id',
+                'first_name' => 'Dev',
+                'last_name' => 'User',
+                'email' => 'devuser@pantheon.io',
+                'role' => 'team_role',
+            ]
         ];
 
         $this->org_user_memberships->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->org_user_membership,]);
-        $this->org_user_membership->expects($this->any())
             ->method('serialize')
+            ->with()
             ->willReturn($data);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->listTeam($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([$data,], $out->getArrayCopy());
+        $this->assertEquals($data, $out->getArrayCopy());
     }
 }

@@ -127,4 +127,14 @@ abstract class TerminusModel implements RequestAwareInterface
     {
         return $this->url;
     }
+
+    /**
+     * Formats the object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        return (array)$this->attributes;
+    }
 }

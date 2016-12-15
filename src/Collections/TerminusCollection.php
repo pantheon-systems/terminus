@@ -29,7 +29,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
     /**
      * @var TerminusModel[]
      */
-    protected $models = [];
+    protected $models = null;
     /**
      * @var boolean
      */
@@ -85,7 +85,21 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function all()
     {
-        $models = array_values($this->getMembers());
+        $models = $this->getMembers();
+        return $models;
+    }
+
+    /**
+     * Retrieves all models serialized into arrays.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $models = [];
+        foreach ($this->getMembers() as $id => $model) {
+            $models[$id] = $model->serialize();
+        }
         return $models;
     }
 
@@ -136,7 +150,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function ids()
     {
-        $models = $this->getMembers();
+        $models = (array)$this->getMembers();
         $ids = array_keys($models);
         return $ids;
     }
@@ -152,12 +166,13 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function listing($key = 'id', $value = 'name')
     {
+        $models = $this->getMembers();
         $members = array_combine(
             array_map(
                 function ($member) use ($key) {
                     return $member->get($key);
                 },
-                $this->models
+                $models
             ),
             array_map(
                 function ($member) use ($value) {
@@ -170,7 +185,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
                     }
                     return $list;
                 },
-                $this->models
+                $models
             )
         );
         return $members;
@@ -262,7 +277,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     protected function getMembers()
     {
-        if (empty($this->models)) {
+        if ($this->models === null) {
             $this->fetch();
         }
         return $this->models;

@@ -24,11 +24,11 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases site:team
      *
      * @field-labels
-     *   first: First name
-     *   last: Last name
+     *   firstname: First name
+     *   lastname: Last name
      *   email: Email
      *   role: Role
-     *   uuid: User ID
+     *   id: User ID
      * @return RowsOfFields
      *
      * @param string $site_id Site name to list team members for.
@@ -39,18 +39,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function teamList($site_id)
     {
         $site = $this->getSite($site_id);
-        $user_memberships = $site->getUserMemberships()->all();
-        $data = [];
-        foreach ($user_memberships as $user_membership) {
-            $user = $user_membership->get('user');
-            $data[] = array(
-                'first' => $user->profile->firstname,
-                'last'  => $user->profile->lastname,
-                'email' => $user->email,
-                'role'  => $user_membership->get('role'),
-                'uuid'  => $user->id,
-            );
-        }
-        return new RowsOfFields($data);
+        $user_memberships = $site->getUserMemberships()->serialize();
+        return new RowsOfFields($user_memberships);
     }
 }

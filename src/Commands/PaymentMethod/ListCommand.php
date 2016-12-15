@@ -29,12 +29,7 @@ class ListCommand extends TerminusCommand
      */
     public function listPaymentMethods()
     {
-        $methods = array_map(
-            function ($method) {
-                return $method->serialize();
-            },
-            $this->session()->getUser()->getPaymentMethods()->fetch()->all()
-        );
+        $methods = $this->session()->getUser()->getPaymentMethods()->serialize();
         if (empty($methods)) {
             $this->log()->notice('There are no payment methods attached to this account.');
         }

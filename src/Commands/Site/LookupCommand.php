@@ -32,6 +32,6 @@ class LookupCommand extends SiteCommand
      */
     public function lookup($site_name)
     {
-        return new PropertyList((array)$this->sites()->findUuidByName($site_name));
+        return new PropertyList($this->sites()->get($site_name)->serialize());
     }
 }

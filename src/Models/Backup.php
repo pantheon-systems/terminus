@@ -158,6 +158,21 @@ class Backup extends TerminusModel implements ConfigAwareInterface
     }
 
     /**
+     * Formats the object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        return [
+            'file'      => $this->get('filename'),
+            'size'      => $this->getSizeInMb(),
+            'date'      => $this->getDate(),
+            'initiator' => $this->getInitiator(),
+        ];
+    }
+
+    /**
      * @inheritdoc
      */
     protected function parseAttributes($data)
