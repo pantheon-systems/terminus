@@ -93,7 +93,7 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, Sessi
      */
     protected function isValidSiteEnvId($site_env_id)
     {
-        return strpos($site_env_id, '.') !== FALSE;
+        return strpos($site_env_id, '.') !== false;
     }
 
     protected function determineSiteId()
@@ -166,8 +166,7 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, Sessi
                 array_unshift($value, $newArgValue);
                 $input->setArgument($key, $value);
                 return;
-            }
-            else {
+            } else {
                 $input->setArgument($key, $newArgValue);
                 $newArgValue = $value;
             }
