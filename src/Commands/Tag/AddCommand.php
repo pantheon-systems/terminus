@@ -15,18 +15,18 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Place a tag on a site by an organization
+     * Adds a tag on a site within an organization.
      *
      * @authorize
      *
      * @command tag:add
      *
-     * @param string $site_name The name or UUID of a site to add the tag to
-     * @param string $organization The name or UUID of an organization which will tag this site
-     * @param string $tag The tag to apply to the site
+     * @param string $site_name Site name
+     * @param string $organization Organization name or UUID
+     * @param string $tag Tag
      *
      * @usage terminus tag:add <site> <org> <tag>
-     *    Adds a <tag> tag to the <site> site by the <org> organization
+     *     Adds the <tag> tag to <site> within <org>.
      */
     public function add($site_name, $organization, $tag)
     {
