@@ -22,7 +22,7 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         ];
 
         $logger = $this->getMockBuilder(NullLogger::class)
-            ->setMethods(array('debug'))
+            ->setMethods(array('warning'))
             ->getMock();
 
 
@@ -41,7 +41,7 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
                     ->willThrowException(new TerminusException($msg));
 
                 $logger->expects($this->at($log++))
-                    ->method('debug')
+                    ->method('warning')
                     ->with('Plugin Discovery: Ignoring directory {dir} because: {msg}.', ['dir' => $path, 'msg' => $msg]);
             } else {
                 $plugin = $this->getMockBuilder(PluginInfo::class)
