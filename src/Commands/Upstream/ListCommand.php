@@ -12,21 +12,21 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class ListCommand extends TerminusCommand
 {
     /**
-     * List the upstreams your logged-in user can access
+     * Displays the list of upstreams accessible to the currently logged-in user.
      *
      * @command upstream:list
      * @aliases upstreams
      *
      * @field-labels
-     *   id: ID
-     *   longname: Name
-     *   category: Category
-     *   type: Type
-     *   framework: Framework
+     *     id: ID
+     *     longname: Name
+     *     category: Category
+     *     type: Type
+     *     framework: Framework
      * @return RowsOfFields
      *
      * @usage terminus upstream:list
-     *    Lists all the upstreams your logged-in user can access
+     *     Displays the list of upstreams accessible to the currently logged-in user.
      */
     public function listUpstreams()
     {

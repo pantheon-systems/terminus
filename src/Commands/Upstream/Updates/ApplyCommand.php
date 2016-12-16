@@ -12,24 +12,24 @@ class ApplyCommand extends UpdatesCommand
 {
 
     /**
-     * Apply the available upstream updates to the given site's environment
+     * Applies upstream updates to a site's development environment.
      *
      * @authorize
      *
      * @command upstream:updates:apply
      *
-     * @param string $site_env Site & environment to which to apply updates
-     * @option boolean $updatedb Run update.php after updating (Drupal only)
+     * @param string $site_env Site & development environment
+     * @option boolean $updatedb Run update.php after update (Drupal only)
      * @option boolean $accept-upstream Attempt to automatically resolve conflicts in favor of the upstream
      *
      * @throws TerminusException
      *
      * @usage terminus upstream:updates:apply <site>.<env>
-     *   Applies the available updates to the <env> environment of <site>
+     *     Applies upstream updates to <site>'s <env> environment.
      * @usage terminus upstream:updates:apply <site>.<env> --updatedb
-     *   Applies the available updates to the <env> environment of <site> and run update.php when finished
+     *     Applies upstream updates to <site>'s <env> environment and runs update.php after update.
      * @usage terminus upstream:updates:apply <site>.<env> --accept-upstream
-     *   Applies the available updates to the <env> environment of <site>, automatically resolving conflicts
+     *     Applies upstream updates to <site>'s <env> environment and attempts to automatically resolve conflicts in favor of the upstream.
      */
     public function applyUpstreamUpdates($site_env, $options = ['updatedb' => false, 'accept-upstream' => false,])
     {
