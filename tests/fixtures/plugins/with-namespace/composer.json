@@ -9,6 +9,6 @@
     },
     "license": "MIT",
     "autoload": {
-        "psr-4": { "OrgName\\PluginName": "src" }
+        "psr-4": { "OrgName\\PluginName\\": "src" }
     }
 }
