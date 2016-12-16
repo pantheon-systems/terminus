@@ -12,22 +12,22 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class InfoCommand extends TerminusCommand
 {
     /**
-     * Print various data about the CLI environment
+     * Displays the local PHP and Terminus environment configuration.
      *
      * @command self:info
      *
      * @field-labels
-     *   php_binary_path: PHP binary
-     *   php_version: PHP version
-     *   php_ini: php.ini used
-     *   project_config_path: Terminus project config
-     *   terminus_path: Terminus root dir
-     *   terminus_version: Terminus version
-     *   os_version: Operating system
+     *     php_binary_path: PHP binary
+     *     php_version: PHP version
+     *     php_ini: php.ini used
+     *     project_config_path: Terminus project config
+     *     terminus_path: Terminus root dir
+     *     terminus_version: Terminus version
+     *     os_version: Operating system
      * @return PropertyList
      *
      * @usage terminus self:info
-     *    Responds with information about the currently running Terminus application
+     *     Displays the local PHP and Terminus environment configuration.
      */
     public function info()
     {
