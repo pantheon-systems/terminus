@@ -11,27 +11,26 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class OperationsCommand extends InfoBaseCommand
 {
     /**
-     * Show operation data for a workflow
-     * Note: Operation descriptions only exist for Quicksilver operations and the column will be otherwise blank.
+     * Displays Quicksilver operation details of a workflow.
      *
      * @authorize
      *
      * @command workflow:info:operations
      *
-     * @param string $site_id Name or ID of the site that the workflow is part of
-     * @option string $id UUID of the workflow to show
+     * @param string $site_id Site name
+     * @option string $id Workflow UUID
      * @return RowsOfFields
      *
      * @field-labels
-     *   type: Type
-     *   result: Result
-     *   duration: Duration
-     *   description: Operation Description
+     *     type: Type
+     *     result: Result
+     *     duration: Duration
+     *     description: Operation Description
      *
      * @usage terminus workflow:info:operations <site> --id=<workflow>
-     *   Shows the operations of the workflow identified by <workflow> found on <site>
+     *     Displays the Quicksilver operation details of <site>'s workflow <workflow>.
      * @usage terminus workflow:info:operations <site>
-     *   Shows the operations of the most recent workflow found on <site>
+     *     Displays the Quicksilver operation details of <site>'s most recently created workflow.
      */
     public function operations($site_id, $options = ['id' => null,])
     {
