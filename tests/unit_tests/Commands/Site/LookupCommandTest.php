@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\LookupCommand;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
@@ -31,30 +32,14 @@ class LookupCommandTest extends CommandTestCase
     {
         $site_name = 'my-site';
 
-        $this->sites->method('findUuidByName')
-            ->with($this->equalTo($site_name))
-            ->willReturn(['name' => $site_name, 'id' => 'site_id',]);
+        $this->site->expects($this->once())
+            ->method('serialize')
+            ->willReturn(['name' => $site_name, 'id' => 'site_id']);
 
         $out = $this->command->lookup($site_name);
         $this->assertInstanceOf(PropertyList::class, $out);
-    }
 
-    /**
-     * Exercises site:lookup where the result is that the site exists but you do not have access to it
-     *
-     * @expectedException \Exception
-     * @expectedExceptionMessage You are not authorized for this site.
-     */
-    public function testSiteLookupExistsButNotAuthorized()
-    {
-        $site_name = 'my-site';
-
-        $this->sites->method('findUuidByName')
-            ->with($this->equalTo($site_name))
-            ->will($this->throwException(new \Exception('You are not authorized for this site.')));
-
-        $out = $this->command->lookup($site_name);
-        $this->assertInstanceOf(PropertyList::class, $out);
+        $this->assertEquals(['name' => $site_name, 'id' => 'site_id'], $out->getArrayCopy());
     }
 
     /**
@@ -67,7 +52,7 @@ class LookupCommandTest extends CommandTestCase
     {
         $site_name = 'my-site';
 
-        $this->sites->method('findUuidByName')
+        $this->sites->method('get')
             ->with($this->equalTo($site_name))
             ->will($this->throwException(new \Exception("A site named $site_name was not found.")));
 

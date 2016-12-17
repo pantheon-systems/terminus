@@ -30,12 +30,6 @@ class ListCommand extends TerminusCommand
      */
     public function listUpstreams()
     {
-        $upstreams = array_map(
-            function ($upstream) {
-                return $upstream->serialize();
-            },
-            $this->session()->getUser()->getUpstreams()->all()
-        );
-        return new RowsOfFields($upstreams);
+        return new RowsOfFields($this->session()->getUser()->getUpstreams()->serialize());
     }
 }

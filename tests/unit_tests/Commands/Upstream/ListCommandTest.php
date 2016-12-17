@@ -29,12 +29,12 @@ class ListCommandTest extends UpstreamCommandTest
     public function testListUpstreams()
     {
         $this->upstreams->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
-            ->willReturn([$this->upstream,]);
+            ->willReturn([$this->data['id'] => $this->data]);
 
         $out = $this->command->listUpstreams();
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$this->data,], $out->getArrayCopy());
+        $this->assertEquals([$this->data['id'] => $this->data], $out->getArrayCopy());
     }
 }

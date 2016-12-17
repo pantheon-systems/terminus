@@ -61,20 +61,16 @@ class ListCommandTest extends CommandTestCase
             ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['abc' => $dummy_info, 'def' => $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index();
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['abc' => $dummy_info, 'def' => $dummy_info,], $out->getArrayCopy());
     }
 
     /**
@@ -92,7 +88,6 @@ class ListCommandTest extends CommandTestCase
             'memberships' => 'user_id: Team',
         ];
 
-        $this->site->memberships = ['user_id: Team'];
         $this->sites->expects($this->once())
             ->method('fetch')
             ->with($this->equalTo(['org_id' => null, 'team_only' => true,]))
@@ -103,20 +98,16 @@ class ListCommandTest extends CommandTestCase
             ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index(['team' => true, 'owner' => null, 'org' => null, 'name' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
 
     /**
@@ -134,7 +125,6 @@ class ListCommandTest extends CommandTestCase
             'memberships' => 'org_id: org_url',
         ];
 
-        $this->site->memberships = ['org_id: org_url'];
         $this->sites->expects($this->once())
             ->method('fetch')
             ->with($this->equalTo(['org_id' => 'org_id', 'team_only' => false,]))
@@ -145,20 +135,16 @@ class ListCommandTest extends CommandTestCase
             ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'org_id', 'name' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
 
     /**
@@ -177,7 +163,6 @@ class ListCommandTest extends CommandTestCase
         ];
         $regex = '(.*)';
 
-        $this->site->memberships = ['org_id: org_url'];
         $this->sites->expects($this->once())
             ->method('fetch')
             ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
@@ -190,20 +175,16 @@ class ListCommandTest extends CommandTestCase
             ->method('getUser');
         $this->sites->expects($this->never())
             ->method('filterByOwner');
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index(['team' => false, 'owner' => null, 'org' => null, 'name' => $regex,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
 
     /**
@@ -235,20 +216,16 @@ class ListCommandTest extends CommandTestCase
             ->method('filterByOwner')
             ->with($this->equalTo($user_id))
             ->willReturn($this->sites);
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index(['team' => false, 'owner' => $user_id, 'org' => null, 'name' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
 
     /**
@@ -271,7 +248,6 @@ class ListCommandTest extends CommandTestCase
             ->getMock();
         $user->id = $user_id;
 
-        $this->site->memberships = ['org_id: org_url'];
         $this->sites->expects($this->once())
             ->method('fetch')
             ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
@@ -286,19 +262,15 @@ class ListCommandTest extends CommandTestCase
             ->method('filterByOwner')
             ->with($this->equalTo($user_id))
             ->willReturn($this->sites);
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($dummy_info);
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site, $this->site,]);
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->index(['team' => false, 'owner' => 'me', 'org' => null, 'name' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
 }

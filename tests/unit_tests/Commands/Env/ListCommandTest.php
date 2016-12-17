@@ -25,20 +25,9 @@ class ListCommandTest extends EnvCommandTest
             ['foo' => 'abc', 'baz' => 'def'],
         ];
 
-        $envs = [];
-        foreach ($data as $env) {
-            $mock = $this->getMockBuilder(Environment::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-
-            $mock->expects($this->once())
-                ->method('serialize')
-                ->willReturn($env);
-            $envs[] = $mock;
-        }
         $this->environments->expects($this->once())
-            ->method('all')
-            ->willReturn($envs);
+            ->method('serialize')
+            ->willReturn($data);
 
         $this->command = new ListCommand();
         $this->command->setSites($this->sites);

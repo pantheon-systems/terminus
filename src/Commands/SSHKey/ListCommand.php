@@ -31,16 +31,7 @@ class ListCommand extends TerminusCommand
      */
     public function listSSHKeys()
     {
-        $ssh_keys = $this->session()->getUser()->getSSHKeys()->all();
-
-        $data = [];
-        foreach ($ssh_keys as $id => $ssh_key) {
-            $data[] = array(
-                'id' => $ssh_key->id,
-                'hex' => $ssh_key->getHex(),
-                'comment' => $ssh_key->getComment(),
-            );
-        }
+        $data = $this->session()->getUser()->getSSHKeys()->serialize();
         if (count($data) == 0) {
             $this->log()->warning('You have no ssh keys.');
         }

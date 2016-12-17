@@ -43,6 +43,7 @@ class TerminusCollectionTest extends CollectionTestCase
             'b' => (object)['id' => 'b', 'foo' => '456', 'category' => 'a'],
             'c' => (object)['id' => 'c', 'foo' => '678', 'category' => 'b']
         ];
+
         $this->request->expects($this->once())
             ->method('request')
             ->with('TESTURL', ['options' => ['method' => 'get']])
@@ -66,6 +67,7 @@ class TerminusCollectionTest extends CollectionTestCase
                 ->method('get')
                 ->with(TerminusModel::class, [$model_data, $options])
                 ->willReturn($models[$key]);
+            $models[$model_data->id]->method('serialize')->willReturn((array)$model_data);
         }
 
         $collection->setRequest($this->request);
@@ -74,10 +76,15 @@ class TerminusCollectionTest extends CollectionTestCase
         $collection->fetch();
 
         $this->assertEquals(array_keys($models), $collection->ids());
-        $this->assertEquals(array_values($models), $collection->all());
+        $this->assertEquals($models, $collection->all());
         foreach ($models as $id => $model) {
             $this->assertEquals($model, $collection->get($id));
         }
+
+        $expected = array_map(function ($d) {
+            return (array)$d;
+        }, $data);
+        $this->assertEquals($expected, $collection->serialize());
 
         $listing = [
             'a' => '123',

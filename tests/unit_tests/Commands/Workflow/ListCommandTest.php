@@ -29,15 +29,12 @@ class ListCommandTest extends WorkflowCommandTest
     {
         $this->workflows->expects($this->once())
             ->method('fetch')
-            ->willReturn(null);
+            ->willReturn($this->workflows);
 
         $this->workflows->expects($this->once())
-            ->method('all')
-            ->willReturn([$this->workflow]);
-
-        $this->workflow->expects($this->once())
             ->method('serialize')
-            ->willReturn(['id' => '12345', 'details' => 'test']);
+            ->willReturn(['12345' => ['id' => '12345', 'details' => 'test']]);
+
 
         $out = $this->command->wfList('mysite');
         foreach ($out as $w) {

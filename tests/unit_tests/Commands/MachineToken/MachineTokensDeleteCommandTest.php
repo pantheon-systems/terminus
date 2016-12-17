@@ -1,5 +1,5 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Robo\Config;

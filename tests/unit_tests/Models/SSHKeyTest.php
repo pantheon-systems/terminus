@@ -74,4 +74,41 @@ class SSHKeyTest extends ModelTestCase
         $this->assertEquals('12:34:56:78:90:ab:cd:ef', $sshkey->getHex());
         $this->assertEquals('dev@example.com', $sshkey->getComment());
     }
+
+    public function testSerialize()
+    {
+        $keys = [
+            '79e7e210bdf335bb8651a46b9a8417ab' => [
+                'id' => '79e7e210bdf335bb8651a46b9a8417ab',
+                'key' => 'ssh-rsa xxxxxxx dev@foo.bar',
+            ],
+            '27a7a11ab9d2acbf91063410546ef980' => [
+                'id' => '27a7a11ab9d2acbf91063410546ef980',
+                'key' => 'ssh-rsa yyyyyyy dev@baz.bar',
+            ]
+        ];
+        $excpected = [
+            '79e7e210bdf335bb8651a46b9a8417ab' => [
+                'id' => '79e7e210bdf335bb8651a46b9a8417ab',
+                'hex' => '79:e7:e2:10:bd:f3:35:bb:86:51:a4:6b:9a:84:17:ab',
+                'comment' => 'dev@foo.bar'
+            ],
+            '27a7a11ab9d2acbf91063410546ef980' => [
+                'id' => '27a7a11ab9d2acbf91063410546ef980',
+                'hex' => '27:a7:a1:1a:b9:d2:ac:bf:91:06:34:10:54:6e:f9:80',
+                'comment' => 'dev@baz.bar'
+            ]
+        ];
+        $collection = $this->getMockBuilder(SSHKeys::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        foreach ($keys as $i => $key_data) {
+            $sshkey = new SSHKey(
+                (object)$key_data,
+                ['collection' => $collection]
+            );
+            $this->assertEquals($excpected[$i], $sshkey->serialize());
+        }
+    }
 }

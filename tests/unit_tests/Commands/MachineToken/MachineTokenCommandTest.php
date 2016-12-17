@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;

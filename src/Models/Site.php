@@ -259,7 +259,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
                 . '.' . substr($data['php_version'], 1, 1);
         }
         if (isset($this->tags)) {
-            $data['tags'] = implode(',', $this->tags->ids());
+            $data['tags'] = implode(',', (array)$this->tags->ids());
         }
         if (isset($this->memberships)) {
             $data['memberships'] = implode(',', $this->memberships);

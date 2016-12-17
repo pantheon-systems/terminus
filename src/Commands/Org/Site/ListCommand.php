@@ -48,12 +48,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
         }
-        $sites = array_map(
-            function ($site) {
-                return $site->serialize();
-            },
-            $this->sites->all()
-        );
+        $sites = $this->sites->serialize();
 
         if (empty($sites)) {
             $this->log()->notice('This organization has no sites.');

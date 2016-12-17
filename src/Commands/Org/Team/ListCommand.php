@@ -35,12 +35,7 @@ class ListCommand extends TerminusCommand
     public function listTeam($organization)
     {
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
-        $members = array_map(
-            function ($member) {
-                return $member->serialize();
-            },
-            $org->getUserMemberships()->fetch()->all()
-        );
+        $members = $org->getUserMemberships()->serialize();
         if (empty($members)) {
             $this->log()->notice('{org} has no team members.', ['org' => $org->get('profile')->name,]);
         }
