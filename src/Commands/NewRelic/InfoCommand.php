@@ -8,10 +8,10 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class StatusCommand
+ * Class InfoCommand
  * @package Pantheon\Terminus\Commands\NewRelic
  */
-class StatusCommand extends TerminusCommand implements SiteAwareInterface
+class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
@@ -20,7 +20,7 @@ class StatusCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command new-relic:status
+     * @command new-relic:info
      *
      * @field-labels
      *     name: Name
@@ -31,10 +31,10 @@ class StatusCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage terminus new-relic:status <site>
+     * @usage terminus new-relic:info <site>
      *     Displays New Relic configuration for <site>.
      */
-    public function status($site_id)
+    public function info($site_id)
     {
         return new PropertyList($this->getSite($site_id)->getNewRelic()->serialize());
     }
