@@ -1,12 +1,12 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Org\Team;
+namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
  * Class AddCommand
- * @package Pantheon\Terminus\Commands\Org\Team
+ * @package Pantheon\Terminus\Commands\Org\People
  */
 class AddCommand extends TerminusCommand
 {
@@ -15,13 +15,14 @@ class AddCommand extends TerminusCommand
      *
      * @authorize
      *
-     * @command org:team:add
+     * @command org:people:add
+     * @aliases org:ppl:add
      *
      * @param string $organization Organization name or ID
      * @param string $email Email address
      * @param string $role [admin|unprivileged|team_member|developer] Role
      *
-     * @usage terminus org:team:add <organization> <email> <role>
+     * @usage terminus org:people:add <organization> <email> <role>
      *     Adds the user with the email, <email>, to <organization> with the <role> role.
      */
     public function add($organization, $email, $role)

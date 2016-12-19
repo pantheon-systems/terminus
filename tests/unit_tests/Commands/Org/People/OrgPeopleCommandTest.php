@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Org\Team;
+namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
@@ -12,10 +12,10 @@ use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Class OrgTeamCommandTest
- * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
+ * Class OrgPeopleCommandTest
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\People
  */
-abstract class OrgTeamCommandTest extends CommandTestCase
+abstract class OrgPeopleCommandTest extends CommandTestCase
 {
     /**
      * @var OrganizationUserMembership

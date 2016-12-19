@@ -1,12 +1,12 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Org\Team;
+namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
  * Class RemoveCommand
- * @package Pantheon\Terminus\Commands\Org\Team
+ * @package Pantheon\Terminus\Commands\Org\People
  */
 class RemoveCommand extends TerminusCommand
 {
@@ -15,7 +15,8 @@ class RemoveCommand extends TerminusCommand
      *
      * @authorize
      *
-     * @command org:team:remove
+     * @command org:people:remove
+     * @aliases org:people:rm org:ppl:remove org:ppl:rm
      *
      * @param string $organization Organization name or ID
      * @param string $member User UUID, email address, or full name

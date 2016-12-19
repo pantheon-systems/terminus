@@ -1,13 +1,13 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Org\Team;
+namespace Pantheon\Terminus\Commands\Org\People;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
  * Class ListCommand
- * @package Pantheon\Terminus\Commands\Org\Team
+ * @package Pantheon\Terminus\Commands\Org\People
  */
 class ListCommand extends TerminusCommand
 {
@@ -16,8 +16,8 @@ class ListCommand extends TerminusCommand
      *
      * @authorize
      *
-     * @command org:team:list
-     * @aliases org:team
+     * @command org:people:list
+     * @aliases org:ppl:list
      *
      * @field-labels
      *     id: ID
@@ -29,15 +29,15 @@ class ListCommand extends TerminusCommand
      *
      * @param string $organization Organization name or ID
      *
-     * @usage terminus org:team:list <organization>
+     * @usage terminus org:people:list <organization>
      *     Displays the list of users associated with <organization>.
      */
-    public function listTeam($organization)
+    public function listPeople($organization)
     {
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
         $members = $org->getUserMemberships()->serialize();
         if (empty($members)) {
-            $this->log()->notice('{org} has no team members.', ['org' => $org->get('profile')->name,]);
+            $this->log()->notice('{org} has no members.', ['org' => $org->get('profile')->name,]);
         }
         return new RowsOfFields($members);
     }
