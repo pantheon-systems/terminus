@@ -5,25 +5,24 @@ namespace Pantheon\Terminus\Commands;
 class AliasesCommand extends TerminusCommand
 {
     /**
-     * Print and save Drush aliases for the the sites on which you are a team member
+     * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
      * @authorized
      *
      * @command aliases
      * @aliases drush:aliases
      *
-     * @option boolean $print Print the aliases rather than saving them to a file
-     * @option string $location The full path, including file name, to the new alias file being created. Without this,
-     *     ~/.drush/pantheon.aliases.drushrc.php will be used
+     * @option boolean $print Print aliases only
+     * @option string $location Path and filename; default: ~/.drush/pantheon.aliases.drushrc.php will be used
      *
      * @return string|null
      *
      * @usage terminus aliases
-     *     Saves your Pantheon Drush aliases to ~/.drush/pantheon.aliases.drushrc.php
+     *     Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
      * @usage terminus aliases --print
-     *     Prints your Pantheon Drush aliases on your screen
+     *     Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      * @usage terminus aliases --location=<full_path>
-     *     Saves your Panthoen Drush aliases to <full_path>
+     *     Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
      */
     public function aliases($options = ['print' => false, 'location' => null,])
     {

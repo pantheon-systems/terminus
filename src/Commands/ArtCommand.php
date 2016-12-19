@@ -20,16 +20,16 @@ class ArtCommand extends TerminusCommand
     protected $filename;
 
     /**
-     * Displays Pantheon ASCII artwork
+     * Displays Pantheon ASCII artwork.
      *
      * @command art
      *
-     * @param string $name Name of the artwork to select
+     * @param string $name Artwork name
      *
-     * @usage terminus art <artwork>
-     *   Displays the <artwork> artwork
      * @usage terminus art
-     *   Displays a random artwork
+     *     Displays the list of available artwork.
+     * @usage terminus art <artwork>
+     *     Displays the <artwork> artwork.
      */
     public function art($name = '')
     {
