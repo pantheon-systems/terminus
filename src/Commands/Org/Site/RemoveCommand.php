@@ -15,18 +15,18 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Remove a site from an organization
+     * Removes a site from an organization.
      *
      * @authorize
      *
      * @command org:site:remove
      * @aliases org:site:rm
      *
-     * @param string $organization The name or UUID of the organization to remove a site from
-     * @param string $site The UUID or name of the site to be removed from this organization
+     * @param string $organization Organization name or ID
+     * @param string $site Site name
      *
      * @usage terminus org:site:remove <organization> <site>
-     *   Removes the <site> site from the <organization> organization
+     *     Removes <site> from <organization>.
      */
     public function remove($organization, $site)
     {

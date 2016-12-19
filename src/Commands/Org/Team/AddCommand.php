@@ -11,18 +11,18 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class AddCommand extends TerminusCommand
 {
     /**
-     * Add a team member to an organization
+     * Adds a user to an organization.
      *
      * @authorize
      *
      * @command org:team:add
      *
-     * @param string $organization The name or UUID of the organization to add a team to
-     * @param string $email The email address of the new team member to be added to this organization
-     * @param string $role [admin|unprivileged|team_member|developer] The role to assign to this member
+     * @param string $organization Organization name or ID
+     * @param string $email Email address
+     * @param string $role [admin|unprivileged|team_member|developer] Role
      *
      * @usage terminus org:team:add <organization> <email> <role>
-     *   Adds the person with the address <email> to the team of the <organization> organization with the role <role>.
+     *     Adds the user with the email, <email>, to <organization> with the <role> role.
      */
     public function add($organization, $email, $role)
     {
