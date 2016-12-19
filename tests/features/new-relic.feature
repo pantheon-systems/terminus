@@ -7,9 +7,9 @@ Feature: New Relic
     Given I am authenticated
     And a site named "[[test_site_name]]"
 
-  @vcr new-relic-status.yml
+  @vcr new-relic-info.yml
   Scenario: Accessing New Relic data
-    When I run "terminus new-relic:status [[test_site_name]]"
+    When I run "terminus new-relic:info [[test_site_name]]"
     Then I should get: "--------------- --"
     And I should get: "Name"
     And I should get: "Status"
