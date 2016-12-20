@@ -17,16 +17,16 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
     const WORKFLOWS_WATCH_INTERVAL = 5;
 
     /**
-     * Stream new and finished workflows of the given site to the console
+     * Streams new and finished workflows from a site to the console.
      *
      * @authorize
      *
      * @command workflow:watch
      *
-     * @param string $site_id Site name or UUID to watch the workflows of
+     * @param string $site_id Site name
      *
      * @usage terminus workflow:watch <site>
-     *   Watches the workflows of <site> until stopped
+     *     Streams new and finished workflows from <site> to the console.
      */
     public function watch($site_id)
     {

@@ -11,30 +11,30 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
 class StatusCommand extends InfoBaseCommand
 {
     /**
-     * Show status information about a workflow
+     * Displays the status of a workflow.
      *
      * @authorize
      *
      * @command workflow:info:status
      *
      * @field-labels
-     *   id: Workflow ID
-     *   env: Environment
-     *   workflow: Workflow
-     *   user: User
-     *   status: Status
-     *   started_at: Started At
-     *   finished_at: Finished At
-     *   time: Time Elapsed
+     *     id: Workflow ID
+     *     env: Environment
+     *     workflow: Workflow
+     *     user: User
+     *     status: Status
+     *     started_at: Started At
+     *     finished_at: Finished At
+     *     time: Time Elapsed
      * @return PropertyList
      *
-     * @param string $site_id Name or ID of the site that the workflow is part of
-     * @option string $id UUID of the workflow to show
+     * @param string $site_id Site name
+     * @option string $id Workflow UUID
      *
      * @usage terminus workflow:info:operations <site> <workflow>
-     *   Shows the status of the workflow identified by <workflow> found on <site>
+     *     Displays the status of <site>'s workflow <workflow>.
      * @usage terminus workflow:info:operations <site>
-     *   Shows the status of the most recent workflow found on <site>
+     *     Displays the status of <site>'s  most recently created workflow.
      */
     public function status($site_id, $options = ['id' => null,])
     {
