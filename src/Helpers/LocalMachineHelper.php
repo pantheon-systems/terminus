@@ -82,17 +82,34 @@ class LocalMachineHelper implements ConfigAwareInterface
         $this->getProcess($command)->run();
     }
 
+    /**
+     * Writes to a file on the local system.
+     *
+     * @param string $filename Name of the file to write to
+     * @param string $content Content to write to the file
+     */
     public function writeFile($filename, $content)
     {
         $this->getFilesystem()->dumpFile($this->fixFilename($filename), $content);
     }
 
+    /**
+     * Accepts a filename/full path and localizes it to the user's system.
+     *
+     * @param string $filename
+     * @return string
+     */
     protected function fixFilename($filename)
     {
         $config = $this->getConfig();
         return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
     }
 
+    /**
+     * Returns a set-up filesystem object.
+     *
+     * @return Filesystem
+     */
     protected function getFilesystem()
     {
         return new Filesystem();
