@@ -2,8 +2,14 @@
 
 namespace Pantheon\Terminus\Commands;
 
-class AliasesCommand extends TerminusCommand
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+
+class AliasesCommand extends TerminusCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
@@ -33,11 +39,8 @@ class AliasesCommand extends TerminusCommand
         if (is_null($location = $options['location'])) {
             $location = '~/.drush/pantheon.aliases.drushrc.php';
         }
-        $config = $this->getConfig();
-        $location = $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $location));
-        $config->ensureDirExists(dirname($location));
-        if (file_put_contents($location, $aliases) !== false) {
-            $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
-        }
+
+        $this->getContainer()->get(LocalMachineHelper::class)->writeFile($location, $aliases);
+        $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
     }
 }
