@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List team members for a site
+     * Displays the list of team members for a site.
      *
      * @authorize
      *
@@ -24,17 +24,17 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases site:team
      *
      * @field-labels
-     *   firstname: First name
-     *   lastname: Last name
-     *   email: Email
-     *   role: Role
-     *   id: User ID
+     *     firstname: First name
+     *     lastname: Last name
+     *     email: Email
+     *     role: Role
+     *     id: User ID
      * @return RowsOfFields
      *
-     * @param string $site_id Site name to list team members for.
+     * @param string $site_id Site name
      *
      * @usage terminus site:team:list <site>
-     *   Lists team members for <site>
+     *     Displays the list of team members for <site>.
      */
     public function teamList($site_id)
     {

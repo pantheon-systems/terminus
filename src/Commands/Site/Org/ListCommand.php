@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the supporting organizations for the given site
+     * Displays the list of supporting organizations associated with a site.
      *
      * @authorize
      *
@@ -24,14 +24,14 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases site:orgs
      *
      * @field-labels
-     *   org_name: Name
-     *   org_id: ID
+     *     org_name: Name
+     *     org_id: ID
      * @return RowsOfFields
      *
-     * @param string $site_id The name or UUID of the site to list the supporting organizations of
+     * @param string $site_id Site name
      *
      * @usage terminus site:org:list <site>
-     *   Displays a list of the supporting organizations associated with <site>
+     *     Displays the list of supporting organizations associated with <site>.
      */
     public function listOrgs($site_id)
     {

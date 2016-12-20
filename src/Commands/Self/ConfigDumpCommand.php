@@ -10,14 +10,14 @@ use Robo\Contract\ConfigAwareInterface;
 class ConfigDumpCommand extends TerminusCommand
 {
     /**
-     * Display the current Terminus configuration information
+     * Displays the local Terminus configuration.
      *
      * @command self:config:dump
      *
      * @return RowsOfFields
      *
      * @usage terminus self:config-dump
-     *    Show the current configuration values
+     *     Displays the local Terminus configuration.
      */
     public function dumpConfig()
     {
