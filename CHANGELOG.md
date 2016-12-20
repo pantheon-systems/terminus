@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project starting with the 0.6.0 release will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Fixed
+- Fixed `sites mass-update`'s `--tag` filter. (#1475)
+
 ## 0.13.6 - 2016-12-13
 ### Changed
 - Users are notified of impending Terminus release via update notification with the following message:

@@ -10,6 +10,7 @@ use Terminus\Collections\SiteAuthorizations;
 use Terminus\Collections\SiteOrganizationMemberships;
 use Terminus\Collections\SiteUserMemberships;
 use Terminus\Collections\Workflows;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 class Site extends TerminusModel
 {
@@ -357,7 +358,7 @@ class Site extends TerminusModel
      * Returns tags from the site/org join
      * TODO: Move these into tags model/collection
      *
-     * @param Organization $org UUID of organization site belongs to
+     * @param Organization $org An object representing the organization with tags on this site
      * @return string[]
      */
     public function getTags($org)
@@ -365,13 +366,13 @@ class Site extends TerminusModel
         if (isset($this->tags)) {
             return $this->tags;
         }
-        $org_site_member = new OrganizationSiteMemberships(
-            ['organization' => $org,]
-        );
-        $org_site_member->fetch();
-        $org  = $org_site_member->get($this->id);
-        $tags = $org->get('tags');
-        return $tags;
+        $org_site_memberships = new OrganizationSiteMemberships(['organization' => $org,]);
+        try {
+            $org_site_membership = $org_site_memberships->get($this->id);
+        } catch (TerminusNotFoundException $e) {
+            return [];
+        }
+        return $org_site_membership->get('tags');
     }
 
     /**
