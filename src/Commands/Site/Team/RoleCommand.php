@@ -16,18 +16,18 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Change a team member's role
+     * Updates a user's role on a site's team.
      *
      * @authorize
      *
      * @command site:team:role
      *
-     * @param string $site_id Site name or UUID to change roles on
-     * @param string $member Email of the member to change the role of
-     * @param string $role [unprivileged|admin|developer|team_member] Role to designate the member as
+     * @param string $site_id Site name
+     * @param string $member Email, UUID, or full name
+     * @param string $role [developer|team_member] Role
      *
      * @usage terminus site:team:role <site> <user> <role>
-     *   Change <user> to have the role of <role> on the site <site>
+     *     Updates <user> to be a <role> on <site>'s team.
      */
     public function role($site_id, $member, $role)
     {

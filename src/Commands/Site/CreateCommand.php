@@ -16,22 +16,21 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * Create a site
+     * Creates a new site.
      *
      * @authorize
      *
      * @command site:create
      *
-     * @param string $site_name Machine name of the site to create (i.e. the slugified name)
-     * @param string $label A human-readable label for the new site
-     * @param string $upstream_id UUID or name of the upstream to use in creating this site
-     * @option string $org UUID or name of the organization to which this site will belong
+     * @param string $site_name Site name
+     * @param string $label Site label
+     * @param string $upstream_id Upstream name or UUID
+     * @option string $org Organization name or UUID
      *
      * @usage terminus site:create <site> <label> <upstream>
-     *   Creates a site with the name <site>, human-readable name <label>, using the upstream <upstream>
+     *     Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
      * @usage terminus site:create <site> <label> <upstream> --org=<org>
-     *   Creates a site with the name <site>, human-readable name <label>, using the upstream <upstream>, belonging to
-     *       the <org> organization
+     *     Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>, associated with <organization>.
      */
 
     public function create($site_name, $label, $upstream_id, $options = ['org' => null,])
