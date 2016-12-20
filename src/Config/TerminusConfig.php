@@ -196,26 +196,6 @@ class TerminusConfig extends \Robo\Config
     }
 
     /**
-     * Ensures a directory exists
-     *
-     * @param string $name  The name of the config var
-     * @param string $value The value of the named config var
-     * @return boolean|null
-     */
-    public function ensureDirExists($name, $value)
-    {
-        if ((strpos($name, 'TERMINUS_') !== false) && (strpos($name, '_DIR') !== false) && ($value != '~')) {
-            try {
-                $dir_exists = (is_dir($value) || (!file_exists($value) && @mkdir($value, 0777, true)));
-            } catch (\Exception $e) {
-                return false;
-            }
-            return $dir_exists;
-        }
-        return null;
-    }
-
-    /**
      * Ensures that directory paths work in any system
      *
      * @param string $path A path to set the directory separators for

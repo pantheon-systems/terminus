@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class AliasesCommand extends TerminusCommand
 {
     /**
@@ -35,9 +37,14 @@ class AliasesCommand extends TerminusCommand
         }
         $config = $this->getConfig();
         $location = $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $location));
-        $config->ensureDirExists(dirname($location));
-        if (file_put_contents($location, $aliases) !== false) {
+
+        // @todo, should this dependency be injected somehow?
+        $filesystem = new Filesystem();
+        try {
+            $filesystem->dumpFile($location, $aliases);
             $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
+        } catch (IOException $e) {
+            // @todo, not sure what the error reporting should be here.
         }
     }
 }
