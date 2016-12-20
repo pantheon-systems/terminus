@@ -282,4 +282,15 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
         }
         return $this->models;
     }
+
+    /**
+     * Determines whether the models contain an object with a specific ID
+     *
+     * @param string $id UUID of object to seek
+     * @return boolean True if object is found, false if it is not
+     */
+    public function has($id)
+    {
+        return !is_null($models = $this->getMembers()) && array_key_exists($id, $models);
+    }
 }
