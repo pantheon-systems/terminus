@@ -57,4 +57,27 @@ abstract class TerminusCommand implements
         }
         return $this->io;
     }
+
+    /**
+     * Confirm that the user wants to continue with the command.
+     *
+     * @deprecated 1.0.0 This is not the correct way to do this and will be removed in the future. Use with caution.
+     *
+     * @param $confirm_text
+     * @param array $replacements
+     * @return bool|string
+     */
+    protected function confirm($confirm_text, $replacements = [])
+    {
+        if ($this->input()->hasOption('yes') && $this->input()->getOption('yes')) {
+            return true;
+        }
+
+        $tr = [];
+        foreach ($replacements as $key => $val) {
+            $tr['{' . $key . '}'] = $val;
+        }
+        $confirm_text = strtr($confirm_text, $tr);
+        return $this->io()->confirm($confirm_text, false);
+    }
 }

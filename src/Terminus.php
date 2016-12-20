@@ -72,6 +72,7 @@ use Robo\Runner as RoboRunner;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use VCR\VCR;
 
@@ -105,6 +106,8 @@ class Terminus implements ConfigAwareInterface
 
         $application = new Application('Terminus', $config->get('version'));
         $container = Robo::createDefaultContainer($input, $output, $application, $config);
+
+        $this->addDefaultArgumentsAndOptions($application);
 
         $this->configureContainer($container);
 
@@ -278,6 +281,16 @@ class Terminus implements ConfigAwareInterface
         // Tell the command loader to only allow command functions that have a name/alias.
         $factory = $container->get('commandFactory');
         $factory->setIncludeAllPublicMethods(false);
+    }
+
+    /**
+     * Add any global arguments or options that apply to all commands.
+     *
+     * @param \Symfony\Component\Console\Application $app
+     */
+    private function addDefaultArgumentsAndOptions(Application $app)
+    {
+        $app->getDefinition()->addOption(new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"'));
     }
 
     /**

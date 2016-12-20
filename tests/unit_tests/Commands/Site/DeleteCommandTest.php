@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Site\DeleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Symfony\Component\Console\Input\Input;
 
 /**
  * Class DeleteCommandTest
@@ -19,9 +20,17 @@ class DeleteCommandTest extends CommandTestCase
     protected function setup()
     {
         parent::setUp();
+
+        $input = $this->getMockBuilder(Input::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $input->method('hasOption')->with('yes')->willReturn(true);
+        $input->method('getOption')->with('yes')->willReturn(true);
+
         $this->command = new DeleteCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($input);
     }
 
     /**

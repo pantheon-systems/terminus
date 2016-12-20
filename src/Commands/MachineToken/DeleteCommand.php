@@ -25,6 +25,10 @@ class DeleteCommand extends TerminusCommand
         $machine_token = $this->session()->getUser()->getMachineTokens()->get($machine_token_id);
         $name = $machine_token->get('device_name');
 
+        if (!$this->confirm('Are you sure you want to delete this machine token?')) {
+            return;
+        }
+
         $this->log()->notice('Deleting {token} ...', ['token' => $name]);
         $machine_token->delete();
         $this->log()->notice('Deleted {token}!', ['token' => $name]);
