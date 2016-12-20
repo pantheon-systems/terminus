@@ -3,6 +3,9 @@
 namespace Pantheon\Terminus\Helpers;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 /**
@@ -12,8 +15,10 @@ use Symfony\Component\Process\Process;
  *
  * @package Pantheon\Terminus\Helpers
  */
-class LocalMachineHelper
+class LocalMachineHelper implements ConfigAwareInterface
 {
+    use ConfigAwareTrait;
+
     /**
      * @var integer The number of seconds to wait on a command until it times out
      */
@@ -75,6 +80,22 @@ class LocalMachineHelper
         $command = sprintf('%s %s', $cmd, $url);
 
         $this->getProcess($command)->run();
+    }
+
+    public function writeFile($filename, $content)
+    {
+        $this->getFilesystem()->dumpFile($this->fixFilename($filename), $content);
+    }
+
+    protected function fixFilename($filename)
+    {
+        $config = $this->getConfig();
+        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
+    }
+
+    protected function getFilesystem()
+    {
+        return new Filesystem();
     }
 
     /**
