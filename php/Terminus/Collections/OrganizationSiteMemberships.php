@@ -3,6 +3,7 @@
 namespace Terminus\Collections;
 
 use Terminus\Exceptions\TerminusException;
+use Terminus\Exceptions\TerminusNotFoundException;
 
 class OrganizationSiteMemberships extends TerminusCollection
 {
@@ -65,7 +66,7 @@ class OrganizationSiteMemberships extends TerminusCollection
                 }
             }
         }
-        return null;
+        throw new TerminusNotFoundException('No such site membership was found in this organization.');
     }
 
   /**
