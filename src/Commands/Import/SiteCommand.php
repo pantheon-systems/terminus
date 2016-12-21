@@ -32,7 +32,13 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
     public function import($sitename, $url)
     {
         $site = $sitename;
-        list(, $env) = $this->getSiteEnv($site, 'dev');
+        list($site, $env) = $this->getSiteEnv($site, 'dev');
+
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you overwrite the code, database and files for {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $env->import($url);
         try {
             $workflow->wait();

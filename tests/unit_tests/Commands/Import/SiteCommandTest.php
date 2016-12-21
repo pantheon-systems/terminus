@@ -22,6 +22,7 @@ class SiteCommandTest extends CommandTestCase
         $this->command = new SiteCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
     }
     
     /**

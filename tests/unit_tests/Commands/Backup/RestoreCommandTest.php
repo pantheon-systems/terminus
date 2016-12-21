@@ -21,6 +21,7 @@ class RestoreCommandTest extends BackupCommandTest
         $this->command = new RestoreCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->command->setInput($this->input);
     }
 
     /**

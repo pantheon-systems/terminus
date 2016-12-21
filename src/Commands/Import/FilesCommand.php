@@ -30,6 +30,12 @@ class FilesCommand extends TerminusCommand implements SiteAwareInterface
     public function import($site_env, $url)
     {
         list($site, $env) = $this->getSiteEnv($site_env);
+
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you overwrite the files for {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $env->importFiles($url);
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

@@ -21,16 +21,10 @@ class DeleteCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $input = $this->getMockBuilder(Input::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $input->method('hasOption')->with('yes')->willReturn(true);
-        $input->method('getOption')->with('yes')->willReturn(true);
-
         $this->command = new DeleteCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
-        $this->command->setInput($input);
+        $this->command->setInput($this->input);
     }
 
     /**

@@ -20,17 +20,11 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     protected function setUp()
     {
         parent::setUp();
-
-        $input = $this->getMockBuilder(Input::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $input->method('hasOption')->with('yes')->willReturn(true);
-        $input->method('getOption')->with('yes')->willReturn(true);
-
+        
         $this->command = new DeleteCommand(new Config());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
-        $this->command->setInput($input);
+        $this->command->setInput($this->input);
     }
 
     /**

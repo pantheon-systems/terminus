@@ -53,6 +53,11 @@ class RestoreCommand extends TerminusCommand implements SiteAwareInterface
             $backup = array_shift($backups);
         }
 
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you want to restore to {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $backup->restore();
         $workflow->wait();
 

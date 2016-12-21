@@ -6,6 +6,7 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\OutputInterface;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Sites;
@@ -137,8 +138,12 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->site2->id = 'def';
 
-
-
+        // Always say yes to confirmations
+        $this->input = $this->getMockBuilder(Input::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->input->method('hasOption')->with('yes')->willReturn(true);
+        $this->input->method('getOption')->with('yes')->willReturn(true);
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
