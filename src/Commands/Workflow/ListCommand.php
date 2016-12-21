@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the workflows for a site
+     * Displays the list of the workflows for a site.
      *
      * @authorize
      *
@@ -24,20 +24,20 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases workflows
      *
      * @field-labels
-     *   id: Workflow ID
-     *   env: Environment
-     *   workflow: Workflow
-     *   user: User
-     *   status: Status
-     *   started_at: Started At
-     *   finished_at: Finished At
-     *   time: Time Elapsed
+     *     id: Workflow ID
+     *     env: Environment
+     *     workflow: Workflow
+     *     user: User
+     *     status: Status
+     *     started_at: Started At
+     *     finished_at: Finished At
+     *     time: Time Elapsed
      * @return RowsOfFields
      *
-     * @param string $site_id Site name to list the workflows of
+     * @param string $site_id Site name
      *
      * @usage terminus workflow:list <site>
-     *   Lists the workflows for <site>
+     *   Displays the list of the workflows for <site>.
      */
     public function wfList($site_id)
     {
