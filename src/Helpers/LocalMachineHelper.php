@@ -44,7 +44,7 @@ class LocalMachineHelper implements ConfigAwareInterface
      * @param callable $callback A function to run while waiting for the process to complete
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback)
+    public function execInteractive($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
         $process->setTty(true);
