@@ -12,6 +12,7 @@ use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Models\UpstreamStatus;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -45,6 +46,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * @var Loadbalancers
      */
     public $loadbalancers;
+    /**
+     * @var UpstreamStatus
+     */
+    public $upstream_status;
     /**
      * @var Site
      */
@@ -885,6 +890,18 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         }
         return $this->workflows;
     }
+
+    /**
+     * @return UpstreamStatus
+     */
+    public function getUpstreamStatus()
+    {
+        if (empty($this->upstream_status)) {
+            $this->upstream_status = $this->getContainer()->get(UpstreamStatus::class, [[], ['environment' => $this,]]);
+        }
+        return $this->upstream_status;
+    }
+
 
     /**
      * @return Workflows

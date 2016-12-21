@@ -52,6 +52,7 @@ use Pantheon\Terminus\Models\Solr;
 use Pantheon\Terminus\Models\SSHKey;
 use Pantheon\Terminus\Models\Tag;
 use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\UpstreamStatus;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\UserSiteMembership;
@@ -232,6 +233,7 @@ class Terminus implements ConfigAwareInterface
         $container->add(MachineToken::class);
         $container->add(Upstream::class);
         $container->add(Upstreams::class);
+        $container->add(UpstreamStatus::class);
         $container->add(UserSiteMemberships::class);
         $container->add(UserSiteMembership::class);
         $container->add(UserOrganizationMemberships::class);

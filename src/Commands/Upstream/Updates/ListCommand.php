@@ -12,7 +12,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class ListCommand extends UpdatesCommand
 {
     /**
-     * Displays a list of new code commits available from the upstream for a site's Dev environment.
+     * Displays a list of new code commits available from the upstream for a site's development environment.
      *
      * @authorize
      *
@@ -26,18 +26,19 @@ class ListCommand extends UpdatesCommand
      *     author: Author
      * @return RowsOfFields
      *
-     * @param string $site_id Site name
+     * @param string $site_env Site & development environment
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:list <site>
-     *     Displays a list of new code commits available from the upstream for <site>'s Dev environment.
+     * @usage terminus upstream:updates:list <site>.<env>
+     *     Displays a list of new code commits available from the upstream for <site>'s <env> environment.
      */
-    public function listUpstreamUpdates($site_id)
+    public function listUpstreamUpdates($site_env)
     {
-        $site = $this->getSite($site_id);
+        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+
         $data = [];
-        foreach ($this->getUpstreamUpdatesLog($site) as $commit) {
+        foreach ($this->getUpstreamUpdatesLog($env) as $commit) {
             $data[] = [
                 'hash' => $commit->hash,
                 'datetime' => $commit->datetime,
