@@ -51,7 +51,7 @@ class UpstreamStatus extends TerminusModel
         } else {
             $base_branch = $this->env->id;
         }
-        return $this->request()->request("sites/{$this->env->site->id}/code-upstream-updates?base_branch={$branch_name}")['data'];
+        return $this->request()->request("sites/{$this->env->site->id}/code-upstream-updates?base_branch={$base_branch}")['data'];
     }
 
     /**
