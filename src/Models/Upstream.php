@@ -33,42 +33,6 @@ class Upstream extends TerminusModel
     }
 
     /**
-     * Returns the status of this site's upstream updates
-     *
-     * @return string $status 'outdated' or 'current'
-     */
-    public function getStatus()
-    {
-        if ($this->hasUpdates()) {
-            $status = 'outdated';
-        } else {
-            $status = 'current';
-        }
-        return $status;
-    }
-
-    /**
-     * Retrives upstream updates
-     *
-     * @return \stdClass
-     */
-    public function getUpdates()
-    {
-        return $this->request()->request("sites/{$this->site->id}/code-upstream-updates")['data'];
-    }
-
-    /**
-     * Determines whether there are any updates to be applied.
-     *
-     * @return boolean
-     */
-    public function hasUpdates()
-    {
-        $updates = $this->getUpdates();
-        return ($updates->behind > 0);
-    }
-
-    /**
      * @inheritdoc
      */
     public function serialize()
