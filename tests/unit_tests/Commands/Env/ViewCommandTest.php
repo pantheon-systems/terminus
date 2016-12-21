@@ -90,7 +90,7 @@ class ViewCommandTest extends EnvCommandTest
             ->method('openUrl')
             ->with($this->equalTo($expected_url));
 
-        $url = $this->command->view('my-site.dev');
-        $this->assertEquals($expected_url, $url);
+        $out = $this->command->view('my-site.dev');
+        $this->assertNull($out);
     }
 }
