@@ -42,7 +42,7 @@ class ApplyCommand extends UpdatesCommand
             );
         }
 
-        $updates = $this->getUpstreamUpdatesLog($site);
+        $updates = $this->getUpstreamUpdatesLog($env);
         $count = count($updates);
         if ($count) {
             $this->log()->notice(

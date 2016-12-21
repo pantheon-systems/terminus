@@ -32,16 +32,16 @@ class ApplyCommandTest extends UpdatesCommandTest
     {
         $this->environment->id = 'dev';
 
-        $upstream = (object)[
+        $upstream_data = (object)[
             'remote_head' => '2f1c945d01cd03250e2b6668ad77bf24f54a5a56',
             'ahead' => 1,
             'update_log' => (object)[],
         ];
 
-        $this->upstream->expects($this->once())
+        $this->upstream_status->expects($this->once())
             ->method('getUpdates')
             ->with()
-            ->willReturn($upstream);
+            ->willReturn($upstream_data);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -64,7 +64,7 @@ class ApplyCommandTest extends UpdatesCommandTest
     {
         $this->environment->id = 'dev';
 
-        $upstream = (object)[
+        $upstream_data = (object)[
             'remote_head' => '2f1c945d01cd03250e2b6668ad77bf24f54a5a56',
             'ahead' => 1,
             'update_log' => (object)[
@@ -96,8 +96,8 @@ class ApplyCommandTest extends UpdatesCommandTest
                 ],
             ],
         ];
-        $this->upstream->method('getUpdates')
-            ->willReturn($upstream);
+        $this->upstream_status->method('getUpdates')
+            ->willReturn($upstream_data);
 
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
