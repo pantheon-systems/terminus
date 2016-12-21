@@ -18,8 +18,7 @@ abstract class WorkflowCommandTest extends CommandTestCase
      * @var Workflow
      */
     protected $workflow;
-
-    /*
+    /**
      * @var Workflows
      */
     protected $workflows;
