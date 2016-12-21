@@ -27,7 +27,7 @@ script:
   - ./scripts/test.sh
 
 after_success:
-  - php vendor/bin/coveralls -v -c tests/config/coveralls.xml
+    - if [ $(phpenv version-name) = "7.0" ]; then php vendor/bin/coveralls -v -c tests/config/coveralls.xml; fi
 
 notifications:
   email:
