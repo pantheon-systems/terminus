@@ -11,7 +11,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
-    "composer/semver": "1.4",
+    "composer/semver": "^1.0",
     "consolidation/robo": "^1.0.5",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.7",
