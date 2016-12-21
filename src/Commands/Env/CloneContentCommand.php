@@ -46,6 +46,12 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         list($site, $env) = $this->getSiteEnv($site_env);
         $from_name = $env->getName();
         $target = $site->getEnvironments()->get($target_env);
+        $to_name = $target->getName();
+
+        $tr = ['from' => $from_name, 'to' => $to_name, 'env' => $site->getName()];
+        if (!$this->confirm('Are you sure you want to clone content from {from} to {to} on {site}?', $tr)) {
+            return;
+        }
 
         if (empty($options['db-only'])) {
             $workflow = $target->cloneFiles($from_name);

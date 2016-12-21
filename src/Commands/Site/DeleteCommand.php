@@ -23,6 +23,11 @@ class DeleteCommand extends SiteCommand
     public function delete($site_name)
     {
         $site = $this->getSite($site_name);
+
+        if (!$this->confirm('Are you sure you want to delete {site}?', ['site' => $site->getName()])) {
+            return;
+        }
+
         $site->delete();
         $this->log()->notice('Deleted {site} from Pantheon', ['site' => $site_name,]);
     }

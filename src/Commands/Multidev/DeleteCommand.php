@@ -34,6 +34,11 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
     public function deleteMultidev($site_env, $options = ['delete-branch' => false,])
     {
         list(, $env) = $this->getSiteEnv($site_env);
+
+        if (!$this->confirm('Are you sure you want to delete {env}?', ['env' => $env->getName()])) {
+            return;
+        }
+
         $workflow = $env->delete(['delete_branch' => $options['delete-branch'],]);
         $workflow->wait();
         if ($workflow->isSuccessful()) {
