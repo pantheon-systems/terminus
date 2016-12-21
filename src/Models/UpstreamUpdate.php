@@ -47,11 +47,11 @@ class UpstreamUpdate extends TerminusModel
     public function getUpdates()
     {
         if (!$this->env->isMultidev()) {
-            $branch_name = 'master';
+            $base_branch = 'master';
         } else {
-            $branch_name = $this->env->id;
+            $base_branch = $this->env->id;
         }
-        return $this->request()->request("sites/{$this->env->site->id}/code-upstream-updates?branch_name={$branch_name}")['data'];
+        return $this->request()->request("sites/{$this->env->site->id}/code-upstream-updates?base_branch={$branch_name}")['data'];
     }
 
     /**

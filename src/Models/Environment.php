@@ -897,7 +897,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function getUpstreamUpdate()
     {
         if (empty($this->upstream_update)) {
-            $this->upstream_update = new UpstreamUpdate([], ['environment' => $this,]);
+            $this->upstream_update = $this->getContainer()->get(UpstreamUpdate::class, [[], ['environment' => $this,]]);
         }
         return $this->upstream_update;
     }
