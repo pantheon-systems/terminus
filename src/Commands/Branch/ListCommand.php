@@ -30,7 +30,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage terminus branch:list <site>
+     * @usage <site>
      *     Displays a list of Git branches within <site>'s Pantheon remote repository.
      */
     public function listBranches($site_id)

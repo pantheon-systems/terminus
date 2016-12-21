@@ -30,7 +30,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus domain:dns <site>.<env>
+     * @usage <site>.<env>
      *     Displays recommended DNS settings for <site>'s <env> environment.
      */
     public function getRecommendations($site_env)

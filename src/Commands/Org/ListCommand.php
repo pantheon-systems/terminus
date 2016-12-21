@@ -24,7 +24,7 @@ class ListCommand extends TerminusCommand
      *   name: Name
      * @return RowsOfFields
      *
-     * @usage terminus org:list
+     * @usage
      *   Display a list of organizations which the logged-in user is a member of
      */
     public function listOrgs()

@@ -18,9 +18,9 @@ class LogsCommand extends InfoBaseCommand
      * @param string $site_id Name or UUID of the site that the workflow belongs to
      * @option string $id The UUID of a specific workflow to show
      *
-     * @usage terminus workflow:info:logs <site_name> --id=<workflow>
+     * @usage  <site_name> --id=<workflow>
      *   Shows info about the the workflow identified by <workflow> found on <site>
-     * @usage terminus workflow:info:logs <site_name>
+     * @usage  <site_name>
      *   Shows info about the most recent workflow found on <site>
      */
     public function logs($site_id, $options = ['id' => null,])

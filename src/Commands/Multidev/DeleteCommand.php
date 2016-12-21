@@ -26,9 +26,9 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment to delete, in the form `site-name.env`
      * @option boolean $delete-branch Set to delete the branch of the same name
      *
-     * @usage terminus multidev:delete <site>.<multidev>
+     * @usage <site>.<multidev>
      *   Deletes the <multidev> environment from <site>
-     * @usage terminus multidev:delete awesome-site.multidev-env --delete-branch
+     * @usage <site> --delete-branch
      *   Deletes the <multidev> environment from <site> and deletes its branch from the repository
      */
     public function deleteMultidev($site_env, $options = ['delete-branch' => false,])

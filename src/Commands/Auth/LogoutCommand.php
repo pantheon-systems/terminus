@@ -17,7 +17,7 @@ class LogoutCommand extends TerminusCommand
      * @command auth:logout
      * @aliases logout
      *
-     * @usage terminus auth:logout
+     * @usage
      *     Logs out of Pantheon and removes saved session.
      */
     public function logOut()

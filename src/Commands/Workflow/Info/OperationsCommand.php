@@ -28,9 +28,9 @@ class OperationsCommand extends InfoBaseCommand
      *   duration: Duration
      *   description: Operation Description
      *
-     * @usage terminus workflow:info:operations <site> --id=<workflow>
+     * @usage <site> --id=<workflow>
      *   Shows the operations of the workflow identified by <workflow> found on <site>
-     * @usage terminus workflow:info:operations <site>
+     * @usage <site>
      *   Shows the operations of the most recent workflow found on <site>
      */
     public function operations($site_id, $options = ['id' => null,])

@@ -25,7 +25,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $domain Domain e.g. `example.com`
      *
-     * @usage terminus domain:delete <site>.<env> <domain_name>
+     * @usage <site>.<env> <domain_name>
      *     Disassociates <domain_name> from <site>'s <env> environment.
      */
     public function remove($site_env, $domain)

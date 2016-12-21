@@ -35,7 +35,7 @@ class InfoCommand extends SiteCommand
      *
      * @param string $site The name or UUID of a site to retrieve information on
      *
-     * @usage terminus site:info <site>
+     * @usage <site>
      *   Responds with the table view of information about <site>
      */
     public function info($site)

@@ -20,7 +20,7 @@ class AddCommand extends TerminusCommand
      *
      * @param string $file The path to the SSH public key file to use
      *
-     * @usage terminus ssh-key:add <file_path>
+     * @usage <file_path>
      *   Adds the public key at the given file path <file_path> to your account
      */
     public function add($file)

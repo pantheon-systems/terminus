@@ -27,11 +27,11 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $element [code|files|database|db] Backup element to retrieve
      * @throws TerminusNotFoundException
      *
-     * @usage terminus backup:get <site>.<env>
+     * @usage <site>.<env>
      *     Displays the URL for the most recent backup of any type in <site>'s <env> environment.
-     * @usage terminus backup:get awesome-site.dev --file=2016-08-18T23-16-20_UTC_code.tar.gz
+     * @usage <site>.dev --file=2016-08-18T23-16-20_UTC_code.tar.gz
      *     Displays the URL for the backup with the specified file name in <site>'s <env> environment.
-     * @usage terminus backup:get awesome-site.dev --element=code
+     * @usage <site>.dev --element=code
      *     Displays the URL for the most recent code backup in <site>'s <env> environment.
      */
     public function getBackup($site_env, array $options = ['file' => null, 'element' => null,])

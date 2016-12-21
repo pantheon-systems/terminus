@@ -20,11 +20,11 @@ class ConsoleCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @option string $site_env Site & environment to access as `$site` and (optional) `$env`
      *
-     * @usage terminus self:console
+     * @usage
      *   Initiates an an interactive PHP console
-     * @usage terminus self:console <site>
+     * @usage <site>
      *   Initiates an interactive PHP console with access to an object representing <site>
-     * @usage terminus self:console <site>.<env>
+     * @usage <site>.<env>
      *   Initiates an interactive PHP console with access to an object representing <site> and its <env> environment
      *
      */

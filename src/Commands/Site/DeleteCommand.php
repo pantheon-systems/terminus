@@ -16,7 +16,7 @@ class DeleteCommand extends SiteCommand
      * @command site:delete
      *
      * @param string $site_name Name of the site to delete
-     * @usage terminus site:delete <site>
+     * @usage <site>
      *   Deletes the site named <site> from Pantheon
      */
     public function delete($site_name)

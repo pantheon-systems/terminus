@@ -16,7 +16,7 @@ class ConfigDumpCommand extends TerminusCommand
      *
      * @return RowsOfFields
      *
-     * @usage terminus self:config-dump
+     * @usage
      *    Show the current configuration values
      */
     public function dumpConfig()

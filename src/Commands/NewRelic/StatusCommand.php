@@ -31,7 +31,7 @@ class StatusCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Name of the site to check New Relic status on
      *
-     * @usage terminus new-relic:status <site>
+     * @usage <site>
      *   Checks the New Relic status of <site>
      */
     public function status($site_id)

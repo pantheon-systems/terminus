@@ -28,7 +28,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @return PropertyList
      *
-     * @usage terminus tag:list <site> <org>
+     * @usage <site> <org>
      *    Lists the tags which the <org> organization has added to the <site> site
      */
     public function listTags($site_name, $organization)

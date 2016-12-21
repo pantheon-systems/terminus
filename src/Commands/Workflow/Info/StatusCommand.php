@@ -31,9 +31,9 @@ class StatusCommand extends InfoBaseCommand
      * @param string $site_id Name or ID of the site that the workflow is part of
      * @option string $id UUID of the workflow to show
      *
-     * @usage terminus workflow:info:operations <site> <workflow>
+     * @usage <site> <workflow>
      *   Shows the status of the workflow identified by <workflow> found on <site>
-     * @usage terminus workflow:info:operations <site>
+     * @usage <site>
      *   Shows the status of the most recent workflow found on <site>
      */
     public function status($site_id, $options = ['id' => null,])

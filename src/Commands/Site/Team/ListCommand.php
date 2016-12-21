@@ -33,7 +33,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name to list team members for.
      *
-     * @usage terminus site:team:list <site>
+     * @usage <site>
      *   Lists team members for <site>
      */
     public function teamList($site_id)

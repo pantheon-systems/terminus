@@ -24,7 +24,7 @@ class ListCommand extends TerminusCommand
      *   id: ID
      * @return RowsOfFields
      *
-     * @usage terminus payment-method:list
+     * @usage 
      *   Display a list of payment methods which the logged-in user has attached to their account
      */
     public function listPaymentMethods()

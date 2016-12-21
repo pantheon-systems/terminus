@@ -25,7 +25,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @throws TerminusException
-     * @usage terminus env:wipe <site>.<env>
+     * @usage <site>.<env>
      *    Deletes all database/files on <site>'s <env> environment.
      */
     public function wipe($site_env)

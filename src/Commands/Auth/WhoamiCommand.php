@@ -25,9 +25,9 @@ class WhoamiCommand extends TerminusCommand
      * @default-string-field email
      * @return PropertyList
      *
-     * @usage terminus auth:whoami
+     * @usage
      *     Displays the email of the logged-in user.
-     * @usage terminus auth:whoami --format=table
+     * @usage --format=table
      *     Displays the current session and user's data.
      */
     public function whoAmI()

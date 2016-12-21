@@ -25,7 +25,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_id Site name or UUID to remove member from
      * @param string $member Email, UUID, or full name of the member to remove
      *
-     * @usage terminus site:team:remove <site> <user>
+     * @usage <site> <user>
      *   Remove <user> from the site <site>
      */
     public function remove($site_id, $member)

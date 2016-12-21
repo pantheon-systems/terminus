@@ -16,7 +16,7 @@ class DeleteCommand extends TerminusCommand
      *
      * @param string $machine_token_id The ID of the machine token to be deleted
      *
-     * @usage terminus machine-token:delete <machine_token>
+     * @usage
      *   Removes the machine token identified by <machine_token> from the logged-in user's account
      */
     public function delete($machine_token_id)

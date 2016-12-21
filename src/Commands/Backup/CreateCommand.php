@@ -25,13 +25,13 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $element [code|files|database|db] Element to be backed up
      * @option integer $keep-for Retention period, in days, to retain backup
      *
-     * @usage terminus backup:create <site>.<env>
+     * @usage <site>.<env>
      *     Creates a backup of <site>'s <env> environment.
-     * @usage terminus backup:create <site>.<env> --element=<element>
+     * @usage <site>.<env> --element=<element>
      *     Creates a backup of <site>'s <env> environment's <element>.
-     * @usage terminus backup:create <site>.<env> --keep-for=<days>
+     * @usage <site>.<env> --keep-for=<days>
      *     Creates a backup of <site>'s <env> environment and retains it for <days> days.
-     * @usage terminus backup:create <site>.<env> --element=<element> --keep-for=<days>
+     * @usage <site>.<env> --element=<element> --keep-for=<days>
      *     Creates a backup of <site>'s <env> environment's <element> and retains it for <days> days.
      */
     public function create($site_env, $options = ['element' => null, 'keep-for' => 365,])

@@ -20,7 +20,7 @@ class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterfa
      * @command self:clear-cache
      * @aliases self:cc
      *
-     * @usage terminus self:clear-cache
+     * @usage
      *    Removes all Terminus cached data
      */
     public function clearCache()

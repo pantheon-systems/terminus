@@ -25,7 +25,7 @@ class LookupCommand extends SiteCommand
      *
      * @param string $site_name Name of a site to look up
      *
-     * @usage terminus site:lookup <site>
+     * @usage <site>
      *   * Responds with the UUID of <site> if it exists and you have access to it
      *   * Responds that you are forbidden if you access <site>, which exists, but you do not have access to it
      *   * Responds that <site> does not exist

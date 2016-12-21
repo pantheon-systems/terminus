@@ -24,7 +24,7 @@ class ListCommand extends TerminusCommand
      *   device_name: Device Name
      * @return RowsOfFields
      *
-     * @usage terminus machine-token:list
+     * @usage
      *   Lists your user's machine tokens
      */
     public function listTokens()

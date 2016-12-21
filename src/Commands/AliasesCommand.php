@@ -18,11 +18,11 @@ class AliasesCommand extends TerminusCommand
      *
      * @return string|null
      *
-     * @usage terminus aliases
+     * @usage 
      *     Saves your Pantheon Drush aliases to ~/.drush/pantheon.aliases.drushrc.php
-     * @usage terminus aliases --print
+     * @usage  --print
      *     Prints your Pantheon Drush aliases on your screen
-     * @usage terminus aliases --location=<full_path>
+     * @usage  --location=<full_path>
      *     Saves your Panthoen Drush aliases to <full_path>
      */
     public function aliases($options = ['print' => false, 'location' => null,])

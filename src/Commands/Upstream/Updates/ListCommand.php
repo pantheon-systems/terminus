@@ -30,7 +30,7 @@ class ListCommand extends UpdatesCommand
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:list <site>
+     * @usage <site>
      *   Lists the available updates for <site>
      */
     public function listUpstreamUpdates($site_id)

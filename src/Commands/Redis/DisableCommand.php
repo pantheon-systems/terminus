@@ -23,7 +23,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Name of the site to disable Redis on
      *
-     * @usage terminus redis:disable <site>
+     * @usage <site>
      *   Disable Redis caching for <site>
      */
     public function disable($site_id)

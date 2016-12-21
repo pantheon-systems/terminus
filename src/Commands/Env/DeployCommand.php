@@ -31,17 +31,17 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
      * @option string $updatedb Run update.php after deploy (Drupal only)
      * @option string $note Custom deploy log message
      *
-     * @usage terminus env:deploy <site>.test
+     * @usage <site>.test
      *   Deploy code from <site>'s Dev environment to the Test environment.
-     * @usage terminus env:deploy <site>.live
+     * @usage <site>.live
      *   Deploy code from <site>'s Test environment to the Live environment.
-     * @usage terminus env:deploy <site>.test --cc
+     * @usage <site>.test --cc
      *   Deploy code from <site>'s Dev environment to the Test environment and clear caches on the Test environment.
-     * @usage terminus env:deploy <site>.test --sync-content
+     * @usage <site>.test --sync-content
      *   Deploy code from <site>'s Dev environment to the Test environment and clone content from the Live environment to the Test environment.
-     * @usage terminus env:deploy <site>.live --updatedb
+     * @usage <site>.live --updatedb
      *   Deploy code from <site>'s Test environment to the Live environment and run Drupal's update.php.
-     * @usage terminus env:deploy <site>.live --note=<message>
+     * @usage <site>.live --note=<message>
      *   Deploy code from <site>'s Test environment to the Live environment with the deploy log message <message>.
      */
     public function deploy(

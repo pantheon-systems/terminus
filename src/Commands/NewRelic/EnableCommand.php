@@ -23,7 +23,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Name of the site to enable New Relic on
      *
-     * @usage terminus new-relic:enable <site>
+     * @usage <site>
      *   Enables New Relic for <site>
      */
     public function enable($site_id)

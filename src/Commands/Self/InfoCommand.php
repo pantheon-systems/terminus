@@ -26,7 +26,7 @@ class InfoCommand extends TerminusCommand
      *   os_version: Operating system
      * @return PropertyList
      *
-     * @usage terminus self:info
+     * @usage
      *    Responds with information about the currently running Terminus application
      */
     public function info()

@@ -41,7 +41,7 @@ class WPCommand extends SSHBaseCommand
      * @param array $wp_command WP-CLI command to invoke on the environment
      * @return string Output of the given WP-CLI command executed on the site environment
      *
-     * @usage terminus wp <site>.<env> -- <command>
+     * @usage <site>.<env> -- <command>
      *    Runs the WP-CLI command <command> on the <env> environment of <site>
      */
     public function wpCommand($site_env_id, array $wp_command)

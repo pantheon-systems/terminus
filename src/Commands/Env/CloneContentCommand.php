@@ -30,11 +30,11 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
-     * @usage terminus env:clone-content <site>.<env> <target_env>
+     * @usage <site>.<env> <target_env>
      *   Clones database and files from <site>'s <env> environment to <target_env> environment.
-     * @usage terminus env:clone-content <site>.<env> <target_env> --db-only
+     * @usage <site>.<env> <target_env> --db-only
      *   Clones only the database from <site>'s <env> environment to <target_env> environment.
-     * @usage terminus env:clone-content <site>.<env> <target_env> --files-only
+     * @usage <site>.<env> <target_env> --files-only
      *   Clones only files from <site>'s <env> environment to <target_env> environment.
      */
     public function cloneContent($site_env, $target_env, array $options = ['db-only' => false, 'files-only' => false,])

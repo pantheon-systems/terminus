@@ -24,7 +24,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_name The name or UUID of the site to remove the payment method from
      *
-     * @usage terminus payment-method:remove <site>
+     * @usage <site>
      *   Removes the set payment method from the <site> site, if one exists.
      */
     public function remove($site_name)

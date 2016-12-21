@@ -34,7 +34,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws TerminusNotFoundException
      *
-     * @usage terminus domain:lookup <domain_name>
+     * @usage <domain_name>
      *     Returns the site and environment associated with <domain_name> or displays not found.
      */
     public function lookup($domain)

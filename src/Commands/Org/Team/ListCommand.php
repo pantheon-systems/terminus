@@ -29,7 +29,7 @@ class ListCommand extends TerminusCommand
      * @param string $organization The name or UUID of the organization to list the team members of
      * @return RowsOfFields
      *
-     * @usage terminus org:team:list <organization>
+     * @usage <organization>
      *   Displays a list of the team members belonging to the <organization> organization
      */
     public function listTeam($organization)

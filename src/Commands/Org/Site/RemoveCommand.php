@@ -25,7 +25,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $organization The name or UUID of the organization to remove a site from
      * @param string $site The UUID or name of the site to be removed from this organization
      *
-     * @usage terminus org:site:remove <organization> <site>
+     * @usage <organization> <site>
      *   Removes the <site> site from the <organization> organization
      */
     public function remove($organization, $site)

@@ -24,11 +24,11 @@ class ApplyCommand extends UpdatesCommand
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:apply <site>.<env>
+     * @usage <site>.<env>
      *   Applies the available updates to the <env> environment of <site>
-     * @usage terminus upstream:updates:apply <site>.<env> --updatedb
+     * @usage <site>.<env> --updatedb
      *   Applies the available updates to the <env> environment of <site> and run update.php when finished
-     * @usage terminus upstream:updates:apply <site>.<env> --accept-upstream
+     * @usage <site>.<env> --accept-upstream
      *   Applies the available updates to the <env> environment of <site>, automatically resolving conflicts
      */
     public function applyUpstreamUpdates($site_env, $options = ['updatedb' => false, 'accept-upstream' => false,])

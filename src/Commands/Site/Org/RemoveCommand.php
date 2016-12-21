@@ -28,7 +28,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws TerminusException
      *
-     * @usage terminus site:org:remove <site> <organization>
+     * @usage <site> <organization>
      *   Removes <organization> as a supporting organization of <site>
      */
     public function remove($site, $organization)

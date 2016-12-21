@@ -27,7 +27,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws TerminusException
      *
-     * @usage terminus connection:set <site>.<env> <mode>
+     * @usage <site>.<env> <mode>
      *     Sets the connection mode of <site>'s <env> environment to <mode>.
      */
     public function connectionSet($site_env, $mode)

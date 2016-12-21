@@ -26,9 +26,9 @@ class ArtCommand extends TerminusCommand
      *
      * @param string $name Name of the artwork to select
      *
-     * @usage terminus art <artwork>
+     * @usage  <artwork>
      *   Displays the <artwork> artwork
-     * @usage terminus art
+     * @usage 
      *   Displays a random artwork
      */
     public function art($name = '')

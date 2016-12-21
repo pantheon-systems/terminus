@@ -20,7 +20,7 @@ class RemoveCommand extends TerminusCommand
      *
      * @param string $ssh_key_id The ID or label of the SSH key to be deleted
      *
-     * @usage terminus ssh-key:delete <ssh-key>
+     * @usage <ssh-key>
      *   Removes the SSH key identified by <ssh-key> from the user's account
      */
     public function delete($ssh_key_id)

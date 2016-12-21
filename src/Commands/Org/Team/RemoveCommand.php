@@ -20,7 +20,7 @@ class RemoveCommand extends TerminusCommand
      * @param string $organization The name or UUID of the organization to remove a team member from
      * @param string $member The UUID, email address, or full name of the team member to remove from this organization
      *
-     * @usage terminus org:team:remove <organization> <member>
+     * @usage <organization> <member>
      *   Removes the team member identified by <member> from the <organization> organization
      */
     public function remove($organization, $member)

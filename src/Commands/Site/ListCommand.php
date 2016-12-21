@@ -29,25 +29,25 @@ class ListCommand extends SiteCommand
      * @option org Filter sites you can access via the organization. Use "all" to get all.
      * @option name Filter sites you can access via name.
      *
-     * @usage terminus site:list
+     * @usage site:list
      *   * Responds with list of every site you can access
      *   * Responds with "You have no sites." if you have no sites
-     * @usage terminus site:list --team
+     * @usage site:list --team
      *   * Responds with a list of sites you are a team member of
      *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --owner=<user>
+     * @usage site:list --owner=<user>
      *   * Responds with a list of sites owned by the user identified by <user>
      *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --owner=me
+     * @usage --owner=me
      *   * Responds with a list of sites the logged-in user owns
      *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --org=<org>
+     * @usage --org=<org>
      *   * Responds with a list of sites associated with the <org> organization
      *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --org=all
+     * @usage --org=all
      *   * Responds with a list of sites belonging to organization you are a member of
      *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --name=<regex>
+     * @usage --name=<regex>
      *   * Responds with a list of sites you have access to by name with a name matching the provided <regex>
      *   * Responds with a notice stating no sites match criteria if none exist
      */

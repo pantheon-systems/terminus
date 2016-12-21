@@ -25,7 +25,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_name The name or UUID of a site to assign a new owner to
      * @param string $owner The UUID, email, or full name of the user to set as the site's new owner
      *
-     * @usage terminus owner:set <site> <new_owner>
+     * @usage <site> <new_owner>
      *    Promotes <new_owner> to be the owner of <site>
      */
     public function setOwner($site_name, $owner)

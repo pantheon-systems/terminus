@@ -24,7 +24,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus env:clear-cache <site>.<env>
+     * @usage <site>.<env>
      *      Clears caches for <site>'s <env> environment.
      */
     public function clearCache($site_env)
