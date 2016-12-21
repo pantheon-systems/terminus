@@ -11,4 +11,4 @@ Feature: Committing code to an environment's branch
   Scenario: Committing a change
     When I run "terminus env:commit [[test_site_name]].dev --message='Behat test commit'"
     And I run "terminus env:code-log [[test_site_name]].dev"
-    Then I should get: "Behat test commit"
+    Then I should get: "Your code was committed."

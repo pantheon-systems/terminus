@@ -24,24 +24,54 @@ class CommitCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:commit command success with all parameters.
-     *
-     * @return void
+     * Tests the env:commit command to success with all parameters
      */
     public function testCommit()
     {
+        $message = 'Custom message.';
+
         $this->environment->expects($this->once())
             ->method('diffstat')
             ->willReturn(['a', 'b']);
-
         $this->environment->expects($this->once())
             ->method('commitChanges')
-            ->willReturn($this->workflow)
-            ->with('Custom message.');
-
+            ->with($this->equalTo($message))
+            ->willReturn($this->workflow);
         $this->workflow->expects($this->once())
-            ->method('wait');
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Your code was committed.')
+            );
 
-        $this->command->commit('mysite.dev', ['message' => 'Custom message.']);
+        $out = $this->command->commit('mysite.' . $this->environment->id, compact('message'));
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the env:commit command when there are no changes to be committed
+     */
+    public function testCommitNoChanges()
+    {
+        $this->environment->expects($this->once())
+            ->method('diffstat')
+            ->willReturn([]);
+        $this->environment->expects($this->never())
+            ->method('commitChanges');
+        $this->workflow->expects($this->never())
+            ->method('checkProgress');
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo('warning'),
+                $this->equalTo('There is no code to commit.')
+            );
+
+        $out = $this->command->commit('mysite.' . $this->environment->id);
+        $this->assertNull($out);
     }
 }
