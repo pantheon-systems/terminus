@@ -82,5 +82,4 @@ class RoleCommandTest extends TeamCommandTest
         $out = $this->command->role('mysite', 'test@example.com', 'admin');
         $this->assertNull($out);
     }
-
 }

@@ -56,7 +56,7 @@ class ConfigDumpCommandTest extends CommandTestCase
             ->willReturn($config_keys);
 
         $i = 0;
-        $rand = random_int(0, 100);
+        $rand = rand();
         foreach ($config_keys as $key) {
             $this->config->method('getConstantFromKey')
                 ->willReturn($rand);

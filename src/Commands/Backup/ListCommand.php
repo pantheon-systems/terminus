@@ -53,7 +53,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
                 $backup_element = $element;
         }
 
-
         $backups = $env->getBackups()->getFinishedBackups($backup_element);
 
         $data = [];
