@@ -54,6 +54,16 @@ class LocalMachineHelper implements ConfigAwareInterface
     }
 
     /**
+     * Returns a set-up filesystem object.
+     *
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        return new Filesystem();
+    }
+
+    /**
      * Opens the given URL in a browser on the local machine.
      *
      * @param $url The URL to be opened
@@ -83,6 +93,17 @@ class LocalMachineHelper implements ConfigAwareInterface
     }
 
     /**
+     * Reads to a file from the local system.
+     *
+     * @param string $filename Name of the file to read
+     * @return string Content read from that file
+     */
+    public function readFile($filename)
+    {
+        return file_get_contents($this->fixFilename($filename));
+    }
+
+    /**
      * Writes to a file on the local system.
      *
      * @param string $filename Name of the file to write to
@@ -103,16 +124,6 @@ class LocalMachineHelper implements ConfigAwareInterface
     {
         $config = $this->getConfig();
         return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
-    }
-
-    /**
-     * Returns a set-up filesystem object.
-     *
-     * @return Filesystem
-     */
-    protected function getFilesystem()
-    {
-        return new Filesystem();
     }
 
     /**
