@@ -11,10 +11,10 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
-    "composer/semver": "1.4",
+    "composer/semver": "^1.4",
     "consolidation/robo": "^1.0.5",
     "guzzlehttp/guzzle": "^6.2",
-    "psy/psysh": "^0.7",
+    "psy/psysh": "^0.8",
     "symfony/finder": "~2.7|^3.1",
     "symfony/yaml": "~2.1|^3.1"
   },
