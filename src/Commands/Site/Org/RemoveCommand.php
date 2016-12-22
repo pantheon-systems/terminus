@@ -36,21 +36,15 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);
 
-        if ($membership = $site->getOrganizationMemberships()->get($organization)) {
-            $workflow = $membership->delete();
-            $this->log()->notice(
-                'Removing {org} as a supporting organization from {site}.',
-                ['site' => $site->getName(), 'org' => $org->getName()]
-            );
-            while (!$workflow->checkProgress()) {
-                // @TODO: Remove Symfony progress bar to indicate that something is happening.
-            }
-            $this->log()->notice($workflow->getMessage());
-        } else {
-            throw new TerminusException(
-                'The organization {org} does not appear to be a supporting member of {site}',
-                ['site' => $site->getName(), 'org' => $org->getName()]
-            );
+        $membership = $site->getOrganizationMemberships()->get($organization);
+        $workflow = $membership->delete();
+        $this->log()->notice(
+            'Removing {org} as a supporting organization from {site}.',
+            ['site' => $site->getName(), 'org' => $org->getName()]
+        );
+        while (!$workflow->checkProgress()) {
+            // @TODO: Remove Symfony progress bar to indicate that something is happening.
         }
+        $this->log()->notice($workflow->getMessage());
     }
 }

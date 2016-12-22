@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\GetCommand;
@@ -77,6 +78,35 @@ class GetCommandTest extends BackupCommandTest
 
         $this->setExpectedException(TerminusNotFoundException::class);
 
-        $this->command->getBackup('mysite.dev', ['file' => $bad_file_name,]);
+        $out = $this->command->getBackup('mysite.dev', ['file' => $bad_file_name,]);
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the backup:get command when there are no backups to get
+     */
+    public function testGetBackupNoBackups()
+    {
+        $element = 'some_element';
+        $site = 'site';
+        $this->environment->id = 'env';
+
+        $this->backups->expects($this->once())
+            ->method('getFinishedBackups')
+            ->with($this->equalTo($element))
+            ->willReturn([]);
+        $this->backup->expects($this->never())
+            ->method('getUrl');
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('name'))
+            ->willReturn($site);
+        $this->setExpectedException(
+            TerminusNotFoundException::class,
+            "No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`"
+        );
+
+        $out = $this->command->getBackup("$site.{$this->environment->id}", compact('element'));
+        $this->assertNull($out);
     }
 }

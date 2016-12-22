@@ -35,7 +35,7 @@ class ListCommand extends UpdatesCommand
      */
     public function listUpstreamUpdates($site_env)
     {
-        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getSiteEnv($site_env, 'dev');
 
         $data = [];
         foreach ($this->getUpstreamUpdatesLog($env) as $commit) {
@@ -48,7 +48,7 @@ class ListCommand extends UpdatesCommand
         }
 
         if (empty($data)) {
-            $this->log()->warning("There are no available updates for this site.");
+            $this->log()->warning('There are no available updates for this site.');
         }
 
         // Return the output data.

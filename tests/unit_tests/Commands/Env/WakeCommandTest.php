@@ -46,9 +46,9 @@ class WakeCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:wake command when the operation fails
+     * Tests the env:wake command when the operation fails to reach the environment
      */
-    public function testWakeFail()
+    public function testWakeFailUnreachable()
     {
         $this->environment->expects($this->once())
             ->method('wake')
@@ -56,6 +56,22 @@ class WakeCommandTest extends EnvCommandTest
             ->willReturn(['success' => false, 'target' => 'dev',]);
 
         $this->setExpectedException(TerminusException::class, 'Could not reach dev');
+
+        $out = $this->command->wake('mysite.dev');
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the env:wake command when the operation fails because Styx data is missing
+     */
+    public function testWakeFail()
+    {
+        $this->environment->expects($this->once())
+            ->method('wake')
+            ->with()
+            ->willReturn(['success' => true, 'target' => 'dev',]);
+
+        $this->setExpectedException(TerminusException::class, 'Pantheon headers missing, which is not quite right.');
 
         $out = $this->command->wake('mysite.dev');
         $this->assertNull($out);

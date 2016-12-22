@@ -57,7 +57,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     protected $site2;
 
     /**
-     * @return Config
+     * @return TerminusConfig
      */
     public function getConfig()
     {
@@ -65,7 +65,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Config $config
+     * @param TerminusConfig $config
      * @return CommandTestCase
      */
     public function setConfig($config)

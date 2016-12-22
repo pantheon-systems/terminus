@@ -23,13 +23,6 @@ class WPCommand extends SSHBaseCommand
     ];
 
     /**
-     * @inheritdoc
-     */
-    protected $unavailable_commands = [
-        'db' => '',
-    ];
-
-    /**
      * Runs a WP-CLI command remotely on a site's environment.
      *
      * @authorize
@@ -47,7 +40,6 @@ class WPCommand extends SSHBaseCommand
     public function wpCommand($site_env_id, array $wp_command)
     {
         $this->prepareEnvironment($site_env_id);
-
         return $this->executeCommand($wp_command);
     }
 }

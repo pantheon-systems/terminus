@@ -44,13 +44,23 @@ class LocalMachineHelper implements ConfigAwareInterface
      * @param callable $callback A function to run while waiting for the process to complete
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback)
+    public function execInteractive($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
         $process->setTty(true);
         $process->start();
         $process->wait($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+    }
+
+    /**
+     * Returns a set-up filesystem object.
+     *
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        return new Filesystem();
     }
 
     /**
@@ -83,6 +93,17 @@ class LocalMachineHelper implements ConfigAwareInterface
     }
 
     /**
+     * Reads to a file from the local system.
+     *
+     * @param string $filename Name of the file to read
+     * @return string Content read from that file
+     */
+    public function readFile($filename)
+    {
+        return file_get_contents($this->fixFilename($filename));
+    }
+
+    /**
      * Writes to a file on the local system.
      *
      * @param string $filename Name of the file to write to
@@ -103,16 +124,6 @@ class LocalMachineHelper implements ConfigAwareInterface
     {
         $config = $this->getConfig();
         return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
-    }
-
-    /**
-     * Returns a set-up filesystem object.
-     *
-     * @return Filesystem
-     */
-    protected function getFilesystem()
-    {
-        return new Filesystem();
     }
 
     /**

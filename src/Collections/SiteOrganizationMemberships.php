@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
@@ -95,6 +96,9 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
                 }
             }
         }
-        return null;
+        throw new TerminusNotFoundException(
+            'Could not find an association for {org} organization with {site}.',
+            ['org' => $id, 'site' => $this->site->getName(),]
+        );
     }
 }

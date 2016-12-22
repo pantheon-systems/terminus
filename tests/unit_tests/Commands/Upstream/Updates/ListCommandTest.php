@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ListCommand;
-use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class ListCommandTest
@@ -34,7 +34,9 @@ class ListCommandTest extends UpdatesCommandTest
             'ahead' => 1,
             'update_log' => (object)[],
         ];
-        $this->upstream_status->method('getUpdates')
+        $this->upstream_status->expects($this->once())
+            ->method('getUpdates')
+            ->with()
             ->willReturn($upstream_data);
 
         $this->logger->expects($this->once())
@@ -44,9 +46,7 @@ class ListCommandTest extends UpdatesCommandTest
                 $this->equalTo('There are no available updates for this site.')
             );
 
-
         $out = $this->command->listUpstreamUpdates('123');
-
         $this->assertEquals([], $out->getArrayCopy());
     }
 
@@ -108,5 +108,20 @@ class ListCommandTest extends UpdatesCommandTest
             ],
         ];
         $this->assertEquals($result, $out->getArrayCopy());
+    }
+
+    /**
+     * Tests the upstream:updates:list command when getUpdates returns empty (i.e. erred)
+     */
+    public function testListUpstreamsErred()
+    {
+        $this->upstream->method('getUpdates')
+            ->willReturn([]);
+        $this->logger->expects($this->never())
+            ->method('log');
+        $this->setExpectedException(TerminusException::class, 'There was a problem checking your upstream status. Please try again.');
+
+        $out = $this->command->listUpstreamUpdates('123');
+        $this->assertNull($out);
     }
 }
