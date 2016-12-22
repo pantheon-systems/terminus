@@ -8,6 +8,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class SSHBaseCommand
@@ -170,13 +171,44 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     /**
      * Gets the command-line args
      *
-     * @param string $command_args
+     * @param string[] $command_args
      * @return string
      */
     private function getCommandLine($command_args)
     {
         array_unshift($command_args, $this->command);
 
-        return implode(" ", $command_args);
+        return implode(" ", $this->escapeArguments($command_args));
+    }
+
+    /**
+     * Escape the command-line args
+     *
+     * @param string[] $args All of the arguments to escape
+     * @param string[]
+     */
+    private function escapeArguments($args)
+    {
+        return array_map(
+            function ($arg) {
+                return $this->escapeArgument($arg);
+            },
+            $args
+        );
+    }
+
+    /**
+     * Escape one command-line arg
+     *
+     * @param string $arg The argument to escape
+     * @return string
+     */
+    private function escapeArgument($arg)
+    {
+        // Omit escaping for simple args.
+        if (preg_match('/^[a-zA-Z0-9_-]*$/', $arg)) {
+            return $arg;
+        }
+        return ProcessUtils::escapeArgument($arg);
     }
 }
