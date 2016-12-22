@@ -111,7 +111,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function fetch(array $options = [])
     {
-        $results = $this->getCollectionData($options);
+        $results = array_filter((array)$this->getCollectionData($options));
 
         foreach ($results as $id => $model_data) {
             if (!isset($model_data->id)) {
