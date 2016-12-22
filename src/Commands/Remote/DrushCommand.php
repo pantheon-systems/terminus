@@ -23,14 +23,6 @@ class DrushCommand extends SSHBaseCommand
     ];
 
     /**
-     * @inheritdoc
-     */
-    protected $unavailable_commands = [
-        'sql-connect' => 'connection:info --field=mysql_command',
-        'sql-sync'    => '',
-    ];
-
-    /**
      * Runs a Drush command remotely on a site's environment.
      *
      * @authorize
@@ -48,7 +40,6 @@ class DrushCommand extends SSHBaseCommand
     public function drushCommand($site_env_id, array $drush_command)
     {
         $this->prepareEnvironment($site_env_id);
-
         return $this->executeCommand($drush_command);
     }
 }

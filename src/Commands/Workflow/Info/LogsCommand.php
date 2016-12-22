@@ -38,7 +38,7 @@ class LogsCommand extends InfoBaseCommand
                     );
                 }
             }
-            if (!$output) {
+            if (empty($output)) {
                 $this->log()->notice('Workflow operations did not contain any logs.');
             }
             return $output;

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\Site\Team\RoleCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class RoleCommandTest
@@ -50,6 +51,33 @@ class RoleCommandTest extends TeamCommandTest
                 $this->equalTo('notice'),
                 $this->equalTo($message)
             );
+
+        $out = $this->command->role('mysite', 'test@example.com', 'admin');
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the site:team:role command when the site cannot change management
+     */
+    public function testRoleCommandRestricted()
+    {
+        $this->site->expects($this->once())
+            ->method('getFeature')
+            ->with('change_management')
+            ->willReturn(false);
+        $this->user_membership->expects($this->never())
+            ->method('setRole');
+        $this->workflow->expects($this->never())
+            ->method('checkProgress');
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
+        $this->logger->expects($this->never())
+            ->method('log');
+
+        $this->setExpectedException(
+            TerminusException::class,
+            'This site does not have its change-management option enabled.'
+        );
 
         $out = $this->command->role('mysite', 'test@example.com', 'admin');
         $this->assertNull($out);

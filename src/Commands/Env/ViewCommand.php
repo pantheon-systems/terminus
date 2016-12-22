@@ -52,9 +52,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
         if ($options['print']) {
             return $url;
         }
-
         $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
-
-        return $url;
     }
 }

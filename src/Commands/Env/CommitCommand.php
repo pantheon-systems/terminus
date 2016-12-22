@@ -36,12 +36,14 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
 
         $change_count = count((array)$env->diffstat());
         if ($change_count === 0) {
-            $this->log()->warning("There is no code to commit.");
+            $this->log()->warning('There is no code to commit.');
             return;
         }
 
         $workflow = $env->commitChanges($options['message']);
-        $workflow->wait();
-        return $workflow->getMessage();
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        }
+        $this->log()->notice('Your code was committed.');
     }
 }

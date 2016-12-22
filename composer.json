@@ -32,7 +32,7 @@
   "scripts": {
       "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/*",
-      "coveralls": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
+      "coveralls": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml ; coveralls -v -c tests/config/coveralls.xml",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/*",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",

@@ -2,22 +2,23 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
 /**
  * Class ArtCommand
  * @package Pantheon\Terminus\Commands
  */
-class ArtCommand extends TerminusCommand
+class ArtCommand extends TerminusCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
-     * @var string Name of the file
+     * @var array
      */
-    protected $filename;
+    protected $available_art = ['druplicon', 'fist', 'hello', 'rocket', 'unicorn', 'wordpress',];
 
     /**
      * Displays Pantheon ASCII artwork.
@@ -31,77 +32,33 @@ class ArtCommand extends TerminusCommand
      * @usage terminus art <artwork>
      *     Displays the <artwork> artwork.
      */
-    public function art($name = '')
+    public function art($name = 'random')
     {
-        $this->formatFilename($name);
-        // If a name wasn't provide we want to only print available items.
-        if ($name) {
-            $artwork_content = $this->retrieveArt($name);
-            $this->io()->text("<comment>{$artwork_content}</comment>");
+        if ($name == 'random') {
+            $name = $this->randomArtName();
         }
-    }
-
-    /**
-     * If the user does not specify the $name parameter, then we will
-     * prompt for it here.
-     *
-     * @hook interact
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    public function interact(InputInterface $input, OutputInterface $output)
-    {
-        $available_art = $this->availableArt();
-        $io = new SymfonyStyle($input, $output);
-        $art_name = $input->getArgument('name');
-        if (!$art_name) {
-            $io->title('Available Art');
-            $io->listing($available_art);
-        }
-    }
-
-    /**
-     * Return available art
-     * @return array
-     */
-    protected function availableArt()
-    {
-        // Find all of the art in the assets directory.
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($this->config->get('assets_dir'))
-            ->depth('== 0')
-            ->name('*.txt')
-            ->sortbyname();
-
-        return array_values(
-            array_map(
-                function ($file) {
-                    return $file->getBasename('.txt');
-                },
-                (array)$finder->getIterator()
-            )
-        );
+        return $this->retrieveArt($name);
     }
 
     /**
      * Set the art filename.
      *
-     * @param $name
-     *
-     * @return ArtCommand
-     *
+     * @param string $name Name of artwork to get a filename for
+     * @return string
      */
-    protected function formatFilename($name)
+    protected function getFilename($name)
     {
-        if ($name == 'random') {
-            $name = $this->randomArtName();
-        }
-        $this->filename = $this->config->get('assets_dir') . "/{$name}.txt";
+        return $this->config->get('assets_dir') . "/$name.txt";
+    }
 
-        return $this;
+    /**
+     * Feeling lucky? Get a random artwork.
+     *
+     * @return string
+     */
+    protected function randomArtName()
+    {
+        return $this->available_art[array_rand($this->available_art)];
     }
 
     /**
@@ -113,36 +70,14 @@ class ArtCommand extends TerminusCommand
      */
     protected function retrieveArt($name)
     {
-        if (!file_exists($this->filename)) {
-            throw new TerminusNotFoundException("There is no source for the requested {name} artwork.", ['name' => $name]);
+        $filename = $this->getFilename($name);
+        $local_machine_helper = $this->getContainer()->get(LocalMachineHelper::class);
+        if (!$local_machine_helper->getFilesystem()->exists($filename)) {
+            throw new TerminusNotFoundException(
+                'There is no source for the requested {name} artwork.',
+                compact('name')
+            );
         }
-        return base64_decode(file_get_contents($this->filename));
-    }
-
-    /**
-     * Feeling lucky? Get a random artwork.
-     * @return string
-     */
-    private function randomArtName()
-    {
-        $art = $this->availableArt();
-
-        return $art[array_rand($art)];
-    }
-
-    /**
-     * @return string
-     */
-    protected function getFilename()
-    {
-        return $this->filename;
-    }
-
-    /**
-     * @param string $filename
-     */
-    protected function setFilename(string $filename)
-    {
-        $this->filename = $filename;
+        return base64_decode($local_machine_helper->readFile($filename));
     }
 }

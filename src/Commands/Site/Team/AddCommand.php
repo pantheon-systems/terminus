@@ -38,7 +38,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
             $role = 'team_member';
             $this->log()->warning(
                 'Site does not have change management enabled, defaulting to user role {role}.',
-                $options
+                compact('role')
             );
         }
         $workflow = $team->create($member, $role);

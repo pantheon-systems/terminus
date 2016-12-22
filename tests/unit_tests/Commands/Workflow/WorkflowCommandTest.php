@@ -15,11 +15,18 @@ use Pantheon\Terminus\Collections\Workflows;
 abstract class WorkflowCommandTest extends CommandTestCase
 {
     /**
+     * @var string
+     */
+    protected $expected_logs;
+    /**
+     * @var WorkflowOperation
+     */
+    protected $operation;
+    /**
      * @var Workflow
      */
     protected $workflow;
-
-    /*
+    /**
      * @var Workflows
      */
     protected $workflows;
@@ -44,11 +51,6 @@ abstract class WorkflowCommandTest extends CommandTestCase
         $this->operation = $this->getMockBuilder(WorkflowOperation::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->operation->expects($this->any())
-            ->method('has')
-            ->with('log_output')
-            ->willReturn(true);
 
         $this->operation->expects($this->any())
             ->method('description')

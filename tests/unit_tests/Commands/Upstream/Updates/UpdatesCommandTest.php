@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
+use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\UpstreamStatus;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
@@ -14,6 +15,10 @@ abstract class UpdatesCommandTest extends CommandTestCase
     /**
      * @var Upstream
      */
+    protected $upstream;
+    /**
+     * @var UpstreamStatus
+     */
     protected $upstream_status;
 
     /**
@@ -23,9 +28,18 @@ abstract class UpdatesCommandTest extends CommandTestCase
     {
         parent::setUp();
 
+        $this->upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->upstream_status = $this->getMockBuilder(UpstreamStatus::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->environment->method('getUpstreamStatus')->willReturn($this->upstream_status);
+
+        $this->environment->method('getUpstreamStatus')
+            ->with()
+            ->willReturn($this->upstream_status);
+        $this->site->method('getUpstream')
+            ->with()
+            ->willReturn($this->upstream);
     }
 }

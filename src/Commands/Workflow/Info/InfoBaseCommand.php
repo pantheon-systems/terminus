@@ -30,7 +30,7 @@ abstract class InfoBaseCommand extends TerminusCommand implements SiteAwareInter
             $workflow = $site->getWorkflows()->get($workflow_id);
         } else {
             $workflow = array_shift($workflows);
-            $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site_id,]);
+            $this->log()->notice('Showing latest workflow on {site}.', ['site' => $site->getName(),]);
         }
         $workflow->fetchWithLogs();
         return $workflow;

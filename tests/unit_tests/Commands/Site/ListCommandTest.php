@@ -36,7 +36,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:list with no filters and all membership types
+     * Tests the site:list command with no filters and all membership types
      */
     public function testListAllSites()
     {
@@ -111,7 +111,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:list with no filters and belonging to an org
+     * Tests the site:list command using no filters and belonging to an org
      */
     public function testListOrgSitesOnly()
     {
@@ -148,7 +148,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:list with a name filter of either membership type
+     * Tests the site:list command when filtering for either membership type
      */
     public function testListByNameRegex()
     {
@@ -188,7 +188,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:list of either membership type owned by a user of a given ID
+     * Tests the site:list command when either membership type owned by a user of a given ID
      */
     public function testListByOwner()
     {
@@ -229,7 +229,7 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:list of either membership type owned by a user is the logged-in user
+     * Tests the site:list command when either membership type owned by a user is the logged-in user
      */
     public function testListMyOwn()
     {
@@ -272,5 +272,36 @@ class ListCommandTest extends CommandTestCase
         $out = $this->command->index(['team' => false, 'owner' => 'me', 'org' => null, 'name' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
+    }
+
+    /**
+     * Tests the site:list command when the user has no sites
+     */
+    public function testListNoSites()
+    {
+        $this->sites->expects($this->once())
+            ->method('fetch')
+            ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
+            ->willReturn($this->sites);
+        $this->sites->expects($this->never())
+            ->method('filterByName');
+        $this->session->expects($this->never())
+            ->method('getUser');
+        $this->sites->expects($this->never())
+            ->method('filterByOwner');
+        $this->sites->expects($this->once())
+            ->method('serialize')
+            ->with()
+            ->willReturn([]);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('You have no sites.')
+            );
+
+        $out = $this->command->index();
+        $this->assertInstanceOf(RowsOfFields::class, $out);
+        $this->assertEquals([], $out->getArrayCopy());
     }
 }
