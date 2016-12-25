@@ -420,6 +420,7 @@ class PluginCommand extends TerminusCommand
                     } else {
                         $message = "Unable to locate archive file {$archive_url}.";
                         $this->log()->error($message);
+                        $output = array();
                     }
                     break;
 
