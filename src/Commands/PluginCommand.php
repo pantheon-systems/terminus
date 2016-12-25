@@ -89,8 +89,7 @@ class PluginCommand extends TerminusCommand
      * List all installed Terminus plugins.
      *
      * @command plugin:show
-     * @aliases plugin:list
-     * @aliases plugin:display
+     * @aliases plugin:list plugin:display
      *
      * @field-labels
      *   name: Name
@@ -199,8 +198,7 @@ class PluginCommand extends TerminusCommand
      * Update one or more Terminus plugins.
      *
      * @command plugin:update
-     * @aliases plugin:upgrade
-     * @aliases plugin:up
+     * @aliases plugin:upgrade plugin:up
      *
      * @option name A comma delimited list of one or more installed plugins to update
      *
@@ -209,11 +207,7 @@ class PluginCommand extends TerminusCommand
     public function update(array $options = ['name' => null])
     {
         if (empty($options['name'])) {
-            $message = "Usage: terminus plugin:<update|up>";
-            $message .= " --name=<plugin-name-1|all>,";
-            $message .= "[plugin-name-2],...";
-            $this->log()->error($message);
-            return false;
+          $options['name'] = 'all';
         }
 
         $plugins = explode(',', $options['name']);
@@ -239,8 +233,7 @@ class PluginCommand extends TerminusCommand
      * Remove one or more Terminus plugins.
      *
      * @command plugin:uninstall
-     * @aliases plugin:remove
-     * @aliases plugin:delete
+     * @aliases plugin:remove plugin:delete
      *
      * @option name A comma delimited list of one or more installed plugins to remove
      *
