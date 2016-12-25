@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * The PluginCommand class manages Terminus plugins
+ */
+
 namespace Pantheon\Terminus\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
@@ -10,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Class PluginCommand.
+ * Manage Terminus plugins
  *
  * @package Pantheon\Terminus\Commands
  */
@@ -18,47 +22,51 @@ class PluginCommand extends TerminusCommand
 {
 
     /**
-     * Install plugin(s).
+     * Install plugin(s)
      *
      * @command plugin:install
      * @aliases plugin:add
      *
-     * @option url A comma delimited list of one or more URLs to plugin Git repositories
+     * @option project A comma delimited list of one or more URLs to plugin Git repositories or names of Packagist projects
      *
-     * @usage terminus plugin:<add|install> --url=<URL to plugin Git repository 1>,[URL to plugin Git repository 2],...
+     * @usage terminus plugin:<add|install> --project=<URL to plugin Git repository 1 or Packagist project 1>,[URL to plugin Git repository 2 or Packagist project 2],...
      *   Install (or add) plugins
      */
-    public function install(array $options = ['url' => null])
+    public function install(array $options = ['project' => null])
     {
-        if (empty($options['url'])) {
+        if (empty($options['project'])) {
             $message = "Usage: terminus plugin:<install|add>";
-            $message .= " --url=<URL to plugin Git repository 1>,";
-            $message .= "[URL to plugin Git repository 2],...";
+            $message .= " --project=<URL to plugin Git repository 1 or Packagist project 1>,";
+            $message .= "[URL to plugin Git repository 2 or Packagist project 2],...";
             $this->log()->error($message);
             return false;
         }
 
-        $urls = explode(',', $options['url']);
+        $projects = explode(',', $options['project']);
         $plugins_dir = $this->getPluginDir();
-        foreach ($urls as $url) {
-            $is_url = (filter_var($url, FILTER_VALIDATE_URL) !== false);
+        foreach ($projects as $project) {
+            $is_url = (filter_var($project, FILTER_VALIDATE_URL) !== false);
             if (!$is_url) {
-                $message = "{$url} is not a valid plugin Git repository.";
-                $this->log()->error($message);
+                if (!$this->isValidPackagistProject($project)) {
+                    $message = "{$project} is not a valid Packagist project.";
+                    $this->log()->error($message);
+                } else {
+                    exec("cd \"$plugins_dir\" && composer create-project {$project}", $output);
+                }
             } else {
-                $parts = parse_url($url);
+                $parts = parse_url($project);
                 $path = explode('/', $parts['path']);
                 $plugin = array_pop($path);
                 $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
-                if (!$this->isValidPlugin($repository, $plugin)) {
-                    $message = "{$url} is not a valid plugin Git repository.";
+                if (!$this->isValidGitRepository($repository, $plugin)) {
+                    $message = "{$project} is not a valid plugin Git repository.";
                     $this->log()->error($message);
                 } else {
                     if (is_dir($plugins_dir . $plugin)) {
                         $message = "{$plugin} plugin already installed.";
                         $this->log()->notice($message);
                     } else {
-                        exec("cd \"$plugins_dir\" && git clone $url", $output);
+                        exec("cd \"$plugins_dir\" && git clone $project --branch 1.x", $output);
                         foreach ($output as $message) {
                             $this->log()->notice($message);
                         }
@@ -69,7 +77,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * List all installed plugins.
+     * List all installed plugins
      *
      * @command plugin:show
      * @aliases plugin:list
@@ -92,11 +100,6 @@ class PluginCommand extends TerminusCommand
             $this->log()->notice($message);
         } else {
             $rows = array();
-            $labels = [
-                'name'        => 'Name',
-                'location'    => 'Location',
-                'description' => 'Description',
-            ];
             $windows = (php_uname('s') == 'Windows NT');
             if ($windows) {
                 $slash = '\\\\';
@@ -107,38 +110,46 @@ class PluginCommand extends TerminusCommand
             $this->log()->notice($message);
             foreach ($plugins as $plugin) {
                 $plugin_dir = $plugins_dir . $plugin;
-                $git_dir = $plugin_dir . $slash . '.git';
-                if (is_dir("$plugin_dir") && is_dir("$git_dir")) {
-                    $remotes = array();
-                    exec("cd \"$plugin_dir\" && git remote -v", $remotes);
-                    foreach ($remotes as $line) {
-                        $parts = explode("\t", $line);
-                        if (isset($parts[1])) {
-                            $repo = explode(' ', $parts[1]);
-                            $parts = parse_url($repo[0]);
-                            $path = explode('/', $parts['path']);
-                            $base = array_pop($path);
-                            $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
-                            if ($title = $this->isValidPlugin($repository, $base)) {
-                                $description = '';
-                                $parts = explode(':', $title);
-                                if (isset($parts[1])) {
-                                    $description = trim($parts[1]);
+                if (is_dir("$plugin_dir")) {
+                    $git_dir = $plugin_dir . $slash . '.git';
+                    if (is_dir("$git_dir")) {
+                        $remotes = array();
+                        exec("cd \"$plugin_dir\" && git remote -v", $remotes);
+                        foreach ($remotes as $line) {
+                            $parts = explode("\t", $line);
+                            if (isset($parts[1])) {
+                                $repo = explode(' ', $parts[1]);
+                                $parts = parse_url($repo[0]);
+                                $path = explode('/', $parts['path']);
+                                $base = array_pop($path);
+                                $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
+                                if ($title = $this->isValidGitRepository($repository, $base)) {
+                                    $description = '';
+                                    $parts = explode(':', $title);
+                                    if (isset($parts[1])) {
+                                        $description = trim($parts[1]);
+                                    }
+                                    $rows[] = [
+                                        'name'        => $plugin,
+                                        'location'    => $repository,
+                                        'description' => $description,
+                                    ];
+                                } else {
+                                    $message = "{$repo} is not a valid plugin Git repository.";
+                                    $this->log()->error($message);
                                 }
-                                $rows[] = [
-                                    'name'        => $plugin,
-                                    'location'    => $repository,
-                                    'description' => $description,
-                                ];
+                                break;
                             } else {
-                                $message = "{$repo} is not a valid plugin Git repository.";
-                                $this->log()->error($message);
+                                  $message = "{$plugin_dir} is not a valid plugin Git repository.";
+                                  $this->log()->error($message);
                             }
-                            break;
-                        } else {
-                              $message = "{$plugin_dir} is not a valid plugin Git repository.";
-                              $this->log()->error($message);
                         }
+                    } else {
+                      $composer_json = $plugin_dir . $slash . 'composer.json';
+                      if (file_exists($composer_json)) {
+                          // TODO: Display the details of the Packagist project.
+                          // Might be able to use a YAML parser.
+                      }
                     }
                 }
             }
@@ -150,7 +161,7 @@ class PluginCommand extends TerminusCommand
 
             $count = count($rows);
             $plural = ($count > 1) ? 's' : '';
-            $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install --url=...' to add more plugins.";
+            $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install --project=...' to add more plugins.";
             $this->log()->notice($message);
 
             // Output the plugin list in table format.
@@ -159,27 +170,27 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Update plugin(s).
+     * Update plugin(s)
      *
      * @command plugin:update
      * @aliases plugin:up
      *
-     * @option plugin-name A comma delimited list of one or more installed plugins to update
+     * @option name A comma delimited list of one or more installed plugins to update
      *
-     * @usage terminus plugin:<update|up> --plugin-name=<plugin-name-1|all>,[plugin-name-2],...
+     * @usage terminus plugin:<update|up> --name=<plugin-name-1|all>,[plugin-name-2],...
      *   Update plugin(s)
      */
-    public function update(array $options = ['plugin-name' => null])
+    public function update(array $options = ['name' => null])
     {
-        if (empty($options['plugin-name'])) {
+        if (empty($options['name'])) {
             $message = "Usage: terminus plugin:<update|up>";
-            $message .= " --plugin-name=<plugin-name-1|all>,";
+            $message .= " --name=<plugin-name-1|all>,";
             $message .= "[plugin-name-2],...";
             $this->log()->error($message);
             return false;
         }
 
-        $plugins = explode(',', $options['plugin-name']);
+        $plugins = explode(',', $options['name']);
         if ($plugins[0] == 'all') {
             $plugins_dir = $this->getPluginDir();
             exec("ls \"$plugins_dir\"", $output);
@@ -199,27 +210,27 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Remove plugin(s).
+     * Remove plugin(s)
      *
      * @command plugin:uninstall
      * @aliases plugin:remove
      *
-     * @option plugin-name A comma delimited list of one or more installed plugins to remove
+     * @option name A comma delimited list of one or more installed plugins to remove
      *
-     * @usage terminus plugin:<remove|uninstall> --plugin-name=<plugin-name-1>,[plugin-name-2],...
+     * @usage terminus plugin:<remove|uninstall> --name=<plugin-name-1>,[plugin-name-2],...
      *   Remove plugin(s)
      */
-    public function uninstall(array $options = ['plugin-name' => null])
+    public function uninstall(array $options = ['name' => null])
     {
-        if (empty($options['plugin-name'])) {
+        if (empty($options['name'])) {
             $message = "Usage: terminus plugin:<uninstall|remove>";
-            $message .= " --plugin-name=<plugin-name-1>,";
+            $message .= " --name=<plugin-name-1>,";
             $message .= "[plugin-name-2],...";
             $this->log()->error($message);
             return false;
         }
 
-        $plugins = explode(',', $options['plugin-name']);
+        $plugins = explode(',', $options['name']);
         foreach ($plugins as $plugin) {
             $plugin = $this->getPluginDir($plugin);
             if (!is_dir("$plugin")) {
@@ -237,7 +248,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Get the plugin directory.
+     * Get the plugin directory
      *
      * @param string $plugin Plugin name
      * @return string Plugin directory
@@ -260,7 +271,7 @@ class PluginCommand extends TerminusCommand
                 $home = str_replace('\\', '\\\\', $home);
                 $plugins_dir = $home . '\\\\terminus\\\\plugins\\\\';
             } else {
-                $plugins_dir = $home . '/terminus/plugins/';
+                $plugins_dir = $home . '/.terminus/plugins/';
             }
         } else {
             // Make sure the proper trailing slash(es) exist
@@ -283,7 +294,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Update a specific plugin.
+     * Update a specific plugin
      *
      * @param string $plugin Plugin name
      */
@@ -300,37 +311,25 @@ class PluginCommand extends TerminusCommand
             $git_dir = $plugin . $slash . '.git';
             $message = "Updating {$plugin} plugin...";
             $this->log()->notice($message);
-            if (!is_dir("$git_dir")) {
-                $messages = array();
-                $message = "Unable to update {$plugin} plugin.";
-                $message .= "  Git repository does not exist.";
-                $messages[] = $message;
-                $message = "The recommended way to install plugins";
-                $message .= " is git clone <URL to plugin Git repository>.";
-                $messages[] = $message;
-                $message = "See https://github.com/pantheon-systems/terminus/";
-                $message .= "wiki/Plugins.";
-                $messages[] = $message;
-                foreach ($messages as $message) {
-                    $this->log()->error($message);
-                }
-            } else {
+            if (is_dir("$git_dir")) {
                 exec("cd \"$plugin\" && git pull", $output);
-                foreach ($output as $message) {
-                    $this->log()->notice($message);
-                }
+            } else {
+                exec("cd \"$plugin\" && composer update", $output);
+            }
+            foreach ($output as $message) {
+                $this->log()->notice($message);
             }
         }
     }
 
     /**
-     * Check whether a plugin is valid.
+     * Check whether a Git repository is valid
      *
      * @param string Repository URL
      * @param string Plugin name
      * @return string Plugin title, if found
      */
-    private function isValidPlugin($repository, $plugin)
+    private function isValidGitRepository($repository, $plugin)
     {
         // Make sure the URL is valid
         $is_url = (filter_var($repository, FILTER_VALIDATE_URL) !== false);
@@ -359,11 +358,34 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Check whether a URL is valid.
+     * Check whether a Packagist project is valid
+     *
+     * @param string Packagist name
+     * @return boolean true if valid, false otherwise
+     */
+    private function isValidPackagistProject($project)
+    {
+        $valid = false;
+        // Search for the Packagist project
+        exec("composer search -N -t terminus-plugin {$project}", $items);
+        if (!empty($items)) {
+            foreach ($items as $item) {
+                if ($item == $project) {
+                    $valid = true;
+                    break;
+                }
+            }
+        }
+        return $valid;
+    }
+
+    /**
+     * Check whether a URL is valid
      *
      * @param string $url The URL to check
      * @return bool True if the URL returns a 200 status
      */
+    /*
     private function isValidUrl($url = '')
     {
         if (!$url) {
@@ -375,4 +397,5 @@ class PluginCommand extends TerminusCommand
         }
         return (strpos($headers[0], '200') !== false);
     }
+    */
 }
