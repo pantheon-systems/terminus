@@ -208,12 +208,12 @@ class PluginCommand extends TerminusCommand
         }
 
         if ($this->commandExists('composer')) {
-						exec("composer search -t terminus-plugin {$keyword}", $output);
-						foreach ($output as $message) {
+            exec("composer search -t terminus-plugin {$keyword}", $output);
+            foreach ($output as $message) {
                 if (stripos($message, 'terminus') && stripos($message, 'plugin')) {
-								    $this->log()->notice($message);
+                    $this->log()->notice($message);
                 }
-						}
+            }
         } else {
             $message = "In order to search for plugins, you need to install composer.";
             $this->log()->notice($message);
@@ -233,7 +233,7 @@ class PluginCommand extends TerminusCommand
     public function update($plugin_list = '')
     {
         if (empty($plugin_list)) {
-          $plugin_list = 'all';
+            $plugin_list = 'all';
         }
 
         $plugins = explode(',', $plugin_list);
@@ -441,7 +441,6 @@ class PluginCommand extends TerminusCommand
                         $output = array();
                     }
                     break;
-
             }
             foreach ($output as $message) {
                 $this->log()->notice($message);
