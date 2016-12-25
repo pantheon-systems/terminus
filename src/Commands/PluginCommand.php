@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The PluginCommand class manages Terminus plugins
+ * The PluginCommand class manages Terminus plugins.
  */
 
 namespace Pantheon\Terminus\Commands;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Manage Terminus plugins
+ * Manage Terminus plugins.
  *
  * @package Pantheon\Terminus\Commands
  */
@@ -22,15 +22,14 @@ class PluginCommand extends TerminusCommand
 {
 
     /**
-     * Install one or more Terminus plugins
+     * Install one or more Terminus plugins.
      *
      * @command plugin:install
      * @aliases plugin:add
      *
      * @option project A comma delimited list of one or more URLs to plugin Git repositories or names of Packagist projects
      *
-     * @usage terminus plugin:<add|install> --project=<URL to plugin Git repository 1 or Packagist project 1>,[URL to plugin Git repository 2 or Packagist project 2],...
-     *   Install (or add) plugins
+     * @usage --project=<URL to plugin Git repository 1 or Packagist project 1>,[URL to plugin Git repository 2 or Packagist project 2],...
      */
     public function install(array $options = ['project' => null])
     {
@@ -87,20 +86,20 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * List all installed Terminus plugins
+     * List all installed Terminus plugins.
      *
      * @command plugin:show
      * @aliases plugin:list
+     * @aliases plugin:display
      *
      * @field-labels
      *   name: Name
      *   location: Location
      *   method: Method
      *   description: Description
+     *
      * @return RowsOfFields
      *
-     * @usage terminus plugin:<list|show>
-     *   List all installed plugins
      */
     public function show()
     {
@@ -197,15 +196,15 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Update one or more Terminus plugins
+     * Update one or more Terminus plugins.
      *
      * @command plugin:update
+     * @aliases plugin:upgrade
      * @aliases plugin:up
      *
      * @option name A comma delimited list of one or more installed plugins to update
      *
-     * @usage terminus plugin:<update|up> --name=<plugin-name-1|all>,[plugin-name-2],...
-     *   Update plugin(s)
+     * @usage --name=<plugin-name-1|all>,[plugin-name-2],...
      */
     public function update(array $options = ['name' => null])
     {
@@ -237,15 +236,15 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Remove one or more Terminus plugins
+     * Remove one or more Terminus plugins.
      *
      * @command plugin:uninstall
      * @aliases plugin:remove
+     * @aliases plugin:delete
      *
      * @option name A comma delimited list of one or more installed plugins to remove
      *
-     * @usage terminus plugin:<remove|uninstall> --name=<plugin-name-1>,[plugin-name-2],...
-     *   Remove plugin(s)
+     * @usage --name=<plugin-name-1>,[plugin-name-2],...
      */
     public function uninstall(array $options = ['name' => null])
     {
@@ -275,7 +274,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Get the plugin directory
+     * Get the plugin directory.
      *
      * @param string $plugin Plugin name
      * @return string Plugin directory
@@ -321,7 +320,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Get the plugin installation method
+     * Get the plugin installation method.
      *
      * @param string Plugin name
      * @return string Plugin installation method
@@ -347,9 +346,10 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Get the plugin Composer information
+     * Get the plugin Composer information.
      *
      * @param string Plugin name
+     * @return array of Composer information
      */
     private function getComposerInfo($plugin)
     {
@@ -369,12 +369,12 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Platform independent check whether a command exists
+     * Platform independent check whether a command exists.
      *
      * TODO: Do we have a generic utility function we could use instead?
      *
      * @param string Command to check
-     * @return boolean true if exists, false otherwise
+     * @return bool true if exists, false otherwise
      */
     private function commandExists($command)
     {
@@ -386,7 +386,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Update a specific plugin
+     * Update a specific plugin.
      *
      * @param string $plugin Plugin name
      */
@@ -432,11 +432,11 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Check whether a Git repository is valid
+     * Check whether a Git repository is valid.
      *
      * @param string Repository URL
      * @param string Plugin name
-     * @return string Plugin title, if found
+     * @return string Plugin title, if found, otherwise, empty string
      */
     private function isValidGitRepository($repository, $plugin)
     {
@@ -467,10 +467,10 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Check whether a Packagist project is valid
+     * Check whether a Packagist project is valid.
      *
      * @param string Packagist name
-     * @return boolean true if valid, false otherwise
+     * @return bool true if valid, false otherwise
      */
     private function isValidPackagistProject($project)
     {
@@ -489,10 +489,10 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Check whether a URL is valid
+     * Check whether a URL is valid.
      *
      * @param string $url The URL to check
-     * @return bool True if the URL returns a 200 status
+     * @return bool true if the URL returns a 200 status
      */
     private function isValidUrl($url = '')
     {
