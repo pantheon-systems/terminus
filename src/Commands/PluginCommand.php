@@ -22,7 +22,7 @@ class PluginCommand extends TerminusCommand
 {
 
     /**
-     * Install plugin(s)
+     * Install one or more Terminus plugins
      *
      * @command plugin:install
      * @aliases plugin:add
@@ -51,7 +51,17 @@ class PluginCommand extends TerminusCommand
                     $message = "{$project} is not a valid Packagist project.";
                     $this->log()->error($message);
                 } else {
-                    exec("cd \"$plugins_dir\" && composer create-project {$project}", $output);
+                    $path = explode('/', $project);
+                    $plugin = $path[1];
+                    if (is_dir($plugins_dir . $plugin)) {
+                        $message = "{$plugin} plugin already installed.";
+                        $this->log()->notice($message);
+                    } else {
+                        exec("composer create-project -n -d {$plugins_dir} {$project}:~1", $output);
+                        foreach ($output as $message) {
+                            $this->log()->notice($message);
+                        }
+                    }
                 }
             } else {
                 $parts = parse_url($project);
@@ -66,7 +76,7 @@ class PluginCommand extends TerminusCommand
                         $message = "{$plugin} plugin already installed.";
                         $this->log()->notice($message);
                     } else {
-                        exec("cd \"$plugins_dir\" && git clone $project --branch 1.x", $output);
+                        exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $output);
                         foreach ($output as $message) {
                             $this->log()->notice($message);
                         }
@@ -77,7 +87,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * List all installed plugins
+     * List all installed Terminus plugins
      *
      * @command plugin:show
      * @aliases plugin:list
@@ -85,6 +95,7 @@ class PluginCommand extends TerminusCommand
      * @field-labels
      *   name: Name
      *   location: Location
+     *   method: Method
      *   description: Description
      * @return RowsOfFields
      *
@@ -100,56 +111,72 @@ class PluginCommand extends TerminusCommand
             $this->log()->notice($message);
         } else {
             $rows = array();
-            $windows = (php_uname('s') == 'Windows NT');
-            if ($windows) {
-                $slash = '\\\\';
-            } else {
-                $slash = '/';
-            }
             $message = "Plugins are installed in {$plugins_dir}.";
             $this->log()->notice($message);
             foreach ($plugins as $plugin) {
                 $plugin_dir = $plugins_dir . $plugin;
                 if (is_dir("$plugin_dir")) {
-                    $git_dir = $plugin_dir . $slash . '.git';
-                    if (is_dir("$git_dir")) {
-                        $remotes = array();
-                        exec("cd \"$plugin_dir\" && git remote -v", $remotes);
-                        foreach ($remotes as $line) {
-                            $parts = explode("\t", $line);
-                            if (isset($parts[1])) {
-                                $repo = explode(' ', $parts[1]);
-                                $parts = parse_url($repo[0]);
-                                $path = explode('/', $parts['path']);
-                                $base = array_pop($path);
-                                $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
-                                if ($title = $this->isValidGitRepository($repository, $base)) {
-                                    $description = '';
-                                    $parts = explode(':', $title);
-                                    if (isset($parts[1])) {
-                                        $description = trim($parts[1]);
+                    $method = $this->getInstallMethod($plugin);
+                    switch ($method) {
+                        case 'git':
+                            $remotes = array();
+                            exec("cd \"$plugin_dir\" && git remote -v", $remotes);
+                            foreach ($remotes as $line) {
+                                $parts = explode("\t", $line);
+                                if (isset($parts[1])) {
+                                    $repo = explode(' ', $parts[1]);
+                                    $parts = parse_url($repo[0]);
+                                    $path = explode('/', $parts['path']);
+                                    $base = array_pop($path);
+                                    $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
+                                    if ($title = $this->isValidGitRepository($repository, $base)) {
+                                        $description = '';
+                                        $parts = explode(':', $title);
+                                        if (isset($parts[1])) {
+                                                $description = trim($parts[1]);
+                                        }
+                                        $rows[] = [
+                                            'name'        => $plugin,
+                                            'location'    => $repository,
+                                             'method'      => $method,
+                                            'description' => $description,
+                                        ];
+                                    } else {
+                                        $message = "{$repo} is not a valid plugin Git repository.";
+                                        $this->log()->error($message);
                                     }
-                                    $rows[] = [
-                                        'name'        => $plugin,
-                                        'location'    => $repository,
-                                        'description' => $description,
-                                    ];
+                                    break;
                                 } else {
-                                    $message = "{$repo} is not a valid plugin Git repository.";
+                                    $message = "{$plugin_dir} is not a valid plugin Git repository.";
                                     $this->log()->error($message);
                                 }
-                                break;
-                            } else {
-                                  $message = "{$plugin_dir} is not a valid plugin Git repository.";
-                                  $this->log()->error($message);
                             }
-                        }
-                    } else {
-                      $composer_json = $plugin_dir . $slash . 'composer.json';
-                      if (file_exists($composer_json)) {
-                          // TODO: Display the details of the Packagist project.
-                          // Might be able to use a YAML parser.
-                      }
+                            break;
+
+                        case 'archive':
+                        case 'composer':
+                        case 'default':
+                            $name = $plugin;
+                            $location = '';
+                            $description = '';
+                            $composer_info = $this->getComposerInfo($plugin);
+                            if (!empty($composer_info)) {
+                                $project = $composer_info['name'];
+                                $description = $composer_info['description'];
+                                $path = explode('/', $project);
+                                $name = $path[1];
+                                if ($method == 'composer') {
+                                    $location = 'https://packagist.org/packages/' . $path[0];
+                                } else {
+                                    $location = 'https://github.com/' . $project . '/archive/1.x.tar.gz';
+                                }
+                            }
+                            $rows[] = [
+                                'name'        => $name,
+                                'location'    => $location,
+                                'method'      => $method,
+                                'description' => $description,
+                            ];
                     }
                 }
             }
@@ -170,7 +197,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Update plugin(s)
+     * Update one or more Terminus plugins
      *
      * @command plugin:update
      * @aliases plugin:up
@@ -210,7 +237,7 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Remove plugin(s)
+     * Remove one or more Terminus plugins
      *
      * @command plugin:uninstall
      * @aliases plugin:remove
@@ -294,27 +321,108 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
+     * Get the plugin installation method
+     *
+     * @param string Plugin name
+     * @return string Plugin installation method
+     */
+    private function getInstallMethod($plugin)
+    {
+        $plugins_dir = $this->getPluginDir($plugin);
+        $windows = (php_uname('s') == 'Windows NT');
+        if ($windows) {
+            $slash = '\\\\';
+        } else {
+            $slash = '/';
+        }
+        $git_dir = $plugins_dir . $slash . '.git';
+        if (is_dir("$git_dir") && $this->commandExists('git')) {
+            return 'git';
+        }
+        $composer_json = $plugins_dir . $slash . 'composer.json';
+        if (file_exists($composer_json)) {
+            return $this->commandExists('composer') ? 'composer' : 'archive';
+        }
+        return 'default';
+    }
+
+    /**
+     * Get the plugin Composer information
+     *
+     * @param string Plugin name
+     */
+    private function getComposerInfo($plugin)
+    {
+        $plugin_dir = $this->getPluginDir($plugin);
+        $windows = (php_uname('s') == 'Windows NT');
+        if ($windows) {
+            $slash = '\\\\';
+        } else {
+            $slash = '/';
+        }
+        $composer_json = $plugin_dir . $slash . 'composer.json';
+        if (file_exists($composer_json)) {
+            $composer_data = @file_get_contents($composer_json);
+            return (array)json_decode($composer_data);
+        }
+        return array();
+    }
+
+    /**
+     * Platform independent check whether a command exists
+     *
+     * TODO: Do we have a generic utility function we could use instead?
+     *
+     * @param string Command to check
+     * @return boolean true if exists, false otherwise
+     */
+    private function commandExists($command)
+    {
+        $windows = (php_uname('s') == 'Windows NT');
+        $testCommand = $windows ? 'where' : 'command -v';
+        $fp = popen("$testCommand $command", 'r');
+        $result = fgets($fp, 255);
+        return $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
+    }
+
+    /**
      * Update a specific plugin
      *
      * @param string $plugin Plugin name
      */
     private function updatePlugin($plugin)
     {
-        $plugin = $this->getPluginDir($plugin);
-        if (is_dir("$plugin")) {
-            $windows = (php_uname('s') == 'Windows NT');
-            if ($windows) {
-                $slash = '\\\\';
-            } else {
-                $slash = '/';
-            }
-            $git_dir = $plugin . $slash . '.git';
+        $plugins_dir = $this->getPluginDir();
+        $plugin_dir = $plugins_dir . $plugin;
+        if (is_dir("$plugin_dir")) {
             $message = "Updating {$plugin} plugin...";
             $this->log()->notice($message);
-            if (is_dir("$git_dir")) {
-                exec("cd \"$plugin\" && git pull", $output);
-            } else {
-                exec("cd \"$plugin\" && composer update", $output);
+            $method = $this->getInstallMethod($plugin);
+            switch ($method) {
+                case 'git':
+                    exec("cd \"$plugin_dir\" && git pull", $output);
+                    break;
+
+                case 'composer':
+                    exec("cd \"$plugin_dir\" && composer update", $output);
+                    break;
+
+                case 'archive':
+                case 'default':
+                    $project = 'unknown';
+                    $composer_info = $this->getComposerInfo($plugin);
+                    if (!empty($composer_info)) {
+                        $project = $composer_info['name'];
+                    }
+                    $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
+                    if ($this->isValidURL($archive_url)) {
+                        exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $output);
+                    } else {
+                        $message = "Unable to locate archive file {$archive_url}.";
+                        $this->log()->error($message);
+                    }
+                    break;
+
             }
             foreach ($output as $message) {
                 $this->log()->notice($message);
@@ -385,7 +493,6 @@ class PluginCommand extends TerminusCommand
      * @param string $url The URL to check
      * @return bool True if the URL returns a 200 status
      */
-    /*
     private function isValidUrl($url = '')
     {
         if (!$url) {
@@ -397,5 +504,4 @@ class PluginCommand extends TerminusCommand
         }
         return (strpos($headers[0], '200') !== false);
     }
-    */
 }
