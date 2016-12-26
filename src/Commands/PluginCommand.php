@@ -95,6 +95,7 @@ class PluginCommand extends TerminusCommand
      *   name: Name
      *   location: Location
      *   method: Method
+     *   version: Version
      *   description: Description
      *
      * @return RowsOfFields
@@ -130,12 +131,18 @@ class PluginCommand extends TerminusCommand
                                         $description = '';
                                         $parts = explode(':', $title);
                                         if (isset($parts[1])) {
-                                                $description = trim($parts[1]);
+                                            $description = trim($parts[1]);
+                                        }
+                                        $version = '';
+                                        $composer_info = $this->getComposerInfo($plugin);
+                                        if (!empty($composer_info)) {
+                                            $version = $composer_info['extra']->terminus->{'compatible-version'};
                                         }
                                         $rows[] = [
                                             'name'        => $plugin,
                                             'location'    => $repository,
-                                             'method'      => $method,
+                                            'method'      => $method,
+                                            'version'     => $version,
                                             'description' => $description,
                                         ];
                                     } else {
@@ -156,6 +163,7 @@ class PluginCommand extends TerminusCommand
                             $name = $plugin;
                             $location = '';
                             $description = '';
+                            $version = '';
                             $composer_info = $this->getComposerInfo($plugin);
                             if (!empty($composer_info)) {
                                 $project = $composer_info['name'];
@@ -167,11 +175,13 @@ class PluginCommand extends TerminusCommand
                                 } else {
                                     $location = "https://github.com/{$project}/archive/1.x.tar.gz";
                                 }
+                                $version = $composer_info['extra']->terminus->{'compatible-version'};
                             }
                             $rows[] = [
                                 'name'        => $name,
                                 'location'    => $location,
                                 'method'      => $method,
+                                'version'     => $version,
                                 'description' => $description,
                             ];
                     }
