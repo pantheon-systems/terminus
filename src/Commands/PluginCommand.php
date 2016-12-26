@@ -29,14 +29,14 @@ class PluginCommand extends TerminusCommand
      *
      * @option project_list A comma delimited list of one or more plugin projects to install
      *
-     * @usage <URL to plugin Git repository 1 or Packagist project 1>,[URL to plugin Git repository 2 or Packagist project 2],...
+     * @usage <URL to plugin archive, Git or Packagist project 1>,[URL to plugin archive, Git or Packagist project 2],...
      */
     public function install($project_list = '')
     {
         if (empty($project_list)) {
             $message = "Usage: terminus plugin:<install|add>";
-            $message .= " <URL to plugin Git repository 1 or Packagist project 1>,";
-            $message .= "[URL to plugin Git repository 2 or Packagist project 2],...";
+            $message .= " <URL to plugin archive, Git or Packagist project 1>,";
+            $message .= "[URL to plugin archive, Git or Packagist project 2],...";
             $this->log()->error($message);
             return false;
         }
@@ -63,23 +63,38 @@ class PluginCommand extends TerminusCommand
                     }
                 }
             } else {
-                $parts = parse_url($project);
-                $path = explode('/', $parts['path']);
-                $plugin = array_pop($path);
-                $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
-                if (!$this->isValidGitRepository($repository, $plugin)) {
-                    $message = "{$project} is not a valid plugin Git repository.";
-                    $this->log()->error($message);
-                } else {
-                    if (is_dir($plugins_dir . $plugin)) {
-                        $message = "{$plugin} plugin already installed.";
-                        $this->log()->notice($message);
-                    } else {
-                        exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $output);
-                        foreach ($output as $message) {
-                            $this->log()->notice($message);
-                        }
+                if ($type = $this->getInstallType($project)) {
+                    switch ($type) {
+                        case 'git':
+                            $parts = parse_url($project);
+                            $path = explode('/', $parts['path']);
+                            $plugin = array_pop($path);
+                            $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
+                            if (!$this->isValidGitRepository($repository, $plugin)) {
+                                $message = "{$project} is not a valid plugin Git repository.";
+                                $this->log()->error($message);
+                            } else {
+                                if (is_dir($plugins_dir . $plugin)) {
+                                    $message = "{$plugin} plugin already installed.";
+                                    $this->log()->notice($message);
+                                } else {
+                                    exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $output);
+                                    foreach ($output as $message) {
+                                        $this->log()->notice($message);
+                                    }
+                                }
+                            }
+                            break;
+
+                        case 'archive':
+                            exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $output);
+                            foreach ($output as $message) {
+                                $this->log()->notice($message);
+                            }
                     }
+                } else {
+                    $message = "{$project} is not a valid plugin project URL.";
+                    $this->log()->error($message);
                 }
             }
         }
@@ -159,7 +174,7 @@ class PluginCommand extends TerminusCommand
 
                         case 'archive':
                         case 'composer':
-                        case 'default':
+                        default:
                             $name = $plugin;
                             $location = '';
                             $description = '';
@@ -350,6 +365,29 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
+     * Get the type of installation.
+     *
+     * @param string Project URL
+     * @return string Method
+     */
+    private function getInstallType($url)
+    {
+        $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+        switch ($ext) {
+            case 'git':
+                return 'git';
+                break;
+
+            case 'gz':
+                return 'archive';
+                break;
+
+            default:
+                return '';
+        }
+    }
+
+    /**
      * Get the plugin installation method.
      *
      * @param string Plugin name
@@ -438,21 +476,14 @@ class PluginCommand extends TerminusCommand
                     break;
 
                 case 'archive':
-                case 'default':
+                default:
                     $project = 'unknown';
                     $composer_info = $this->getComposerInfo($plugin);
                     if (!empty($composer_info)) {
                         $project = $composer_info['name'];
                     }
                     $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
-                    if ($this->isValidURL($archive_url)) {
-                        exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $output);
-                    } else {
-                        $message = "Unable to locate archive file {$archive_url}.";
-                        $this->log()->error($message);
-                        $output = array();
-                    }
-                    break;
+                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $output);
             }
             foreach ($output as $message) {
                 $this->log()->notice($message);
