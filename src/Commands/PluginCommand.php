@@ -454,32 +454,35 @@ class PluginCommand extends TerminusCommand
     {
         $plugins_dir = $this->getPluginDir();
         $plugin_dir = $plugins_dir . $plugin;
-        if (is_dir("$plugin_dir")) {
-            $message = "Updating {$plugin} plugin...";
+        if (!is_dir("$plugin_dir")) {
+            $message = "Plugin {$plugin} is not installed.";
+            throw new TerminusNotFoundException($message);
+        }
+        $messages = array();
+        $message = "Updating {$plugin} plugin...";
+        $this->log()->notice($message);
+        $method = $this->getInstallMethod($plugin);
+        switch ($method) {
+            case 'git':
+                exec("cd \"$plugin_dir\" && git pull", $messages);
+                break;
+
+            case 'composer':
+                exec("cd \"$plugin_dir\" && composer update", $messages);
+                break;
+
+            case 'archive':
+            default:
+                $project = 'unknown';
+                $composer_info = $this->getComposerInfo($plugin);
+                if (!empty($composer_info)) {
+                    $project = $composer_info['name'];
+                }
+                $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
+                exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
+        }
+        foreach ($messages as $message) {
             $this->log()->notice($message);
-            $method = $this->getInstallMethod($plugin);
-            switch ($method) {
-                case 'git':
-                    exec("cd \"$plugin_dir\" && git pull", $messages);
-                    break;
-
-                case 'composer':
-                    exec("cd \"$plugin_dir\" && composer update", $messages);
-                    break;
-
-                case 'archive':
-                default:
-                    $project = 'unknown';
-                    $composer_info = $this->getComposerInfo($plugin);
-                    if (!empty($composer_info)) {
-                        $project = $composer_info['name'];
-                    }
-                    $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
-                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
-            }
-            foreach ($messages as $message) {
-                $this->log()->notice($message);
-            }
         }
     }
 
