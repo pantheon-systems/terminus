@@ -27,21 +27,19 @@ class PluginCommand extends TerminusCommand
      * @command plugin:install
      * @aliases plugin:add
      *
-     * @option project_list A comma delimited list of one or more plugin projects to install
+     * @option array $projects A space delimited list of one or more plugin projects to install
      *
-     * @usage <URL to plugin archive, Git or Packagist project 1>,[URL to plugin archive, Git or Packagist project 2],...
+     * @usage <URL to plugin archive, Git or Packagist project 1> [URL to plugin archive, Git or Packagist project 2] ...
      */
-    public function install($project_list = '')
+    public function install(array $projects)
     {
-        if (empty($project_list)) {
+        if (empty($projects)) {
             $message = "Usage: terminus plugin:<install|add>";
-            $message .= " <URL to plugin archive, Git or Packagist project 1>,";
-            $message .= "[URL to plugin archive, Git or Packagist project 2],...";
-            $this->log()->error($message);
-            return false;
+            $message .= " <URL to plugin archive, Git or Packagist project 1>";
+            $message .= " [URL to plugin archive, Git or Packagist project 2] ...";
+            throw new TerminusNotFoundException($message);
         }
 
-        $projects = explode(',', $project_list);
         $plugins_dir = $this->getPluginDir();
         foreach ($projects as $project) {
             $is_url = (filter_var($project, FILTER_VALIDATE_URL) !== false);
@@ -56,15 +54,15 @@ class PluginCommand extends TerminusCommand
                         $message = "{$plugin} plugin already installed.";
                         $this->log()->notice($message);
                     } else {
-                        exec("composer create-project --dev -n -d {$plugins_dir} {$project}", $output);
-                        foreach ($output as $message) {
+                        exec("composer create-project --dev -n -d {$plugins_dir} {$project}:~1", $messages);
+                        foreach ($messages as $message) {
                             $this->log()->notice($message);
                         }
                     }
                 }
             } else {
-                if ($type = $this->getInstallType($project)) {
-                    switch ($type) {
+                if ($ext = pathinfo(parse_url($project, PHP_URL_PATH), PATHINFO_EXTENSION)) {
+                    switch ($ext) {
                         case 'git':
                             $parts = parse_url($project);
                             $path = explode('/', $parts['path']);
@@ -78,17 +76,17 @@ class PluginCommand extends TerminusCommand
                                     $message = "{$plugin} plugin already installed.";
                                     $this->log()->notice($message);
                                 } else {
-                                    exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $output);
-                                    foreach ($output as $message) {
+                                    exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $messages);
+                                    foreach ($messages as $message) {
                                         $this->log()->notice($message);
                                     }
                                 }
                             }
                             break;
 
-                        case 'archive':
-                            exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $output);
-                            foreach ($output as $message) {
+                        case 'gz':
+                            exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $messages);
+                            foreach ($messages as $message) {
                                 $this->log()->notice($message);
                             }
                     }
@@ -117,13 +115,10 @@ class PluginCommand extends TerminusCommand
      */
     public function show()
     {
+        $rows = array();
         $plugins_dir = $this->getPluginDir();
-        exec("ls \"$plugins_dir\"", $plugins);
-        if (empty($plugins[0])) {
-            $message = "You have no plugins installed.";
-            $this->log()->notice($message);
-        } else {
-            $rows = array();
+        $plugins = $this->getPluginProjects($plugins_dir);
+        if (!empty($plugins[0])) {
             $message = "Plugins are installed in {$plugins_dir}.";
             $this->log()->notice($message);
             foreach ($plugins as $plugin) {
@@ -202,20 +197,20 @@ class PluginCommand extends TerminusCommand
                     }
                 }
             }
-
-            if (empty($rows)) {
-                $this->log()->notice('You have no plugins installed.');
-                return false;
-            }
-
-            $count = count($rows);
-            $plural = ($count > 1) ? 's' : '';
-            $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install <project>...' to add more plugins.";
-            $this->log()->notice($message);
-
-            // Output the plugin list in table format.
-            return new RowsOfFields($rows);
         }
+
+        if (empty($rows)) {
+            $this->log()->notice('You have no plugins installed.');
+            return false;
+        }
+
+        $count = count($rows);
+        $plural = ($count > 1) ? 's' : '';
+        $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install <project>...' to add more plugins.";
+        $this->log()->notice($message);
+
+        // Output the plugin list in table format.
+        return new RowsOfFields($rows);
     }
 
     /**
@@ -224,19 +219,20 @@ class PluginCommand extends TerminusCommand
      * @command plugin:search
      * @aliases plugin:find plugin:locate
      *
-     * @option keyword A search string used to query for plugins. Example: terminus plugin:search pantheon.
+     * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search pantheon.
+     *
+     * @return List of search results
      */
     public function search($keyword = '')
     {
         if (empty($keyword)) {
             $message = "Usage: terminus plugin:<search|find|locate> <string>";
-            $this->log()->error($message);
-            return false;
+            throw new TerminusNotFoundException($message);
         }
 
         if ($this->commandExists('composer')) {
-            exec("composer search -t terminus-plugin {$keyword}", $output);
-            foreach ($output as $message) {
+            exec("composer search -t terminus-plugin {$keyword}", $messages);
+            foreach ($messages as $message) {
                 if (stripos($message, 'terminus') && stripos($message, 'plugin')) {
                     $this->log()->notice($message);
                 }
@@ -253,32 +249,27 @@ class PluginCommand extends TerminusCommand
      * @command plugin:update
      * @aliases plugin:upgrade plugin:up
      *
-     * @option plugin_list A comma delimited list of one or more installed plugins to update
+     * @option array $plugins A space delimited list of one or more installed plugins to update
      *
-     * @usage <plugin-name-1|all>,[plugin-name-2],...
+     * @usage <plugin-name-1|all> [plugin-name-2] ...
      */
-    public function update($plugin_list = '')
+    public function update(array $plugins)
     {
-        if (empty($plugin_list)) {
-            $plugin_list = 'all';
+        if (empty($plugins)) {
+            $plugins = array('all');
         }
 
-        $plugins = explode(',', $plugin_list);
         if ($plugins[0] == 'all') {
             $plugins_dir = $this->getPluginDir();
-            exec("ls \"$plugins_dir\"", $output);
-            if (empty($output[0])) {
+            $plugins = $this->getPluginProjects($plugins_dir);
+            if (empty($plugins[0])) {
                 $message = "You have no plugins installed.";
                 $this->log()->notice($message);
-            } else {
-                foreach ($output as $plugin) {
-                    $this->updatePlugin($plugin);
-                }
+                return false;
             }
-        } else {
-            foreach ($plugins as $plugin) {
-                $this->updatePlugin($plugin);
-            }
+        }
+        foreach ($plugins as $plugin) {
+            $this->updatePlugin($plugin);
         }
     }
 
@@ -288,34 +279,56 @@ class PluginCommand extends TerminusCommand
      * @command plugin:uninstall
      * @aliases plugin:remove plugin:delete
      *
-     * @option plugin_list A comma delimited list of one or more installed plugins to remove
+     * @option array $plugins A space delimited list of one or more installed plugins to remove
      *
-     * @usage <plugin-name-1>,[plugin-name-2],...
+     * @usage <plugin-name-1> [plugin-name-2] ...
      */
-    public function uninstall($plugin_list = '')
+    public function uninstall(array $plugins)
     {
-        if (empty($plugin_list)) {
-            $message = "Usage: terminus plugin:<uninstall|remove>";
-            $message .= " <plugin-name-1>,[plugin-name-2],...";
-            $this->log()->error($message);
-            return false;
+        if (empty($plugins)) {
+            $message = "Usage: terminus plugin:<uninstall|remove|delete>";
+            $message .= " <plugin-name-1> [plugin-name-2] ...";
+            throw new TerminusNotFoundException($message);
         }
 
-        $plugins = explode(',', $plugin_list);
         foreach ($plugins as $plugin) {
             $plugin = $this->getPluginDir($plugin);
             if (!is_dir("$plugin")) {
                 $message = "{$plugin} plugin is not installed.";
                 $this->log()->error($message);
             } else {
-                exec("rm -rf \"$plugin\"", $output);
-                foreach ($output as $message) {
+                exec("rm -rf \"$plugin\"", $messages);
+                foreach ($messages as $message) {
                     $this->log()->notice($message);
                 }
                 $message = "{$plugin} plugin was removed successfully.";
                 $this->log()->notice($message);
             }
         }
+    }
+
+    /**
+     * Get plugin projects.
+     *
+     * @param string $plugins_dir Plugins directory
+     * @return array Plugin projects
+     */
+    private function getPluginProjects($plugins_dir)
+    {
+        $projects = array();
+        $finder = new Finder();
+        $finder->files()->in($plugins_dir);
+        foreach ($finder as $file) {
+            $path = $file->getRelativePath();
+            // Get the parent path only.
+            if (!strpos($path, '/')) {
+                // Make sure the path is unique.
+                if (!in_array($path, $projects)) {
+                    $projects[] = $path;
+                }
+            }
+        }
+        return $projects;
     }
 
     /**
@@ -365,29 +378,6 @@ class PluginCommand extends TerminusCommand
     }
 
     /**
-     * Get the type of installation.
-     *
-     * @param string Project URL
-     * @return string Method
-     */
-    private function getInstallType($url)
-    {
-        $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
-        switch ($ext) {
-            case 'git':
-                return 'git';
-                break;
-
-            case 'gz':
-                return 'archive';
-                break;
-
-            default:
-                return '';
-        }
-    }
-
-    /**
      * Get the plugin installation method.
      *
      * @param string Plugin name
@@ -416,7 +406,9 @@ class PluginCommand extends TerminusCommand
     /**
      * Get the plugin Composer information.
      *
-     * @param string Plugin name
+     * TODO: This could be a good utility function to use in other places.
+     *
+     * @param string $plugin Plugin name
      * @return array of Composer information
      */
     private function getComposerInfo($plugin)
@@ -441,8 +433,8 @@ class PluginCommand extends TerminusCommand
      *
      * TODO: Do we have a generic utility function we could use instead?
      *
-     * @param string Command to check
-     * @return bool true if exists, false otherwise
+     * @param string $command Command to check
+     * @return bool True if exists, false otherwise
      */
     private function commandExists($command)
     {
@@ -468,11 +460,11 @@ class PluginCommand extends TerminusCommand
             $method = $this->getInstallMethod($plugin);
             switch ($method) {
                 case 'git':
-                    exec("cd \"$plugin_dir\" && git pull", $output);
+                    exec("cd \"$plugin_dir\" && git pull", $messages);
                     break;
 
                 case 'composer':
-                    exec("cd \"$plugin_dir\" && composer update", $output);
+                    exec("cd \"$plugin_dir\" && composer update", $messages);
                     break;
 
                 case 'archive':
@@ -483,9 +475,9 @@ class PluginCommand extends TerminusCommand
                         $project = $composer_info['name'];
                     }
                     $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
-                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $output);
+                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
             }
-            foreach ($output as $message) {
+            foreach ($messages as $message) {
                 $this->log()->notice($message);
             }
         }
@@ -494,8 +486,8 @@ class PluginCommand extends TerminusCommand
     /**
      * Check whether a Git repository is valid.
      *
-     * @param string Repository URL
-     * @param string Plugin name
+     * @param string $repository Repository URL
+     * @param string $plugin Plugin name
      * @return string Plugin title, if found, otherwise, empty string
      */
     private function isValidGitRepository($repository, $plugin)
@@ -529,7 +521,7 @@ class PluginCommand extends TerminusCommand
     /**
      * Check whether a Packagist project is valid.
      *
-     * @param string Packagist name
+     * @param string $project Packagist project name
      * @return bool true if valid, false otherwise
      */
     private function isValidPackagistProject($project)
