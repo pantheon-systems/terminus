@@ -16,21 +16,21 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Show a statistical summary of the uncommitted code on an environment
+     * Displays the diff of uncommitted code changes on the development environment.
      *
      * @command env:diffstat
      *
-     * @param string $site_env Site and environment to show diff statistics for
+     * @param string $site_env Site & development environment in the format `site-name.env`
      *
      * @field-labels
-     *   file: File
-     *   status: Status
-     *   deletions: Deletions
-     *   additions: Additions
+     *     file: File
+     *     status: Status
+     *     deletions: Deletions
+     *     additions: Additions
      * @return RowsOfFields
      *
      * @usage terminus env:diffstat <site>.<env>
-     *   Shows the diff statistics for the <env> environment of <site>
+     *     Displays a diff of uncommitted code changes on <site>'s <env> environment.
      */
     public function diffstat($site_env)
     {

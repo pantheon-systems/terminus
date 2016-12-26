@@ -15,14 +15,17 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Set a site's service level
+     * Upgrades or downgrades a site's service level.
      *
      * @authorize
      *
      * @command service-level:set
      *
-     * @param string $site_id The name of the site to set the service level of
-     * @param string $level [free|basic|pro|business] The service level to set the site to
+     * @param string $site_id Site name
+     * @param string $level [free|basic|pro|business] Service level
+     *
+     * @usage terminus service-level:set <site> <service_level>
+     *     Updates <site>'s service level to <service_level>.
      */
     public function set($site_id, $level)
     {

@@ -12,23 +12,23 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class WhoamiCommand extends TerminusCommand
 {
     /**
-     * Display information about the currently logged-in user
+     * Displays information about the currently logged-in user.
      *
      * @command auth:whoami
      * @aliases whoami
      *
      * @field-labels
-     *   firstname: First Name
-     *   lastname: Last Name
-     *   email: eMail
-     *   id: ID
+     *     firstname: First Name
+     *     lastname: Last Name
+     *     email: Email
+     *     id: ID
      * @default-string-field email
      * @return PropertyList
      *
      * @usage terminus auth:whoami
-     *   Responds with the email of the logged-in user
+     *     Displays the email of the logged-in user.
      * @usage terminus auth:whoami --format=table
-     *   Responds with the current session and user's data
+     *     Displays the current session and user's data.
      */
     public function whoAmI()
     {

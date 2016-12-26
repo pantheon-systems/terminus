@@ -16,26 +16,26 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Clone content from one environment to another
+     * Clones database/files from one environment to another environment.
      *
      * @authorize
      *
      * @command env:clone-content
      *
-     * @param string $site_env The origin site/environment to clone content from
-     * @param string $target_env The target environment to clone content to
+     * @param string $site_env Origin site & environment in the format `site-name.env`
+     * @param string $target_env Target environment
      * @param array $options
-     * @option bool $db-only Use to only clone the database
-     * @option bool $files-only Use to only clone the files
+     * @option bool $db-only Only clone database
+     * @option bool $files-only Only clone files
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
-     * @usage terminus env:clone-content <site>.<env> <other_env>
-     *   Clones the files and database from the <env> environment of <site> to its <other_env> environment
-     * @usage terminus env:clone-content <site>.<env> <other_env> --db-only
-     *   Clones the database from the <env> environment of <site> to its <other_env> environment
-     * @usage terminus env:clone-content <site>.<env> <other_env> --files-only
-     *   Clones the files from the <env> environment of <site> to its <other_env> environment
+     * @usage terminus env:clone-content <site>.<env> <target_env>
+     *   Clones database and files from <site>'s <env> environment to <target_env> environment.
+     * @usage terminus env:clone-content <site>.<env> <target_env> --db-only
+     *   Clones only the database from <site>'s <env> environment to <target_env> environment.
+     * @usage terminus env:clone-content <site>.<env> <target_env> --files-only
+     *   Clones only files from <site>'s <env> environment to <target_env> environment.
      */
     public function cloneContent($site_env, $target_env, array $options = ['db-only' => false, 'files-only' => false,])
     {
@@ -46,6 +46,12 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         list($site, $env) = $this->getSiteEnv($site_env);
         $from_name = $env->getName();
         $target = $site->getEnvironments()->get($target_env);
+        $to_name = $target->getName();
+
+        $tr = ['from' => $from_name, 'to' => $to_name, 'env' => $site->getName()];
+        if (!$this->confirm('Are you sure you want to clone content from {from} to {to} on {site}?', $tr)) {
+            return;
+        }
 
         if (empty($options['db-only'])) {
             $workflow = $target->cloneFiles($from_name);

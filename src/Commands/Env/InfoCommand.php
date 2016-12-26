@@ -16,7 +16,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Show information about an environment
+     * Displays environment status and configuration.
      *
      * @authorize
      *
@@ -24,20 +24,20 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases env
      *
      * @field-labels
-     *   id: ID
-     *   created: Created
-     *   domain: Domain
-     *   locked: Locked
-     *   initialized: Initialized
-     *   connection_mode: Connection Mode
-     *   php_version: PHP Version
-     *   drush_version: Drush Version
+     *     id: ID
+     *     created: Created
+     *     domain: Domain
+     *     locked: Locked
+     *     initialized: Initialized
+     *     connection_mode: Connection Mode
+     *     php_version: PHP Version
+     *     drush_version: Drush Version
      * @return PropertyList
      *
-     * @param string $site_env The site and environment to retrieve information about
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage env:info <site>.<env>
-     *    Gives information about the <env> environment of <site>
+     *    Displays status and configuration for <site>'s <env> environment.
      */
     public function info($site_env)
     {

@@ -55,10 +55,6 @@ class ListCommandTest extends CommandTestCase
             ->method('getPaymentMethods')
             ->with()
             ->willReturn($this->payment_methods);
-        $this->payment_methods->expects($this->once())
-            ->method('fetch')
-            ->with()
-            ->willReturn($this->payment_methods);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -70,27 +66,20 @@ class ListCommandTest extends CommandTestCase
      */
     public function testListPaymentMethods()
     {
-        $data = ['id' => 'payment_method_id', 'label' => 'Card - 1111',];
+        $data = ['payment_method_id' => ['id' => 'payment_method_id', 'label' => 'Card - 1111']];
 
-        $payment_method = $this->getMockBuilder(PaymentMethod::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $payment_method->expects($this->once())
+        $this->payment_methods->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($data);
 
-        $this->payment_methods->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$payment_method,]);
         $this->logger->expects($this->never())
             ->method('log');
 
 
         $out = $this->command->listPaymentMethods();
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$data,], $out->getArrayCopy());
+        $this->assertEquals($data, $out->getArrayCopy());
     }
 
 
@@ -100,7 +89,7 @@ class ListCommandTest extends CommandTestCase
     public function testListPaymentMethodsEmpty()
     {
         $this->payment_methods->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
             ->willReturn([]);
         $this->logger->expects($this->once())

@@ -218,9 +218,10 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             'user' => $user,
             'status' => $this->getStatus(),
             'time' => sprintf("%ds", $elapsed_time),
+            'finished_at' => $this->get('finished_at'),
+            'started_at' => $this->get('started_at'),
             'operations' => $operations_data,
         ];
-
         return $data;
     }
 

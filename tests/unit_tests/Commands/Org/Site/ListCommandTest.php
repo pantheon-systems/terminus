@@ -34,11 +34,9 @@ class ListCommandTest extends OrgSiteCommandTest
     public function testOrgSiteListEmpty()
     {
         $this->sites->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
             ->willReturn([]);
-        $this->site->expects($this->never())
-          ->method('serialize');
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -60,18 +58,15 @@ class ListCommandTest extends OrgSiteCommandTest
         ];
 
         $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site,]);
-        $this->site->expects($this->any())
             ->method('serialize')
-            ->willReturn($data);
+            ->with()
+            ->willReturn(['site_id' => $data]);
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->listSites($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([$data,], $out->getArrayCopy());
+        $this->assertEquals(['site_id' => $data], $out->getArrayCopy());
     }
 
     /**
@@ -79,21 +74,17 @@ class ListCommandTest extends OrgSiteCommandTest
      */
     public function testOrgSiteListByTag()
     {
-        $data = [
+        $data = ['site_id' => [
           'id' => 'site_id',
           'name' => 'Site Name',
-        ];
+        ]];
         $tag = 'tag';
 
-        $this->sites->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->site,]);
         $this->sites->expects($this->once())
             ->method('filterByTag')
             ->with($this->equalTo($tag))
             ->willReturn($this->sites);
-        $this->site->expects($this->any())
+        $this->sites->expects($this->once())
             ->method('serialize')
             ->willReturn($data);
         $this->logger->expects($this->never())
@@ -101,6 +92,6 @@ class ListCommandTest extends OrgSiteCommandTest
 
         $out = $this->command->listSites($this->organization->id, compact('tag'));
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([$data,], $out->getArrayCopy());
+        $this->assertEquals($data, $out->getArrayCopy());
     }
 }

@@ -17,30 +17,30 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Looks up which environment a given domain is associated with
+     * Displays site and environment with which a given domain is associated.
+     * Note: Only sites for which the user is authorized will appear.
      *
      * @authorize
      *
      * @command domain:lookup
      *
      * @field-labels
-     *   site_id: Site ID
-     *   site_name: Site Name
-     *   env_id: Environment ID
+     *     site_id: Site ID
+     *     site_name: Site Name
+     *     env_id: Environment ID
      * @return PropertyList
      *
-     * @param string $domain The domain to search your site environments for
+     * @param string $domain Domain e.g. `example.com`
      *
      * @throws TerminusNotFoundException
      *
      * @usage terminus domain:lookup <domain_name>
-     *    * If found, will return information about the environment with which this domain is associated
-     *    * If not found, will throw a TerminusNotFound exception
+     *     Returns the site and environment associated with <domain_name> or displays not found.
      */
     public function lookup($domain)
     {
         $this->log()->notice('This operation may take a long time to run.');
-        $sites = $this->sites()->fetch()->all();
+        $sites = $this->sites()->all();
         $environments = ['dev', 'test', 'live',];
         foreach ($sites as $site_id => $site) {
             foreach ($environments as $env_name) {

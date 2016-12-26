@@ -2,31 +2,35 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
-class ViewCommand extends TerminusCommand implements SiteAwareInterface
+class ViewCommand extends TerminusCommand implements SiteAwareInterface, ContainerAwareInterface
 {
     use SiteAwareTrait;
+    use ContainerAwareTrait;
 
     /**
-     * Print the URL for an environment or open it in a browser
+     * Displays the URL for the environment or opens the environment in a browser.
      *
      * @authorize
      *
      * @command env:view
      * @aliases site:view
      *
-     * @param string $site_env The site and environment to view in the form: <sitename>.<env>
-     * @option boolean $print Output the URL only. Do not open the URL in the default browser.
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @option boolean $print Print URL only
      * @return string
      *
-     * @usage: terminus env:view <site>.<env> --print
-     *    Outputs the URL of the <env> environment of <site>
      * @usage: terminus env:view <site>.<env>
-     *    Opens the URL of the <dev> environment of <site> in your default browser
+     *    Opens the browser to <site>'s <env> environment.
+     * @usage: terminus env:view <site>.<env> --print
+     *    Prints the URL for <site>'s <env> environment.
      *
      * @throws TerminusException
      */
@@ -48,25 +52,6 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
         if ($options['print']) {
             return $url;
         }
-
-        // Otherwise attempt to launch it.
-        $cmd = '';
-        switch (php_uname('s')) {
-            case 'Linux':
-                $cmd = 'xdg-open';
-                break;
-            case 'Darwin':
-                $cmd = 'open';
-                break;
-            case 'Windows NT':
-                $cmd = 'start';
-                break;
-        }
-        if (!$cmd) {
-            throw new TerminusException("Terminus is unable to open a browser on this OS");
-        }
-        $command = sprintf('%s %s', $cmd, $url);
-        exec($command);
-        return $url;
+        $this->getContainer()->get(LocalMachineHelper::class)->openUrl($url);
     }
 }

@@ -32,10 +32,6 @@ class LookupCommandTest extends DomainTest
         $this->site_name = 'site_name';
 
         $this->sites->expects($this->once())
-            ->method('fetch')
-            ->with()
-            ->willReturn($this->sites);
-        $this->sites->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->site,]);

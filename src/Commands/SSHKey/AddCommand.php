@@ -12,16 +12,16 @@ class AddCommand extends TerminusCommand
 {
 
     /**
-     * Add a SSH key to the logged-in user's account
+     * Associates a SSH public key with the currently logged-in user.
      *
      * @authorize
      *
      * @command ssh-key:add
      *
-     * @param string $file The path to the SSH public key file to use
+     * @param string $file SSH public key filepath
      *
      * @usage terminus ssh-key:add <file_path>
-     *   Adds the public key at the given file path <file_path> to your account
+     *     Associates the SSH public key at <file_path> with the currently logged-in user.
      */
     public function add($file)
     {

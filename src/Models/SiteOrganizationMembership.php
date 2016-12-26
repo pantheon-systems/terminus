@@ -58,7 +58,7 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      */
     public function serialize()
     {
-        $organization = $this->getOrganizatio();
+        $organization = $this->getOrganization();
         $data = [
             'org_id' => $organization->id,
             'org_name' => $organization->get('profile')->name,

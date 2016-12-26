@@ -22,9 +22,9 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
      * @return object The upstream information
      * @throws TerminusException
      */
-    protected function getUpstreamUpdates($site)
+    protected function getUpstreamUpdates($env)
     {
-        if (empty($upstream = $site->getUpstream()->getUpdates())) {
+        if (empty($upstream = $env->getUpstreamStatus()->getUpdates())) {
             throw new TerminusException('There was a problem checking your upstream status. Please try again.');
         }
         return $upstream;
@@ -37,13 +37,8 @@ abstract class UpdatesCommand extends TerminusCommand implements SiteAwareInterf
      * @return array The list of updates
      * @throws TerminusException
      */
-    protected function getUpstreamUpdatesLog($site)
+    protected function getUpstreamUpdatesLog($env)
     {
-        $upstream = $this->getUpstreamUpdates($site);
-
-        if (!empty($upstream->update_log)) {
-            return (array)$upstream->update_log;
-        }
-        return [];
+        return (array)$this->getUpstreamUpdates($env)->update_log;
     }
 }

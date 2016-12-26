@@ -91,4 +91,12 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
     {
         return $this->site;
     }
+
+    public function serialize()
+    {
+        $user = $this->getUser()->serialize();
+        return $user + [
+            'role'  => $this->get('role'),
+        ];
+    }
 }

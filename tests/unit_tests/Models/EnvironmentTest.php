@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Lock;
 use Pantheon\Terminus\Models\Site;
@@ -69,8 +70,14 @@ class EnvironmentTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->local_machine = $this->getMockBuilder(LocalMachineHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->container->add(Workflows::class, $this->workflows);
         $this->container->add(Lock::class, $this->lock);
+        $this->container->add(LocalMachineHelper::class, $this->local_machine);
+
 
         $model->setContainer($this->container);
         $model->setRequest($this->request);
@@ -196,7 +203,32 @@ class EnvironmentTest extends ModelTestCase
 
     public function testCommitChanges()
     {
-        // @TODO: this cannot be tested currently due to the use of `passthru`
+        $this->workflows->expects($this->any())
+            ->method('create')
+            ->with(
+                'commit_and_push_on_server_changes',
+                ['params' =>
+                    [
+                        'message' => 'Hello, World!',
+                        'committer_name' => 'Dev Tester',
+                        'committer_email' => 'dev@example.com'
+                    ]
+                ]
+            )
+            ->willReturn($this->workflow);
+
+        $this->local_machine->expects($this->at(0))
+            ->method('exec')
+            ->with('git config user.email')
+            ->willReturn('dev@example.com');
+
+        $this->local_machine->expects($this->at(1))
+            ->method('exec')
+            ->with('git config user.name')
+            ->willReturn('Dev Tester');
+
+        $actual = $this->model->commitChanges('Hello, World!');
+        $this->assertEquals($this->workflow, $actual);
     }
 
     public function testConnectionInfo()
@@ -592,7 +624,24 @@ class EnvironmentTest extends ModelTestCase
 
     public function testSendCommandViaSsh()
     {
-        // @TODO: Cannot be tested because it uses 'passthru'
+        $expected = ['output' => 'Hello, World!', 'exit_code' => 0];
+        $this->local_machine->expects($this->at(0))
+            ->method('execInteractive')
+            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "AddressFamily inet" \'echo "Hello, World!"\'')
+            ->willReturn($expected);
+
+        $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');
+        $this->assertEquals($expected, $actual);
+
+        $this->configSet(['test_mode' => 1]);
+        $expected = [
+            'output' => "Terminus is in test mode. "
+                . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
+                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" 'echo \"Hello, World!\"'",
+            'exit_code' => 0
+        ];
+        $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');
+        $this->assertEquals($expected, $actual);
     }
 
     public function testSerialize()

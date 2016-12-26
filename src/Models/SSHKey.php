@@ -65,4 +65,18 @@ class SSHKey extends TerminusModel
         $hex = implode(':', str_split($this->id, 2));
         return $hex;
     }
+
+    /**
+     * Formats the object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        return array(
+            'id' => $this->id,
+            'hex' => $this->getHex(),
+            'comment' => $this->getComment(),
+        );
+    }
 }

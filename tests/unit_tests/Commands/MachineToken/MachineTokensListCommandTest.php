@@ -1,9 +1,9 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\ListCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 
@@ -31,7 +31,7 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
      */
     public function testMachineTokenListEmpty()
     {
-        $this->machine_tokens->method('all')
+        $this->machine_tokens->method('serialize')
             ->willReturn([]);
 
         $this->logger->expects($this->once())
@@ -49,15 +49,11 @@ class MachineTokensListCommandTest extends MachineTokenCommandTest
     public function testMachineTokenListNotEmpty()
     {
         $tokens = [
-            ['id' => '1', 'device_name' => 'Foo'],
-            ['id' => '2', 'device_name' => 'Bar']
+            '1' => ['id' => '1', 'device_name' => 'Foo'],
+            '2' => ['id' => '2', 'device_name' => 'Bar']
         ];
-        $collection = new MachineTokens(['user' => $this->user]);
-        $this->machine_tokens->method('all')
-            ->willReturn([
-                new MachineToken((object)$tokens[0], ['collection' => $collection]),
-                new MachineToken((object)$tokens[1], ['collection' => $collection])
-            ]);
+        $this->machine_tokens->method('serialize')
+            ->willReturn($tokens);
 
         $this->logger->expects($this->never())
             ->method($this->anything());

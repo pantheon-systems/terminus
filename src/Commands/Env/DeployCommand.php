@@ -15,29 +15,34 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Deploy the dev environment to either test or live
+     * Deploys code to the Test or Live environment.
+     * Notes:
+     *   - Deploying the Test environment will deploy code from the Dev environment.
+     *   - Deploying the Live environment will deploy code from the Test environment.
      *
      * @authorize
      *
      * @command env:deploy
      * @aliases deploy
      *
-     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`
-     * @option string $sync-content If deploying test, copy database and files from live
-     * @option string $cc Set to clear the cache after deploy
-     * @option string $updatedb Set to run update.php after deploy (Drupal only)
-     * @option string $note Set to add a custom deploy log message
+     * @param string $site_env Site & environment in the format `site-name.env` (only Test or Live environment)
+     * @option string $sync-content Clone database/files from Live environment when deploying Test environment
+     * @option string $cc Clear caches after deploy
+     * @option string $updatedb Run update.php after deploy (Drupal only)
+     * @option string $note Custom deploy log message
      *
-     * @usage terminus env:deploy <site>.<env>
-     *   Deploy the dev environment of <site> to its <env> environment
-     * @usage terminus env:deploy <site>.<env> --cc
-     *   Deploy the dev environment of <site> to its <env> environment and clear its cache
-     * @usage terminus env:deploy <site>.<env> --sync-content
-     *   Deploy the dev environment of <site> to its <env> environment, copying the database and files from live
-     * @usage terminus env:deploy <site>.<env> --updatedb
-     *   Deploy the dev environment of <site> to its <env> environment and run Drupal's update.php
-     * @usage terminus env:deploy <site>.<env> --note=<message>
-     *   Deploy the dev environment of <site> to its <env> environment with the note <message>
+     * @usage terminus env:deploy <site>.test
+     *   Deploy code from <site>'s Dev environment to the Test environment.
+     * @usage terminus env:deploy <site>.live
+     *   Deploy code from <site>'s Test environment to the Live environment.
+     * @usage terminus env:deploy <site>.test --cc
+     *   Deploy code from <site>'s Dev environment to the Test environment and clear caches on the Test environment.
+     * @usage terminus env:deploy <site>.test --sync-content
+     *   Deploy code from <site>'s Dev environment to the Test environment and clone content from the Live environment to the Test environment.
+     * @usage terminus env:deploy <site>.live --updatedb
+     *   Deploy code from <site>'s Test environment to the Live environment and run Drupal's update.php.
+     * @usage terminus env:deploy <site>.live --note=<message>
+     *   Deploy code from <site>'s Test environment to the Live environment with the deploy log message <message>.
      */
     public function deploy(
         $site_env,

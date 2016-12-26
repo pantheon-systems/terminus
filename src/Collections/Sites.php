@@ -31,17 +31,6 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     }
 
     /**
-     * Retrieves all sites
-     *
-     * @return Site[]
-     */
-    public function all()
-    {
-        $models = array_values($this->models);
-        return $models;
-    }
-
-    /**
      * Creates a new site
      *
      * @param string[] $params Options for the new site, elements as follow:
@@ -180,17 +169,52 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      * @param string $name Name of the site to look up
      * @return string
      */
-    public function findUuidByName($name)
+    protected function findUuidByName($name)
     {
         $response = $this->request()->request(
             "site-names/$name",
             ['method' => 'get',]
         );
-        return $response['data'];
+        return $response['data']->id;
+    }
+
+    /**
+     * Looks up a site's UUID by its name.
+     *
+     * @param string $id Name of the site to look up
+     * @return string
+     */
+    protected function findUuidByNameOrUuid($id)
+    {
+        // If it LOOKS like a uuid, then we assume it is. Since a user is unlikely to name a site with this exact
+        // pattern this is a reasonably good test.
+        if ($this->isUuid($id)) {
+            return $id;
+        }
+        return $this->findUuidByName($id);
+    }
+
+    /**
+     * Determine if the given string looks like a valid uuid.
+     *
+     * This is not an exact test for uuids but it matches the general pattern:
+     *  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+     * where x is any hexidecimal character. This is close enough for our purposes.
+     *
+     * @param $id
+     * @return int
+     */
+    protected function isUuid($id)
+    {
+        return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($id));
     }
 
     /**
      * Retrieves the site of the given UUID or name
+     *
+     * If the site list has already been fetched then this function will search for the site in the fetched list.
+     * If no sites have been fetched yet then it will query the API. Use caution when calling this function after
+     * a manual fetch as it may be just searching a subset of the user's sites.
      *
      * @param string $id UUID or name of desired site
      * @return Site
@@ -198,16 +222,21 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      */
     public function get($id)
     {
-        $models = $this->models;
-        $list = $this->listing('name', 'id');
         $site = null;
-        if (isset($models[$id])) {
-            $site = $models[$id];
-        } elseif (isset($list[$id])) {
-            $site = $models[$list[$id]];
-        } else {
+
+        if ($this->models === null) {
+            // If the full model set hasn't been fetched then request the item individually from the API
+            // This can be a lot faster when there are a lot of items.
             try {
-                $uuid = $this->findUuidByName($id)->id;
+                $uuid = $this->findUuidByNameOrUuid($id);
+                $site = $this->getContainer()->get(
+                    $this->collected_class,
+                    [
+                        (object)['id' => $uuid,],
+                        ['id' => $uuid, 'collection' => $this,]
+                    ]
+                );
+                $site->fetch();
             } catch (\Exception $e) {
                 throw new TerminusException(
                     'Could not locate a site your user may access identified by {id}.',
@@ -215,16 +244,20 @@ class Sites extends TerminusCollection implements SessionAwareInterface
                     1
                 );
             }
-            $site = $this->getContainer()->get(
-                $this->collected_class,
-                [
-                    (object)['id' => $uuid,],
-                    ['id' => $uuid, 'collection' => $this,]
-                ]
-            );
-            $site->fetch();
-            $this->models[$uuid] = $site;
+        } else {
+            // If we have a list of sites already then look through it for the given site.
+            if (isset($this->models[$id])) {
+                // Search by id
+                $site = $this->models[$id];
+            } else {
+                // Search by name
+                $list = $this->listing('name', 'id');
+                if (isset($list[$id])) {
+                    $site = $this->models[$list[$id]];
+                }
+            }
         }
+
         return $site;
     }
 

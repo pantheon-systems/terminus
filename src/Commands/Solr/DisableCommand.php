@@ -15,16 +15,16 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Disable Solr indexing on a site
+     * Disables Solr add-on for a site.
      *
      * @authorize
      *
      * @command solr:disable
      *
-     * @param string $site_id Name of the site to disable Solr on
+     * @param string $site_id Site name
      *
      * @usage terminus solr:disable <site>
-     *   Disables Solr indexing on <site>
+     *     Disables Solr add-on for <site>.
      */
     public function disable($site_id)
     {

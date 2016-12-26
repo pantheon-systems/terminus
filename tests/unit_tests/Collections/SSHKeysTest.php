@@ -64,7 +64,7 @@ class SSHKeysTest extends UserOwnedCollectionTest
         foreach ($data as $id => $key) {
             $options['id'] = $id;
             $model_data = (object)['id' => $id, 'key' => $key];
-            $model = $models[$i] = new SSHKey($model_data, $options);
+            $model = $models[$id] = new SSHKey($model_data, $options);
             $this->container->expects($this->at($i++))
                 ->method('get')
                 ->with(SSHKey::class, [$model_data, $options])

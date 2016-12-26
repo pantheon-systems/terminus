@@ -1,0 +1,14 @@
+{
+    "name": "orgname/with-namespace",
+    "description": "A test Terminus command with namespacing",
+    "type": "terminus-plugin",
+    "extra": {
+        "terminus": {
+            "compatible-version": "1.*"
+        }
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": { "OrgName\\PluginName\\": "src" }
+    }
+}

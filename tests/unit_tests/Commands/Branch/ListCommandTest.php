@@ -20,27 +20,16 @@ class ListCommandTest extends CommandTestCase
     public function testListBranches()
     {
         $branches_info = [
-            ['id' => 'master', 'sha' => 'xxx'],
-            ['id' => 'another', 'sha' => 'yyy'],
+            'master' => ['id' => 'master', 'sha' => 'xxx'],
+            'another' => ['id' => 'another', 'sha' => 'yyy'],
         ];
-
-        $branches = [];
-        foreach ($branches_info as $branch_info) {
-            $branch = $this->getMockBuilder(Branch::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $branch->expects($this->once())
-                ->method('serialize')
-                ->willReturn($branch_info);
-            $branches[] = $branch;
-        }
-
+        
         $branches_collection = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();
         $branches_collection->expects($this->once())
-            ->method('all')
-            ->willReturn($branches);
+            ->method('serialize')
+            ->willReturn($branches_info);
 
         $this->site->expects($this->once())
             ->method('getBranches')

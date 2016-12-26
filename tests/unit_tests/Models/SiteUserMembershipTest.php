@@ -25,14 +25,31 @@ class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $user_data = (object)['id' => '234'];
+        $user_data = [
+            'id' => 'abc',
+            'firstname' => 'Daisy',
+            'lastname' => 'Duck',
+            'email' => 'daisy@duck.com',
+        ];
+        $this->user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->user->method('serialize')
+            ->willReturn([
+                'id' => 'abc',
+                'firstname' => 'Daisy',
+                'lastname' => 'Duck',
+                'email' => 'daisy@duck.com',
+            ]);
+        $this->user->id = 'abc';
+
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
         $container->expects($this->once())
             ->method('get')
             ->with(User::class, [$user_data])
-            ->willReturn(new User($user_data));
+            ->willReturn($this->user);
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -49,7 +66,7 @@ class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
         $this->site->method('getWorkflows')->willReturn($this->workflows);
 
         $this->site_user = new SiteUserMembership(
-            (object)['user' => $user_data],
+            (object)['user' => $user_data, 'role' => 'team_member'],
             ['collection' => (object)['site' => $this->site]]
         );
         $this->site_user->setContainer($container);
@@ -61,7 +78,7 @@ class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
             ->method('create')
             ->with(
                 'remove_site_user_membership',
-                ['params' => ['user_id' => '234']]
+                ['params' => ['user_id' => 'abc']]
             )
             ->willReturn($this->workflow);
 
@@ -75,11 +92,24 @@ class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
             ->method('create')
             ->with(
                 'update_site_user_membership',
-                ['params' => ['user_id' => '234', 'role' => 'testrole']]
+                ['params' => ['user_id' => 'abc', 'role' => 'testrole']]
             )
             ->willReturn($this->workflow);
 
         $out = $this->site_user->setRole('testrole');
         $this->assertEquals($this->workflow, $out);
+    }
+
+    public function testSerialize()
+    {
+        $expected = [
+            'firstname' => 'Daisy',
+            'lastname' => 'Duck',
+            'email' => 'daisy@duck.com',
+            'id' => 'abc',
+            'role' => 'team_member',
+        ];
+        $actual = $this->site_user->serialize();
+        $this->assertEquals($expected, $actual);
     }
 }
