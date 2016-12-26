@@ -185,7 +185,7 @@ class PluginCommand extends TerminusCommand
 
             $count = count($rows);
             $plural = ($count > 1) ? 's' : '';
-            $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install --project=...' to add more plugins.";
+            $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install <project>...' to add more plugins.";
             $this->log()->notice($message);
 
             // Output the plugin list in table format.
@@ -198,6 +198,8 @@ class PluginCommand extends TerminusCommand
      *
      * @command plugin:search
      * @aliases plugin:find plugin:locate
+     *
+     * @option keyword A search string used to query for plugins. Example: terminus plugin:search pantheon.
      */
     public function search($keyword = '')
     {
