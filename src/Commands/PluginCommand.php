@@ -54,7 +54,7 @@ class PluginCommand extends TerminusCommand
                         $message = "{$plugin} plugin already installed.";
                         $this->log()->notice($message);
                     } else {
-                        exec("composer create-project --dev -n -d {$plugins_dir} {$project}:~1", $messages);
+                        exec("composer create-project -n -d {$plugins_dir} {$project}:~1", $messages);
                         foreach ($messages as $message) {
                             $this->log()->notice($message);
                         }
