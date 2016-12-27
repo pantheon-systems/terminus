@@ -31,7 +31,7 @@ class PaymentMethods extends UserOwnedCollection
      */
     public function get($id)
     {
-        $payment_methods = $this->models;
+        $payment_methods = $this->getMembers();
         if (isset($payment_methods[$id])) {
             return $payment_methods[$id];
         }
