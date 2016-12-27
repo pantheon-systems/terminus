@@ -44,14 +44,17 @@ class PluginCommand extends TerminusCommand
         foreach ($projects as $project) {
             $is_url = (filter_var($project, FILTER_VALIDATE_URL) !== false);
             if (!$is_url) {
-                if (!$this->isValidPackagistProject($project)) {
-                    $message = "{$project} is not a valid Packagist project.";
+                if (!$this->commandExists('composer')) {
+                    $message = "In order to install Packagist plugin projects, you need to install Composer.";
+                    $this->log()->notice($message);
+                } elseif (!$this->isValidPackagistProject($project)) {
+                    $message = "{$project} is not a valid Packagist plugin project.";
                     $this->log()->error($message);
                 } else {
                     $path = explode('/', $project);
                     $plugin = $path[1];
                     if (is_dir($plugins_dir . $plugin)) {
-                        $message = "{$plugin} plugin already installed.";
+                        $message = "{$plugin} plugin is already installed.";
                         $this->log()->notice($message);
                     } else {
                         exec("composer create-project -n -d {$plugins_dir} {$project}:~1", $messages);
@@ -71,21 +74,26 @@ class PluginCommand extends TerminusCommand
                             if (!$this->isValidGitRepository($repository, $plugin)) {
                                 $message = "{$project} is not a valid plugin Git repository.";
                                 $this->log()->error($message);
-                            } else {
-                                if (is_dir($plugins_dir . $plugin)) {
-                                    $message = "{$plugin} plugin already installed.";
+                            } elseif (is_dir($plugins_dir . $plugin)) {
+                                $message = "{$plugin} plugin is already installed.";
+                                $this->log()->notice($message);
+                            } elseif ($this->commandExists('git')) {
+                                exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $messages);
+                                foreach ($messages as $message) {
                                     $this->log()->notice($message);
-                                } else {
-                                    exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $messages);
-                                    foreach ($messages as $message) {
-                                        $this->log()->notice($message);
-                                    }
                                 }
+                             } else {
+                                $message = "In order to clone Git repository plugin projects, you need to install Git.";
+                                $this->log()->notice($message);
                             }
                             break;
 
                         case 'gz':
-                            exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $messages);
+                            if ($this->commandExists('curl') && $this->commandExists('tar')) {
+                                exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $messages);
+                            } else {
+                                $messages[] = "In order to install archive plugin projects, you need to install curl and tar.";
+                            }
                             foreach ($messages as $message) {
                                 $this->log()->notice($message);
                             }
@@ -238,7 +246,7 @@ class PluginCommand extends TerminusCommand
                 }
             }
         } else {
-            $message = "In order to search for plugins, you need to install composer.";
+            $message = "In order to search for Packagist project plugins, you need to install Composer.";
             $this->log()->notice($message);
         }
     }
@@ -406,7 +414,7 @@ class PluginCommand extends TerminusCommand
     /**
      * Get the plugin Composer information.
      *
-     * TODO: This could be a good utility function to use in other places.
+     * TODO: This could be a generic utility function to use in other places.
      *
      * @param string $plugin Plugin name
      * @return array of Composer information
@@ -473,13 +481,17 @@ class PluginCommand extends TerminusCommand
 
             case 'archive':
             default:
-                $project = 'unknown';
-                $composer_info = $this->getComposerInfo($plugin);
-                if (!empty($composer_info)) {
-                    $project = $composer_info['name'];
+                if ($this->commandExists('curl') && $this->commandExists('tar')) {
+                    $project = 'unknown';
+                    $composer_info = $this->getComposerInfo($plugin);
+                    if (!empty($composer_info)) {
+                        $project = $composer_info['name'];
+                    }
+                    $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
+                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
+                } else {
+                    $messages[] = "In order to update archive plugin projects, you need to install curl and tar.";
                 }
-                $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
-                exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
         }
         foreach ($messages as $message) {
             $this->log()->notice($message);
