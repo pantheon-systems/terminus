@@ -7,6 +7,7 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
+use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class SSHBaseCommand
