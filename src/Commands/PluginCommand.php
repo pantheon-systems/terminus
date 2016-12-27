@@ -82,7 +82,7 @@ class PluginCommand extends TerminusCommand
                                 foreach ($messages as $message) {
                                     $this->log()->notice($message);
                                 }
-                             } else {
+                            } else {
                                 $message = "In order to clone Git repository plugin projects, you need to install Git.";
                                 $this->log()->notice($message);
                             }
