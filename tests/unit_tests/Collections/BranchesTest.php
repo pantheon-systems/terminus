@@ -68,7 +68,7 @@ class BranchesTest extends CollectionTestCase
     protected function _expectAdditions()
     {
         $counter = 0;
-        foreach($this->collection_data as $id => $sha) {
+        foreach ($this->collection_data as $id => $sha) {
             $this->collection->expects($this->at($counter++))
                 ->method('add')
                 ->with($this->equalTo((object)['id' => $id, 'sha' => $sha,]));

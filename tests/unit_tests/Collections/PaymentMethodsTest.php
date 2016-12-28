@@ -64,6 +64,9 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
         $this->assertNull($not_model);
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
     protected function _createPaymentMethods()
     {
         $model_data = [

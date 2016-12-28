@@ -85,8 +85,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function all()
     {
-        $models = $this->getMembers();
-        return $models;
+        return $this->getMembers();
     }
 
     /**
