@@ -476,7 +476,9 @@ class PluginCommand extends TerminusCommand
                 break;
 
             case 'composer':
-                exec("cd \"$plugin_dir\" && composer update", $messages);
+                $composer_info = $this->getComposerInfo($plugin);
+                $project = $composer_info['name'];
+                exec("rm -rf \"{$plugin_dir}\" && composer create-project -n -d {$plugins_dir} {$project}:~1", $messages);
                 break;
 
             case 'archive':
@@ -488,7 +490,7 @@ class PluginCommand extends TerminusCommand
                         $project = $composer_info['name'];
                     }
                     $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
-                    exec("rm -rf \"$plugin_dir\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
+                    exec("rm -rf \"{$plugin_dir}\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
                 } else {
                     $messages[] = "In order to update archive plugin projects, you need to install curl and tar.";
                 }
