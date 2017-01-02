@@ -5,17 +5,14 @@ namespace Pantheon\Terminus\Commands\Plugin;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
- * Install one or more Terminus plugins.
+ * Manage Terminus plugins.
  *
- * @package Pantheon\Terminus\Commands
+ * @package Pantheon\Terminus\Commands\Plugin
  */
 class InstallCommand extends PluginBaseCommand
 {
-
     /**
      * Install one or more Terminus plugins.
-     *
-     * TODO: Add the ability to search and prompt to install new plugins.
      *
      * @command plugin:install
      * @aliases plugin:add
@@ -26,6 +23,8 @@ class InstallCommand extends PluginBaseCommand
      */
     public function install(array $projects)
     {
+        // @TODO: Add the ability to search and prompt to install new plugins.
+
         if (empty($projects)) {
             $message = "Usage: terminus plugin:<install|add>";
             $message .= " <URL to plugin archive, Git or Packagist project 1>";
@@ -41,13 +40,13 @@ class InstallCommand extends PluginBaseCommand
                     $message = "In order to install Packagist plugin projects, you need to install Composer.";
                     $this->log()->notice($message);
                 } elseif (!$this->isValidPackagistProject($project)) {
-                    $message = "{$project} is not a valid Packagist plugin project.";
+                    $message = "{$project} is not a valid Packagist project.";
                     $this->log()->error($message);
                 } else {
                     $path = explode('/', $project);
                     $plugin = $path[1];
                     if (is_dir($plugins_dir . $plugin)) {
-                        $message = "{$plugin} plugin is already installed.";
+                        $message = "{$plugin} is already installed.";
                         $this->log()->notice($message);
                     } else {
                         exec("composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~1", $messages);
@@ -65,10 +64,10 @@ class InstallCommand extends PluginBaseCommand
                             $plugin = array_pop($path);
                             $repository = $parts['scheme'] . '://' . $parts['host'] . implode('/', $path);
                             if (!$this->isValidGitRepository($repository, $plugin)) {
-                                $message = "{$project} is not a valid plugin Git repository.";
+                                $message = "{$project} is not a valid Git repository.";
                                 $this->log()->error($message);
                             } elseif (is_dir($plugins_dir . $plugin)) {
-                                $message = "{$plugin} plugin is already installed.";
+                                $message = "{$plugin} is already installed.";
                                 $this->log()->notice($message);
                             } elseif ($this->commandExists('git')) {
                                 exec("git clone --branch 1.x {$project} {$plugins_dir}{$plugin}", $messages);
@@ -76,7 +75,7 @@ class InstallCommand extends PluginBaseCommand
                                     $this->log()->notice($message);
                                 }
                             } else {
-                                $message = "In order to clone Git repository plugin projects, you need to install Git.";
+                                $message = "In order to clone Git repository projects, you need to install Git.";
                                 $this->log()->notice($message);
                             }
                             break;
@@ -85,14 +84,14 @@ class InstallCommand extends PluginBaseCommand
                             if ($this->commandExists('curl') && $this->commandExists('tar')) {
                                 exec("curl {$project} -L | tar -C {$plugins_dir} -xvz", $messages);
                             } else {
-                                $messages[] = "In order to install archive plugin projects, you need to install curl and tar.";
+                                $messages[] = "In order to install archive projects, you need to install curl and tar.";
                             }
                             foreach ($messages as $message) {
                                 $this->log()->notice($message);
                             }
                     }
                 } else {
-                    $message = "{$project} is not a valid plugin project URL.";
+                    $message = "{$project} is not a valid project URL.";
                     $this->log()->error($message);
                 }
             }
