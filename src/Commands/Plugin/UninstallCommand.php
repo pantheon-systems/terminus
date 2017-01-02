@@ -14,8 +14,6 @@ class UninstallCommand extends PluginBaseCommand
     /**
      * Remove one or more Terminus plugins.
      *
-     * TODO: Add the ability to prompt for plugins to remove.
-     *
      * @command plugin:uninstall
      * @aliases plugin:remove plugin:delete
      *
@@ -25,6 +23,8 @@ class UninstallCommand extends PluginBaseCommand
      */
     public function uninstall(array $plugins)
     {
+        // @TODO: Add the ability to prompt for plugins to remove.
+
         if (empty($plugins)) {
             $message = "Usage: terminus plugin:<uninstall|remove|delete>";
             $message .= " <plugin-name-1> [plugin-name-2] ...";
@@ -34,14 +34,14 @@ class UninstallCommand extends PluginBaseCommand
         foreach ($plugins as $plugin) {
             $plugin_dir = $this->getPluginDir($plugin);
             if (!is_dir("$plugin_dir")) {
-                $message = "{$plugin} plugin is not installed.";
+                $message = "{$plugin} is not installed.";
                 $this->log()->error($message);
             } else {
                 exec("rm -rf \"$plugin_dir\"", $messages);
                 foreach ($messages as $message) {
                     $this->log()->notice($message);
                 }
-                $message = "{$plugin} plugin was removed successfully.";
+                $message = "{$plugin} was removed successfully.";
                 $this->log()->notice($message);
             }
         }
