@@ -4,8 +4,6 @@ namespace Pantheon\Terminus\Commands\Plugin;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -170,7 +168,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Get the currently installed plugin version.
      *
      * @param string $plugin Path to plugin
-     * @return string $version
+     * @return string Installed plugin version
      */
     protected function getInstalledVersion($plugin)
     {
@@ -188,7 +186,7 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Get the latest available plugin version.
      *
      * @param string $plugin Path to plugin
-     * @return string $version
+     * @return string Latest plugin version
      */
     protected function getLatestVersion($plugin)
     {
@@ -211,17 +209,17 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function isValidGitRepository($repository, $plugin)
     {
-        // Make sure the URL is valid
+        // Make sure the URL is valid.
         $is_url = (filter_var($repository, FILTER_VALIDATE_URL) !== false);
         if (!$is_url) {
             return '';
         }
-        // Make sure a subpath exists
+        // Make sure a subpath exists.
         $parts = parse_url($repository);
         if (!isset($parts['path']) || ($parts['path'] == '/')) {
             return '';
         }
-        // Search for a plugin title
+        // Search for a plugin title.
         $plugin_data = @file_get_contents($repository . '/' . $plugin);
         if (!empty($plugin_data)) {
             preg_match('|<title>(.*)</title>|', $plugin_data, $match);
@@ -241,12 +239,12 @@ abstract class PluginBaseCommand extends TerminusCommand
      * Check whether a Packagist project is valid.
      *
      * @param string $project Packagist project name
-     * @return bool true if valid, false otherwise
+     * @return bool True if valid, false otherwise
      */
     protected function isValidPackagistProject($project)
     {
         $valid = false;
-        // Search for the Packagist project
+        // Search for the Packagist project.
         exec("composer search -N -t terminus-plugin {$project}", $items);
         if (!empty($items)) {
             foreach ($items as $item) {
@@ -262,13 +260,13 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Check whether a URL is valid.
      *
-     * TODO: This could be a generic utility function used by other commands.
-     *
      * @param string $url The URL to check
-     * @return bool true if the URL returns a 200 status, false otherwise
+     * @return bool True if the URL returns a 200 status, false otherwise
      */
     protected function isValidUrl($url = '')
     {
+        // @TODO: This could be a generic utility function used by other commands.
+
         if (!$url) {
             return false;
         }
@@ -282,13 +280,13 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get the plugin Composer information.
      *
-     * TODO: This could be a generic utility function used by other commands.
-     *
      * @param string $plugin Plugin name
      * @return array of Composer information
      */
     protected function getComposerInfo($plugin)
     {
+        // @TODO: This could be a generic utility function used by other commands.
+
         $slash = $this->getSlash();
         $plugin_dir = $this->getPluginDir($plugin);
         $composer_json = $plugin_dir . $slash . 'composer.json';
@@ -302,13 +300,13 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Platform independent check whether a command exists.
      *
-     * TODO: This could be a generic utility function used by other commands.
-     *
      * @param string $command Command to check
      * @return bool True if exists, false otherwise
      */
     protected function commandExists($command)
     {
+        // @TODO: This could be a generic utility function used by other commands.
+
         $windows = (php_uname('s') == 'Windows NT');
         $test_command = $windows ? 'where' : 'command -v';
         $file = popen("$test_command $command", 'r');
@@ -319,12 +317,12 @@ abstract class PluginBaseCommand extends TerminusCommand
     /**
      * Get platform independent directory separator.
      *
-     * TODO: This could be a generic utility function used by other commands.
-     *
-     * @return string $slash
+     * @return string Directory separator
      */
     protected function getSlash()
     {
+        // @TODO: This could be a generic utility function used by other commands.
+
         $windows = (php_uname('s') == 'Windows NT');
         if ($windows) {
             $slash = '\\\\';

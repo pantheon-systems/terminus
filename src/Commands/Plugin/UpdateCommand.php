@@ -13,7 +13,6 @@ class UpdateCommand extends PluginBaseCommand
     /**
      * Update one or more Terminus plugins.
      *
-     * TODO: Add the ability to prompt for plugins to update.
      *
      * @command plugin:update
      * @aliases plugin:upgrade plugin:up
@@ -24,6 +23,8 @@ class UpdateCommand extends PluginBaseCommand
      */
     public function update(array $plugins)
     {
+        // @TODO: Add the ability to prompt for plugins to update.
+
         if (empty($plugins)) {
             $plugins = array('all');
         }
