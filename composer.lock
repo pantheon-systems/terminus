@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "df4cdbcd8ba74cacba89bb9dc2dc081e",
+    "hash": "f92f68fd90c9f36c32e7ddcf947d623b",
     "content-hash": "206cd377eda7f4ab771f8d2d30ea2a04",
     "packages": [
         {
@@ -1643,16 +1643,16 @@
     "packages-dev": [
         {
             "name": "beberlei/assert",
-            "version": "v2.6.8",
+            "version": "v2.6.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "848c8f0bde97b48d1e159075e20a6667583f3978"
+                "reference": "dc75095761b03afb09fb61913a178fc60274b1bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beberlei/assert/zipball/848c8f0bde97b48d1e159075e20a6667583f3978",
-                "reference": "848c8f0bde97b48d1e159075e20a6667583f3978",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/dc75095761b03afb09fb61913a178fc60274b1bf",
+                "reference": "dc75095761b03afb09fb61913a178fc60274b1bf",
                 "shasum": ""
             },
             "require": {
@@ -1694,7 +1694,7 @@
                 "assertion",
                 "validation"
             ],
-            "time": "2016-12-05 11:33:17"
+            "time": "2017-01-04 18:24:33"
         },
         {
             "name": "behat/behat",
