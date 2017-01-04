@@ -44,7 +44,7 @@
     "rmccue/requests": "^1.7",
     "phpunit/phpcov": "^2.0",
     "phpunit/phpunit": "^4.0",
-    "php-vcr/php-vcr": "^1.3",
+    "php-vcr/php-vcr": "1.3.1",
     "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.7",
     "satooshi/php-coveralls": "^1.0"
