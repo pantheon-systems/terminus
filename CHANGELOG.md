@@ -1,6 +1,10 @@
 #Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Fixed
+- Pinned PHP-VCR version to 1.3.1 due to issues with turning PUT into POST. (#1501)
+
 ## 1.0.0-beta.1 - 2016-12-21
 ### Changed
 - Moved to Symfony Console
