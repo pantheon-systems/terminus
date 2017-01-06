@@ -90,7 +90,7 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
         if (isset($models[$id])) {
             return $models[$id];
         } else {
-            foreach ($models as $key => $membership) {
+            foreach ($models as $membership) {
                 if (in_array($id, [$membership->getOrganization()->id, $membership->getOrganization()->getName()])) {
                     return $membership;
                 }

@@ -41,12 +41,7 @@ class DefaultsConfig extends TerminusConfig
      */
     protected function getPhpBinary()
     {
-        if (defined('PHP_BINARY')) {
-            $php_bin = PHP_BINARY;
-        } else {
-            $php_bin = 'php';
-        }
-        return $php_bin;
+        return defined('PHP_BINARY') ? PHP_BINARY : 'php';
     }
 
     /**
