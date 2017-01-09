@@ -112,7 +112,7 @@ class Terminus implements ConfigAwareInterface
 
         $this->configureContainer($container);
 
-        $this->addBuiltInCommandsAndHooks($container);
+        $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks($container);
 
         $this->runner = new RoboRunner();
@@ -183,10 +183,8 @@ class Terminus implements ConfigAwareInterface
 
     /**
      * Add the commands and hooks which are shipped with core Terminus
-     *
-     * @param $container
      */
-    private function addBuiltInCommandsAndHooks($container)
+    private function addBuiltInCommandsAndHooks()
     {
         // Add the built in commands.
         $commands_directory = __DIR__ . '/Commands';
