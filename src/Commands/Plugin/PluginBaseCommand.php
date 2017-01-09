@@ -131,7 +131,7 @@ abstract class PluginBaseCommand extends TerminusCommand
                         $messages[] = "Already up-to-date.";
                     }
                 } else {
-                    $messages[] = "Unable to update. Semver compliance issue with tagged release.";
+                    $messages[] = "Unable to update.  Semver compliance issue with tagged release.";
                 }
                 break;
 
@@ -141,41 +141,25 @@ abstract class PluginBaseCommand extends TerminusCommand
                 $project = $composer_info['name'];
                 $packagist_url = "https://packagist.org/packages/{$project}";
                 if ($this->isValidUrl($packagist_url)) {
+                    // Get the Terminus major version.
+                    $terminus_major_version = $this->getTerminusMajorVersion();
                     // Backup the plugin directory, just in case.
                     $datetime = date('YmdHi', time());
-                    $backup_directory = "~/.composer/backups/{$project}/{$datetime}";
+                    $backup_directory = "~/.terminus/backups/plugins/{$project}/{$datetime}";
                     exec("mkdir -p {$backup_directory} && tar czvf {$backup_directory}/backup.tar.gz \"{$plugin_dir}\"", $backup_messages);
                     // Create a new project via Composer.
-                    exec("rm -rf \"{$plugin_dir}\" && composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~1", $install_messages);
+                    $composer_command = "composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~{$terminus_major_version}";
+                    exec("rm -rf \"{$plugin_dir}\" && {$composer_command}", $install_messages);
                     $messages = array_merge($backup_messages, $install_messages);
                     $messages[] = "Backed up the project to {$backup_directory}/backup.tar.gz.";
                 } else {
-                    $messages[] = "{$packagist_url} is not a valid Packagist project.";
+                    $messages[] = "Unable to update.  {$packagist_url} is not a valid Packagist project.";
                 }
                 break;
 
             case 'archive':
             default:
-                if ($this->commandExists('curl') && $this->commandExists('tar')) {
-                    // Determine the project name.
-                    $project = 'unknown';
-                    $composer_info = $this->getComposerInfo($plugin);
-                    if (!empty($composer_info)) {
-                        $project = $composer_info['name'];
-                    }
-                    // Grab the Terminus release so we can get the major version.
-                    $terminus_version = $this->getConfig()->get('version');
-                    $version_parts = explode('.', $terminus_version);
-                    $terminus_major_version = $version_parts[0];
-                    $archive_url = "https://github.com/{$project}/archive/{$terminus_major_version}.x.tar.gz";
-                    if ($this->isValidUrl($archive_url)) {
-                        exec("rm -rf \"{$plugin_dir}\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
-                    } else {
-                        $messages[] = "{$archive_url} is not a valid Git project.";
-                    }
-                } else {
-                    $messages[] = "In order to update archive plugin projects, you need to install curl and tar.";
-                }
+                $messages[] = "Unable to update.  Plugin is not a Composer project or Git repository.";
         }
         foreach ($messages as $message) {
             $this->log()->notice($message);
@@ -208,10 +192,8 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getLatestVersion($plugin)
     {
-        // Grab the Terminus release so we can get the major version.
-        $terminus_version = $this->getConfig()->get('version');
-        $version_parts = explode('.', $terminus_version);
-        $terminus_major_version = $version_parts[0];
+        // Get the Terminus major version.
+        $terminus_major_version = $this->getTerminusMajorVersion();
         exec("cd \"$plugin\" && git fetch --all && git tag -l | grep ^{$terminus_major_version} | sort -r | head -1", $tag);
         if (!empty($tag)) {
             $version = array_pop($tag);
@@ -352,5 +334,19 @@ abstract class PluginBaseCommand extends TerminusCommand
             $slash = '/';
         }
         return $slash;
+    }
+
+    /**
+     * Get the Terminus major version.
+     *
+     * @return integer Terminus major version
+     */
+    protected function getTerminusMajorVersion()
+    {
+        // @TODO: This could be a generic utility function used by other commands.
+
+        $terminus_version = $this->getConfig()->get('version');
+        $version_parts = explode('.', $terminus_version);
+        return $version_parts[0];
     }
 }
