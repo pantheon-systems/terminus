@@ -121,21 +121,34 @@ abstract class PluginBaseCommand extends TerminusCommand
         $method = $this->getInstallMethod($plugin);
         switch ($method) {
             case 'git':
+                // Compare installed version to the latest release.
                 $installed_version = $this->getInstalledVersion($plugin_dir);
                 $latest_version = $this->getLatestVersion($plugin_dir);
-                if ($installed_version < $latest_version) {
-                    exec("cd \"$plugin_dir\" && git checkout {$latest_version}", $messages);
+                if ($installed_version != 'unknown' && $latest_version != 'unknown') {
+                    if ($installed_version < $latest_version) {
+                        exec("cd \"$plugin_dir\" && git checkout {$latest_version}", $messages);
+                    } else {
+                        $messages[] = "Already up-to-date.";
+                    }
                 } else {
-                    $messages[] = "Already up-to-date.";
+                    $messages[] = "Unable to update. Semver compliance issue with tagged release.";
                 }
                 break;
 
             case 'composer':
+                // Determine the project name.
                 $composer_info = $this->getComposerInfo($plugin);
                 $project = $composer_info['name'];
                 $packagist_url = "https://packagist.org/packages/{$project}";
                 if ($this->isValidUrl($packagist_url)) {
-                    exec("rm -rf \"{$plugin_dir}\" && composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~1", $messages);
+                    // Backup the plugin directory, just in case.
+                    $datetime = date('YmdHi', time());
+                    $backup_directory = "~/.composer/backups/{$project}/{$datetime}";
+                    exec("mkdir -p {$backup_directory} && tar czvf {$backup_directory}/backup.tar.gz \"{$plugin_dir}\"", $backup_messages);
+                    // Create a new project via Composer.
+                    exec("rm -rf \"{$plugin_dir}\" && composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~1", $install_messages);
+                    $messages = array_merge($backup_messages, $install_messages);
+                    $messages[] = "Backed up the project to {$backup_directory}/backup.tar.gz.";
                 } else {
                     $messages[] = "{$packagist_url} is not a valid Packagist project.";
                 }
@@ -144,12 +157,17 @@ abstract class PluginBaseCommand extends TerminusCommand
             case 'archive':
             default:
                 if ($this->commandExists('curl') && $this->commandExists('tar')) {
+                    // Determine the project name.
                     $project = 'unknown';
                     $composer_info = $this->getComposerInfo($plugin);
                     if (!empty($composer_info)) {
                         $project = $composer_info['name'];
                     }
-                    $archive_url = "https://github.com/{$project}/archive/1.x.tar.gz";
+                    // Grab the Terminus release so we can get the major version.
+                    $terminus_version = $this->getConfig()->get('version');
+                    $version_parts = explode('.', $terminus_version);
+                    $terminus_major_version = $version_parts[0];
+                    $archive_url = "https://github.com/{$project}/archive/{$terminus_major_version}.x.tar.gz";
                     if ($this->isValidUrl($archive_url)) {
                         exec("rm -rf \"{$plugin_dir}\" && curl {$archive_url} -L | tar -C {$plugins_dir} -xvz", $messages);
                     } else {
@@ -190,7 +208,11 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getLatestVersion($plugin)
     {
-        exec("cd \"$plugin\" && git fetch --all && git tag -l | sort -r | head -1", $tag);
+        // Grab the Terminus release so we can get the major version.
+        $terminus_version = $this->getConfig()->get('version');
+        $version_parts = explode('.', $terminus_version);
+        $terminus_major_version = $version_parts[0];
+        exec("cd \"$plugin\" && git fetch --all && git tag -l | grep ^{$terminus_major_version} | sort -r | head -1", $tag);
         if (!empty($tag)) {
             $version = array_pop($tag);
         } else {
