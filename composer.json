@@ -30,14 +30,15 @@
     }
   },
   "scripts": {
-      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
+      "behat": "COMPOSER_PROCESS_TIMEOUT=1800 SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/*",
-      "coveralls": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml ; coveralls -v -c tests/config/coveralls.xml",
+      "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
+      "coveralls": "coveralls -v -c tests/config/coveralls.xml",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/*",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
-      "test": "SHELL_INTERACTIVE=true ./scripts/test.sh"
+      "test": "set -ex ; composer cs ; composer phpunit ; composer behat"
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
