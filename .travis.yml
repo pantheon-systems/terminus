@@ -16,18 +16,21 @@ sudo: false
 env:
   global:
     - TERMINUS_TEST_MODE=1
+    - COMPOSER_PROCESS_TIMEOUT=1800
 
 before_script:
   - set -ex
   - composer install --no-interaction --prefer-dist
 
 script:
-  - vendor/bin/phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml
+  - composer clover
   - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
-  - ./scripts/test.sh
+  - composer cs
+  - composer phpunit
+  - composer behat
 
 after_success:
-    - if [ $(phpenv version-name) = "7.0" ]; then php vendor/bin/coveralls -v -c tests/config/coveralls.xml; fi
+    - if [ $(phpenv version-name) = "7.0" ]; then composer coveralls; fi
 
 notifications:
   email:
