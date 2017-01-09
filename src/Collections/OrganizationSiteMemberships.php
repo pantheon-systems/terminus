@@ -66,7 +66,7 @@ class OrganizationSiteMemberships extends TerminusCollection
         if (isset($models[$id])) {
             return $models[$id];
         }
-        foreach ($models as $key => $membership) {
+        foreach ($models as $membership) {
             if (in_array($id, [$membership->getSite()->id, $membership->getSite()->get('name')])) {
                 return $membership;
             }

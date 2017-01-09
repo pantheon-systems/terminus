@@ -38,6 +38,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562183.1445751,
                     'size' => 33333110,
                     'timestamp' => 1471562190,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562156_backup_manifest' =>
                 (object)[
@@ -52,6 +53,7 @@ class BackupsTest extends CollectionTestCase
                     'total_entries' => 0,
                     'size' => 0,
                     'timestamp' => 1471562160,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562156_backup_files' =>
                 (object)[
@@ -66,6 +68,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562159.2395351,
                     'size' => 168,
                     'timestamp' => 1471562160,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562156_backup_database' =>
                 (object)[
@@ -80,6 +83,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562158.974858,
                     'size' => 833,
                     'timestamp' => 1471562159,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562156_backup_code' =>
                 (object)[
@@ -94,6 +98,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562158.947875,
                     'size' => 33358038,
                     'timestamp' => 1471562166,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562114_backup_manifest' =>
                 (object)[
@@ -108,6 +113,7 @@ class BackupsTest extends CollectionTestCase
                     'total_entries' => 0,
                     'size' => 0,
                     'timestamp' => 1471562119,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562114_backup_files' =>
                 (object)[
@@ -122,6 +128,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562118.104852,
                     'size' => 169,
                     'timestamp' => null,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562114_backup_database' =>
                 (object)[
@@ -136,6 +143,7 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562118.301039,
                     'size' => 0,
                     'timestamp' => 1471562120,
+                    'scheduled_for' => 1471562190,
                 ],
                 '1471562114_backup_code' =>
                 (object)[
@@ -150,63 +158,11 @@ class BackupsTest extends CollectionTestCase
                     'start_time' => 1471562118.0184841,
                     'size' => 0,
                     'timestamp' => 1471562126,
+                    'scheduled_for' => 1471562190,
                 ],
         ];
 
         $this->backups = $this->_createBackups();
-    }
-
-    protected function _createBackups()
-    {
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->environment->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->environment->site = (object)['id' => 'abc'];
-        $this->environment->id = 'dev';
-
-        $backups = new Backups(['environment' => $this->environment]);
-        $backups->setRequest($this->request);
-        $backups->setContainer($this->container);
-        return $backups;
-    }
-
-    protected function _createBackupsWithModels()
-    {
-        $backups = $this->_createBackups();
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                'sites/abc/environments/dev/backups/catalog',
-                ['options' => ['method' => 'get']]
-            )
-            ->willReturn(['data' => $this->backup_data]);
-
-        $i = 0;
-        foreach ($this->backup_data as $id => $data) {
-            if (isset($data->filename)) {
-                $data->id = $id;
-                $this->container->expects($this->at($i++))
-                    ->method('get')
-                    ->with(
-                        Backup::class,
-                        [
-                            $data,
-                            ['id' => $id, 'collection' => $backups]
-                        ]
-                    )
-                    ->willReturn(new Backup($data, ['collection' => $backups]));
-            }
-        }
-        return $backups;
     }
 
     public function testCancelBackupSchedule()
@@ -479,5 +435,58 @@ class BackupsTest extends CollectionTestCase
 
         $actual = $backups->setBackupSchedule(['day' => 'Monday', 'hour' => 5]);
         $this->assertEquals($this->workflow, $actual);
+    }
+
+    protected function _createBackups()
+    {
+        $this->workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->environment = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->environment->method('getWorkflows')->willReturn($this->workflows);
+
+        $this->environment->site = (object)['id' => 'abc'];
+        $this->environment->id = 'dev';
+
+        $backups = new Backups(['environment' => $this->environment]);
+        $backups->setRequest($this->request);
+        $backups->setContainer($this->container);
+        return $backups;
+    }
+
+    protected function _createBackupsWithModels()
+    {
+        $backups = $this->_createBackups();
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with(
+                'sites/abc/environments/dev/backups/catalog',
+                ['options' => ['method' => 'get']]
+            )
+            ->willReturn(['data' => $this->backup_data]);
+
+        $i = 0;
+        foreach ($this->backup_data as $id => $data) {
+            if (isset($data->filename)) {
+                $data->id = $id;
+                $this->container->expects($this->at($i++))
+                    ->method('get')
+                    ->with(
+                        Backup::class,
+                        [
+                            $data,
+                            ['id' => $id, 'collection' => $backups]
+                        ]
+                    )
+                    ->willReturn(new Backup($data, ['collection' => $backups,]));
+            }
+        }
+        return $backups;
     }
 }

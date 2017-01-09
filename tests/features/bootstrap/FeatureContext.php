@@ -138,7 +138,7 @@ class FeatureContext implements Context
         echo $prompt . PHP_EOL;
         echo 'Then press any key.';
         $site      = $this->replacePlaceholders($site);
-        $site_info = $this->iGetInfoForTheSite($site, $return_hash = true);
+        $site_info = $this->iGetInfoForTheSite($site);
         $url       = $this->replacePlaceholders($url, $site_info);
         $this->openInBrowser($url);
         $line = trim(fgets(STDIN));
@@ -289,7 +289,7 @@ class FeatureContext implements Context
      */
     public function iDeployTheEnvironmentOf($env, $from, $site, $message)
     {
-        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$note");
+        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$message");
     }
 
     /**
@@ -531,7 +531,11 @@ class FeatureContext implements Context
      */
     public function iMergeTheEnvironment($from_env, $to_env, $site)
     {
-        $this->setTestStatus('pending');
+        if ($to_env ==='dev') {
+            $this->iRun("terminus env:merge-to-dev $site.$from_env");
+        } else {
+            $this->iRun("terminus env:merge-from-dev $site.$to_env");
+        }
     }
 
     /**
@@ -556,7 +560,7 @@ class FeatureContext implements Context
      */
     public function iRestoreTheEnvironmentOfFromBackup($env, $site)
     {
-        $this->setTestStatus('pending');
+        $this->iRun("terminus backup:restore $site.$env");
     }
 
     /**
@@ -958,17 +962,6 @@ class FeatureContext implements Context
     public function iEnterInput()
     {
         throw new PendingException("Interactivity is not yet implemented");
-    }
-
-    /**
-     * Reads one line from STDIN
-     *
-     * @return [string] $line
-     */
-    private function read()
-    {
-        $line = trim(fgets(STDIN));
-        return $line;
     }
 
     /**

@@ -54,7 +54,8 @@ class PluginInfo
         $command_files = $discovery->discover($path, $namespace);
 
         // @TODO: Decide if we should require an autoloader for plugins or just include the command files here.
-        foreach ($command_files as $file => $class) {
+        $file_names = array_keys($command_files);
+        foreach ($file_names as $file) {
             include $file;
         }
 
@@ -110,7 +111,8 @@ class PluginInfo
         }
 
         if (isset($info['autoload']) && isset($info['autoload']['psr-4'])) {
-            foreach ($info['autoload']['psr-4'] as $namespace => $path) {
+            $namespaces = array_keys($info['autoload']['psr-4']);
+            foreach ($namespaces as $namespace) {
                 if (substr($namespace, -1) != '\\') {
                     $correctNamespace = $namespace . '\\';
                     throw new TerminusException('The namespace "{namespace}" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "{correct}"', ['namespace' => addslashes($namespace), 'correct' => addslashes($correctNamespace)]);
