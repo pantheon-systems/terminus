@@ -5,6 +5,8 @@ namespace Pantheon\Terminus\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -25,11 +27,12 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  *
  * @package Pantheon\Terminus\Request
  */
-class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwareInterface
+class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwareInterface, ContainerAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use SessionAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * Download file from target URL
@@ -158,10 +161,10 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
 
-        $client = new Client([
+        $client = $this->getContainer()->get(Client::class, [[
             'base_uri' => $base_uri,
-            RequestOptions::VERIFY => (strpos($this->getConfig()->get('host'), 'onebox') === false),
-        ]);
+            RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
+        ]]);
 
         $this->logger->debug(
             "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}",
@@ -175,7 +178,7 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
 
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = new HttpRequest($method, $uri, $headers, $body);
+        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body]);
         error_reporting(E_ALL);
         $response = $client->send($request);
 
@@ -220,7 +223,7 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
         return sprintf(
             'Terminus/%s (php_version=%s&script=%s)',
             $this->getConfig()->get('version'),
-            phpversion(),
+            $this->getConfig()->get('php_version'),
             $this->getConfig()->get('script')
         );
     }
