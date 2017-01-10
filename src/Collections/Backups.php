@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Backup;
 
 /**
  * Class Backups
@@ -16,8 +17,7 @@ class Backups extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Backup';
-
+    protected $collected_class = Backup::class;
     /**
      * @var string
      */

@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 
@@ -36,7 +37,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Workflow';
+    protected $collected_class = Workflow::class;
 
     /**
      * Instantiates the collection, sets param members as properties

@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Loadbalancer;
+
 /**
  * Class Loadbalancers
  * @package Pantheon\Terminus\Collections
@@ -15,7 +17,7 @@ class Loadbalancers extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Loadbalancer';
+    protected $collected_class = Loadbalancer::class;
 
     /**
      * @inheritdoc

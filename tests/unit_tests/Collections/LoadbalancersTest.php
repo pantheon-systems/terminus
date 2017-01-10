@@ -30,7 +30,7 @@ class LoadbalancersTest extends CollectionTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->loadbalancers = $this->_createLoadbalancers();
+        $this->loadbalancers = $this->createLoadbalancers();
     }
 
     /**
@@ -77,7 +77,7 @@ class LoadbalancersTest extends CollectionTestCase
      *
      * @return Loadbalancers
      */
-    protected function _createLoadbalancers()
+    protected function createLoadbalancers()
     {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()

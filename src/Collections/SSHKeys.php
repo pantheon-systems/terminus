@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\SSHKey;
 
 /**
  * Class SSHKeys
@@ -13,12 +14,11 @@ class SSHKeys extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $url = 'users/{user_id}/keys';
-
+    protected $collected_class = SSHKey::class;
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SSHKey';
+    protected $url = 'users/{user_id}/keys';
 
     /**
      * Adds an SSH key to the user's Pantheon account

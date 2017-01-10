@@ -17,12 +17,22 @@ use Pantheon\Terminus\Models\Site;
  */
 class WorkflowsTest extends CollectionTestCase
 {
-
+    /**
+     * @inheritdoc
+     */
     public function setUp()
     {
         parent::setUp();
     }
 
+    /**
+     * Tests several workflow array-getting functions:
+     * allFinished
+     * allWithLogs
+     * findLatestWithLogs
+     * lastCreatedAt
+     * lastFinishedAt
+     */
     public function testAll()
     {
         $data = [
@@ -51,6 +61,43 @@ class WorkflowsTest extends CollectionTestCase
         $this->assertEquals($models[0], $workflows->findLatestWithLogs());
         $this->assertEquals($data[1]['created_at'], $workflows->lastCreatedAt());
         $this->assertEquals($data[1]['finished_at'], $workflows->lastFinishedAt());
+    }
+
+    /**
+     * Tests several workflow array-getting functions when returning nulls because no workflows fit the criteria:
+     * allFinished
+     * allWithLogs
+     * findLatestWithLogs
+     * lastCreatedAt
+     */
+    public function testAllIncompleteAndWithoutLogs()
+    {
+        $data = [
+            ['id' => 'a', 'has_operation_log_output' => false,],
+            ['id' => 'b', 'has_operation_log_output' => false,],
+            ['id' => 'c', 'has_operation_log_output' => false,],
+            ['id' => 'd', 'has_operation_log_output' => false,],
+        ];
+
+        $workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['all'])
+            ->getMock();
+
+        $models = [];
+        foreach ($data as $model_data) {
+            $models[] = new Workflow((object)$model_data, ['collection' => $workflows]);
+        }
+        $workflows->expects($this->any())
+            ->method('all')
+            ->willReturn($models);
+
+        $this->assertEquals($models, $workflows->all());
+        $this->assertEquals([], $workflows->allFinished());
+        $this->assertEquals([], $workflows->allWithLogs());
+        $this->assertNull($workflows->findLatestWithLogs());
+        $this->assertNull($workflows->lastCreatedAt());
+        $this->assertNull($workflows->lastFinishedAt());
     }
 
     public function testCreate()
@@ -99,38 +146,6 @@ class WorkflowsTest extends CollectionTestCase
         $workflows->create('test', ['params' => $params]);
     }
 
-    public function testGetOwnerObject()
-    {
-        $site = new Site((object)['id' => 'site_id']);
-        $environments = new Environments(['site' => $site]);
-        $env = new Environment((object)['id' => 'env_id'], ['collection' => $environments]);
-        $user = new User((object)['id' => 'user_id']);
-        $org = new Organization((object)['id' => 'org_id']);
-
-        $workflows = new Workflows(['environment' => $env]);
-        $this->assertEquals($env, $workflows->getOwnerObject());
-        $this->assertEquals('sites/site_id/environments/env_id/workflows', $workflows->getUrl());
-
-        $workflows = new Workflows(['site' => $site]);
-        $this->assertEquals($site, $workflows->getOwnerObject());
-        $this->assertEquals('sites/site_id/workflows', $workflows->getUrl());
-
-        $workflows = new Workflows(['user' => $user]);
-        $this->assertEquals($user, $workflows->getOwnerObject());
-        $this->assertEquals('users/user_id/workflows', $workflows->getUrl());
-
-        $session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $session->expects($this->once())
-            ->method('getUser')
-            ->willReturn($user);
-        $workflows = new Workflows(['organization' => $org]);
-        $workflows->setSession($session);
-        $this->assertEquals($org, $workflows->getOwnerObject());
-        $this->assertEquals('users/user_id/organizations/org_id/workflows', $workflows->getUrl());
-    }
-
     public function testFetchWithOperations()
     {
         $data = [
@@ -167,5 +182,51 @@ class WorkflowsTest extends CollectionTestCase
         $workflows->setRequest($this->request);
 
         $workflows->fetchWithOperations();
+    }
+
+    public function testGetOwnerObject()
+    {
+        $site = new Site((object)['id' => 'site_id']);
+        $environments = new Environments(['site' => $site]);
+        $env = new Environment((object)['id' => 'env_id'], ['collection' => $environments]);
+        $user = new User((object)['id' => 'user_id']);
+        $org = new Organization((object)['id' => 'org_id']);
+
+        $workflows = new Workflows(['environment' => $env]);
+        $this->assertEquals($env, $workflows->getOwnerObject());
+        $this->assertEquals('sites/site_id/environments/env_id/workflows', $workflows->getUrl());
+
+        $workflows = new Workflows(['site' => $site]);
+        $this->assertEquals($site, $workflows->getOwnerObject());
+        $this->assertEquals('sites/site_id/workflows', $workflows->getUrl());
+
+        $workflows = new Workflows(['user' => $user]);
+        $this->assertEquals($user, $workflows->getOwnerObject());
+        $this->assertEquals('users/user_id/workflows', $workflows->getUrl());
+
+        $session = $this->getMockBuilder(Session::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $session->expects($this->once())
+            ->method('getUser')
+            ->willReturn($user);
+        $workflows = new Workflows(['organization' => $org]);
+        $workflows->setSession($session);
+        $this->assertEquals($org, $workflows->getOwnerObject());
+        $this->assertEquals('users/user_id/organizations/org_id/workflows', $workflows->getUrl());
+    }
+
+    /**
+     * Tests Workflows::getUrl when the url property has a value
+     */
+    public function testGetUrl()
+    {
+        $site = new Site((object)['id' => 'site_id',]);
+        $environments = new Environments(['site' => $site,]);
+        $env = new Environment((object)['id' => 'env_id',], ['collection' => $environments,]);
+        $workflows = new Workflows(['environment' => $env,]);
+        $url1 = $workflows->getUrl(); // Assigns the value to the property
+        $url2 = $workflows->getUrl(); // Returns the already-assigned value of that property
+        $this->assertEquals($url1, $url2);
     }
 }

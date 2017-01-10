@@ -16,9 +16,18 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class BackupsTest extends CollectionTestCase
 {
-    protected $environment;
-    protected $backups;
+    /**
+     * @var object
+     */
     protected $backup_data;
+    /**
+     * @var Backups
+     */
+    protected $backups;
+    /**
+     * @var Environment
+     */
+    protected $environment;
 
     public function setUp()
     {
@@ -162,7 +171,7 @@ class BackupsTest extends CollectionTestCase
                 ],
         ];
 
-        $this->backups = $this->_createBackups();
+        $this->backups = $this->createBackups();
     }
 
     public function testCancelBackupSchedule()
@@ -178,7 +187,7 @@ class BackupsTest extends CollectionTestCase
 
     public function testCreate()
     {
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -196,7 +205,7 @@ class BackupsTest extends CollectionTestCase
         $actual = $backups->create();
         $this->assertEquals($this->workflow, $actual);
 
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -214,7 +223,7 @@ class BackupsTest extends CollectionTestCase
         $actual = $backups->create(['element' => 'code', 'keep-for' => 5]);
         $this->assertEquals($this->workflow, $actual);
 
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -232,7 +241,7 @@ class BackupsTest extends CollectionTestCase
         $actual = $backups->create(['element' => 'database', 'keep-for' => 5]);
         $this->assertEquals($this->workflow, $actual);
 
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -251,16 +260,30 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($this->workflow, $actual);
     }
 
+    /**
+     * Tests Fetch when the backups have IDs
+     */
     public function testFetch()
     {
-
-        $backups = $this->_createBackupsWithModels();
+        $backups = $this->createBackupsWithModels();
         $this->assertEquals($backups, $backups->fetch());
+    }
+
+    public function testFetchWithoutIDs()
+    {
+        $model_data = (object)[
+            '1471562180_backup_code' => (object)['filename' => 'behat-tests_dev_2016-08-18T23-16-20_UTC_code.tar.gz',],
+            '1471562156_backup_manifest' => (object)[]
+        ];
+
+        $backups = $this->createBackups();
+        $out = $backups->fetch(['data' => $model_data,]);
+        $this->assertEquals($out, $backups);
     }
 
     public function testGetBackupByFileName()
     {
-        $backups = $this->_createBackupsWithModels();
+        $backups = $this->createBackupsWithModels();
 
         $id = '1471562156_backup_code';
         $data = $this->backup_data->{$id};
@@ -277,7 +300,7 @@ class BackupsTest extends CollectionTestCase
 
     public function testGetBackupsByElement()
     {
-        $backups = $this->_createBackupsWithModels();
+        $backups = $this->createBackupsWithModels();
         $out = $backups->getBackupsByElement('code');
         $this->assertEquals(3, count($out));
         foreach ($out as $backup) {
@@ -336,7 +359,7 @@ class BackupsTest extends CollectionTestCase
                     'ttl' => 691200,
                 ]),
         ]);
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->request->expects($this->once())
             ->method('request')
             ->with('sites/abc/environments/dev/backups/schedule')
@@ -352,7 +375,7 @@ class BackupsTest extends CollectionTestCase
 
     public function testGetFinishedBackups()
     {
-        $backups = $this->_createBackupsWithModels();
+        $backups = $this->createBackupsWithModels();
 
         $out = $backups->getFinishedBackups();
         $this->assertEquals(4, count($out));
@@ -392,7 +415,7 @@ class BackupsTest extends CollectionTestCase
 
     public function testSetBackupSchedule()
     {
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -414,7 +437,7 @@ class BackupsTest extends CollectionTestCase
         $actual = $backups->setBackupSchedule(['day' => 'Sunday']);
         $this->assertEquals($this->workflow, $actual);
 
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -437,7 +460,7 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($this->workflow, $actual);
     }
 
-    protected function _createBackups()
+    protected function createBackups()
     {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -460,9 +483,9 @@ class BackupsTest extends CollectionTestCase
         return $backups;
     }
 
-    protected function _createBackupsWithModels()
+    protected function createBackupsWithModels()
     {
-        $backups = $this->_createBackups();
+        $backups = $this->createBackups();
         $this->request->expects($this->once())
             ->method('request')
             ->with(
