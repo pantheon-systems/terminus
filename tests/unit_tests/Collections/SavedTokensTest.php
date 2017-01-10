@@ -121,7 +121,7 @@ class SavedTokensTest extends CollectionTestCase
 
     public function testDeleteAll()
     {
-        $this->_makeTokensFetchable();
+        $this->makeTokensFetchable();
 
         $this->token->expects($this->once())
             ->method('delete')
@@ -136,7 +136,7 @@ class SavedTokensTest extends CollectionTestCase
      */
     public function testGetByID()
     {
-        $this->_makeTokensFetchable();
+        $this->makeTokensFetchable();
         $out = $this->collection->get(0);
         $this->assertEquals($out, $this->token);
     }
@@ -147,7 +147,7 @@ class SavedTokensTest extends CollectionTestCase
     public function testGetByToken()
     {
         $token = '111111111111111111111111111111111111111111111';
-        $this->_makeTokensFetchable();
+        $this->makeTokensFetchable();
 
         $this->token->expects($this->once())
             ->method('get')
@@ -164,7 +164,7 @@ class SavedTokensTest extends CollectionTestCase
     public function testGetDNE()
     {
         $token_name = 'invalid';
-        $this->_makeTokensFetchable();
+        $this->makeTokensFetchable();
 
         $this->setExpectedException(
             TerminusException::class,
@@ -175,7 +175,7 @@ class SavedTokensTest extends CollectionTestCase
         $this->assertNull($out);
     }
 
-    protected function _makeTokensFetchable()
+    protected function makeTokensFetchable()
     {
         $email = 'some@email.ext';
         $token = '111111111111111111111111111111111111111111111';

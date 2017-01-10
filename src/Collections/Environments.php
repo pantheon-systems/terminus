@@ -10,17 +10,14 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
-
     /**
      * @var string
      */
     protected $collected_class = 'Pantheon\Terminus\Models\Environment';
-
     /**
      * @var string
      */
     protected $url = 'sites/{site_id}/environments';
-
 
     /**
      * Creates a multidev environment
@@ -60,7 +57,7 @@ class Environments extends SiteOwnedCollection
         $ids = array_keys($this->getMembers());
 
         //Reorder environments to put dev/test/live first
-        $default_ids = array('dev', 'test', 'live');
+        $default_ids = ['dev', 'test', 'live'];
         $multidev_ids = array_diff($ids, $default_ids);
         $ids = array_merge($default_ids, $multidev_ids);
 
@@ -77,8 +74,7 @@ class Environments extends SiteOwnedCollection
         $environments = array_filter(
             $this->getMembers(),
             function ($environment) {
-                $is_multidev = $environment->isMultidev();
-                return $is_multidev;
+                return $environment->isMultidev();
             }
         );
         return $environments;

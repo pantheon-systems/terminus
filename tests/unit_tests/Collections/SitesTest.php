@@ -121,14 +121,14 @@ class SitesTest extends CollectionTestCase
 
     public function testFetch()
     {
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
         $out = $this->collection->fetch();
         $this->assertEquals($this->collection, $out);
     }
 
     public function testFilterByName()
     {
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
 
         $this->site1->expects($this->once())
             ->method('get')
@@ -149,7 +149,7 @@ class SitesTest extends CollectionTestCase
 
     public function testFilterByOwner()
     {
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
 
         $this->site1->expects($this->once())
             ->method('get')
@@ -170,7 +170,7 @@ class SitesTest extends CollectionTestCase
 
     public function testFilterByTag()
     {
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
         $tag = 'this tag';
 
         $this->site1->tags = $this->getMockBuilder(Tags::class)
@@ -303,7 +303,7 @@ class SitesTest extends CollectionTestCase
     public function testGetFetchedByUUID()
     {
         $uuid = '11111111-1111-1111-1111-111111111111';
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
         $this->collection->fetch();
         $out = $this->collection->get($uuid);
         $this->assertEquals($out, $this->site1);
@@ -314,7 +314,7 @@ class SitesTest extends CollectionTestCase
      */
     public function testGetFetchedByName()
     {
-        $this->collection = $this->_makeSitesFetchable($this->collection);
+        $this->collection = $this->makeSitesFetchable($this->collection);
 
         $this->site1->expects($this->at(0))
             ->method('get')
@@ -399,7 +399,7 @@ class SitesTest extends CollectionTestCase
      * @param Sites $sites Sites object to make fetchable
      * @return Sites
      */
-    protected function _makeSitesFetchable(Sites $sites)
+    protected function makeSitesFetchable(Sites $sites)
     {
         $this->site1 = $this->getMockBuilder(Site::class)
             ->enableOriginalConstructor()

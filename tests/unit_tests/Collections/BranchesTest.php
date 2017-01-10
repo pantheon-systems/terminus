@@ -59,13 +59,13 @@ class BranchesTest extends CollectionTestCase
     {
         $this->collection->expects($this->never())
             ->method('getCollectionData');
-        $this->_expectAdditions();
+        $this->expectAdditions();
 
         $out = $this->collection->fetch(['data' => $this->collection_data,]);
         $this->assertEquals($out, $this->collection);
     }
 
-    protected function _expectAdditions()
+    protected function expectAdditions()
     {
         $counter = 0;
         foreach ($this->collection_data as $id => $sha) {

@@ -25,7 +25,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
     {
         parent::setUp();
 
-        $this->collection = $this->_createPaymentMethods();
+        $this->collection = $this->createPaymentMethods();
     }
 
     public function testGetByID()
@@ -67,7 +67,7 @@ class PaymentMethodsTest extends UserOwnedCollectionTest
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function _createPaymentMethods()
+    protected function createPaymentMethods()
     {
         $model_data = [
             'a' => (object)[
