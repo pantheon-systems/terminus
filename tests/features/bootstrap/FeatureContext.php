@@ -32,7 +32,11 @@ class FeatureContext implements Context
         $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
         $this->parameters      = $parameters;
         $this->start_time      = time();
-        $this->connection_info = ['host' => $parameters['host'], 'machine_token' => $parameters['machine_token'],];
+        $this->connection_info = [
+          'host' => $parameters['host'],
+          'machine_token' => $parameters['machine_token'],
+          'verify_host_cert' => $parameters['verify_host_cert']
+        ];
 
         $this->cache_dir = $parameters['cache_dir'];
         $this->cache_token_dir = $this->cache_dir . "/tokens";
@@ -579,6 +583,10 @@ class FeatureContext implements Context
 
         if (isset($this->connection_info['host'])) {
             $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
+        }
+        if (isset($this->connection_info['verify_host_cert'])) {
+            $verify = $this->connection_info['verify_host_cert'] ? '1' : '0';
+            $command = "TERMINUS_VERIFY_HOST_CERT=$verify $command";
         }
         if (isset($this->cassette_name)) {
             $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";

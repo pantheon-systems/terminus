@@ -4,6 +4,8 @@ namespace Pantheon\Terminus;
 
 use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerInterface;
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
@@ -201,6 +203,8 @@ class Terminus implements ConfigAwareInterface
     private function configureContainer(ContainerInterface $container)
     {
         // Add the services.
+        $container->add(Client::class);
+        $container->add(HttpRequest::class);
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
