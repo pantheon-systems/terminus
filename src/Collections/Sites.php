@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -17,7 +18,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Site';
+    protected $collected_class = Site::class;
 
     /**
      * Creates a new site

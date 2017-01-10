@@ -15,12 +15,10 @@ class Bindings extends EnvironmentOwnedCollection
      * @var Environment
      */
     public $environment;
-
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Binding';
-
+    protected $collected_class = Binding::class;
     /**
      * @var string
      */

@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -25,7 +26,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\TerminusModel';
+    protected $collected_class = TerminusModel::class;
     /**
      * @var TerminusModel[]
      */
@@ -34,7 +35,6 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      * @var boolean
      */
     protected $paged = false;
-
     /**
      * @var string
      */

@@ -2,18 +2,18 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Commit;
+
 /**
  * Class Commits
  * @package Pantheon\Terminus\Collections
  */
 class Commits extends EnvironmentOwnedCollection
 {
-
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Commit';
-
+    protected $collected_class = Commit::class;
     /**
      * @var string
      */

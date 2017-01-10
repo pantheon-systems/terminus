@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\PaymentMethod;
 
 /**
  * Class PaymentMethods
@@ -14,12 +15,11 @@ class PaymentMethods extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $url = 'users/{user_id}/instruments';
-
+    protected $collected_class = PaymentMethod::class;
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\PaymentMethod';
+    protected $url = 'users/{user_id}/instruments';
 
     /**
      * Retrieves a payment method object by either its UUID or its label

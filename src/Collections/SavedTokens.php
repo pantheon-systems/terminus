@@ -21,7 +21,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SavedToken';
+    protected $collected_class = SavedToken::class;
 
     /**
      * Adds a model to this collection

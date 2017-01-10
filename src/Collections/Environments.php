@@ -13,7 +13,7 @@ class Environments extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Environment';
+    protected $collected_class = Environment::class;
     /**
      * @var string
      */
