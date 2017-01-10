@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
+use Pantheon\Terminus\Collections\UserOwnedCollection;
 use Pantheon\Terminus\Models\User;
 
 /**
@@ -10,8 +11,14 @@ use Pantheon\Terminus\Models\User;
  */
 class UserOwnedCollectionTest extends CollectionTestCase
 {
+    /**
+     * @var string
+     */
+    protected $class = UserOwnedCollection::class;
+    /**
+     * @var null|string
+     */
     protected $url = null;
-    protected $class = 'Pantheon\Terminus\Collections\UserOwnedCollection';
 
     protected $collection;
 
