@@ -82,9 +82,6 @@ class OrganizationSiteMemberships extends TerminusCollection
      */
     public function getOrganization()
     {
-        if (empty($this->organization)) {
-            $this->organization = $this->getContainer()->get(Organization::class, [$this->get('organization')]);
-        }
         return $this->organization;
     }
 
