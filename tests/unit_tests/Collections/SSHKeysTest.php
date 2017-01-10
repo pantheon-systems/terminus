@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
+use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Models\SSHKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
@@ -12,8 +13,14 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class SSHKeysTest extends UserOwnedCollectionTest
 {
+    /**
+     * @var string
+     */
+    protected $class = SSHKeys::class;
+    /**
+     * @var string
+     */
     protected $url = 'users/USERID/keys';
-    protected $class = 'Pantheon\Terminus\Collections\SSHKeys';
 
     public function testAddKey()
     {

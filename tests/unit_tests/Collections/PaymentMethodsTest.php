@@ -15,7 +15,13 @@ use Pantheon\Terminus\Models\User;
  */
 class PaymentMethodsTest extends UserOwnedCollectionTest
 {
-    protected $class = 'Pantheon\Terminus\Collections\PaymentMethods';
+    /**
+     * @var string
+     */
+    protected $class = PaymentMethods::class;
+    /**
+     * @var string
+     */
     protected $url = 'users/USERID/instruments';
 
     /**

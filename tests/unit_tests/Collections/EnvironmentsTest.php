@@ -102,19 +102,6 @@ class EnvironmentsTest extends CollectionTestCase
         $this->assertEquals($out, ['dev', 'test', 'live', 'multidev', 'new_version', 'multidev2',]);
     }
 
-    /**
-    public function testMultidev()
-    {
-        $this->makeEnvironmentsFetchable();
-        $out = $this->collection->multidev();
-        $this->assertEquals(print_r($out, true), 'nope');
-        foreach ($out as $env) {
-            $this->assertInstanceOf(Environment::class, $out);
-            $this->assertFalse(in_array($env->id, ['dev', 'test', 'live',]));
-        }
-    }
-    */
-
     protected function makeEnvironmentsFetchable()
     {
         $envs = [

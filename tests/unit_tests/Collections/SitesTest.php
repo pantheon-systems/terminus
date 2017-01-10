@@ -126,6 +126,13 @@ class SitesTest extends CollectionTestCase
         $this->assertEquals($this->collection, $out);
     }
 
+    public function testFetchOrgOnly()
+    {
+        $this->collection = $this->makeSitesFetchable($this->collection);
+        $out = $this->collection->fetch(['org_id' => 'orgmembership',]);
+        $this->assertEquals($this->collection, $out);
+    }
+
     public function testFilterByName()
     {
         $this->collection = $this->makeSitesFetchable($this->collection);
@@ -427,7 +434,7 @@ class SitesTest extends CollectionTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->user->expects($this->once())
+        $this->user->expects($this->any())
             ->method('getSites')
             ->with()
             ->willReturn([$this->site1, $this->site2,]);
@@ -443,15 +450,15 @@ class SitesTest extends CollectionTestCase
             ->method('all')
             ->with()
             ->willReturn([$org_membership,]);
-        $org_membership->expects($this->once())
+        $org_membership->expects($this->any())
             ->method('get')
             ->with($this->equalTo('role'))
             ->willReturn('admin');
-        $org_membership->expects($this->once())
+        $org_membership->expects($this->any())
             ->method('getOrganization')
             ->with()
             ->willReturn($org);
-        $org->expects($this->once())
+        $org->expects($this->any())
             ->method('getSites')
             ->with()
             ->willReturn([$this->site1,]);
