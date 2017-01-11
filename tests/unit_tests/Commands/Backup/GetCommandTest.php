@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\GetCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Request\Request;
 
 /**
  * Class GetCommandTest
@@ -107,6 +108,37 @@ class GetCommandTest extends BackupCommandTest
         );
 
         $out = $this->command->getBackup("$site.{$this->environment->id}", compact('element'));
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the backup:get command when saving the backup to a file
+     */
+    public function testGetBackupToFile()
+    {
+        $test_filename = 'test.tar.gz';
+        $test_download_url = 'http://download';
+        $test_save_path = '/tmp/file.tar.gz';
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->backups->expects($this->once())
+            ->method('getBackupByFileName')
+            ->with($test_filename)
+            ->willReturn($this->backup);
+        $this->backup->expects($this->once())
+            ->method('getUrl')
+            ->willReturn($test_download_url);
+        $request->expects($this->once())
+            ->method('download')
+            ->with(
+                $this->equalTo($test_download_url),
+                $this->equalTo($test_save_path)
+            );
+
+        $this->command->setRequest($request);
+        $out = $this->command->getBackup('mysite.dev', ['file' => $test_filename, 'to' => $test_save_path,]);
         $this->assertNull($out);
     }
 }

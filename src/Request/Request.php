@@ -7,13 +7,14 @@ use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Request
@@ -27,33 +28,32 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  *
  * @package Pantheon\Terminus\Request
  */
-class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwareInterface, ContainerAwareInterface
+class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface, SessionAwareInterface
 {
-    use LoggerAwareTrait;
     use ConfigAwareTrait;
-    use SessionAwareTrait;
     use ContainerAwareTrait;
+    use LoggerAwareTrait;
+    use SessionAwareTrait;
 
     /**
      * Download file from target URL
      *
      * @param string $url URL to download from
      * @param string $target Target file's name
-     * @return bool True if download succeeded
      * @throws TerminusException
      */
-    public static function download($url, $target)
+    public function download($url, $target)
     {
-        if (file_exists($target)) {
-            throw new TerminusException(
-                'Target file {target} already exists.',
-                compact('target')
-            );
+        if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
+            throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
 
-        $client = new Client();
+        $parsed_url = parse_url($url);
+        $client = $this->getContainer()->get(Client::class, [[
+            'base_uri' => $parsed_url['host'],
+            RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
+        ],]);
         $client->request('GET', $url, ['sink' => $target,]);
-        return true;
     }
 
     /**
