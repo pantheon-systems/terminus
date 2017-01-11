@@ -17,7 +17,7 @@ class SearchCommand extends PluginBaseCommand
      * @command plugin:search
      * @aliases plugin:find plugin:locate
      *
-     * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search pantheon.
+     * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search "Terminus plugin".
      *
      * @return List of search results
      */
@@ -28,17 +28,16 @@ class SearchCommand extends PluginBaseCommand
             throw new TerminusNotFoundException($message);
         }
 
-        if ($this->commandExists('composer')) {
-            // @TODO: Limit the search to include only Packagist projects with version 1.x plugins.
-            exec("composer search -t terminus-plugin {$keyword}", $messages);
-            foreach ($messages as $message) {
-                if (stripos($message, 'terminus') !== false && stripos($message, 'plugin') !== false) {
-                    $this->log()->notice($message);
-                }
+        // @TODO: Limit the search to include only Packagist projects with versions
+        //        compatible with the currently installed Terminus version.
+
+        // @TODO: Bonus: Add the ability to search and prompt to install new plugins.
+
+        exec("composer search -t terminus-plugin {$keyword}", $messages);
+        foreach ($messages as $message) {
+            if (stripos($message, 'terminus') !== false && stripos($message, 'plugin') !== false) {
+                $this->log()->notice($message);
             }
-        } else {
-            $message = "In order to search for Packagist projects, you need to install Composer.";
-            $this->log()->notice($message);
         }
     }
 }
