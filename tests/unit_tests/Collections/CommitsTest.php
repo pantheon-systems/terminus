@@ -12,7 +12,6 @@ use Pantheon\Terminus\Models\Environment;
  */
 class CommitsTest extends CollectionTestCase
 {
-
     public function testGetURL()
     {
         $this->environment = $this->getMockBuilder(Environment::class)

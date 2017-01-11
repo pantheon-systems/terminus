@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Upstream;
 
 /**
  * Class Upstreams
@@ -13,7 +14,7 @@ class Upstreams extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Upstream';
+    protected $collected_class = Upstream::class;
     /**
      * @var string
      */

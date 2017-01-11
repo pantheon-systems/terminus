@@ -16,17 +16,15 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SiteOrganizationMembership';
-
-    /**
-     * @var string
-     */
-    protected $url = 'sites/{site_id}/memberships/organizations';
-
+    protected $collected_class = SiteOrganizationMembership::class;
     /**
      * @var boolean
      */
     protected $paged = true;
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/memberships/organizations';
 
     /**
      * Adds this org as a member to the site
@@ -90,7 +88,7 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
         if (isset($models[$id])) {
             return $models[$id];
         } else {
-            foreach ($models as $key => $membership) {
+            foreach ($models as $membership) {
                 if (in_array($id, [$membership->getOrganization()->id, $membership->getOrganization()->getName()])) {
                     return $membership;
                 }

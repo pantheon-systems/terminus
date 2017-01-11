@@ -14,18 +14,43 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class DomainsTest extends CollectionTestCase
 {
+    /**
+     * @var Domains
+     */
     protected $domains;
+    /**
+     * @var Environment
+     */
     protected $environment;
+    /**
+     * @var Workflows
+     */
     protected $workflows;
 
     public function setUp()
     {
         parent::setUp();
-
-        $this->domains = $this->_createDomains();
+        $this->domains = $this->createDomains();
     }
 
-    protected function _createDomains()
+    public function testCreate()
+    {
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'put']);
+
+        $this->domains->create('dev.example.com');
+    }
+
+    public function testSetHydration()
+    {
+        $this->domains->setHydration('test');
+        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=test', $this->domains->getUrl());
+        $this->domains->setHydration('');
+        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->domains->getUrl());
+    }
+
+    protected function createDomains()
     {
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -46,22 +71,5 @@ class DomainsTest extends CollectionTestCase
         $domains->setRequest($this->request);
         $domains->setContainer($this->container);
         return $domains;
-    }
-
-    public function testCreate()
-    {
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'put']);
-
-        $this->domains->create('dev.example.com');
-    }
-
-    public function testSetHydration()
-    {
-        $this->domains->setHydration('test');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=test', $this->domains->getUrl());
-        $this->domains->setHydration('');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->domains->getUrl());
     }
 }

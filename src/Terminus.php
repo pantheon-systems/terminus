@@ -4,6 +4,8 @@ namespace Pantheon\Terminus;
 
 use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerInterface;
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
@@ -112,7 +114,7 @@ class Terminus implements ConfigAwareInterface
 
         $this->configureContainer($container);
 
-        $this->addBuiltInCommandsAndHooks($container);
+        $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks($container);
 
         $this->runner = new RoboRunner();
@@ -183,10 +185,8 @@ class Terminus implements ConfigAwareInterface
 
     /**
      * Add the commands and hooks which are shipped with core Terminus
-     *
-     * @param $container
      */
-    private function addBuiltInCommandsAndHooks($container)
+    private function addBuiltInCommandsAndHooks()
     {
         // Add the built in commands.
         $commands_directory = __DIR__ . '/Commands';
@@ -203,6 +203,8 @@ class Terminus implements ConfigAwareInterface
     private function configureContainer(ContainerInterface $container)
     {
         // Add the services.
+        $container->add(Client::class);
+        $container->add(HttpRequest::class);
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);

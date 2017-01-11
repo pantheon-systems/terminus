@@ -3,9 +3,10 @@
 namespace Pantheon\Terminus\Request;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Psr\Log\LoggerAwareInterface;
@@ -26,11 +27,12 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  *
  * @package Pantheon\Terminus\Request
  */
-class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwareInterface
+class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwareInterface, ContainerAwareInterface
 {
     use LoggerAwareTrait;
     use ConfigAwareTrait;
     use SessionAwareTrait;
+    use ContainerAwareTrait;
 
     /**
      * Download file from target URL
@@ -50,7 +52,7 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
         }
 
         $client = new Client();
-        $response = $client->request('GET', $url, ['sink' => $target,]);
+        $client->request('GET', $url, ['sink' => $target,]);
         return true;
     }
 
@@ -59,10 +61,8 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
      *
      * @param string $path API path (URL)
      * @param array $options Options for the request
-     *   [string] method GET is default
-     *   [mixed]  data   Native PHP data structure (e.g. int, string array, or
-     *     simple object) to be sent along with the request. Will be encoded as
-     *     JSON for you.
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
      * @return array
      */
     public function pagedRequest($path, array $options = [])
@@ -107,124 +107,82 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
             }
         }
 
-        $return = ['data' => array_values($results),];
-        return $return;
+        return ['data' => array_values($results),];
     }
 
     /**
      * Simplified request method for Pantheon API
      *
      * @param string $path API path (URL)
-     * @param array $arg_options Options for the request
-     *   [string] method        GET is default
-     *   [mixed]  data          Native PHP data structure (e.g. int, string
-     *     array, or simple object) to be sent along with the request. Will
-     *     be encoded as JSON for you.
-     *   [boolean] absolute_url True if URL passed is to be treated as absolute
+     * @param array $options Options for the request
+     *   string method      GET is default
+     *   array form_params  Fed into the body of the request
      * @return array
-     * @throws TerminusException
      */
-    public function request($path, $arg_options = [])
+    public function request($path, array $options = [])
     {
-        $default_options = [
-            'method' => 'get',
-            'absolute_url' => false,
-        ];
-        $options = array_merge($default_options, $arg_options);
-
-        $url = $path;
-        if ((strpos($path, 'http') !== 0) && !$options['absolute_url']) {
-            $url = sprintf(
-                '%s://%s:%s/api/%s',
-                $this->getConfig()->get('protocol'),
-                $this->getConfig()->get('host'),
-                $this->getConfig()->get('port'),
-                $path
-            );
-        }
-
-        $response = $this->send($url, $options['method'], $options);
-
+        $response = $this->send($path, $options);
         $data = [
             'data' => json_decode($response->getBody()->getContents()),
             'headers' => $response->getHeaders(),
             'status_code' => $response->getStatusCode(),
         ];
+        $this->logger->debug("#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}", $data);
         return $data;
     }
 
     /**
      * Sends a request to the API
      *
-     * @param string $uri URL for API request
-     * @param string $method Request method (i.e. PUT, POST, DELETE, or GET)
-     * @param array $arg_params Request parameters
+     * @param string $path API path (URL)
+     * @param array $arg_options Request parameters
      * @return \Psr\Http\Message\ResponseInterface
      */
-    private function send($uri, $method, array $arg_params = [])
+    private function send($path, array $options = [])
     {
-        $host = $this->getConfig()->get('host');
-        $extra_params = [
-            'headers' => [
-                'User-Agent' => $this->userAgent(),
-                'Content-type' => 'application/json',
-            ],
-            RequestOptions::VERIFY => (strpos($host, 'onebox') === false),
-        ];
-
-        if ((!isset($arg_params['absolute_url']) || !$arg_params['absolute_url'])
-            && $session = $this->session()->get('session', false)
-        ) {
-            $extra_params['headers']['Authorization'] = "Bearer $session";
+        // Set headers
+        $headers = $this->getDefaultHeaders();
+        if (isset($options['headers'])) {
+            $headers = array_merge($headers, $options['headers']);
         }
-        $params = array_merge_recursive($extra_params, $arg_params);
-        if (isset($params['form_params'])) {
-            $params['json'] = $params['form_params'];
-            unset($params['form_params']);
-        }
-        $params[RequestOptions::VERIFY] = (strpos($host, 'onebox') === false);
 
-        $client = new Client(
-            [
-                'base_uri' => $this->getBaseUri(),
-                'cookies' => $this->fillCookieJar($params),
-            ]
-        );
-        unset($params['cookies']);
+        $base_uri = $this->getBaseURI();
+
+        if (strpos($path, '://') === false) {
+            $uri = "$base_uri/api/$path";
+            if ($session = $this->session()->get('session', false)) {
+                $headers['Authorization'] = "Bearer $session";
+            }
+        } else {
+            $uri = $path;
+        }
+
+        $body = isset($options['form_params']) ? json_encode($options['form_params']) : null;
+
+        $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
+
+        $client = $this->getContainer()->get(Client::class, [[
+            'base_uri' => $base_uri,
+            RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
+        ]]);
 
         $this->logger->debug(
-            "#### REQUEST ####\nParams: {params}\nURI: {uri}\nMethod: {method}",
+            "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}",
             [
-                'params' => json_encode($params),
+                'headers' => json_encode($headers),
                 'uri' => $uri,
                 'method' => $method,
+                'body' => $body,
             ]
         );
 
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = new HttpRequest(ucwords($method), $uri, $params);
+        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body]);
         error_reporting(E_ALL);
-        $response = $client->send($request, $params);
+        $response = $client->send($request);
 
         return $response;
-    }
-
-    /**
-     * Sets up and fills a cookie jar
-     *
-     * @param array $params Request data to fill jar with
-     * @return \GuzzleHttp\Cookie\CookieJar $jar
-     */
-    private function fillCookieJar(array $params)
-    {
-        $jar = new CookieJar();
-        $cookies = [];
-        if (isset($params['cookies'])) {
-            $cookies = array_merge($cookies, $params['cookies']);
-        }
-        $jar->fromArray($cookies, '');
-        return $jar;
     }
 
     /**
@@ -232,15 +190,27 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
      *
      * @return string
      */
-    private function getBaseUri()
+    private function getBaseURI()
     {
-        $base_uri = sprintf(
+        return sprintf(
             '%s://%s:%s',
             $this->getConfig()->get('protocol'),
             $this->getConfig()->get('host'),
             $this->getConfig()->get('port')
         );
-        return $base_uri;
+    }
+
+    /**
+     * Gives the default headers for requests
+     *
+     * @return array
+     */
+    private function getDefaultHeaders()
+    {
+        return [
+            'User-Agent' => $this->userAgent(),
+            'Content-type' => 'application/json',
+        ];
     }
 
     /**
@@ -250,12 +220,11 @@ class Request implements ConfigAwareInterface, SessionAwareInterface, LoggerAwar
      */
     private function userAgent()
     {
-        $agent = sprintf(
+        return sprintf(
             'Terminus/%s (php_version=%s&script=%s)',
             $this->getConfig()->get('version'),
-            phpversion(),
+            $this->getConfig()->get('php_version'),
             $this->getConfig()->get('script')
         );
-        return $agent;
     }
 }

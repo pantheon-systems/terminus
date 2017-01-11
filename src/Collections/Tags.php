@@ -18,7 +18,7 @@ class Tags extends TerminusCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Tag';
+    protected $collected_class = Tag::class;
 
     /**
      * @inheritdoc
