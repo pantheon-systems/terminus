@@ -242,6 +242,59 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->makeRequest($client_options, $request_options, 'foo/bar');
     }
 
+    public function testPagedRequest()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $headers = [
+            'Content-type' => 'application/json',
+            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)',
+        ];
+        $body = '';
+        $request_options = [$method, $uri, $headers, $body];
+
+        $expected_options = $request_options;
+        $expected_options[1] .= '?limit=' . Request::PAGED_REQUEST_ENTRY_LIMIT;
+
+        $this->container->expects($this->at(0))
+            ->method('get')
+            ->with(Client::class, [$client_options])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options)
+            ->willReturn($this->http_request);
+
+        $message = $this->getMock(Response::class);
+        $body = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $body->method('getContents')->willReturn(json_encode(['abc' => (object)['id' => 'abc123',],]));
+        $message->expects($this->once())
+            ->method('getBody')
+            ->willReturn($body);
+        $message->expects($this->once())
+            ->method('getHeaders')
+            ->willReturn(['Content-type' => 'application/json']);
+        $message->expects($this->once())
+            ->method('getStatusCode')
+            ->willReturn(200);
+        $this->client->expects($this->once())
+            ->method('send')
+            ->with($this->http_request)
+            ->willReturn($message);
+
+        $actual = $this->request->pagedRequest($uri, $request_options);
+        $expected = [
+            'data' => [(object)['id' => 'abc123',],],
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
     private function makeRequest($client_options, $request_options, $url, $options = [])
     {
         $this->container->expects($this->at(0))

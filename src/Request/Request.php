@@ -35,6 +35,8 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     use LoggerAwareTrait;
     use SessionAwareTrait;
 
+    const PAGED_REQUEST_ENTRY_LIMIT = 100;
+
     /**
      * Download file from target URL
      *
@@ -63,14 +65,12 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      * @param array $options Options for the request
      *   string method      GET is default
      *   array form_params  Fed into the body of the request
+     *   integer limit      Max number of entries to return
      * @return array
      */
     public function pagedRequest($path, array $options = [])
     {
-        $limit = 100;
-        if (isset($options['limit'])) {
-            $limit = $options['limit'];
-        }
+        $limit = isset($options['limit']) ? $options['limit'] : self::PAGED_REQUEST_ENTRY_LIMIT;
 
         //$results is an associative array so we don't refetch
         $results = [];

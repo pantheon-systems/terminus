@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 ### Added
-- Added `--to=` option to `backup:get` to allow specifying of a local download location. (#15XX)
+- Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
 
 ## 1.0.0-beta.2 - 2017-01-10
 ### Fixed
