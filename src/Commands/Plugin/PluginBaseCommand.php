@@ -17,6 +17,28 @@ use Symfony\Component\Finder\Finder;
 abstract class PluginBaseCommand extends TerminusCommand
 {
     /**
+     * PluginBaseCommand constructor.
+     */
+    public function __construct()
+    {
+         // Check for minimum plugin command requirements.
+         $windows = (php_uname('s') == 'Windows NT');
+         $test_command = $windows ? 'where' : 'command -v';
+         $file = popen("$test_command git", 'r');
+         $result = fgets($file, 255);
+         $valid = $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
+         if (!$valid) {
+            die("Please install the git command to enable plugin management.\n");
+         }
+         $file = popen("$test_command composer", 'r');
+         $result = fgets($file, 255);
+         $valid = $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
+         if (!$valid) {
+            die("Please install the composer command to enable plugin management.  See https://getcomposer.org/download/.\n");
+        }
+    }
+
+    /**
      * Get plugin projects.
      *
      * @param string $plugins_dir Plugins directory
@@ -52,7 +74,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         $plugins_dir = getenv('TERMINUS_PLUGINS_DIR');
         $windows = (php_uname('s') == 'Windows NT');
         if (!$plugins_dir) {
-            // Determine the correct $plugins_dir based on the operating system
+            // Determine the correct $plugins_dir based on the operating system.
             $home = getenv('HOME');
             if ($windows) {
                 $system = '';
@@ -68,13 +90,13 @@ abstract class PluginBaseCommand extends TerminusCommand
                 $plugins_dir = $home . '/.terminus/plugins/';
             }
         } else {
-            // Make sure the proper trailing slash(es) exist
+            // Make sure the proper trailing slash(es) exist.
             $chars = $windows ? 2 : 1;
             if (substr("$plugins_dir", -$chars) != $slash) {
                 $plugins_dir .= $slash;
             }
         }
-        // Create the directory if it doesn't already exist
+        // Create the directory if it doesn't already exist.
         if (!is_dir("$plugins_dir")) {
             mkdir("$plugins_dir", 0755, true);
         }
@@ -92,14 +114,11 @@ abstract class PluginBaseCommand extends TerminusCommand
         $slash = $this->getSlash();
         $plugin_dir = $this->getPluginDir($plugin);
         $git_dir = $plugin_dir . $slash . '.git';
-        if (is_dir("$git_dir") && $this->commandExists('git')) {
+        if (is_dir("$git_dir")) {
             return 'git';
         }
         $composer_json = $plugin_dir . $slash . 'composer.json';
-        if (file_exists($composer_json)) {
-            return $this->commandExists('composer') ? 'composer' : 'archive';
-        }
-        return 'unknown';
+        return file_exists($composer_json) ? 'composer' : 'unknown';
     }
 
     /**
@@ -157,9 +176,8 @@ abstract class PluginBaseCommand extends TerminusCommand
                 }
                 break;
 
-            case 'archive':
             default:
-                $messages[] = "Unable to update.  Plugin is not a Composer project or Git repository.";
+                $messages[] = "Unable to update.  Plugin is not a valid Packagist project.";
         }
         foreach ($messages as $message) {
             $this->log()->notice($message);
@@ -202,41 +220,6 @@ abstract class PluginBaseCommand extends TerminusCommand
             $version = !empty($branch) ? array_pop($branch) : 'unknown';
         }
         return $version;
-    }
-
-    /**
-     * Check whether a Git repository is valid.
-     *
-     * @param string $repository Repository URL
-     * @param string $plugin Plugin name
-     * @return string Plugin title, if found, otherwise, empty string
-     */
-    protected function isValidGitRepository($repository, $plugin)
-    {
-        // Make sure the URL is valid.
-        $is_url = (filter_var($repository, FILTER_VALIDATE_URL) !== false);
-        if (!$is_url) {
-            return '';
-        }
-        // Make sure a subpath exists.
-        $parts = parse_url($repository);
-        if (!isset($parts['path']) || ($parts['path'] == '/')) {
-            return '';
-        }
-        // Search for a plugin title.
-        $plugin_data = @file_get_contents($repository . '/' . $plugin);
-        if (!empty($plugin_data)) {
-            preg_match('|<title>(.*)</title>|', $plugin_data, $match);
-            if (isset($match[1])) {
-                $title = $match[1];
-                if (stripos($title, 'terminus') !== false && stripos($title, 'plugin') !== false) {
-                    return $title;
-                }
-                return '';
-            }
-            return '';
-        }
-        return '';
     }
 
     /**
@@ -299,23 +282,6 @@ abstract class PluginBaseCommand extends TerminusCommand
             return (array)json_decode($composer_data);
         }
         return array();
-    }
-
-    /**
-     * Platform independent check whether a command exists.
-     *
-     * @param string $command Command to check
-     * @return bool True if exists, false otherwise
-     */
-    protected function commandExists($command)
-    {
-        // @TODO: This could be a generic utility function used by other commands.
-
-        $windows = (php_uname('s') == 'Windows NT');
-        $test_command = $windows ? 'where' : 'command -v';
-        $file = popen("$test_command $command", 'r');
-        $result = fgets($file, 255);
-        return $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
     }
 
     /**
