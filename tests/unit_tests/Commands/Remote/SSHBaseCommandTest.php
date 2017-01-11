@@ -32,7 +32,6 @@ class SSHBaseCommandTest extends CommandTestCase
     {
         $dummy_output = 'dummy output';
         $options = ['arg1', 'arg2',];
-        $framework_name = 'framework-a';
         $site_name = 'site name';
         $mode = 'sftp';
         $command = 'dummy ' . implode(' ', $options);
@@ -44,11 +43,10 @@ class SSHBaseCommandTest extends CommandTestCase
             ->willReturn($mode);
         $this->site->expects($this->any())->method('get')
             ->withConsecutive(
-                [$this->equalTo('framework'),],
                 [$this->equalTo('name'),],
                 [$this->equalTo('name'),]
             )
-            ->willReturnOnConsecutiveCalls($framework_name, $site_name, $site_name);
+            ->willReturnOnConsecutiveCalls($site_name, $site_name);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -77,7 +75,6 @@ class SSHBaseCommandTest extends CommandTestCase
     {
         $dummy_output = 'dummy output';
         $options = ['arg1', 'arg2',];
-        $framework_name = 'framework-a';
         $site_name = 'site name';
         $mode = 'sftp';
         $status_code = 1;
@@ -90,11 +87,10 @@ class SSHBaseCommandTest extends CommandTestCase
             ->willReturn($mode);
         $this->site->expects($this->any())->method('get')
             ->withConsecutive(
-                [$this->equalTo('framework'),],
                 [$this->equalTo('name'),],
                 [$this->equalTo('name'),]
             )
-            ->willReturnOnConsecutiveCalls($framework_name, $site_name, $site_name);
+            ->willReturnOnConsecutiveCalls($site_name, $site_name);
         $this->environment->expects($this->once())
             ->method('sendCommandViaSsh')
             ->with($this->equalTo($command))
@@ -119,47 +115,12 @@ class SSHBaseCommandTest extends CommandTestCase
     }
 
     /**
-     * Tests command execution when attempting to execute with an invalid framework
-     */
-    public function testExecuteCommandInvalidFramework()
-    {
-        $options = ['arg1', 'arg2',];
-        $framework_name = 'framework';
-        $site_name = 'site name';
-        $mode = 'sftp';
-
-        $this->environment->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('connection_mode'))
-            ->willReturn($mode);
-        $this->site->expects($this->any())->method('get')
-            ->withConsecutive(
-                [$this->equalTo('framework'),],
-                [$this->equalTo('name'),]
-            )
-            ->willReturnOnConsecutiveCalls($framework_name, $site_name);
-        $this->logger->expects($this->never())
-            ->method('log');
-        $this->environment->expects($this->never())
-            ->method('sendCommandViaSsh');
-
-        $this->setExpectedException(
-            TerminusException::class,
-            "The dummy command is only available on sites running framework-a, framework-b. The framework for this site is $framework_name."
-        );
-
-        $out = $this->command->dummyCommand("$site_name.env", $options);
-        $this->assertNull($out);
-    }
-
-    /**
      * Tests command execution when in git mode
      */
     public function testExecuteCommandInGitMode()
     {
         $dummy_output = 'dummy output';
         $options = ['arg1', 'arg2',];
-        $framework_name = 'framework-a';
         $site_name = 'site name';
         $mode = 'git';
         $status_code = 0;
@@ -180,11 +141,10 @@ class SSHBaseCommandTest extends CommandTestCase
             );
         $this->site->expects($this->any())->method('get')
             ->withConsecutive(
-                [$this->equalTo('framework'),],
                 [$this->equalTo('name'),],
                 [$this->equalTo('name'),]
             )
-            ->willReturnOnConsecutiveCalls($framework_name, $site_name, $site_name);
+            ->willReturnOnConsecutiveCalls($site_name, $site_name);
         $this->logger->expects($this->at(1))
             ->method('log')
             ->with(
