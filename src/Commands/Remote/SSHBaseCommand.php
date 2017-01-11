@@ -23,10 +23,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected $command = '';
     /**
-     * @var array
-     */
-    protected $valid_frameworks = [];
-    /**
      * @var Site
      */
     private $site;
@@ -91,7 +87,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function validateEnvironment($site, $environment)
     {
         $this->validateConnectionMode($environment->get('connection_mode'));
-        $this->validateFramework($site->get('framework'));
     }
 
     /**
@@ -105,26 +100,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             $this->log()->warning(
                 'This environment is in read-only Git mode. If you want to make changes to the codebase of this site '
                 . '(e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first.'
-            );
-        }
-    }
-
-    /**
-     * Validates the framework being used
-     *
-     * @param string $framework
-     * @throws TerminusException
-     */
-    protected function validateFramework($framework)
-    {
-        if (!in_array($framework, $this->valid_frameworks)) {
-            throw new TerminusException(
-                'The {command} command is only available on sites running {frameworks}. The framework for this site is {framework}.',
-                [
-                    'command'    => $this->command,
-                    'frameworks' => implode(', ', $this->valid_frameworks),
-                    'framework'  => $framework,
-                ]
             );
         }
     }

@@ -15,14 +15,6 @@ class WPCommand extends SSHBaseCommand
     protected $command = 'wp';
 
     /**
-     * @inheritdoc
-     */
-    protected $valid_frameworks = [
-        'wordpress',
-        'wordpress_network',
-    ];
-
-    /**
      * Runs a WP-CLI command remotely on a site's environment.
      *
      * @authorize
