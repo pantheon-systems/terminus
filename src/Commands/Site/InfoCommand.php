@@ -14,6 +14,7 @@ class InfoCommand extends SiteCommand
      * Displays a site's information.
      *
      * @authorize
+     * @update
      *
      * @command site:info
      * @aliases site

@@ -31,13 +31,6 @@ abstract class TerminusCommand implements
     use SessionAwareTrait;
 
     /**
-     * TerminusCommand constructor
-     */
-    public function __construct()
-    {
-    }
-
-    /**
      * Returns a logger object for use
      *
      * @return LoggerInterface

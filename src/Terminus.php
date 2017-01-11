@@ -143,18 +143,29 @@ class Terminus implements ConfigAwareInterface
     }
 
     /**
-     * Discovers command classes using CommandFileDiscovery
-     *
-     * @param string[] $options Elements as follow
-     *        string path      The full path to the directory to search for commands
-     *        string namespace The full namespace associated with given the command directory
-     * @return TerminusCommand[] An array of TerminusCommand instances
+     * Add the commands and hooks which are shipped with core Terminus
      */
-    private function getCommands(array $options = ['path' => null, 'namespace' => null,])
+    private function addBuiltInCommandsAndHooks()
     {
-        $discovery = new CommandFileDiscovery();
-        $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
-        return $discovery->discover($options['path'], $options['namespace']);
+        $commands = $this->getCommands([
+            'path' => __DIR__ . '/Commands',
+            'namespace' => 'Pantheon\Terminus\Commands',
+        ]);
+        $hooks = [
+            'Pantheon\Terminus\Hooks\Authorizer',
+            'Pantheon\Terminus\Hooks\UpdateChecker',
+        ];
+        $this->commands = array_merge($commands, $hooks);
+    }
+
+    /**
+     * Add any global arguments or options that apply to all commands.
+     *
+     * @param \Symfony\Component\Console\Application $app
+     */
+    private function addDefaultArgumentsAndOptions(Application $app)
+    {
+        $app->getDefinition()->addOption(new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"'));
     }
 
     /**
@@ -181,18 +192,6 @@ class Terminus implements ConfigAwareInterface
                 );
             }
         }
-    }
-
-    /**
-     * Add the commands and hooks which are shipped with core Terminus
-     */
-    private function addBuiltInCommandsAndHooks()
-    {
-        // Add the built in commands.
-        $commands_directory = __DIR__ . '/Commands';
-        $top_namespace = 'Pantheon\Terminus\Commands';
-        $this->commands = $this->getCommands(['path' => $commands_directory, 'namespace' => $top_namespace,]);
-        $this->commands[] = 'Pantheon\\Terminus\\Authorizer';
     }
 
     /**
@@ -288,13 +287,18 @@ class Terminus implements ConfigAwareInterface
     }
 
     /**
-     * Add any global arguments or options that apply to all commands.
+     * Discovers command classes using CommandFileDiscovery
      *
-     * @param \Symfony\Component\Console\Application $app
+     * @param string[] $options Elements as follow
+     *        string path      The full path to the directory to search for commands
+     *        string namespace The full namespace associated with given the command directory
+     * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    private function addDefaultArgumentsAndOptions(Application $app)
+    private function getCommands(array $options = ['path' => null, 'namespace' => null,])
     {
-        $app->getDefinition()->addOption(new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"'));
+        $discovery = new CommandFileDiscovery();
+        $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
+        return $discovery->discover($options['path'], $options['namespace']);
     }
 
     /**
