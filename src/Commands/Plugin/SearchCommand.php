@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
