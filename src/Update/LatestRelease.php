@@ -42,7 +42,7 @@ class LatestRelease implements ContainerAwareInterface, DataStoreAwareInterface,
     }
 
     /**
-     * @param $id
+     * @param string $id Key of the attribute to retrieve
      * @return string
      * @throws TerminusNotFoundException
      */

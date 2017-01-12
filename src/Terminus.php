@@ -6,7 +6,8 @@ use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
-use League\Container\ContainerInterface;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Branches;
@@ -69,6 +70,8 @@ use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Update\LatestRelease;
 use Pantheon\Terminus\Update\UpdateChecker;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Config;
 use Robo\Contract\ConfigAwareInterface;
@@ -84,9 +87,11 @@ use VCR\VCR;
  * Class Terminus
  * @package Pantheon\Terminus
  */
-class Terminus implements ConfigAwareInterface
+class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerAwareInterface
 {
     use ConfigAwareTrait;
+    use ContainerAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * @var \Robo\Runner
@@ -110,16 +115,19 @@ class Terminus implements ConfigAwareInterface
 
         $application = new Application('Terminus', $config->get('version'));
         $container = Robo::createDefaultContainer($input, $output, $application, $config);
+        $this->setContainer($container);
 
         $this->addDefaultArgumentsAndOptions($application);
 
-        $this->configureContainer($container);
+        $this->configureContainer();
 
         $this->addBuiltInCommandsAndHooks();
-        $this->addPluginsCommandsAndHooks($container);
+        $this->addPluginsCommandsAndHooks();
 
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
+
+        $this->setLogger($container->get('logger'));
 
         date_default_timezone_set($config->get('time_zone'));
     }
@@ -172,23 +180,18 @@ class Terminus implements ConfigAwareInterface
 
     /**
      * Discovers command classes using CommandFileDiscovery
-     *
-     * @param string[] $options Elements as follow
-     *        string path      The full path to the directory to search for commands
-     *        string namespace The full namespace associated with given the command directory
-     * @return TerminusCommand[] An array of TerminusCommand instances
      */
-    private function addPluginsCommandsAndHooks($container)
+    private function addPluginsCommandsAndHooks()
     {
         // Rudimentary plugin loading.
-        $discovery = $container->get(PluginDiscovery::class, [$this->getConfig()->get('plugins_dir')]);
+        $discovery = $this->getContainer()->get(PluginDiscovery::class, [$this->getConfig()->get('plugins_dir')]);
         $plugins = $discovery->discover();
         $version = $this->config->get('version');
         foreach ($plugins as $plugin) {
             if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
                 $this->commands += $plugin->getCommandsAndHooks();
             } else {
-                $container->get('logger')->warning(
+                $this->logger->warning(
                     "Could not load plugin {plugin} because it is not compatible with this version of Terminus.",
                     ['plugin' => $plugin->getName()]
                 );
@@ -198,11 +201,11 @@ class Terminus implements ConfigAwareInterface
 
     /**
      * Register the necessary classes for Terminus
-     *
-     * @param \League\Container\ContainerInterface $container
      */
-    private function configureContainer(ContainerInterface $container)
+    private function configureContainer()
     {
+        $container = $this->getContainer();
+
         // Add the services
         // Request
         $container->add(Client::class);
