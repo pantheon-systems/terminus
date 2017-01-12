@@ -59,6 +59,12 @@ class SearchCommand extends PluginBaseCommand
         return new RowsOfFields($results);
     }
 
+    /**
+     * Check the project status on Packagist.
+     *
+     * @param string $project Project name
+     * @return string Project status
+     */
     protected function checkStatus($project)
     {
         // TODO: Keep an internal registry of approved third-party plugins.
