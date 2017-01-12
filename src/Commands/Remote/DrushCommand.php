@@ -15,14 +15,6 @@ class DrushCommand extends SSHBaseCommand
     protected $command = 'drush';
 
     /**
-     * @inheritdoc
-     */
-    protected $valid_frameworks = [
-        'drupal',
-        'drupal8',
-    ];
-
-    /**
      * Runs a Drush command remotely on a site's environment.
      *
      * @authorize
