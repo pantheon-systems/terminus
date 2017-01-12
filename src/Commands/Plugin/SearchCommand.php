@@ -23,6 +23,12 @@ class SearchCommand extends PluginBaseCommand
      */
     public function search($keyword = '')
     {
+        // Check for minimum plugin command requirements.
+	if (!$this->commandExists('composer')) {
+            $message = 'Please install composer to enable plugin management.  See https://getcomposer.org/download/.';
+            throw new TerminusNotFoundException($message);
+	}
+
         if (empty($keyword)) {
             $message = "Usage: terminus plugin:<search|find|locate> <string>";
             throw new TerminusNotFoundException($message);
