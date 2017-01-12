@@ -67,12 +67,13 @@ use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Update\LatestRelease;
+use Pantheon\Terminus\Update\UpdateChecker;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Config;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
-use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -138,6 +139,8 @@ class Terminus implements ConfigAwareInterface
         $status_code = $this->runner->run($input, $output, null, $this->commands);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
+        } else {
+            $this->runUpdateChecker();
         }
         return $status_code;
     }
@@ -153,7 +156,6 @@ class Terminus implements ConfigAwareInterface
         ]);
         $hooks = [
             'Pantheon\Terminus\Hooks\Authorizer',
-            'Pantheon\Terminus\Hooks\UpdateChecker',
         ];
         $this->commands = array_merge($commands, $hooks);
     }
@@ -201,19 +203,22 @@ class Terminus implements ConfigAwareInterface
      */
     private function configureContainer(ContainerInterface $container)
     {
-        // Add the services.
+        // Add the services
+        // Request
         $container->add(Client::class);
         $container->add(HttpRequest::class);
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
             ->invokeMethod('setRequest', ['request']);
 
+        // Session
         $session_store = new FileStore($this->getConfig()->get('cache_dir'));
         $session = new Session($session_store);
         $container->share('session', $session);
         $container->inflector(SessionAwareInterface::class)
             ->invokeMethod('setSession', ['session']);
 
+        // Saved tokens
         $token_store = new FileStore($this->getConfig()->get('tokens_dir'));
         $container->inflector(SavedTokens::class)
             ->invokeMethod('setDataStore', [$token_store]);
@@ -269,13 +274,16 @@ class Terminus implements ConfigAwareInterface
         $container->add(Tags::class);
         $container->add(Tag::class);
 
-        // Add Helpers
+        // Helpers
         $container->add(LocalMachineHelper::class);
-
 
         // Plugin handlers
         $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
+
+        // Update checker
+        $container->add(LatestRelease::class);
+        $container->add(UpdateChecker::class);
 
         $container->share('sites', Sites::class);
         $container->inflector(SiteAwareInterface::class)
@@ -299,6 +307,15 @@ class Terminus implements ConfigAwareInterface
         $discovery = new CommandFileDiscovery();
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([]);
         return $discovery->discover($options['path'], $options['namespace']);
+    }
+
+    /**
+     * Runs the UpdateChecker to check for new Terminus versions
+     */
+    private function runUpdateChecker()
+    {
+        $file_store = new FileStore($this->getConfig()->get('cache_dir'));
+        $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
     }
 
     /**
