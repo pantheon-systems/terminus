@@ -21,21 +21,6 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     public function __construct()
     {
-         // Check for minimum plugin command requirements.
-         $windows = (php_uname('s') == 'Windows NT');
-         $test_command = $windows ? 'where' : 'command -v';
-         $file = popen("$test_command git", 'r');
-         $result = fgets($file, 255);
-         $valid = $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
-         if (!$valid) {
-            die("Please install the git command to enable plugin management.\n");
-         }
-         $file = popen("$test_command composer", 'r');
-         $result = fgets($file, 255);
-         $valid = $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
-         if (!$valid) {
-            die("Please install the composer command to enable plugin management.  See https://getcomposer.org/download/.\n");
-        }
     }
 
     /**
@@ -282,6 +267,23 @@ abstract class PluginBaseCommand extends TerminusCommand
             return (array)json_decode($composer_data);
         }
         return array();
+    }
+
+    /**
+     * Platform independent check whether a command exists.
+     *
+     * @param string $command Command to check
+     * @return bool True if exists, false otherwise
+     */
+    protected function commandExists($command)
+    {
+        // @TODO: This could be a generic utility function used by other commands.
+
+        $windows = (php_uname('s') == 'Windows NT');
+        $test_command = $windows ? 'where' : 'command -v';
+        $file = popen("$test_command $command", 'r');
+        $result = fgets($file, 255);
+        return $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
     }
 
     /**
