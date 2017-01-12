@@ -48,17 +48,17 @@ class SearchCommand extends PluginBaseCommand
                 $results[] = explode(' ', $message);
             }
         }
-	$rows = [];
-	if (!empty($results)) {
-	    foreach ($results as $result) {
+        $rows = [];
+        if (!empty($results)) {
+            foreach ($results as $result) {
                 $name = array_shift($result);
-	        $desc = implode(' ', $result);
+                $desc = implode(' ', $result);
                 $rows[] = [
                     'name'        => $name,
                     'description' => $desc,
                 ];
             }
-	}
+        }
 
         // Output the search results in table format.
         return new RowsOfFields($rows);
