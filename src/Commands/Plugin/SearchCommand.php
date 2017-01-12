@@ -62,6 +62,7 @@ class SearchCommand extends PluginBaseCommand
     /**
      * Check the project status on Packagist.
      *
+     * @param string $project Project name
      * @return string Project status
      */
     protected function checkStatus($project)
