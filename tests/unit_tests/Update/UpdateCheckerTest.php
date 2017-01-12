@@ -76,13 +76,13 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClientIsUpToDate()
     {
-        $running_version_number = '1.0.0-beta.2';
-        $latest_version_number = '1.0.0-beta.2';
+        $running_version_num = '1.0.0-beta.2';
+        $latest_version_num = '1.0.0-beta.2';
 
         $this->config->expects($this->once())
             ->method('get')
             ->with($this->equalTo('version'))
-            ->willReturn($running_version_number);
+            ->willReturn($running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -93,7 +93,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->latest_release->expects($this->once())
             ->method('get')
             ->with($this->equalTo('version'))
-            ->willReturn($latest_version_number);
+            ->willReturn($latest_version_num);
         $this->logger->expects($this->never())
             ->method('notice');
         $this->logger->expects($this->never())
@@ -108,13 +108,13 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClientIsOutOfDate()
     {
-        $running_version_number = '1.0.0-beta.1';
-        $latest_version_number = '1.0.0-beta.2';
+        $running_version_num = '1.0.0-beta.1';
+        $latest_version_num = '1.0.0-beta.2';
 
         $this->config->expects($this->once())
             ->method('get')
             ->with($this->equalTo('version'))
-            ->willReturn($running_version_number);
+            ->willReturn($running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -125,7 +125,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->latest_release->expects($this->once())
             ->method('get')
             ->with($this->equalTo('version'))
-            ->willReturn($latest_version_number);
+            ->willReturn($latest_version_num);
         $this->logger->expects($this->once())
             ->method('notice');
         $this->logger->expects($this->never())
@@ -140,12 +140,12 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
      */
     public function testCannotCheckVersion()
     {
-        $running_version_number = '1.0.0-beta.2';
+        $running_version_num = '1.0.0-beta.2';
 
         $this->config->expects($this->once())
             ->method('get')
             ->with($this->equalTo('version'))
-            ->willReturn($running_version_number);
+            ->willReturn($running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(

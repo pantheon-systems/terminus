@@ -73,9 +73,9 @@ class LatestRelease implements ContainerAwareInterface, DataStoreAwareInterface,
                     "Terminus was unable to check the latest release version number.\n{message}",
                     ['message' => $e->getMessage(),]
                 );
-                $this->attributes = $saved_data;
             }
-        } else {
+        }
+        if (empty($this->attributes)) {
             $this->attributes = $saved_data;
         }
     }
