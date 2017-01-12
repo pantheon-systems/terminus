@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus;
+namespace Pantheon\Terminus\Hooks;
 
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
@@ -11,7 +11,7 @@ use Robo\Common\ConfigAwareTrait;
 
 /**
  * Class Authorizer
- * @package Pantheon\Terminus
+ * @package Pantheon\Terminus\Hooks
  */
 class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionAwareInterface
 {
@@ -20,9 +20,8 @@ class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionA
     use SessionAwareTrait;
 
     /**
-     * Authorize the current user prior to running a command.  The Annotated Commands hook manager will call this
+     * Authorize the current user prior to running a command. The Annotated Commands hook manager will call this
      * function during the pre-validate phase of any command that has an 'authorize' annotation.
-     * TODO: Currently this is not being triggered when commands using it are run.
      *
      * @hook pre-validate @authorize
      */

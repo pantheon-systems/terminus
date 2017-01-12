@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
 - Removed framework type check from `drush` and `wp` commands. (#1521)
+- Terminus now checks for new versions after every command run. (#1523)
 
 ## 1.0.0-beta.2 - 2017-01-10
 ### Fixed
