@@ -17,12 +17,12 @@ class InstallCommand extends PluginBaseCommand
      * @command plugin:install
      * @aliases plugin:add
      *
-     * @option string $stability Version stability such as stable, beta, alpha, etc.
      * @option array $projects A list of one or more plugin projects to install
+     * @option string $stability Version stability such as stable, beta, alpha, etc.
      *
      * @usage <Packagist project 1> [Packagist project 2] ...
      */
-    public function install($stability = 'stable', array $projects)
+    public function install(array $projects, $options = ['stability' => 'stable', ])
     {
         // Check for minimum plugin command requirements.
         $this->checkRequirements();
@@ -46,7 +46,7 @@ class InstallCommand extends PluginBaseCommand
                     $message = "{$plugin} is already installed.";
                     $this->log()->notice($message);
                 } else {
-                    exec("composer create-project --stability={$stability} --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~{$terminus_major_version}", $messages);
+                    exec("composer create-project --stability={$options['stability']} --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~{$terminus_major_version}", $messages);
                     foreach ($messages as $message) {
                         $this->log()->notice($message);
                     }
