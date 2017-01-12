@@ -26,6 +26,12 @@ class InstallCommand extends PluginBaseCommand
         // Check for minimum plugin command requirements.
         $this->checkRequirements();
 
+        if (empty($projects)) {
+            $message = "Usage: terminus plugin:<install|add>";
+            $message .= " <Packagist project 1> [Packagist project 2] ...";
+            throw new TerminusNotFoundException($message);
+        }
+
         $terminus_major_version = $this->getTerminusMajorVersion();
         $plugins_dir = $this->getPluginDir();
         foreach ($projects as $project) {
