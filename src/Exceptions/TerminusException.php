@@ -8,11 +8,14 @@ namespace Pantheon\Terminus\Exceptions;
  */
 class TerminusException extends \Exception
 {
-  /**
-   * @var array
-   */
+    /**
+     * @var array
+     */
     private $replacements;
 
+    /**
+     * @var null|string
+     */
     private $raw_message;
 
   /**
@@ -24,7 +27,7 @@ class TerminusException extends \Exception
    */
     public function __construct(
         $message = null,
-        $replacements = array(),
+        array $replacements = [],
         $code = 0
     ) {
         $this->replacements = $replacements;
@@ -33,33 +36,33 @@ class TerminusException extends \Exception
         parent::__construct($this->interpolateString($message, $replacements), $code);
     }
 
-  /**
-   * Returns the replacements context array
-   *
-   * @return array $this->replacements The replacement variables.
-   */
-    public function getReplacements()
-    {
-        return $this->replacements;
-    }
-
-  /**
-   * Returns the replacements context array
-   *
-   * @return string $this->replacements
-   */
+    /**
+     * Returns the replacements context array
+     *
+     * @return string $this->replacements
+     */
     public function getRawMessage()
     {
         return $this->raw_message;
     }
 
-  /**
-   * Replace the variables into the message string.
-   *
-   * @param string $message      The raw, uninterpolated message string
-   * @param array  $replacements The values to replace into the message
-   * @return string
-   */
+    /**
+     * Returns the replacements context array
+     *
+     * @return array $this->replacements The replacement variables.
+     */
+    public function getReplacements()
+    {
+        return $this->replacements;
+    }
+
+    /**
+     * Replace the variables into the message string.
+     *
+     * @param string $message      The raw, uninterpolated message string
+     * @param array  $replacements The values to replace into the message
+     * @return string
+     */
     protected function interpolateString($message, $replacements)
     {
         $tr = [];
