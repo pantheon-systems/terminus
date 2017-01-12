@@ -26,7 +26,7 @@ class SearchCommand extends PluginBaseCommand
      *     description: Description
      * @return RowsOfFields
      */
-    public function search($keyword)
+    public function search($keyword = '')
     {
         // Check for minimum plugin command requirements.
         $this->checkRequirements();
@@ -44,7 +44,7 @@ class SearchCommand extends PluginBaseCommand
         $results = [];
         exec("composer search -t terminus-plugin {$keyword}", $messages);
         foreach ($messages as $message) {
-            list($project,$description) = explode(' ', $message, 2);
+            list($project, $description) = explode(' ', $message, 2);
             $status = $this->checkStatus($project);
             if (preg_match('#^[^/]*/[^/]*$#', $project)) {
                 $results[] = [
