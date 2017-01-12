@@ -24,16 +24,7 @@ class InstallCommand extends PluginBaseCommand
     public function install(array $projects)
     {
         // Check for minimum plugin command requirements.
-        if (!$this->commandExists('composer')) {
-            $message = 'Please install composer to enable plugin management.  See https://getcomposer.org/download/.';
-            throw new TerminusNotFoundException($message);
-        }
-
-        if (empty($projects)) {
-            $message = "Usage: terminus plugin:<install|add>";
-            $message .= " <Packagist project 1> [Packagist project 2] ...";
-            throw new TerminusNotFoundException($message);
-        }
+        $this->checkRequirements();
 
         $terminus_major_version = $this->getTerminusMajorVersion();
         $plugins_dir = $this->getPluginDir();

@@ -317,4 +317,19 @@ abstract class PluginBaseCommand extends TerminusCommand
         $version_parts = explode('.', $terminus_version);
         return $version_parts[0];
     }
+
+    /**
+     * Check for minimum plugin command requirements.
+     */
+    protected function checkRequirements()
+    {
+        if (!$this->commandExists('composer')) {
+            $message = 'Please install composer to enable plugin management.  See https://getcomposer.org/download/.';
+            throw new TerminusNotFoundException($message);
+        }
+        if (!$this->commandExists('git')) {
+            $message = 'Please install git to enable plugin management.';
+            throw new TerminusNotFoundException($message);
+        }
+    }
 }
