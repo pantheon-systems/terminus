@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Plugin;
 
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
@@ -19,15 +20,16 @@ class SearchCommand extends PluginBaseCommand
      *
      * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search "Terminus plugin".
      *
-     * @return List of search results
+     * @field-labels
+     *   name: Name
+     *   description: Description
+     *
+     * @return RowOfFields
      */
     public function search($keyword = '')
     {
         // Check for minimum plugin command requirements.
-	if (!$this->commandExists('composer')) {
-            $message = 'Please install composer to enable plugin management.  See https://getcomposer.org/download/.';
-            throw new TerminusNotFoundException($message);
-	}
+        $this->checkRequirements();
 
         if (empty($keyword)) {
             $message = "Usage: terminus plugin:<search|find|locate> <string>";
@@ -39,11 +41,26 @@ class SearchCommand extends PluginBaseCommand
 
         // @TODO: Bonus: Add the ability to search and prompt to install new plugins.
 
+        $results = [];
         exec("composer search -t terminus-plugin {$keyword}", $messages);
         foreach ($messages as $message) {
             if (stripos($message, 'terminus') !== false && stripos($message, 'plugin') !== false) {
-                $this->log()->notice($message);
+                $results[] = explode(' ', $message);
             }
         }
+	$rows = [];
+	if (!empty($results)) {
+	    foreach ($results as $result) {
+                $name = array_shift($result);
+	        $desc = implode(' ', $result);
+                $rows[] = [
+                    'name'        => $name,
+                    'description' => $desc,
+                ];
+            }
+	}
+
+        // Output the search results in table format.
+        return new RowsOfFields($rows);
     }
 }
