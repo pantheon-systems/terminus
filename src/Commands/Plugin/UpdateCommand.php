@@ -26,14 +26,7 @@ class UpdateCommand extends PluginBaseCommand
     public function update(array $plugins)
     {
         // Check for minimum plugin command requirements.
-	if (!$this->commandExists('git')) {
-            $message = 'Please install git to enable plugin management.';
-            throw new TerminusNotFoundException($message);
-	}
-	if (!$this->commandExists('composer')) {
-            $message = 'Please install composer to enable plugin management.  See https://getcomposer.org/download/.';
-            throw new TerminusNotFoundException($message);
-	}
+        $this->checkRequirements();
 
         // @TODO: Add the ability to prompt for plugins to update.
 
