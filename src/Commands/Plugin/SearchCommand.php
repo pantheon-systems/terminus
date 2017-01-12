@@ -62,7 +62,7 @@ class SearchCommand extends PluginBaseCommand
     protected function checkStatus($project)
     {
         // TODO: Keep an internal registry of approved third-party plugins.
-        $approved = [];
+        $approvedProjects = [];
 
         if (preg_match('#^pantheon-systems/#', $project)) {
             return 'Official';
