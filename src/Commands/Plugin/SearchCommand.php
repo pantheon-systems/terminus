@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Plugin;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
@@ -21,12 +22,12 @@ class SearchCommand extends PluginBaseCommand
      * @option string $keyword A search string used to query for plugins. Example: terminus plugin:search "Terminus plugin".
      *
      * @field-labels
-     *   name: Name
-     *   description: Description
-     *
-     * @return RowOfFields
+     *     name: Name
+     *     status: Status
+     *     description: Description
+     * @return RowsOfFields
      */
-    public function search($keyword = '')
+    public function search($keyword)
     {
         // Check for minimum plugin command requirements.
         $this->checkRequirements();
@@ -44,23 +45,33 @@ class SearchCommand extends PluginBaseCommand
         $results = [];
         exec("composer search -t terminus-plugin {$keyword}", $messages);
         foreach ($messages as $message) {
-            if (stripos($message, 'terminus') !== false && stripos($message, 'plugin') !== false) {
-                $results[] = explode(' ', $message);
-            }
-        }
-        $rows = [];
-        if (!empty($results)) {
-            foreach ($results as $result) {
-                $name = array_shift($result);
-                $desc = implode(' ', $result);
-                $rows[] = [
-                    'name'        => $name,
-                    'description' => $desc,
+             list($project,$description) = explode(' ', $message, 2);
+            $status = $this->checkStatus($project);
+            if (preg_match('#^[^/]*/[^/]*$#', $project)) {
+                $results[] = [
+                    'name' => $project,
+                    'status' => $status,
+                    'description' => $description,
                 ];
             }
         }
 
-        // Output the search results in table format.
-        return new RowsOfFields($rows);
+        return new RowsOfFields($results);
+    }
+
+    protected function checkStatus($project)
+    {
+        // TODO: Keep an internal registry of approved third-party plugins.
+        $approved = [];
+
+        if (preg_match('#^pantheon-systems/#', $project)) {
+            return 'Official';
+        }
+
+        if (in_array($project, $approvedProjects)) {
+            return 'Approved';
+        }
+
+        return 'Unknown';
     }
 }
