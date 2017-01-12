@@ -32,7 +32,8 @@ You are currently using version v{running_version}.
 You can update Terminus by running `composer update` or using the Terminus installer:
 {update_command}
 EOT;
-    const UPDATE_NOTICE_COLOR = "\e[35m";
+    const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
+    const UPDATE_VARS_COLOR = "\e[38;5;45m";
 
     /**
      * @param DataStoreInterface $data_store
@@ -54,9 +55,9 @@ EOT;
 
         if (version_compare($latest_version, $running_version, '>')) {
             $this->logger->notice($this->getUpdateNotice(), [
-                'latest_version' => $latest_version,
-                'running_version' => $running_version,
-                'update_command' => self::UPDATE_COMMAND,
+                'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
+                'running_version' => self::UPDATE_VARS_COLOR . $running_version,
+                'update_command' => self::UPDATE_VARS_COLOR . self::UPDATE_COMMAND,
             ]);
         }
     }
