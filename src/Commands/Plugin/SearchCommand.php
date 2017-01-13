@@ -67,7 +67,9 @@ class SearchCommand extends PluginBaseCommand
     protected function checkStatus($project)
     {
         // TODO: Keep an internal registry of approved third-party plugins.
-        $approvedProjects = [];
+        $approvedProjects = [
+            'terminus-plugin-project/terminus-pancakes-plugin',
+        ];
 
         if (preg_match('#^pantheon-systems/#', $project)) {
             return 'Official';
@@ -77,6 +79,6 @@ class SearchCommand extends PluginBaseCommand
             return 'Approved';
         }
 
-        return 'Unknown';
+        return 'Unofficial';
     }
 }
