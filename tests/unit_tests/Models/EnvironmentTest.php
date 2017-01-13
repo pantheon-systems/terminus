@@ -220,12 +220,12 @@ class EnvironmentTest extends ModelTestCase
         $this->local_machine->expects($this->at(0))
             ->method('exec')
             ->with('git config user.email')
-            ->willReturn('dev@example.com');
+            ->willReturn(['output' => 'dev@example.com', 'exit_code' => 0]);
 
         $this->local_machine->expects($this->at(1))
             ->method('exec')
             ->with('git config user.name')
-            ->willReturn('Dev Tester');
+            ->willReturn(['output' => 'Dev Tester', 'exit_code' => 0]);
 
         $actual = $this->model->commitChanges('Hello, World!');
         $this->assertEquals($this->workflow, $actual);
