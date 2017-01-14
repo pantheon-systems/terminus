@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
 
 /**
  * Class UserOrganizationMemberships
@@ -17,7 +19,7 @@ class UserOrganizationMemberships extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\UserOrganizationMembership';
+    protected $collected_class = UserOrganizationMembership::class;
     /**
      * @var boolean
      */

@@ -11,12 +11,12 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.9",
+    "composer/semver": "^1.4",
     "consolidation/robo": "^1.0.5",
     "guzzlehttp/guzzle": "^6.2",
-    "psy/psysh": "^0.7",
+    "psy/psysh": "^0.8",
     "symfony/finder": "~2.7|^3.1",
-    "symfony/yaml": "~2.1|^3.1",
-    "vlucas/phpdotenv": "^2.4"
+    "symfony/yaml": "~2.1|^3.1"
   },
   "autoload": {
     "psr-4": {
@@ -30,21 +30,22 @@
     }
   },
   "scripts": {
-      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
+      "behat": "COMPOSER_PROCESS_TIMEOUT=1800 SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/*",
+      "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
+      "coveralls": "coveralls -v -c tests/config/coveralls.xml",
       "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/*",
+      "docs": "php scripts/make-docs.php",
       "lint": "@cs",
-      "docs": "php utils/make-docs.php",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
-      "test": "SHELL_INTERACTIVE=true ./scripts/test.sh"
+      "test": "set -ex ; composer cs ; composer phpunit ; composer behat"
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
     "rmccue/requests": "^1.7",
     "phpunit/phpcov": "^2.0",
     "phpunit/phpunit": "^4.0",
-    "php-vcr/php-vcr": "^1.3",
-    "php-vcr/phpunit-testlistener-vcr": "@stable",
+    "php-vcr/php-vcr": "1.3.1",
     "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.7",
     "satooshi/php-coveralls": "^1.0"

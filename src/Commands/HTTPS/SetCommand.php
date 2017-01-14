@@ -15,22 +15,22 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Add or replace an HTTPS certificate on an environment
+     * Enables HTTPS and/or updates the SSL certificate for the environment.
      *
      * @authorize
      *
      * @command https:set
      * @aliases https:add https:enable
      *
-     * @param string $site_env Site and environment in the form `site-name.env`.
-     * @param string $certificate A file containing the ssl certificate
-     * @param string $private_key A file containing the private key
-     * @option string $intermediate-certificate A file containing the CA intermediate certificate(s)
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param string $certificate File containing the SSL certificate
+     * @param string $private_key File containing the private key
+     * @option string $intermediate-certificate File containing the CA intermediate certificate(s)
      *
      * @usage https:set <site>.<env> <cert_file> <key_file>
-     *    Upload the certificate from <cert_file> and key from <key_file> and apply them to the <env> environment of <site>
-     * @usage https:set <site>.<env> <cert> <key> --intermediate-certificate=<int>
-     *    Specify the certificate <cert>, the key <key>, and the and intermediary certificate <int> directly on the command line and apply them to the <env> environment of <site>
+     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
+     * @usage https:set <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file>
+     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
      */
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {

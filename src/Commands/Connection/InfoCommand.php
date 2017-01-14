@@ -17,7 +17,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Retrieve connection info for a specific environment such as git, sftp, mysql, redis
+     * Displays connection information for Git, SFTP, MySQL, and Redis.
      *
      * @authorize
      *
@@ -25,40 +25,40 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases connection
      *
      * @field-labels
-     *   sftp_command: SFTP Command
-     *   sftp_username: SFTP Username
-     *   sftp_host: SFTP Host
-     *   sftp_password: SFTP Password
-     *   sftp_url: SFTP URL
-     *   git_command: Git Command
-     *   git_username: Git Username
-     *   git_host: Git Host
-     *   git_port: Git Port
-     *   git_url: Git URL
-     *   mysql_command: MySQL Command
-     *   mysql_username: MySQL Username
-     *   mysql_host: MySQL Host
-     *   mysql_password: MySQL Password
-     *   mysql_url: MySQL URL
-     *   mysql_port: MySQL Port
-     *   mysql_database: MySQL Database
-     *   redis_command: Redis Command
-     *   redis_port: Redis Port
-     *   redis_url: Redis URL
-     *   redis_password: Redis Password
+     *     sftp_command: SFTP Command
+     *     sftp_username: SFTP Username
+     *     sftp_host: SFTP Host
+     *     sftp_password: SFTP Password
+     *     sftp_url: SFTP URL
+     *     git_command: Git Command
+     *     git_username: Git Username
+     *     git_host: Git Host
+     *     git_port: Git Port
+     *     git_url: Git URL
+     *     mysql_command: MySQL Command
+     *     mysql_username: MySQL Username
+     *     mysql_host: MySQL Host
+     *     mysql_password: MySQL Password
+     *     mysql_url: MySQL URL
+     *     mysql_port: MySQL Port
+     *     mysql_database: MySQL Database
+     *     redis_command: Redis Command
+     *     redis_port: Redis Port
+     *     redis_url: Redis URL
+     *     redis_password: Redis Password
      * @default-fields *_command
      * @return PropertyList
      *
-     * @param string $site_env_id Name of the environment to retrieve
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @usage connection:info <site>.<env>
-     *   Display connection information about the <env> environment of <site>
+     *     Displays connection information for <site>'s <env> environment.
      * @usage connection:info <site>.<env> --fields='git_*'
-     *   Display all of the connection information fields related to Git for the <env> environment of <site>
+     *     Displays connection information fields related to Git for <site>'s <env> environment.
      */
-    public function connectionInfo($site_env_id)
+    public function connectionInfo($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env_id);
+        list(, $env) = $this->getSiteEnv($site_env);
         return new PropertyList($env->connectionInfo());
     }
 }

@@ -13,6 +13,9 @@ use Pantheon\Terminus\Models\Environment;
  */
 class BindingsTest extends CollectionTestCase
 {
+    /**
+     * @var object
+     */
     protected $bindings_data;
 
     public function setUp()
@@ -300,59 +303,12 @@ class BindingsTest extends CollectionTestCase
                 ],
         ];
 
-        $this->bindings = $this->_createBindings();
-    }
-
-    protected function _createBindings()
-    {
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->environment->site = (object)['id' => 'abc'];
-        $this->environment->id = 'dev';
-
-        $bindings = new Bindings(['environment' => $this->environment]);
-        $bindings->setRequest($this->request);
-        $bindings->setContainer($this->container);
-        return $bindings;
-    }
-
-    protected function _createBindingsWithModels()
-    {
-        $bindings = $this->_createBindings();
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                'sites/abc/bindings',
-                ['options' => ['method' => 'get']]
-            )
-            ->willReturn(['data' => $this->bindings_data]);
-
-        $i = 0;
-        foreach ($this->bindings_data as $id => $data) {
-            $this->container->expects($this->at($i++))
-                ->method('get')
-                ->with(
-                    Binding::class,
-                    [
-                        $data,
-                        ['id' => $id, 'collection' => $bindings]
-                    ]
-                )
-                ->willReturn(new Binding($data, ['collection' => $bindings]));
-        }
-        return $bindings;
-    }
-
-    public function testGetURL()
-    {
-        $this->assertEquals('sites/abc/bindings', $this->bindings->getUrl());
+        $this->bindings = $this->createBindings();
     }
 
     public function testGetByType()
     {
-        $bindings = $this->_createBindingsWithModels();
+        $bindings = $this->createBindingsWithModels();
 
         $out = $bindings->getByType('cacheserver');
         $this->assertEquals(4, count($out));
@@ -380,5 +336,52 @@ class BindingsTest extends CollectionTestCase
 
         $out = $bindings->getByType('other');
         $this->assertEquals(0, count($out));
+    }
+
+    public function testGetURL()
+    {
+        $this->assertEquals('sites/abc/bindings', $this->bindings->getUrl());
+    }
+
+    protected function createBindings()
+    {
+        $this->environment = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->environment->site = (object)['id' => 'abc'];
+        $this->environment->id = 'dev';
+
+        $bindings = new Bindings(['environment' => $this->environment]);
+        $bindings->setRequest($this->request);
+        $bindings->setContainer($this->container);
+        return $bindings;
+    }
+
+    protected function createBindingsWithModels()
+    {
+        $bindings = $this->createBindings();
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with(
+                'sites/abc/bindings',
+                ['options' => ['method' => 'get']]
+            )
+            ->willReturn(['data' => $this->bindings_data]);
+
+        $i = 0;
+        foreach ($this->bindings_data as $id => $data) {
+            $this->container->expects($this->at($i++))
+                ->method('get')
+                ->with(
+                    Binding::class,
+                    [
+                        $data,
+                        ['id' => $id, 'collection' => $bindings]
+                    ]
+                )
+                ->willReturn(new Binding($data, ['collection' => $bindings]));
+        }
+        return $bindings;
     }
 }

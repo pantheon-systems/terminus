@@ -9,7 +9,10 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
+use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Models\UpstreamStatus;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -39,6 +42,14 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * @var Domains
      */
     public $domains;
+    /**
+     * @var Loadbalancers
+     */
+    public $loadbalancers;
+    /**
+     * @var UpstreamStatus
+     */
+    public $upstream_status;
     /**
      * @var Site
      */
@@ -188,20 +199,17 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function commitChanges($commit = null)
     {
-        // @TODO: Remove passthru from this function to make it testable.
-        // One idea might be to move this discovery to Config (which can then be mocked in tests).
-        ob_start();
-        passthru('git config user.email');
-        $git_email = ob_get_clean();
-        ob_start();
-        passthru('git config user.name');
-        $git_user = ob_get_clean();
+        $local = $this->getContainer()->get(LocalMachineHelper::class);
+
+        $git_email = $local->exec('git config user.email');
+        $git_user = $local->exec('git config user.name');
 
         $params = [
             'message' => $commit,
             'committer_name' => $git_user,
             'committer_email' => $git_email,
         ];
+
         $workflow = $this->getWorkflows()->create(
             'commit_and_push_on_server_changes',
             compact('params')
@@ -386,6 +394,34 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $options = ['method' => 'get',];
         $data = $this->request()->request($path, $options);
         return $data['data'];
+    }
+
+    /**
+     * Remove a HTTPS certificate from the environment
+     *
+     * @return array $workflow
+     *
+     * @throws TerminusException
+     */
+    public function disableHttpsCertificate()
+    {
+        if (!$this->settings('ssl_enabled')) {
+            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
+        }
+        try {
+            $this->request()->request(
+                "sites/{$this->site->id}/environments/{$this->id}/settings",
+                [
+                    'method' => 'put',
+                    'form_params' => [
+                        'ssl_enabled' => false,
+                        'dedicated_ip' => false,
+                    ],
+                ]
+            );
+        } catch (\Exception $e) {
+            throw new TerminusException('There was an problem disabling https for this environment.');
+        }
     }
 
     /**
@@ -649,11 +685,12 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * Sends a command to an environment via SSH.
      *
      * @param string $command The command to be run on the platform
+     * @param callable $callback An anonymous function to run while waiting for the command to finish
      * @return string[] $response Elements as follow:
      *         string output    The output from the command run
      *         string exit_code The status code returned by the command run
      */
-    public function sendCommandViaSsh($command)
+    public function sendCommandViaSsh($command, $callback = null)
     {
         $sftp = $this->sftpConnectionInfo();
         $ssh_command = vsprintf(
@@ -671,10 +708,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             ];
         }
 
-        ob_start();
-        passthru($ssh_command, $exit_code);
-        $response = ['output' => ob_get_clean(), 'exit_code' => $exit_code,];
-
+        $response = $this->getContainer()->get(LocalMachineHelper::class)->execInteractive($ssh_command, $callback);
         return $response;
     }
 
@@ -732,34 +766,6 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $workflow_data = $response['data'];
         $workflow = $this->getContainer()->get(Workflow::class, [$workflow_data, ['environment' => $this,]]);
         return $workflow;
-    }
-
-    /**
-     * Remove a HTTPS certificate from the environment
-     *
-     * @return array $workflow
-     *
-     * @throws TerminusException
-     */
-    public function disableHttpsCertificate()
-    {
-        if (!$this->settings('ssl_enabled')) {
-            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id]);
-        }
-        try {
-            $this->request()->request(
-                "sites/{$this->site->id}/environments/{$this->id}/settings",
-                [
-                    'method' => 'put',
-                    'form_params' => [
-                        'ssl_enabled' => false,
-                        'dedicated_ip' => false,
-                    ],
-                ]
-            );
-        } catch (\Exception $e) {
-            throw new TerminusException('There was an problem disabling https for this environment.');
-        }
     }
 
     /**
@@ -873,6 +879,29 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         }
         return $this->domains;
     }
+
+    /**
+     * @return Loadbalancers
+     */
+    public function getLoadbalancers()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(Loadbalancers::class, [['environment' => $this,]]);
+        }
+        return $this->workflows;
+    }
+
+    /**
+     * @return UpstreamStatus
+     */
+    public function getUpstreamStatus()
+    {
+        if (empty($this->upstream_status)) {
+            $this->upstream_status = $this->getContainer()->get(UpstreamStatus::class, [[], ['environment' => $this,]]);
+        }
+        return $this->upstream_status;
+    }
+
 
     /**
      * @return Workflows

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\Domain;
 
 /**
  * Class Domains
@@ -13,17 +14,15 @@ class Domains extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Domain';
-
-    /**
-     * @var string
-     */
-    protected $url = 'sites/{site_id}/environments/{environment_id}/hostnames';
-
+    protected $collected_class = Domain::class;
     /**
      * @var mixed Use to hydrate the data with additional information
      */
     protected $hydrate = false;
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/environments/{environment_id}/hostnames';
 
     /**
      * Adds a domain to the environment

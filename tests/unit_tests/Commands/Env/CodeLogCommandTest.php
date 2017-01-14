@@ -51,23 +51,21 @@ class CodeLogCommandTest extends EnvCommandTest
      */
     public function testLog()
     {
+        $data = ['1' => [
+            'datetime' => '2016-09-21T12:21:18',
+            'author' => 'Daisy Duck',
+            'labels' => ['test', 'dev'],
+            'hash' => 'c65e638f03cabc7b97e686bb9de843b7173e329a',
+            'message' => 'Add some new code',
+        ]];
         $this->environment->id = 'dev';
-        $this->commits->method('all')
-            ->willReturn([
-                $this->commit_1,
-                $this->commit_2,
-            ]);
+        $this->commits->method('serialize')
+            ->willReturn($data);
 
         $out = $this->command->codeLog('mysite.dev');
 
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals(count($out), 2);
-        $out_1 = $out->getArrayCopy()[0];
-        $this->assertEquals($this->commit_1_attribs['datetime'], $out_1['time']);
-        $this->assertEquals($this->commit_1_attribs['author'], $out_1['author']);
-        $this->assertEquals($this->commit_1_attribs['hash'], $out_1['hash']);
-        $this->assertEquals($this->commit_1_attribs['message'], $out_1['message']);
-        $this->assertEquals('test, dev', $out_1['labels']);
+        $this->assertEquals($data, $out->getArrayCopy());
     }
 
     /**
@@ -76,7 +74,7 @@ class CodeLogCommandTest extends EnvCommandTest
     public function testDeployNoCode()
     {
         $this->environment->id = 'dev';
-        $this->commits->method('all')
+        $this->commits->method('serialize')
             ->willReturn([]);
 
         $out = $this->command->codeLog('mysite.dev');

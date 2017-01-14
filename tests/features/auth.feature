@@ -77,7 +77,7 @@ Feature: Authorization command
     Given I am authenticated
     When I run "terminus auth:whoami --format=table --fields=email,id"
     Then I should get: "------- --------------------------------------"
-    And I should get: "eMail   [[username]]"
+    And I should get: "Email   [[username]]"
     And I should get: "ID      [[user_id]]"
     And I should get: "------- --------------------------------------"
 

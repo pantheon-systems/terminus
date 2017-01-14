@@ -16,26 +16,34 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Import a site archive onto a Pantheon site
+     *  Imports a site archive (code, database, and files) to the site.
      *
      * @authorize
      *
      * @command import:site
      * @aliases site:import import
      *
-     * @option string $site Name of the site to import to
-     * @option string $url URL at which the import archive exists
+     * @option string $site Site name
+     * @option string $url Publicly accessible URL of the site archive
      *
      * @usage terminus import <site> <archive_url>
-     *   Imports the file at <archive_url> to the site named <site>
+     *   Imports the site archive at <archive_url> to <site>.
      */
     public function import($sitename, $url)
     {
         $site = $sitename;
-        list(, $env) = $this->getSiteEnv($site, 'dev');
+        list($site, $env) = $this->getSiteEnv($site, 'dev');
+
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you overwrite the code, database and files for {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $env->import($url);
         try {
-            $workflow->wait();
+            while (!$workflow->checkProgress()) {
+                // @TODO: Add Symfony progress bar to indicate that something is happening.
+            }
         } catch (\Exception $e) {
             if ($e->getMessage() == 'Successfully queued import_site') {
                 throw new TerminusException('Site import failed');

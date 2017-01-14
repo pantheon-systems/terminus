@@ -15,17 +15,17 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Adds a domain to the environment
+     * Associates a domain with the environment.
      *
      * @authorize
      *
      * @command domain:add
      *
-     * @param string $site_env Site & environment to add a domain to, in the form `site-name.env`.
-     * @param string $domain   The domain to associate with this environment
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param string $domain Domain e.g. `example.com`
      *
      * @usage terminus domain:add <site>.<env> <domain_name>
-     *     Attaches <domain_name> to <site> site's <env> environment
+     *     Associates <domain_name> with <site>'s <env> environment.
      */
     public function add($site_env, $domain)
     {

@@ -16,18 +16,18 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Create a multidev environment by duplicating another environment
+     * Creates a multidev environment.
      *
      * @authorize
      *
      * @command multidev:create
      * @aliases env:create
      *
-     * @param string $site_env Site & environment to copy from, in the form `site-name.env`
-     * @param string $multidev Name of the new multidev environment being created
+     * @param string $site_env Site & source environment in the format `site-name.env`
+     * @param string $multidev Multidev environment name
      *
      * @usage terminus multidev:create <site>.<env> <multidev>
-     *   Creates a new multidev environment named <multidev> from the <env> environment of <site>
+     *     Creates the Multidev environment, <multidev>, within <site> with database and files from the <env> environment.
      */
     public function create($site_env, $multidev)
     {

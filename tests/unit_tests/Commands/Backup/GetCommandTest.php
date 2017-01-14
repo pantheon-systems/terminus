@@ -1,8 +1,10 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\GetCommand;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Request\Request;
 
 /**
  * Class GetCommandTest
@@ -77,6 +79,66 @@ class GetCommandTest extends BackupCommandTest
 
         $this->setExpectedException(TerminusNotFoundException::class);
 
-        $this->command->getBackup('mysite.dev', ['file' => $bad_file_name,]);
+        $out = $this->command->getBackup('mysite.dev', ['file' => $bad_file_name,]);
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the backup:get command when there are no backups to get
+     */
+    public function testGetBackupNoBackups()
+    {
+        $element = 'some_element';
+        $site = 'site';
+        $this->environment->id = 'env';
+
+        $this->backups->expects($this->once())
+            ->method('getFinishedBackups')
+            ->with($this->equalTo($element))
+            ->willReturn([]);
+        $this->backup->expects($this->never())
+            ->method('getUrl');
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('name'))
+            ->willReturn($site);
+        $this->setExpectedException(
+            TerminusNotFoundException::class,
+            "No backups available. Create one with `terminus backup:create $site.{$this->environment->id}`"
+        );
+
+        $out = $this->command->getBackup("$site.{$this->environment->id}", compact('element'));
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the backup:get command when saving the backup to a file
+     */
+    public function testGetBackupToFile()
+    {
+        $test_filename = 'test.tar.gz';
+        $test_download_url = 'http://download';
+        $test_save_path = '/tmp/file.tar.gz';
+        $request = $this->getMockBuilder(Request::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->backups->expects($this->once())
+            ->method('getBackupByFileName')
+            ->with($test_filename)
+            ->willReturn($this->backup);
+        $this->backup->expects($this->once())
+            ->method('getUrl')
+            ->willReturn($test_download_url);
+        $request->expects($this->once())
+            ->method('download')
+            ->with(
+                $this->equalTo($test_download_url),
+                $this->equalTo($test_save_path)
+            );
+
+        $this->command->setRequest($request);
+        $out = $this->command->getBackup('mysite.dev', ['file' => $test_filename, 'to' => $test_save_path,]);
+        $this->assertNull($out);
     }
 }

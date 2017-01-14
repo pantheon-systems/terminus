@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Collections;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -25,16 +26,15 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\TerminusModel';
+    protected $collected_class = TerminusModel::class;
     /**
      * @var TerminusModel[]
      */
-    protected $models = [];
+    protected $models = null;
     /**
      * @var boolean
      */
     protected $paged = false;
-
     /**
      * @var string
      */
@@ -85,7 +85,20 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function all()
     {
-        $models = array_values($this->getMembers());
+        return $this->getMembers();
+    }
+
+    /**
+     * Retrieves all models serialized into arrays.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $models = [];
+        foreach ($this->getMembers() as $id => $model) {
+            $models[$id] = $model->serialize();
+        }
         return $models;
     }
 
@@ -97,7 +110,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function fetch(array $options = [])
     {
-        $results = $this->getCollectionData($options);
+        $results = array_filter((array)$this->getCollectionData($options));
 
         foreach ($results as $id => $model_data) {
             if (!isset($model_data->id)) {
@@ -136,7 +149,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function ids()
     {
-        $models = $this->getMembers();
+        $models = (array)$this->getMembers();
         $ids = array_keys($models);
         return $ids;
     }
@@ -152,12 +165,13 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     public function listing($key = 'id', $value = 'name')
     {
+        $models = $this->getMembers();
         $members = array_combine(
             array_map(
                 function ($member) use ($key) {
                     return $member->get($key);
                 },
-                $this->models
+                $models
             ),
             array_map(
                 function ($member) use ($value) {
@@ -170,7 +184,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
                     }
                     return $list;
                 },
-                $this->models
+                $models
             )
         );
         return $members;
@@ -262,9 +276,20 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     protected function getMembers()
     {
-        if (empty($this->models)) {
+        if ($this->models === null) {
             $this->fetch();
         }
         return $this->models;
+    }
+
+    /**
+     * Determines whether the models contain an object with a specific ID
+     *
+     * @param string $id UUID of object to seek
+     * @return boolean True if object is found, false if it is not
+     */
+    public function has($id)
+    {
+        return !is_null($models = $this->getMembers()) && array_key_exists($id, $models);
     }
 }

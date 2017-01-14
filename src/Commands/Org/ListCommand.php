@@ -12,7 +12,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class ListCommand extends TerminusCommand
 {
     /**
-     * List the organizations of which the current user is a member
+     * Displays the list of organizations.
      *
      * @authorize
      *
@@ -20,12 +20,12 @@ class ListCommand extends TerminusCommand
      * @aliases orgs
      *
      * @field-labels
-     *   id: ID
-     *   name: Name
+     *     id: ID
+     *     name: Name
      * @return RowsOfFields
      *
      * @usage terminus org:list
-     *   Display a list of organizations which the logged-in user is a member of
+     *     Displays the list of organizations.
      */
     public function listOrgs()
     {

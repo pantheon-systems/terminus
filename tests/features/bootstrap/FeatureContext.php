@@ -32,7 +32,11 @@ class FeatureContext implements Context
         $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
         $this->parameters      = $parameters;
         $this->start_time      = time();
-        $this->connection_info = ['host' => $parameters['host'], 'machine_token' => $parameters['machine_token'],];
+        $this->connection_info = [
+          'host' => $parameters['host'],
+          'machine_token' => $parameters['machine_token'],
+          'verify_host_cert' => $parameters['verify_host_cert']
+        ];
 
         $this->cache_dir = $parameters['cache_dir'];
         $this->cache_token_dir = $this->cache_dir . "/tokens";
@@ -138,7 +142,7 @@ class FeatureContext implements Context
         echo $prompt . PHP_EOL;
         echo 'Then press any key.';
         $site      = $this->replacePlaceholders($site);
-        $site_info = $this->iGetInfoForTheSite($site, $return_hash = true);
+        $site_info = $this->iGetInfoForTheSite($site);
         $url       = $this->replacePlaceholders($url, $site_info);
         $this->openInBrowser($url);
         $line = trim(fgets(STDIN));
@@ -289,7 +293,7 @@ class FeatureContext implements Context
      */
     public function iDeployTheEnvironmentOf($env, $from, $site, $message)
     {
-        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$note");
+        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$message");
     }
 
     /**
@@ -531,7 +535,11 @@ class FeatureContext implements Context
      */
     public function iMergeTheEnvironment($from_env, $to_env, $site)
     {
-        $this->setTestStatus('pending');
+        if ($to_env ==='dev') {
+            $this->iRun("terminus env:merge-to-dev $site.$from_env");
+        } else {
+            $this->iRun("terminus env:merge-from-dev $site.$to_env");
+        }
     }
 
     /**
@@ -556,7 +564,7 @@ class FeatureContext implements Context
      */
     public function iRestoreTheEnvironmentOfFromBackup($env, $site)
     {
-        $this->setTestStatus('pending');
+        $this->iRun("terminus backup:restore $site.$env");
     }
 
     /**
@@ -576,6 +584,10 @@ class FeatureContext implements Context
         if (isset($this->connection_info['host'])) {
             $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
         }
+        if (isset($this->connection_info['verify_host_cert'])) {
+            $verify = $this->connection_info['verify_host_cert'] ? '1' : '0';
+            $command = "TERMINUS_VERIFY_HOST_CERT=$verify $command";
+        }
         if (isset($this->cassette_name)) {
             $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
         }
@@ -584,7 +596,7 @@ class FeatureContext implements Context
         }
 
         // Pass the cache directory to the command so that tests don't poison the user's cache.
-        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir $command";
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir $command";
 
         ob_start();
         passthru($command . ' 2>&1');
@@ -958,17 +970,6 @@ class FeatureContext implements Context
     public function iEnterInput()
     {
         throw new PendingException("Interactivity is not yet implemented");
-    }
-
-    /**
-     * Reads one line from STDIN
-     *
-     * @return [string] $line
-     */
-    private function read()
-    {
-        $line = trim(fgets(STDIN));
-        return $line;
     }
 
     /**

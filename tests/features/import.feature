@@ -9,27 +9,15 @@ Feature: Import a a site and its content onto Pantheon
 
   @vcr import.yml
   Scenario: Importing a site archive onto Pantheon
-    When I run "terminus import:site [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz"
-    Then I should get "."
-    Then I should get:
-    """
-    Imported site onto Pantheon
-    """
+    When I run "terminus import:site [[test_site_name]] https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz --yes"
+    Then I should get: "Imported site onto Pantheon"
 
   @vcr import-files.yml
   Scenario: Import files into the site
-    When I run "terminus import:files [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/files.tar.gz"
-    Then I should get "."
-    Then I should get:
-    """
-    Imported files to [[test_site_name]].dev.
-    """
+    When I run "terminus import:files [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/files.tar.gz --yes"
+    And I should get: "Imported files to [[test_site_name]].dev."
 
   @vcr import-database.yml
   Scenario: Import database into the site
-    When I run "terminus import:database [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/database.tar.gz"
-    Then I should get "."
-    Then I should get:
-    """
-    Imported database to [[test_site_name]].dev.
-    """
+    When I run "terminus import:database [[test_site_name]].dev https://s3.amazonaws.com/pantheondemofiles/database.tar.gz --yes"
+    Then I should get: "Imported database to [[test_site_name]].dev."

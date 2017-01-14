@@ -53,6 +53,7 @@ class WipeCommandTest extends EnvCommandTest
         $this->command = new WipeCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);

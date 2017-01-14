@@ -1,10 +1,11 @@
 <?php
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
-use Pantheon\Terminus\Config;
+use Robo\Config;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Symfony\Component\Console\Input\Input;
 
 /**
  * Class MachineTokenDeleteCommandTest
@@ -19,12 +20,12 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     protected function setUp()
     {
         parent::setUp();
-
+        
         $this->command = new DeleteCommand(new Config());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
     }
-
 
     /**
      * Tests the machine-token:delete command.
@@ -50,7 +51,6 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
             ->willReturn(
                 $token
             );
-
 
         $this->command->delete('123');
     }

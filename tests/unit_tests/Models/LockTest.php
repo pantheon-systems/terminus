@@ -43,7 +43,7 @@ class LockTest extends ModelTestCase
         return $lock;
     }
 
-    public function testAdd()
+    public function testEnable()
     {
         $params = ['username' => 'dev', 'password' => '123'];
         $this->workflows->expects($this->once())
@@ -51,7 +51,7 @@ class LockTest extends ModelTestCase
             ->with('lock_environment', ['params' => $params])
             ->willReturn($this->workflow);
 
-        $wf = $this->lock->add($params);
+        $wf = $this->lock->enable($params);
         $this->assertEquals($this->workflow, $wf);
     }
 
@@ -84,14 +84,14 @@ class LockTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testRemove()
+    public function testDisable()
     {
         $this->workflows->expects($this->once())
             ->method('create')
             ->with('unlock_environment')
             ->willReturn($this->workflow);
 
-        $wf = $this->lock->remove();
+        $wf = $this->lock->disable();
         $this->assertEquals($this->workflow, $wf);
     }
 }

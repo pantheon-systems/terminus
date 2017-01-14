@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List a site's environments
+     * Displays a list of the site's environments.
      *
      * @authorize
      *
@@ -24,26 +24,21 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases envs
      *
      * @field-labels
-     *   id: ID
-     *   created: Created
-     *   domain: Domain
-     *   connection_mode: Connection Mode
-     *   locked: Locked
-     *   initialized: Initialized
+     *     id: ID
+     *     created: Created
+     *     domain: Domain
+     *     connection_mode: Connection Mode
+     *     locked: Locked
+     *     initialized: Initialized
      * @return RowsOfFields
      *
-     * @param string $site_id The site to list the environments of
+     * @param string $site_id Site name
      *
      * @usage env:list <site>
-     *    Lists all environments for the site named <site>
+     *    Displays a list of <site>'s environments.
      */
     public function listEnvs($site_id)
     {
-        $site = $this->getSite($site_id);
-        $data = [];
-        foreach ($site->getEnvironments()->all() as $env) {
-            $data[] = $env->serialize();
-        }
-        return new RowsOfFields($data);
+        return new RowsOfFields($this->getSite($site_id)->getEnvironments()->serialize());
     }
 }

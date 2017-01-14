@@ -16,19 +16,27 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Completely wipe and reset an environment
+     * Deletes all files and database content in the environment.
      *
      * @authorize
      *
      * @command env:wipe
      *
-     * @param string $site_env The name or UUID of the site/environment to wipe
+     * @param string $site_env Site & environment in the format `site-name.env`
      *
      * @throws TerminusException
+     * @usage terminus env:wipe <site>.<env>
+     *    Deletes all database/files on <site>'s <env> environment.
      */
     public function wipe($site_env)
     {
         list($site, $env) = $this->getSiteEnv($site_env);
+
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you want to wipe {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $env->wipe();
         $this->log()->notice(
             'Wiping the "{env}" environment of "{site}"',

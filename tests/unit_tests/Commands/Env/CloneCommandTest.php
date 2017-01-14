@@ -24,11 +24,12 @@ class CloneCommandTest extends EnvCommandTest
         $this->command = new CloneContentCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
     }
 
     public function testCloneFiles()
     {
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
         $this->environment->expects($this->once())
@@ -53,7 +54,7 @@ class CloneCommandTest extends EnvCommandTest
 
     public function testCloneDatabase()
     {
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
         $this->environment->expects($this->once())
@@ -78,7 +79,7 @@ class CloneCommandTest extends EnvCommandTest
 
     public function testCloneAll()
     {
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
 

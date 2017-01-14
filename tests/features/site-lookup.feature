@@ -15,4 +15,4 @@ Feature: Looking up a site
   @vcr site-lookup-dne.yml
   Scenario: Site look-up fails because site DNE
     When I run "terminus site:lookup invalid"
-    Then I should get: "A site named invalid was not found."
+    Then I should get: "Could not locate a site your user may access identified by invalid."

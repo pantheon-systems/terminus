@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Exceptions;
 
 /**
- * Class TerminusException
+ * Class TerminusNotFoundException
  * @package Pantheon\Terminus\Exceptions
  */
 class TerminusNotFoundException extends TerminusException

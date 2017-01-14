@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\RestoreCommand;
@@ -21,6 +22,7 @@ class RestoreCommandTest extends BackupCommandTest
         $this->command = new RestoreCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->command->setInput($this->input);
     }
 
     /**
@@ -187,6 +189,35 @@ class RestoreCommandTest extends BackupCommandTest
         $this->setExpectedException(TerminusException::class);
 
         $out = $this->command->restoreBackup('mysite.dev', ['element' => 'db',]);
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the backup:restore command when there isn't a backup to restore
+     */
+    public function testRestoreNoBackups()
+    {
+        $site_name = 'site name';
+        $this->environment->id = 'dev';
+        $element = 'code';
+
+        $this->backups->expects($this->once())
+            ->method('getFinishedBackups')
+            ->with($this->equalTo($element))
+            ->willReturn([]);
+
+        $this->backup->expects($this->never())->method('restore');
+        $this->logger->expects($this->never())->method('log');
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('name'))
+            ->willReturn($site_name);
+        $this->setExpectedException(
+            TerminusNotFoundException::class,
+            "No backups available. Create one with `terminus backup:create $site_name.{$this->environment->id}`"
+        );
+
+        $out = $this->command->restoreBackup("$site_name.{$this->environment->id}", compact('element'));
         $this->assertNull($out);
     }
 }

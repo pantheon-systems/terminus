@@ -8,4 +8,15 @@ namespace Pantheon\Terminus\Models;
  */
 class Commit extends TerminusModel
 {
+
+    public function serialize()
+    {
+        return [
+            'datetime' => $this->get('datetime'),
+            'author' => $this->get('author'),
+            'labels' => implode(', ', $this->get('labels')),
+            'hash' => $this->get('hash'),
+            'message' => substr(strtr(trim($this->get('message')), ["\n" => ' ', "\t" => ' ']), 0, 50),
+        ];
+    }
 }

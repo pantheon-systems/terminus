@@ -12,19 +12,20 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class LoginCommand extends TerminusCommand
 {
     /**
-     * Log a user into Pantheon
+     * Logs in a user to Pantheon.
      *
      * @command auth:login
      * @aliases login
      *
-     * @option machine-token A machine token to be saved for future logins
+     * @option machine-token Grants access for a user and is saved for future logins
+     * @option email Uses an existing machine token for this user
      *
      * @usage terminus auth:login --machine-token=<machine_token>
-     *   Logs in the user granted the machine token <machine_token>
+     *     Logs in a user granted the machine token <machine_token>.
      * @usage terminus auth:login
-     *   Logs in your user with a previously saved machine token
+     *     Logs in a user with a previously saved machine token.
      * @usage terminus auth:login --email=<email>
-     *   Logs in your user with a previously saved machine token belonging to <email>
+     *     Logs in a user with a previously saved machine token belonging to <email>.
      */
     public function logIn(array $options = ['machine-token' => null, 'email' => null,])
     {

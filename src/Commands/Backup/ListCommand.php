@@ -16,7 +16,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the backups for a given site and environment
+     * Lists backups for a specific site and environment.
      *
      * @authorize
      *
@@ -24,19 +24,19 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases backups
      *
      * @field-labels
-     *   file: Filename
-     *   size: Size
-     *   date: Date
-     *   initiator: Initiator
+     *     file: Filename
+     *     size: Size
+     *     date: Date
+     *     initiator: Initiator
      * @return RowsOfFields
      *
-     * @param string $site_env Site & environment to deploy to, in the form `site-name.env`.
-     * @param string $element [code|files|database|db] Only show backups of a certain type
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param string $element [code|files|database|db] Backup element filter
      *
      * @usage terminus backup:list <site>.<env>
-     *     Lists all backups made of <site>'s <env> environment
+     *     Lists all backups made of <site>'s <env> environment.
      * @usage terminus backup:list <site>.<env> --element=<element>
-     *     Lists all <element> backups made of <site>'s <env> environment
+     *     Lists all <element> backups made of <site>'s <env> environment.
      */
     public function listBackups($site_env, $element = 'all')
     {
@@ -53,17 +53,11 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
                 $backup_element = $element;
         }
 
-
         $backups = $env->getBackups()->getFinishedBackups($backup_element);
 
         $data = [];
-        foreach ($backups as $id => $backup) {
-            $data[] = [
-                'file'      => $backup->get('filename'),
-                'size'      => $backup->getSizeInMb(),
-                'date'      => $backup->getDate(),
-                'initiator' => $backup->getInitiator(),
-            ];
+        foreach ($backups as $backup) {
+            $data[] = $backup->serialize();
         }
 
         // Return the output data.

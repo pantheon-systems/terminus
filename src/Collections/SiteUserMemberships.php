@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\SiteUserMembership;
 
 /**
  * Class SiteUserMemberships
@@ -13,17 +14,15 @@ class SiteUserMemberships extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SiteUserMembership';
-
-    /**
-     * @var string
-     */
-    protected $url = 'sites/{site_id}/memberships/users';
-
+    protected $collected_class = SiteUserMembership::class;
     /**
      * @var boolean
      */
     protected $paged = true;
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/memberships/users';
 
     /**
      * Adds this user as a member to the site

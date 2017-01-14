@@ -182,7 +182,7 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/code-upstream-updates'
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/code-upstream-updates?base_branch=master'
         headers:
             Host: onebox
             Accept-Encoding: null

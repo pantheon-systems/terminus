@@ -29,20 +29,17 @@ class ListCommandTest extends DomainTest
      */
     public function testList()
     {
-        $dummy_info = ['domain' => 'domain', 'zone' => 'zone',];
+        $dummy_info = ['123' => ['domain' => 'domain', 'zone' => 'zone']];
 
         $this->domains->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
-            ->willReturn([$this->domain, $this->domain,]);
+            ->willReturn($dummy_info);
         $this->logger->expects($this->never())
             ->method('log');
-        $this->domain->expects($this->any())
-            ->method('serialize')
-            ->willReturn($dummy_info);
 
         $out = $this->command->listDomains('site_name.env_id');
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals([$dummy_info, $dummy_info,], $out->getArrayCopy());
+        $this->assertEquals($dummy_info, $out->getArrayCopy());
     }
 }
