@@ -16,7 +16,7 @@ sudo: false
 env:
   global:
     - TERMINUS_TEST_MODE=1
-    - COMPOSER_PROCESS_TIMEOUT=1800
+    - COMPOSER_PROCESS_TIMEOUT=3600
 
 before_script:
   - set -ex

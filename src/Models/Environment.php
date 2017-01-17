@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Models;
 
-use GuzzleHttp\TransferStats as TransferStats;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
@@ -12,7 +11,6 @@ use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\UpstreamStatus;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -807,16 +805,18 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function wake()
     {
-        $on_stats = function (TransferStats $stats) {
-            $this->transfertime = $stats->getTransferTime();
-        };
-        $domains = $this->getDomains()->ids();
-        $target = array_pop($domains);
+        $domains = array_filter(
+            $this->getDomains()->all(),
+            function ($domain) {
+                return !empty($domain->get('dns_zone_name'));
+            }
+        );
+        $domain = array_pop($domains);
+        $target = $domain->id;
         $healthc = "http://$target/pantheon_healthcheck";
         $response = $this->request()->request($healthc, compact('on_stats'));
         $return_data = [
             'success' => ($response['status_code'] === 200),
-            'time' => $this->transfertime,
             'styx' => $response['headers']['X-Pantheon-Styx-Hostname'],
             'response' => $response,
             'target' => $target,
