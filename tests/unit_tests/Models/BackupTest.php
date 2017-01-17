@@ -162,7 +162,7 @@ class BackupTest extends ModelTestCase
                 'restore_code',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
@@ -177,7 +177,7 @@ class BackupTest extends ModelTestCase
                 'restore_files',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
@@ -192,7 +192,7 @@ class BackupTest extends ModelTestCase
                 'restore_database',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
