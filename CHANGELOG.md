@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 - Removed framework type check from `drush` and `wp` commands. (#1521)
 - Terminus now checks for new versions after every command run. (#1523)
 - Fixed backup:restore. (#1529)
+- Fixed env:wake to target domains with zone names. (#1530)
 
 ## 1.0.0-beta.2 - 2017-01-10
 ### Fixed
