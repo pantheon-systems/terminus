@@ -43,6 +43,6 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('Pantheon headers missing, which is not quite right.');
         }
 
-        $this->log()->notice('OK >> {target} responded in {time}', $data);
+        $this->log()->notice('OK >> {target} responded', $data);
     }
 }
