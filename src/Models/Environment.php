@@ -199,13 +199,13 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     {
         $local = $this->getContainer()->get(LocalMachineHelper::class);
 
-        $git_email = $local->exec('git config user.email');
-        $git_user = $local->exec('git config user.name');
+        $git_email_result = $local->exec('git config user.email');
+        $git_user_result = $local->exec('git config user.name');
 
         $params = [
             'message' => $commit,
-            'committer_name' => $git_user,
-            'committer_email' => $git_email,
+            'committer_name' => $git_user_result['output'],
+            'committer_email' => $git_email_result['output'],
         ];
 
         $workflow = $this->getWorkflows()->create(
