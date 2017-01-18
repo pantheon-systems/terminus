@@ -54,13 +54,6 @@ class CachedCommandInfo extends CommandInfo
                 $option['default']
             );
         }
-
-
-        // Remember the name of the last parameter, if it holds the options.
-        // We will use this information to ignore @param annotations for the options.
-    //    if (!empty($this->options)) {
-    //      $this->optionParamName = $this->lastParameterName();
-    //    }
     }
 
   /**
@@ -76,15 +69,6 @@ class CachedCommandInfo extends CommandInfo
         return $this->input_options;
     }
 
-    protected function lastParameterName()
-    {
-        $params = $this->reflection->getParameters();
-        $param = end($params);
-        if (!$param) {
-            return '';
-        }
-        return $param->name;
-    }
 
   /**
    * Return the list of refleaction parameters.

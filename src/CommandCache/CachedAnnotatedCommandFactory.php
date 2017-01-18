@@ -24,11 +24,8 @@ class CachedAnnotatedCommandFactory extends AnnotatedCommandFactory implements D
         $includeAllPublicMethods = null
     ) {
 
-        // Deprecated: avoid using the $includeAllPublicMethods in favor of the setIncludeAllPublicMethods() accessor.
-        if (!isset($includeAllPublicMethods)) {
-            $includeAllPublicMethods = false;
-        }
-
+        $includeAllPublicMethods = $this->getIncludeAllPublicMethods();
+      
         $this->notify($commandFileInstance);
 
         $class = get_class($commandFileInstance);

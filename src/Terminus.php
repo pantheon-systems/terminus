@@ -6,6 +6,7 @@ use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use League\Container\Argument\RawArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
@@ -293,14 +294,14 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
 
-        // Tell the command loader to only allow command functions that have a name/alias.
-        $command_cache = new FileStore($this->getConfig()->get('cache_dir') . '/commands');
-        $factory = new CachedAnnotatedCommandFactory();
-        $factory->setDataStore($command_cache);
-        $factory->setIncludeAllPublicMethods(false);
-        $factory->setCommandProcessor($container->get('commandProcessor'));
+        // Add our caching command factory
+        $container->share('commandCache', FileStore::class)
+            ->withArgument(new RawArgument($this->getConfig()->get('cache_dir') . '/commands'));
 
-        $container->share('commandFactory', $factory);
+        $container->share('commandFactory', CachedAnnotatedCommandFactory::class)
+            ->withMethodCall('setCommandProcessor', ['commandProcessor'])
+            ->withMethodCall('setDataStore', ['commandCache'])
+            ->withMethodCall('setIncludeAllPublicMethods', [new RawArgument(false)]);
     }
 
     /**
