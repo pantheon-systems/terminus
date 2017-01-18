@@ -120,11 +120,11 @@ class CachedCommandInfo extends CommandInfo
     {
         $out = [];
         foreach ($in->getValues() as $key => $val) {
-            $info['arguments'][$key] = [
+            $out[$key] = [
               'description' => $in->getDescription($key),
             ];
             if ($in->hasDefault($key)) {
-                $info['arguments'][$key]['default'] = $val;
+                $out[$key]['default'] = $val;
             }
         }
         return $out;
@@ -153,7 +153,7 @@ class CachedCommandInfo extends CommandInfo
                 $mode = InputOption::VALUE_NONE;
             }
 
-            $info['input_options'][$i] = [
+            $out[$i] = [
               'name' => $option->getName(),
               'shortcut' => $option->getShortcut(),
               'mode' => $mode,
@@ -161,7 +161,7 @@ class CachedCommandInfo extends CommandInfo
               'default' => null,
             ];
             if ($option->isValueOptional()) {
-                $info['input_options'][$i]['default'] = $option->getDefault();
+                $out[$i]['default'] = $option->getDefault();
             }
         }
         return $out;
