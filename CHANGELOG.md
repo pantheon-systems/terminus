@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 - Terminus now checks for new versions after every command run. (#1523)
+- `site:create` now checks to see whether a site name is taken before attempting to create it. (#1536)
 
 ### Removed
 - Removed framework type check from `drush` and `wp` commands. (#1521)

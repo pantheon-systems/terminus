@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Site;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class CreateCommand
@@ -33,6 +34,10 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
 
     public function create($site_name, $label, $upstream_id, $options = ['org' => null,])
     {
+        if ($this->sites()->nameIsTaken($site_name)) {
+            throw new TerminusException('The site name {site_name} is already taken.', compact('site_name'));
+        }
+
         $workflow_options = [
             'label' => $label,
             'site_name' => $site_name
@@ -50,13 +55,13 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
 
         // Create the site
         $this->log()->notice('Creating a new site...');
-        $workflow = $this->sites->create($workflow_options);
+        $workflow = $this->sites()->create($workflow_options);
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.
         }
 
         // Deploy the upstream
-        if ($site = $this->getSite($site_name)) {
+        if ($site = $this->getSite($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
             $workflow = $site->deployProduct($upstream->id);
             while (!$workflow->checkProgress()) {
