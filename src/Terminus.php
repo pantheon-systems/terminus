@@ -29,6 +29,7 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\CommandCache\CachedAnnotatedCommandFactory;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
@@ -293,8 +294,13 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->invokeMethod('setSites', ['sites']);
 
         // Tell the command loader to only allow command functions that have a name/alias.
-        $factory = $container->get('commandFactory');
+        $command_cache = new FileStore($this->getConfig()->get('cache_dir') . '/commands');
+        $factory = new CachedAnnotatedCommandFactory();
+        $factory->setDataStore($command_cache);
         $factory->setIncludeAllPublicMethods(false);
+        $factory->setCommandProcessor($container->get('commandProcessor'));
+
+        $container->share('commandFactory', $factory);
     }
 
     /**
