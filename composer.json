@@ -12,7 +12,6 @@
   "require": {
     "php": ">=5.5.9",
     "composer/semver": "^1.4",
-    "consolidation/annotated-command": "dev-command-cache as 2.2.2",
     "consolidation/robo": "^1.0.5",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
