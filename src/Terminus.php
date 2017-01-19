@@ -30,7 +30,6 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\CommandCache\CachedAnnotatedCommandFactory;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
@@ -294,14 +293,13 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
 
-        // Add our caching command factory
-        $container->share('commandCache', FileStore::class)
-            ->withArgument(new RawArgument($this->getConfig()->get('cache_dir') . '/commands'));
+        // Install our command cache into the command factory
+        $commandCacheDir = $this->getConfig()->get('cache_dir') . '/commands';
+        $commandCacheDataStore = new FileStore($commandCacheDir);
 
-        $container->share('commandFactory', CachedAnnotatedCommandFactory::class)
-            ->withMethodCall('setCommandProcessor', ['commandProcessor'])
-            ->withMethodCall('setDataStore', ['commandCache'])
-            ->withMethodCall('setIncludeAllPublicMethods', [new RawArgument(false)]);
+        $factory = $container->get('commandFactory');
+        $factory->setIncludeAllPublicMethods(false);
+        $factory->setDataStore($commandCacheDataStore);
     }
 
     /**
