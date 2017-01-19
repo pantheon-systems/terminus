@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\CommandCache;
 
 use Consolidation\AnnotatedCommand\AnnotatedCommandFactory;
+use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 
@@ -31,14 +32,14 @@ class CachedAnnotatedCommandFactory extends AnnotatedCommandFactory implements D
             $cache_data = [];
             foreach ($commandInfoList as $i => $commandInfo) {
                 if (static::isCommandMethod($commandInfo, $includeAllPublicMethods)) {
-                    $cache_data[$i] = CachedCommandInfo::serialize($commandInfo);
+                    $cache_data[$i] = $commandInfo->serialize();
                 }
             }
             $this->getDataStore()->set($class, $cache_data);
         } else {
             $commandInfoList = [];
             foreach ($cache_data as $i => $data) {
-                $commandInfoList[$i] = CachedCommandInfo::unserialize((array)$data);
+                $commandInfoList[$i] = CommandInfo::deserialize((array)$data);
             }
         }
 
