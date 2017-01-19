@@ -42,84 +42,18 @@ class EnvironmentTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = $this->_createModel(['id' => 'dev']);
-    }
-
-    protected function _createModel($params = ['id' => 'dev'])
-    {
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site->id = "abc";
-        $this->site->method('getName')->willReturn('abc');
-
-        $environments = new Environments(['site' => $this->site]);
-        $model = new Environment((object)$params, ['collection' => $environments]);
-
-        $this->container = new Container();
-
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->lock = $this->getMockBuilder(Lock::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->local_machine = $this->getMockBuilder(LocalMachineHelper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->container->add(Workflows::class, $this->workflows);
-        $this->container->add(Lock::class, $this->lock);
-        $this->container->add(LocalMachineHelper::class, $this->local_machine);
-
-
-        $model->setContainer($this->container);
-        $model->setRequest($this->request);
-        $model->setConfig($this->config);
-
-        return $model;
-    }
-
-    protected function _testWorkflowOperation(
-        $method,
-        $method_params,
-        $wf_name,
-        $wf_params = null,
-        $model_params = ['id' => 'dev']
-    ) {
-        $model = $this->_createModel($model_params);
-
-        if ($wf_params) {
-            $this->workflows->expects($this->any())
-                ->method('create')
-                ->with($wf_name, ['params' => $wf_params])
-                ->willReturn($this->workflow);
-        } else {
-            $this->workflows->expects($this->any())
-                ->method('create')
-                ->with($wf_name)
-                ->willReturn($this->workflow);
-        }
-
-        $wf = call_user_func_array([$model, $method], $method_params);
-        $this->assertEquals($this->workflow, $wf);
+        $this->model = $this->createModel(['id' => 'dev']);
     }
 
     public function testApplyUpstreamUpdates()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'applyUpstreamUpdates',
             [],
             'apply_upstream_updates',
             ['updatedb' => true, 'xoption' => false]
         );
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'applyUpstreamUpdates',
             [false, true],
             'apply_upstream_updates',
@@ -134,7 +68,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testChangeConnectionMode()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'changeConnectionMode',
             ['git'],
             'enable_git_mode',
@@ -142,7 +76,7 @@ class EnvironmentTest extends ModelTestCase
             ['id' => 'dev', 'on_server_development' => true]
         );
 
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'changeConnectionMode',
             ['sftp'],
             'enable_on_server_development',
@@ -150,18 +84,18 @@ class EnvironmentTest extends ModelTestCase
             ['id' => 'dev']
         );
 
-        $model = $this->_createModel(['id' => 'dev', 'on_server_development' => true]);
+        $model = $this->createModel(['id' => 'dev', 'on_server_development' => true]);
         $return = $model->changeConnectionMode('sftp');
         $this->assertEquals('The connection mode is already set to sftp.', $return);
 
-        $model = $this->_createModel(['id' => 'dev']);
+        $model = $this->createModel(['id' => 'dev']);
         $return = $model->changeConnectionMode('git');
         $this->assertEquals('The connection mode is already set to git.', $return);
     }
 
     public function testClearCache()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'clearCache',
             [],
             'clear_cache',
@@ -171,13 +105,13 @@ class EnvironmentTest extends ModelTestCase
 
     public function testCloneDatabase()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'cloneDatabase',
             ['stage'],
             'clone_database',
             ['from_environment' => 'stage',]
         );
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'cloneDatabase',
             ['prod'],
             'clone_database',
@@ -187,13 +121,13 @@ class EnvironmentTest extends ModelTestCase
 
     public function testCloneFiles()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'cloneFiles',
             ['stage'],
             'clone_files',
             ['from_environment' => 'stage',]
         );
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'cloneFiles',
             ['prod'],
             'clone_files',
@@ -238,7 +172,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testConvergeBindings()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'convergeBindings',
             [],
             'converge_environment'
@@ -262,7 +196,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testDelete()
     {
-        $model = $this->_createModel(['id' => 'mymulti']);
+        $model = $this->createModel(['id' => 'mymulti']);
         $this->site->method('getWorkflows')->willReturn($this->workflows);
         $this->workflows->expects($this->any())
             ->method('create')
@@ -278,7 +212,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testDeleteWithBranch()
     {
-        $model = $this->_createModel(['id' => 'mymulti2']);
+        $model = $this->createModel(['id' => 'mymulti2']);
         $this->site->method('getWorkflows')->willReturn($this->workflows);
         $this->workflows->expects($this->any())
             ->method('create')
@@ -294,7 +228,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testDeploy()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'deploy',
             [['a' => '123', 'b' => '345']],
             'deploy',
@@ -318,7 +252,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testDomain()
     {
-        $model = $this->_createModel(['id' => 'dev', 'dns_zone' => 'example.com']);
+        $model = $this->createModel(['id' => 'dev', 'dns_zone' => 'example.com']);
         $expected = "dev-abc.example.com";
         $actual = $model->domain();
         $this->assertEquals($expected, $actual);
@@ -351,7 +285,7 @@ class EnvironmentTest extends ModelTestCase
 
     protected function _testGetParentEnvironment($id, $parent)
     {
-        $model = $this->_createModel(['id' => $id]);
+        $model = $this->createModel(['id' => $id]);
         $environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -424,7 +358,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function _getModelWithCommits($commit_labels)
     {
-        $model = $this->_createModel(['id' => 'live']);
+        $model = $this->createModel(['id' => 'live']);
         $environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -486,7 +420,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testImportDatabase()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'importDatabase',
             ['https://example.com/myfile.sql'],
             'import_database',
@@ -496,7 +430,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testImport()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'import',
             ['https://example.com/myfile.tar.gz'],
             'do_migration',
@@ -506,7 +440,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testImportFiles()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'importFiles',
             ['https://example.com/myfile.tar.gz'],
             'import_files',
@@ -516,7 +450,7 @@ class EnvironmentTest extends ModelTestCase
 
     public function testInitializeBindings()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'initializeBindings',
             [],
             'create_environment',
@@ -527,7 +461,7 @@ class EnvironmentTest extends ModelTestCase
             ],
             ['id' => 'test']
         );
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'initializeBindings',
             [],
             'create_environment',
@@ -544,18 +478,18 @@ class EnvironmentTest extends ModelTestCase
     {
         $this->assertTrue($this->model->isInitialized());
 
-        $model = $this->_createModel(['id' => 'mymulti']);
+        $model = $this->createModel(['id' => 'mymulti']);
         $this->assertTrue($model->isInitialized());
 
         $commits = [
             ['some', 'commit'],
         ];
-        $model = $this->_createModel(['id' => 'test']);
+        $model = $this->createModel(['id' => 'test']);
         $model->commits = $this->_getCommits($commits);
         $this->assertTrue($model->isInitialized());
 
         $commits = [];
-        $model = $this->_createModel(['id' => 'test']);
+        $model = $this->createModel(['id' => 'test']);
         $model->commits = $this->_getCommits($commits);
         $this->assertFalse($model->isInitialized());
     }
@@ -564,19 +498,19 @@ class EnvironmentTest extends ModelTestCase
     {
         $this->assertFalse($this->model->isMultidev());
 
-        $model = $this->_createModel(['id' => 'test']);
+        $model = $this->createModel(['id' => 'test']);
         $this->assertFalse($model->isMultidev());
 
-        $model = $this->_createModel(['id' => 'live']);
+        $model = $this->createModel(['id' => 'live']);
         $this->assertFalse($model->isMultidev());
 
-        $model = $this->_createModel(['id' => 'mymulti']);
+        $model = $this->createModel(['id' => 'mymulti']);
         $this->assertTrue($model->isMultidev());
     }
 
     public function testMergeFromDev()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'mergeFromDev',
             [],
             'merge_dev_into_cloud_development_environment',
@@ -584,7 +518,7 @@ class EnvironmentTest extends ModelTestCase
             ['id' => 'mymulti']
         );
 
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'mergeFromDev',
             [['updatedb' => true]],
             'merge_dev_into_cloud_development_environment',
@@ -593,21 +527,21 @@ class EnvironmentTest extends ModelTestCase
         );
 
         $this->setExpectedException(TerminusException::class, 'The dev environment is not a multidev environment');
-        $model = $this->_createModel(['id' => 'dev']);
+        $model = $this->createModel(['id' => 'dev']);
         $model->mergeFromDev();
     }
 
     public function testMergeToDev()
     {
 
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'mergeToDev',
             [],
             'merge_cloud_development_environment_into_dev',
             ['updatedb' => false, 'from_environment' => null]
         );
 
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'mergeToDev',
             [['updatedb' => true, 'from_environment' => 'mymulti']],
             'merge_cloud_development_environment_into_dev',
@@ -618,7 +552,7 @@ class EnvironmentTest extends ModelTestCase
             TerminusException::class,
             'Environment::mergeToDev() may only be run on the dev environment.'
         );
-        $model = $this->_createModel(['id' => 'stage']);
+        $model = $this->createModel(['id' => 'stage']);
         $model->mergeToDev();
     }
 
@@ -657,7 +591,7 @@ class EnvironmentTest extends ModelTestCase
             'dns_zone' => 'example.com'
         ];
         $this->lock->method('isLocked')->willReturn(false);
-        $model = $this->_createModel($info);
+        $model = $this->createModel($info);
         $actual = $model->serialize();
         $expected = [
             'id' => 'dev',
@@ -674,7 +608,7 @@ class EnvironmentTest extends ModelTestCase
         $info['on_server_development'] = false;
         $expected['onserverdev'] = 'false';
         $expected['connection_mode'] = 'git';
-        $model = $this->_createModel($info);
+        $model = $this->createModel($info);
         $actual = $model->serialize();
         $this->assertEquals($expected, $actual);
     }
@@ -804,10 +738,76 @@ class EnvironmentTest extends ModelTestCase
 
     public function testWipe()
     {
-        $this->_testWorkflowOperation(
+        $this->setUpWorkflowOperationTest(
             'wipe',
             [],
             'wipe'
         );
+    }
+
+    protected function createModel($params = ['id' => 'dev'])
+    {
+        $this->site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site->id = "abc";
+        $this->site->method('getName')->willReturn('abc');
+
+        $environments = new Environments(['site' => $this->site]);
+        $model = new Environment((object)$params, ['collection' => $environments]);
+
+        $this->container = new Container();
+
+        $this->workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->lock = $this->getMockBuilder(Lock::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->local_machine = $this->getMockBuilder(LocalMachineHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->container->add(Workflows::class, $this->workflows);
+        $this->container->add(Lock::class, $this->lock);
+        $this->container->add(LocalMachineHelper::class, $this->local_machine);
+
+
+        $model->setContainer($this->container);
+        $model->setRequest($this->request);
+        $model->setConfig($this->config);
+
+        return $model;
+    }
+
+    protected function setUpWorkflowOperationTest(
+        $method,
+        $method_params,
+        $wf_name,
+        $wf_params = null,
+        $model_params = ['id' => 'dev']
+    ) {
+        $model = $this->createModel($model_params);
+
+        if ($wf_params) {
+            $this->workflows->expects($this->any())
+                ->method('create')
+                ->with($wf_name, ['params' => $wf_params])
+                ->willReturn($this->workflow);
+        } else {
+            $this->workflows->expects($this->any())
+                ->method('create')
+                ->with($wf_name)
+                ->willReturn($this->workflow);
+        }
+
+        $wf = call_user_func_array([$model, $method], $method_params);
+        $this->assertEquals($this->workflow, $wf);
     }
 }

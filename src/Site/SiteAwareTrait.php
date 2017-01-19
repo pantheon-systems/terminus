@@ -47,6 +47,25 @@ trait SiteAwareTrait
     }
 
     /**
+     * Get the site and environment with the given ids, if provided
+     *
+     * @param string $site_env_id The site/environment id in the form [<site>[.<env>]]
+     * @return array The site and environment in an array, if provided; may return [null, null]
+     */
+    public function getOptionalSiteEnv($site_env_id)
+    {
+        if (empty($site_env_id)) {
+            return [null, null];
+        }
+
+        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
+
+        $site = $this->getSite($site_id);
+        $env = !empty($env_id) ? $site->getEnvironments()->get($env_id) : null;
+        return [$site, $env];
+    }
+
+    /**
      * Get the site and environment with the given ids.
      *
      * @TODO This should be moved to the input/validation stage when that is available.
@@ -71,21 +90,23 @@ trait SiteAwareTrait
     }
 
     /**
-     * Get the site and environment with the given ids, if provided
+     * Get the site and environment with the given IDs, provided the site is not frozen when the environment is either
+     * test or live.
      *
-     * @param string $site_env_id The site/environment id in the form [<site>[.<env>]]
-     * @return array The site and environment in an array, if provided; may return [null, null]
+     * @TODO This should be moved to the input/validation stage when that is available.
+     *
+     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
+     * @param string  $default_env The default environment to use if none is specified
+     * @return array  The site and environment in an array.
      */
-    public function getOptionalSiteEnv($site_env_id)
+    public function getUnfrozenSiteEnv($site_env_id, $default_env = null)
     {
-        if (empty($site_env_id)) {
-            return [null, null];
+        list($site, $env) = $this->getSiteEnv($site_env_id, $default_env);
+
+        if (in_array($env->id, ['test', 'live',]) && !is_null($site->get('frozen'))) {
+            throw new TerminusException('This site is frozen. Its test and live environments are unavailable.');
         }
 
-        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
-
-        $site = $this->getSite($site_id);
-        $env = !empty($env_id) ? $site->getEnvironments()->get($env_id) : null;
-        return [$site, $env];
+        return [$site, $env,];
     }
 }

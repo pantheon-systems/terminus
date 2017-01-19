@@ -291,7 +291,7 @@ class SiteTest extends ModelTestCase
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
-            'frozen' => true,
+            'frozen' => 'true',
         ];
 
         $this->request->expects($this->once())

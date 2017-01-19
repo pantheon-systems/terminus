@@ -221,6 +221,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Returns the PHP version of this site.
+     *
+     * @return null|string
+     */
+    public function getPHPVersion()
+    {
+        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
+    }
+
+    /**
      * Remove this site's payment method
      *
      * @return Workflow
@@ -246,18 +256,12 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
             'upstream' => (string)$this->getUpstream(),
-            'php_version' => $this->get('php_version'),
+            'php_version' => $this->getPHPVersion(),
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
+            'frozen' => is_null($this->get('frozen')) ? 'false' : 'true',
         ];
-        if ($this->has('frozen')) {
-            $data['frozen'] = true;
-        }
-        if (!is_null($data['php_version'])) {
-            $data['php_version'] = substr($data['php_version'], 0, 1)
-                . '.' . substr($data['php_version'], 1, 1);
-        }
         if (isset($this->tags)) {
             $data['tags'] = implode(',', (array)$this->tags->ids());
         }
@@ -299,20 +303,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             }
             throw $e;
         }
-    }
-
-    /**
-     * Modify response data between fetch and assignment
-     *
-     * @param object $data attributes received from API response
-     * @return object $data
-     */
-    protected function parseAttributes($data)
-    {
-        if (property_exists($data, 'php_version')) {
-            $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
-        }
-        return $data;
     }
 
     /**

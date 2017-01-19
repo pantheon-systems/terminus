@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file. This projec
 ## MASTER
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
-- Removed framework type check from `drush` and `wp` commands. (#1521)
+
+### Fixed
+- Fixed `backup:restore`. (#1529)
+- Fixed `env:wake` to target domains with zone names. (#1530)
+- Fixed `env` commands to not err when the site is frozen and the test or live environment is to be accessed. (#1537)
+
+### Changed
 - Terminus now checks for new versions after every command run. (#1523)
-- Fixed backup:restore. (#1529)
-- Fixed env:wake to target domains with zone names. (#1530)
+
+### Removed
+- Removed framework type check from `drush` and `wp` commands. (#1521)
 
 ## 1.0.0-beta.2 - 2017-01-10
 ### Fixed

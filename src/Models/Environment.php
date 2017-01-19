@@ -490,6 +490,16 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * Returns the PHP version of this environment.
+     *
+     * @return null|string
+     */
+    public function getPHPVersion()
+    {
+        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
+    }
+
+    /**
      * Gives Git connection info for this environment
      *
      * @return array
@@ -717,7 +727,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function serialize()
     {
-        $info = [
+        return [
             'id' => $this->id,
             'created' => date($this->getConfig()->get('date_format'), $this->get('environment_created')),
             'domain' => $this->domain(),
@@ -725,9 +735,8 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             'locked' => $this->getLock()->isLocked() ? 'true' : 'false',
             'initialized' => $this->isInitialized() ? 'true' : 'false',
             'connection_mode' => $this->get('connection_mode'),
-            'php_version' => $this->get('php_version'),
+            'php_version' => $this->getPHPVersion(),
         ];
-        return $info;
     }
 
     /**
@@ -930,16 +939,12 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     protected function parseAttributes($data)
     {
-        if (property_exists($data, 'on_server_development')
-            && (boolean)$data->on_server_development
-        ) {
+        if (property_exists($data, 'on_server_development') && (boolean)$data->on_server_development) {
             $data->connection_mode = 'sftp';
         } else {
             $data->connection_mode = 'git';
         }
-        if (property_exists($data, 'php_version')) {
-            $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
-        } else {
+        if (!property_exists($data, 'php_version')) {
             $data->php_version = $this->getSite()->get('php_version');
         }
         return $data;
