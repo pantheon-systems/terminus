@@ -73,7 +73,7 @@ trait SiteAwareTrait
      * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
      * @param string  $default_env The default environment to use if none is specified
      * @return array  The site and environment in an array.
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws TerminusException
      */
     public function getSiteEnv($site_env_id, $default_env = null)
     {
@@ -98,6 +98,7 @@ trait SiteAwareTrait
      * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
      * @param string  $default_env The default environment to use if none is specified
      * @return array  The site and environment in an array.
+     * @throws TerminusException
      */
     public function getUnfrozenSiteEnv($site_env_id, $default_env = null)
     {
