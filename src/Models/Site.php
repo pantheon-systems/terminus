@@ -47,10 +47,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public $solr;
     /**
-     * @var \stdClass
-     */
-    protected $upstream_data;
-    /**
      * @var SiteUserMemberships
      */
     public $user_memberships;
@@ -58,6 +54,10 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      * @var Workflows
      */
     public $workflows;
+    /**
+     * @var \stdClass
+     */
+    protected $upstream_data;
     /**
      * @var string The URL at which to fetch this model's information
      */
@@ -76,16 +76,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->url = "sites/{$this->id}?site_state=true";
 
         $this->setUpstream($attributes);
-    }
-
-    /**
-     * Get the human-readable name of the site
-     *
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->get('name');
     }
 
     /**
@@ -127,14 +117,12 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function dashboardUrl()
     {
-        $url = sprintf(
+        return sprintf(
             '%s://%s/sites/%s',
             $this->getConfig()->get('dashboard_protocol'),
             $this->getConfig()->get('dashboard_host'),
             $this->id
         );
-
-        return $url;
     }
 
     /**
@@ -157,10 +145,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function deployProduct($upstream_id)
     {
-        return $this->getWorkflows()->create(
-            'deploy_product',
-            ['params' => ['product_id' => $upstream_id,],]
-        );
+        return $this->getWorkflows()->create('deploy_product', ['params' => ['product_id' => $upstream_id,],]);
     }
 
     /**
@@ -175,6 +160,28 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->setUpstream($data);
         $this->attributes = (object)array_merge((array)$this->attributes, (array)$data);
         return $this;
+    }
+
+    /**
+     * @return Branches
+     */
+    public function getBranches()
+    {
+        if (empty($this->branches)) {
+            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
+        }
+        return $this->branches;
+    }
+
+    /**
+     * @return Environments
+     */
+    public function getEnvironments()
+    {
+        if (empty($this->environments)) {
+            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
+        }
+        return $this->environments;
     }
 
     /**
@@ -193,6 +200,38 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             return $this->features[$feature];
         }
         return null;
+    }
+
+    /**
+     * Get the human-readable name of the site
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->get('name');
+    }
+
+    /**
+     * @return NewRelic
+     */
+    public function getNewRelic()
+    {
+        if (empty($this->new_relic)) {
+            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,]]);
+        }
+        return $this->new_relic;
+    }
+
+    /**
+     * @return SiteOrganizationMemberships
+     */
+    public function getOrganizationMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,]]);
+        }
+        return $this->org_memberships;
     }
 
     /**
@@ -231,6 +270,58 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * @return Redis
+     */
+    public function getRedis()
+    {
+        if (empty($this->redis)) {
+            $this->redis = $this->getContainer()->get(Redis::class, [null, ['site' => $this,]]);
+        }
+        return $this->redis;
+    }
+
+    /**
+     * @return Solr
+     */
+    public function getSolr()
+    {
+        if (empty($this->solr)) {
+            $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,]]);
+        }
+        return $this->solr;
+    }
+
+    /**
+     * @return Upstream
+     */
+    public function getUpstream()
+    {
+        return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
+    }
+
+    /**
+     * @return SiteUserMemberships
+     */
+    public function getUserMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
+        }
+        return $this->user_memberships;
+    }
+
+    /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
+        }
+        return $this->workflows;
+    }
+
+    /**
      * Remove this site's payment method
      *
      * @return Workflow
@@ -263,7 +354,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'frozen' => is_null($this->get('frozen')) ? 'false' : 'true',
         ];
         if (isset($this->tags)) {
-            $data['tags'] = implode(',', (array)$this->tags->ids());
+            $data['tags'] = implode(',', $this->tags->ids());
         }
         if (isset($this->memberships)) {
             $data['memberships'] = implode(',', $this->memberships);
@@ -288,17 +379,14 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      *
      * @param string $service_level Level to set service on site to
      * @return Workflow
-     * @throws \Exception
+     * @throws TerminusException|\Exception
      */
     public function updateServiceLevel($service_level)
     {
         try {
-            return $this->getWorkflows()->create(
-                'change_site_service_level',
-                ['params' => compact('service_level'),]
-            );
+            return $this->getWorkflows()->create('change_site_service_level', ['params' => compact('service_level'),]);
         } catch (\Exception $e) {
-            if ($e->getCode() == '403') {
+            if ($e->getCode() == 403) {
                 throw new TerminusException('A payment method is required to increase the service level of this site.');
             }
             throw $e;
@@ -315,107 +403,9 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $upstream_data = (object)[];
         if (isset($attributes->settings->upstream)) {
             $upstream_data = $attributes->settings->upstream;
-        } else {
-            if (isset($attributes->upstream)) {
-                $upstream_data = $attributes->upstream;
-            }
+        } else if (isset($attributes->upstream)) {
+            $upstream_data = $attributes->upstream;
         }
         $this->upstream_data = $upstream_data;
-    }
-
-    /**
-     * @return Upstream
-     */
-    public function getUpstream()
-    {
-        return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
-    }
-
-    /**
-     * @return Branches
-     */
-    public function getBranches()
-    {
-        if (empty($this->branches)) {
-            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
-        }
-        return $this->branches;
-    }
-
-    /**
-     * @return Workflows
-     */
-    public function getWorkflows()
-    {
-        if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
-        }
-        return $this->workflows;
-    }
-
-    /**
-     * @return SiteUserMemberships
-     */
-    public function getUserMemberships()
-    {
-        if (empty($this->user_memberships)) {
-            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
-        }
-        return $this->user_memberships;
-    }
-    
-    /**
-     * @return SiteOrganizationMemberships
-     */
-    public function getOrganizationMemberships()
-    {
-        if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,]]);
-        }
-        return $this->org_memberships;
-    }
-
-    /**
-     * @return Redis
-     */
-    public function getRedis()
-    {
-        if (empty($this->redis)) {
-            $this->redis = $this->getContainer()->get(Redis::class, [null, ['site' => $this,]]);
-        }
-        return $this->redis;
-    }
-
-    /**
-     * @return Solr
-     */
-    public function getSolr()
-    {
-        if (empty($this->solr)) {
-            $this->solr = $this->getContainer()->get(Solr::class, [null, ['site' => $this,]]);
-        }
-        return $this->solr;
-    }
-
-    /**
-     * @return Environments
-     */
-    public function getEnvironments()
-    {
-        if (empty($this->environments)) {
-            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
-        }
-        return $this->environments;
-    }
-
-    /**
-     * @return NewRelic
-     */
-    public function getNewRelic()
-    {
-        if (empty($this->new_relic)) {
-            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,]]);
-        }
-        return $this->new_relic;
     }
 }
