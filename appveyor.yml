@@ -21,7 +21,7 @@ install:
   - SET PATH=%APPVEYOR_BUILD_FOLDER%/DevDesktopCommon/bintools-win/msys/bin;%PATH%
   - SET PATH=C:\Program Files\MySql\MySQL Server 5.7\bin\;%PATH%
   #Install PHP
-  - cinst -y php
+  - cinst -y --ignore-checksums php --version 7.0.12
   - cd c:\tools\php
   - copy php.ini-production php.ini
 
