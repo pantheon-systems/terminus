@@ -116,4 +116,18 @@ class NewRelicTest extends ModelTestCase
         $data = $this->model->fetch()->serialize();
         $this->assertEquals($desired_data, $data);
     }
+
+    /**
+     * Tests NewRelic::serialize() without a name
+     */
+    public function testSerializeNoName()
+    {
+        $this->request->expects($this->never())
+            ->method('request');
+        $this->model = new NewRelic((object)[], ['site' => $this->site,]);
+        $this->model->setRequest($this->request);
+
+        $out = $this->model->serialize();
+        $this->assertEquals([], $out);
+    }
 }

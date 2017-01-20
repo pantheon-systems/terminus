@@ -19,17 +19,17 @@ class OrganizationSiteMembershipTest extends ModelTestCase
 {
     public function testToString()
     {
-        $org = new Organization((object)['id' => '123', 'profile' => (object)['name' => 'My Org']]);
+        $org = new Organization((object)['id' => '123', 'profile' => (object)['name' => 'My Org',],]);
         $org_site = new OrganizationSiteMembership(
-            (object)['site' => (object)[], 'tags' => (object)[]],
-            ['collection' => (object)['organization' => $org]]
+            (object)['site' => (object)[], 'tags' => (object)[],],
+            ['collection' => (object)['organization' => $org,],]
         );
         $this->assertEquals('123: My Org', (string)$org_site);
     }
     
     public function testDelete()
     {
-        $site_data = ['site_id' => '123'];
+        $site_data = ['site_id' => '123',];
         $container = new Container();
 
         $site = $this->getMockBuilder(Site::class)
@@ -55,14 +55,14 @@ class OrganizationSiteMembershipTest extends ModelTestCase
             ->method('create')
             ->with(
                 'remove_organization_site_membership',
-                ['params' => ['site_id' => '123']]
+                ['params' => $site_data,]
             )
             ->willReturn($wf);
         $org->method('getWorkflows')->willReturn($workflows);
 
         $org_site = new OrganizationSiteMembership(
-            (object)['site' => (object)$site_data, 'tags' => (object)[]],
-            ['collection' => (object)['organization' => $org]]
+            (object)['site' => (object)$site_data, 'tags' => (object)[],],
+            ['collection' => (object)['organization' => $org,],]
         );
         $org_site->setContainer($container);
         $out = $org_site->delete();

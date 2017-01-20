@@ -2,6 +2,12 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
@@ -15,29 +21,13 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     use SessionAwareTrait;
 
     /**
-     * @var mixed
-     */
-    protected $owner;
-    /**
-     * @var Environment
-     */
-    private $environment;
-    /**
-     * @var Organization
-     */
-    private $organization;
-    /**
-     * @var Site
-     */
-    private $site;
-    /**
-     * @var User
-     */
-    private $user;
-    /**
      * @var string
      */
     protected $collected_class = Workflow::class;
+    /**
+     * @var TerminusModel
+     */
+    protected $owner;
 
     /**
      * Instantiates the collection, sets param members as properties
@@ -48,59 +38,14 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     {
         parent::__construct($options);
         if (isset($options['environment'])) {
-            $this->owner = $this->environment = $options['environment'];
+            $this->owner = $options['environment'];
         } elseif (isset($options['organization'])) {
-            $this->owner = $this->organization = $options['organization'];
+            $this->owner = $options['organization'];
         } elseif (isset($options['site'])) {
-            $this->owner = $this->site = $options['site'];
+            $this->owner = $options['site'];
         } elseif (isset($options['user'])) {
-            $this->owner = $this->user = $options['user'];
+            $this->owner = $options['user'];
         }
-    }
-
-    /**
-     * Get the URL for this model
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        if (!empty($this->url)) {
-            return $this->url;
-        }
-
-        // Determine the url based on the workflow owner.
-        $owner = $this->getOwnerObject();
-        switch (get_class($owner)) {
-            case 'Pantheon\Terminus\Models\Environment':
-                $this->url = sprintf(
-                    'sites/%s/environments/%s/workflows',
-                    $owner->site->id,
-                    $owner->id
-                );
-                break;
-            case 'Pantheon\Terminus\Models\Organization':
-                $this->url = sprintf(
-                    'users/%s/organizations/%s/workflows',
-                    // @TODO: This should be passed in rather than read from the current session.
-                    $this->session()->getUser()->id,
-                    $owner->id
-                );
-                break;
-            case 'Pantheon\Terminus\Models\Site':
-                $this->url = sprintf(
-                    'sites/%s/workflows',
-                    $owner->id
-                );
-                break;
-            case 'Pantheon\Terminus\Models\User':
-                $this->url = sprintf(
-                    'users/%s/workflows',
-                    $owner->id
-                );
-                break;
-        }
-        return $this->url;
     }
 
     /**
@@ -110,14 +55,12 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
      */
     public function allFinished()
     {
-        $workflows = array_filter(
+        return array_filter(
             $this->all(),
             function ($workflow) {
-                $is_finished = $workflow->isFinished();
-                return $is_finished;
+                return $workflow->isFinished();
             }
         );
-        return $workflows;
     }
 
     /**
@@ -127,16 +70,12 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
      */
     public function allWithLogs()
     {
-        $workflows = $this->allFinished();
-        $workflows = array_filter(
-            $workflows,
+        return array_filter(
+            $this->allFinished(),
             function ($workflow) {
-                $has_logs = $workflow->get('has_operation_log_output');
-                return $has_logs;
+                return $workflow->get('has_operation_log_output');
             }
         );
-
-        return $workflows;
     }
 
     /**
@@ -179,11 +118,42 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     /**
      * Returns the object which controls this collection
      *
-     * @return mixed
+     * @return TerminusModel
      */
     public function getOwnerObject()
     {
         return $this->owner;
+    }
+
+    /**
+     * Get the URL for this model
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        if (!empty($this->url)) {
+            return $this->url;
+        }
+
+        // Determine the url based on the workflow owner.
+        $owner = $this->getOwnerObject();
+        switch (get_class($owner)) {
+            case Environment::class:
+                $this->url = "sites/{$owner->site->id}/environments/{$owner->id}/workflows";
+                break;
+            case Organization::class:
+                $this->url = "users/{$this->session()->getUser()->id}/organizations/{$owner->id}/workflows";
+                // @TODO: This should be passed in rather than read from the current session.
+                break;
+            case Site::class:
+                $this->url = "sites/{$owner->id}/workflows";
+                break;
+            case User::class:
+                $this->url = "users/{$owner->id}/workflows";
+                break;
+        }
+        return $this->url;
     }
 
     /**
@@ -212,22 +182,14 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
         usort(
             $workflows,
             function ($a, $b) {
-                $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
-                if ($a_finished_after_b) {
-                    $cmp = -1;
-                } else {
-                    $cmp = 1;
-                }
-                return $cmp;
+                return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
             }
         );
 
         if (count($workflows) > 0) {
-            $workflow = $workflows[0];
-        } else {
-            $workflow = null;
+            return $workflows[0];
         }
-        return $workflow;
+        return null;
     }
 
     /**
@@ -241,21 +203,14 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
         usort(
             $workflows,
             function ($a, $b) {
-                $a_created_after_b = $a->get('created_at') >= $b->get('created_at');
-                if ($a_created_after_b) {
-                    $cmp = -1;
-                } else {
-                    $cmp = 1;
-                }
-                return $cmp;
+                return ($a->wasCreatedAfter($b->get('created_at'))) ? -1 : 1;
             }
         );
-        if (count($workflows) > 0) {
-            $timestamp = $workflows[0]->get('created_at');
-        } else {
-            $timestamp = null;
+        if (!empty($workflows)) {
+            $workflow = array_shift($workflows);
+            return $workflow->get('created_at');
         }
-        return $timestamp;
+        return null;
     }
 
     /**
@@ -269,20 +224,13 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
         usort(
             $workflows,
             function ($a, $b) {
-                $a_finished_after_b = $a->get('finished_at') >= $b->get('finished_at');
-                if ($a_finished_after_b) {
-                    $cmp = -1;
-                } else {
-                    $cmp = 1;
-                }
-                return $cmp;
+                return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
             }
         );
-        if (count($workflows) > 0) {
-            $timestamp = $workflows[0]->get('finished_at');
-        } else {
-            $timestamp = null;
+        if (!empty($workflows)) {
+            $workflow = array_shift($workflows);
+            return $workflow->get('finished_at');
         }
-        return $timestamp;
+        return null;
     }
 }

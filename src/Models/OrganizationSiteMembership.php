@@ -52,7 +52,8 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
      */
     public function __toString()
     {
-        return "{$this->organization->id}: {$this->organization->get('profile')->name}";
+        $org = $this->getOrganization();
+        return "{$org->id}: {$org->get('profile')->name}";
     }
 
     /**
@@ -62,11 +63,10 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        $workflow = $this->organization->getWorkflows()->create(
+        return $this->getOrganization()->getWorkflows()->create(
             'remove_organization_site_membership',
             ['params' => ['site_id' => $this->getSite()->get('id'),],]
         );
-        return $workflow;
     }
 
     /**
@@ -75,9 +75,9 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
     public function getSite()
     {
         if (!$this->site) {
-            $this->site = $this->getContainer()->get(Site::class, [$this->site_data]);
+            $this->site = $this->getContainer()->get(Site::class, [$this->site_data,]);
             $this->site->memberships = [$this,];
-            $this->site->tags = $this->getContainer()->get(Tags::class, [['org_site_membership' => $this,]]);
+            $this->site->tags = $this->getContainer()->get(Tags::class, [['org_site_membership' => $this,],]);
             $this->site->tags->fetch((array)$this->tags_data);
         }
         return $this->site;

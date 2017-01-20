@@ -18,22 +18,18 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      * @var Site
      */
     public $site;
-
     /**
-     * @var \stdClass
+     * @var object
      */
     protected $organization_data;
 
     /**
-     * Object constructor
-     *
-     * @param object $attributes Attributes of this model
-     * @param array $options Options to set as $this->key
+     * @inheritdoc
      */
     public function __construct($attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
-        $this->site = $options['collection']->site;
+        $this->site = $options['collection']->getSite();
         $this->organization_data = $attributes->organization;
     }
 
@@ -44,47 +40,14 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      **/
     public function delete()
     {
-        $workflow = $this->site->getWorkflows()->create(
+        return $this->site->getWorkflows()->create(
             'remove_site_organization_membership',
             ['params' => ['organization_id' => $this->id,],]
         );
-        return $workflow;
     }
 
     /**
-     * Get model data as PropertyList
-     *
-     * @return PropertyList
-     */
-    public function serialize()
-    {
-        $organization = $this->getOrganization();
-        $data = [
-            'org_id' => $organization->id,
-            'org_name' => $organization->get('profile')->name,
-            'site_id' => $this->site->id,
-            'site_name' => $this->site->getName(),
-        ];
-        return $data;
-    }
-
-    /**
-     * Changes the role of the given member
-     *
-     * @param string $role Desired role for this organization
-     * @return Workflow
-     */
-    public function setRole($role)
-    {
-        $workflow = $this->site->getWorkflows()->create(
-            'update_site_organization_membership',
-            ['params' => ['organization_id' => $this->id, 'role' => $role,],]
-        );
-        return $workflow;
-    }
-
-    /**
-     * @return \Terminus\Models\Organization
+     * @return Organization
      */
     public function getOrganization()
     {
@@ -96,10 +59,40 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
     }
 
     /**
-     * @return \Pantheon\Terminus\Models\Site
+     * @return Site
      */
     public function getSite()
     {
         return $this->site;
+    }
+
+    /**
+     * Get model data as PropertyList
+     *
+     * @return PropertyList
+     */
+    public function serialize()
+    {
+        $organization = $this->getOrganization();
+        return [
+            'org_id' => $organization->id,
+            'org_name' => $organization->get('profile')->name,
+            'site_id' => $this->site->id,
+            'site_name' => $this->site->getName(),
+        ];
+    }
+
+    /**
+     * Changes the role of the given member
+     *
+     * @param string $role Desired role for this organization
+     * @return Workflow
+     */
+    public function setRole($role)
+    {
+        return $this->site->getWorkflows()->create(
+            'update_site_organization_membership',
+            ['params' => ['organization_id' => $this->id, 'role' => $role,],]
+        );
     }
 }
