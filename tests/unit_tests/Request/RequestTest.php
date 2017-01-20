@@ -224,6 +224,30 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->makeRequest($client_options, $request_options, 'http://foo.bar/a/b/c');
     }
 
+    public function testRequestWithQuery()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar?foo=bar';
+        $headers = [
+          'Content-type' => 'application/json',
+          'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)'
+        ];
+        $body = '';
+        $request_options = [$method, $uri, $headers, $body];
+        $actual = $this->makeRequest($client_options, $request_options, 'foo/bar', ['query' => ['foo' => 'bar']]);
+        $expected = [
+          'data' => (object)['abc' => '123'],
+          'headers' => ['Content-type' => 'application/json'],
+          'status_code' => 200,
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
+
     public function testRequestNoVerify()
     {
         $this->config->set('verify_host_cert', false);

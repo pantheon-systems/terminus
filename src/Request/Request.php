@@ -157,6 +157,10 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $uri = $path;
         }
 
+        if (!empty($options['query'])) {
+            $uri .= '?' . http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
+        }
+
         $body = isset($options['form_params']) ? json_encode($options['form_params']) : null;
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
