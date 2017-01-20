@@ -1,0 +1,49 @@
+build: false
+shallow_clone: true
+platform: 'x86'
+clone_folder: C:\projects\terminus
+branches:
+  only:
+    - master
+
+init:
+  #https://github.com/composer/composer/blob/master/appveyor.yml
+  #- SET ANSICON=121x90 (121x90)
+
+# Inspired by https://github.com/Codeception/base/blob/master/appveyor.yml and https://github.com/phpmd/phpmd/blob/master/appveyor.yml
+install:
+  - cinst -y curl
+  - SET PATH=C:\Program Files\curl;%PATH%
+  #which is only needed by the test suite.
+  - cinst -y which
+  - SET PATH=C:\Program Files\which;%PATH%
+  #Install PHP
+  - cinst -y php
+  - cd c:\tools\php
+  - copy php.ini-production php.ini
+
+  - echo extension_dir=ext >> php.ini
+  - echo extension=php_openssl.dll >> php.ini
+  - echo date.timezone="UTC" >> php.ini
+  - echo variables_order="EGPCS" >> php.ini #Debugging related to https://github.com/drush-ops/drush/pull/646. May be unneeded.
+  - echo mbstring.http_input=pass >> php.ini
+  - echo mbstring.http_output=pass >> php.ini
+  - echo sendmail_path=nul >> php.ini
+  - echo extension=php_mbstring.dll >> php.ini
+  - echo extension=php_curl.dll >> php.ini
+  - echo extension=php_pdo_mysql.dll >> php.ini
+  - echo extension=php_pdo_pgsql.dll >> php.ini
+  - echo extension=php_pdo_sqlite.dll >> php.ini
+  - echo extension=php_pgsql.dll >> php.ini
+  - echo extension=php_gd2.dll >> php.ini
+  - SET PATH=C:\tools\php;%PATH%
+  #Install Composer
+  - cd %APPVEYOR_BUILD_FOLDER%
+  #- appveyor DownloadFile https://getcomposer.org/composer.phar
+  - php -r "readfile('http://getcomposer.org/installer');" | php
+  #Install Drush's dependencies via Composer
+  - php composer.phar -q install --prefer-dist -n
+  - SET PATH=%APPVEYOR_BUILD_FOLDER%;%APPVEYOR_BUILD_FOLDER%/vendor/bin;%PATH%
+
+test_script:
+  - composer test
