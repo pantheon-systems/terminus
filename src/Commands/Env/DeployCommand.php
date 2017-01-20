@@ -48,7 +48,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
         $site_env,
         $options = ['sync-content' => false, 'note' => 'Deploy from Terminus', 'cc' => false, 'updatedb' => false,]
     ) {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
 
         if ($env->isInitialized()) {
             if (!$env->hasDeployableCode()) {

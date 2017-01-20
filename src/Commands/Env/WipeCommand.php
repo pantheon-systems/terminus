@@ -30,7 +30,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function wipe($site_env)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
 
         $tr = ['site' => $site->getName(), 'env' => $env->getName()];
         if (!$this->confirm('Are you sure you want to wipe {env} on {site}?', $tr)) {

@@ -79,4 +79,21 @@ class Environments extends SiteOwnedCollection
         );
         return $environments;
     }
+
+    /**
+     * Retrieves all models serialized into arrays. If the site is frozen, it skips test and live.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $site_is_frozen = !is_null($this->site->get('frozen'));
+        $models = [];
+        foreach ($this->getMembers() as $id => $model) {
+            if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {
+                $models[$id] = $model->serialize();
+            }
+        }
+        return $models;
+    }
 }

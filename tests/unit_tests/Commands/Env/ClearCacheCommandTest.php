@@ -40,10 +40,7 @@ class ClearCacheCommandTest extends EnvCommandTest
             ->method('checkProgress')
             ->with()
             ->willReturn(true);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site_name);
+        $this->site->method('get')->willReturn($site_name);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(

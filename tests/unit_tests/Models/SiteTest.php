@@ -3,11 +3,20 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
+use Pantheon\Terminus\Collections\Branches;
+use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
+use Pantheon\Terminus\Collections\Tags;
+use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\NewRelic;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\Models\Solr;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\Workflow;
 
@@ -19,6 +28,38 @@ use Pantheon\Terminus\Models\Workflow;
 class SiteTest extends ModelTestCase
 {
     /**
+     * @var Branches
+     */
+    protected $branches;
+    /**
+     * @var Container
+     */
+    protected $container;
+    /**
+     * @var Environments
+     */
+    protected $environments;
+    /**
+     * @var NewRelic
+     */
+    protected $new_relic;
+    /**
+     * @var Redis
+     */
+    protected $redis;
+    /**
+     * @var Solr
+     */
+    protected $solr;
+    /**
+     * @var Upstream
+     */
+    protected $upstream;
+    /**
+     * @var SiteUserMemberships
+     */
+    protected $user_memberships;
+    /**
      * @var Workflow
      */
     protected $workflow;
@@ -26,11 +67,6 @@ class SiteTest extends ModelTestCase
      * @var Workflows
      */
     protected $workflows;
-
-    /**
-     * @var Container
-     */
-    protected $container;
 
     /**
      * @inheritdoc
@@ -41,6 +77,27 @@ class SiteTest extends ModelTestCase
 
         $this->container = new Container();
 
+        $this->branches = $this->getMockBuilder(Branches::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->environments = $this->getMockBuilder(Environments::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->new_relic = $this->getMockBuilder(NewRelic::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->redis = $this->getMockBuilder(Redis::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->solr = $this->getMockBuilder(Solr::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -48,12 +105,14 @@ class SiteTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->upstream = $this->getMockBuilder(Upstream::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->container->add(Workflows::class, $this->workflows);
+        $this->container->add(Branches::class, $this->branches);
+        $this->container->add(Environments::class, $this->environments);
+        $this->container->add(NewRelic::class, $this->new_relic);
+        $this->container->add(Redis::class, $this->redis);
+        $this->container->add(SiteUserMemberships::class, $this->user_memberships);
+        $this->container->add(Solr::class, $this->solr);
         $this->container->add(Upstream::class, $this->upstream);
+        $this->container->add(Workflows::class, $this->workflows);
 
         $this->model = new Site((object)['id' => 123, 'name' => 'My Site']);
 
@@ -179,6 +238,24 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::getBranches()
+     */
+    public function testGetBranches()
+    {
+        $branches = $this->model->getBranches();
+        $this->assertEquals($this->branches, $branches);
+    }
+
+    /**
+     * Tests Site::getEnvironments()
+     */
+    public function testGetEnvironments()
+    {
+        $environments = $this->model->getEnvironments();
+        $this->assertEquals($this->environments, $environments);
+    }
+
+    /**
      * Tests Site::getFeature($feature)
      */
     public function testGetFeature()
@@ -212,6 +289,23 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::getName()
+     */
+    public function testGetName()
+    {
+        $this->assertEquals('My Site', $this->model->getName());
+    }
+
+    /**
+     * Tests Site::getNewRelic()
+     */
+    public function testGetNewRelic()
+    {
+        $new_relic = $this->model->getNewRelic();
+        $this->assertEquals($this->new_relic, $new_relic);
+    }
+
+    /**
      * Tests Site::getOrganizations()
      */
     public function testGetOrganizations()
@@ -241,6 +335,33 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::getRedis()
+     */
+    public function testGetRedis()
+    {
+        $redis = $this->model->getRedis();
+        $this->assertEquals($this->redis, $redis);
+    }
+
+    /**
+     * Tests Site::getSolr()
+     */
+    public function testGetSolr()
+    {
+        $solr = $this->model->getSolr();
+        $this->assertEquals($this->solr, $solr);
+    }
+
+    /**
+     * Tests Site::getUserMemberships()
+     */
+    public function testGetUserMemberships()
+    {
+        $user_memberships = $this->model->getUserMemberships();
+        $this->assertEquals($this->user_memberships, $user_memberships);
+    }
+
+    /**
      * Tests Site::removePaymentMethod()
      */
     public function testRemovePaymentMethod()
@@ -262,8 +383,12 @@ class SiteTest extends ModelTestCase
      */
     public function testSerialize()
     {
-        $this->configSet(['date_format' => 'Y-m-d H:i:s']);
-        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
+        $this->configSet(['date_format' => 'Y-m-d H:i:s',]);
+        $this->model->tags = $this->getMockBuilder(Tags::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->model->memberships = ['membership1', 'membership2',];
+        $tags = ['tag1', 'tag2',];
         $data = (object)[
             'id' => $this->model->id,
             'name' => 'site name',
@@ -291,13 +416,20 @@ class SiteTest extends ModelTestCase
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
-            'frozen' => true,
+            'frozen' => 'true',
+            'memberships' => implode(',', $this->model->memberships),
+            'tags' => implode(',', $tags),
         ];
 
         $this->request->expects($this->once())
             ->method('request')
             ->with($this->equalTo("sites/{$this->model->id}?site_state=true"))
             ->willReturn(compact('data'));
+        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
+        $this->model->tags->expects($this->once())
+            ->method('ids')
+            ->with()
+            ->willReturn($tags);
 
         $returned_data = $this->model->fetch()->serialize();
         $this->assertEquals($expected_data, $returned_data);
@@ -323,6 +455,63 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::setUpstream($attributes) when there is upstream info in the constructor attributes
+     */
+    public function testSetUpstreamFromConstructorAttr()
+    {
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $attributes = (object)['id' => 'site_id', 'upstream' => (object)['product_id' => 'product id',],];
+        $site = new Site($attributes);
+        $site->setContainer($container);
+        $upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Upstream::class),
+                $this->equalTo([$attributes->upstream, compact('site'),])
+            )
+            ->willReturn($upstream);
+
+        $out = $site->getUpstream();
+        $this->assertEquals($upstream, $out);
+    }
+
+    /**
+     * Tests Site::setUpstream($attributes) when there is upstream info in the constructor attributes' settings property
+     */
+    public function testSetUpstreamFromConstructorAttrSettings()
+    {
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $attributes = (object)[
+            'id' => 'site_id',
+            'settings' => (object)['upstream' => (object)['product_id' => 'product id',],],
+        ];
+        $site = new Site($attributes);
+        $site->setContainer($container);
+        $upstream = $this->getMockBuilder(Upstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Upstream::class),
+                $this->equalTo([$attributes->settings->upstream, compact('site'),])
+            )
+            ->willReturn($upstream);
+
+        $out = $site->getUpstream();
+        $this->assertEquals($upstream, $out);
+    }
+
+    /**
      * Tests Site::updateServiceLevel($service_level)
      */
     public function testUpdateServiceLevel()
@@ -341,8 +530,49 @@ class SiteTest extends ModelTestCase
         $this->assertEquals($workflow, $this->workflow);
     }
 
-    public function testGetName()
+    /**
+     * Tests Site::updateServiceLevel($service_level) when there is no payment method available
+     */
+    public function testUpdateServiceLevelNoMethod()
     {
-        $this->assertEquals('My Site', $this->model->getName());
+        $service_level = 'service_level';
+
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->equalTo('change_site_service_level'),
+                $this->equalTo(['params' => compact('service_level'),])
+            )
+            ->will($this->throwException(new \Exception('message', 403)));
+
+        $this->setExpectedException(
+            TerminusException::class,
+            'A payment method is required to increase the service level of this site.'
+        );
+
+        $out = $this->model->updateServiceLevel($service_level);
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests Site::updateServiceLevel($service_level) when a non-403 error occurs
+     */
+    public function testUpdateServiceLevelMiscError()
+    {
+        $service_level = 'service_level';
+        $expected_exception = new \Exception('message', 0);
+
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with(
+                $this->equalTo('change_site_service_level'),
+                $this->equalTo(['params' => compact('service_level'),])
+            )
+            ->will($this->throwException($expected_exception));
+
+        $this->setExpectedException(get_class($expected_exception), $expected_exception->getMessage());
+
+        $out = $this->model->updateServiceLevel($service_level);
+        $this->assertNull($out);
     }
 }

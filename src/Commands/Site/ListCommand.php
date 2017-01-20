@@ -22,6 +22,7 @@ class ListCommand extends SiteCommand
      *     owner: Owner
      *     created: Created
      *     memberships: Memberships
+     *     frozen: Is Frozen?
      * @return RowsOfFields
      *
      * @option team Team-only filter
