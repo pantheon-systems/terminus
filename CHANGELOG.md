@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `env` commands to not err when the site is frozen and the test or live environment is to be accessed. (#1537)
 
 ### Changed
+- Clear cache no longer deletes stored machine tokens. Logout now deletes stored machine tokens. (#1542)
 - Terminus now checks for new versions after every command run. (#1523)
 - `site:create` now checks to see whether a site name is taken before attempting to create it. (#1536)
 

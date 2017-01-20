@@ -2,7 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
+use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\Auth\LogoutCommand;
+use Pantheon\Terminus\Models\SavedToken;
 
 /**
  * Class LogoutCommandTest
@@ -29,12 +31,39 @@ class LogoutCommandTest extends AuthTest
      */
     public function testLogInWithMachineToken()
     {
+        $token = $this->getMockBuilder(SavedToken::class)
+          ->disableOriginalConstructor()
+          ->getMock();
+        $token->expects($this->once())
+          ->method('delete');
+
+        $token2 = $this->getMockBuilder(SavedToken::class)
+          ->disableOriginalConstructor()
+          ->getMock();
+        $token2->expects($this->once())
+          ->method('delete');
+
+        $tokens = $this->getMockBuilder(SavedTokens::class)
+          ->disableOriginalConstructor()
+          ->setMethods(['getMembers'])
+          ->getMock();
+        $tokens->expects($this->any())
+          ->method('getMembers')
+          ->willReturn([$token, $token2]);
+
+        $this->session->expects($this->any())
+          ->method('getTokens')
+          ->willReturn($tokens);
         $this->session->expects($this->once())
-            ->method('destroy')
-            ->with();
+          ->method('destroy');
+
+
         $this->logger->expects($this->once())
-            ->method('log')
-            ->with($this->equalTo('notice'), $this->equalTo('You have been logged out of Pantheon.'));
+          ->method('log')
+          ->with(
+              $this->equalTo('notice'),
+              $this->equalTo('Your saved machine tokens have been deleted and you have been logged out.')
+          );
 
         $out = $this->command->logOut();
         $this->assertNull($out);
