@@ -81,9 +81,11 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
         if (isset($tokens[$id])) {
             return $tokens[$id];
         } else {
-            foreach ($tokens as $token) {
-                if ($id == $token->get('token')) {
-                    return $token;
+            if (is_array($tokens)) {
+                foreach ($tokens as $token) {
+                    if ($id == $token->get('token')) {
+                        return $token;
+                    }
                 }
             }
         }
