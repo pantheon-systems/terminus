@@ -194,3 +194,4 @@ To deploy a new version of Terminus:
  
 ## Debugging
 - Run Terminus with the `-vvv` option to get debug output.
+- If you are getting `PHP Fatal error:  Uncaught exception 'ReflectionException' ...`, install php-xml.
