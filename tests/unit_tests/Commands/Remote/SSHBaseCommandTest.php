@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Symfony\Component\Process\ProcessUtils;
 
 /**
  * SSHBaseCommand Test Suite
@@ -37,6 +38,11 @@ class SSHBaseCommandTest extends CommandTestCase
         $command = 'dummy ' . implode(' ', $options);
         $status_code = 0;
 
+        // For windows testing; wrap $command in the correct kind of quote
+        // characters. Presumes that nothing inside $command particularly
+        // needs escaping.
+        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
+
         $this->environment->expects($this->once())
             ->method('get')
             ->with($this->equalTo('connection_mode'))
@@ -55,7 +61,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 $this->equalTo([
                     'site' => $site_name,
                     'env' => $this->environment->id,
-                    'command' => "'$command'",
+                    'command' => "$expectedEscapedCommand",
                     'exit' => $status_code,
                 ])
             );
@@ -81,6 +87,8 @@ class SSHBaseCommandTest extends CommandTestCase
         $this->environment->id = 'env_id';
         $command = 'dummy ' . implode(' ', $options);
 
+        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
+
         $this->environment->expects($this->once())
             ->method('get')
             ->with($this->equalTo('connection_mode'))
@@ -103,7 +111,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 $this->equalTo([
                     'site' => $site_name,
                     'env' => $this->environment->id,
-                    'command' => "'$command'",
+                    'command' => "$expectedEscapedCommand",
                     'exit' => $status_code,
                 ])
             );
@@ -125,6 +133,8 @@ class SSHBaseCommandTest extends CommandTestCase
         $mode = 'git';
         $status_code = 0;
         $command = 'dummy ' . implode(' ', $options);
+
+        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
 
         $this->environment->expects($this->once())
             ->method('get')
@@ -153,7 +163,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 $this->equalTo([
                     'site' => $site_name,
                     'env' => $this->environment->id,
-                    'command' => "'$command'",
+                    'command' => "$expectedEscapedCommand",
                     'exit' => $status_code,
                 ])
             );
