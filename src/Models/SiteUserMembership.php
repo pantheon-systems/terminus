@@ -21,9 +21,8 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
      * @var User
      */
     public $user;
-
     /**
-     * @var \stdClass
+     * @var object
      */
     protected $user_data;
 
@@ -48,26 +47,18 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
      **/
     public function delete()
     {
-        $workflow = $this->site->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'remove_site_user_membership',
             ['params' => ['user_id' =>  $this->getUser()->id,],]
         );
-        return $workflow;
     }
 
     /**
-     * Changes the role of the given member
-     *
-     * @param string $role Desired role for this member
-     * @return Workflow
+     * @return Site
      */
-    public function setRole($role)
+    public function getSite()
     {
-        $workflow = $this->site->getWorkflows()->create(
-            'update_site_user_membership',
-            ['params' => ['user_id' =>  $this->getUser()->id, 'role' => $role,],]
-        );
-        return $workflow;
+        return $this->site;
     }
 
     /**
@@ -84,19 +75,25 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
         return $this->user;
     }
 
-    /**
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
     public function serialize()
     {
         $user = $this->getUser()->serialize();
         return $user + [
             'role'  => $this->get('role'),
         ];
+    }
+
+    /**
+     * Changes the role of the given member
+     *
+     * @param string $role Desired role for this member
+     * @return Workflow
+     */
+    public function setRole($role)
+    {
+        return $this->getSite()->getWorkflows()->create(
+            'update_site_user_membership',
+            ['params' => ['user_id' =>  $this->getUser()->id, 'role' => $role,],]
+        );
     }
 }
