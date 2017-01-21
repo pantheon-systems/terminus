@@ -60,13 +60,12 @@ services:
 test_script:
   - php composer.phar cs
   - php composer.phar clover
-  - php composer.phar behat-windows
+  - php composer.phar behat
 
 # environment variables
 environment:
   global:
       TERMINUS_TEST_MODE: 1
       COMPOSER_PROCESS_TIMEOUT: 3600
-      SHELL_INTERACTIVE: true
       php_ver_target: 7.0
 
