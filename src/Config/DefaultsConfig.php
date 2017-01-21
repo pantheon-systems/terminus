@@ -56,15 +56,15 @@ class DefaultsConfig extends TerminusConfig
         if (is_null($current_dir)) {
             $current_dir = dirname(__DIR__);
         }
-        if (file_exists("$current_dir/composer.json")) {
+        if (file_exists($current_dir . DIRECTORY_SEPARATOR . 'composer.json')) {
             return $current_dir;
         }
-        $dir = explode('/', $current_dir);
+        $dir = explode(DIRECTORY_SEPARATOR, $current_dir);
         array_pop($dir);
         if (empty($dir)) {
             throw new TerminusException('Could not locate root to set TERMINUS_ROOT.');
         }
-        $dir = implode('/', $dir);
+        $dir = implode(DIRECTORY_SEPARATOR, $dir);
         $root_dir = $this->getTerminusRoot($dir);
         return $root_dir;
     }
