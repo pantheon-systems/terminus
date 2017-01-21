@@ -32,7 +32,7 @@ You can install Terminus just about anywhere on your system. In this README, we'
 ### Installing via the Terminus installer
 Run this in your Terminal client:
 ```bash
-curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar
+curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
 ```
 For more information on installation options, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
