@@ -58,9 +58,8 @@ services:
   - mysql
 
 test_script:
-  - php composer.phar cs
   - php composer.phar clover
-  - php composer.phar behat
+  - php composer.phar cs
 
 # environment variables
 environment:
