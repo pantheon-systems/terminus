@@ -97,7 +97,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     {
         $tokens = [];
         foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = $this->getDataStore()->get($key);
+            $tokens[] = (object)$this->getDataStore()->get($key);
         }
         return $tokens;
     }
