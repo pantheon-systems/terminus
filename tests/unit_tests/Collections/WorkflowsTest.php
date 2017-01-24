@@ -36,10 +36,10 @@ class WorkflowsTest extends CollectionTestCase
     public function testAll()
     {
         $data = [
-            ['id' => 'a', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 4, 'created_at' => 1],
-            ['id' => 'b', 'has_operation_log_output' => false, 'result' => 'failed', 'finished_at' => 5, 'created_at' => 4],
-            ['id' => 'c', 'has_operation_log_output' => true, 'finished_at' => 2, 'created_at' => 3],
-            ['id' => 'd', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 1, 'created_at' => 2],
+            'a' => ['id' => 'a', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 4, 'created_at' => 1],
+            'b' => ['id' => 'b', 'has_operation_log_output' => false, 'result' => 'failed', 'finished_at' => 5, 'created_at' => 4],
+            'c' => ['id' => 'c', 'has_operation_log_output' => true, 'finished_at' => 2, 'created_at' => 3],
+            'd' => ['id' => 'd', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 1, 'created_at' => 2],
         ];
 
         $workflows = $this->getMockBuilder(Workflows::class)
@@ -48,19 +48,19 @@ class WorkflowsTest extends CollectionTestCase
             ->getMock();
 
         $models = [];
-        foreach ($data as $model_data) {
-            $models[] = new Workflow((object)$model_data, ['collection' => $workflows]);
+        foreach ($data as $id => $model_data) {
+            $models[$id] = new Workflow((object)$model_data, ['collection' => $workflows,]);
         }
         $workflows->expects($this->any())
             ->method('all')
             ->willReturn($models);
 
         $this->assertEquals($models, $workflows->all());
-        $this->assertEquals([$models[0], $models[1], $models[3]], array_values($workflows->allFinished()));
-        $this->assertEquals([$models[0], $models[3]], array_values($workflows->allWithLogs()));
-        $this->assertEquals($models[0], $workflows->findLatestWithLogs());
-        $this->assertEquals($data[1]['created_at'], $workflows->lastCreatedAt());
-        $this->assertEquals($data[1]['finished_at'], $workflows->lastFinishedAt());
+        $this->assertEquals([$models['a'], $models['b'], $models['d']], array_values($workflows->allFinished()));
+        $this->assertEquals([$models['a'], $models['d']], array_values($workflows->allWithLogs()));
+        $this->assertEquals($models['a'], $workflows->findLatestWithLogs());
+        $this->assertEquals($data['b']['created_at'], $workflows->lastCreatedAt());
+        $this->assertEquals($data['b']['finished_at'], $workflows->lastFinishedAt());
     }
 
     /**

@@ -47,7 +47,13 @@ Feature: Authorization command
     When I run "terminus auth:logout"
     Then I should get:
     """
-    You have been logged out of Pantheon.
+    Your saved machine tokens have been deleted and you have been logged out.
+    """
+    And I run "terminus auth:whoami"
+    Then I should get: "You are not logged in."
+    And I should not get:
+    """
+    [[username]]
     """
 
   @vcr auth-whoami.yml

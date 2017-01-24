@@ -37,7 +37,7 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function codeLog($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
         return new RowsOfFields($env->getCommits()->serialize());
     }
 }

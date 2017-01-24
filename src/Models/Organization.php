@@ -34,6 +34,24 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     private $features;
 
     /**
+     * Returns a specific organization feature value
+     *
+     * @param string $feature Feature to check
+     * @return mixed|null Feature value, or null if not found
+     */
+    public function getFeature($feature)
+    {
+        if (!isset($this->features)) {
+            $response = $this->request->request("organizations/{$this->id}/features");
+            $this->features = (array)$response['data'];
+        }
+        if (isset($this->features[$feature])) {
+            return $this->features[$feature];
+        }
+        return null;
+    }
+
+    /**
      * Get the human-readable name of the organization.
      *
      * @return string
@@ -44,23 +62,15 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     }
 
     /**
-     * Returns a specific organization feature value
-     *
-     * @param string $feature Feature to check
-     * @return mixed|null Feature value, or null if not found
+     * @return OrganizationSiteMemberships
      */
-    public function getFeature($feature)
+    public function getSiteMemberships()
     {
-        if (!isset($this->features)) {
-            $response = $this->request->request(
-                sprintf('organizations/%s/features', $this->id)
-            );
-            $this->features = (array)$response['data'];
+        if (!$this->site_memberships) {
+            $this->site_memberships = $this->getContainer()
+                ->get(OrganizationSiteMemberships::class, [['organization' => $this]]);
         }
-        if (isset($this->features[$feature])) {
-            return $this->features[$feature];
-        }
-        return null;
+        return $this->site_memberships;
     }
 
     /**
@@ -89,6 +99,18 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     }
 
     /**
+     * @return OrganizationUserMemberships
+     */
+    public function getUserMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->user_memberships = $this->getContainer()
+                ->get(OrganizationUserMemberships::class, [['organization' => $this,],]);
+        }
+        return $this->user_memberships;
+    }
+
+    /**
      * Retrieves organization users
      *
      * @return User[]
@@ -114,6 +136,18 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     }
 
     /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()
+                ->get(Workflows::class, [['organization' => $this,],]);
+        }
+        return $this->workflows;
+    }
+
+    /**
      * Formats the Organization object into an associative array for output
      *
      * @return array Associative array of data for output
@@ -122,42 +156,6 @@ class Organization extends TerminusModel implements ContainerAwareInterface
      */
     public function serialize()
     {
-        return ['id' => $this->id, 'name' => $this->get('profile')->name,];
-    }
-
-    /**
-     * @return OrganizationSiteMemberships
-     */
-    public function getSiteMemberships()
-    {
-        if (!$this->site_memberships) {
-            $this->site_memberships = $this->getContainer()
-                ->get(OrganizationSiteMemberships::class, [['organization' => $this]]);
-        }
-        return $this->site_memberships;
-    }
-
-    /**
-     * @return Workflows
-     */
-    public function getWorkflows()
-    {
-        if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()
-                ->get(Workflows::class, [['organization' => $this]]);
-        }
-        return $this->workflows;
-    }
-
-    /**
-     * @return OrganizationUserMemberships
-     */
-    public function getUserMemberships()
-    {
-        if (empty($this->user_memberships)) {
-            $this->user_memberships = $this->getContainer()
-                ->get(OrganizationUserMemberships::class, [['organization' => $this]]);
-        }
-        return $this->user_memberships;
+        return ['id' => $this->id, 'name' => $this->getName(),];
     }
 }

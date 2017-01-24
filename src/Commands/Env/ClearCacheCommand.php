@@ -29,7 +29,7 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function clearCache($site_env)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
         $workflow = $env->clearCache();
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

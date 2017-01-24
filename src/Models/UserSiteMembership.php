@@ -46,7 +46,7 @@ class UserSiteMembership extends TerminusModel implements ContainerAwareInterfac
     }
 
     /**
-     * @return \Pantheon\Terminus\Models\Site
+     * @return Site
      */
     public function getSite()
     {

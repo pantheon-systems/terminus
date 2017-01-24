@@ -34,7 +34,7 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function diffstat($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
         $diff = (array)$env->diffstat();
         $data = [];
         if (empty($diff)) {

@@ -12,6 +12,7 @@ use League\Container\ContainerAwareTrait;
 class OrganizationUserMembership extends TerminusModel implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
+
     /**
      * @var Organization
      */
@@ -20,9 +21,8 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      * @var User
      */
     public $user;
-
     /**
-     * @var \stdClass
+     * @var object
      */
     protected $user_data;
 
@@ -36,7 +36,7 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
     {
         parent::__construct($attributes, $options);
         $this->user_data = $attributes->user;
-        $this->organization = $options['collection']->organization;
+        $this->organization = $options['collection']->getOrganization();
     }
 
     /**
@@ -46,11 +46,18 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function delete()
     {
-        $workflow = $this->organization->getWorkflows()->create(
+        return $this->getOrganization()->getWorkflows()->create(
             'remove_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id,],]
         );
-        return $workflow;
+    }
+
+    /**
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 
     /**
@@ -91,18 +98,9 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function setRole($role)
     {
-        $workflow = $this->organization->getWorkflows()->create(
+        return $this->getOrganization()->getWorkflows()->create(
             'update_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id, 'role' => $role,],]
         );
-        return $workflow;
-    }
-
-    /**
-     * @return Organization
-     */
-    public function getOrganization()
-    {
-        return $this->organization;
     }
 }

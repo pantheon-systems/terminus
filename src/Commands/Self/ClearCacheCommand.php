@@ -15,7 +15,7 @@ class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterfa
     use ContainerAwareTrait;
 
     /**
-     * Clears the local Terminus session cache and all locally saved machine tokens.
+     * Clears the local Terminus command cache.
      *
      * @command self:clear-cache
      * @aliases self:cc
@@ -25,10 +25,6 @@ class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterfa
      */
     public function clearCache()
     {
-        $tokens  = $this->session()->getTokens();
-
-        $tokens->deleteAll();
-        $this->session()->destroy();
-        $this->log()->notice('Your saved machine tokens have been deleted and you have been logged out.');
+        $this->log()->notice('The local Terminus cache has been cleared.');
     }
 }

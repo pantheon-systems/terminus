@@ -36,7 +36,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
      */
     public function view($site_env, $options = ['print' => false,])
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
 
         $domain = $env->domain();
         $protocol = 'http';

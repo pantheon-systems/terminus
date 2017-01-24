@@ -5,8 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Env\ListCommand;
-use Pantheon\Terminus\Collections\Environments;
-use Pantheon\Terminus\Models\Environment;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ListCommandTest
@@ -16,23 +15,73 @@ use Pantheon\Terminus\Models\Environment;
 class ListCommandTest extends EnvCommandTest
 {
     /**
+     * @var array
+     */
+    protected $data;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->logger = $this->getMockBuilder(LoggerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->data = [
+            'env_id' => ['id' => 'env_id', 'foo' => 'bar', 'baz' => 'bop',],
+            'env_id_2' => ['id' => 'env_id_2', 'foo' => 'abc', 'baz' => 'def',],
+        ];
+        $this->environments->expects($this->once())
+            ->method('serialize')
+            ->with()
+            ->willReturn($this->data);
+
+        $this->command = new ListCommand();
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+    }
+
+    /**
      * Tests the env:list command
      */
     public function testListEnvs()
     {
-        $data = [
-            ['foo' => 'bar', 'baz' => 'bop'],
-            ['foo' => 'abc', 'baz' => 'def'],
-        ];
 
-        $this->environments->expects($this->once())
-            ->method('serialize')
-            ->willReturn($data);
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('frozen'))
+            ->willReturn(null);
+        $this->logger->expects($this->never())
+            ->method('warning');
 
-        $this->command = new ListCommand();
-        $this->command->setSites($this->sites);
         $out = $this->command->listEnvs('mysite');
         $this->assertInstanceOf(RowsOfFields::class, $out);
-        $this->assertEquals($data, $out->getArrayCopy());
+        $this->assertEquals($this->data, $out->getArrayCopy());
+    }
+
+    /**
+     * Tests the env:list command when the site is frozen
+     */
+    public function testListFrozenEnvs()
+    {
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('frozen'))
+            ->willReturn('anything but null');
+        $this->logger->expects($this->once())
+            ->method('warning')
+            ->with(
+                $this->equalTo('This site is frozen. Its test and live environments are unavailable.')
+            );
+
+        $out = $this->command->listEnvs('mysite');
+        $this->assertInstanceOf(RowsOfFields::class, $out);
+        $this->assertEquals($this->data, $out->getArrayCopy());
     }
 }

@@ -35,11 +35,10 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
      **/
     public function create($name, $role)
     {
-        $workflow = $this->getSite()->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
             ['params' => ['organization_name' => $name, 'role' => $role,],]
         );
-        return $workflow;
     }
 
     /**
@@ -49,23 +48,6 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
      * @return SiteOrganizationMembership|null
      */
     public function findByName($name)
-    {
-        foreach ($this->models as $org_member) {
-            $org = $org_member->getName();
-            if ($name == $org) {
-                return $org_member;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns UUID of organization with given name
-     *
-     * @param string $name A name to search for
-     * @return SiteOrganizationMembership|null
-     */
-    public function getUUID($name)
     {
         foreach ($this->models as $org_member) {
             $org = $org_member->getName();
@@ -98,5 +80,22 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
             'Could not find an association for {org} organization with {site}.',
             ['org' => $id, 'site' => $this->site->getName(),]
         );
+    }
+
+    /**
+     * Returns UUID of organization with given name
+     *
+     * @param string $name A name to search for
+     * @return SiteOrganizationMembership|null
+     */
+    public function getUUID($name)
+    {
+        foreach ($this->models as $org_member) {
+            $org = $org_member->getName();
+            if ($name == $org) {
+                return $org_member;
+            }
+        }
+        return null;
     }
 }

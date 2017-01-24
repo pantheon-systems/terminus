@@ -32,7 +32,7 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function commit($site_env, $options = ['message' => 'Terminus commit.'])
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
 
         $change_count = count((array)$env->diffstat());
         if ($change_count === 0) {

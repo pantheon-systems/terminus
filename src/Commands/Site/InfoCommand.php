@@ -31,6 +31,7 @@ class InfoCommand extends SiteCommand
      *     holder_type: Holder Type
      *     holder_id: Holder ID
      *     owner: Owner
+     *     frozen: Is Frozen?
      * @return PropertyList
      *
      * @param string $site The name or UUID of a site to retrieve information on
