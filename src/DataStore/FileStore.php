@@ -34,7 +34,7 @@ class FileStore implements DataStoreInterface
         $path = $this->getFileName($key);
         if (file_exists($path)) {
             $out = file_get_contents($path);
-            $out = json_decode($out);
+            $out = json_decode($out, true);
         }
         return $out;
     }
