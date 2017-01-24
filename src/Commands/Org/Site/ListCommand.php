@@ -36,10 +36,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $organization Organization name or ID
      * @option string $tag Tag name to filter
      *
-     * @usage terminus org:site:list <organization>
-     *     Displays the list of sites associated with <organization>.
-     * @usage terminus org:site:list <organization> --tag=<tag>
-     *     Displays the list of sites associated with <organization> that have the <tag> tag.
+     * @usage <organization> Displays the list of sites associated with <organization>.
+     * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have the <tag> tag.
      */
     public function listSites($organization, $options = ['tag' => null,])
     {

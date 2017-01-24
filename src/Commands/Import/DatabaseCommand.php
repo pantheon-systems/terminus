@@ -21,8 +21,7 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $url Publicly accessible URL of the database archive
      *
-     * @usage terminus import:database <site>.<env> <archive_url>
-     *     Imports the database archive at <archive_url> to <site>'s <env> environment.
+     * @usage <site>.<env> <archive_url> Imports the database archive at <archive_url> to <site>'s <env> environment.
      */
     public function import($site_env, $url)
     {

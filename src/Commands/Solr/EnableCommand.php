@@ -23,8 +23,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage terminus solr:enable <site>
-     *     Enables Solr add-on for <site>.
+     * @usage <site> Enables Solr add-on for <site>.
      */
     public function enable($site_id)
     {

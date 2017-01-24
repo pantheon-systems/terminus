@@ -35,8 +35,7 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_id Site name
      * @option integer $checks Times to query
      *
-     * @usage terminus workflow:watch <site>
-     *     Streams new and finished workflows from <site> to the console.
+     * @usage <site> Streams new and finished workflows from <site> to the console.
      */
     public function watch($site_id, $options = ['checks' => null,])
     {

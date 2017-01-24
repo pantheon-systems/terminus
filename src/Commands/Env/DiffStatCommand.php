@@ -29,8 +29,7 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
      *     additions: Additions
      * @return RowsOfFields
      *
-     * @usage terminus env:diffstat <site>.<env>
-     *     Displays a diff of uncommitted code changes on <site>'s <env> environment.
+     * @usage <site>.<env> Displays a diff of uncommitted code changes on <site>'s <env> environment.
      */
     public function diffstat($site_env)
     {

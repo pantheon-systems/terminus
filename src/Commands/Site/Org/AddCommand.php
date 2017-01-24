@@ -24,8 +24,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site Site name
      * @param string $organization Organization name or UUID
      *
-     * @usage terminus site:org:add <organization> <site>
-     *     Associates <organization> with <site> as a supporting organization.
+     * @usage <site> <organization> Associates <organization> with <site> as a supporting organization.
      */
     public function add($site, $organization)
     {
