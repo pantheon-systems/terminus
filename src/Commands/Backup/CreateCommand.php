@@ -22,7 +22,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      * @command backup:create
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option string $element [code|files|database|db] Element to be backed up
+     * @option string $element [code|files|database|db] Element to be backed up. If not defined, all elements are selected.
      * @option integer $keep-for Retention period, in days, to retain backup
      *
      * @usage terminus backup:create <site>.<env>
