@@ -34,7 +34,7 @@
       "cbf": "phpcbf --standard=PSR2 -n tests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
       "coveralls": "coveralls -v -c tests/config/coveralls.xml",
-      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/* bin/terminus src/*",
+      "cs": "phpcs --standard=PSR2 --severity=1 -n tests bin/terminus src",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
