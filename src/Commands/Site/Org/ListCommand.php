@@ -30,8 +30,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage terminus site:org:list <site>
-     *     Displays the list of supporting organizations associated with <site>.
+     * @usage <site> Displays the list of supporting organizations associated with <site>.
      */
     public function listOrgs($site_id)
     {

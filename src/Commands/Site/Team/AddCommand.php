@@ -26,8 +26,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $member Email of user
      * @param string $role [developer|team_member] Role
      *
-     * @usage terminus site:team:add <site> <user> <role>
-     *     Adds <user> as a <role> to <site>'s team.
+     * @usage <site> <user> <role> Adds <user> as a <role> to <site>'s team.
      */
     public function add($site_id, $member, $role)
     {

@@ -25,8 +25,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_name Site name
      * @param string $payment_method Payment method label or UUID
      *
-     * @usage terminus payment-method:add <site> <payment_method>
-     *     Associates <payment_method> with <site>.
+     * @usage <site> <payment_method> Associates <payment_method> with <site>.
      */
     public function add($site_name, $payment_method)
     {

@@ -24,8 +24,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_name Site name
      *
-     * @usage terminus payment-method:remove <site>
-     *     Disassociates the active payment method from <site>.
+     * @usage <site> Disassociates the active payment method from <site>.
      */
     public function remove($site_name)
     {

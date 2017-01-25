@@ -23,8 +23,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus lock:disable <site>.<env>
-     *     Disables HTTP basic authentication on <site>'s <env> environment.
+     * @usage <site>.<env> Disables HTTP basic authentication on <site>'s <env> environment.
      */
     public function disable($site_env)
     {

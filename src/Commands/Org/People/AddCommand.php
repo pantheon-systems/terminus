@@ -22,8 +22,7 @@ class AddCommand extends TerminusCommand
      * @param string $email Email address
      * @param string $role [admin|unprivileged|team_member|developer] Role
      *
-     * @usage terminus org:people:add <organization> <email> <role>
-     *     Adds the user with the email, <email>, to <organization> with the <role> role.
+     * @usage <organization> <email> <role> Adds the user with the email, <email>, to <organization> with the <role> role.
      */
     public function add($organization, $email, $role)
     {
