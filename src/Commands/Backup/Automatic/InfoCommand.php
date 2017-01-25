@@ -31,10 +31,8 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus backup:automatic:info <site>.<env>
-     *     Displays the day when <site>'s <env> environment's weekly backup is created'.
-     * @usage terminus backup:automatic:info <site>.<env> --format=table
-     *     Displays the hour of <site>'s <env> environment's daily backups (retained for one week) and the day on which its weekly backups (retained for one month) are made.
+     * @usage <site>.<env> Displays the day when <site>'s <env> environment's weekly backup is created'.
+     * @usage <site>.<env> --format=table Displays the hour of <site>'s <env> environment's daily backups (retained for one week) and the day on which its weekly backups (retained for one month) are made.
      */
     public function getSchedule($site_env)
     {

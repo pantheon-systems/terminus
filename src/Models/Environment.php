@@ -14,6 +14,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class Environment
@@ -733,7 +734,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $sftp = $this->sftpConnectionInfo();
         $ssh_command = vsprintf(
             'ssh -T %s@%s -p %s -o "AddressFamily inet" %s',
-            [$sftp['username'], $sftp['host'], $sftp['port'], escapeshellarg($command),]
+            [$sftp['username'], $sftp['host'], $sftp['port'], ProcessUtils::escapeArgument($command),]
         );
 
         // Catch Terminus running in test mode

@@ -32,8 +32,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus domain:list <site>.<env>
-     *     Displays domains associated with <site>'s <env> environment.
+     * @usage <site>.<env> Displays domains associated with <site>'s <env> environment.
      */
     public function listDomains($site_env)
     {

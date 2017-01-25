@@ -31,8 +31,7 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus lock:info <site>.<env>
-     *     Displays HTTP basic authentication status and configuration for <site>'s <env> environment.
+     * @usage <site>.<env> Displays HTTP basic authentication status and configuration for <site>'s <env> environment.
      */
     public function info($site_env)
     {

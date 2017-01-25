@@ -26,8 +26,7 @@ class WPCommand extends SSHBaseCommand
      * @param array $wp_command WP-CLI command
      * @return string Command output
      *
-     * @usage terminus wp <site>.<env> -- <command>
-     *     Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> -- <command> Runs the WP-CLI command <command> remotely on <site>'s <env> environment.
      */
     public function wpCommand($site_env_id, array $wp_command)
     {

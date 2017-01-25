@@ -33,10 +33,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $element [code|files|database|db] Backup element filter. If not defined, all elements are selected.
      *
-     * @usage terminus backup:list <site>.<env>
-     *     Lists all backups made of <site>'s <env> environment.
-     * @usage terminus backup:list <site>.<env> --element=<element>
-     *     Lists all <element> backups made of <site>'s <env> environment.
+     * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
+     * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.
      */
     public function listBackups($site_env, $element = 'all')
     {

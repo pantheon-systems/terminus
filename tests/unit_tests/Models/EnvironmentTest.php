@@ -20,6 +20,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class EnvironmentTest
@@ -818,20 +819,23 @@ class EnvironmentTest extends ModelTestCase
 
     public function testSendCommandViaSsh()
     {
+        $command = 'echo "Hello, World!"';
+        $expectedCommand = ProcessUtils::escapeArgument($command);
+
         $expected = ['output' => 'Hello, World!', 'exit_code' => 0,];
         $this->local_machine->expects($this->at(0))
             ->method('execInteractive')
-            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "AddressFamily inet" \'echo "Hello, World!"\'')
+            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "AddressFamily inet" ' . $expectedCommand)
             ->willReturn($expected);
 
-        $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');
+        $actual = $this->model->sendCommandViaSsh($command);
         $this->assertEquals($expected, $actual);
 
         $this->configSet(['test_mode' => 1]);
         $expected = [
             'output' => "Terminus is in test mode. "
                 . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" 'echo \"Hello, World!\"'",
+                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" $expectedCommand",
             'exit_code' => 0
         ];
         $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');

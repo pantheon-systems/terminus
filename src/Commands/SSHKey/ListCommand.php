@@ -26,8 +26,7 @@ class ListCommand extends TerminusCommand
      *     comment: Description
      * @return RowsOfFields
      *
-     * @usage terminus ssh-key:list
-     *     Displays the list of SSH public keys associated with the currently logged-in user.
+     * @usage Displays the list of SSH public keys associated with the currently logged-in user.
      */
     public function listSSHKeys()
     {

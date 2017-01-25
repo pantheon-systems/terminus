@@ -27,10 +27,8 @@ class OperationsCommand extends InfoBaseCommand
      *     duration: Duration
      *     description: Operation Description
      *
-     * @usage terminus workflow:info:operations <site> --id=<workflow>
-     *     Displays the Quicksilver operation details of <site>'s workflow <workflow>.
-     * @usage terminus workflow:info:operations <site>
-     *     Displays the Quicksilver operation details of <site>'s most recently created workflow.
+     * @usage <site> --id=<workflow> Displays the Quicksilver operation details of <site>'s workflow <workflow>.
+     * @usage <site> Displays the Quicksilver operation details of <site>'s most recently created workflow.
      */
     public function operations($site_id, $options = ['id' => null,])
     {

@@ -51,10 +51,8 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage connection:info <site>.<env>
-     *     Displays connection information for <site>'s <env> environment.
-     * @usage connection:info <site>.<env> --fields='git_*'
-     *     Displays connection information fields related to Git for <site>'s <env> environment.
+     * @usage connection:info <site>.<env> Displays connection information for <site>'s <env> environment.
+     * @usage connection:info <site>.<env> --fields='git_*' Displays connection information fields related to Git for <site>'s <env> environment.
      */
     public function connectionInfo($site_env)
     {

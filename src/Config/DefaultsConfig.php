@@ -79,7 +79,7 @@ class DefaultsConfig extends TerminusConfig
         $debug           = debug_backtrace();
         $script_location = array_pop($debug);
         $script_name     = str_replace(
-            $this->getTerminusRoot() . '/',
+            $this->getTerminusRoot() . DIRECTORY_SEPARATOR,
             '',
             $script_location['file']
         );

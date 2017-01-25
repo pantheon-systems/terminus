@@ -23,8 +23,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage terminus redis:enable <site>
-     *     Enables Redis add-on for <site>.
+     * @usage <site> Enables Redis add-on for <site>.
      */
     public function enable($site_id)
     {

@@ -31,14 +31,10 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
      *
      * @return string|null
      *
-     * @usage terminus dashboard
-     *     Opens browser to user's account on the Pantheon Dashboard.
-     * @usage terminus dashboard --print
-     *     Prints the URL for user's account on the Pantheon Dashboard.
-     * @usage terminus dashboard <site>
-     *     Opens browser to <site> on the Pantheon Dashboard.
-     * @usage terminus dashboard <site>.<env>
-     *     Opens browser to <site>'s <env> environment on the Pantheon Dashboard.
+     * @usage Opens browser to user's account on the Pantheon Dashboard.
+     * @usage --print Prints the URL for user's account on the Pantheon Dashboard.
+     * @usage <site> Opens browser to <site> on the Pantheon Dashboard.
+     * @usage <site>.<env> Opens browser to <site>'s <env> environment on the Pantheon Dashboard.
      */
     public function view($site_env = null, $options = ['print' => false,])
     {

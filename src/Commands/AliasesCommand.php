@@ -23,12 +23,9 @@ class AliasesCommand extends TerminusCommand implements ContainerAwareInterface
      *
      * @return string|null
      *
-     * @usage terminus aliases
-     *     Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
-     * @usage terminus aliases --print
-     *     Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
-     * @usage terminus aliases --location=<full_path>
-     *     Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
+     * @usage Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
+     * @usage --print Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
+     * @usage --location=<full_path> Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
      */
     public function aliases($options = ['print' => false, 'location' => null,])
     {

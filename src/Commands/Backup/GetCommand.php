@@ -31,16 +31,11 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface, RequestA
      * @option string $to Local path to save to
      * @throws TerminusNotFoundException
      *
-     * @usage terminus backup:get <site>.<env>
-     *     Displays the URL for the most recent backup of any type in <site>'s <env> environment.
-     * @usage terminus backup:get <site>.<env> --file=<file_name>
-     *     Displays the URL for the backup with the file name <file_name> in <site>'s <env> environment.
-     * @usage terminus backup:get <site>.<env> --element=<element>
-     *     Displays the URL for the most recent <element> backup in <site>'s <env> environment.
-     * @usage terminus backup:get <site>.<env> --to=<path>
-     *     Saves the most recent backup of any type in <site>'s <env> environment to <path>.
-     * @usage terminus backup:get <site>.<env> --element=<element> --to=<path>
-     *     Saves the most recent <element> backup in <site>'s <env> environment to <path>.
+     * @usage <site>.<env> Displays the URL for the most recent backup of any type in <site>'s <env> environment.
+     * @usage <site>.<env> --file=<file_name> Displays the URL for the backup with the file name <file_name> in <site>'s <env> environment.
+     * @usage <site>.<env> --element=<element> Displays the URL for the most recent <element> backup in <site>'s <env> environment.
+     * @usage <site>.<env> --to=<path> Saves the most recent backup of any type in <site>'s <env> environment to <path>.
+     * @usage <site>.<env> --to=<path> Saves the most recent <element> backup in <site>'s <env> environment to <path>.
      */
     public function getBackup($site_env, array $options = ['file' => null, 'element' => null, 'to' => null,])
     {
