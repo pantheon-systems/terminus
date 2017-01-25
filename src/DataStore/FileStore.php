@@ -80,6 +80,18 @@ class FileStore implements DataStoreInterface
     }
 
     /**
+     * Remove all values from the store
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function removeAll()
+    {
+        foreach ($this->keys() as $key) {
+            $this->remove($key);
+        }
+    }
+
+    /**
      * Return a list of all keys in the store.
      * @return array A list of keys
      */

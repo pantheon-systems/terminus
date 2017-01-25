@@ -6,6 +6,7 @@ use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
+use League\Container\Argument\RawArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
@@ -292,9 +293,13 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->inflector(SiteAwareInterface::class)
             ->invokeMethod('setSites', ['sites']);
 
-        // Tell the command loader to only allow command functions that have a name/alias.
+        // Install our command cache into the command factory
+        $commandCacheDir = $this->getConfig()->get('cache_dir') . '/commands';
+        $commandCacheDataStore = new FileStore($commandCacheDir);
+
         $factory = $container->get('commandFactory');
         $factory->setIncludeAllPublicMethods(false);
+        $factory->setDataStore($commandCacheDataStore);
     }
 
     /**
