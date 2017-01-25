@@ -47,10 +47,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public $solr;
     /**
-     * @var \stdClass
-     */
-    protected $upstream_data;
-    /**
      * @var SiteUserMemberships
      */
     public $user_memberships;
@@ -58,6 +54,10 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      * @var Workflows
      */
     public $workflows;
+    /**
+     * @var \stdClass
+     */
+    protected $upstream_data;
     /**
      * @var string The URL at which to fetch this model's information
      */
@@ -76,16 +76,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->url = "sites/{$this->id}?site_state=true";
 
         $this->setUpstream($attributes);
-    }
-
-    /**
-     * Get the human-readable name of the site
-     *
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->get('name');
     }
 
     /**
@@ -127,14 +117,12 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function dashboardUrl()
     {
-        $url = sprintf(
+        return sprintf(
             '%s://%s/sites/%s',
             $this->getConfig()->get('dashboard_protocol'),
             $this->getConfig()->get('dashboard_host'),
             $this->id
         );
-
-        return $url;
     }
 
     /**
@@ -157,10 +145,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function deployProduct($upstream_id)
     {
-        return $this->getWorkflows()->create(
-            'deploy_product',
-            ['params' => ['product_id' => $upstream_id,],]
-        );
+        return $this->getWorkflows()->create('deploy_product', ['params' => ['product_id' => $upstream_id,],]);
     }
 
     /**
@@ -175,6 +160,28 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $this->setUpstream($data);
         $this->attributes = (object)array_merge((array)$this->attributes, (array)$data);
         return $this;
+    }
+
+    /**
+     * @return Branches
+     */
+    public function getBranches()
+    {
+        if (empty($this->branches)) {
+            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
+        }
+        return $this->branches;
+    }
+
+    /**
+     * @return Environments
+     */
+    public function getEnvironments()
+    {
+        if (empty($this->environments)) {
+            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
+        }
+        return $this->environments;
     }
 
     /**
@@ -193,6 +200,38 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             return $this->features[$feature];
         }
         return null;
+    }
+
+    /**
+     * Get the human-readable name of the site
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->get('name');
+    }
+
+    /**
+     * @return NewRelic
+     */
+    public function getNewRelic()
+    {
+        if (empty($this->new_relic)) {
+            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,]]);
+        }
+        return $this->new_relic;
+    }
+
+    /**
+     * @return SiteOrganizationMemberships
+     */
+    public function getOrganizationMemberships()
+    {
+        if (empty($this->user_memberships)) {
+            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,]]);
+        }
+        return $this->org_memberships;
     }
 
     /**
@@ -221,168 +260,13 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Remove this site's payment method
+     * Returns the PHP version of this site.
      *
-     * @return Workflow
+     * @return null|string
      */
-    public function removePaymentMethod()
+    public function getPHPVersion()
     {
-        return $this->getWorkflows()->create('disassociate_site_instrument', ['site' => $this->id,]);
-    }
-
-    /**
-     * Formats the Site object into an associative array for output
-     *
-     * @return array Associative array of data for output
-     */
-    public function serialize()
-    {
-        $data = [
-            'id' => $this->id,
-            'name' => $this->get('name'),
-            'label' => $this->get('label'),
-            'created' => date($this->getConfig()->get('date_format'), $this->get('created')),
-            'framework' => $this->get('framework'),
-            'organization' => $this->get('organization'),
-            'service_level' => $this->get('service_level'),
-            'upstream' => (string)$this->getUpstream(),
-            'php_version' => $this->get('php_version'),
-            'holder_type' => $this->get('holder_type'),
-            'holder_id' => $this->get('holder_id'),
-            'owner' => $this->get('owner'),
-        ];
-        if ($this->has('frozen')) {
-            $data['frozen'] = true;
-        }
-        if (!is_null($data['php_version'])) {
-            $data['php_version'] = substr($data['php_version'], 0, 1)
-                . '.' . substr($data['php_version'], 1, 1);
-        }
-        if (isset($this->tags)) {
-            $data['tags'] = implode(',', (array)$this->tags->ids());
-        }
-        if (isset($this->memberships)) {
-            $data['memberships'] = implode(',', $this->memberships);
-        }
-        return $data;
-    }
-
-    /**
-     * Sets the site owner to the indicated team member
-     *
-     * @param User $user_id UUID of new owner of site
-     * @return Workflow
-     * @throws TerminusException
-     */
-    public function setOwner($user_id)
-    {
-        return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
-    }
-
-    /**
-     * Update service level
-     *
-     * @param string $service_level Level to set service on site to
-     * @return Workflow
-     * @throws \Exception
-     */
-    public function updateServiceLevel($service_level)
-    {
-        try {
-            return $this->getWorkflows()->create(
-                'change_site_service_level',
-                ['params' => compact('service_level'),]
-            );
-        } catch (\Exception $e) {
-            if ($e->getCode() == '403') {
-                throw new TerminusException('A payment method is required to increase the service level of this site.');
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Modify response data between fetch and assignment
-     *
-     * @param object $data attributes received from API response
-     * @return object $data
-     */
-    protected function parseAttributes($data)
-    {
-        if (property_exists($data, 'php_version')) {
-            $data->php_version = substr($data->php_version, 0, 1) . '.' . substr($data->php_version, 1, 1);
-        }
-        return $data;
-    }
-
-    /**
-     * Ensures the proper creation of an Upstream object
-     *
-     * @param object $attributes Data about the site from the API
-     */
-    private function setUpstream($attributes)
-    {
-        $upstream_data = (object)[];
-        if (isset($attributes->settings->upstream)) {
-            $upstream_data = $attributes->settings->upstream;
-        } else {
-            if (isset($attributes->upstream)) {
-                $upstream_data = $attributes->upstream;
-            }
-        }
-        $this->upstream_data = $upstream_data;
-    }
-
-    /**
-     * @return Upstream
-     */
-    public function getUpstream()
-    {
-        return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
-    }
-
-    /**
-     * @return Branches
-     */
-    public function getBranches()
-    {
-        if (empty($this->branches)) {
-            $this->branches = $this->getContainer()->get(Branches::class, [['site' => $this,]]);
-        }
-        return $this->branches;
-    }
-
-    /**
-     * @return Workflows
-     */
-    public function getWorkflows()
-    {
-        if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
-        }
-        return $this->workflows;
-    }
-
-    /**
-     * @return SiteUserMemberships
-     */
-    public function getUserMemberships()
-    {
-        if (empty($this->user_memberships)) {
-            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
-        }
-        return $this->user_memberships;
-    }
-    
-    /**
-     * @return SiteOrganizationMemberships
-     */
-    public function getOrganizationMemberships()
-    {
-        if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,]]);
-        }
-        return $this->org_memberships;
+        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
     }
 
     /**
@@ -408,24 +292,120 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return Environments
+     * @return Upstream
      */
-    public function getEnvironments()
+    public function getUpstream()
     {
-        if (empty($this->environments)) {
-            $this->environments = $this->getContainer()->get(Environments::class, [['site' => $this,]]);
-        }
-        return $this->environments;
+        return $this->getContainer()->get(Upstream::class, [$this->upstream_data, ['site' => $this,]]);
     }
 
     /**
-     * @return NewRelic
+     * @return SiteUserMemberships
      */
-    public function getNewRelic()
+    public function getUserMemberships()
     {
-        if (empty($this->new_relic)) {
-            $this->new_relic = $this->getContainer()->get(NewRelic::class, [null, ['site' => $this,]]);
+        if (empty($this->user_memberships)) {
+            $this->user_memberships = $this->getContainer()->get(SiteUserMemberships::class, [['site' => $this,]]);
         }
-        return $this->new_relic;
+        return $this->user_memberships;
+    }
+
+    /**
+     * @return Workflows
+     */
+    public function getWorkflows()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,]]);
+        }
+        return $this->workflows;
+    }
+
+    /**
+     * Remove this site's payment method
+     *
+     * @return Workflow
+     */
+    public function removePaymentMethod()
+    {
+        return $this->getWorkflows()->create('disassociate_site_instrument', ['site' => $this->id,]);
+    }
+
+    /**
+     * Formats the Site object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        $data = [
+            'id' => $this->id,
+            'name' => $this->get('name'),
+            'label' => $this->get('label'),
+            'created' => date($this->getConfig()->get('date_format'), $this->get('created')),
+            'framework' => $this->get('framework'),
+            'organization' => $this->get('organization'),
+            'service_level' => $this->get('service_level'),
+            'upstream' => (string)$this->getUpstream(),
+            'php_version' => $this->getPHPVersion(),
+            'holder_type' => $this->get('holder_type'),
+            'holder_id' => $this->get('holder_id'),
+            'owner' => $this->get('owner'),
+            'frozen' => is_null($this->get('frozen')) ? 'false' : 'true',
+        ];
+        if (isset($this->tags)) {
+            $data['tags'] = implode(',', $this->tags->ids());
+        }
+        if (isset($this->memberships)) {
+            $data['memberships'] = implode(',', $this->memberships);
+        }
+        return $data;
+    }
+
+    /**
+     * Sets the site owner to the indicated team member
+     *
+     * @param User $user_id UUID of new owner of site
+     * @return Workflow
+     * @throws TerminusException
+     */
+    public function setOwner($user_id)
+    {
+        return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
+    }
+
+    /**
+     * Update service level
+     *
+     * @param string $service_level Level to set service on site to
+     * @return Workflow
+     * @throws TerminusException|\Exception
+     */
+    public function updateServiceLevel($service_level)
+    {
+        try {
+            return $this->getWorkflows()->create('change_site_service_level', ['params' => compact('service_level'),]);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 403) {
+                throw new TerminusException('A payment method is required to increase the service level of this site.');
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Ensures the proper creation of an Upstream object
+     *
+     * @param object $attributes Data about the site from the API
+     */
+    private function setUpstream($attributes)
+    {
+        $upstream_data = (object)[];
+        if (isset($attributes->settings->upstream)) {
+            $upstream_data = $attributes->settings->upstream;
+        } else if (isset($attributes->upstream)) {
+            $upstream_data = $attributes->upstream;
+        }
+        $this->upstream_data = $upstream_data;
     }
 }

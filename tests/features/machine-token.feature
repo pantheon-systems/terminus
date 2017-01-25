@@ -21,3 +21,4 @@ Feature: Machine tokens command
     """
     Deleted [[machine_token_device]]!
     """
+

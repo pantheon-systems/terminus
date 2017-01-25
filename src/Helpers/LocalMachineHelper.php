@@ -47,7 +47,10 @@ class LocalMachineHelper implements ConfigAwareInterface
     public function execInteractive($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
-        $process->setTty(true);
+        // Set tty mode if the user is running terminus iteractively.
+        if (function_exists('posix_isatty')) {
+            $process->setTty(posix_isatty(STDOUT));
+        }
         $process->start();
         $process->wait($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];

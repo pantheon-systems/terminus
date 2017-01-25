@@ -28,33 +28,33 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     protected $container;
     /**
-     * @var OutputInterface
+     * @var Environment
      */
-    protected $output;
+    protected $environment;
+    /**
+     * @var Environments
+     */
+    protected $environments;
     /**
      * @var ArrayInput
      */
     protected $input;
-
     /**
-     * @var Sites
+     * @var OutputInterface
      */
-    protected $sites;
-
+    protected $output;
     /**
      * @var Site
      */
     protected $site;
     /**
-     * @var Environment
+     * @var Site
      */
-    protected $environment;
-
-    /**
-     * @var Environments
-     */
-    protected $environments;
     protected $site2;
+    /**
+     * @var Sites
+     */
+    protected $sites;
 
     /**
      * @return TerminusConfig

@@ -81,9 +81,11 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
         if (isset($tokens[$id])) {
             return $tokens[$id];
         } else {
-            foreach ($tokens as $token) {
-                if ($id == $token->get('token')) {
-                    return $token;
+            if (is_array($tokens)) {
+                foreach ($tokens as $token) {
+                    if ($id == $token->get('token')) {
+                        return $token;
+                    }
                 }
             }
         }
@@ -97,7 +99,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     {
         $tokens = [];
         foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = $this->getDataStore()->get($key);
+            $tokens[] = (object)$this->getDataStore()->get($key);
         }
         return $tokens;
     }

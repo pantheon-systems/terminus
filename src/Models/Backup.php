@@ -131,25 +131,27 @@ class Backup extends TerminusModel implements ConfigAwareInterface
      */
     public function restore()
     {
-        switch ($this->get('type')) {
+        $type = $this->get('type');
+        switch ($type) {
             case 'code':
-                $type = 'restore_code';
+                $wf_name = 'restore_code';
                 break;
             case 'files':
-                $type = 'restore_files';
+                $wf_name = 'restore_files';
                 break;
             case 'database':
-                $type = 'restore_database';
+                $wf_name = 'restore_database';
                 break;
             default:
                 throw new TerminusException('This backup has no archive to restore.');
                 break;
         }
+        $modified_id = str_replace("_$type", '', $this->id);
         $workflow = $this->environment->getWorkflows()->create(
-            $type,
+            $wf_name,
             [
                 'params' => [
-                    'key' => "{$this->environment->site->id}/{$this->environment->id}/{$this->get('filename')}",
+                    'key' => "{$this->environment->site->id}/{$this->environment->id}/{$modified_id}/{$this->get('filename')}",
                     'bucket' => $this->getBucket(),
                 ],
             ]

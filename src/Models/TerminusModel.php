@@ -92,8 +92,7 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function has($attribute)
     {
-        $isset = isset($this->attributes->$attribute);
-        return $isset;
+        return isset($this->attributes->$attribute);
     }
 
     /**

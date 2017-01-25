@@ -32,7 +32,7 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function wake($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
         $data = $env->wake();
 
         // @TODO: Move the exceptions up the chain to the `wake` function. (One env is ported over).
@@ -43,6 +43,6 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('Pantheon headers missing, which is not quite right.');
         }
 
-        $this->log()->notice('OK >> {target} responded in {time}', $data);
+        $this->log()->notice('OK >> {target} responded', $data);
     }
 }

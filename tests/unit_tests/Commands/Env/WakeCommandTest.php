@@ -32,13 +32,13 @@ class WakeCommandTest extends EnvCommandTest
         $this->environment->expects($this->once())
             ->method('wake')
             ->with()
-            ->willReturn(['success' => true, 'target' => 'dev', 'time' => 1, 'styx' => 'yep!',]);
+            ->willReturn(['success' => true, 'target' => 'dev', 'styx' => 'yep!',]);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('OK >> {target} responded in {time}'),
-                $this->equalTo(['success' => true, 'target' => 'dev', 'time' => 1, 'styx' => 'yep!',])
+                $this->equalTo('OK >> {target} responded'),
+                $this->equalTo(['success' => true, 'target' => 'dev', 'styx' => 'yep!',])
             );
 
         $out = $this->command->wake('mysite.dev');

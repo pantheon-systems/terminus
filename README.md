@@ -32,7 +32,7 @@ You can install Terminus just about anywhere on your system. In this README, we'
 ### Installing via the Terminus installer
 Run this in your Terminal client:
 ```bash
-curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar
+curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
 ```
 For more information on installation options, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
@@ -194,3 +194,4 @@ To deploy a new version of Terminus:
  
 ## Debugging
 - Run Terminus with the `-vvv` option to get debug output.
+- If you are getting `PHP Fatal error:  Uncaught exception 'ReflectionException' ...`, install php-xml.

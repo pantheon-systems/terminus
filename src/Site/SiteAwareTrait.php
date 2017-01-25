@@ -47,30 +47,6 @@ trait SiteAwareTrait
     }
 
     /**
-     * Get the site and environment with the given ids.
-     *
-     * @TODO This should be moved to the input/validation stage when that is available.
-     *
-     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
-     * @param string  $default_env The default environment to use if none is specified
-     * @return array  The site and environment in an array.
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    public function getSiteEnv($site_env_id, $default_env = null)
-    {
-        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
-        $env_id = !empty($env_id) ? $env_id : $default_env;
-
-        if (empty($site_id) || empty($env_id)) {
-            throw new TerminusException('The environment argument must be given as <site_name>.<environment>');
-        }
-
-        $site = $this->getSite($site_id);
-        $env = $site->getEnvironments()->get($env_id);
-        return [$site, $env];
-    }
-
-    /**
      * Get the site and environment with the given ids, if provided
      *
      * @param string $site_env_id The site/environment id in the form [<site>[.<env>]]
@@ -87,5 +63,51 @@ trait SiteAwareTrait
         $site = $this->getSite($site_id);
         $env = !empty($env_id) ? $site->getEnvironments()->get($env_id) : null;
         return [$site, $env];
+    }
+
+    /**
+     * Get the site and environment with the given ids.
+     *
+     * @TODO This should be moved to the input/validation stage when that is available.
+     *
+     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
+     * @param string  $default_env The default environment to use if none is specified
+     * @return array  The site and environment in an array.
+     * @throws TerminusException
+     */
+    public function getSiteEnv($site_env_id, $default_env = null)
+    {
+        list($site_id, $env_id) = array_pad(explode('.', $site_env_id), 2, null);
+        $env_id = !empty($env_id) ? $env_id : $default_env;
+
+        if (empty($site_id) || empty($env_id)) {
+            throw new TerminusException('The environment argument must be given as <site_name>.<environment>');
+        }
+
+        $site = $this->getSite($site_id);
+        $env = $site->getEnvironments()->get($env_id);
+        return [$site, $env];
+    }
+
+    /**
+     * Get the site and environment with the given IDs, provided the site is not frozen when the environment is either
+     * test or live.
+     *
+     * @TODO This should be moved to the input/validation stage when that is available.
+     *
+     * @param string  $site_env_id The site/environment id in the form <site>[.<env>]
+     * @param string  $default_env The default environment to use if none is specified
+     * @return array  The site and environment in an array.
+     * @throws TerminusException
+     */
+    public function getUnfrozenSiteEnv($site_env_id, $default_env = null)
+    {
+        list($site, $env) = $this->getSiteEnv($site_env_id, $default_env);
+
+        if (in_array($env->id, ['test', 'live',]) && !is_null($site->get('frozen'))) {
+            throw new TerminusException('This site is frozen. Its test and live environments are unavailable.');
+        }
+
+        return [$site, $env,];
     }
 }

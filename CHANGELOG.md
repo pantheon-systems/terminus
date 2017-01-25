@@ -1,9 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.0.0 - 2017-01-20
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
+
+### Fixed
+- Fixed `backup:restore`. (#1529)
+- Fixed `env:wake` to target domains with zone names. (#1530)
+- Fixed `env` commands to not err when the site is frozen and the test or live environment is to be accessed. (#1537)
+
+### Changed
+- Clear cache no longer deletes stored machine tokens. Logout now deletes stored machine tokens. (#1542)
+- Terminus now checks for new versions after every command run. (#1523)
+- `site:create` now checks to see whether a site name is taken before attempting to create it. (#1536)
+
+### Removed
 - Removed framework type check from `drush` and `wp` commands. (#1521)
 
 ## 1.0.0-beta.2 - 2017-01-10

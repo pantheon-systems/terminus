@@ -12,17 +12,18 @@ class LogoutCommand extends TerminusCommand
 {
 
     /**
-     * Logs out the currently logged-in user.
+     * Logs out the currently logged-in user and deletes any saved machine tokens.
      *
      * @command auth:logout
      * @aliases logout
      *
      * @usage terminus auth:logout
-     *     Logs out of Pantheon and removes saved session.
+     *     Logs out of Pantheon and removes saved session and machine tokens.
      */
     public function logOut()
     {
+        $this->session()->getTokens()->deleteAll();
         $this->session()->destroy();
-        $this->log()->notice('You have been logged out of Pantheon.');
+        $this->log()->notice('Your saved machine tokens have been deleted and you have been logged out.');
     }
 }

@@ -9,5 +9,5 @@ Feature: Waking a site
     When I run "terminus env:wake [[test_site_name]].dev"
     Then I should get:
     """
-    OK >> dev-[[test_site_name]].[[php_site_domain]] responded in
+    OK >> dev-[[test_site_name]].[[php_site_domain]] responded
     """

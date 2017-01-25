@@ -34,7 +34,7 @@ class FileStore implements DataStoreInterface
         $path = $this->getFileName($key);
         if (file_exists($path)) {
             $out = file_get_contents($path);
-            $out = json_decode($out);
+            $out = json_decode($out, true);
         }
         return $out;
     }
@@ -76,6 +76,18 @@ class FileStore implements DataStoreInterface
         $path = $this->getFileName($key, true);
         if (file_exists($path)) {
             unlink($path);
+        }
+    }
+
+    /**
+     * Remove all values from the store
+     *
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    public function removeAll()
+    {
+        foreach ($this->keys() as $key) {
+            $this->remove($key);
         }
     }
 

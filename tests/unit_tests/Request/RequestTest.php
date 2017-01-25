@@ -55,6 +55,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      * @var Session
      */
     protected $session;
+    /**
+     * @var string
+     */
+    protected $user_agent;
 
     /**
      * @inheritdoc
@@ -75,13 +79,19 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $terminusVersion = '1.1.1';
+        $phpVersion = '7.0.0';
+        $script = 'foo/bar/baz.php';
+        $platformScript = str_replace('/', DIRECTORY_SEPARATOR, $script);
+        $this->user_agent = "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
+
         $this->config = new TerminusConfig();
         $this->config->set('host', 'example.com');
         $this->config->set('protocol', 'https');
         $this->config->set('port', '443');
-        $this->config->set('version', '1.1.1');
-        $this->config->set('script', 'foo/bar/baz.php');
-        $this->config->set('php_version', '7.0.0');
+        $this->config->set('version', $terminusVersion);
+        $this->config->set('script', $script);
+        $this->config->set('php_version', $phpVersion);
 
         $this->container = $this->getMock(Container::class);
         $this->session = $this->getMockBuilder(Session::class)
@@ -176,7 +186,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $headers = [
             'foo' => 'bar',
             'Content-type' => 'application/json',
-            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)'
+            'User-Agent' => $this->user_agent,
         ];
         $body = '';
         $request_options = [$method, $uri, $headers, $body];
@@ -198,7 +208,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $uri = 'https://example.com:443/api/foo/bar';
         $headers = [
             'Content-type' => 'application/json',
-            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)',
+            'User-Agent' => $this->user_agent,
             'Authorization' => 'Bearer abc123'
         ];
         $body = '';
@@ -217,12 +227,36 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $uri = 'http://foo.bar/a/b/c';
         $headers = [
             'Content-type' => 'application/json',
-            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)'
+            'User-Agent' => $this->user_agent,
         ];
         $body = '';
         $request_options = [$method, $uri, $headers, $body];
         $this->makeRequest($client_options, $request_options, 'http://foo.bar/a/b/c');
     }
+
+    public function testRequestWithQuery()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar?foo=bar';
+        $headers = [
+          'Content-type' => 'application/json',
+          'User-Agent' => $this->user_agent,
+        ];
+        $body = '';
+        $request_options = [$method, $uri, $headers, $body];
+        $actual = $this->makeRequest($client_options, $request_options, 'foo/bar', ['query' => ['foo' => 'bar']]);
+        $expected = [
+          'data' => (object)['abc' => '123'],
+          'headers' => ['Content-type' => 'application/json'],
+          'status_code' => 200,
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
 
     public function testRequestNoVerify()
     {
@@ -235,7 +269,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $uri = 'https://example.com:443/api/foo/bar';
         $headers = [
             'Content-type' => 'application/json',
-            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)'
+            'User-Agent' => $this->user_agent,
         ];
         $body = '';
         $request_options = [$method, $uri, $headers, $body];
@@ -252,7 +286,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $uri = 'https://example.com:443/api/foo/bar';
         $headers = [
             'Content-type' => 'application/json',
-            'User-Agent' => 'Terminus/1.1.1 (php_version=7.0.0&script=foo/bar/baz.php)',
+            'User-Agent' => $this->user_agent,
         ];
         $body = '';
         $request_options = [$method, $uri, $headers, $body];

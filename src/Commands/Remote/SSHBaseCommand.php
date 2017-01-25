@@ -57,8 +57,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $output = $this->output();
         $result = $this->environment->sendCommandViaSsh(
             $command_line,
-            function ($buffer) use ($output) {
-                $output->writeln($buffer);
+            function ($type, $buffer) use ($output) {
             }
         );
         $output = $result['output'];
@@ -67,7 +66,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
             'site'    => $this->site->get('name'),
             'env'     => $this->environment->id,
-            'command' => escapeshellarg($command_line),
+            'command' => ProcessUtils::escapeArgument($command_line),
             'exit'    => $exit,
         ]);
 
