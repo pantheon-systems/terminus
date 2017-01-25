@@ -70,13 +70,14 @@ class Backups extends EnvironmentOwnedCollection
      *
      * @param array $options params to pass configure fetching
      *        array $data Data to fill in the model members of this collection
-     * @return TerminusCollection $this
+     * @return Backups $this
      */
     public function fetch(array $options = [])
     {
         $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
+        $results = array_filter((array)$data);
 
-        foreach ($data as $id => $model_data) {
+        foreach ($results as $id => $model_data) {
             if (isset($model_data->filename)) {
                 if (!isset($model_data->id)) {
                     $model_data->id = $id;
@@ -97,12 +98,16 @@ class Backups extends EnvironmentOwnedCollection
      */
     public function getBackupByFileName($filename)
     {
-        $matches = $this->getFilteredMemberList(compact('filename'), 'id', 'id');
-        try {
-            return $this->get(array_shift($matches));
-        } catch (\Exception $e) {
+        $matches = array_filter(
+            $this->all(),
+            function ($backup) use ($filename) {
+                return $backup->get('filename') === $filename;
+            }
+        );
+        if (count($matches) === 0) {
             throw new TerminusNotFoundException('Cannot find a backup named {filename}.', compact('filename'));
         }
+        return array_shift($matches);
     }
 
     /**

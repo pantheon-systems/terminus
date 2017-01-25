@@ -3,11 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\DefaultsConfig;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
- * Class ConfigTest
- * Testing class for Pantheon\Terminus\Config
- * @package Pantheon\Terminus\UnitTests
+ * Class DefaultsConfigTest
+ * Testing class for Pantheon\Terminus\Config\DefaultsConfig
+ * @package Pantheon\Terminus\UnitTests\Config
  */
 class DefaultsConfigTest extends \PHPUnit_Framework_TestCase
 {
@@ -17,23 +18,50 @@ class DefaultsConfigTest extends \PHPUnit_Framework_TestCase
     private $config;
 
     /**
-     * Creates oft-used objects
+     * @inheritdoc
      */
-    public function __construct($name = null, array $data = [], $dataName = null)
+    public function setUp()
     {
-        parent::__construct($name, $data, $dataName);
         $this->config = new DefaultsConfig();
     }
 
     /**
-     * Tests the getHomeDir function
+     * Tests the getHomeDir function when using HOME
      */
-    public function testGetHomeDir()
+    public function testGetHomeDirHome()
     {
-        // This test doesn't test across all platforms.
-        if (getenv('HOME')) {
-            $this->assertEquals(getenv('HOME'), $this->config->get('user_home'));
+        $home = getenv('HOME');
+        if (!$home) {
+            $home = 'home';
+            putenv("HOME=$home");
         }
+        $config = new DefaultsConfig();
+        $this->assertEquals($home, $config->get('user_home'));
+    }
+
+    /**
+     * Tests the getHomeDir function's functionality when using the HOMEPATH
+     */
+    public function testGetHomeDirHomepath()
+    {
+        $homepath = 'homepath';
+        putenv("HOME=");
+        putenv("HOMEPATH=$homepath");
+        putenv("MSYSTEM=''");
+        $config = new DefaultsConfig();
+        $this->assertEquals($homepath, $config->get('user_home'));
+    }
+
+    /**
+     * Tests the getHomeDir function's functionality when the system is 'MING'
+     */
+    public function testGetHomeDirMing()
+    {
+        putenv("HOME=");
+        putenv("HOMEPATH=homepath");
+        putenv("MSYSTEM=MING");
+        $config = new DefaultsConfig();
+        $this->assertEmpty($config->get('user_home'));
     }
 
     public function testGetPhpAndOSInfo()
@@ -44,8 +72,26 @@ class DefaultsConfigTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(php_uname('v'), $this->config->get('os_version'));
     }
 
+    public function testGetSourceName()
+    {
+        $this->assertInternalType('string', $this->config->getSourceName());
+    }
+
+    /**
+     * Tests the result of getTerminusRoot function
+     */
     public function testGetTerminusRoot()
     {
         $this->assertEquals(getcwd(), $this->config->get('root'));
+    }
+
+    /**
+     * Tests the result of the getTerminusRoot function when Terminus cannot find its root
+     */
+    public function testGetTerminusRootInvalid()
+    {
+        $config = new DummyConfigClass();
+        $this->setExpectedException(TerminusException::class, 'Could not locate root to set TERMINUS_ROOT.');
+        $this->assertNull($config->runGetTerminusRoot('/'));
     }
 }

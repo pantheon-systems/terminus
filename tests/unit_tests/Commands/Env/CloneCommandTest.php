@@ -32,6 +32,7 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('cloneFiles')
             ->willReturn($this->workflow);
@@ -52,11 +53,35 @@ class CloneCommandTest extends EnvCommandTest
         $this->command->cloneContent('mysite.dev', 'test', ['files-only' => true]);
     }
 
+    /**
+     * Tests CloneContentCommand::cloneContent when declining the confirmation
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    public function testCloneFilesConfirmationDecline()
+    {
+        $this->environment->expects($this->any())
+            ->method('getName')
+            ->willReturn('dev');
+        $this->expectConfirmation(false);
+        $this->environment->expects($this->never())
+            ->method('cloneFiles');
+        $this->workflow->expects($this->never())
+            ->method('checkProgress');
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
+        $this->logger->expects($this->never())
+            ->method('log');
+
+        $this->command->cloneContent('mysite.dev', 'test', ['files-only' => true,]);
+    }
+
     public function testCloneDatabase()
     {
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('cloneDatabase')
             ->willReturn($this->workflow);
@@ -82,6 +107,7 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn('dev');
+        $this->expectConfirmation();
 
         $worlflow1 = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()

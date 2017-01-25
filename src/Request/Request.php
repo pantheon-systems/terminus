@@ -85,7 +85,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
             $resp = $this->request($paged_path);
 
-            $data = $resp['data'];
+            $data = (array)$resp['data'];
             if (count($data) > 0) {
                 if (count($data) < $limit) {
                     $finished = true;
@@ -107,7 +107,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             }
         }
 
-        return ['data' => array_values($results),];
+        return ['data' => $results,];
     }
 
     /**
@@ -122,12 +122,20 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     public function request($path, array $options = [])
     {
         $response = $this->send($path, $options);
+        $body = $response->getBody()->getContents();
         $data = [
-            'data' => json_decode($response->getBody()->getContents()),
+            'data' => json_decode($body),
             'headers' => $response->getHeaders(),
             'status_code' => $response->getStatusCode(),
         ];
-        $this->logger->debug("#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}", $data);
+        $this->logger->debug(
+            "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}",
+            [
+                'data' => $body,
+                'headers' => json_encode($data['headers']),
+                'status_code' => $data['status_code'],
+            ]
+        );
         return $data;
     }
 
@@ -176,7 +184,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 'headers' => json_encode($headers),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => $body,
+                'body' => json_encode($body),
             ]
         );
 
