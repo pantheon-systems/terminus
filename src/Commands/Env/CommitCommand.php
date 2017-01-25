@@ -25,10 +25,8 @@ class CommitCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $message Commit message
      *
-     * @usage terminus env:commit <site>.<env>
-     *   Commits code changes to <site>'s <env> environment with the default message.
-     * @usage terminus env:commit <site>.<env> --message=<message>
-     *   Commits code changes to <site>'s <env> environment with the message <message>.
+     * @usage <site>.<env> Commits code changes to <site>'s <env> environment with the default message.
+     * @usage <site>.<env> --message=<message> Commits code changes to <site>'s <env> environment with the message <message>.
      */
     public function commit($site_env, $options = ['message' => 'Terminus commit.'])
     {

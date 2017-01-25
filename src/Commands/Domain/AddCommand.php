@@ -24,8 +24,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $domain Domain e.g. `example.com`
      *
-     * @usage terminus domain:add <site>.<env> <domain_name>
-     *     Associates <domain_name> with <site>'s <env> environment.
+     * @usage <site>.<env> <domain_name> Associates <domain_name> with <site>'s <env> environment.
      */
     public function add($site_env, $domain)
     {

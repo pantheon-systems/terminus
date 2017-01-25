@@ -30,8 +30,7 @@ class ListCommand extends UpdatesCommand
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:list <site>.<env>
-     *     Displays a list of new code commits available from the upstream for <site>'s <env> environment.
+     * @usage <site>.<env> Displays a list of new code commits available from the upstream for <site>'s <env> environment.
      */
     public function listUpstreamUpdates($site_env)
     {

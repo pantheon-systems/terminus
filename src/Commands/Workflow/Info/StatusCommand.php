@@ -31,10 +31,8 @@ class StatusCommand extends InfoBaseCommand
      * @param string $site_id Site name
      * @option string $id Workflow UUID
      *
-     * @usage terminus workflow:info:operations <site> <workflow>
-     *     Displays the status of <site>'s workflow <workflow>.
-     * @usage terminus workflow:info:operations <site>
-     *     Displays the status of <site>'s  most recently created workflow.
+     * @usage <site> <workflow> Displays the status of <site>'s workflow <workflow>.
+     * @usage <site> Displays the status of <site>'s  most recently created workflow.
      */
     public function status($site_id, $options = ['id' => null,])
     {
