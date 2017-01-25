@@ -26,8 +26,7 @@ class DrushCommand extends SSHBaseCommand
      * @param array $drush_command Drush command
      * @return string Command output
      *
-     * @usage terminus drush <site>.<env> -- <command>
-     *     Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
      */
     public function drushCommand($site_env_id, array $drush_command)
     {

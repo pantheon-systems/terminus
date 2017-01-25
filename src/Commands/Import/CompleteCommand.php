@@ -24,8 +24,7 @@ class CompleteCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_name Site name
      *
-     * @usage terminus import:complete <site>
-     *     Finalizes <site>'s Pantheon import process.
+     * @usage <site> Finalizes <site>'s Pantheon import process.
      */
     public function complete($site_name)
     {

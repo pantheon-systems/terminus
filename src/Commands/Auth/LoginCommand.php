@@ -20,12 +20,9 @@ class LoginCommand extends TerminusCommand
      * @option machine-token Grants access for a user and is saved for future logins
      * @option email Uses an existing machine token for this user
      *
-     * @usage terminus auth:login --machine-token=<machine_token>
-     *     Logs in a user granted the machine token <machine_token>.
-     * @usage terminus auth:login
-     *     Logs in a user with a previously saved machine token.
-     * @usage terminus auth:login --email=<email>
-     *     Logs in a user with a previously saved machine token belonging to <email>.
+     * @usage --machine-token=<machine_token> Logs in a user granted the machine token <machine_token>.
+     * @usage Logs in a user with a previously saved machine token.
+     * @usage --email=<email> Logs in a user with a previously saved machine token belonging to <email>.
      */
     public function logIn(array $options = ['machine-token' => null, 'email' => null,])
     {

@@ -32,8 +32,7 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus env:code-log <site>.<env>
-     *     Displays the code log for <site>'s <env> environment.
+     * @usage <site>.<env> Displays the code log for <site>'s <env> environment.
      */
     public function codeLog($site_env)
     {

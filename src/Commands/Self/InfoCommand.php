@@ -26,8 +26,7 @@ class InfoCommand extends TerminusCommand
      *     os_version: Operating system
      * @return PropertyList
      *
-     * @usage terminus self:info
-     *     Displays the local PHP and Terminus environment configuration.
+     * @usage Displays the local PHP and Terminus environment configuration.
      */
     public function info()
     {
