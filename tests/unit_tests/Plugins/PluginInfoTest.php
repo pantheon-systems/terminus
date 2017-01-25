@@ -35,7 +35,7 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     public function testLoadCommands()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->markTestIncomplete("Plugins not supported on Windows yet.");
+            //$this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
 
         $plugin = new PluginInfo($this->paths[2]);
