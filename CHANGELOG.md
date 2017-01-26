@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 ## 1.0.0 - 2017-01-20
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
+- Added an `--element=` option to `backup:list`. (#1563)
 
 ### Fixed
 - Fixed `backup:restore`. (#1529)
@@ -17,6 +18,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Removed
 - Removed framework type check from `drush` and `wp` commands. (#1521)
+
+### Deprecated
+- The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
 
 ## 1.0.0-beta.2 - 2017-01-10
 ### Fixed

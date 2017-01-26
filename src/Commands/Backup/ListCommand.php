@@ -3,18 +3,13 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends BackupCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Lists backups for a specific site and environment.
      *
@@ -31,32 +26,25 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @param string $element [code|files|database|db] Backup element filter. If not defined, all elements are selected.
+     * @param string $element [all|code|files|database|db] DEPRECATED Backup element filter
+     * @option string $element [all|code|files|database|db] Backup element filter
      *
      * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.
+     *
+     * @deprecated 1.0.0 The element parameter is inconsistent with the other backup commands and will be removed.
      */
-    public function listBackups($site_env, $element = 'all')
+    public function listBackups($site_env, $element = 'all', array $options = ['element' => 'all',])
     {
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        $backup_element = ($options['element'] !== 'all') ? $options['element'] : $element;
 
-        switch ($element) {
-            case 'all':
-                $backup_element = null;
-                break;
-            case 'db':
-                $backup_element = 'database';
-                break;
-            default:
-                $backup_element = $element;
-        }
-
-        $backups = $env->getBackups()->getFinishedBackups($backup_element);
-
-        $data = [];
-        foreach ($backups as $backup) {
-            $data[] = $backup->serialize();
-        }
+        $data = array_map(
+            function ($backup) {
+                return $backup->serialize();
+            },
+            $env->getBackups()->getFinishedBackups($this->getElement($backup_element))
+        );
 
         // Return the output data.
         return new RowsOfFields($data);

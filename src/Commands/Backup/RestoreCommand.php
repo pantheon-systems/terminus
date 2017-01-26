@@ -2,9 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
@@ -12,10 +9,8 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  * Class RestoreCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class RestoreCommand extends TerminusCommand implements SiteAwareInterface
+class RestoreCommand extends BackupCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Restores a specific backup or the latest backup.
      *
@@ -25,22 +20,22 @@ class RestoreCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $file [filename.tgz] Name of backup file
-     * @option string $element [code|files|database|db] Backup element. If not defined, all elements are selected.
+     * @option string $element [all|code|files|database|db] Backup element
      * @throws TerminusException
      *
      * @usage <site>.<env> Restores the most recent backup of any type to <site>'s <env> environment.
      * @usage <site>.<env> --file=<backup> Restores backup with the <backup> file name to <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Restores the most recent <element> backup to <site>'s <env> environment.
      */
-    public function restoreBackup($site_env, array $options = ['file' => null, 'element' => null,])
+    public function restoreBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
         list($site, $env) = $this->getSiteEnv($site_env);
 
         if (isset($options['file']) && !is_null($file_name = $options['file'])) {
             $backup = $env->getBackups()->getBackupByFileName($file_name);
         } else {
-            $element = ($options['element'] == 'db') ? 'database' : $options['element'];
-            $backups = $env->getBackups()->getFinishedBackups($element);
+            $element = isset($options['element']) ? $this->getElement($options['element']) : null;
+            $backups = $env->getBackups()->getFinishedBackups($this->getElement($element));
             if (empty($backups)) {
                 throw new TerminusNotFoundException(
                     'No backups available. Create one with `terminus backup:create {site}.{env}`',
