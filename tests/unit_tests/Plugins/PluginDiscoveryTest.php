@@ -17,6 +17,9 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         }
 
         $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        if (DIRECTORY_SEPARATOR != '/') {
+            $plugins_dir = str_replace('/', DIRECTORY_SEPARATOR, $plugins_dir);
+        }
 
         $paths = [
             $plugins_dir  . 'invalid-no-composer-json',

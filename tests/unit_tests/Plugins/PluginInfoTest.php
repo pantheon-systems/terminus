@@ -11,7 +11,11 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        $base_dir = '/../../fixtures/plugins/';
+        if (DIRECTORY_SEPARATOR != '/') {
+            $base_dir = str_replace('/', DIRECTORY_SEPARATOR, $base_dir);
+        }
+        $this->plugins_dir = __DIR__ . $base_dir;
 
         $this->paths = [
             $this->plugins_dir . 'invalid-no-composer-json',
@@ -40,9 +44,15 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
 
         $plugin = new PluginInfo($this->paths[2]);
 
+        $ns_command = 'with-namespace/src/Commands/NullCommand.php';
+        $opt_ns_command = 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php';
+        if (DIRECTORY_SEPARATOR != '/') {
+            $ns_command = str_replace('/', DIRECTORY_SEPARATOR, $ns_command);
+            $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $opt_ns_command);
+        }
         $expected = [
-            $this->plugins_dir . 'with-namespace/src/Commands/NullCommand.php' => 'OrgName\\PluginName\\Commands\\NullCommand',
-            $this->plugins_dir . 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php' => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
+            $this->plugins_dir . $ns_command => 'OrgName\\PluginName\\Commands\\NullCommand',
+            $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
         $actual = $plugin->getCommandsAndHooks();
         $this->assertEquals($expected, $actual);
@@ -50,8 +60,12 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
 
         $plugin = new PluginInfo($this->paths[3]);
 
+        $no_ns_command = 'without-namespace/src/NullCommand.php';
+        if (DIRECTORY_SEPARATOR != '/') {
+            $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $no_ns_command);
+        }
         $expected = [
-            $this->plugins_dir . 'without-namespace/src/NullCommand.php' => 'NullCommand',
+            $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
         $actual = $plugin->getCommandsAndHooks();
         $this->assertEquals($expected, $actual);
