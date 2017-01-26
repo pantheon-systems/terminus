@@ -27,7 +27,7 @@ class GetCommand extends TerminusCommand implements SiteAwareInterface, RequestA
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $file [filename.tgz] Name of backup file
-     * @option string $element [code|files|database|db] Backup element to retrieve
+     * @option string $element [code|files|database|db] Backup element to retrieve. If not defined, all elements are selected.
      * @option string $to Local path to save to
      * @throws TerminusNotFoundException
      *

@@ -25,7 +25,7 @@ class RestoreCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $file [filename.tgz] Name of backup file
-     * @option string $element [code|files|database|db] Backup element
+     * @option string $element [code|files|database|db] Backup element. If not defined, all elements are selected.
      * @throws TerminusException
      *
      * @usage <site>.<env> Restores the most recent backup of any type to <site>'s <env> environment.
