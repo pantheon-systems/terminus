@@ -26,7 +26,7 @@ class PluginInfo
      */
     public function __construct($plugin_dir)
     {
-        $this->plugin_dir = $plugin_dir;
+        $this->plugin_dir = str_replace('/', DIRECTORY_SEPARATOR, $plugin_dir);
         $this->info = $this->parsePluginInfo();
     }
 
