@@ -21,7 +21,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command site:team:list
-     * @aliases site:team
      *
      * @field-labels
      *     firstname: First name

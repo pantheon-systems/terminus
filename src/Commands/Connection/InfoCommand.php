@@ -22,7 +22,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command connection:info
-     * @aliases connection
      *
      * @field-labels
      *     sftp_command: SFTP Command

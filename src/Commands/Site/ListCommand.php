@@ -12,7 +12,7 @@ class ListCommand extends SiteCommand
      * @authorize
      *
      * @command site:list
-     * @alias sites
+     * @aliases sites
      *
      * @field-labels
      *     name: Name

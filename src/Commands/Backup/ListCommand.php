@@ -32,11 +32,12 @@ class ListCommand extends BackupCommand
      * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.
      *
-     * @deprecated 1.0.0 The element parameter is inconsistent with the other backup commands and will be removed.
+     * @deprecated 1.0.0 The element parameter is inconsistent with the other backup commands and will be removed. Please use the option instead.
      */
     public function listBackups($site_env, $element = 'all', array $options = ['element' => 'all',])
     {
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
+        // If the element option is set to default, it looks to the element parameter.
         $backup_element = ($options['element'] !== 'all') ? $options['element'] : $element;
 
         $data = array_map(
