@@ -21,7 +21,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command env:info
-     * @aliases env
      *
      * @field-labels
      *     id: ID

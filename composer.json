@@ -4,9 +4,6 @@
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "https://pantheon.io",
   "license": "MIT",
-  "bin": [
-    "bin/terminus.bat", "bin/terminus"
-  ],
   "minimum-stability": "beta",
   "prefer-stable": true,
   "require": {

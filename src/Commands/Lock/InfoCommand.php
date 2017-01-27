@@ -21,7 +21,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command lock:info
-     * @aliases lock
      *
      * @field-labels
      *     locked: Locked?

@@ -17,7 +17,6 @@ class ListCommand extends UpdatesCommand
      * @authorize
      *
      * @command upstream:updates:list
-     * @aliases upstream:updates
      *
      * @field-labels
      *     hash: Commit ID
