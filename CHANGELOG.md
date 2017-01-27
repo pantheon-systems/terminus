@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- Added an `--element=` option to `backup:list`. (#1563)
+
+### Deprecated
+- The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
+
 ## 1.0.0 - 2017-01-20
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)

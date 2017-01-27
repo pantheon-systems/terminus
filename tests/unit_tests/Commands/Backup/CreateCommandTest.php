@@ -61,7 +61,7 @@ class CreateCommandTest extends BackupCommandTest
 
         $this->backups->expects($this->once())
           ->method('create')
-          ->with($this->equalTo($params))
+          ->with($this->equalTo($params + ['element' => null,]))
           ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())

@@ -783,10 +783,9 @@ class FeatureContext implements Context
      */
     public function iShouldHaveRecords($number)
     {
-        preg_match("/.*(\[.*\]).*/", str_replace("\n", '', $this->output), $matches);
-        $records = json_decode($matches[1]);
-        if ((integer)$number != count($records)) {
-            throw new \Exception("Wanted $number records, got " . count($records) . '.');
+        $record_count = count((array)json_decode($this->output));
+        if ((integer)$number != $record_count) {
+            throw new \Exception("Wanted $number records, got " . $record_count . '.');
         }
         return true;
     }
