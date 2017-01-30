@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
+use Symfony\Component\Console\Input\Input;
 
 /**
  * Class DeleteCommandTest
@@ -17,11 +18,12 @@ class DeleteCommandTest extends MultidevCommandTest
     protected function setUp()
     {
         parent::setUp();
-
+        
         $this->command = new DeleteCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environment->method('delete')->willReturn($this->workflow);
+        $this->command->setInput($this->input);
     }
 
     /**

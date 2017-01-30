@@ -12,7 +12,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class ListCommand extends TerminusCommand
 {
     /**
-     * Lists the payment methods attached to the logged-in account
+     * Displays the list of payment methods for the currently logged-in user.
      *
      * @authorize
      *
@@ -20,21 +20,15 @@ class ListCommand extends TerminusCommand
      * @aliases payment-methods pm:list pms
      *
      * @field-labels
-     *   label: Label
-     *   id: ID
+     *     label: Label
+     *     id: ID
      * @return RowsOfFields
      *
-     * @usage terminus payment-method:list
-     *   Display a list of payment methods which the logged-in user has attached to their account
+     * @usage Displays the list of payment methods for the currently logged-in user.
      */
     public function listPaymentMethods()
     {
-        $methods = array_map(
-            function ($method) {
-                return $method->serialize();
-            },
-            $this->session()->getUser()->getPaymentMethods()->fetch()->all()
-        );
+        $methods = $this->session()->getUser()->getPaymentMethods()->serialize();
         if (empty($methods)) {
             $this->log()->notice('There are no payment methods attached to this account.');
         }

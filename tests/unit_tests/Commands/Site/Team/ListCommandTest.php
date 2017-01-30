@@ -27,28 +27,28 @@ class ListCommandTest extends TeamCommandTest
      */
     public function testListCommand()
     {
-        $user = (object)[];
-        $user->id = 'abcdef';
-        $user->profile = (object)[];
-        $user->profile->firstname = 'Daisy';
-        $user->profile->lastname = 'Duck';
-        $user->email = 'daisy@duck.com';
-
-        $this->user_membership->expects($this->any())
-            ->method('get')
-            ->will($this->onConsecutiveCalls($user, 'team_member', $user, 'team_member'));
+        $expected = [
+            'abc' => [
+                'firstname' => 'Daisy',
+                'lastname' => 'Duck',
+                'email' => 'daisy@duck.com',
+                'user_id' => 'abc',
+                'role' => 'team_member',
+            ],
+            'def' => [
+                'firstname' => 'Mickey',
+                'lastname' => 'Mouse',
+                'email' => 'mickey@mouse.com',
+                'user_id' => 'def',
+                'role' => 'team_member',
+            ]
+        ];
 
         $this->user_memberships->expects($this->once())
-            ->method('all')
-            ->willReturn([$this->user_membership, $this->user_membership]);
+            ->method('serialize')
+            ->willReturn($expected);
 
-        $out = $this->command->teamList('mysite');
-        foreach ($out as $u) {
-            $this->assertEquals($u['first'], $user->profile->firstname);
-            $this->assertEquals($u['last'], $user->profile->lastname);
-            $this->assertEquals($u['email'], $user->email);
-            $this->assertEquals($u['role'], 'team_member');
-            $this->assertEquals($u['uuid'], $user->id);
-        }
+        $actual = $this->command->teamList('mysite');
+        $this->assertEquals($expected, $actual->getArrayCopy());
     }
 }

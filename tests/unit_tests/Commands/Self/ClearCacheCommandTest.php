@@ -2,11 +2,14 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
-use Pantheon\Terminus\Collections\SavedTokens;
+use League\Container\Container;
 use Pantheon\Terminus\Commands\Self\ClearCacheCommand;
-use Pantheon\Terminus\Models\SavedToken;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\Config\TerminusConfig;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\Tests\Iterator\Iterator;
 
 /**
  * Class ClearCacheCommandTest
@@ -16,53 +19,100 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 class ClearCacheCommandTest extends CommandTestCase
 {
     /**
-     * Tests the self:clear-cache commadn
+     * @var TerminusConfig
+     */
+    protected $config;
+    /**
+     * @var Filesystem
+     */
+    protected $filesystem;
+    /**
+     * @var Finder
+     */
+    protected $finder;
+
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $local_machine = $this->getMockBuilder(LocalMachineHelper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->config = $this->getMockBuilder(TerminusConfig::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->filesystem = $this->getMockBuilder(Filesystem::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->finder = $this->getMockBuilder(Finder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo(LocalMachineHelper::class))
+            ->willReturn($local_machine);
+        $local_machine->expects($this->once())
+            ->method('getFilesystem')
+            ->with()
+            ->willReturn($this->filesystem);
+        $local_machine->expects($this->once())
+            ->method('getFinder')
+            ->with()
+            ->willReturn($this->finder);
+        $this->finder->expects($this->once())
+            ->method('files')
+            ->with()
+            ->willReturn($this->finder);
+
+        $this->command = new ClearCacheCommand();
+        $this->command->setLogger($this->logger);
+        $this->command->setContainer($container);
+        $this->command->setConfig($this->config);
+    }
+
+    /**
+     * Tests the self:clear-cache command
      */
     public function testClearCache()
     {
-        $this->session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $dir_name = 'some dir';
+        $dirs = ['dir1', 'dir2', 'dir3', 'dir4',];
+        $iterator = new Iterator($dirs);
 
-        $token = $this->getMockBuilder(SavedToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $token->expects($this->once())
-            ->method('delete');
+        $this->config->expects(($this->once()))
+            ->method('get')
+            ->with($this->equalTo('command_cache_dir'))
+            ->willReturn($dir_name);
+        $this->finder->expects($this->once())
+            ->method('in')
+            ->with($this->equalTo($dir_name))
+            ->willReturn($this->finder);
+        $this->finder->expects($this->once())
+            ->method('getIterator')
+            ->with()
+            ->willReturn($iterator);
 
-        $token2 = $this->getMockBuilder(SavedToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $token2->expects($this->once())
-            ->method('delete');
-
-        $tokens = $this->getMockBuilder(SavedTokens::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getMembers'])
-            ->getMock();
-        $tokens->expects($this->any())
-            ->method('getMembers')
-            ->willReturn([$token, $token2]);
-
-        $this->session->expects($this->any())
-            ->method('getTokens')
-            ->willReturn($tokens);
-        $this->session->expects($this->once())
-            ->method('destroy');
-
+        for ($i = 0; $i < count($dirs); $i++) {
+            $this->filesystem->expects($this->at($i))
+                ->method('remove')
+                ->with($this->equalTo($dirs[$i]));
+        }
 
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Your saved machine tokens have been deleted and you have been logged out.')
+                $this->equalTo('The local Terminus cache has been cleared.')
             );
 
-        $command = new ClearCacheCommand();
-        $command->setConfig($this->config);
-        $command->setLogger($this->logger);
-        $command->setSession($this->session);
-
-        $command->clearCache();
+        $out = $this->command->clearCache();
+        $this->assertNull($out);
     }
 }

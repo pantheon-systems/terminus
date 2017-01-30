@@ -21,21 +21,28 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command import:site
-     * @aliases site:import import
+     * @aliases site:import
      *
      * @option string $site Site name
      * @option string $url Publicly accessible URL of the site archive
      *
-     * @usage terminus import <site> <archive_url>
-     *   Imports the site archive at <archive_url> to <site>.
+     * @usage <site> <archive_url> Imports the site archive at <archive_url> to <site>.
      */
     public function import($sitename, $url)
     {
         $site = $sitename;
-        list(, $env) = $this->getSiteEnv($site, 'dev');
+        list($site, $env) = $this->getSiteEnv($site, 'dev');
+
+        $tr = ['site' => $site->getName(), 'env' => $env->getName()];
+        if (!$this->confirm('Are you sure you overwrite the code, database and files for {env} on {site}?', $tr)) {
+            return;
+        }
+
         $workflow = $env->import($url);
         try {
-            $workflow->wait();
+            while (!$workflow->checkProgress()) {
+                // @TODO: Add Symfony progress bar to indicate that something is happening.
+            }
         } catch (\Exception $e) {
             if ($e->getMessage() == 'Successfully queued import_site') {
                 throw new TerminusException('Site import failed');

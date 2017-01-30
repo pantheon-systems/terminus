@@ -1,16 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Org\Team;
+namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
-use Pantheon\Terminus\Commands\Org\Team\RoleCommand;
+use Pantheon\Terminus\Commands\Org\People\RemoveCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
- * Class RoleCommandTest
- * Testing class for Pantheon\Terminus\Commands\Org\Team\RoleCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
+ * Class RemoveCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Org\People\RemoveCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\People
  */
-class RoleCommandTest extends OrgTeamCommandTest
+class RemoveCommandTest extends OrgPeopleCommandTest
 {
     /**
      * @inheritdoc
@@ -19,20 +19,19 @@ class RoleCommandTest extends OrgTeamCommandTest
     {
         parent::setUp();
 
-        $this->command = new RoleCommand($this->getConfig());
+        $this->command = new RemoveCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
     }
 
     /**
-     * Tests the org:team:role command
+     * Tests the org:people:remove command
      */
-    public function testRole()
+    public function testRemove()
     {
         $email = 'devuser@pantheon.io';
         $org_name = 'org_name';
         $full_name = 'Dev User';
-        $role = 'team_role';
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -42,8 +41,8 @@ class RoleCommandTest extends OrgTeamCommandTest
             ->with($email)
             ->willReturn($this->org_user_membership);
         $this->org_user_membership->expects($this->once())
-            ->method('setRole')
-            ->with($this->equalTo($role))
+            ->method('delete')
+            ->with()
             ->willReturn($workflow);
         $workflow->expects($this->once())
             ->method('checkProgress')
@@ -65,11 +64,11 @@ class RoleCommandTest extends OrgTeamCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo("{member}'s role has been changed to {role} in the {org} organization."),
-                $this->equalTo(['member' => $full_name, 'role' => $role, 'org' => $org_name,])
+                $this->equalTo('{member} has been removed from the {org} organization.'),
+                $this->equalTo(['member' => $full_name, 'org' => $org_name,])
             );
 
-        $out = $this->command->role($this->organization->id, $email, $role);
+        $out = $this->command->remove($this->organization->id, $email);
         $this->assertNull($out);
     }
 }

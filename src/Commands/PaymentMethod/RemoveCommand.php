@@ -15,17 +15,16 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Remove the applied paynment method to the given site
+     * Disassociates the active payment method from a site.
      *
      * @authorize
      *
      * @command payment-method:remove
      * @aliases pm:remove pm:rm
      *
-     * @param string $site_name The name or UUID of the site to remove the payment method from
+     * @param string $site_name Site name
      *
-     * @usage terminus payment-method:remove <site>
-     *   Removes the set payment method from the <site> site, if one exists.
+     * @usage <site> Disassociates the active payment method from <site>.
      */
     public function remove($site_name)
     {

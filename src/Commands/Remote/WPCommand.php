@@ -15,21 +15,6 @@ class WPCommand extends SSHBaseCommand
     protected $command = 'wp';
 
     /**
-     * @inheritdoc
-     */
-    protected $valid_frameworks = [
-        'wordpress',
-        'wordpress_network',
-    ];
-
-    /**
-     * @inheritdoc
-     */
-    protected $unavailable_commands = [
-        'db' => '',
-    ];
-
-    /**
      * Runs a WP-CLI command remotely on a site's environment.
      *
      * @authorize
@@ -41,13 +26,11 @@ class WPCommand extends SSHBaseCommand
      * @param array $wp_command WP-CLI command
      * @return string Command output
      *
-     * @usage terminus wp <site>.<env> -- <command>
-     *     Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> -- <command> Runs the WP-CLI command <command> remotely on <site>'s <env> environment.
      */
     public function wpCommand($site_env_id, array $wp_command)
     {
         $this->prepareEnvironment($site_env_id);
-
         return $this->executeCommand($wp_command);
     }
 }

@@ -15,18 +15,17 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Apply a payment method attached to your account to the given site
+     * Associates an existing payment method with a site.
      *
      * @authorize
      *
      * @command payment-method:add
      * @aliases pm:add
      *
-     * @param string $site_name The name or UUID of the site to attach a payment method to
-     * @param string $payment_method The label or UUID of the payment method to apply to the site
+     * @param string $site_name Site name
+     * @param string $payment_method Payment method label or UUID
      *
-     * @usage terminus payment-method:add <site> <method>
-     *   Attaches the <method> payment method ot the <site> site
+     * @usage <site> <payment_method> Associates <payment_method> with <site>.
      */
     public function add($site_name, $payment_method)
     {

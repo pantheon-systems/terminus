@@ -6,9 +6,9 @@ Feature: Organizational users
   Background: I am authenticated
     Given I am authenticated
 
-  @vcr org-team-list.yml
-  Scenario: List an organization's teammates
-    When I run "terminus org:team:list '[[organization_name]]'"
+  @vcr org-people-list.yml
+  Scenario: List an organization's members
+    When I run "terminus org:people:list '[[organization_name]]'"
     Then I should get: "-------------------------------------- ------------ ----------- ----------------------- -----------"
     And I should get: "ID                                     First Name   Last Name   Email                   Role"
     And I should get: "-------------------------------------- ------------ ----------- ----------------------- -----------"
@@ -16,25 +16,25 @@ Feature: Organizational users
     And I should get: "11111111-1111-1111-1111-111111111111   Dev          User        [[username]]     admin"
     And I should get: "-------------------------------------- ------------ ----------- ----------------------- -----------"
 
-  @vcr org-team-site-list-empty.yml
-  Scenario: List an organization's teammates
-    When I run "terminus org:team:list '[[organization_name]]'"
-    Then I should get: "[[organization_name]] has no team members."
+  @vcr org-people-site-list-empty.yml
+  Scenario: List an organization's members
+    When I run "terminus org:people:list '[[organization_name]]'"
+    Then I should get: "[[organization_name]] has no members."
     And I should get: "---- ------------ ----------- ------- ------"
     And I should get: "ID   First Name   Last Name   Email   Role"
     And I should get: "---- ------------ ----------- ------- ------"
 
-  @vcr org-team-add.yml
-  Scenario: Add a new member to a team
-    When I run "terminus org:team:add '[[organization_name]]' [[other_user]] team_member"
+  @vcr org-people-add.yml
+  Scenario: Add a new member to an organization
+    When I run "terminus org:people:add '[[organization_name]]' [[other_user]] team_member"
     Then I should get: "[[other_user]] has been added to the [[organization_name]] organization as a(n) team_member."
 
-  @vcr org-team-remove.yml
-  Scenario: Removing a new member from a team
-    When I run "terminus org:team:remove '[[organization_name]]' [[other_user]]"
+  @vcr org-people-remove.yml
+  Scenario: Removing a member from an organization
+    When I run "terminus org:people:remove '[[organization_name]]' [[other_user]]"
     Then I should get: "Dev User has been removed from the [[organization_name]] organization."
 
-  @vcr org-team-role.yml
-  Scenario: Changing a team member's role
-    When I run "terminus org:team:role '[[organization_name]]' [[other_user]] developer"
+  @vcr org-people-role.yml
+  Scenario: Changing a org member's role
+    When I run "terminus org:people:role '[[organization_name]]' [[other_user]] developer"
     Then I should get: "Dev User's role has been changed to developer in the [[organization_name]] organization."

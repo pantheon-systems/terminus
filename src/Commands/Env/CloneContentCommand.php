@@ -30,12 +30,9 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
-     * @usage terminus env:clone-content <site>.<env> <target_env>
-     *   Clones database and files from <site>'s <env> environment to <target_env> environment.
-     * @usage terminus env:clone-content <site>.<env> <target_env> --db-only
-     *   Clones only the database from <site>'s <env> environment to <target_env> environment.
-     * @usage terminus env:clone-content <site>.<env> <target_env> --files-only
-     *   Clones only files from <site>'s <env> environment to <target_env> environment.
+     * @usage <site>.<env> <target_env> Clones database and files from <site>'s <env> environment to <target_env> environment.
+     * @usage <site>.<env> <target_env> --db-only Clones only the database from <site>'s <env> environment to <target_env> environment.
+     * @usage <site>.<env> <target_env> --files-only Clones only files from <site>'s <env> environment to <target_env> environment.
      */
     public function cloneContent($site_env, $target_env, array $options = ['db-only' => false, 'files-only' => false,])
     {
@@ -43,9 +40,15 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException("You cannot specify both --db-only and --files-only");
         }
 
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
         $from_name = $env->getName();
         $target = $site->getEnvironments()->get($target_env);
+        $to_name = $target->getName();
+
+        $tr = ['from' => $from_name, 'to' => $to_name, 'env' => $site->getName()];
+        if (!$this->confirm('Are you sure you want to clone content from {from} to {to} on {site}?', $tr)) {
+            return;
+        }
 
         if (empty($options['db-only'])) {
             $workflow = $target->cloneFiles($from_name);

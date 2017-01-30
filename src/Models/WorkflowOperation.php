@@ -8,6 +8,18 @@ namespace Pantheon\Terminus\Models;
  */
 class WorkflowOperation extends TerminusModel
 {
+    /**
+     * @inheritdoc
+     */
+    public function __toString()
+    {
+        return sprintf(
+            "------ %s (%s) ------\n%s",
+            $this->description(),
+            $this->get('environment'),
+            $this->get('log_output')
+        );
+    }
 
     /**
      * Formats operation object into an associative array for output

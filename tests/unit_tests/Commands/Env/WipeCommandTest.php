@@ -28,12 +28,7 @@ class WipeCommandTest extends EnvCommandTest
             ->method('getMessage')
             ->with()
             ->willReturn($message);
-
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site_name);
-
+        $this->site->method('get')->willReturn($site_name);
         $this->environment->expects($this->once())
             ->method('wipe')
             ->willReturn($this->workflow);
@@ -53,6 +48,7 @@ class WipeCommandTest extends EnvCommandTest
         $this->command = new WipeCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);

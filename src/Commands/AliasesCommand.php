@@ -2,28 +2,30 @@
 
 namespace Pantheon\Terminus\Commands;
 
-class AliasesCommand extends TerminusCommand
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
+
+class AliasesCommand extends TerminusCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
-     * Print and save Drush aliases for the the sites on which you are a team member
+     * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
      * @authorized
      *
      * @command aliases
      * @aliases drush:aliases
      *
-     * @option boolean $print Print the aliases rather than saving them to a file
-     * @option string $location The full path, including file name, to the new alias file being created. Without this,
-     *     ~/.drush/pantheon.aliases.drushrc.php will be used
+     * @option boolean $print Print aliases only
+     * @option string $location Path and filename; default: ~/.drush/pantheon.aliases.drushrc.php will be used
      *
      * @return string|null
      *
-     * @usage terminus aliases
-     *     Saves your Pantheon Drush aliases to ~/.drush/pantheon.aliases.drushrc.php
-     * @usage terminus aliases --print
-     *     Prints your Pantheon Drush aliases on your screen
-     * @usage terminus aliases --location=<full_path>
-     *     Saves your Panthoen Drush aliases to <full_path>
+     * @usage Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
+     * @usage --print Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
+     * @usage --location=<full_path> Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
      */
     public function aliases($options = ['print' => false, 'location' => null,])
     {
@@ -34,11 +36,8 @@ class AliasesCommand extends TerminusCommand
         if (is_null($location = $options['location'])) {
             $location = '~/.drush/pantheon.aliases.drushrc.php';
         }
-        $config = $this->getConfig();
-        $location = $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $location));
-        $config->ensureDirExists(dirname($location));
-        if (file_put_contents($location, $aliases) !== false) {
-            $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
-        }
+
+        $this->getContainer()->get(LocalMachineHelper::class)->writeFile($location, $aliases);
+        $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
     }
 }

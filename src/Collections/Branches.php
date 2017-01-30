@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Branch;
+
 /**
  * Class Branches
  * @package Pantheon\Terminus\Collections
@@ -9,14 +11,13 @@ namespace Pantheon\Terminus\Collections;
 class Branches extends SiteOwnedCollection
 {
     /**
+     * @var string
+     */
+    protected $collected_class = Branch::class;
+    /**
      * @var Site
      */
     public $site;
-    /**
-     * @var string
-     */
-    protected $collected_class = 'Pantheon\Terminus\Models\Branch';
-
     /**
      * @var string
      */

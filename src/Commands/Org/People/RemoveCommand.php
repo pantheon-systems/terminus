@@ -1,27 +1,27 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Org\Team;
+namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
  * Class RemoveCommand
- * @package Pantheon\Terminus\Commands\Org\Team
+ * @package Pantheon\Terminus\Commands\Org\People
  */
 class RemoveCommand extends TerminusCommand
 {
     /**
-     * Remove a team member from an organization
+     * Removes a user from an organization.
      *
      * @authorize
      *
-     * @command org:team:remove
+     * @command org:people:remove
+     * @aliases org:people:rm org:ppl:remove org:ppl:rm
      *
-     * @param string $organization The name or UUID of the organization to remove a team member from
-     * @param string $member The UUID, email address, or full name of the team member to remove from this organization
+     * @param string $organization Organization name or ID
+     * @param string $member User UUID, email address, or full name
      *
-     * @usage terminus org:team:remove <organization> <member>
-     *   Removes the team member identified by <member> from the <organization> organization
+     * @usage <organization> <user> Removes the user, <user>, from <organization>.
      */
     public function remove($organization, $member)
     {

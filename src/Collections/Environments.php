@@ -10,17 +10,14 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
-
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Environment';
-
+    protected $collected_class = Environment::class;
     /**
      * @var string
      */
     protected $url = 'sites/{site_id}/environments';
-
 
     /**
      * Creates a multidev environment
@@ -60,7 +57,7 @@ class Environments extends SiteOwnedCollection
         $ids = array_keys($this->getMembers());
 
         //Reorder environments to put dev/test/live first
-        $default_ids = array('dev', 'test', 'live');
+        $default_ids = ['dev', 'test', 'live'];
         $multidev_ids = array_diff($ids, $default_ids);
         $ids = array_merge($default_ids, $multidev_ids);
 
@@ -77,10 +74,26 @@ class Environments extends SiteOwnedCollection
         $environments = array_filter(
             $this->getMembers(),
             function ($environment) {
-                $is_multidev = $environment->isMultidev();
-                return $is_multidev;
+                return $environment->isMultidev();
             }
         );
         return $environments;
+    }
+
+    /**
+     * Retrieves all models serialized into arrays. If the site is frozen, it skips test and live.
+     *
+     * @return array
+     */
+    public function serialize()
+    {
+        $site_is_frozen = !is_null($this->site->get('frozen'));
+        $models = [];
+        foreach ($this->getMembers() as $id => $model) {
+            if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {
+                $models[$id] = $model->serialize();
+            }
+        }
+        return $models;
     }
 }

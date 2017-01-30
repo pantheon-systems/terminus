@@ -12,32 +12,31 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class ListCommand extends UpdatesCommand
 {
     /**
-     * List all of the available upstream updates for a given site
+     * Displays a list of new code commits available from the upstream for a site's development environment.
      *
      * @authorize
      *
      * @command upstream:updates:list
-     * @aliases upstream:updates
      *
      * @field-labels
-     *   hash: Commit ID
-     *   datetime: Timestamp
-     *   message: Message
-     *   author: Author
+     *     hash: Commit ID
+     *     datetime: Timestamp
+     *     message: Message
+     *     author: Author
      * @return RowsOfFields
      *
-     * @param string $site_id Name of the site for which to check for updates.
+     * @param string $site_env Site & development environment
      *
      * @throws TerminusException
      *
-     * @usage terminus upstream:updates:list <site>
-     *   Lists the available updates for <site>
+     * @usage <site>.<env> Displays a list of new code commits available from the upstream for <site>'s <env> environment.
      */
-    public function listUpstreamUpdates($site_id)
+    public function listUpstreamUpdates($site_env)
     {
-        $site = $this->getSite($site_id);
+        list(, $env) = $this->getSiteEnv($site_env, 'dev');
+
         $data = [];
-        foreach ($this->getUpstreamUpdatesLog($site) as $commit) {
+        foreach ($this->getUpstreamUpdatesLog($env) as $commit) {
             $data[] = [
                 'hash' => $commit->hash,
                 'datetime' => $commit->datetime,
@@ -47,7 +46,7 @@ class ListCommand extends UpdatesCommand
         }
 
         if (empty($data)) {
-            $this->log()->warning("There are no available updates for this site.");
+            $this->log()->warning('There are no available updates for this site.');
         }
 
         // Return the output data.

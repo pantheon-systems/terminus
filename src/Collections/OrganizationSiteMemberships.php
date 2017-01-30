@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Models\OrganizationSiteMembership;
 
 /**
  * Class OrganizationSiteMemberships
@@ -13,13 +14,13 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 class OrganizationSiteMemberships extends TerminusCollection
 {
     /**
+     * @var string
+     */
+    protected $collected_class = OrganizationSiteMembership::class;
+    /**
      * @var Organization
      */
     public $organization;
-    /**
-     * @var string
-     */
-    protected $collected_class = 'Pantheon\Terminus\Models\OrganizationSiteMembership';
     /**
      * @var boolean
      */
@@ -66,7 +67,7 @@ class OrganizationSiteMemberships extends TerminusCollection
         if (isset($models[$id])) {
             return $models[$id];
         }
-        foreach ($models as $key => $membership) {
+        foreach ($models as $membership) {
             if (in_array($id, [$membership->getSite()->id, $membership->getSite()->get('name')])) {
                 return $membership;
             }
@@ -82,9 +83,6 @@ class OrganizationSiteMemberships extends TerminusCollection
      */
     public function getOrganization()
     {
-        if (empty($this->organization)) {
-            $this->organization = $this->getContainer()->get(Organization::class, [$this->get('organization')]);
-        }
         return $this->organization;
     }
 

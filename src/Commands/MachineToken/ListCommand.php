@@ -24,25 +24,14 @@ class ListCommand extends TerminusCommand
      *   device_name: Device Name
      * @return RowsOfFields
      *
-     * @usage terminus machine-token:list
-     *   Lists the currently logged-in user's machine tokens.
+     * @usage Lists the currently logged-in user's machine tokens.
      */
     public function listTokens()
     {
-        $machine_tokens = $this->session()->getUser()->getMachineTokens()->all();
-        $data = array();
-        foreach ($machine_tokens as $id => $machine_token) {
-            $data[] = array(
-                'id' => $machine_token->id,
-                'device_name' => $machine_token->get('device_name'),
-            );
-        }
-
+        $data = $this->session()->getUser()->getMachineTokens()->serialize();
         if (count($data) == 0) {
             $this->log()->warning('You have no machine tokens.');
         }
-
-        // Return the output data.
         return new RowsOfFields($data);
     }
 }

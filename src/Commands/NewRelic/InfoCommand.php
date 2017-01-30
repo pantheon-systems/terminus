@@ -8,33 +8,32 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
- * Class StatusCommand
+ * Class InfoCommand
  * @package Pantheon\Terminus\Commands\NewRelic
  */
-class StatusCommand extends TerminusCommand implements SiteAwareInterface
+class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
     /**
-     * Retrieve the New Relic status of a site
+     * Displays New Relic configuration.
      *
      * @authorize
      *
-     * @command new-relic:status
+     * @command new-relic:info
      *
      * @field-labels
-     *   name: Name
-     *   status: Status
-     *   subscribed: Subscribed On
-     *   state: State
+     *     name: Name
+     *     status: Status
+     *     subscribed: Subscribed On
+     *     state: State
      * @return PropertyList
      *
-     * @param string $site_id Name of the site to check New Relic status on
+     * @param string $site_id Site name
      *
-     * @usage terminus new-relic:status <site>
-     *   Checks the New Relic status of <site>
+     * @usage <site> Displays New Relic configuration for <site>.
      */
-    public function status($site_id)
+    public function info($site_id)
     {
         return new PropertyList($this->getSite($site_id)->getNewRelic()->serialize());
     }

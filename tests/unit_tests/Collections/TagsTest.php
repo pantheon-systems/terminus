@@ -69,6 +69,17 @@ class TagsTest extends CollectionTestCase
     public function testFetch()
     {
         $data = ['tag1',];
-        $this->collection->fetch(compact('data'));
+        $this->collection->fetch($data);
+    }
+
+    /**
+     * Tests Tags::has($id)
+     */
+    public function testHas()
+    {
+        $data = ['tag1',];
+        $this->collection->fetch($data);
+        $this->assertTrue($this->collection->has($data[0]));
+        $this->assertFalse($this->collection->has('invalid'));
     }
 }

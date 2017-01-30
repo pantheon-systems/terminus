@@ -15,16 +15,15 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Disable New Relic for a site
+     * Disables New Relic for a site.
      *
      * @authorize
      *
      * @command new-relic:disable
      *
-     * @param string $site_id Name of the site to disable New Relic on
+     * @param string $site_id Site name
      *
-     * @usage terminus new-relic:disable <site>
-     *   Disables New Relic for <site>
+     * @usage <site> Disables New Relic for <site>.
      */
     public function disable($site_id)
     {

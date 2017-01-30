@@ -3,8 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Collections\Upstreams;
+use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
@@ -14,10 +18,13 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  * Class CreateCommandTest
  * Test suite class for Pantheon\Terminus\Commands\Site\CreateCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Site
- * TODO: Update this when Org and Upstreams are both accessible through DI
  */
 class CreateCommandTest extends CommandTestCase
 {
+    /**
+     * @var Organization
+     */
+    protected $organization;
     /**
      * @var Session
      */
@@ -34,6 +41,14 @@ class CreateCommandTest extends CommandTestCase
      * @var User
      */
     protected $user;
+    /**
+     * @var UserOrganizationMembership
+     */
+    protected $user_org_membership;
+    /**
+     * @var UserOrganizationMemberships
+     */
+    protected $user_org_memberships;
 
     /**
      * @inheritdoc
@@ -56,18 +71,6 @@ class CreateCommandTest extends CommandTestCase
             ->getMock();
         $this->upstream->id = 'upstream_id';
 
-        $this->session->expects($this->once())
-            ->method('getUser')
-            ->with()
-            ->willReturn($this->user);
-        $this->user->expects($this->once())
-            ->method('getUpstreams')
-            ->with()
-            ->willReturn($this->upstreams);
-        $this->upstreams->expects($this->once())
-            ->method('get')
-            ->willReturn($this->upstream);
-
         $this->command = new CreateCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
@@ -75,7 +78,7 @@ class CreateCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises the site:create command
+     * Tests the site:create command
      */
     public function testCreate()
     {
@@ -88,6 +91,12 @@ class CreateCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->sites->expects($this->once())
+            ->method('nameIsTaken')
+            ->with($this->equalTo($site_name))
+            ->willReturn(false);
+
+        $this->expectUpstreams();
         $this->sites->expects($this->once())
             ->method('create')
             ->with($this->equalTo(['site_name' => $site_name, 'label' => $label,]))
@@ -103,6 +112,10 @@ class CreateCommandTest extends CommandTestCase
                 $this->equalTo('Creating a new site...')
             );
 
+        $workflow->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('waiting_for_task'))
+            ->willReturn((object)['site_id' => 'site UUID',]);
         $this->logger->expects($this->at(1))
             ->method('log')
             ->with(
@@ -126,5 +139,130 @@ class CreateCommandTest extends CommandTestCase
 
         $out = $this->command->create($site_name, $label, 'upstream');
         $this->assertNull($out);
+    }
+
+    /**
+     * Tests the site:create command when the site name already exists
+     */
+    public function testCreateDuplicate()
+    {
+        $site_name = 'site_name';
+
+        $this->sites->expects($this->once())
+            ->method('nameIsTaken')
+            ->with($this->equalTo($site_name))
+            ->willReturn(true);
+
+        $this->setExpectedException(TerminusException::class, "The site name $site_name is already taken.");
+
+        $out = $this->command->create($site_name, $site_name, 'upstream');
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the site:create command when associating the new site with an organization
+     */
+    public function testCreateInOrg()
+    {
+        $site_name = 'site_name';
+        $label = 'label';
+        $org_name = 'org name';
+        $workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow2 = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user_org_memberships = $this->getMockBuilder(UserOrganizationMemberships::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user_org_membership = $this->getMockBuilder(UserOrganizationMembership::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $organization = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $organization->id = 'org_id';
+
+        $this->sites->expects($this->once())
+            ->method('nameIsTaken')
+            ->with($this->equalTo($site_name))
+            ->willReturn(false);
+
+        $this->expectUpstreams();
+        $this->user->expects($this->once())
+            ->method('getOrgMemberships')
+            ->with()
+            ->willReturn($user_org_memberships);
+        $user_org_memberships->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo($org_name))
+            ->willReturn($user_org_membership);
+        $user_org_membership->expects($this->once())
+            ->method('getOrganization')
+            ->with()
+            ->willReturn($organization);
+
+        $this->sites->expects($this->once())
+            ->method('create')
+            ->with($this->equalTo([
+                'site_name' => $site_name,
+                'label' => $label,
+                'organization_id' => $organization->id,
+            ]))
+            ->willReturn($workflow);
+        $workflow->expects($this->once())
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
+        $this->logger->expects($this->at(0))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Creating a new site...')
+            );
+
+        $workflow->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('waiting_for_task'))
+            ->willReturn((object)['site_id' => 'site UUID',]);
+        $this->logger->expects($this->at(1))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Deploying CMS...')
+            );
+        $this->site->expects($this->once())
+            ->method('deployProduct')
+            ->with($this->equalTo($this->upstream->id))
+            ->willReturn($workflow2);
+        $workflow2->expects($this->once())
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
+        $this->logger->expects($this->at(2))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Deployed CMS')
+            );
+
+        $out = $this->command->create($site_name, $label, 'upstream', ['org' => $org_name,]);
+        $this->assertNull($out);
+    }
+
+    protected function expectUpstreams()
+    {
+        $this->session->expects($this->once())
+            ->method('getUser')
+            ->with()
+            ->willReturn($this->user);
+        $this->user->expects($this->once())
+            ->method('getUpstreams')
+            ->with()
+            ->willReturn($this->upstreams);
+        $this->upstreams->expects($this->once())
+            ->method('get')
+            ->willReturn($this->upstream);
     }
 }

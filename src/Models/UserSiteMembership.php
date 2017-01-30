@@ -33,7 +33,7 @@ class UserSiteMembership extends TerminusModel implements ContainerAwareInterfac
     public function __construct($attributes = null, array $options = [])
     {
         parent::__construct($attributes, $options);
-         $this->site_info = $attributes->site;
+        $this->site_info = $attributes->site;
         $this->user = $options['collection']->getUser();
     }
 
@@ -46,7 +46,7 @@ class UserSiteMembership extends TerminusModel implements ContainerAwareInterfac
     }
 
     /**
-     * @return \Pantheon\Terminus\Models\Site
+     * @return Site
      */
     public function getSite()
     {

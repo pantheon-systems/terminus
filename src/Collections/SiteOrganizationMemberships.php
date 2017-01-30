@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
@@ -15,17 +16,15 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SiteOrganizationMembership';
-
-    /**
-     * @var string
-     */
-    protected $url = 'sites/{site_id}/memberships/organizations';
-
+    protected $collected_class = SiteOrganizationMembership::class;
     /**
      * @var boolean
      */
     protected $paged = true;
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/memberships/organizations';
 
     /**
      * Adds this org as a member to the site
@@ -36,11 +35,10 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
      **/
     public function create($name, $role)
     {
-        $workflow = $this->getSite()->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
             ['params' => ['organization_name' => $name, 'role' => $role,],]
         );
-        return $workflow;
     }
 
     /**
@@ -50,23 +48,6 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
      * @return SiteOrganizationMembership|null
      */
     public function findByName($name)
-    {
-        foreach ($this->models as $org_member) {
-            $org = $org_member->getName();
-            if ($name == $org) {
-                return $org_member;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns UUID of organization with given name
-     *
-     * @param string $name A name to search for
-     * @return SiteOrganizationMembership|null
-     */
-    public function getUUID($name)
     {
         foreach ($this->models as $org_member) {
             $org = $org_member->getName();
@@ -89,10 +70,30 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
         if (isset($models[$id])) {
             return $models[$id];
         } else {
-            foreach ($models as $key => $membership) {
+            foreach ($models as $membership) {
                 if (in_array($id, [$membership->getOrganization()->id, $membership->getOrganization()->getName()])) {
                     return $membership;
                 }
+            }
+        }
+        throw new TerminusNotFoundException(
+            'Could not find an association for {org} organization with {site}.',
+            ['org' => $id, 'site' => $this->site->getName(),]
+        );
+    }
+
+    /**
+     * Returns UUID of organization with given name
+     *
+     * @param string $name A name to search for
+     * @return SiteOrganizationMembership|null
+     */
+    public function getUUID($name)
+    {
+        foreach ($this->models as $org_member) {
+            $org = $org_member->getName();
+            if ($name == $org) {
+                return $org_member;
             }
         }
         return null;

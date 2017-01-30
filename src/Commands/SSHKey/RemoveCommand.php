@@ -11,17 +11,16 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 class RemoveCommand extends TerminusCommand
 {
     /**
-     * Remove an SSH key from the logged-in user's account
+     * Disassociates a SSH public key from the currently logged-in user.
      *
      * @authorize
      *
      * @command ssh-key:remove
      * @aliases ssh-key:rm
      *
-     * @param string $ssh_key_id The ID or label of the SSH key to be deleted
+     * @param string $ssh_key_id SSH public key ID
      *
-     * @usage terminus ssh-key:delete <ssh-key>
-     *   Removes the SSH key identified by <ssh-key> from the user's account
+     * @usage <ssh-key> Disassociates the SSH public key <ssh-key> from the currently logged-in user.
      */
     public function delete($ssh_key_id)
     {

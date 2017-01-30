@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\Collections;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
-use Pantheon\Terminus\Session\Session;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -20,21 +19,22 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     use DataStoreAwareTrait;
 
     /**
-     * @var Session
-     */
-    public $session;
-    /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\SavedToken';
+    protected $collected_class = SavedToken::class;
 
     /**
-     * @inheritdoc
+     * Adds a model to this collection
+     *
+     * @param object $model_data Data to feed into attributes of new model
+     * @param array $options Data to make properties of the new model
+     * @return TerminusModel
      */
-    public function __construct($options = [])
+    public function add($model_data, array $options = [])
     {
-        parent::__construct($options);
-        $this->session = $options['session'];
+        $model = parent::add($model_data, $options);
+        $model->setDataStore($this->getDataStore());
+        return $model;
     }
 
     /**
@@ -51,26 +51,22 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
         $token->setDataStore($this->getDataStore());
         $user = $token->logIn();
         $user->fetch();
-        $token->id = $user->get('email');
-        $token->set('email', $user->get('email'));
+        $user_email = $user->get('email');
+        $token->id = $user_email;
+        $token->set('email', $user_email);
         $token->saveToDir();
         $this->models[$token->id] = $token;
     }
 
     /**
-     * Adds a model to this collection
-     *
-     * @param object $model_data Data to feed into attributes of new model
-     * @param array $options Data to make properties of the new model
-     * @return TerminusModel
+     * Delete all of the saved tokens.
      */
-    public function add($model_data, array $options = [])
+    public function deleteAll()
     {
-        $model = parent::add($model_data, $options);
-        $model->setDataStore($this->getDataStore());
-        return $model;
+        foreach ($this->getMembers() as $token) {
+            $token->delete();
+        }
     }
-
 
     /**
      * Retrieves the model with site of the given email or machine token
@@ -85,9 +81,11 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
         if (isset($tokens[$id])) {
             return $tokens[$id];
         } else {
-            foreach ($tokens as $token) {
-                if ($id == $token->get('token')) {
-                    return $token;
+            if (is_array($tokens)) {
+                foreach ($tokens as $token) {
+                    if ($id == $token->get('token')) {
+                        return $token;
+                    }
                 }
             }
         }
@@ -95,23 +93,13 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     }
 
     /**
-     * Delete all of the saved tokens.
-     */
-    public function deleteAll()
-    {
-        foreach ($this->getMembers() as $token) {
-            $token->delete();
-        }
-    }
-    
-    /**
      * @inheritdoc
      */
     protected function getCollectionData($options = [])
     {
         $tokens = [];
         foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = $this->getDataStore()->get($key);
+            $tokens[] = (object)$this->getDataStore()->get($key);
         }
         return $tokens;
     }

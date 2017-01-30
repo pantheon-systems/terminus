@@ -6,6 +6,7 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\OutputInterface;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Sites;
@@ -27,35 +28,36 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
      */
     protected $container;
     /**
-     * @var OutputInterface
+     * @var Environment
      */
-    protected $output;
+    protected $environment;
+    /**
+     * @var Environments
+     */
+    protected $environments;
     /**
      * @var ArrayInput
      */
     protected $input;
-
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
+    /**
+     * @var Site
+     */
+    protected $site;
+    /**
+     * @var Site
+     */
+    protected $site2;
     /**
      * @var Sites
      */
     protected $sites;
 
     /**
-     * @var Site
-     */
-    protected $site;
-    /**
-     * @var Environment
-     */
-    protected $environment;
-
-    /**
-     * @var Environments
-     */
-    protected $environments;
-
-    /**
-     * @return Config
+     * @return TerminusConfig
      */
     public function getConfig()
     {
@@ -63,7 +65,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param Config $config
+     * @param TerminusConfig $config
      * @return CommandTestCase
      */
     public function setConfig($config)
@@ -129,6 +131,19 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             ->willReturn($this->environment);
 
         $this->site->method('getEnvironments')->willReturn($this->environments);
+        $this->site->id = 'abc';
+
+        $this->site2 = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site2->id = 'def';
+
+        // Always say yes to confirmations
+        $this->input = $this->getMockBuilder(Input::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->input->method('hasOption')->with('yes')->willReturn(true);
+        $this->input->method('getOption')->with('yes')->willReturn(true);
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()

@@ -162,7 +162,7 @@ class BackupTest extends ModelTestCase
                 'restore_code',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
@@ -177,7 +177,7 @@ class BackupTest extends ModelTestCase
                 'restore_files',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
@@ -192,7 +192,7 @@ class BackupTest extends ModelTestCase
                 'restore_database',
                 [
                     'params' => [
-                        'key' => "abc/dev/def.tgz",
+                        'key' => "abc/dev/scheduledfor_archivetype/def.tgz",
                         'bucket' => 'pantheon-backups',
                     ]
                 ]
@@ -203,5 +203,25 @@ class BackupTest extends ModelTestCase
         $backup = $this->_getBackup(['id' => 'scheduledfor_archivetype_xyz', 'filename' => 'def.tgz']);
         $this->setExpectedException(TerminusException::class, 'This backup has no archive to restore.');
         $this->assertNull($backup->restore());
+    }
+
+    public function testSerialize()
+    {
+        $this->configSet(['date_format' => 'Y-m-d']);
+        $backup = $this->_getBackup([
+            'size' => 4508876,
+            'finish_time' => 1479742685,
+            'folder' => 'xyz_automated',
+            'filename' => 'test.tar.gz',
+        ]);
+
+        $expected = [
+            'file' => 'test.tar.gz',
+            'size' => '4.3MB',
+            'date' => '2016-11-21',
+            'initiator' => 'automated',
+        ];
+        $actual = $backup->serialize();
+        $this->assertEquals($expected, $actual);
     }
 }

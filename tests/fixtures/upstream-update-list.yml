@@ -144,7 +144,43 @@
 -
     request:
         method: GET
-        url: 'https://terminus.pantheon.io/api/sites/11111111-1111-1111-1111-111111111111/code-upstream-updates'
+        url: 'https://terminus.pantheon.io/api/sites/11111111-1111-1111-1111-111111111111/environments'
+        headers:
+            Host: onebox
+            Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
+            Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:0a9ec146-6647-11e6-957b-bc764e10b0ce:Qy0LJnAlzPix9zH6FA0xm'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:0a9ec146-6647-11e6-957b-bc764e10b0ce:Qy0LJnAlzPix9zH6FA0xm'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
+    response:
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
+        headers:
+            Server: nginx
+            Date: 'Fri, 19 Aug 2016 19:56:41 GMT'
+            Content-Type: application/json
+            Transfer-Encoding: chunked
+            Connection: keep-alive
+            X-Pantheon-Trace-Id: 0c064ef0-6647-11e6-a69e-9d129c74acd7
+            X-Frame-Options: deny
+            Access-Control-Allow-Methods: GET
+            Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
+            Cache-Control: no-cache
+            Pragma: no-cache
+            Vary: Accept-Encoding
+            Strict-Transport-Security: max-age=31536000
+        body: '{"dev": {"watchers": 1, "diffstat": {}, "on_server_development": true, "environment_created": 1471385341, "dns_zone": "pantheonsite.io", "randseed": "DAWMHE2LTF12P5H2DY3URABPX8N16US9", "styx_cluster": "styx-03.pantheon.io", "target_ref": "refs/heads/master", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "drush_version": 8}, "test": {"environment_created": 1471385344, "dns_zone": "pantheonsite.io", "randseed": "2768L88WYTOBH0MIQPOB6KY42C3L4WZI", "target_ref": "refs/tags/pantheon_test_2", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "cb3f7bbe08bbdc0d2f68e3fa66655c860ec6c24b", "styx_cluster": "styx-03.pantheon.io"}, "live": {"environment_created": 1471385345, "dns_zone": "pantheonsite.io", "randseed": "0G8KI1O49B4E19HYWI5YUYREYHP0A4TJ", "target_ref": "refs/tags/pantheon_live_1", "lock": {"username": null, "password": null, "locked": false}, "target_commit": "1fdf194d3d7a0c930a4f118e1398412765320328", "styx_cluster": "styx-02.pantheon.io"}}'
+-
+    request:
+        method: GET
+        url: 'https://terminus.pantheon.io/api/sites/11111111-1111-1111-1111-111111111111/code-upstream-updates?base_branch=master'
         headers:
             Host: terminus.pantheon.io
             Accept-Encoding: null

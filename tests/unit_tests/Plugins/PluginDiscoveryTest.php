@@ -12,6 +12,10 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
 {
     public function testDiscover()
     {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestIncomplete("Plugins not supported on Windows yet.");
+        }
+
         $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
 
         $paths = [
@@ -22,7 +26,7 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         ];
 
         $logger = $this->getMockBuilder(NullLogger::class)
-            ->setMethods(array('debug'))
+            ->setMethods(array('warning'))
             ->getMock();
 
 
@@ -41,7 +45,7 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
                     ->willThrowException(new TerminusException($msg));
 
                 $logger->expects($this->at($log++))
-                    ->method('debug')
+                    ->method('warning')
                     ->with('Plugin Discovery: Ignoring directory {dir} because: {msg}.', ['dir' => $path, 'msg' => $msg]);
             } else {
                 $plugin = $this->getMockBuilder(PluginInfo::class)

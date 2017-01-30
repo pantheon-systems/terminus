@@ -35,23 +35,20 @@ abstract class SSHKeyCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->ssh_keys = $this->getMockBuilder(SSHKeys::class)
+        $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->user->expects($this->any())
-            ->method('getSSHKeys')
-            ->willReturn($this->ssh_keys);
-
-        $this->session = $this->getMockBuilder(Session::class)
+        $this->ssh_keys = $this->getMockBuilder(SSHKeys::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->session->method('getUser')
             ->willReturn($this->user);
+        $this->user->expects($this->any())
+            ->method('getSSHKeys')
+            ->willReturn($this->ssh_keys);
     }
 }

@@ -16,20 +16,19 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List the tags which an organization has added to a site
+     * Displays the list of tags for a site within an organization.
      *
      * @authorize
      *
      * @command tag:list
      * @aliases tags
      *
-     * @param string $site_name The name or UUID of a site to list the tags of
-     * @param string $organization The name or UUID of an organization which has tagged this site
+     * @param string $site_name Site name
+     * @param string $organization Organization name or UUID
      *
      * @return PropertyList
      *
-     * @usage terminus tag:list <site> <org>
-     *    Lists the tags which the <org> organization has added to the <site> site
+     * @usage <site> <org> Displays the list of tags for <site> within <org>.
      */
     public function listTags($site_name, $organization)
     {

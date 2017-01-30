@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
+use Guzzle\Service\Description\Operation;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Models\User;
@@ -19,37 +20,189 @@ use Pantheon\Terminus\Models\Site;
  */
 class WorkflowTest extends ModelTestCase
 {
+    /**
+     * Tests the Workflow::checkProgress() function
+     */
+    public function testCheckProgress()
+    {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
+        $workflow_id = 'workflow id';
+        $workflow = new Workflow(
+            (object)['id' => $workflow_id,],
+            ['site' => $site,]
+        );
+
+        $this->request->expects($this->once())
+            ->method('request')
+            ->willReturn(['data' => ['result' => true,],]);
+
+        $workflow->setRequest($this->request);
+
+        $this->assertTrue($workflow->checkProgress());
+    }
 
     /**
-     * @var Workflow
+     * Tests the Workflow::checkProgress() function when the workflow has failed
      */
-    protected $workflow;
-
-    public function setUp()
+    public function testCheckProgressFailure()
     {
-        parent::setUp();
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
+        $workflow_id = 'workflow id';
+        $workflow = new Workflow((object)['id' => $workflow_id,], ['site' => $site,]);
 
-        $this->workflow = new Workflow(['id' => '123']);
+        $this->assertFalse($workflow->checkProgress());
     }
 
-    public function testStatus()
+    /**
+     * Tests the Workflow::fetchWithLogs() and ::getUrl() functions
+     */
+    public function testFetchWithLogs()
     {
-        $this->assertEquals('running', $this->workflow->getStatus());
-        $this->assertEquals(false, $this->workflow->isSuccessful());
-        $this->assertEquals(false, $this->workflow->isFinished());
+        $data = ['id' => 'workflow_id',];
 
+        $site = new Site((object)['id' => 'site_id',]);
+        $environments = new Environments(['site' => $site,]);
+        $env = new Environment((object)['id' => 'env_id',], ['collection' => $environments,]);
+        $user = new User((object)['id' => 'user_id',]);
+        $org = new Organization((object)['id' => 'org_id',]);
 
-        $this->workflow->set('result', 'succeeded');
-        $this->assertEquals('succeeded', $this->workflow->getStatus());
-        $this->assertEquals(true, $this->workflow->isSuccessful());
-        $this->assertEquals(true, $this->workflow->isFinished());
+        $workflow = new Workflow((object)$data, ['environment' => $env,]);
+        $this->request->expects($this->at(0))
+            ->method('request')
+            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
+            ->willReturn(['data' => ['baz' => '123',],]);
+        $workflow->setRequest($this->request);
+        $workflow->fetchWithLogs();
 
-        $this->workflow->set('result', 'failed');
-        $this->assertEquals('failed', $this->workflow->getStatus());
-        $this->assertEquals(false, $this->workflow->isSuccessful());
-        $this->assertEquals(true, $this->workflow->isFinished());
+        $workflow = new Workflow((object)$data, ['site' => $site,]);
+        $this->request->expects($this->at(0))
+            ->method('request')
+            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
+            ->willReturn(['data' => ['baz' => '123',],]);
+        $workflow->setRequest($this->request);
+        $workflow->fetchWithLogs();
+
+        $workflow = new Workflow((object)$data, ['user' => $user,]);
+        $this->request->expects($this->at(0))
+            ->method('request')
+            ->with('users/user_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
+            ->willReturn(['data' => ['baz' => '123',],]);
+        $workflow->setRequest($this->request);
+        $workflow->fetchWithLogs();
+
+        $session = $this->getMockBuilder(Session::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $session->expects($this->once())
+            ->method('getUser')
+            ->willReturn($user);
+        $workflow = new Workflow((object)$data, ['organization' => $org,]);
+        $this->request->expects($this->at(0))
+            ->method('request')
+            ->with('users/user_id/organizations/org_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
+            ->willReturn(['data' => ['baz' => '123',],]);
+        $workflow->setSession($session);
+        $workflow->setRequest($this->request);
+        $workflow->fetchWithLogs();
     }
 
+    /**
+     * Tests the Workflow::getMessage() function when the workflow has not succeeded
+     */
+    public function testGetMessageUnsuccessful()
+    {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow_id = 'workflow id';
+        $active_description = 'active description';
+        $final_task = (object)[
+            'messages' => ['message' => (object)['message' => ['message'],],],
+        ];
+        $workflow = new Workflow((object)[
+            'id' => $workflow_id,
+            'final_task' => $final_task,
+            'result' => 'not success',
+            'active_description' => $active_description,
+        ], ['site' => $site,]);
+
+        $out = $workflow->getMessage();
+        $this->assertEquals(print_r($final_task->messages['message']->message, true), $out);
+    }
+
+    /**
+     * Tests the Workflow::getMessage() function when the workflow has not succeeded and has a reason
+     */
+    public function testGetMessageUnsuccessfulWithReason()
+    {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow_id = 'workflow id';
+        $active_description = 'active description';
+        $final_task = (object)[
+            'messages' => ['message' => (object)['message' => ['message'],],],
+            'reason' => 'reason',
+        ];
+        $workflow = new Workflow((object)[
+            'id' => $workflow_id,
+            'final_task' => $final_task,
+            'result' => 'not success',
+            'active_description' => $active_description,
+        ], ['site' => $site,]);
+
+        $out = $workflow->getMessage();
+        $this->assertEquals($final_task->reason, $out);
+    }
+
+    /**
+     * Tests the Workflow::getMessage() function when the workflow has succeeded
+     */
+    public function testGetMessageSuccess()
+    {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow_id = 'workflow id';
+        $active_description = 'active description';
+        $final_task = (object)[
+            'messages' => ['message' => (object)['message' => ['message'],],],
+        ];
+        $workflow = new Workflow((object)[
+            'id' => $workflow_id,
+            'final_task' => $final_task,
+            'result' => 'succeeded',
+            'active_description' => $active_description,
+        ], ['site' => $site,]);
+
+        $out = $workflow->getMessage();
+        $this->assertEquals($active_description, $out);
+    }
+
+    /**
+     * Tests the Workflow::getUrl() function when accessed multiple times
+     */
+    public function testGetUrlDuplicate()
+    {
+        $data = ['id' => 'workflow_id',];
+        $site = new Site((object)['id' => 'site_id',]);
+        $environments = new Environments(['site' => $site,]);
+        $env = new Environment((object)['id' => 'env_id',], ['collection' => $environments,]);
+
+        $workflow = new Workflow((object)$data, ['environment' => $env,]);
+        $url = $workflow->getUrl();
+        $this->assertEquals($url, $workflow->getUrl());
+    }
+
+    /**
+     * Tests the Workflow::operations() function
+     */
     public function testOperations()
     {
         $operations = [
@@ -67,65 +220,98 @@ class WorkflowTest extends ModelTestCase
                 ->willReturn(new WorkflowOperation($op));
         }
 
-        $this->workflow->setContainer($container);
-        $this->workflow->set('operations', $operations);
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow = new Workflow(['id' => '123',], ['site' => $site,]);
+        $workflow->setContainer($container);
+        $workflow->set('operations', $operations);
 
-        $this->workflow->operations();
+        $workflow->operations();
     }
 
     /**
-     *
+     * Tests the Workflow::serialize() function
      */
-    public function testFetchWithLogs()
+    public function testSerialize()
     {
-        $data = ['id' => 'workflow_id'];
+        $workflow_description = 'workflow description';
+        $env = 'some env';
+        $email = 'handle@domain.ext';
+        $workflow_id = 'workflow id';
+        $status = 'succeeded';
+        $ops_array = [(object)['id' => 'operation1',] , (object)['id' => 'operation2',],];
+        $ops_serialized = ['ops' => 'data',];
 
-        $site = new Site((object)['id' => 'site_id']);
-        $environments = new Environments(['site' => $site]);
-        $env = new Environment((object)['id' => 'env_id'], ['collection' => $environments]);
-        $user = new User((object)['id' => 'user_id']);
-        $org = new Organization((object)['id' => 'org_id']);
-
-
-        $this->workflow = new Workflow((object)$data, ['environment' => $env]);
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs']])
-            ->willReturn(['data' => ['baz' => '123']]);
-        $this->workflow->setRequest($this->request);
-        $this->workflow->fetchWithLogs();
-
-        $this->workflow = new Workflow((object)$data, ['site' => $site]);
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs']])
-            ->willReturn(['data' => ['baz' => '123']]);
-        $this->workflow->setRequest($this->request);
-        $this->workflow->fetchWithLogs();
-
-        $this->workflow = new Workflow((object)$data, ['user' => $user]);
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with('users/user_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs']])
-            ->willReturn(['data' => ['baz' => '123']]);
-        $this->workflow->setRequest($this->request);
-        $this->workflow->fetchWithLogs();
-
-        $session = $this->getMockBuilder(Session::class)
+        $site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $session->expects($this->once())
-            ->method('getUser')
-            ->willReturn($user);
-        $this->workflow = new Workflow((object)$data, ['organization' => $org]);
-        $this->request->expects($this->at(0))
-            ->method('request')
-            ->with('users/user_id/organizations/org_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs']])
-            ->willReturn(['data' => ['baz' => '123']]);
-        $this->workflow->setSession($session);
-        $this->workflow->setRequest($this->request);
-        $this->workflow->fetchWithLogs();
+        $workflow = new Workflow((object)[
+            'id' => $workflow_id,
+            'description' => $workflow_description,
+            'environment' => $env,
+            'result' => $status,
+            'created_at' => 0,
+            'finished_at' => 1,
+            'started_at' => 0,
+            'user' => (object)compact('email'),
+            'operations' => $ops_array,
+        ], ['site' => $site,]);
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow->setContainer($container);
+        $expected = [
+            'id' => $workflow_id,
+            'env' => $env,
+            'workflow' => $workflow_description,
+            'user' => $email,
+            'status' => $status,
+            'finished_at' => 1,
+            'started_at' => 0,
+            'time' => time() . 's',
+            'operations' => [$ops_serialized, $ops_serialized,],
+        ];
+        $operation = $this->getMockBuilder(WorkflowOperation::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->any())
+            ->method('get')
+            ->with(
+                $this->equalTo(WorkflowOperation::class)
+            )
+            ->willReturn($operation);
+        $operation->expects($this->any())
+            ->method('serialize')
+            ->with()
+            ->willReturn($ops_serialized);
+
+        $out = $workflow->serialize();
+        $this->assertEquals($expected, $out);
     }
 
-    // @TODO: Test the waiting and get message functions once they've been unwound into something testable.
+    /**
+     * Tests the Workflow::status() functions
+     */
+    public function testStatus()
+    {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow = new Workflow(['id' => '123',], ['site' => $site,]);
+        $this->assertEquals('running', $workflow->getStatus());
+        $this->assertEquals(false, $workflow->isSuccessful());
+        $this->assertEquals(false, $workflow->isFinished());
+
+        $workflow->set('result', 'succeeded');
+        $this->assertEquals('succeeded', $workflow->getStatus());
+        $this->assertEquals(true, $workflow->isSuccessful());
+        $this->assertEquals(true, $workflow->isFinished());
+
+        $workflow->set('result', 'failed');
+        $this->assertEquals('failed', $workflow->getStatus());
+        $this->assertEquals(false, $workflow->isSuccessful());
+        $this->assertEquals(true, $workflow->isFinished());
+    }
 }

@@ -16,41 +16,28 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * List team members for a site
+     * Displays the list of team members for a site.
      *
      * @authorize
      *
      * @command site:team:list
-     * @aliases site:team
      *
      * @field-labels
-     *   first: First name
-     *   last: Last name
-     *   email: Email
-     *   role: Role
-     *   uuid: User ID
+     *     firstname: First name
+     *     lastname: Last name
+     *     email: Email
+     *     role: Role
+     *     id: User ID
      * @return RowsOfFields
      *
-     * @param string $site_id Site name to list team members for.
+     * @param string $site_id Site name
      *
-     * @usage terminus site:team:list <site>
-     *   Lists team members for <site>
+     * @usage <site> Displays the list of team members for <site>.
      */
     public function teamList($site_id)
     {
         $site = $this->getSite($site_id);
-        $user_memberships = $site->getUserMemberships()->all();
-        $data = [];
-        foreach ($user_memberships as $user_membership) {
-            $user = $user_membership->get('user');
-            $data[] = array(
-                'first' => $user->profile->firstname,
-                'last'  => $user->profile->lastname,
-                'email' => $user->email,
-                'role'  => $user_membership->get('role'),
-                'uuid'  => $user->id,
-            );
-        }
-        return new RowsOfFields($data);
+        $user_memberships = $site->getUserMemberships()->serialize();
+        return new RowsOfFields($user_memberships);
     }
 }

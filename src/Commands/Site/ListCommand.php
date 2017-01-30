@@ -7,49 +7,36 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class ListCommand extends SiteCommand
 {
     /**
-     * List the sites accessible by the logged-in user
+     * Displays the list of sites accessible to the currently logged-in user.
      *
      * @authorize
      *
      * @command site:list
-     * @alias sites
+     * @aliases sites
      *
      * @field-labels
-     *   name: Name
-     *   id: ID
-     *   service_level: Service Level
-     *   framework: Framework
-     *   owner: Owner
-     *   created: Created
-     *   memberships: Memberships
+     *     name: Name
+     *     id: ID
+     *     service_level: Service Level
+     *     framework: Framework
+     *     owner: Owner
+     *     created: Created
+     *     memberships: Memberships
+     *     frozen: Is Frozen?
      * @return RowsOfFields
      *
-     * @option team Filter for sites you are a team member of
-     * @option owner Filter for sites a specific user owns. Use "me" for your own user
-     * @option org Filter sites you can access via the organization. Use "all" to get all.
-     * @option name Filter sites you can access via name.
+     * @option team Team-only filter
+     * @option owner Owner filter; "me" or user UUID
+     * @option org Organization filter; "all" or organization UUID
+     * @option name Name filter
      *
-     * @usage terminus site:list
-     *   * Responds with list of every site you can access
-     *   * Responds with "You have no sites." if you have no sites
-     * @usage terminus site:list --team
-     *   * Responds with a list of sites you are a team member of
-     *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --owner=<user>
-     *   * Responds with a list of sites owned by the user identified by <user>
-     *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --owner=me
-     *   * Responds with a list of sites the logged-in user owns
-     *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --org=<org>
-     *   * Responds with a list of sites associated with the <org> organization
-     *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --org=all
-     *   * Responds with a list of sites belonging to organization you are a member of
-     *   * Responds with a notice stating no sites match criteria if none exist
-     * @usage terminus site:list --name=<regex>
-     *   * Responds with a list of sites you have access to by name with a name matching the provided <regex>
-     *   * Responds with a notice stating no sites match criteria if none exist
+     * @usage Displays the list of all sites accessible to the currently logged-in user.
+     * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
+     * @usage --owner=<user> Displays the list of accessible sites owned by the user with UUID <user>.
+     * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
+     * @usage --org=<org> Displays a list of accessible sites associated with the <org> organization.
+     * @usage --org=all Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
+     * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
      */
     public function index($options = ['team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {
@@ -70,12 +57,7 @@ class ListCommand extends SiteCommand
             $this->sites->filterByOwner($owner);
         }
 
-        $sites = array_map(
-            function ($site) {
-                return $site->serialize();
-            },
-            $this->sites->all()
-        );
+        $sites = $this->sites->serialize();
 
         if (empty($sites)) {
             $this->log()->notice('You have no sites.');

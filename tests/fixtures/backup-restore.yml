@@ -193,7 +193,7 @@
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"restore_code","params":{"key":"11111111-1111-1111-1111-111111111111\/dev\/behat-tests_dev_2016-10-25T19-13-37_UTC_code.tar.gz","bucket":"onebox-pantheon-backups"}}'
+        body: '{"type":"restore_code","params":{"key":"11111111-1111-1111-1111-111111111111\/dev\/1477422817_backup\/behat-tests_dev_2016-10-25T19-13-37_UTC_code.tar.gz","bucket":"onebox-pantheon-backups"}}'
     response:
         status:
             http_version: '1.1'
@@ -266,7 +266,7 @@
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"restore_files","params":{"key":"11111111-1111-1111-1111-111111111111\/dev\/behat-tests_dev_2016-10-25T19-13-37_UTC_files.tar.gz","bucket":"onebox-pantheon-backups"}}'
+        body: '{"type":"restore_files","params":{"key":"11111111-1111-1111-1111-111111111111\/dev\/1477422817_backup\/behat-tests_dev_2016-10-25T19-13-37_UTC_files.tar.gz","bucket":"onebox-pantheon-backups"}}'
     response:
         status:
             http_version: '1.1'

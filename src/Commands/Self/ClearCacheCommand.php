@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Self;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
 /**
  * Class ClearCacheCommand
@@ -15,20 +16,23 @@ class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterfa
     use ContainerAwareTrait;
 
     /**
-     * Clear the local Terminus session and all saved machine tokens
+     * Clears the local Terminus command cache.
      *
      * @command self:clear-cache
      * @aliases self:cc
      *
-     * @usage terminus self:clear-cache
-     *    Removes all Terminus cached data
+     * @usage Clears the local Terminus session cache and all locally saved machine tokens.
      */
     public function clearCache()
     {
-        $tokens  = $this->session()->getTokens();
+        $local_machine = $this->getContainer()->get(LocalMachineHelper::class);
+        $fs = $local_machine->getFilesystem();
+        $finder = $local_machine->getFinder();
 
-        $tokens->deleteAll();
-        $this->session()->destroy();
-        $this->log()->notice('Your saved machine tokens have been deleted and you have been logged out.');
+        $finder->files()->in($this->getConfig()->get('command_cache_dir'));
+        foreach ($finder as $file) {
+            $fs->remove($file);
+        }
+        $this->log()->notice('The local Terminus cache has been cleared.');
     }
 }

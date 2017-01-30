@@ -15,18 +15,17 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Remove a team member from the site's team
+     * Removes a user from a site's team.
      *
      * @authorize
      *
      * @command site:team:remove
      * @aliases site:team:rm
      *
-     * @param string $site_id Site name or UUID to remove member from
-     * @param string $member Email, UUID, or full name of the member to remove
+     * @param string $site_id Site name
+     * @param string $member Email, UUID, or full name
      *
-     * @usage terminus site:team:remove <site> <user>
-     *   Remove <user> from the site <site>
+     * @usage <site> <user> Removes <user> from <site>'s team.
      */
     public function remove($site_id, $member)
     {

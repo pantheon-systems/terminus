@@ -19,6 +19,12 @@ class OperationsCommandTest extends WorkflowCommandTest
     protected function setUp()
     {
         parent::setUp();
+
+        $this->workflows->expects($this->once())
+            ->method('fetch')
+            ->with()
+            ->willReturn($this->workflows);
+
         $this->command = new OperationsCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
@@ -29,19 +35,28 @@ class OperationsCommandTest extends WorkflowCommandTest
      */
     public function testLatestOperationsCommand()
     {
-        $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->willReturn($this->workflows);
+        $site_name = 'site_name';
 
         $this->workflows->expects($this->once())
             ->method('all')
+            ->with()
             ->willReturn([$this->workflow,]);
-
         $this->workflow->expects($this->once())
             ->method('operations')
-            ->willReturn([$this->operation]);
+            ->willReturn([$this->operation,]);
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($site_name);
+        $this->logger->expects($this->at(0))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Showing latest workflow on {site}.'),
+                $this->equalTo(['site' => $site_name,])
+            );
 
-        $out = $this->command->operations('mysite', ['id' => null,]);
+        $out = $this->command->operations($site_name);
         $this->assertInstanceOf(RowsOfFields::class, $out);
     }
 
@@ -50,19 +65,56 @@ class OperationsCommandTest extends WorkflowCommandTest
      */
     public function testWorkflowIDOperationsCommand()
     {
-        $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->willReturn($this->workflows);
+        $site_name = 'site_name';
+        $workflow_id = 'workflow id';
+
         $this->workflows->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('12345'))
+            ->with($this->equalTo($workflow_id))
             ->willReturn($this->workflow);
-
         $this->workflow->expects($this->once())
             ->method('operations')
-            ->willReturn([$this->operation]);
+            ->willReturn([$this->operation,]);
+        $this->logger->expects($this->never())
+            ->method('log');
 
-        $out = $this->command->operations('mysite', ['id' => '12345',]);
+        $out = $this->command->operations($site_name, ['id' => $workflow_id,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
+    }
+
+    /**
+     * Tests the workflow:info:operations command when the workflow does not contain any operations
+     */
+    public function testWorkflowNoOperations()
+    {
+        $site_name = 'site_name';
+
+        $this->workflows->expects($this->once())
+            ->method('all')
+            ->with()
+            ->willReturn([$this->workflow,]);
+        $this->workflow->expects($this->once())
+            ->method('operations')
+            ->willReturn([]);
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($site_name);
+        $this->logger->expects($this->at(0))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Showing latest workflow on {site}.'),
+                $this->equalTo(['site' => $site_name,])
+            );
+        $this->logger->expects($this->at(1))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Workflow does not contain any operations.')
+            );
+
+        $out = $this->command->operations($site_name);
+        $this->assertNull($out);
     }
 }

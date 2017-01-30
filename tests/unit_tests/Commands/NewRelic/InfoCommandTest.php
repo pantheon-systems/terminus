@@ -3,14 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Commands\NewRelic\StatusCommand;
+use Pantheon\Terminus\Commands\NewRelic\InfoCommand;
 
 /**
- * Class StatusCommandTest
- * Testing class for Pantheon\Terminus\Commands\NewRelic\StatusCommand
+ * Class InfoCommandTest
+ * Testing class for Pantheon\Terminus\Commands\NewRelic\InfoCommand
  * @package Pantheon\Terminus\UnitTests\Commands\NewRelic
  */
-class StatusCommandTest extends NewRelicCommandTest
+class InfoCommandTest extends NewRelicCommandTest
 {
     /**
      * @inheritdoc
@@ -19,23 +19,23 @@ class StatusCommandTest extends NewRelicCommandTest
     {
         parent::setUp();
 
-        $this->command = new StatusCommand();
+        $this->command = new InfoCommand();
         $this->command->setSites($this->sites);
     }
 
     /**
-     * Tests the new-relic:status command
+     * Tests the new-relic:info command
      */
-    public function testStatus()
+    public function testInfo()
     {
-        $data = ['name' => 'Name', 'status' => 'Status',];
+        $data = ['name' => 'Name', 'info' => 'Info',];
 
         $this->new_relic->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($data);
 
-        $out = $this->command->status('mysite');
+        $out = $this->command->info('mysite');
         $this->assertInstanceOf(PropertyList::class, $out);
         $this->assertEquals($data, $out->getArrayCopy());
     }

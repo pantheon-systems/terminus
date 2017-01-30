@@ -13,7 +13,7 @@ class ListCommand extends TerminusCommand
 {
 
     /**
-     * List the IDs and labels of SSH Keys belonging to the logged-in user
+     * Displays the list of SSH public keys associated with the currently logged-in user.
      *
      * @authorize
      *
@@ -21,26 +21,16 @@ class ListCommand extends TerminusCommand
      * @aliases ssh-keys
      *
      * @field-labels
-     *   id: ID
-     *   hex: Fingerprint
-     *   comment: Description
+     *     id: ID
+     *     hex: Fingerprint
+     *     comment: Description
      * @return RowsOfFields
      *
-     * @usage terminus ssh-key:list
-     *    Lists the saved SSH keys belonging to the logged-in user
+     * @usage Displays the list of SSH public keys associated with the currently logged-in user.
      */
     public function listSSHKeys()
     {
-        $ssh_keys = $this->session()->getUser()->getSSHKeys()->all();
-
-        $data = [];
-        foreach ($ssh_keys as $id => $ssh_key) {
-            $data[] = array(
-                'id' => $ssh_key->id,
-                'hex' => $ssh_key->getHex(),
-                'comment' => $ssh_key->getComment(),
-            );
-        }
+        $data = $this->session()->getUser()->getSSHKeys()->serialize();
         if (count($data) == 0) {
             $this->log()->warning('You have no ssh keys.');
         }

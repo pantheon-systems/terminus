@@ -1,28 +1,28 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Org\Team;
+namespace Pantheon\Terminus\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**
  * Class RoleCommand
- * @package Pantheon\Terminus\Commands\Org\Team
+ * @package Pantheon\Terminus\Commands\Org\People
  */
 class RoleCommand extends TerminusCommand
 {
     /**
-     * Change an organizational team member's role
+     * Changes a user's role within an organization.
      *
      * @authorize
      *
-     * @command org:team:role
+     * @command org:people:role
+     * @aliases org:ppl:role
      *
-     * @param string $organization The name or UUID of the organization to of which the user is a member
-     * @param string $member The UUID, email address, or full name of the user to change the role of
-     * @param string $role [unprivileged|admin|team_member|developer] The role to assign to this member
+     * @param string $organization Organization name or ID
+     * @param string $member User UUID, email address, or full name
+     * @param string $role [unprivileged|admin|team_member|developer] Role
      *
-     * @usage terminus org:team:role <organization> <member> <role>
-     *   Changes the role of the team member identified by <member> from the <organization> organization to <role>.
+     * @usage <organization> <user> <role> Changes the role of the user, <user>, to <role> within <organization>.
      */
     public function role($organization, $member, $role)
     {

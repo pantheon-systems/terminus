@@ -15,20 +15,18 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Add a team member to a site
+     * Adds a user to a site's team.
+     * Note: An invite will be sent if the email is not associated with a Pantheon account.
      *
      * @authorize
      *
      * @command site:team:add
      *
-     * @param string $site_id Site name or UUID to add a team member to
-     * @param string $member Email of the user to add; they will receive an invitation
-     * @param string $role [unprivileged|admin|team_member|developer] Role to designate the new member as
+     * @param string $site_id Site name
+     * @param string $member Email of user
+     * @param string $role [developer|team_member] Role
      *
-     * @usage terminus site:team:add <site> <user>
-     *   Add <user> in the team_member role to the site <site>
-     * @usage terminus site:team:add <site> <user> <role>
-     *   Add <user> in the <role> role to the site <site>
+     * @usage <site> <user> <role> Adds <user> as a <role> to <site>'s team.
      */
     public function add($site_id, $member, $role)
     {
@@ -39,7 +37,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
             $role = 'team_member';
             $this->log()->warning(
                 'Site does not have change management enabled, defaulting to user role {role}.',
-                $options
+                compact('role')
             );
         }
         $workflow = $team->create($member, $role);

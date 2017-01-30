@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Auth;
+namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
@@ -25,6 +25,8 @@ abstract class MachineTokenCommandTest extends CommandTestCase
      */
     protected function setUp()
     {
+        parent::setUp();
+        
         $this->machine_tokens = $this->getMockBuilder(MachineTokens::class)
             ->disableOriginalConstructor()
             ->getMock();

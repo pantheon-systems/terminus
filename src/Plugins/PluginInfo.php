@@ -54,7 +54,8 @@ class PluginInfo
         $command_files = $discovery->discover($path, $namespace);
 
         // @TODO: Decide if we should require an autoloader for plugins or just include the command files here.
-        foreach ($command_files as $file => $class) {
+        $file_names = array_keys($command_files);
+        foreach ($file_names as $file) {
             include $file;
         }
 
@@ -94,10 +95,10 @@ class PluginInfo
         $info = json_decode(file_get_contents($composer_json), true);
 
         if (!$info) {
-            throw new TerminusException('The file "{file}" is not a valid', ['file' => $composer_json]);
+            throw new TerminusException('The file "{file}" does not contain valid JSON', ['file' => $composer_json]);
         }
 
-        if (!$info['type'] || $info['type'] !== 'terminus-plugin') {
+        if (!isset($info['type']) || $info['type'] !== 'terminus-plugin') {
             throw new TerminusException('The composer.json must contain a "type" attribute with the value "terminus-plugin"');
         }
 
@@ -107,6 +108,16 @@ class PluginInfo
 
         if (!isset($info['extra']['terminus']['compatible-version'])) {
             throw new TerminusException('The composer.json must contain a "compatible-version" field in "extras/terminus"');
+        }
+
+        if (isset($info['autoload']) && isset($info['autoload']['psr-4'])) {
+            $namespaces = array_keys($info['autoload']['psr-4']);
+            foreach ($namespaces as $namespace) {
+                if (substr($namespace, -1) != '\\') {
+                    $correctNamespace = $namespace . '\\';
+                    throw new TerminusException('The namespace "{namespace}" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "{correct}"', ['namespace' => addslashes($namespace), 'correct' => addslashes($correctNamespace)]);
+                }
+            }
         }
 
         return (array)$info;

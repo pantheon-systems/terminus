@@ -24,12 +24,11 @@ class ClearCacheCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus env:clear-cache <site>.<env>
-     *      Clears caches for <site>'s <env> environment.
+     * @usage <site>.<env> Clears caches for <site>'s <env> environment.
      */
     public function clearCache($site_env)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
         $workflow = $env->clearCache();
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

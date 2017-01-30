@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -17,29 +18,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     /**
      * @var string
      */
-    protected $collected_class = 'Pantheon\Terminus\Models\Site';
-
-    /**
-     * Instantiates the collection, sets param members as properties
-     *
-     * @param array $options To be set to $this->key
-     * @return Sites
-     */
-    public function __construct(array $options = [])
-    {
-        parent::__construct($options);
-    }
-
-    /**
-     * Retrieves all sites
-     *
-     * @return Site[]
-     */
-    public function all()
-    {
-        $models = array_values($this->models);
-        return $models;
-    }
+    protected $collected_class = Site::class;
 
     /**
      * Creates a new site
@@ -52,8 +31,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      */
     public function create($params = [])
     {
-        $workflow = $this->getUser()->getWorkflows()->create('create_site', compact('params'));
-        return $workflow;
+        return $this->getUser()->getWorkflows()->create('create_site', compact('params'));
     }
 
     /**
@@ -68,8 +46,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      */
     public function createForMigration($params = [])
     {
-        $workflow = $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
-        return $workflow;
+        return $this->getUser()->getWorkflows()->create('create_site_for_migration', compact('params'));
     }
 
     /**
@@ -95,6 +72,9 @@ class Sites extends TerminusCollection implements SessionAwareInterface
 
         if (!$options['team_only']) {
             $memberships = $this->getUser()->getOrgMemberships()->fetch()->all();
+            if (is_null($memberships)) {
+                $memberships = [];
+            }
             if (!is_null($org_id = $options['org_id']) && ($org_id != 'all')) {
                 $memberships = array_filter($memberships, function ($membership) use ($org_id) {
                     return $membership->id == $org_id;
@@ -123,23 +103,6 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     }
 
     /**
-     * Filters sites list by tag
-     *
-     * @param string $tag A tag to filter by
-     * @return Sites
-     */
-    public function filterByTag($tag)
-    {
-        $this->models = array_filter(
-            $this->models,
-            function ($site) use ($tag) {
-                return $site->tags->has($tag);
-            }
-        );
-        return $this;
-    }
-
-    /**
      * Filters an array of sites by whether the user is an organizational member
      *
      * @param string $regex Non-delimited PHP regex to filter site names by
@@ -148,7 +111,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     public function filterByName($regex = '(.*)')
     {
         $this->models = array_filter(
-            $this->models,
+            $this->getMembers(),
             function ($site) use ($regex) {
                 preg_match("~$regex~", $site->get('name'), $matches);
                 return !empty($matches);
@@ -166,7 +129,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     public function filterByOwner($owner_uuid)
     {
         $this->models = array_filter(
-            $this->models,
+            $this->getMembers(),
             function ($model) use ($owner_uuid) {
                 return ($model->get('owner') == $owner_uuid);
             }
@@ -175,22 +138,28 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     }
 
     /**
-     * Looks up a site's UUID by its name.
+     * Filters sites list by tag
      *
-     * @param string $name Name of the site to look up
-     * @return string
+     * @param string $tag A tag to filter by
+     * @return Sites
      */
-    public function findUuidByName($name)
+    public function filterByTag($tag)
     {
-        $response = $this->request()->request(
-            "site-names/$name",
-            ['method' => 'get',]
+        $this->models = array_filter(
+            $this->getMembers(),
+            function ($site) use ($tag) {
+                return $site->tags->has($tag);
+            }
         );
-        return $response['data'];
+        return $this;
     }
 
     /**
      * Retrieves the site of the given UUID or name
+     *
+     * If the site list has already been fetched then this function will search for the site in the fetched list.
+     * If no sites have been fetched yet then it will query the API. Use caution when calling this function after
+     * a manual fetch as it may be just searching a subset of the user's sites.
      *
      * @param string $id UUID or name of desired site
      * @return Site
@@ -198,16 +167,21 @@ class Sites extends TerminusCollection implements SessionAwareInterface
      */
     public function get($id)
     {
-        $models = $this->models;
-        $list = $this->listing('name', 'id');
         $site = null;
-        if (isset($models[$id])) {
-            $site = $models[$id];
-        } elseif (isset($list[$id])) {
-            $site = $models[$list[$id]];
-        } else {
+
+        if ($this->models === null) {
+            // If the full model set hasn't been fetched then request the item individually from the API
+            // This can be a lot faster when there are a lot of items.
             try {
-                $uuid = $this->findUuidByName($id)->id;
+                $uuid = $this->findUUIDByNameOrUUID($id);
+                $site = $this->getContainer()->get(
+                    $this->collected_class,
+                    [
+                        (object)['id' => $uuid,],
+                        ['id' => $uuid, 'collection' => $this,]
+                    ]
+                );
+                $site->fetch();
             } catch (\Exception $e) {
                 throw new TerminusException(
                     'Could not locate a site your user may access identified by {id}.',
@@ -215,16 +189,20 @@ class Sites extends TerminusCollection implements SessionAwareInterface
                     1
                 );
             }
-            $site = $this->getContainer()->get(
-                $this->collected_class,
-                [
-                    (object)['id' => $uuid,],
-                    ['id' => $uuid, 'collection' => $this,]
-                ]
-            );
-            $site->fetch();
-            $this->models[$uuid] = $site;
+        } else {
+            // If we have a list of sites already then look through it for the given site.
+            if (isset($this->models[$id])) {
+                // Search by id
+                $site = $this->models[$id];
+            } else {
+                // Search by name
+                $list = $this->listing('name', 'id');
+                if (isset($list[$id])) {
+                    $site = $this->models[$list[$id]];
+                }
+            }
         }
+
         return $site;
     }
 
@@ -237,12 +215,58 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     public function nameIsTaken($name)
     {
         try {
-            $this->findUuidByName($name);
+            $this->findUUIDByName($name);
             //If this has not been caught, the name is taken.
             $name_is_taken = true;
         } catch (\Exception $e) {
-            $name_is_taken = strpos($e->getMessage(), '404 Not Found') !== false;
+            $name_is_taken = strpos($e->getMessage(), '404 Not Found') === false;
         }
         return $name_is_taken;
+    }
+
+    /**
+     * Looks up a site's UUID by its name.
+     *
+     * @param string $name Name of the site to look up
+     * @return string
+     */
+    protected function findUUIDByName($name)
+    {
+        $response = $this->request()->request(
+            "site-names/$name",
+            ['method' => 'get',]
+        );
+        return $response['data']->id;
+    }
+
+    /**
+     * Looks up a site's UUID by its name.
+     *
+     * @param string $id Name of the site to look up
+     * @return string
+     */
+    protected function findUUIDByNameOrUUID($id)
+    {
+        // If it LOOKS like a uuid, then we assume it is. Since a user is unlikely to name a site with this exact
+        // pattern this is a reasonably good test.
+        if ($this->isUUID($id)) {
+            return $id;
+        }
+        return $this->findUUIDByName($id);
+    }
+
+    /**
+     * Determine if the given string looks like a valid uuid.
+     *
+     * This is not an exact test for uuids but it matches the general pattern:
+     *  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+     * where x is any hexidecimal character. This is close enough for our purposes.
+     *
+     * @param $id
+     * @return int
+     */
+    protected function isUUID($id)
+    {
+        return preg_match('/[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/', strtolower($id));
     }
 }

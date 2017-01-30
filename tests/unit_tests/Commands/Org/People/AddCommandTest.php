@@ -1,16 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Org\Team;
+namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
-use Pantheon\Terminus\Commands\Org\Team\AddCommand;
+use Pantheon\Terminus\Commands\Org\People\AddCommand;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Class AddCommandTest
- * Testing class for Pantheon\Terminus\Commands\Org\Team\AddCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
+ * Testing class for Pantheon\Terminus\Commands\Org\People\AddCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\People
  */
-class AddCommandTest extends OrgTeamCommandTest
+class AddCommandTest extends OrgPeopleCommandTest
 {
     /**
      * @inheritdoc
@@ -25,7 +25,7 @@ class AddCommandTest extends OrgTeamCommandTest
     }
 
     /**
-     * Tests the org:team:add command
+     * Tests the org:people:add command
      */
     public function testAdd()
     {

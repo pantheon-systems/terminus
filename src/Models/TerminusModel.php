@@ -92,8 +92,7 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function has($attribute)
     {
-        $isset = isset($this->attributes->$attribute);
-        return $isset;
+        return isset($this->attributes->$attribute);
     }
 
     /**
@@ -126,5 +125,15 @@ abstract class TerminusModel implements RequestAwareInterface
     public function getUrl()
     {
         return $this->url;
+    }
+
+    /**
+     * Formats the object into an associative array for output
+     *
+     * @return array Associative array of data for output
+     */
+    public function serialize()
+    {
+        return (array)$this->attributes;
     }
 }

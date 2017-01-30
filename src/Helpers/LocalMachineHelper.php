@@ -3,6 +3,10 @@
 namespace Pantheon\Terminus\Helpers;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
 /**
@@ -12,8 +16,10 @@ use Symfony\Component\Process\Process;
  *
  * @package Pantheon\Terminus\Helpers
  */
-class LocalMachineHelper
+class LocalMachineHelper implements ConfigAwareInterface
 {
+    use ConfigAwareTrait;
+
     /**
      * @var integer The number of seconds to wait on a command until it times out
      */
@@ -39,13 +45,36 @@ class LocalMachineHelper
      * @param callable $callback A function to run while waiting for the process to complete
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback)
+    public function execInteractive($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
-        $process->setTty(true);
+        // Set tty mode if the user is running terminus iteractively.
+        if (function_exists('posix_isatty')) {
+            $process->setTty(posix_isatty(STDOUT));
+        }
         $process->start();
         $process->wait($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+    }
+
+    /**
+     * Returns a set-up filesystem object.
+     *
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        return new Filesystem();
+    }
+
+    /**
+     * Returns a finder object
+     *
+     * @return Finder
+     */
+    public function getFinder()
+    {
+        return new Finder();
     }
 
     /**
@@ -75,6 +104,40 @@ class LocalMachineHelper
         $command = sprintf('%s %s', $cmd, $url);
 
         $this->getProcess($command)->run();
+    }
+
+    /**
+     * Reads to a file from the local system.
+     *
+     * @param string $filename Name of the file to read
+     * @return string Content read from that file
+     */
+    public function readFile($filename)
+    {
+        return file_get_contents($this->fixFilename($filename));
+    }
+
+    /**
+     * Writes to a file on the local system.
+     *
+     * @param string $filename Name of the file to write to
+     * @param string $content Content to write to the file
+     */
+    public function writeFile($filename, $content)
+    {
+        $this->getFilesystem()->dumpFile($this->fixFilename($filename), $content);
+    }
+
+    /**
+     * Accepts a filename/full path and localizes it to the user's system.
+     *
+     * @param string $filename
+     * @return string
+     */
+    protected function fixFilename($filename)
+    {
+        $config = $this->getConfig();
+        return $config->fixDirectorySeparators(str_replace('~', $config->get('user_home'), $filename));
     }
 
     /**

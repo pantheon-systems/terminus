@@ -40,23 +40,13 @@ class ListCommandTest extends CommandTestCase
     public function testListOrgs()
     {
         $data = [
-            ['org_name' => 'abc', 'org_id' => '000'],
-            ['org_name' => 'def', 'org_id' => '111'],
+            '000' => ['org_name' => 'abc', 'org_id' => '000'],
+            '111' => ['org_name' => 'def', 'org_id' => '111'],
         ];
-        $memberships = [];
-        foreach ($data as $item) {
-            $mock = $this->getMockBuilder(SiteOrganizationMembership::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $mock->expects($this->once())
-                ->method('serialize')
-                ->willReturn($item);
-            $memberships[] = $mock;
-        }
 
         $this->org_memberships->expects($this->once())
-            ->method('all')
-            ->willReturn($memberships);
+            ->method('serialize')
+            ->willReturn($data);
 
         $out = $this->command->listOrgs('my-site');
         $this->assertInstanceOf(RowsOfFields::class, $out);
@@ -69,7 +59,7 @@ class ListCommandTest extends CommandTestCase
     public function testListOrgsNone()
     {
         $this->org_memberships->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->willReturn([]);
 
         $this->logger->expects($this->at(0))

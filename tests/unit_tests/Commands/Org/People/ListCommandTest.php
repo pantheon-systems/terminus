@@ -1,15 +1,15 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Org\Team;
+namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
-use Pantheon\Terminus\Commands\Org\Team\ListCommand;
+use Pantheon\Terminus\Commands\Org\People\ListCommand;
 
 /**
  * Class ListCommandTest
- * Testing class for Pantheon\Terminus\Commands\Org\Team\ListCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Org\Team
+ * Testing class for Pantheon\Terminus\Commands\Org\People\ListCommand
+ * @package Pantheon\Terminus\UnitTests\Commands\Org\People
  */
-class ListCommandTest extends OrgTeamCommandTest
+class ListCommandTest extends OrgPeopleCommandTest
 {
     /**
      * @inheritdoc
@@ -24,17 +24,15 @@ class ListCommandTest extends OrgTeamCommandTest
     }
 
     /**
-     * Tests the org:team:list command when the organization has no team members
+     * Tests the org:people:list command when the organization has no members
      */
-    public function testOrgTeamListEmpty()
+    public function testOrgPeopleListEmpty()
     {
         $org_name = 'org_name';
         $this->org_user_memberships->expects($this->once())
-            ->method('all')
+            ->method('serialize')
             ->with()
             ->willReturn([]);
-        $this->org_user_membership->expects($this->never())
-            ->method('serialize');
         $this->organization->expects($this->once())
             ->method('get')
             ->with($this->equalTo('profile'))
@@ -44,40 +42,39 @@ class ListCommandTest extends OrgTeamCommandTest
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('{org} has no team members.'),
+                $this->equalTo('{org} has no members.'),
                 $this->equalTo(['org' => $org_name,])
             );
 
-        $out = $this->command->listTeam($this->organization->id);
+        $out = $this->command->listPeople($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
         $this->assertEquals([], $out->getArrayCopy());
     }
 
     /**
-     * Tests the org:team:list command
+     * Tests the org:people:list command
      */
-    public function testOrgTeamListNotEmpty()
+    public function testOrgPeopleListNotEmpty()
     {
         $data = [
-            'id' => 'user_id',
-            'first_name' => 'Dev',
-            'last_name' => 'User',
-            'email' => 'devuser@pantheon.io',
-            'role' => 'team_role',
+            'user_id' => [
+                'id' => 'user_id',
+                'first_name' => 'Dev',
+                'last_name' => 'User',
+                'email' => 'devuser@pantheon.io',
+                'role' => 'team_role',
+            ]
         ];
 
         $this->org_user_memberships->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$this->org_user_membership,]);
-        $this->org_user_membership->expects($this->any())
             ->method('serialize')
+            ->with()
             ->willReturn($data);
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->listTeam($this->organization->id);
+        $out = $this->command->listPeople($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([$data,], $out->getArrayCopy());
+        $this->assertEquals($data, $out->getArrayCopy());
     }
 }

@@ -23,7 +23,7 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      * @command env:code-log
      *
      * @field-labels
-     *     time: Timestamp
+     *     datetime: Timestamp
      *     author: Author
      *     labels: Labels
      *     hash: Commit ID
@@ -32,29 +32,11 @@ class CodeLogCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
-     * @usage terminus env:code-log <site>.<env>
-     *     Displays the code log for <site>'s <env> environment.
+     * @usage <site>.<env> Displays the code log for <site>'s <env> environment.
      */
     public function codeLog($site_env)
     {
-        list(, $env) = $this->getSiteEnv($site_env, 'dev');
-        $logs = $env->getCommits()->all();
-        $data = [];
-        foreach ($logs as $log) {
-            $data[] = [
-                'time'    => $log->get('datetime'),
-                'author'  => $log->get('author'),
-                'labels'  => implode(', ', $log->get('labels')),
-                'hash'    => $log->get('hash'),
-                'message' => trim(
-                    str_replace(
-                        "\n",
-                        '',
-                        str_replace("\t", '', substr($log->get('message'), 0, 50))
-                    )
-                ),
-            ];
-        }
-        return new RowsOfFields($data);
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
+        return new RowsOfFields($env->getCommits()->serialize());
     }
 }

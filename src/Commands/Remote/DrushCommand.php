@@ -15,22 +15,6 @@ class DrushCommand extends SSHBaseCommand
     protected $command = 'drush';
 
     /**
-     * @inheritdoc
-     */
-    protected $valid_frameworks = [
-        'drupal',
-        'drupal8',
-    ];
-
-    /**
-     * @inheritdoc
-     */
-    protected $unavailable_commands = [
-        'sql-connect' => 'connection:info --field=mysql_command',
-        'sql-sync'    => '',
-    ];
-
-    /**
      * Runs a Drush command remotely on a site's environment.
      *
      * @authorize
@@ -42,13 +26,11 @@ class DrushCommand extends SSHBaseCommand
      * @param array $drush_command Drush command
      * @return string Command output
      *
-     * @usage terminus drush <site>.<env> -- <command>
-     *     Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
      */
     public function drushCommand($site_env_id, array $drush_command)
     {
         $this->prepareEnvironment($site_env_id);
-
         return $this->executeCommand($drush_command);
     }
 }
