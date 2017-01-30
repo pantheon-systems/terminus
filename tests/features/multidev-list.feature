@@ -19,5 +19,5 @@ Feature: Listing a site's environments
     Then I should get: "---------- --------------------- -------------------------------------- --------------- --------- --------------"
     And I should get: "Name       Created               Domain                                 OnServer Dev?   Locked?   Initialized?"
     And I should get: "---------- --------------------- -------------------------------------- --------------- --------- --------------"
-    And I should get: "multidev   2016-08-16 22:09:01   multidev-behat-tests.pantheonsite.io   true            false     true"
+    And I should get: "multidev   2016-08-16 22:09:01   multidev-[[test_site_name]].pantheonsite.io   true            false     true"
     And I should get: "---------- --------------------- -------------------------------------- --------------- --------- --------------"

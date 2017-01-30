@@ -599,8 +599,8 @@ Feature: Gathering sites' aliases
             '%drush-script' => 'drush',
            ),
         );
-        $aliases['behat-tests.test'] = array(
-          'uri' => 'test-behat-tests.pantheonsite.io',
+        $aliases['[[test_site_name]].test'] = array(
+          'uri' => 'test-[[test_site_name]].pantheonsite.io',
           'db-url' => 'mysql://pantheon:ac7b3205bb5b4f6884c4cddf99dfa4c3@dbserver.test.11111111-1111-1111-1111-111111111111.drush.in:17434/pantheon',
           'db-allows-remote' => TRUE,
           'remote-host' => 'appserver.test.11111111-1111-1111-1111-111111111111.drush.in',
@@ -611,8 +611,8 @@ Feature: Gathering sites' aliases
             '%drush-script' => 'drush',
            ),
         );
-        $aliases['behat-tests.live'] = array(
-          'uri' => 'live-behat-tests.pantheonsite.io',
+        $aliases['[[test_site_name]].live'] = array(
+          'uri' => 'live-[[test_site_name]].pantheonsite.io',
           'db-url' => 'mysql://pantheon:a7dd95d3d52f40f3806b7a307e1fe748@dbserver.live.11111111-1111-1111-1111-111111111111.drush.in:16569/pantheon',
           'db-allows-remote' => TRUE,
           'remote-host' => 'appserver.live.11111111-1111-1111-1111-111111111111.drush.in',
@@ -623,8 +623,8 @@ Feature: Gathering sites' aliases
             '%drush-script' => 'drush',
            ),
         );
-        $aliases['behat-tests.dev'] = array(
-          'uri' => 'dev-behat-tests.pantheonsite.io',
+        $aliases['[[test_site_name]].dev'] = array(
+          'uri' => 'dev-[[test_site_name]].pantheonsite.io',
           'db-url' => 'mysql://pantheon:ad7e59695d264b3782c2a9fd959d6a40@dbserver.dev.11111111-1111-1111-1111-111111111111.drush.in:16698/pantheon',
           'db-allows-remote' => TRUE,
           'remote-host' => 'appserver.dev.11111111-1111-1111-1111-111111111111.drush.in',
