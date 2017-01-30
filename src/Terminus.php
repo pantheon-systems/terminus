@@ -294,7 +294,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->invokeMethod('setSites', ['sites']);
 
         // Install our command cache into the command factory
-        $commandCacheDir = $this->getConfig()->get('cache_dir') . '/commands';
+        $commandCacheDir = $this->getConfig()->get('command_cache_dir');
         $commandCacheDataStore = new FileStore($commandCacheDir);
 
         $factory = $container->get('commandFactory');

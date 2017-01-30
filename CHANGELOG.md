@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Added an `--element=` option to `backup:list`. (#1563)
 
+### Changed
+- `self:cc` now acts to delete all files in the command cache directory. (#1569)
+
 ### Deprecated
 - The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
 
