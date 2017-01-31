@@ -27,9 +27,10 @@ class TerminusConfig extends \Robo\Config
 
     /**
      * Set add all the values in the array to this Config object.
+    }
      * @param array $array
      */
-    public function fromArray($array)
+    public function fromArray(array $array = [])
     {
         foreach ($array as $key => $val) {
             $this->set($key, $val);
@@ -38,6 +39,7 @@ class TerminusConfig extends \Robo\Config
 
     /**
      * Convert the config to an array.
+     *
      * @return array
      */
     public function toArray()

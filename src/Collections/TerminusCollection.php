@@ -276,7 +276,8 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
      */
     protected function getMembers()
     {
-        if ($this->models === null) {
+        if (is_null($this->models)) {
+            $this->models = [];
             $this->fetch();
         }
         return $this->models;
