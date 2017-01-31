@@ -40,7 +40,7 @@ Feature: View site workflow information
   @vcr quicksilver-workflow-info-status.yml
   Scenario: Show the most recent set of logs for a workflow that has logs
     When I run "terminus workflow:info:logs [[test_site_name]]"
-    Then I should get: "Showing latest workflow on behat-tests."
+    Then I should get: "Showing latest workflow on [[test_site_name]]."
     And I should get: "Simple Quicksilver Example finished in"
     And I should get: "Quicksilver Debugging Output"
 
