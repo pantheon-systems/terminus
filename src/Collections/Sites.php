@@ -72,9 +72,6 @@ class Sites extends TerminusCollection implements SessionAwareInterface
 
         if (!$options['team_only']) {
             $memberships = $this->getUser()->getOrgMemberships()->fetch()->all();
-            if (is_null($memberships)) {
-                $memberships = [];
-            }
             if (!is_null($org_id = $options['org_id']) && ($org_id != 'all')) {
                 $memberships = array_filter($memberships, function ($membership) use ($org_id) {
                     return $membership->id == $org_id;
