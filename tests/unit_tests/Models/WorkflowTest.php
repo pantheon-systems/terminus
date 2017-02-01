@@ -2,9 +2,10 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Guzzle\Service\Description\Operation;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\WorkflowOperation;
@@ -37,7 +38,7 @@ class WorkflowTest extends ModelTestCase
 
         $this->request->expects($this->once())
             ->method('request')
-            ->willReturn(['data' => ['result' => true,],]);
+            ->willReturn(['data' => ['result' => 'succeeded',],]);
 
         $workflow->setRequest($this->request);
 
@@ -49,14 +50,47 @@ class WorkflowTest extends ModelTestCase
      */
     public function testCheckProgressFailure()
     {
+        $message = 'reason message';
         $site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
         $site->id = 'site id';
         $workflow_id = 'workflow id';
         $workflow = new Workflow((object)['id' => $workflow_id,], ['site' => $site,]);
+        $final_task = (object)[
+            'messages' => ['message' => (object)['message' => ['message'],],],
+            'reason' => $message,
+        ];
 
+        $this->request->expects($this->at(0))
+            ->method('request')
+            ->willReturn(['data' => ['result' => null,],]);
+        $this->request->expects($this->at(1))
+            ->method('request')
+            ->willReturn(['data' => ['result' => 'failed', 'final_task' => $final_task,],]);
+
+        $this->setExpectedException(TerminusException::class, $message);
+
+        $workflow->setRequest($this->request);
         $this->assertFalse($workflow->checkProgress());
+        $this->assertNull($workflow->checkProgress());
+    }
+
+    /**
+     * Tests the response of the Workflow constructor when it is not given an owner object
+     */
+    public function testConstructWithoutOwner()
+    {
+        $workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflows->expects($this->once())
+            ->method('getOwnerObject')
+            ->will($this->throwException(new \Exception('exception message')));
+
+        $this->setExpectedException(TerminusException::class, 'Could not locate an owner for this Workflow object.');
+
+        new Workflow((object)['id' => 'workflow id',], ['collection' => $workflows,]);
     }
 
     /**

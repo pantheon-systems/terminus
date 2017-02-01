@@ -1,17 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Site;
+namespace Pantheon\Terminus\UnitTests\Commands\Import;
 
 use Pantheon\Terminus\Commands\Import\SiteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Class SiteCommandTest
  * Testing class for Pantheon\Terminus\Commands\Import\SiteCommand
- * @package Pantheon\Terminus\UnitTests\Commands\Site
+ * @package Pantheon\Terminus\UnitTests\Commands\Import
  */
 class SiteCommandTest extends CommandTestCase
 {
@@ -44,6 +43,7 @@ class SiteCommandTest extends CommandTestCase
     {
         $url = 'a-valid-url';
 
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('import')
             ->with($this->equalTo($url))
@@ -64,12 +64,34 @@ class SiteCommandTest extends CommandTestCase
     }
 
     /**
+     * Exercises site:import command when declining the confirmation
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    public function testSiteImportConfirmationDecline()
+    {
+        $url = 'a-valid-url';
+
+        $this->expectConfirmation(false);
+        $this->environment->expects($this->never())
+            ->method('import');
+        $this->workflow->expects($this->never())
+            ->method('checkProgress');
+        $this->logger->expects($this->never())
+            ->method('log');
+
+        $out = $this->command->import('dummy-site', $url);
+        $this->assertNull($out);
+    }
+
+    /**
      * Exercises site:import command with an invalid URL
      */
     public function testSiteImportInvalidURL()
     {
         $url = 'an-invalid-url';
 
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('import')
             ->with($this->equalTo($url))
@@ -95,6 +117,7 @@ class SiteCommandTest extends CommandTestCase
         $url = 'an-invalid-url';
         $message = 'Any message except the special one';
 
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('import')
             ->with($this->equalTo($url))

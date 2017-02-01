@@ -12,6 +12,19 @@ use Pantheon\Terminus\Commands\Env\WipeCommand;
 class WipeCommandTest extends EnvCommandTest
 {
     /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->command = new WipeCommand();
+        $this->command->setSites($this->sites);
+        $this->command->setLogger($this->logger);
+        $this->command->setInput($this->input);
+    }
+
+    /**
      * Tests the env:wipe command
      */
     public function testWipe()
@@ -19,6 +32,8 @@ class WipeCommandTest extends EnvCommandTest
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
         $message = 'successful workflow';
+
+        $this->expectConfirmation();
 
         $this->workflow->expects($this->once())
             ->method('checkProgress')
@@ -28,7 +43,9 @@ class WipeCommandTest extends EnvCommandTest
             ->method('getMessage')
             ->with()
             ->willReturn($message);
-        $this->site->method('get')->willReturn($site_name);
+        $this->site->expects($this->once())
+            ->method('get')
+            ->willReturn($site_name);
         $this->environment->expects($this->once())
             ->method('wipe')
             ->willReturn($this->workflow);
@@ -45,10 +62,31 @@ class WipeCommandTest extends EnvCommandTest
                 $this->equalTo($message)
             );
 
-        $this->command = new WipeCommand();
-        $this->command->setSites($this->sites);
-        $this->command->setLogger($this->logger);
-        $this->command->setInput($this->input);
+        $out = $this->command->wipe("$site_name.{$this->environment->id}");
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the env:wipe command when the confirmation is declined
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    public function testWipeConfirmationDecline()
+    {
+        $site_name = 'site_name';
+        $this->environment->id = 'env_id';
+
+        $this->expectConfirmation(false);
+        $this->workflow->expects($this->never())
+            ->method('checkProgress');
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
+        $this->site->expects($this->never())
+            ->method('get');
+        $this->environment->expects($this->never())
+            ->method('wipe');
+        $this->logger->expects($this->never())
+            ->method('log');
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);

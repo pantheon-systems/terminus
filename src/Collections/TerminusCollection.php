@@ -8,16 +8,15 @@ use Pantheon\Terminus\Models\TerminusModel;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Request;
 
 /**
  * Class TerminusCollection
  * @package Pantheon\Terminus\Collections
  */
-abstract class TerminusCollection implements RequestAwareInterface, ContainerAwareInterface
+abstract class TerminusCollection implements ContainerAwareInterface, RequestAwareInterface
 {
-    use RequestAwareTrait;
     use ContainerAwareTrait;
+    use RequestAwareTrait;
 
     /**
      * @var array
@@ -72,7 +71,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
             ['id' => $model_data->id, 'collection' => $this,],
             $options
         );
-        $model = $this->getContainer()->get($this->collected_class, [$model_data, $options]);
+        $model = $this->getContainer()->get($this->collected_class, [$model_data, $options,]);
         $this->models[$model_data->id] = $model;
         return $model;
     }
@@ -105,12 +104,14 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
     /**
      * Fetches model data from API and instantiates its model instances
      *
-     * @param array $options params to pass to url request
+     * @param array $options params to pass configure fetching
+     *        array $data Data to fill in the model members of this collection
      * @return TerminusCollection $this
      */
     public function fetch(array $options = [])
     {
-        $results = array_filter((array)$this->getCollectionData($options));
+        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
+        $results = array_filter((array)$data);
 
         foreach ($results as $id => $model_data) {
             if (!isset($model_data->id)) {
@@ -150,8 +151,7 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
     public function ids()
     {
         $models = (array)$this->getMembers();
-        $ids = array_keys($models);
-        return $ids;
+        return array_keys($models);
     }
 
     /**
@@ -251,21 +251,6 @@ abstract class TerminusCollection implements RequestAwareInterface, ContainerAwa
                 }
             }
         }
-        return $member_list;
-    }
-
-    /**
-     * Returns an array of data where the keys are the attribute $key and the
-     *   values are the attribute $value
-     *
-     * @param string $key Name of attribute to make array keys
-     * @param string $value Name of attribute to make array values
-     * @return array Array rendered as requested
-     *         $this->attribute->$key = $this->attribute->$value
-     */
-    public function getMemberList($key = 'id', $value = 'name')
-    {
-        $member_list = $this->getFilteredMemberList([], $key, $value);
         return $member_list;
     }
 

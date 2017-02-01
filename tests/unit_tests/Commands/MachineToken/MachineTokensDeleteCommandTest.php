@@ -15,12 +15,21 @@ use Symfony\Component\Console\Input\Input;
 class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
 {
     /**
+     * @var Token
+     */
+    protected $token;
+
+    /**
      * @inheritdoc
      */
     protected function setUp()
     {
         parent::setUp();
-        
+
+        $this->token = $this->getMockBuilder(MachineToken::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->command = new DeleteCommand(new Config());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
@@ -29,86 +38,79 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
 
     /**
      * Tests the machine-token:delete command.
-     *
-     * @return void
      */
     public function testMachineTokenDelete()
     {
-        $token = $this->getMockBuilder(MachineToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $token->expects($this->once())
-            ->method('delete')
-            ->willReturn(
-                ['status_code' => 200]
-            );
-
-
         $this->machine_tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo('123'))
-            ->willReturn(
-                $token
-            );
+            ->willReturn($this->token);
+        $this->expectConfirmation();
+        $this->token->expects($this->once())
+            ->method('delete')
+            ->willReturn(['status_code' => 200,]);
 
-        $this->command->delete('123');
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the machine-token:delete command when declining the confirmation
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    public function testMachineTokenDeleteConfirmationDecline()
+    {
+        $this->machine_tokens->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('123'))
+            ->willReturn($this->token);
+        $this->expectConfirmation(false);
+        $this->token->expects($this->never())
+            ->method('delete');
+
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
     }
 
     /**
      * Tests the machine-token:delete command when there are no tokens.
-     *
-     * @return void
      */
     public function testMachineTokenDeleteNonExistant()
     {
-        $token = $this->getMockBuilder(MachineToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $token->expects($this->never())
-            ->method('delete');
-
         $this->machine_tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo('123'))
             ->will($this->throwException(new TerminusException));
-
+        $this->token->expects($this->never())
+            ->method('delete');
 
         $this->setExpectedException(TerminusException::class);
 
-        $this->command->delete('123');
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
     }
 
     /**
      * Tests the machine-token:delete command when the API fails.
-     *
-     * @return void
      */
     public function testMachineTokenDeleteAPIFailure()
     {
-        $token = $this->getMockBuilder(MachineToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $token->expects($this->once())
-            ->method('delete')
-            ->will($this->throwException(new TerminusException('There was an problem deleting the machine token.')));
-
-
         $this->machine_tokens->expects($this->once())
             ->method('get')
             ->with($this->equalTo('123'))
-            ->willReturn(
-                $token
-            );
-
+            ->willReturn($this->token);
+        $this->expectConfirmation();
+        $this->token->expects($this->once())
+            ->method('delete')
+            ->will($this->throwException(new TerminusException('There was an problem deleting the machine token.')));
 
         $this->setExpectedException(
             \Exception::class,
             'There was an problem deleting the machine token.'
         );
 
-        $this->command->delete('123');
+        $out = $this->command->delete('123');
+        $this->assertNull($out);
     }
 }

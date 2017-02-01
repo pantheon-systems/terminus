@@ -18,11 +18,12 @@ class DeleteCommandTest extends MultidevCommandTest
     protected function setUp()
     {
         parent::setUp();
-        
+
+        $this->environment->method('delete')->willReturn($this->workflow);
+
         $this->command = new DeleteCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
-        $this->environment->method('delete')->willReturn($this->workflow);
         $this->command->setInput($this->input);
     }
 
@@ -33,12 +34,17 @@ class DeleteCommandTest extends MultidevCommandTest
     {
         $this->environment->id = 'multipass';
 
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('delete')
             ->with();
         $this->workflow->expects($this->once())
-            ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(true);
+            ->method('wait')
+            ->with();
+        $this->workflow->expects($this->once())
+            ->method('isSuccessful')
+            ->with()
+            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -52,18 +58,48 @@ class DeleteCommandTest extends MultidevCommandTest
     }
 
     /**
+     * Tests the multidev:create command when declining the confirmation
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    public function testMultidevDeleteConfirmationDecline()
+    {
+        $this->environment->id = 'multipass';
+
+        $this->expectConfirmation(false);
+        $this->environment->expects($this->never())
+            ->method('delete');
+        $this->workflow->expects($this->never())
+            ->method('wait');
+        $this->workflow->expects($this->never())
+            ->method('isSuccessful')
+            ->with()
+            ->willReturn(true);
+        $this->logger->expects($this->never())
+            ->method('log');
+
+        $out = $this->command->deleteMultidev("site.{$this->environment->id}");
+        $this->assertNull($out);
+    }
+
+    /**
      * Tests to ensure the multidev:delete to ensure it passes the 'delete-branch' option successfully
      */
     public function testMultidevDeleteWithBranch()
     {
         $this->environment->id = 'multipass';
 
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('delete')
             ->with($this->equalTo(['delete_branch' => true,]));
         $this->workflow->expects($this->once())
-            ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(true);
+            ->method('wait')
+            ->with();
+        $this->workflow->expects($this->once())
+            ->method('isSuccessful')
+            ->with()
+            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -84,13 +120,21 @@ class DeleteCommandTest extends MultidevCommandTest
      */
     public function testMultidevDeleteFailure()
     {
+        $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('delete')
             ->with();
         $this->workflow->expects($this->once())
-            ->method('wait');
-        $this->workflow->method('isSuccessful')->willReturn(false);
-        $this->workflow->method('getMessage')->willReturn("The {env} environment could not be deleted.");
+            ->method('wait')
+            ->with();
+        $this->workflow->expects($this->once())
+            ->method('isSuccessful')
+            ->with()
+            ->willReturn(false);
+        $this->workflow->expects($this->once())
+            ->method('getMessage')
+            ->with()
+            ->willReturn("The {env} environment could not be deleted.");
 
         $out = $this->command->deleteMultidev('site.multipass');
         $this->assertNull($out);

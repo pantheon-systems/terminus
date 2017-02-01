@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Symfony\Component\Process\ProcessUtils;
@@ -32,16 +31,9 @@ class SSHBaseCommandTest extends CommandTestCase
     public function testExecuteCommand()
     {
         $dummy_output = 'dummy output';
-        $options = ['arg1', 'arg2',];
+        $options = ['arg1', 'arg2', '<escape me>',];
         $site_name = 'site name';
         $mode = 'sftp';
-        $command = 'dummy ' . implode(' ', $options);
-        $status_code = 0;
-
-        // For windows testing; wrap $command in the correct kind of quote
-        // characters. Presumes that nothing inside $command particularly
-        // needs escaping.
-        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
 
         $this->environment->expects($this->once())
             ->method('get')
@@ -57,17 +49,10 @@ class SSHBaseCommandTest extends CommandTestCase
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Command: {site}.{env} -- {command} [Exit: {exit}]'),
-                $this->equalTo([
-                    'site' => $site_name,
-                    'env' => $this->environment->id,
-                    'command' => "$expectedEscapedCommand",
-                    'exit' => $status_code,
-                ])
+                $this->equalTo('Command: {site}.{env} -- {command} [Exit: {exit}]')
             );
         $this->environment->expects($this->once())
             ->method('sendCommandViaSsh')
-            ->with($this->equalTo('dummy ' . implode(' ', $options)))
             ->willReturn(['output' => $dummy_output, 'exit_code' => 0,]);
 
         $out = $this->command->dummyCommand("$site_name.env", $options);
