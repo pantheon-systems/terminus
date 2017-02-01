@@ -115,9 +115,6 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getSites()
     {
         $site_memberships = $this->getSiteMemberships()->all();
-        if (is_null($site_memberships)) {
-            $site_memberships = [];
-        }
 
         $sites = array_combine(
             array_map(

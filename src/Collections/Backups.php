@@ -78,10 +78,10 @@ class Backups extends EnvironmentOwnedCollection
         $results = array_filter((array)$data);
 
         foreach ($results as $id => $model_data) {
+            if (!isset($model_data->id)) {
+                $model_data->id = $id;
+            }
             if (isset($model_data->filename)) {
-                if (!isset($model_data->id)) {
-                    $model_data->id = $id;
-                }
                 $this->add($model_data);
             }
         }
