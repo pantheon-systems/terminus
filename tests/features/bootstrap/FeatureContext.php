@@ -33,9 +33,9 @@ class FeatureContext implements Context
         $this->parameters      = $parameters;
         $this->start_time      = time();
         $this->connection_info = [
-          'host' => $parameters['host'],
-          'machine_token' => $parameters['machine_token'],
-          'verify_host_cert' => $parameters['verify_host_cert']
+            'host' => $parameters['host'],
+            'machine_token' => $parameters['machine_token'],
+            'verify_host_cert' => $parameters['verify_host_cert']
         ];
 
         $this->cache_dir = $parameters['cache_dir'];

@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Collections;
 
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 
 /**

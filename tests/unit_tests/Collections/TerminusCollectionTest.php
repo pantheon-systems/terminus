@@ -92,7 +92,6 @@ class TerminusCollectionTest extends CollectionTestCase
             'c' => '678',
         ];
         $this->assertEquals($listing, $collection->listing('id', 'foo'));
-        $this->assertEquals($listing, $collection->getMemberList('id', 'foo'));
 
         $listing = [
             'a' => '123',

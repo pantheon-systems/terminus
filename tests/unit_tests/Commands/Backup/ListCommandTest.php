@@ -61,7 +61,7 @@ class ListCommandTest extends BackupCommandTest
             ->with($this->equalTo('database'))
             ->willReturn([$this->backup,]);
 
-        $out = $this->command->listBackups('mysite.dev', null, ['element' => 'db',]);
+        $out = $this->command->listBackups('mysite.dev', 'all', ['element' => 'db',]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
     }
@@ -79,7 +79,7 @@ class ListCommandTest extends BackupCommandTest
             ->willReturn([$this->backup,]);
 
 
-        $out = $this->command->listBackups('mysite.dev', null, compact('element'));
+        $out = $this->command->listBackups('mysite.dev', 'all', compact('element'));
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
     }

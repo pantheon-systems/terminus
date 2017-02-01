@@ -142,8 +142,6 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->input = $this->getMockBuilder(Input::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->input->method('hasOption')->with('yes')->willReturn(true);
-        $this->input->method('getOption')->with('yes')->willReturn(true);
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
@@ -157,5 +155,26 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(array('log'))
             ->getMock();
+    }
+
+    /**
+     * Responds to the confirmation prompt
+     *
+     * @deprecated 1.0.1 This is a test for the incorrect way to do this and will be removed in the future.
+     *
+     * @param bool $confirm Whether or not to respond affirmatively at the prompt
+     *
+     * @todo Remove this when removing TerminusCommand::confirm()
+     */
+    protected function expectConfirmation($confirm = true)
+    {
+        $this->input->expects($this->once())
+            ->method('hasOption')
+            ->with($this->equalTo('yes'))
+            ->willReturn(true);
+        $this->input->expects($this->once())
+            ->method('getOption')
+            ->with($this->equalTo('yes'))
+            ->willReturn($confirm);
     }
 }

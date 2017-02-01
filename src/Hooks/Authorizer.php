@@ -2,10 +2,9 @@
 
 namespace Pantheon\Terminus\Hooks;
 
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Common\ConfigAwareTrait;
 
@@ -13,10 +12,9 @@ use Robo\Common\ConfigAwareTrait;
  * Class Authorizer
  * @package Pantheon\Terminus\Hooks
  */
-class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionAwareInterface
+class Authorizer implements ConfigAwareInterface, SessionAwareInterface
 {
     use ConfigAwareTrait;
-    use LoggerAwareTrait;
     use SessionAwareTrait;
 
     /**
@@ -24,16 +22,19 @@ class Authorizer implements ConfigAwareInterface, LoggerAwareInterface, SessionA
      * function during the pre-validate phase of any command that has an 'authorize' annotation.
      *
      * @hook pre-validate @authorize
+     *
+     * @throws TerminusException
      */
     public function ensureLogin()
     {
         if (!$this->session()->isActive()) {
-            if (count($tokens = $this->session()->getTokens()->all()) == 1) {
+            $tokens_obj = $this->session()->getTokens();
+            if (count($tokens = $tokens_obj->all()) == 1) {
                 $token = array_shift($tokens);
             } elseif (!empty($email = $this->getConfig()->get('user'))) {
-                $token = $this->session()->getTokens()->get($email);
+                $token = $tokens_obj->get($email);
             } else {
-                throw new \Exception(
+                throw new TerminusException(
                     'You are not logged in. Run `auth:login` to authenticate or `help auth:login` for more info.'
                 );
             }

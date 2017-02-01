@@ -12,27 +12,36 @@ use Pantheon\Terminus\Commands\Remote\DrushCommand;
 class DrushCommandTest extends CommandTestCase
 {
     /**
-     * Tests the drush command
+     * @inheritdoc
      */
-    public function testDrushCommand()
+    public function setUp()
     {
-        $command = $this->getMockBuilder(DrushCommand::class)
+        parent::setUp();
+
+        $this->command = $this->getMockBuilder(DrushCommand::class)
             ->disableOriginalConstructor()
             ->setMethods([
                 'prepareEnvironment',
                 'executeCommand',
             ])
             ->getMock();
+    }
 
-        $command->expects($this->once())
+    /**
+     * Tests the drush command
+     */
+    public function testDrushCommand()
+    {
+        $command_output = 'command output';
+
+        $this->command->expects($this->once())
             ->method('prepareEnvironment')
             ->with($this->equalTo('dummy-site.dummy-env'));
-
-        $command->expects($this->once())
+        $this->command->expects($this->once())
             ->method('executeCommand')
-            ->willReturn('command output');
+            ->willReturn($command_output);
 
-        $output = $command->drushCommand('dummy-site.dummy-env', ['drushable', 'command', 'arguments']);
-        $this->assertEquals('command output', $output);
+        $output = $this->command->drushCommand('dummy-site.dummy-env', ['drushable', 'command', 'arguments',]);
+        $this->assertEquals($command_output, $output);
     }
 }
