@@ -9,9 +9,9 @@ namespace Pantheon\Terminus\Models;
 class UpstreamStatus extends TerminusModel
 {
     /**
-     * @var Env
+     * @var Environment
      */
-    public $env;
+    public $environment;
 
     /**
      * @inheritdoc
@@ -20,7 +20,7 @@ class UpstreamStatus extends TerminusModel
     {
         parent::__construct($attributes, $options);
         if (isset($options['environment'])) {
-            $this->env = $options['environment'];
+            $this->environment = $options['environment'];
         }
     }
 
@@ -31,27 +31,18 @@ class UpstreamStatus extends TerminusModel
      */
     public function getStatus()
     {
-        if ($this->hasUpdates()) {
-            $status = 'outdated';
-        } else {
-            $status = 'current';
-        }
-        return $status;
+        return $this->hasUpdates() ? 'outdated' : 'current';
     }
 
     /**
      * Retrives upstream updates
      *
-     * @return \stdClass
+     * @return object
      */
     public function getUpdates()
     {
-        if (!$this->env->isMultidev()) {
-            $base_branch = 'master';
-        } else {
-            $base_branch = $this->env->id;
-        }
-        return $this->request()->request("sites/{$this->env->site->id}/code-upstream-updates?base_branch={$base_branch}")['data'];
+        $base_branch = 'refs/heads/' . $this->environment->getBranchName();
+        return $this->request()->request("sites/{$this->environment->site->id}/code-upstream-updates?base_branch=$base_branch")['data'];
     }
 
     /**
@@ -61,7 +52,6 @@ class UpstreamStatus extends TerminusModel
      */
     public function hasUpdates()
     {
-        $updates = $this->getUpdates();
-        return ($updates->behind > 0);
+        return ($this->getUpdates()->behind > 0);
     }
 }
