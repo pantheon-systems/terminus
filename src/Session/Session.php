@@ -27,7 +27,6 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      * @var SavedTokens
      */
     public $tokens;
-
     /**
      * @var object
      */
@@ -73,9 +72,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
      */
     public function getUser()
     {
-        $user_id = $this->get('user_id');
-        $user = $this->getContainer()->get(User::class, [(object)array('id' => $user_id)]);
-        return $user;
+        return $this->getContainer()->get(User::class, [(object)['id' => $this->get('user_id'),],]);
     }
 
     /**
@@ -108,7 +105,7 @@ class Session implements ContainerAwareInterface, ConfigAwareInterface, DataStor
     public function getTokens()
     {
         if (empty($this->tokens)) {
-            $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,]]);
+            $this->tokens = $this->getContainer()->get(SavedTokens::class, [['session' => $this,],]);
         }
         return $this->tokens;
     }
