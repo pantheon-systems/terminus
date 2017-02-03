@@ -17,6 +17,9 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SetCommandTest extends CommandTestCase
 {
+    /**
+     * @var SiteUserMemberships
+     */
     protected $user_memberships;
 
     /**
@@ -69,7 +72,7 @@ class SetCommandTest extends CommandTestCase
             ->willReturn($workflow);
 
         $workflow->expects($this->once())
-            ->method('wait')
+            ->method('checkProgress')
             ->with()
             ->willReturn(true);
 

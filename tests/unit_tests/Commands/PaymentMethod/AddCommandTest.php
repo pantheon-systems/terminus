@@ -95,8 +95,9 @@ class AddCommandTest extends CommandTestCase
             ->with($this->equalTo($this->payment_method->id))
             ->willReturn($workflow);
         $workflow->expects($this->once())
-            ->method('wait')
-            ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
         $this->payment_method->expects($this->once())
             ->method('get')
             ->with($this->equalTo('label'))

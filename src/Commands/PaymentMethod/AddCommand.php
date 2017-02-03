@@ -31,7 +31,11 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     {
         $site = $this->getSite($site_name);
         $pm = $this->session()->getUser()->getPaymentMethods()->fetch()->get($payment_method);
-        $site->addPaymentMethod($pm->id)->wait();
+        $workflow = $site->addPaymentMethod($pm->id);
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        }
+
         $this->log()->notice(
             '{method} has been applied to the {site} site.',
             ['method' => $pm->get('label'), 'site' => $site->get('name'),]
