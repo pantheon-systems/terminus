@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Deprecated
 - The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
 
+### Fixed
+- Fixed the base branch in the URL when checking for upstream updates. (#1581)
+
 ## 1.0.0 - 2017-01-20
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)
