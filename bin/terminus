@@ -9,7 +9,15 @@
  *   - Exits with a status code
  */
 
-include_once file_exists($path = __DIR__ . '/../vendor/autoload.php') ? $path : __DIR__ . '/../../../autoload.php';
+if (file_exists($path = __DIR__ . '/../vendor/autoload.php')
+    || file_exists($path = __DIR__ . '/../../autoload.php')
+    || file_exists($path = __DIR__ . '/../../../autoload.php')
+) {
+    include_once($path);
+} else {
+    throw new \Exception('Could not locate autoload.php');
+}
+
 
 use Pantheon\Terminus\Terminus;
 use Pantheon\Terminus\Config\DefaultsConfig;
