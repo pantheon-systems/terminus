@@ -5,15 +5,16 @@ namespace Pantheon\Terminus\UnitTests\Plugins;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+    define('DIRECTORY_SEPARATOR', '\\');
+}
+
 class PluginInfoTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            DIRECTORY_SEPARATOR = '\\';
-        }
         $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
         $this->plugins_dir = str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $plugins_dir);
 
