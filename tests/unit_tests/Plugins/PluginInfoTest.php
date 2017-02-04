@@ -41,27 +41,23 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
 
         $plugin = new PluginInfo($this->paths[2]);
 
-        $ns_command = 'with-namespace/src/Commands/NullCommand.php';
-        $ns_command = str_replace('/', DIRECTORY_SEPARATOR, $ns_command);
-        $opt_ns_command = 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php';
-        $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $opt_ns_command);
+        $ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'with-namespace/src/Commands/NullCommand.php');
+        $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php');
         $expected = [
             $this->plugins_dir . $ns_command => 'OrgName\\PluginName\\Commands\\NullCommand',
             $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
-        $actual = $plugin->getCommandsAndHooks();
+        $actual = str_replace('/', DIRECTORY_SEPARATOR, $plugin->getCommandsAndHooks());
         $this->assertEquals($expected, $actual);
 
 
         $plugin = new PluginInfo($this->paths[3]);
 
-        $no_ns_command = 'without-namespace/src/NullCommand.php';
-        $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $no_ns_command);
+        $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'without-namespace/src/NullCommand.php');
         $expected = [
             $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
-        $actual = $plugin->getCommandsAndHooks();
-        $actual = str_replace('/', DIRECTORY_SEPARATOR, $actual);
+        $actual = str_replace('/', DIRECTORY_SEPARATOR, $plugin->getCommandsAndHooks());
         $this->assertEquals($expected, $actual);
     }
 
