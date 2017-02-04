@@ -49,7 +49,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         ];
         $actual = [];
         foreach ($plugin->getCommandsAndHooks() as $key => $command) {
-           $actual[$key] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+            $key = str_replace('/', DIRECTORY_SEPARATOR, $key);
+            $actual[$key] = $command;
         }
         $this->assertEquals($expected, $actual);
 
@@ -62,7 +63,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         ];
         $actual = [];
         foreach ($plugin->getCommandsAndHooks() as $key => $command) {
-           $actual[$key] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+            $key = str_replace('/', DIRECTORY_SEPARATOR, $key);
+            $actual[$key] = $command;
         }
         $this->assertEquals($expected, $actual);
     }
