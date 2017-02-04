@@ -6,6 +6,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
 /**
@@ -64,6 +65,16 @@ class LocalMachineHelper implements ConfigAwareInterface
     public function getFilesystem()
     {
         return new Filesystem();
+    }
+
+    /**
+     * Returns a finder object
+     *
+     * @return Finder
+     */
+    public function getFinder()
+    {
+        return new Finder();
     }
 
     /**

@@ -16,7 +16,6 @@ class InfoCommand extends SiteCommand
      * @authorize
      *
      * @command site:info
-     * @aliases site
      *
      * @field-labels
      *     id: ID
@@ -36,8 +35,7 @@ class InfoCommand extends SiteCommand
      *
      * @param string $site The name or UUID of a site to retrieve information on
      *
-     * @usage terminus site:info <site>
-     *     Displays <site>'s information.
+     * @usage <site> Displays <site>'s information.
      */
     public function info($site)
     {

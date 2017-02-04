@@ -27,8 +27,7 @@ class WakeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @throws TerminusException
      *
-     * @usage terminus env:wake <site>.<env>
-     *    Wakes <site>'s <env> environment by pinging it.
+     * @usage <site>.<env> Wakes <site>'s <env> environment by pinging it.
      */
     public function wake($site_env)
     {

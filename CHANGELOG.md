@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- Added an `--element=` option to `backup:list`. (#1563)
+
+### Changed
+- `self:cc` now acts to delete all files in the command cache directory. (#1569)
+
+### Deprecated
+- The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
+
+### Fixed
+- Fixed the base branch in the URL when checking for upstream updates. (#1581)
+
 ## 1.0.0 - 2017-01-20
 ### Added
 - Added `--to=` option to `backup:get` to allow specifying of a local download location. (#1520)

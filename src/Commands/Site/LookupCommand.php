@@ -25,8 +25,7 @@ class LookupCommand extends SiteCommand
      *
      * @param string $site_name Name of a site to look up
      *
-     * @usage terminus site:lookup <site>
-     *     Displays the UUID of <site> if it exists and is accessible to you.
+     * @usage <site> Displays the UUID of <site> if it exists and is accessible to you.
      */
     public function lookup($site_name)
     {

@@ -12,7 +12,7 @@ class ListCommand extends SiteCommand
      * @authorize
      *
      * @command site:list
-     * @alias sites
+     * @aliases sites
      *
      * @field-labels
      *     name: Name
@@ -30,20 +30,13 @@ class ListCommand extends SiteCommand
      * @option org Organization filter; "all" or organization UUID
      * @option name Name filter
      *
-     * @usage terminus site:list
-     *     Displays the list of all sites accessible to the currently logged-in user.
-     * @usage terminus site:list --team
-     *     Displays the list of sites of which the currently logged-in user is a member of the team.
-     * @usage terminus site:list --owner=<user>
-     *     Displays the list of accessible sites owned by the user with UUID <user>.
-     * @usage terminus site:list --owner=me
-     *     Displays the list of sites owned by the currently logged-in user.
-     * @usage terminus site:list --org=<org>
-     *     Displays a list of accessible sites associated with the <org> organization.
-     * @usage terminus site:list --org=all
-     *     Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
-     * @usage terminus site:list --name=<regex>
-     *     Displays a list of accessible sites with a name that matches <regex>.
+     * @usage Displays the list of all sites accessible to the currently logged-in user.
+     * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
+     * @usage --owner=<user> Displays the list of accessible sites owned by the user with UUID <user>.
+     * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
+     * @usage --org=<org> Displays a list of accessible sites associated with the <org> organization.
+     * @usage --org=all Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
+     * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
      */
     public function index($options = ['team' => false, 'owner' => null, 'org' => null, 'name' => null,])
     {

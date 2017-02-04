@@ -66,7 +66,6 @@ abstract class TerminusModel implements RequestAwareInterface
             (array)$this->attributes,
             (array)$this->parseAttributes($results['data'])
         );
-
         return $this;
     }
 

@@ -21,13 +21,12 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command import:site
-     * @aliases site:import import
+     * @aliases site:import
      *
      * @option string $site Site name
      * @option string $url Publicly accessible URL of the site archive
      *
-     * @usage terminus import <site> <archive_url>
-     *   Imports the site archive at <archive_url> to <site>.
+     * @usage <site> <archive_url> Imports the site archive at <archive_url> to <site>.
      */
     public function import($sitename, $url)
     {

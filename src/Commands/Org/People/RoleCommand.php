@@ -22,8 +22,7 @@ class RoleCommand extends TerminusCommand
      * @param string $member User UUID, email address, or full name
      * @param string $role [unprivileged|admin|team_member|developer] Role
      *
-     * @usage terminus org:people:role <organization> <user> <role>
-     *     Changes the role of the user, <user>, to <role> within <organization>.
+     * @usage <organization> <user> <role> Changes the role of the user, <user>, to <role> within <organization>.
      */
     public function role($organization, $member, $role)
     {

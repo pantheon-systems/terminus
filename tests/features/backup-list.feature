@@ -15,7 +15,7 @@ Feature: List Backups for a Site
 
   @vcr backup-list.yml
   Scenario: Filter backups by element
-    When I run "terminus backup:list [[test_site_name]].dev db --format=json"
+    When I run "terminus backup:list [[test_site_name]].dev --element=db --format=json"
     Then I should have "2" records
     And I should get: "database.sql.gz"
     And I should not get: "code.tar.gz"

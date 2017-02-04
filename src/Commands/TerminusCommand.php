@@ -69,7 +69,8 @@ abstract class TerminusCommand implements
      */
     protected function confirm($confirm_text, $replacements = [])
     {
-        if ($this->input()->hasOption('yes') && $this->input()->getOption('yes')) {
+        $input = $this->input();
+        if ($input->hasOption('yes') && $input->getOption('yes')) {
             return true;
         }
 

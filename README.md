@@ -2,6 +2,7 @@
  
 ## Status
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus)
+[![Windows CI](https://ci.appveyor.com/api/projects/status/niiheng08p25mgnm?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/terminus)
 [![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/pantheon-systems/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
  
@@ -195,3 +196,6 @@ To deploy a new version of Terminus:
 ## Debugging
 - Run Terminus with the `-vvv` option to get debug output.
 - If you are getting `PHP Fatal error:  Uncaught exception 'ReflectionException' ...`, install php-xml.
+- If you are getting `cURL error 60: SSL certificate problem: ...`, download a [cacert.pem](https://curl.haxx.se/ca/cacert.pem)
+file and add `curl.cainfo = "[path_to_file]\cacert.pem"` to your `php.ini`. If using XAMPP, you can add this to your
+`xampp\php\extras\ssl` directory.
