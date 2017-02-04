@@ -196,3 +196,6 @@ To deploy a new version of Terminus:
 ## Debugging
 - Run Terminus with the `-vvv` option to get debug output.
 - If you are getting `PHP Fatal error:  Uncaught exception 'ReflectionException' ...`, install php-xml.
+- If you are getting `cURL error 60: SSL certificate problem: ...`, download a [cacert.pem](https://curl.haxx.se/ca/cacert.pem)
+file and add `curl.cainfo = "[path_to_file]\cacert.pem"` to your `php.ini`. If using XAMPP, you can add this to your
+`xampp\php\extras\ssl` directory.

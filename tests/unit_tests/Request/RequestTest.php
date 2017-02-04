@@ -11,6 +11,7 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
 use Psr\Log\LoggerInterface;
@@ -276,7 +277,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->makeRequest($client_options, $request_options, 'foo/bar');
     }
 
-    public function testPagedRequest()
+    /**
+     * Test Request::pagedRequest() when the second query's data comes back empty
+     */
+    public function testPagedRequestWhenSecondQueryEmpty()
     {
         $this->session->method('get')->with('session')->willReturn(false);
 
@@ -291,42 +295,216 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $body = '';
         $request_options = [$method, $uri, $headers, $body];
 
-        $expected_options = $request_options;
-        $expected_options[1] .= '?limit=' . Request::PAGED_REQUEST_ENTRY_LIMIT;
+        $prefix = 'abc_';
+        $expected_options = $expected_options_2 = $request_options;
+        $limit = Request::PAGED_REQUEST_ENTRY_LIMIT;
+        $expected_options[1] .= "?limit=$limit";
+        $expected_options_2[1] .= "?limit=$limit&start=$prefix" . ($limit - 1);
+        $expected_objects = [];
+        for ($i = 0; $i < $limit; $i++) {
+            $id = $prefix . $i;
+            $expected_objects[$id] = (object)compact('id');
+        }
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$client_options])
+            ->with(Client::class, [$client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(1))
             ->method('get')
             ->with(HttpRequest::class, $expected_options)
+            ->willReturn($this->http_request);
+        $this->container->expects($this->at(2))
+            ->method('get')
+            ->with(Client::class, [$client_options,])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options_2)
             ->willReturn($this->http_request);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $body->method('getContents')->willReturn(json_encode(['abc' => (object)['id' => 'abc123',],]));
-        $message->expects($this->once())
+
+        $body->expects($this->at(0))
+            ->method('getContents')
+            ->willReturn(json_encode($expected_objects));
+        $body->expects($this->at(1))
+            ->method('getContents')
+            ->willReturn(json_encode([]));
+        $message->expects($this->exactly(2))
             ->method('getBody')
             ->willReturn($body);
-        $message->expects($this->once())
+        $message->expects($this->exactly(2))
             ->method('getHeaders')
-            ->willReturn(['Content-type' => 'application/json']);
-        $message->expects($this->once())
+            ->willReturn(['Content-type' => 'application/json',]);
+        $message->expects($this->exactly(2))
             ->method('getStatusCode')
             ->willReturn(200);
-        $this->client->expects($this->once())
+        $this->client->expects($this->exactly(2))
             ->method('send')
             ->with($this->http_request)
             ->willReturn($message);
 
         $actual = $this->request->pagedRequest($uri, $request_options);
-        $expected = [
-            'data' => [(object)['id' => 'abc123',],],
+        $this->assertEquals(['data' => $expected_objects,], $actual);
+    }
+
+    /**
+     * Test Request::pagedRequest() when the second query's data comes back with fewer than the limit of results
+     */
+    public function testPagedRequestWhenSecondQueryNotFull()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $headers = [
+            'Content-type' => 'application/json',
+            'User-Agent' => $this->user_agent,
         ];
-        $this->assertEquals($expected, $actual);
+        $body = '';
+        $request_options = [$method, $uri, $headers, $body];
+
+        $prefix = 'abc_';
+        $expected_options = $expected_options_2 = $request_options;
+        $limit = Request::PAGED_REQUEST_ENTRY_LIMIT;
+        $expected_options[1] .= "?limit=$limit";
+        $expected_options_2[1] .= "?limit=$limit&start=$prefix" . ($limit - 1);
+        $expected_objects = [];
+        for ($i = 0; $i < $limit; $i++) {
+            $id = $prefix . $i;
+            $expected_objects[$id] = (object)compact('id');
+        }
+        $expected_objects_2 = [];
+        for ($i = $limit; $i < $limit + floor($limit / 2); $i++) {
+            $id = $prefix . $i;
+            $expected_objects_2[$id] = (object)compact('id');
+        }
+
+        $this->container->expects($this->at(0))
+            ->method('get')
+            ->with(Client::class, [$client_options,])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options)
+            ->willReturn($this->http_request);
+        $this->container->expects($this->at(2))
+            ->method('get')
+            ->with(Client::class, [$client_options,])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options_2)
+            ->willReturn($this->http_request);
+
+        $message = $this->getMock(Response::class);
+        $body = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $body->expects($this->at(0))
+            ->method('getContents')
+            ->willReturn(json_encode($expected_objects));
+        $body->expects($this->at(1))
+            ->method('getContents')
+            ->willReturn(json_encode($expected_objects_2));
+        $message->expects($this->exactly(2))
+            ->method('getBody')
+            ->willReturn($body);
+        $message->expects($this->exactly(2))
+            ->method('getHeaders')
+            ->willReturn(['Content-type' => 'application/json',]);
+        $message->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn(200);
+        $this->client->expects($this->exactly(2))
+            ->method('send')
+            ->with($this->http_request)
+            ->willReturn($message);
+
+        $actual = $this->request->pagedRequest($uri, $request_options);
+        $this->assertEquals(['data' => $expected_objects + $expected_objects_2,], $actual);
+    }
+
+    /**
+     * Test Request::pagedRequest() when the second query's data comes back with the same ending obj as the first
+     */
+    public function testPagedRequestWhenSecondQueryRepeats()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $headers = [
+            'Content-type' => 'application/json',
+            'User-Agent' => $this->user_agent,
+        ];
+        $body = '';
+        $request_options = [$method, $uri, $headers, $body];
+
+        $prefix = 'abc_';
+        $expected_options = $expected_options_2 = $request_options;
+        $limit = Request::PAGED_REQUEST_ENTRY_LIMIT;
+        $expected_options[1] .= "?limit=$limit";
+        $expected_options_2[1] .= "?limit=$limit&start=$prefix" . ($limit - 1);
+        $expected_objects = [];
+        for ($i = 0; $i < $limit; $i++) {
+            $id = $prefix . $i;
+            $expected_objects[$id] = (object)compact('id');
+        }
+
+        $this->container->expects($this->at(0))
+            ->method('get')
+            ->with(Client::class, [$client_options,])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options)
+            ->willReturn($this->http_request);
+        $this->container->expects($this->at(2))
+            ->method('get')
+            ->with(Client::class, [$client_options,])
+            ->willReturn($this->client);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(HttpRequest::class, $expected_options_2)
+            ->willReturn($this->http_request);
+
+        $message = $this->getMock(Response::class);
+        $body = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $body->expects($this->at(0))
+            ->method('getContents')
+            ->willReturn(json_encode($expected_objects));
+        $body->expects($this->at(1))
+            ->method('getContents')
+            ->willReturn(json_encode($expected_objects));
+        $message->expects($this->exactly(2))
+            ->method('getBody')
+            ->willReturn($body);
+        $message->expects($this->exactly(2))
+            ->method('getHeaders')
+            ->willReturn(['Content-type' => 'application/json',]);
+        $message->expects($this->exactly(2))
+            ->method('getStatusCode')
+            ->willReturn(200);
+        $this->client->expects($this->exactly(2))
+            ->method('send')
+            ->with($this->http_request)
+            ->willReturn($message);
+
+        $actual = $this->request->pagedRequest($uri, $request_options);
+        $this->assertEquals(['data' => $expected_objects,], $actual);
     }
 
     private function makeRequest($client_options, $request_options, $url, $options = [])

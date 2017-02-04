@@ -64,11 +64,30 @@ class WorkflowsTest extends CollectionTestCase
     }
 
     /**
+     * Tests several workflows collection evaluation functions when there are no workflows
+     * lastCreatedAt
+     * lastFinishedAt
+     */
+    public function testAllComesBackEmpty()
+    {
+        $workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['all',])
+            ->getMock();
+
+        $workflows->expects($this->any())
+            ->method('all')
+            ->willReturn([]);
+
+        $this->assertNull($workflows->lastCreatedAt());
+        $this->assertNull($workflows->lastFinishedAt());
+    }
+
+    /**
      * Tests several workflow array-getting functions when returning nulls because no workflows fit the criteria:
      * allFinished
      * allWithLogs
      * findLatestWithLogs
-     * lastCreatedAt
      */
     public function testAllIncompleteAndWithoutLogs()
     {
@@ -96,8 +115,6 @@ class WorkflowsTest extends CollectionTestCase
         $this->assertEquals([], $workflows->allFinished());
         $this->assertEquals([], $workflows->allWithLogs());
         $this->assertNull($workflows->findLatestWithLogs());
-        $this->assertNull($workflows->lastCreatedAt());
-        $this->assertNull($workflows->lastFinishedAt());
     }
 
     public function testCreate()

@@ -9,16 +9,15 @@
  *   - Exits with a status code
  */
 
-$phar_path = \Phar::running(true);
-if ($phar_path) {
-    include_once "$phar_path/vendor/autoload.php";
+if (file_exists($path = __DIR__ . '/../vendor/autoload.php')
+    || file_exists($path = __DIR__ . '/../../autoload.php')
+    || file_exists($path = __DIR__ . '/../../../autoload.php')
+) {
+    include_once($path);
 } else {
-    if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-        include_once __DIR__ . '/../vendor/autoload.php';
-    } elseif (file_exists(__DIR__ . '/../../../autoload.php')) {
-        include_once __DIR__ . '/../../../autoload.php';
-    }
+    throw new \Exception('Could not locate autoload.php');
 }
+
 
 use Pantheon\Terminus\Terminus;
 use Pantheon\Terminus\Config\DefaultsConfig;
@@ -40,8 +39,7 @@ $config->extend(new DotEnvConfig(getcwd()));
 $config->extend(new EnvConfig());
 
 // Running Terminus
-// @TODO: Figure out if and why we need to pass input/output twice and define what happens if we
-// use different objects for each call.
+// @TODO: Figure out if and why we need to pass input/output twice and define what happens if we use different objects for each call.
 $terminus = new Terminus($config, $input, $output);
 $status_code = $terminus->run($input, $output);
 exit($status_code);

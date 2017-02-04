@@ -16,7 +16,6 @@ class InfoCommand extends SiteCommand
      * @authorize
      *
      * @command site:info
-     * @aliases site
      *
      * @field-labels
      *     id: ID

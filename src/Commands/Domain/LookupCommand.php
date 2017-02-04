@@ -43,7 +43,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
         $environments = ['dev', 'test', 'live',];
         foreach ($sites as $site) {
             foreach ($environments as $env_name) {
-                if ($site->getEnvironments()->get($env_name)->getDomains()->fetch()->has($domain)) {
+                if ($site->getEnvironments()->get($env_name)->getDomains()->has($domain)) {
                     $env = ['site_id' => $site->id, 'site_name' => $site->get('name'), 'env_id' => $env_name,];
                     break 2;
                 }

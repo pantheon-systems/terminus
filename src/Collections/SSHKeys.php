@@ -68,10 +68,12 @@ class SSHKeys extends UserOwnedCollection
      */
     public function fetch(array $options = [])
     {
-        $results = $this->getCollectionData($options);
-        foreach ($results as $uuid => $ssh_key) {
-            $model_data = (object)['id' => $uuid, 'key' => $ssh_key,];
-            $this->add($model_data);
+        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
+        if (!is_null($data)) {
+            foreach ($data as $uuid => $ssh_key) {
+                $model_data = (object)['id' => $uuid, 'key' => $ssh_key,];
+                $this->add($model_data);
+            }
         }
 
         return $this;

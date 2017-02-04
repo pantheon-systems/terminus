@@ -10,51 +10,77 @@ use Psr\Log\NullLogger;
 
 class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Container
+     */
+    protected $container;
+    /**
+     * @var PluginDiscovery
+     */
+    protected $discovery;
+    /**
+     * @var NullLogger
+     */
+    protected $logger;
+    /**
+     * @var string
+     */
+    protected $plugins_dir;
+
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->logger = $this->getMockBuilder(NullLogger::class)
+            ->setMethods(['warning',])
+            ->getMock();
+        $this->plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+
+        $this->discovery = new PluginDiscovery($this->plugins_dir);
+        $this->discovery->setContainer($this->container);
+        $this->discovery->setLogger($this->logger);
+    }
+
     public function testDiscover()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             //$this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
 
-        $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
-        if (DIRECTORY_SEPARATOR != '/') {
-            $plugins_dir = str_replace('/', DIRECTORY_SEPARATOR, $plugins_dir);
-        }
-
         $paths = [
-            $plugins_dir  . 'invalid-no-composer-json',
-            $plugins_dir  . 'invalid-wrong-composer-type',
-            $plugins_dir  . 'with-namespace',
-            $plugins_dir  . 'without-namespace'
+            $this->plugins_dir  . 'invalid-no-composer-json',
+            $this->plugins_dir  . 'invalid-wrong-composer-type',
+            $this->plugins_dir  . 'with-namespace',
+            $this->plugins_dir  . 'without-namespace',
         ];
-
-        $logger = $this->getMockBuilder(NullLogger::class)
-            ->setMethods(array('warning'))
-            ->getMock();
-
-
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         $expected = [];
         $log = 0;
         foreach ($paths as $i => $path) {
             if (strpos($path, 'invalid')) {
                 $msg = "Plugin $i is not valid";
-                $container->expects($this->at($i))
+                $this->container->expects($this->at($i))
                     ->method('get')
                     ->with(PluginInfo::class, [$path])
                     ->willThrowException(new TerminusException($msg));
 
-                $logger->expects($this->at($log++))
+                $this->logger->expects($this->at($log++))
                     ->method('warning')
-                    ->with('Plugin Discovery: Ignoring directory {dir} because: {msg}.', ['dir' => $path, 'msg' => $msg]);
+                    ->with(
+                        'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
+                        ['dir' => $path, 'msg' => $msg,]
+                    );
             } else {
                 $plugin = $this->getMockBuilder(PluginInfo::class)
                     ->disableOriginalConstructor()
                     ->getMock();
-                $container->expects($this->at($i))
+                $this->container->expects($this->at($i))
                     ->method('get')
                     ->with(PluginInfo::class, [$path])
                     ->willReturn($plugin);
@@ -62,11 +88,7 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
             }
         }
 
-        $discovery = new PluginDiscovery($plugins_dir);
-        $discovery->setContainer($container);
-        $discovery->setLogger($logger);
-
-        $actual = $discovery->discover();
+        $actual = $this->discovery->discover();
         $this->assertEquals($expected, $actual);
     }
 }

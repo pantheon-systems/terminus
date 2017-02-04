@@ -36,8 +36,9 @@ class Loadbalancers extends EnvironmentOwnedCollection
     protected function getCollectionData($options = [])
     {
         $env_id = $this->environment->id;
+        $data = parent::getCollectionData($options)->loadbalancers;
         $loadbalancers = array_filter(
-            (array)parent::getCollectionData($options)->loadbalancers,
+            (array)$data,
             function ($loadbalancer) use ($env_id) {
                 return $loadbalancer->environment == $env_id;
             }

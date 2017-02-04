@@ -142,7 +142,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
-        if (!empty($cassette = $this->config->get('vcr_cassette')) && !empty($mode = $this->getConfig()->get('vcr_mode'))) {
+        $config = $this->getConfig();
+        if (!empty($cassette = $config->get('vcr_cassette')) && !empty($mode = $config->get('vcr_mode'))) {
             $this->startVCR(array_merge(compact('cassette'), compact('mode')));
         }
         $status_code = $this->runner->run($input, $output, null, $this->commands);
@@ -294,7 +295,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->invokeMethod('setSites', ['sites']);
 
         // Install our command cache into the command factory
-        $commandCacheDir = $this->getConfig()->get('cache_dir') . '/commands';
+        $commandCacheDir = $this->getConfig()->get('command_cache_dir');
         $commandCacheDataStore = new FileStore($commandCacheDir);
 
         $factory = $container->get('commandFactory');

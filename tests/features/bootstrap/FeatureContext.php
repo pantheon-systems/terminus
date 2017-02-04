@@ -33,9 +33,9 @@ class FeatureContext implements Context
         $this->parameters      = $parameters;
         $this->start_time      = time();
         $this->connection_info = [
-          'host' => $parameters['host'],
-          'machine_token' => $parameters['machine_token'],
-          'verify_host_cert' => $parameters['verify_host_cert']
+            'host' => $parameters['host'],
+            'machine_token' => $parameters['machine_token'],
+            'verify_host_cert' => $parameters['verify_host_cert']
         ];
 
         $this->cache_dir = $parameters['cache_dir'];
@@ -602,6 +602,15 @@ class FeatureContext implements Context
         passthru($command . ' 2>&1');
         $this->output = ob_get_clean();
 
+        // Terminus commands might complete their tasks even with PHP warnings
+        // or notices. But those should still trigger test failures.
+        if ($this->checkResult("PHP Warning:", $this->output)) {
+            throw new \Exception("The Terminus command generated a PHP Warning:\n{$this->output}\n");
+        }
+        if ($this->checkResult("PHP Notice:", $this->output)) {
+            throw new \Exception("The Terminus command generated a PHP Notice:\n{$this->output}\n");
+        }
+
         return $this->output;
     }
 
@@ -783,10 +792,9 @@ class FeatureContext implements Context
      */
     public function iShouldHaveRecords($number)
     {
-        preg_match("/.*(\[.*\]).*/", str_replace("\n", '', $this->output), $matches);
-        $records = json_decode($matches[1]);
-        if ((integer)$number != count($records)) {
-            throw new \Exception("Wanted $number records, got " . count($records) . '.');
+        $record_count = count((array)json_decode($this->output));
+        if ((integer)$number != $record_count) {
+            throw new \Exception("Wanted $number records, got " . $record_count . '.');
         }
         return true;
     }

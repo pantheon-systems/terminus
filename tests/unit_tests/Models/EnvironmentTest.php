@@ -602,6 +602,17 @@ class EnvironmentTest extends ModelTestCase
         $this->assertEquals($this->backups, $out);
     }
 
+    /**
+     * Tests Environment::getBranchName()
+     */
+    public function testGetBranchName()
+    {
+        $env_id = 'environment id';
+        $multidev_env = $this->createModel(['id' => $env_id,]);
+        $this->assertEquals($env_id, $multidev_env->getBranchName());
+        $this->assertEquals('master', $this->model->getBranchName());
+    }
+
     public function testGetCommits()
     {
         $out = $this->model->getCommits();
@@ -994,8 +1005,8 @@ class EnvironmentTest extends ModelTestCase
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->id = "abc";
-        $this->site->method('getName')->willReturn('abc');
+        $this->site->id = 'abc';
+        $this->site->method('getName')->willReturn($this->site->id);
 
         $environments = new Environments(['site' => $this->site,]);
         $model = new Environment((object)$params, ['collection' => $environments,]);

@@ -21,7 +21,7 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command import:site
-     * @aliases site:import import
+     * @aliases site:import
      *
      * @option string $site Site name
      * @option string $url Publicly accessible URL of the site archive

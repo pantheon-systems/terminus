@@ -431,6 +431,14 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * @return string
+     */
+    public function getBranchName()
+    {
+        return $this->isMultidev() ? $this->id : 'master';
+    }
+
+    /**
      * @return Commits
      */
     public function getCommits()

@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Plugins;
 
-use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
