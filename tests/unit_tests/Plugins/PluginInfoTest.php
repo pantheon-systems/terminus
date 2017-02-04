@@ -48,8 +48,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
             $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
         $actual = [];
-        foreach ($plugin->getCommandsAndHooks() as $command) {
-           $actual[] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+        foreach ($plugin->getCommandsAndHooks() as $key => $command) {
+           $actual[$key] = str_replace('/', DIRECTORY_SEPARATOR, $command);
         }
         $this->assertEquals($expected, $actual);
 
@@ -61,8 +61,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
             $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
         $actual = [];
-        foreach ($plugin->getCommandsAndHooks() as $command) {
-           $actual[] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+        foreach ($plugin->getCommandsAndHooks() as $key => $command) {
+           $actual[$key] = str_replace('/', DIRECTORY_SEPARATOR, $command);
         }
         $this->assertEquals($expected, $actual);
     }
