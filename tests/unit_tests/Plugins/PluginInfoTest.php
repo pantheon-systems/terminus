@@ -5,10 +5,6 @@ namespace Pantheon\Terminus\UnitTests\Plugins;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-    define('DIRECTORY_SEPARATOR', '\\');
-}
-
 class PluginInfoTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
@@ -51,7 +47,10 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
             $this->plugins_dir . $ns_command => 'OrgName\\PluginName\\Commands\\NullCommand',
             $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
-        $actual = str_replace('/', DIRECTORY_SEPARATOR, $plugin->getCommandsAndHooks());
+        $actual = [];
+        foreach ($plugin->getCommandsAndHooks() as $command) {
+           $actual[] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+        }
         $this->assertEquals($expected, $actual);
 
 
@@ -61,7 +60,10 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $expected = [
             $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
-        $actual = str_replace('/', DIRECTORY_SEPARATOR, $plugin->getCommandsAndHooks());
+        $actual = [];
+        foreach ($plugin->getCommandsAndHooks() as $command) {
+           $actual[] = str_replace('/', DIRECTORY_SEPARATOR, $command);
+        }
         $this->assertEquals($expected, $actual);
     }
 
