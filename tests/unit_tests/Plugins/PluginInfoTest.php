@@ -11,11 +11,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $base_dir = '/../../fixtures/plugins/';
-        if (DIRECTORY_SEPARATOR != '/') {
-            $base_dir = str_replace('/', DIRECTORY_SEPARATOR, $base_dir);
-        }
-        $this->plugins_dir = __DIR__ . $base_dir;
+        $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        $this->plugins_dir = str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $plugins_dir);
 
         $this->paths = [
             $this->plugins_dir . 'invalid-no-composer-json',
@@ -45,11 +42,9 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $plugin = new PluginInfo($this->paths[2]);
 
         $ns_command = 'with-namespace/src/Commands/NullCommand.php';
+        $ns_command = str_replace('/', DIRECTORY_SEPARATOR, $ns_command);
         $opt_ns_command = 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php';
-        if (DIRECTORY_SEPARATOR != '/') {
-            $ns_command = str_replace('/', DIRECTORY_SEPARATOR, $ns_command);
-            $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $opt_ns_command);
-        }
+        $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $opt_ns_command);
         $expected = [
             $this->plugins_dir . $ns_command => 'OrgName\\PluginName\\Commands\\NullCommand',
             $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
@@ -61,9 +56,7 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $plugin = new PluginInfo($this->paths[3]);
 
         $no_ns_command = 'without-namespace/src/NullCommand.php';
-        if (DIRECTORY_SEPARATOR != '/') {
-            $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $no_ns_command);
-        }
+        $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, $no_ns_command);
         $expected = [
             $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
