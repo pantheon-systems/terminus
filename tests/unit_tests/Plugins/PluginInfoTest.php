@@ -61,6 +61,7 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
             $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
         $actual = $plugin->getCommandsAndHooks();
+        $actual = str_replace('/', DIRECTORY_SEPARATOR, $actual);
         $this->assertEquals($expected, $actual);
     }
 
