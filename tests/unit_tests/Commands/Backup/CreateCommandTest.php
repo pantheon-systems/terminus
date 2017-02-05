@@ -36,8 +36,9 @@ class CreateCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -60,13 +61,14 @@ class CreateCommandTest extends BackupCommandTest
         $params = ['keep-for' => 55,];
 
         $this->backups->expects($this->once())
-          ->method('create')
-          ->with($this->equalTo($params + ['element' => null,]))
-          ->willReturn($this->workflow);
+            ->method('create')
+            ->with($this->equalTo($params + ['element' => null,]))
+            ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-          ->method('wait')
-          ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         $this->logger->expects($this->once())
           ->method('log')
@@ -94,8 +96,9 @@ class CreateCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -123,8 +126,9 @@ class CreateCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -154,7 +158,7 @@ class CreateCommandTest extends BackupCommandTest
             ->method('log');
 
         $this->workflow->expects($this->never())
-            ->method('wait');
+            ->method('checkProgress');
 
         $this->setExpectedException(TerminusException::class);
 

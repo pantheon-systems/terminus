@@ -252,6 +252,8 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      *
      * @return Workflow|void
      * @throws TerminusException
+     *
+     * @deprecated 1.0.1 Use checkProgress to wait on workflows
      */
     public function wait()
     {
