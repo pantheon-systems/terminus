@@ -44,11 +44,11 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
             foreach ($di as $dir) {
                 if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                     try {
-                        $out[] = $this->getContainer()->get(PluginInfo::class, [$dir->getPathname()]);
+                        $out[] = $this->getContainer()->get(PluginInfo::class, [$dir->getPathname(),]);
                     } catch (TerminusException $e) {
                         $this->logger->warning(
                             'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
-                            ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
+                            ['dir' => $dir->getPathName(), 'msg' => $e->getMessage(),]
                         );
                     }
                 }
