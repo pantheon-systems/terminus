@@ -6,10 +6,13 @@ branches:
     - master
     - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
 
-php:
-  - 5.5
-  - 5.6
-  - 7.0
+matrix:
+  include:
+    - php: 7.0
+      env: dependencies=highest
+    - php: 5.6
+    - php: 5.5
+      env: dependencies=lowest
 
 sudo: false
 
@@ -20,7 +23,9 @@ env:
 
 before_script:
   - set -ex
-  - composer install --no-interaction --prefer-dist
+  - if [ -z "$dependencies" ]; then composer install -n --prefer-dist; fi;
+  - if [ "$dependencies" = "lowest" ]; then composer update -n --prefer-dist --prefer-lowest -n; fi;
+  - if [ "$dependencies" = "highest" ]; then composer update -n --prefer-dist -n; fi;
 
 script:
   - composer clover

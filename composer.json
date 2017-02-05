@@ -10,10 +10,15 @@
     "php": ">=5.5.9",
     "composer/semver": "^1.4",
     "consolidation/robo": "^1.0.5",
+    "consolidation/annotated-command": "^2.4.0",
+    "consolidation/output-formatters": "^3.1.7",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
-    "symfony/finder": "~2.7|^3.2",
-    "symfony/yaml": "~2.1|^3.2"
+    "symfony/console": "^2.8.16",
+    "symfony/finder": "^3.2",
+    "symfony/yaml": "^3.2",
+    "symfony/var-dumper": "^3.2",
+    "sebastian/version": "^1.0.6"
   },
   "autoload": {
     "psr-4": {
@@ -38,11 +43,12 @@
       "test": "set -ex ; composer cs ; composer phpunit ; composer behat"
   },
   "require-dev": {
-    "behat/behat": "^3.2.2",
-    "phpunit/phpcov": "^2.0",
-    "phpunit/phpunit": "^4.0",
+    "behat/behat": "^3.3",
+    "phpunit/phpcov": "^2.0.2",
+    "phpunit/phpunit": "^4.8.34",
+    "phpunit/phpunit-mock-objects": "^2.3.8",
     "php-vcr/php-vcr": "1.3.1",
-    "sebastian/phpcpd": "^2.0",
+    "sebastian/phpcpd": "^2.0.4",
     "squizlabs/php_codesniffer": "^2.7",
     "satooshi/php-coveralls": "^1.0"
   },
