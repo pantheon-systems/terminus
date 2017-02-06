@@ -24,7 +24,7 @@ before_script:
 
 script:
 #  - composer clover
-#  - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
+  - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
   - composer cs
   - composer phpunit
 #  - composer behat
