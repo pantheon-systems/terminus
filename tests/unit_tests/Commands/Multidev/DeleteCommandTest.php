@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Symfony\Component\Console\Input\Input;
 
 /**
@@ -39,10 +40,7 @@ class DeleteCommandTest extends MultidevCommandTest
             ->method('delete')
             ->with();
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
             ->willReturn(true);
         $this->logger->expects($this->once())
@@ -70,11 +68,7 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->environment->expects($this->never())
             ->method('delete');
         $this->workflow->expects($this->never())
-            ->method('wait');
-        $this->workflow->expects($this->never())
-            ->method('isSuccessful')
-            ->with()
-            ->willReturn(true);
+            ->method('checkProgress');
         $this->logger->expects($this->never())
             ->method('log');
 
@@ -92,12 +86,10 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('delete')
-            ->with($this->equalTo(['delete_branch' => true,]));
+            ->with($this->equalTo(['delete_branch' => true,]))
+            ->willReturn($this->workflow);
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
             ->willReturn(true);
         $this->logger->expects($this->once())
@@ -120,23 +112,23 @@ class DeleteCommandTest extends MultidevCommandTest
      */
     public function testMultidevDeleteFailure()
     {
+        $message = 'The {env} environment could not be deleted.';
+        $this->environment->id = 'env id';
+        $expected_message = "The {$this->environment->id} environment could not be deleted.";
+
         $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('delete')
-            ->with();
+            ->with($this->equalTo(['delete_branch' => false,]))
+            ->willReturn($this->workflow);
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
-            ->willReturn(false);
-        $this->workflow->expects($this->once())
-            ->method('getMessage')
-            ->with()
-            ->willReturn("The {env} environment could not be deleted.");
+            ->will($this->throwException(new TerminusException($message, ['env' => $this->environment->id,])));
 
-        $out = $this->command->deleteMultidev('site.multipass');
+        $this->setExpectedException(TerminusException::class, $expected_message);
+
+        $out = $this->command->deleteMultidev("site.{$this->environment->id}");
         $this->assertNull($out);
     }
 }

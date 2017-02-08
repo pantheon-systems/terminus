@@ -28,7 +28,10 @@ class CreateCommand extends BackupCommand
     {
         list(, $env) = $this->getSiteEnv($site_env);
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
-        $env->getBackups()->create($options)->wait();
+        $workflow = $env->getBackups()->create($options);
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        }
         $this->log()->notice('Created a backup of the {env} environment.', ['env' => $env->id,]);
     }
 }

@@ -41,8 +41,9 @@ class RemoveCommandTest extends CommandTestCase
             ->with()
             ->willReturn($workflow);
         $workflow->expects($this->once())
-            ->method('wait')
-            ->with();
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))

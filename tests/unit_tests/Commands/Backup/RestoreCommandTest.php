@@ -44,10 +44,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
             ->willReturn(true);
 
@@ -71,6 +68,7 @@ class RestoreCommandTest extends BackupCommandTest
         $this->environment->id = 'env_id';
         $test_filename = 'test.tar.gz';
         $message = 'Successfully queued restore_site';
+        $better_message = 'There was an error while restoring your backup.';
 
         $this->backups->expects($this->once())
             ->method('getBackupByFileName')
@@ -83,12 +81,9 @@ class RestoreCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
-            ->willReturn(false);
+            ->will($this->throwException(new TerminusException($message)));
 
         $this->logger->expects($this->never())
             ->method('log');
@@ -98,7 +93,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->setExpectedException(TerminusException::class, $better_message);
 
         $out = $this->command->restoreBackup("mysite.{$this->environment->id}", ['file' => $test_filename,]);
         $this->assertNull($out);
@@ -138,10 +133,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
             ->willReturn(true);
 
@@ -163,6 +155,7 @@ class RestoreCommandTest extends BackupCommandTest
     public function testRestoreBackupWithElementFails()
     {
         $message = 'Successfully queued restore_site';
+        $better_message = 'There was an error while restoring your backup.';
 
         $this->backups->expects($this->once())
             ->method('getFinishedBackups')
@@ -175,12 +168,9 @@ class RestoreCommandTest extends BackupCommandTest
             ->willReturn($this->workflow);
 
         $this->workflow->expects($this->once())
-            ->method('wait')
-            ->with();
-        $this->workflow->expects($this->once())
-            ->method('isSuccessful')
+            ->method('checkProgress')
             ->with()
-            ->willReturn(false);
+            ->will($this->throwException(new TerminusException($message)));
 
         $this->logger->expects($this->never())
             ->method('log');
@@ -190,7 +180,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->setExpectedException(TerminusException::class, $better_message);
 
         $out = $this->command->restoreBackup('mysite.dev', ['element' => 'db',]);
         $this->assertNull($out);
