@@ -119,6 +119,13 @@ class SitesTest extends CollectionTestCase
         $this->assertEquals($out, $this->workflow);
     }
 
+    public function testFetchWhichReturnsNoSites()
+    {
+        $this->collection = $this->makeSitesFetchableWithNoSiteData($this->collection);
+        $out = $this->collection->fetch();
+        $this->assertEquals($this->collection, $out);
+    }
+
     public function testFetch()
     {
         $this->collection = $this->makeSitesFetchable($this->collection);
@@ -462,6 +469,58 @@ class SitesTest extends CollectionTestCase
             ->method('getSites')
             ->with()
             ->willReturn([$this->site1,]);
+
+        return $sites;
+    }
+
+    /**
+     * @param Sites $sites Sites object to make fetchable
+     * @return Sites
+     */
+    protected function makeSitesFetchableWithNoSiteData(Sites $sites)
+    {
+        $this->site1 = $this->getMockBuilder(Site::class)
+            ->enableOriginalConstructor()
+            ->setConstructorArgs([
+                (object)['id' => '11111111-1111-1111-1111-111111111111', 'name' => 'site1', 'owner' => 'person1',],
+                ['collection' => $sites,]
+            ])
+            ->getMock();
+        $this->site1->memberships = ['orgmembership', 'usermembership',];
+        $this->site2 = $this->getMockBuilder(Site::class)
+            ->enableOriginalConstructor()
+            ->setConstructorArgs([
+                (object)['id' => '22222222-2222-2222-2222-222222222222', 'name' => 'site2', 'owner' => 'person2',],
+                ['collection' => $sites,]
+            ])
+            ->getMock();
+        $this->site2->memberships = ['usermembership',];
+        $org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $org_membership = $this->getMockBuilder(SiteOrganizationMembership::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $org = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->user->expects($this->any())
+            ->method('getSites')
+            ->with()
+            ->willReturn([$this->site1, $this->site2,]);
+        $this->user->expects($this->once())
+            ->method('getOrgMemberships')
+            ->with()
+            ->willReturn($org_memberships);
+        $org_memberships->expects($this->once())
+            ->method('fetch')
+            ->with()
+            ->willReturn($org_memberships);
+        $org_memberships->expects($this->once())
+            ->method('all')
+            ->with()
+            ->willReturn(null);
 
         return $sites;
     }
