@@ -8,11 +8,19 @@ Feature: Site Deployment
     And a site named "[[test_site_name]]"
 
   @vcr env-deploy.yml
-  Scenario: Deploy dev to test
+  Scenario: Deploying dev to test while syncing content from the live environment
     When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
+    """
+
+  @vcr env-deploy-uninitialized-source.yml
+  Scenario: Attempting to deploy dev to test while syncing content from an uninitialized live environment
+    When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
+    Then I should get:
+    """
+    [[test_site_name]]'s live environment cannot be cloned because it has not been initialized.
     """
 
   @vcr env-deploy-no-changes.yml
