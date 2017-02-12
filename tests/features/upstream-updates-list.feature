@@ -16,7 +16,7 @@ Feature: Update a site with all its upstream's updates
     And I should get: "Commit ID   Timestamp   Message   Author"
     And I should get: "----------- ----------- --------- --------"
 
-  @vcr upstream-update-list.yml
+  @vcr upstream-updates-list.yml
   Scenario: Check for upstream updates and there are some
     When I run "terminus upstream:updates:list [[test_site_name]].dev"
     Then I should get: "------------------------------------------ --------------------- -------------------------------------------------------------------------------------------------------------------------------------------- ---------------------"
