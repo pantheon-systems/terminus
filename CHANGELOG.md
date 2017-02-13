@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Deprecated
 - The `element` parameter on `backup:list` is deprecated. Use the `--element=` option instead. (#1563)
+- The `wait()` function of `Workflows` is deprecated. Use `checkStatus()` instead. (#1584)
 
 ### Fixed
 - Fixed the base branch in the URL when checking for upstream updates. (#1581)
