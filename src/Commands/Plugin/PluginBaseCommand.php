@@ -37,7 +37,7 @@ abstract class PluginBaseCommand extends TerminusCommand
         foreach ($finder as $file) {
             $path = $file->getRelativePath();
             // Get the parent path only.
-            if (!strpos($path, '/')) {
+            if (!strpos($path, DIRECTORY_SEPARATOR)) {
                 // Make sure the path is unique.
                 if (!in_array($path, $projects)) {
                     $projects[] = $path;
