@@ -55,37 +55,12 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getPluginDir($plugin = '')
     {
-        $slash = $this->getSlash();
-        $plugins_dir = getenv('TERMINUS_PLUGINS_DIR');
-        $windows = (php_uname('s') == 'Windows NT');
-        if (!$plugins_dir) {
-            // Determine the correct $plugins_dir based on the operating system.
-            $home = getenv('HOME');
-            if ($windows) {
-                $system = '';
-                if (getenv('MSYSTEM') !== null) {
-                    $system = strtoupper(substr(getenv('MSYSTEM'), 0, 4));
-                }
-                if ($system != 'MING') {
-                    $home = getenv('HOMEPATH');
-                }
-                $home = str_replace('\\', $slash, $home);
-                $plugins_dir = $home . $slash . 'terminus' . $slash . 'plugins' . $slash;
-            } else {
-                $plugins_dir = $home . '/.terminus/plugins/';
-            }
-        } else {
-            // Make sure the proper trailing slash(es) exist.
-            $chars = $windows ? 2 : 1;
-            if (substr("$plugins_dir", -$chars) != $slash) {
-                $plugins_dir .= $slash;
-            }
-        }
+        $plugins_dir = $this->getConfig()->get('plugins_dir');
         // Create the directory if it doesn't already exist.
         if (!is_dir("$plugins_dir")) {
             mkdir("$plugins_dir", 0755, true);
         }
-        return $plugins_dir . $plugin;
+        return $plugins_dir . DIRECTORY_SEPARATOR . $plugin;
     }
 
     /**
@@ -96,77 +71,13 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function getInstallMethod($plugin)
     {
-        $slash = $this->getSlash();
         $plugin_dir = $this->getPluginDir($plugin);
-        $git_dir = $plugin_dir . $slash . '.git';
+        $git_dir = $plugin_dir . DIRECTORY_SEPARATOR . '.git';
         if (is_dir("$git_dir")) {
             return 'git';
         }
-        $composer_json = $plugin_dir . $slash . 'composer.json';
+        $composer_json = $plugin_dir . DIRECTORY_SEPARATOR . 'composer.json';
         return file_exists($composer_json) ? 'composer' : 'unknown';
-    }
-
-    /**
-     * Update a specific plugin.
-     *
-     * @param string $plugin Plugin name
-     */
-    protected function updatePlugin($plugin)
-    {
-        $plugins_dir = $this->getPluginDir();
-        $plugin_dir = $plugins_dir . $plugin;
-        if (!is_dir("$plugin_dir")) {
-            $message = "{$plugin} is not installed.";
-            throw new TerminusNotFoundException($message);
-        }
-        $messages = array();
-        $message = "Updating {$plugin}...";
-        $this->log()->notice($message);
-        $method = $this->getInstallMethod($plugin);
-        switch ($method) {
-            case 'git':
-                // Compare installed version to the latest release.
-                $installed_version = $this->getInstalledVersion($plugin_dir);
-                $latest_version = $this->getLatestVersion($plugin_dir);
-                if ($installed_version != 'unknown' && $latest_version != 'unknown') {
-                    if ($installed_version < $latest_version) {
-                        exec("cd \"$plugin_dir\" && git checkout {$latest_version}", $messages);
-                    } else {
-                        $messages[] = "Already up-to-date.";
-                    }
-                } else {
-                    $messages[] = "Unable to update.  Semver compliance issue with tagged release.";
-                }
-                break;
-
-            case 'composer':
-                // Determine the project name.
-                $composer_info = $this->getComposerInfo($plugin);
-                $project = $composer_info['name'];
-                $packagist_url = "https://packagist.org/packages/{$project}";
-                if ($this->isValidUrl($packagist_url)) {
-                    // Get the Terminus major version.
-                    $terminus_major_version = $this->getTerminusMajorVersion();
-                    // Backup the plugin directory, just in case.
-                    $datetime = date('YmdHi', time());
-                    $backup_directory = "~/.terminus/backups/plugins/{$project}/{$datetime}";
-                    exec("mkdir -p {$backup_directory} && tar czvf {$backup_directory}/backup.tar.gz \"{$plugin_dir}\"", $backup_messages);
-                    // Create a new project via Composer.
-                    $composer_command = "composer create-project --prefer-source --keep-vcs -n -d {$plugins_dir} {$project}:~{$terminus_major_version}";
-                    exec("rm -rf \"{$plugin_dir}\" && {$composer_command}", $install_messages);
-                    $messages = array_merge($backup_messages, $install_messages);
-                    $messages[] = "Backed up the project to {$backup_directory}/backup.tar.gz.";
-                } else {
-                    $messages[] = "Unable to update.  {$packagist_url} is not a valid Packagist project.";
-                }
-                break;
-
-            default:
-                $messages[] = "Unable to update.  Plugin is not a valid Packagist project.";
-        }
-        foreach ($messages as $message) {
-            $this->log()->notice($message);
-        }
     }
 
     /**
@@ -215,18 +126,16 @@ abstract class PluginBaseCommand extends TerminusCommand
      */
     protected function isValidPackagistProject($project)
     {
-        $valid = false;
         // Search for the Packagist project.
         exec("composer search -N -t terminus-plugin {$project}", $items);
         if (!empty($items)) {
             foreach ($items as $item) {
                 if ($item == $project) {
-                    $valid = true;
-                    break;
+                    return true;
                 }
             }
         }
-        return $valid;
+        return false;
     }
 
     /**
@@ -259,9 +168,8 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         // @TODO: This could be a generic utility function used by other commands.
 
-        $slash = $this->getSlash();
         $plugin_dir = $this->getPluginDir($plugin);
-        $composer_json = $plugin_dir . $slash . 'composer.json';
+        $composer_json = $plugin_dir . DIRECTORY_SEPARATOR . 'composer.json';
         if (file_exists($composer_json)) {
             $composer_data = @file_get_contents($composer_json);
             return (array)json_decode($composer_data);
@@ -284,24 +192,6 @@ abstract class PluginBaseCommand extends TerminusCommand
         $file = popen("$test_command $command", 'r');
         $result = fgets($file, 255);
         return $windows ? !preg_match('#Could not find files#', $result) : !empty($result);
-    }
-
-    /**
-     * Get platform independent directory separator.
-     *
-     * @return string Directory separator
-     */
-    protected function getSlash()
-    {
-        // @TODO: This could be a generic utility function used by other commands.
-
-        $windows = (php_uname('s') == 'Windows NT');
-        if ($windows) {
-            $slash = '\\\\';
-        } else {
-            $slash = '/';
-        }
-        return $slash;
     }
 
     /**
