@@ -62,6 +62,7 @@ use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\UserSiteMembership;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\WorkflowOperation;
+use Pantheon\Terminus\Plugins\PluginAutoload;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Request\Request;
@@ -283,6 +284,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(LocalMachineHelper::class);
 
         // Plugin handlers
+        $container->share('pluginAutoload', PluginAutoload::class);
         $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
 
@@ -301,6 +303,10 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $factory = $container->get('commandFactory');
         $factory->setIncludeAllPublicMethods(false);
         $factory->setDataStore($commandCacheDataStore);
+
+        // Call our autoload loader at the beginning of any command dispatch.
+        $pluginAutoload = $container->get('pluginAutoload');
+        $factory->hookManager()->addInitializeHook($pluginAutoload);
     }
 
     /**
