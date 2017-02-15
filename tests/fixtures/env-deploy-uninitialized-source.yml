@@ -9,6 +9,13 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:9cb56790-663f-11e6-9061-bc764e105ecb:SDZlKyL74bn4qPc9hphz4'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:9cb56790-663f-11e6-9061-bc764e105ecb:SDZlKyL74bn4qPc9hphz4'
+            verify: '1'
+            method: post
+            absolute_url: ''
+            json: terminus
+            Accept: null
         body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
         status:
@@ -40,6 +47,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -70,6 +83,11 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -100,6 +118,11 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -130,6 +153,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -160,6 +189,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -191,6 +226,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: post
+            absolute_url: ''
+            json: ''
+            Accept: null
         body: '{"type":"deploy","params":{"updatedb":0,"clear_cache":0,"annotation":"Deploy test","clone_database":{"from_environment":"live"},"clone_files":{"from_environment":"live"}}}'
     response:
         status:
@@ -221,6 +262,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:4a2fe1de-6640-11e6-8d03-bc764e10b0ce:ufQocJfmb6tEtFlbf9z62'
+            verify: '1'
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -251,6 +298,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:6e7bd1d2-697f-11e6-9f69-bc764e11227e:yspWsnspZ03e2MuH9DcUr'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:6e7bd1d2-697f-11e6-9f69-bc764e11227e:yspWsnspZ03e2MuH9DcUr'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -281,6 +334,12 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:6e7bd1d2-697f-11e6-9f69-bc764e11227e:yspWsnspZ03e2MuH9DcUr'
+            headers: 'Bearer 11111111-1111-1111-1111-111111111111:6e7bd1d2-697f-11e6-9f69-bc764e11227e:yspWsnspZ03e2MuH9DcUr'
+            verify: ''
+            method: get
+            absolute_url: ''
+            options: get
+            Accept: null
     response:
         status:
             http_version: '1.1'
@@ -330,4 +389,4 @@
             Pragma: no-cache
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
-        body: '[{"gravitar_url": "https://secure.gravatar.com/avatar/9631f4a345eabaa121f599004f32fab2?s=40&d=https%3A%2F%2Fpantheon-content.s3.amazonaws.com%2Fblank_user.png", "hash": "1fdf194d3d7a0c930a4f118e1398412765320328", "author": "Root", "labels": ["test", "live", "dev"], "datetime": "2016-08-16T22:09:25", "parents": ["99d9779d7924d37be5750954b774ec786a95e5e0"], "message": "\"Initial Commit\"\n", "email": "root@getpantheon.com"}]'
+        body: ''

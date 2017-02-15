@@ -51,11 +51,12 @@ class RestoreCommand extends BackupCommand
         }
 
         $workflow = $backup->restore();
-        $workflow->wait();
-
-        if ($workflow->isSuccessful()) {
+        try {
+            while (!$workflow->checkProgress()) {
+                // @TODO: Add Symfony progress bar to indicate that something is happening.
+            }
             $this->log()->notice('Restored the backup to {env}.', ['env' => $env->id,]);
-        } else {
+        } catch (\Exception $e) {
             $message = $workflow->getMessage();
             if (trim($message) == 'Successfully queued restore_site') {
                 $message = 'There was an error while restoring your backup.';

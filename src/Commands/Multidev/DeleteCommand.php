@@ -37,12 +37,13 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
             return;
         }
 
-        $workflow = $env->delete(['delete_branch' => $options['delete-branch'],]);
-        $workflow->wait();
-        if ($workflow->isSuccessful()) {
-            $this->log()->notice('Deleted the multidev environment {env}.', ['env' => $env->id,]);
-        } else {
-            throw new TerminusException($workflow->getMessage());
+        $workflow = $env->delete(
+            ['delete_branch' => isset($options['delete-branch']) ? $options['delete-branch'] : false,]
+        );
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
         }
+
+        $this->log()->notice('Deleted the multidev environment {env}.', ['env' => $env->id,]);
     }
 }

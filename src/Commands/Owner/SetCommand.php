@@ -37,7 +37,11 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 'The new owner must be added with "terminus site:team:add" before promoting.'
             );
         }
-        $site->setOwner($user->id)->wait();
+        $workflow = $site->setOwner($user->id);
+        while (!$workflow->checkProgress()) {
+            // @TODO: Add Symfony progress bar to indicate that something is happening.
+        }
+
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
             ['user' => $user->getName(), 'site' => $site->getName(),]

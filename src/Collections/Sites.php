@@ -77,9 +77,11 @@ class Sites extends TerminusCollection implements SessionAwareInterface
                     return $membership->id == $org_id;
                 });
             }
-            foreach ($memberships as $membership) {
-                if ($membership->get('role') != 'unprivileged') {
-                    $sites[] = $membership->getOrganization()->getSites();
+            if (is_array($memberships)) {
+                foreach ($memberships as $membership) {
+                    if ($membership->get('role') != 'unprivileged') {
+                        $sites[] = $membership->getOrganization()->getSites();
+                    }
                 }
             }
         }

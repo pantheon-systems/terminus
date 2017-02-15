@@ -45,7 +45,13 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         $target = $site->getEnvironments()->get($target_env);
         $to_name = $target->getName();
 
-        $tr = ['from' => $from_name, 'to' => $to_name, 'env' => $site->getName()];
+        $tr = ['from' => $from_name, 'to' => $to_name, 'site' => $site->getName(),];
+        if (!$env->isInitialized()) {
+            throw new TerminusException(
+                "{site}'s {from} environment cannot be cloned because it has not been initialized. Please run `env:deploy {site}.{from}` to initialize it.",
+                $tr
+            );
+        }
         if (!$this->confirm('Are you sure you want to clone content from {from} to {to} on {site}?', $tr)) {
             return;
         }
