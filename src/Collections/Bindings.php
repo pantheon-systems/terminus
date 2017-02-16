@@ -11,10 +11,7 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Bindings extends EnvironmentOwnedCollection
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
+    public static $pretty_name = 'bindings';
     /**
      * @var string
      */

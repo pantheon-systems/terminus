@@ -26,7 +26,7 @@ class AddCommand extends TerminusCommand
      */
     public function add($organization, $email, $role)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $workflow = $org->getUserMemberships()->create($email, $role);
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

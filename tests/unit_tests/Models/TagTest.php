@@ -16,24 +16,45 @@ use Pantheon\Terminus\Models\Tag;
 class TagTest extends ModelTestCase
 {
     /**
+     * @var Tags
+     */
+    protected $collection;
+    /**
+     * @var Tag
+     */
+    protected $model;
+    /**
+     * @var Organization
+     */
+    protected $organization;
+    /**
+     * @var Site
+     */
+    protected $site;
+
+    /**
      * @inheritdoc
      */
     public function setUp()
     {
         parent::setUp();
+
         $this->collection = $this->getMockBuilder(Tags::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->collection->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
+        $this->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->collection->org_site_membership->method('getSite')->willReturn($this->site);
-        $this->collection->org_site_membership->organization = $this->getMockBuilder(Organization::class)
+        $org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->collection->method('getMembership')->willReturn($org_site_membership);
+        $org_site_membership->method('getSite')->willReturn($this->site);
+        $org_site_membership->method('getOrganization')->willReturn($this->organization);
 
         $this->model = new Tag(null, ['collection' => $this->collection,]);
         $this->model->setRequest($this->request);
@@ -47,7 +68,7 @@ class TagTest extends ModelTestCase
     {
         $this->model->id = 'tag_id';
         $this->site->id = 'site_uuid';
-        $this->model->org_site_membership->organization->id = 'org_uuid';
+        $this->organization->id = 'org_uuid';
         $this->request->expects($this->once())
             ->method('request')
             ->with(

@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Collections\TerminusCollection;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
 
@@ -13,18 +14,19 @@ abstract class TerminusModel implements RequestAwareInterface
 {
     use RequestAwareTrait;
 
+    public static $pretty_name = 'terminus model';
     /**
      * @var string
      */
     public $id;
     /**
-     * @var array Arguments for fetching this model's information
-     */
-    protected $args = [];
-    /**
      * @var object
      */
     protected $attributes;
+    /**
+     * @var TerminusCollection
+     */
+    protected $collection;
     /**
      * @var string The URL at which to fetch this model's information
      */
@@ -38,6 +40,9 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function __construct($attributes = null, array $options = [])
     {
+        if (isset($options['collection'])) {
+            $this->collection = $options['collection'];
+        }
         if (is_object($attributes)) {
             $this->attributes = $this->parseAttributes($attributes);
             if (isset($this->attributes->id)) {
@@ -56,11 +61,7 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function fetch(array $args = [])
     {
-        $options = array_merge(
-            ['options' => ['method' => 'get',],],
-            $this->args,
-            $args
-        );
+        $options = array_merge(['options' => ['method' => 'get',],], $args);
         $results = $this->request->request($this->getUrl(), $options);
         $this->attributes = (object)array_merge(
             (array)$this->attributes,
@@ -106,14 +107,13 @@ abstract class TerminusModel implements RequestAwareInterface
     }
 
     /**
-     * Modify response data between fetch and assignment
+     * Returns the fields by which this model can be found.
      *
-     * @param object $data attributes received from API response
-     * @return object $data
+     * @return array
      */
-    protected function parseAttributes($data)
+    public function getReferences()
     {
-        return $data;
+        return [$this->id,];
     }
 
     /**
@@ -123,7 +123,7 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function getUrl()
     {
-        return $this->url;
+        return str_replace('{id}', $this->id, $this->url);
     }
 
     /**
@@ -134,5 +134,16 @@ abstract class TerminusModel implements RequestAwareInterface
     public function serialize()
     {
         return (array)$this->attributes;
+    }
+
+    /**
+     * Modify response data between fetch and assignment
+     *
+     * @param object $data attributes received from API response
+     * @return object $data
+     */
+    protected function parseAttributes($data)
+    {
+        return $data;
     }
 }

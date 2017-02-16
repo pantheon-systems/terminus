@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
+use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteUserMembership;
@@ -16,100 +17,175 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var SiteUserMemberships
+     */
+    protected $collection;
+    /**
+     * @var SiteUserMembership
+     */
+    protected $model;
+    /**
+     * @var string
+     */
+    protected $role;
+    /**
+     * @var array
+     */
+    protected $user_data;
+    /**
+     * @var Workflow
+     */
     protected $workflow;
-    protected $site;
+    /**
+     * @var Workflows
+     */
     protected $workflows;
-    protected $site_user;
 
+    /**
+     * @inheritdoc
+     */
     public function setUp()
     {
         parent::setUp();
 
-        $user_data = [
+        $this->user_data = [
             'id' => 'abc',
             'firstname' => 'Daisy',
             'lastname' => 'Duck',
             'email' => 'daisy@duck.com',
         ];
-        $this->user = $this->getMockBuilder(User::class)
+        $this->role = 'role';
+        $this->collection = $this->getMockBuilder(SiteUserMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->user->method('serialize')
-            ->willReturn([
-                'id' => 'abc',
-                'firstname' => 'Daisy',
-                'lastname' => 'Duck',
-                'email' => 'daisy@duck.com',
-            ]);
-        $this->user->id = 'abc';
-
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $container->expects($this->once())
-            ->method('get')
-            ->with(User::class, [$user_data])
-            ->willReturn($this->user);
-
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->site->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->site_user = new SiteUserMembership(
-            (object)['user' => $user_data, 'role' => 'team_member'],
-            ['collection' => (object)['site' => $this->site]]
+        $this->model = new SiteUserMembership(
+            (object)['user' => $this->user_data, 'role' => $this->role,],
+            ['collection' => $this->collection,]
         );
-        $this->site_user->setContainer($container);
     }
 
+    /**
+     * Tests the SiteUserMembership::delete() function.
+     */
     public function testDelete()
     {
+        $user = $this->expectGetUser();
+        $this->expectGetSite();
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
                 'remove_site_user_membership',
-                ['params' => ['user_id' => 'abc']]
+                ['params' => ['user_id' => $user->id,],]
             )
             ->willReturn($this->workflow);
 
-        $out = $this->site_user->delete();
+        $out = $this->model->delete();
         $this->assertEquals($this->workflow, $out);
     }
 
+    /**
+     * Tests the SiteUserMembership::getReferences() function.
+     */
+    public function testGetReferences()
+    {
+        $user = $this->expectGetUser();
+        $user->expects($this->once())
+            ->method('getReferences')
+            ->with()
+            ->willReturn($this->user_data);
+
+        $out = $this->model->getReferences();
+        $this->assertEquals(array_merge([$this->model->id,], $this->user_data), $out);
+    }
+
+    /**
+     * Tests the SiteUserMembership::serialize() function.
+     */
+    public function testSerialize()
+    {
+        $user = $this->expectGetUser();
+        $user->expects($this->once())
+            ->method('serialize')
+            ->with()
+            ->willReturn($this->user_data);
+        $expected = array_merge($this->user_data, ['role' => $this->role,]);
+        $out = $this->model->serialize();
+        $this->assertEquals($expected, $out);
+    }
+
+    /**
+     * Tests the SiteUserMembership::setRole() function.
+     */
     public function testSetRole()
     {
+        $user = $this->expectGetUser();
+        $this->expectGetSite();
+
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
                 'update_site_user_membership',
-                ['params' => ['user_id' => 'abc', 'role' => 'testrole']]
+                ['params' => ['user_id' => $user->id, 'role' => $this->role,],]
             )
             ->willReturn($this->workflow);
 
-        $out = $this->site_user->setRole('testrole');
+        $out = $this->model->setRole($this->role);
         $this->assertEquals($this->workflow, $out);
     }
 
-    public function testSerialize()
+    /**
+     * Prepares the test case for the getSite() function.
+     *
+     * @return Site The site object getSite() will return
+     */
+    protected function expectGetSite()
     {
-        $expected = [
-            'firstname' => 'Daisy',
-            'lastname' => 'Duck',
-            'email' => 'daisy@duck.com',
-            'id' => 'abc',
-            'role' => 'team_member',
-        ];
-        $actual = $this->site_user->serialize();
-        $this->assertEquals($expected, $actual);
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site ID';
+        $site->method('getWorkflows')
+            ->with()
+            ->willReturn($this->workflows);
+        $this->collection->expects($this->once())
+            ->method('getSite')
+            ->with()
+            ->willReturn($site);
+        return $site;
+    }
+
+    /**
+     * Prepares the test case for the getUser() function.
+     *
+     * @return User The user object getUser() will return
+     */
+    protected function expectGetUser()
+    {
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user->id = $this->user_data['id'];
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(User::class),
+                $this->equalTo([$this->user_data,])
+            )
+            ->willReturn($user);
+
+        $this->model->setContainer($container);
+        return $user;
     }
 }

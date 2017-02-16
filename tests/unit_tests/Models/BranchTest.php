@@ -40,14 +40,16 @@ class BranchTest extends ModelTestCase
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site = $this->getMockBuilder(Site::class)
+        $site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->method('getWorkflows')->willReturn($this->workflows);
+        $site->id = 'site_id';
+        $site->method('getWorkflows')->willReturn($this->workflows);
         $this->collection = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->collection->site = $this->site;
+        $this->collection->method('getSite')->willReturn($site);
+
         $this->model = new Branch((object)['id' => 'branch_id', 'sha' => 'sha',], ['collection' => $this->collection,]);
         $this->model->setRequest($this->request);
     }
@@ -57,8 +59,6 @@ class BranchTest extends ModelTestCase
      */
     public function testDelete()
     {
-        $this->site->id = 'site_id';
-
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(

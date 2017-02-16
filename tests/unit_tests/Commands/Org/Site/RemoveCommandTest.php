@@ -39,7 +39,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
         $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->org_site_membership->site = $this->site;
+        $this->org_site_membership->method('getSite')->willReturn($this->site);
         $this->org_site_memberships = $this->getMockBuilder(OrganizationSiteMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();

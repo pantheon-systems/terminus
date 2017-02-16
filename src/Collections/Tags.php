@@ -11,14 +11,15 @@ use Pantheon\Terminus\Models\Tag;
  */
 class Tags extends TerminusCollection
 {
-    /**
-     * @var OrganizationSiteMembership
-     */
-    public $org_site_membership;
+    public static $pretty_name = 'tags';
     /**
      * @var string
      */
     protected $collected_class = Tag::class;
+    /**
+     * @var OrganizationSiteMembership
+     */
+    protected $org_site_membership;
 
     /**
      * @inheritdoc
@@ -39,7 +40,7 @@ class Tags extends TerminusCollection
     {
         $params = [$tag => ['sites' => [$this->org_site_membership->getSite()->id,],],];
         $this->request->request(
-            "organizations/{$this->org_site_membership->organization->id}/tags",
+            "organizations/{$this->org_site_membership->getOrganization()->id}/tags",
             ['method' => 'put', 'form_params' => $params,]
         );
         $this->models[$tag] = $this->getContainer()->get($this->collected_class, [(object)['id' => $tag,], ['collection' => $this,]]);
@@ -57,5 +58,13 @@ class Tags extends TerminusCollection
             }
         }
         return $this;
+    }
+
+    /**
+     * @return OrganizationSiteMembership
+     */
+    public function getMembership()
+    {
+        return $this->org_site_membership;
     }
 }

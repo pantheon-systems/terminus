@@ -6,6 +6,7 @@ use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Loadbalancer;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -82,18 +83,19 @@ class LoadbalancersTest extends CollectionTestCase
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->environment->method('getSite')->willReturn($site);
 
-        $loadbalancers = new Loadbalancers(['environment' => $this->environment]);
+        $loadbalancers = new Loadbalancers(['environment' => $this->environment,]);
         $loadbalancers->setRequest($this->request);
         $loadbalancers->setContainer($this->container);
         return $loadbalancers;

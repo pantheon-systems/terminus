@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -17,11 +18,15 @@ class DomainsTest extends CollectionTestCase
     /**
      * @var Domains
      */
-    protected $domains;
+    protected $collection;
     /**
      * @var Environment
      */
     protected $environment;
+    /**
+     * @var Site
+     */
+    protected $site;
     /**
      * @var Workflows
      */
@@ -30,24 +35,25 @@ class DomainsTest extends CollectionTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->domains = $this->createDomains();
+
+        $this->collection = $this->createDomains();
     }
 
     public function testCreate()
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'put']);
+            ->with("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames/dev.example.com", ['method' => 'put']);
 
-        $this->domains->create('dev.example.com');
+        $this->collection->create('dev.example.com');
     }
 
     public function testSetHydration()
     {
-        $this->domains->setHydration('test');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=test', $this->domains->getUrl());
-        $this->domains->setHydration('');
-        $this->assertEquals('sites/abc/environments/dev/hostnames?hydrate=', $this->domains->getUrl());
+        $this->collection->setHydration('test');
+        $this->assertEquals("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames?hydrate=test", $this->collection->getUrl());
+        $this->collection->setHydration('');
+        $this->assertEquals("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames?hydrate=", $this->collection->getUrl());
     }
 
     protected function createDomains()
@@ -55,7 +61,6 @@ class DomainsTest extends CollectionTestCase
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,11 +68,15 @@ class DomainsTest extends CollectionTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->environment->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
+        $this->site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site->id = 'site id';
 
-        $domains = new Domains(['environment' => $this->environment]);
+        $this->environment->method('getSite')->willReturn($this->site);
+
+        $domains = new Domains(['environment' => $this->environment,]);
         $domains->setRequest($this->request);
         $domains->setContainer($this->container);
         return $domains;

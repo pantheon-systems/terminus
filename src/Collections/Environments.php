@@ -10,6 +10,7 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
+    public static $pretty_name = 'environments';
     /**
      * @var string
      */
@@ -87,7 +88,7 @@ class Environments extends SiteOwnedCollection
      */
     public function serialize()
     {
-        $site_is_frozen = !is_null($this->site->get('frozen'));
+        $site_is_frozen = !is_null($this->getSite()->get('frozen'));
         $models = [];
         foreach ($this->getMembers() as $id => $model) {
             if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {

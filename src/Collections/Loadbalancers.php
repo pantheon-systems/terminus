@@ -10,10 +10,7 @@ use Pantheon\Terminus\Models\Loadbalancer;
  */
 class Loadbalancers extends EnvironmentOwnedCollection
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
+    public static $pretty_name = 'loadbalancers';
     /**
      * @var string
      */
@@ -24,7 +21,7 @@ class Loadbalancers extends EnvironmentOwnedCollection
      */
     public function getUrl()
     {
-        return $this->environment->getUrl() . '?environment_state=true';
+        return $this->getEnvironment()->getUrl() . '?environment_state=true';
     }
 
     /**
@@ -35,7 +32,7 @@ class Loadbalancers extends EnvironmentOwnedCollection
      */
     protected function getCollectionData($options = [])
     {
-        $env_id = $this->environment->id;
+        $env_id = $this->getEnvironment()->id;
         $data = parent::getCollectionData($options)->loadbalancers;
         $loadbalancers = array_filter(
             (array)$data,

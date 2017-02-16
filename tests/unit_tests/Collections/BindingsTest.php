@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Models\Binding;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 
 /**
  * Class BindingsTest
@@ -340,7 +341,7 @@ class BindingsTest extends CollectionTestCase
 
     public function testGetURL()
     {
-        $this->assertEquals('sites/abc/bindings', $this->bindings->getUrl());
+        $this->assertEquals("sites/{$this->environment->getSite()->id}/bindings", $this->bindings->getUrl());
     }
 
     protected function createBindings()
@@ -348,11 +349,14 @@ class BindingsTest extends CollectionTestCase
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
+        $this->environment->method('getSite')->willReturn($site);
 
-        $bindings = new Bindings(['environment' => $this->environment]);
+        $bindings = new Bindings(['environment' => $this->environment,]);
         $bindings->setRequest($this->request);
         $bindings->setContainer($this->container);
         return $bindings;
@@ -364,7 +368,7 @@ class BindingsTest extends CollectionTestCase
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                'sites/abc/bindings',
+                "sites/{$this->environment->getSite()->id}/bindings",
                 ['options' => ['method' => 'get']]
             )
             ->willReturn(['data' => $this->bindings_data]);

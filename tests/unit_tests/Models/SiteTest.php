@@ -8,14 +8,11 @@ use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Tags;
-use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\NewRelic;
-use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Solr;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\Workflow;
@@ -44,9 +41,17 @@ class SiteTest extends ModelTestCase
      */
     protected $new_relic;
     /**
+     * @var SiteOrganizationMemberships
+     */
+    protected $org_memberships;
+    /**
      * @var Redis
      */
     protected $redis;
+    /**
+     * @var array
+     */
+    protected $site_data;
     /**
      * @var Solr
      */
@@ -75,15 +80,17 @@ class SiteTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->container = new Container();
-
         $this->branches = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->container = new Container();
         $this->environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->new_relic = $this->getMockBuilder(NewRelic::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->redis = $this->getMockBuilder(Redis::class)
@@ -105,8 +112,11 @@ class SiteTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->site_data = (object)['id' => 'site id', 'name' => 'my-site', 'label' => 'My Site',];
+
         $this->container->add(Branches::class, $this->branches);
         $this->container->add(Environments::class, $this->environments);
+        $this->container->add(SiteOrganizationMemberships::class, $this->org_memberships);
         $this->container->add(NewRelic::class, $this->new_relic);
         $this->container->add(Redis::class, $this->redis);
         $this->container->add(SiteUserMemberships::class, $this->user_memberships);
@@ -114,7 +124,7 @@ class SiteTest extends ModelTestCase
         $this->container->add(Upstream::class, $this->upstream);
         $this->container->add(Workflows::class, $this->workflows);
 
-        $this->model = new Site((object)['id' => 123, 'name' => 'My Site']);
+        $this->model = new Site($this->site_data);
 
         $this->model->setContainer($this->container);
         $this->model->setRequest($this->request);
@@ -178,8 +188,8 @@ class SiteTest extends ModelTestCase
      */
     public function testDashboardUrl()
     {
-        $this->configSet(['dashboard_protocol' => 'https', 'dashboard_host' => 'dashboard.pantheon.io']);
-        $this->assertEquals('https://dashboard.pantheon.io/sites/123', $this->model->dashboardUrl());
+        $this->configSet(['dashboard_protocol' => 'https', 'dashboard_host' => 'dashboard.pantheon.io',]);
+        $this->assertEquals("https://dashboard.pantheon.io/sites/" . $this->site_data->id, $this->model->dashboardUrl());
     }
 
     /**
@@ -293,7 +303,24 @@ class SiteTest extends ModelTestCase
      */
     public function testGetName()
     {
-        $this->assertEquals('My Site', $this->model->getName());
+        $this->assertEquals($this->site_data->name, $this->model->getName());
+    }
+
+    /**
+     * Tests Site::getOrganizationMemberships()
+     */
+    public function testGetOrganizationMemberships()
+    {
+        $org_memberships = $this->model->getOrganizationMemberships();
+        $this->assertEquals($this->org_memberships, $org_memberships);
+    }
+
+    /**
+     * Tests Site::getReferences()
+     */
+    public function testGetReferences()
+    {
+        $this->assertEquals(array_values((array)$this->site_data), $this->model->getReferences());
     }
 
     /**
@@ -303,35 +330,6 @@ class SiteTest extends ModelTestCase
     {
         $new_relic = $this->model->getNewRelic();
         $this->assertEquals($this->new_relic, $new_relic);
-    }
-
-    /**
-     * Tests Site::getOrganizations()
-     */
-    public function testGetOrganizations()
-    {
-        $org_membership = $this->getMockBuilder(SiteOrganizationMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $org_membership->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $org_membership->organization->id = 'organization_id';
-        $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->org_memberships->expects($this->once())
-            ->method('all')
-            ->with()
-            ->willReturn([$org_membership,]);
-
-        $this->container->add(SiteOrganizationMemberships::class, $this->org_memberships);
-
-        $data = [$org_membership->organization->id => $org_membership->organization,];
-
-        $orgs = $this->model->getOrganizations();
-        $this->assertEquals($data, $orgs);
     }
 
     /**

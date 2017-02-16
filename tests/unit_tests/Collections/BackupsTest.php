@@ -6,6 +6,7 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
@@ -272,7 +273,7 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($out->get('task_id'), $data->task_id);
         $this->assertEquals($out->get('filename'), $data->filename);
 
-        $this->setExpectedException(TerminusException::class, "Cannot find a backup named not-there.");
+        $this->setExpectedException(TerminusException::class, "Could not find a backup identified by not-there.");
         $out = $backups->getBackupByFileName('not-there');
         $this->assertNull($out);
     }
@@ -441,20 +442,22 @@ class BackupsTest extends CollectionTestCase
 
     protected function createBackups()
     {
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'abc';
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
-
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->environment->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->environment->site = (object)['id' => 'abc',];
         $this->environment->id = 'dev';
+        $this->environment->method('getWorkflows')->willReturn($this->workflows);
+        $this->environment->method('getSite')->willReturn($site);
 
         $backups = new Backups(['environment' => $this->environment]);
         $backups->setRequest($this->request);

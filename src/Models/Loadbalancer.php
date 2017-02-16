@@ -8,6 +8,8 @@ namespace Pantheon\Terminus\Models;
  */
 class Loadbalancer extends TerminusModel
 {
+    public static $pretty_name = 'loadbalancer';
+
     /**
      * @return boolean
      */

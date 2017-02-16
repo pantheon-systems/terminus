@@ -2,7 +2,6 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\SiteUserMembership;
 
 /**
@@ -33,32 +32,9 @@ class SiteUserMemberships extends SiteOwnedCollection
      **/
     public function create($email, $role)
     {
-        $workflow = $this->site->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'add_site_user_membership',
             ['params' => ['user_email' => $email, 'role' => $role,],]
         );
-        return $workflow;
-    }
-
-    /**
-     * Retrieves the membership of the given UUID or email
-     *
-     * @param string $id UUID or email of desired user
-     * @return SiteUserMembership
-     * @throws TerminusNotFoundException
-     */
-    public function get($id)
-    {
-        $models = $this->getMembers();
-        if (isset($models[$id])) {
-            return $models[$id];
-        }
-        foreach ($models as $model) {
-            $user = $model->getUser();
-            if (in_array($id, [$user->get('email'), $user->get('profile')->full_name])) {
-                return $model;
-            }
-        }
-        throw new TerminusNotFoundException('Cannot find site user with the name "{id}"', compact('id'));
     }
 }

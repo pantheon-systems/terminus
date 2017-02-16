@@ -7,10 +7,6 @@ use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\OrganizationSiteMembership;
-use Pantheon\Terminus\Models\OrganizationUserMembership;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\Site;
 
 /**
  * Class OrganizationTest
@@ -74,61 +70,9 @@ class OrganizationTest extends ModelTestCase
     }
 
     /**
-     * Tests the Organization::getSites() function
-     */
-    public function testGetSites()
-    {
-        $organization = new Organization((object)['id' => '123',]);
-
-        $model_data = [
-            'a' => (object)[
-                'site' => new Site((object)['id' => 'abc', 'name' => 'Site A',]),
-                'organization_id' => '123',
-                'role' => 'team_member',
-            ],
-            'b' => (object)[
-                'site' => new Site((object)['id' => 'bcd', 'name' => 'Site B',]),
-                'organization_id' => '123',
-                'role' => 'team_member',
-            ],
-            'c' => (object)[
-                'site' => new Site((object)['id' => 'cde', 'name' => 'Site C',]),
-                'organization_id' => '123',
-                'role' => 'team_member',
-            ],
-        ];
-        $models = $sites = [];
-        foreach ($model_data as $id => $data) {
-            $models[$id] = $this->getMockBuilder(OrganizationSiteMembership::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $models[$id]->method('getSite')->willReturn($data->site);
-            $sites[$data->site->id] = $data->site;
-        }
-        $org_site_membership = $this->getMockBuilder(OrganizationSiteMemberships::class)
-            ->setMethods(['getMembers'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $org_site_membership->expects($this->any())
-            ->method('getMembers')
-            ->willReturn($models);
-
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with(OrganizationSiteMemberships::class, [['organization' => $organization,],])
-            ->willReturn($org_site_membership);
-
-        $organization->setContainer($this->container);
-
-        $this->assertEquals($org_site_membership, $organization->getSiteMemberships());
-        $this->assertEquals($sites, $organization->getSites());
-    }
-
-    /**
      * Tests the Organization::getSiteMemberships() function
      */
-    public function testSiteMemberships()
+    public function testGetSiteMemberships()
     {
         $org_name = 'organization name';
         $organization = new Organization((object)['id' => '123', 'profile' => (object)['name' => $org_name,],]);
@@ -151,7 +95,7 @@ class OrganizationTest extends ModelTestCase
     /**
      * Tests the Organization::getUserMemberships() function
      */
-    public function testUserMemberships()
+    public function testGetUserMemberships()
     {
         $org_name = 'organization name';
         $organization = new Organization((object)['id' => '123', 'profile' => (object)['name' => $org_name,],]);
@@ -169,47 +113,6 @@ class OrganizationTest extends ModelTestCase
 
         $out = $organization->getUserMemberships();
         $this->assertEquals($org_user_memberships, $out);
-    }
-
-    /**
-     * Tests the Organization::getUsers() function
-     */
-    public function testGetUsers()
-    {
-        $organization = new Organization((object)['id' => '123',]);
-
-        $user_data = [
-            'a' => ['id' => 'abc', 'email' => 'a@example.com', 'profile' => (object)['full_name' => 'User A',],],
-            'b' => ['id' => 'bcd', 'email' => 'b@example.com', 'profile' => (object)['full_name' => 'User B',],],
-            'c' => ['id' => 'cde', 'email' => 'c@example.com', 'profile' => (object)['full_name' => 'User C',],],
-        ];
-        $model_data = $users = [];
-        foreach ($user_data as $i => $user) {
-            $model_data[$i] = $this->getMockBuilder(OrganizationUserMembership::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $users[$user['id']] = new User((object)$user);
-            $model_data[$i]->method('getUser')->willReturn($users[$user['id']]);
-        }
-
-        $org_user_membership = $this->getMockBuilder(OrganizationUserMemberships::class)
-            ->setMethods(['getMembers',])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $org_user_membership->expects($this->any())
-            ->method('getMembers')
-            ->willReturn($model_data);
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with(OrganizationUserMemberships::class, [['organization' => $organization,],])
-            ->willReturn($org_user_membership);
-        $organization->setContainer($this->container);
-
-        $this->assertEquals($org_user_membership, $organization->getUserMemberships());
-        $this->assertEquals($users, $organization->getUsers());
     }
 
     /**
@@ -236,7 +139,7 @@ class OrganizationTest extends ModelTestCase
     }
 
     /**
-     * Tests the Organization::serialize() function
+     * Tests the Organization::serialize() and Organiztion::getReferences() functions
      */
     public function testSerialize()
     {
@@ -244,7 +147,7 @@ class OrganizationTest extends ModelTestCase
         $org_name = 'organization name';
         $expected = ['id' => $org_id, 'name' => $org_name,];
         $organization = new Organization((object)['id' => $org_id, 'profile' => (object)['name' => $org_name,],]);
-        $out = $organization->serialize();
-        $this->assertEquals($expected, $out);
+        $this->assertEquals($expected, $organization->serialize());
+        $this->assertEquals($expected, $organization->getReferences());
     }
 }

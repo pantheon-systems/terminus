@@ -2,44 +2,24 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteTrait;
 
 /**
  * Class SiteOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-class SiteOwnedCollection extends TerminusCollection
+class SiteOwnedCollection extends TerminusCollection implements SiteInterface
 {
-    /**
-     * @var Site
-     */
-    public $site;
+    use SiteTrait;
 
     /**
-     * Object constructor
-     *
-     * @param array $options Options to set as $this->key
+     * @inheritdoc
      */
     public function __construct($options = [])
     {
         parent::__construct($options);
         $this->setSite($options['site']);
-    }
-
-    /**
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
-    }
-
-    /**
-     * @param Site $site
-     */
-    public function setSite($site)
-    {
-        $this->site = $site;
     }
 
     /**

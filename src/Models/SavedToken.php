@@ -6,26 +6,33 @@ use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedToken
  * @package Pantheon\Terminus\Models
  */
-class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigAwareInterface, DataStoreAwareInterface
+class SavedToken extends TerminusModel implements SessionAwareInterface, DataStoreAwareInterface
 {
     use SessionAwareTrait;
-    use ConfigAwareTrait;
     use DataStoreAwareTrait;
 
+    public static $pretty_name = 'saved token';
+
     /**
-     * @inheritdoc
+     * Delete the token.
      */
-    public function __construct($attributes = null, array $options = [])
+    public function delete()
     {
-        parent::__construct($attributes, $options);
+        $this->getDataStore()->remove($this->id);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getReferences()
+    {
+        return [$this->id, $this->get('token'),];
     }
 
     /**
@@ -55,14 +62,6 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, ConfigA
 
         $this->set('date', time());
         $this->getDataStore()->set($this->id, $this->attributes);
-    }
-
-    /**
-     * Delete the token.
-     */
-    public function delete()
-    {
-        $this->getDataStore()->remove($this->id);
     }
 
     /**

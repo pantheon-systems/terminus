@@ -6,21 +6,9 @@ namespace Pantheon\Terminus\Models;
  * Class Redis
  * @package Pantheon\Terminus\Models
  */
-class Redis extends TerminusModel
+class Redis extends AddOnModel
 {
-    /**
-     * @var Site
-     */
-    public $site;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site = $options['site'];
-    }
+    public static $pretty_name = 'Redis';
 
     /**
      * Clears the Redis cache on the named environment
@@ -31,7 +19,7 @@ class Redis extends TerminusModel
     public function clear($env)
     {
         // @Todo: Change this when the env model conversion is merged
-        return $env->workflows->create('clear_redis_cache');
+        return $env->getWorkflows()->create('clear_redis_cache');
     }
 
     /**
@@ -58,7 +46,7 @@ class Redis extends TerminusModel
     private function setStatus($status)
     {
         $this->request()->request(
-            "sites/{$this->site->id}/settings",
+            "sites/{$this->getSite()->id}/settings",
             ['method' => 'put', 'form_params' => ['allow_cacheserver' => $status,],]
         );
     }

@@ -267,7 +267,7 @@ class EnvironmentTest extends ModelTestCase
         $username = $database = 'pantheon';
         $sftp_username = "{$this->model->id}.{$this->site->id}";
         $sftp_hostname = "appserver.$sftp_username.drush.in";
-        $db_hostname = "dbserver.{$this->model->id}.{$this->model->site->id}.drush.in";
+        $db_hostname = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
         $cache_hostname = 'hostname';
         $git_hostname = "codeserver.dev.{$this->site->id}.drush.in";
         $git_username = "codeserver.dev.{$this->site->id}";
@@ -417,7 +417,7 @@ class EnvironmentTest extends ModelTestCase
         $password = 'password';
         $port = 'port';
         $username = $database = 'pantheon';
-        $hostname = "dbserver.{$this->model->id}.{$this->model->site->id}.drush.in";
+        $hostname = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
         $expected = [
             'username' => $username,
             'password' => $password,
@@ -746,23 +746,28 @@ class EnvironmentTest extends ModelTestCase
         );
     }
 
-    public function testEnvIsInitialized()
+    public function testIsInitialized()
     {
-        $this->assertTrue($this->model->isInitialized());
+        $commits = $this->getMockBuilder(Commits::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $environments = $this->getMockBuilder(Environments::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $container->method('get')->willReturn($commits);
+        $environments->method('getSite')->with()->willReturn($this->site);
 
-        $model = $this->createModel(['id' => 'mymulti',]);
+        $model = new Environment((object)['id' => 'neither test nor live',], ['collection' => $environments,]);
         $this->assertTrue($model->isInitialized());
 
-        $commits = [
-            ['some', 'commit',],
-        ];
-        $model = $this->createModel(['id' => 'test',]);
-        $model->commits = $this->getCommits($commits);
-        $this->assertTrue($model->isInitialized());
-
-        $commits = [];
-        $model = $this->createModel(['id' => 'test',]);
-        $model->commits = $this->getCommits($commits);
+        $model = new Environment((object)['id' => 'test',], ['collection' => $environments,]);
+        $model->setContainer($container);
+        $commits->expects($this->once())
+            ->method('all')
+            ->willReturn([]);
         $this->assertFalse($model->isInitialized());
     }
 
@@ -895,14 +900,14 @@ class EnvironmentTest extends ModelTestCase
             'intermediary' => 'INTERMEDIARY',
         ];
         $certificate = array_merge($expected_params, ['key' => null,]);
-        $this->model->site->id = 'site id';
+        $this->model->getSite()->id = 'site id';
         $this->model->id = 'env id';
         $response = ['data' => (object)['some' => 'data',],];
 
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                $this->equalTo("sites/{$this->model->site->id}/environments/{$this->model->id}/add-ssl-cert"),
+                $this->equalTo("sites/{$this->model->getSite()->id}/environments/{$this->model->id}/add-ssl-cert"),
                 $this->equalTo(['method' => 'POST', 'form_params' => $expected_params,])
             )
             ->willReturn($response);

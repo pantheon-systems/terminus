@@ -7,7 +7,6 @@ use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SavedTokens
@@ -18,6 +17,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     use ConfigAwareTrait;
     use DataStoreAwareTrait;
 
+    public static $pretty_name = 'tokens';
     /**
      * @var string
      */
@@ -66,30 +66,6 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
         foreach ($this->getMembers() as $token) {
             $token->delete();
         }
-    }
-
-    /**
-     * Retrieves the model with site of the given email or machine token
-     *
-     * @param string $id Email or machine token to look up a saved token by
-     * @return \Pantheon\Terminus\Models\SavedToken
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
-     */
-    public function get($id)
-    {
-        $tokens = $this->getMembers();
-        if (isset($tokens[$id])) {
-            return $tokens[$id];
-        } else {
-            if (is_array($tokens)) {
-                foreach ($tokens as $token) {
-                    if ($id == $token->get('token')) {
-                        return $token;
-                    }
-                }
-            }
-        }
-        throw new TerminusException('Could not find a saved token identified by {id}.', compact('id'));
     }
 
     /**

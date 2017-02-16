@@ -4,40 +4,22 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Friends\OrganizationInterface;
+use Pantheon\Terminus\Friends\OrganizationTrait;
+use Pantheon\Terminus\Friends\UserJoinInterface;
+use Pantheon\Terminus\Friends\UserJoinTrait;
 
 /**
  * Class OrganizationUserMembership
  * @package Pantheon\Terminus\Models
  */
-class OrganizationUserMembership extends TerminusModel implements ContainerAwareInterface
+class OrganizationUserMembership extends TerminusModel implements ContainerAwareInterface, OrganizationInterface, UserJoinInterface
 {
     use ContainerAwareTrait;
+    use OrganizationTrait;
+    use UserJoinTrait;
 
-    /**
-     * @var Organization
-     */
-    public $organization;
-    /**
-     * @var User
-     */
-    public $user;
-    /**
-     * @var object
-     */
-    protected $user_data;
-
-    /**
-     * Object constructor
-     *
-     * @param object $attributes Attributes of this model
-     * @param array $options Options with which to configure this model
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->user_data = $attributes->user;
-        $this->organization = $options['collection']->getOrganization();
-    }
+    public static $pretty_name = 'organization-user membership';
 
     /**
      * Removes a user from this organization
@@ -50,28 +32,6 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
             'remove_organization_user_membership',
             ['params' => ['user_id' => $this->getUser()->id,],]
         );
-    }
-
-    /**
-     * @return Organization
-     */
-    public function getOrganization()
-    {
-        return $this->organization;
-    }
-
-    /**
-     * Get the user for this membership
-     *
-     * @return User
-     */
-    public function getUser()
-    {
-        if (empty($this->user)) {
-            $this->user = $this->getContainer()->get(User::class, [$this->user_data]);
-            $this->user->memberships = [$this,];
-        }
-        return $this->user;
     }
 
     /**

@@ -26,7 +26,7 @@ class RoleCommand extends TerminusCommand
      */
     public function role($organization, $member, $role)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
         $workflow = $membership->setRole($role);
         while (!$workflow->checkProgress()) {

@@ -7,31 +7,38 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Friends\SitesInterface;
+use Pantheon\Terminus\Friends\SitesTrait;
+use Pantheon\Terminus\Friends\UsersInterface;
+use Pantheon\Terminus\Friends\UsersTrait;
 
 /**
  * Class Organization
  * @package Pantheon\Terminus\Models
  */
-class Organization extends TerminusModel implements ContainerAwareInterface
+class Organization extends TerminusModel implements ContainerAwareInterface, SitesInterface, UsersInterface
 {
     use ContainerAwareTrait;
+    use SitesTrait;
+    use UsersTrait;
 
-    /**
-     * @var OrganizationSiteMemberships
-     */
-    public $site_memberships;
-    /**
-     * @var OrganizationUserMemberships
-     */
-    public $user_memberships;
-    /**
-     * @var Workflows
-     */
-    public $workflows;
+    public static $pretty_name = 'organization';
     /**
      * @var array
      */
     private $features;
+    /**
+     * @var OrganizationSiteMemberships
+     */
+    private $site_memberships;
+    /**
+     * @var OrganizationUserMemberships
+     */
+    private $user_memberships;
+    /**
+     * @var Workflows
+     */
+    private $workflows;
 
     /**
      * Returns a specific organization feature value
@@ -62,40 +69,23 @@ class Organization extends TerminusModel implements ContainerAwareInterface
     }
 
     /**
+     * @return string[]
+     */
+    public function getReferences()
+    {
+        return $this->serialize();
+    }
+
+    /**
      * @return OrganizationSiteMemberships
      */
     public function getSiteMemberships()
     {
         if (!$this->site_memberships) {
             $this->site_memberships = $this->getContainer()
-                ->get(OrganizationSiteMemberships::class, [['organization' => $this]]);
+                ->get(OrganizationSiteMemberships::class, [['organization' => $this,],]);
         }
         return $this->site_memberships;
-    }
-
-    /**
-     * Retrieves organization sites
-     *
-     * @return Site[]
-     */
-    public function getSites()
-    {
-        $site_memberships = $this->getSiteMemberships()->all();
-        $sites = array_combine(
-            array_map(
-                function ($membership) {
-                    return $membership->getSite()->id;
-                },
-                $site_memberships
-            ),
-            array_map(
-                function ($membership) {
-                    return $membership->getSite();
-                },
-                $site_memberships
-            )
-        );
-        return $sites;
     }
 
     /**
@@ -108,31 +98,6 @@ class Organization extends TerminusModel implements ContainerAwareInterface
                 ->get(OrganizationUserMemberships::class, [['organization' => $this,],]);
         }
         return $this->user_memberships;
-    }
-
-    /**
-     * Retrieves organization users
-     *
-     * @return User[]
-     */
-    public function getUsers()
-    {
-        $user_memberships = $this->getUserMemberships()->all();
-        $users = array_combine(
-            array_map(
-                function ($membership) {
-                    return $membership->getUser()->id;
-                },
-                $user_memberships
-            ),
-            array_map(
-                function ($membership) {
-                    return $membership->getUser();
-                },
-                $user_memberships
-            )
-        );
-        return $users;
     }
 
     /**

@@ -10,6 +10,7 @@ use Pantheon\Terminus\Models\Branch;
  */
 class Branches extends SiteOwnedCollection
 {
+    public static $pretty_name = 'branches';
     /**
      * @var string
      */

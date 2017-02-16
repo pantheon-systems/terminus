@@ -41,7 +41,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listSites($organization, $options = ['tag' => null,])
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);

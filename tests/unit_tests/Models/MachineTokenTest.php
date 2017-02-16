@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\User;
 
 /**
  * Class MachineTokenTest
@@ -13,47 +14,68 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class MachineTokenTest extends ModelTestCase
 {
-    public function testDelete()
+    /**
+     * @var MachineTokens
+     */
+    protected $collection;
+    /**
+     * @var MachineToken
+     */
+    protected $model;
+
+    public function setUp()
     {
-        $collection = $this->getMockBuilder(MachineTokens::class)
+        parent::setUp();
+
+        $this->collection = $this->getMockBuilder(MachineTokens::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $collection->expects($this->once())
-            ->method('getUser')
-            ->willReturn((object)['id' => '123']);
 
-        $mt = new MachineToken((object)['id' => '456'], ['collection' => $collection]);
+        $this->model = new MachineToken((object)['id' => 'token_id',], ['collection' => $this->collection,]);
+        $this->model->setRequest($this->request);
+    }
 
-        $this->request->expects($this->at(0))
+    public function testDelete()
+    {
+        $user = $this->expectGetUser();
+        $this->request->expects($this->once())
             ->method('request')
-            ->with("users/123/machine_tokens/456", ['method' => 'delete'])
-            ->willReturn(['status_code' => 200]);
+            ->with("users/{$user->id}/machine_tokens/{$this->model->id}", ['method' => 'delete',])
+            ->willReturn(['status_code' => 200,]);
 
-        $mt->setRequest($this->request);
-
-        $mt->delete();
+        $out = $this->model->delete();
+        $this->assertNull($out);
     }
 
     public function testDeleteFail()
     {
-        $collection = $this->getMockBuilder(MachineTokens::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $collection->expects($this->once())
-            ->method('getUser')
-            ->willReturn((object)['id' => '123']);
-
-        $mt = new MachineToken((object)['id' => '456'], ['collection' => $collection]);
-
-        $this->request->expects($this->at(0))
+        $user = $this->expectGetUser();
+        $this->request->expects($this->once())
             ->method('request')
-            ->with("users/123/machine_tokens/456", ['method' => 'delete'])
-            ->willReturn(['status_code' => 404]);
-
-        $mt->setRequest($this->request);
+            ->with("users/{$user->id}/machine_tokens/{$this->model->id}", ['method' => 'delete',])
+            ->willReturn(['status_code' => 404,]);
 
         $this->setExpectedException(TerminusException::class);
-        
-        $mt->delete();
+
+        $out = $this->model->delete();
+        $this->assertNull($out);
+    }
+
+    /**
+     * Prepares the test case for the getUser() function.
+     *
+     * @return User The user object getUser() will return
+     */
+    protected function expectGetUser()
+    {
+        $user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user->id = 'user ID';
+        $this->collection->expects($this->once())
+            ->method('getUser')
+            ->with()
+            ->willReturn($user);
+        return $user;
     }
 }

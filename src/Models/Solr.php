@@ -2,21 +2,9 @@
 
 namespace Pantheon\Terminus\Models;
 
-class Solr extends TerminusModel
+class Solr extends AddOnModel
 {
-    /**
-     * @var Site
-     */
-    public $site;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site = $options['site'];
-    }
+    public static $pretty_name = 'Solr';
 
     /**
      * Disables Solr indexing
@@ -42,7 +30,7 @@ class Solr extends TerminusModel
     private function setStatus($status)
     {
         $this->request()->request(
-            "sites/{$this->site->id}/settings",
+            "sites/{$this->getSite()->id}/settings",
             ['method' => 'put', 'form_params' => ['allow_indexserver' => $status,],]
         );
     }

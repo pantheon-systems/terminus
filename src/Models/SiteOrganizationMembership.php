@@ -5,33 +5,18 @@ namespace Pantheon\Terminus\Models;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Friends\OrganizationJoinInterface;
+use Pantheon\Terminus\Friends\OrganizationJoinTrait;
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteTrait;
 
-class SiteOrganizationMembership extends TerminusModel implements ContainerAwareInterface
+class SiteOrganizationMembership extends TerminusModel implements ContainerAwareInterface, OrganizationJoinInterface, SiteInterface
 {
     use ContainerAwareTrait;
+    use OrganizationJoinTrait;
+    use SiteTrait;
 
-    /**
-     * @var Organization
-     */
-    public $organization;
-    /**
-     * @var Site
-     */
-    public $site;
-    /**
-     * @var object
-     */
-    protected $organization_data;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site = $options['collection']->getSite();
-        $this->organization_data = $attributes->organization;
-    }
+    public static $pretty_name = 'site-organization membership';
 
     /**
      * Remove membership of organization
@@ -40,30 +25,10 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      **/
     public function delete()
     {
-        return $this->site->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'remove_site_organization_membership',
             ['params' => ['organization_id' => $this->id,],]
         );
-    }
-
-    /**
-     * @return Organization
-     */
-    public function getOrganization()
-    {
-        if (empty($this->organization)) {
-            $this->organization = $this->getContainer()->get(Organization::class, [$this->organization_data]);
-            $this->organization->memberships = [$this,];
-        }
-        return $this->organization;
-    }
-
-    /**
-     * @return Site
-     */
-    public function getSite()
-    {
-        return $this->site;
     }
 
     /**
@@ -74,11 +39,12 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
     public function serialize()
     {
         $organization = $this->getOrganization();
+        $site = $this->getSite();
         return [
             'org_id' => $organization->id,
             'org_name' => $organization->get('profile')->name,
-            'site_id' => $this->site->id,
-            'site_name' => $this->site->getName(),
+            'site_id' => $site->id,
+            'site_name' => $site->getName(),
         ];
     }
 
@@ -90,7 +56,7 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
      */
     public function setRole($role)
     {
-        return $this->site->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'update_site_organization_membership',
             ['params' => ['organization_id' => $this->id, 'role' => $role,],]
         );

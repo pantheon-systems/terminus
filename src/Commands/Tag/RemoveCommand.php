@@ -2,18 +2,12 @@
 
 namespace Pantheon\Terminus\Commands\Tag;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
-
 /**
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Tag
  */
-class RemoveCommand extends TerminusCommand implements SiteAwareInterface
+class RemoveCommand extends TagCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Removes a tag from a site within an organization.
      *
@@ -30,13 +24,12 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function remove($site_name, $organization, $tag)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
-        $site = $org->getSiteMemberships()->get($site_name)->getSite();
-        $site->tags->get($tag)->delete();
+        list($org, $site, $tags) = $this->getModels($site_name, $organization);
+        $tags->get($tag)->delete();
 
         $this->log()->notice(
             '{org} has removed the {tag} tag from {site}.',
-            ['org' => $org->get('profile')->name, 'tag' => $tag, 'site' => $site->get('name'),]
+            ['org' => $org->getName(), 'tag' => $tag, 'site' => $site->getName(),]
         );
     }
 }

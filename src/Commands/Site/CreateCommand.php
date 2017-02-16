@@ -47,7 +47,7 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
 
         // Locate organization
         if (!is_null($org_id = $options['org'])) {
-            $org = $user->getOrgMemberships()->get($org_id)->getOrganization();
+            $org = $user->getOrganizationMemberships()->get($org_id)->getOrganization();
             $workflow_options['organization_id'] = $org->id;
         }
 

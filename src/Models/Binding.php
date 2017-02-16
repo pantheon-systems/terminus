@@ -8,4 +8,5 @@ namespace Pantheon\Terminus\Models;
  */
 class Binding extends TerminusModel
 {
+    public static $pretty_name = 'binding';
 }

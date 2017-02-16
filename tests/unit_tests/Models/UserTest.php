@@ -11,11 +11,7 @@ use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Robo\Config;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
-use Pantheon\Terminus\Models\UserSiteMembership;
 
 /**
  * Class UserTest
@@ -94,64 +90,6 @@ class UserTest extends ModelTestCase
         $this->assertEquals($aliases, $this->user->getAliases());
     }
 
-
-    /**
-     * Tests the User::getOrganizations() function
-     */
-    public function testGetOrganizations()
-    {
-        $memberships = [
-            (object)[
-                'id' => '1',
-                'organization' => new Organization((object)[
-                    'id' => 'org1',
-                    'other' => 'abc',
-                ])
-            ],
-            (object)[
-                'id' => '2',
-                'organization' => new Organization((object)[
-                    'id' => 'org2',
-                    'other' => 'cdf',
-                ])
-            ]
-        ];
-        $membs = [];
-        foreach ($memberships as $i => $membership) {
-            $membs[$i] = $this->getMockBuilder(UserOrganizationMembership::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $membs[$i]->expects($this->any())
-                ->method('getOrganization')
-                ->willReturn($membership->organization);
-        }
-        $orgs = [
-            'org1' => $memberships[0]->organization,
-            'org2' => $memberships[1]->organization,
-        ];
-
-        $orgmemberships = $this->getMockBuilder(UserOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $orgmemberships ->expects($this->once())
-            ->method('all')
-            ->willReturn($membs);
-
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $container->expects($this->once())
-            ->method('get')
-            ->with(UserOrganizationMemberships::class, [['user' => $this->user]])
-            ->willReturn($orgmemberships);
-
-        $this->user->setContainer($container);
-
-        $this->assertEquals($orgs, $this->user->getOrganizations());
-    }
-
     /**
      * Tests the User::getProfile() function
      */
@@ -169,65 +107,12 @@ class UserTest extends ModelTestCase
     }
 
     /**
-     * Tests the User::getSites() function
+     * Tests the User::getReferences() function
      */
-    public function testGetSites()
+    public function testGetReferences()
     {
-        $memberships_data = [
-            (object)[
-                'id' => '1',
-                'site' => (object)[
-                    'id' => 'site1',
-                    'other' => 'abc',
-                ],
-            ],
-            (object)[
-                'id' => '2',
-                'site' => (object)[
-                    'id' => 'site2',
-                    'other' => 'cdf',
-                ],
-            ]
-        ];
-
-        $memberships = [];
-        foreach ($memberships_data as $membership_data) {
-            $membership = $this->getMockBuilder(UserSiteMembership::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $site = $this->getMockBuilder(Site::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $site->method('get')
-                ->with('id')
-                ->willReturn($membership_data->site->id);
-
-            $membership->method('getSite')
-                ->willReturn($site);
-            $memberships[] = $membership;
-            $sites[$membership_data->site->id] = $site;
-        }
-
-        $sitememberships = $this->getMockBuilder(UserSiteMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $sitememberships->expects($this->once())
-            ->method('all')
-            ->willReturn($memberships);
-
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $container->expects($this->once())
-            ->method('get')
-            ->with(UserSiteMemberships::class, [['user' => $this->user]])
-            ->willReturn($sitememberships);
-
-        $this->user->setContainer($container);
-
-        $this->assertEquals($sites, $this->user->getSites());
+        $data = $this->user_data;
+        $this->assertEquals([$data['id'], $data['profile']->full_name, $data['email'],], $this->user->getReferences());
     }
 
     /**
@@ -259,7 +144,7 @@ class UserTest extends ModelTestCase
 
         $this->user->getPaymentMethods();
         $this->user->getMachineTokens();
-        $this->user->getOrgMemberships();
+        $this->user->getOrganizationMemberships();
         $this->user->getSiteMemberships();
         $this->user->getSSHKeys();
         $this->user->getUpstreams();

@@ -21,7 +21,6 @@ class ListCommandTest extends TagCommandTest
 
         $this->command = new ListCommand($this->config);
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
         $this->command->setSession($this->session);
     }
 
@@ -49,27 +48,19 @@ class ListCommandTest extends TagCommandTest
      */
     public function testListTagsWhenEmpty()
     {
-        $org = 'org';
         $tags = [];
 
         $this->tags->expects($this->once())
             ->method('ids')
             ->with()
             ->willReturn($tags);
-        $this->organization->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)['name' => $org,]);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($this->site->id);
+        $this->expectGetNames();
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('{org} does not have any tags for {site}.'),
-                $this->equalTo(['site' => $this->site->id, 'org' => $org,])
+                $this->equalTo(['site' => $this->site_name, 'org' => $this->org_name,])
             );
 
         $out = $this->command->listTags($this->site->id, $this->organization->id);

@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Collections\SSHKeys;
 use Pantheon\Terminus\Models\SSHKey;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\User;
 
 /**
  * Class SSHKeyTest
@@ -13,66 +14,77 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class SSHKeyTest extends ModelTestCase
 {
-    public function testDelete()
+    /**
+     * @var SSHKeys
+     */
+    protected $collection;
+    /**
+     * @var object
+     */
+    protected $key_data;
+    /**
+     * @var SSHKey
+     */
+    protected $model;
+    /**
+     * @var User
+     */
+    protected $user;
+
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
     {
-        $collection = $this->getMockBuilder(SSHKeys::class)
+        parent::setUp();
+
+        $this->collection = $this->getMockBuilder(SSHKeys::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $collection->expects($this->once())
-            ->method('getUser')
-            ->willReturn((object)['id' => '123']);
-        $sshkey = new SSHKey((object)['id' => '456'], ['collection' => $collection]);
+        $this->user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->user->id = 'user id';
+        $this->key_data = (object)[
+            'id' => '1234567890abcdef',
+            'key' => 'ssh-rsa AAAAB3xxx0uj+Q== dev@example.com'
+        ];
 
-        $this->request->expects($this->at(0))
+        $this->collection->method('getUser')->willReturn($this->user);
+
+        $this->model = new SSHKey($this->key_data, ['collection' => $this->collection,]);
+        $this->model->setRequest($this->request);
+    }
+
+    public function testDelete()
+    {
+        $this->request->expects($this->once())
             ->method('request')
-            ->with("users/123/keys/456", ['method' => 'delete'])
-            ->willReturn(['status_code' => 200]);
+            ->with("users/{$this->user->id}/keys/{$this->model->id}", ['method' => 'delete',])
+            ->willReturn(['status_code' => 200,]);
 
-        $sshkey->setRequest($this->request);
-
-        $sshkey->delete();
+        $out = $this->model->delete();
+        $this->assertNull($out);
     }
 
     public function testDeleteFail()
     {
-        $collection = $this->getMockBuilder(SSHKeys::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $collection->expects($this->once())
-            ->method('getUser')
-            ->willReturn((object)['id' => '123']);
-        $sshkey = new SSHKey((object)['id' => '456'], ['collection' => $collection]);
-
-        $this->request->expects($this->at(0))
+        $this->request->expects($this->once())
             ->method('request')
-            ->with("users/123/keys/456", ['method' => 'delete'])
-            ->willReturn(['status_code' => 404]);
-
-        $sshkey->setRequest($this->request);
+            ->with("users/{$this->user->id}/keys/{$this->model->id}", ['method' => 'delete',])
+            ->willReturn(['status_code' => 404,]);
 
         $this->setExpectedException(TerminusException::class);
 
-        $sshkey->delete();
+        $out = $this->model->delete();
+        $this->assertNull($out);
     }
 
     public function testGetCommentHex()
     {
-        $collection = $this->getMockBuilder(SSHKeys::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $collection->expects($this->once())
-            ->method('getUser')
-            ->willReturn((object)['id' => '123']);
-        $sshkey = new SSHKey(
-            (object)[
-                'id' => '1234567890abcdef',
-                'key' => 'ssh-rsa AAAAB3xxx0uj+Q== dev@example.com'
-            ],
-            ['collection' => $collection]
-        );
-
-        $this->assertEquals('12:34:56:78:90:ab:cd:ef', $sshkey->getHex());
-        $this->assertEquals('dev@example.com', $sshkey->getComment());
+        $this->assertEquals(substr($this->key_data->id, 0, 2), substr($this->model->getHex(), 0, 2));
+        $key_split = explode(' ', $this->key_data->key);
+        $this->assertEquals(array_pop($key_split), $this->model->getComment());
     }
 
     public function testSerialize()
@@ -99,14 +111,11 @@ class SSHKeyTest extends ModelTestCase
                 'comment' => 'dev@baz.bar'
             ]
         ];
-        $collection = $this->getMockBuilder(SSHKeys::class)
-            ->disableOriginalConstructor()
-            ->getMock();
 
         foreach ($keys as $i => $key_data) {
             $sshkey = new SSHKey(
                 (object)$key_data,
-                ['collection' => $collection]
+                ['collection' => $this->collection]
             );
             $this->assertEquals($excpected[$i], $sshkey->serialize());
         }

@@ -2,16 +2,18 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\EnvironmentInterface;
+use Pantheon\Terminus\Friends\EnvironmentTrait;
+
 /**
  * Class Lock
  * @package Pantheon\Terminus\Models
  */
-class Lock extends TerminusModel
+class Lock extends TerminusModel implements EnvironmentInterface
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
+    use EnvironmentTrait;
+
+    public static $pretty_name = 'lock';
 
     /**
      * @inheritdoc
@@ -32,7 +34,7 @@ class Lock extends TerminusModel
      */
     public function enable($params)
     {
-        return $this->environment->getWorkflows()->create('lock_environment', compact('params'));
+        return $this->getEnvironment()->getWorkflows()->create('lock_environment', compact('params'));
     }
 
     /**
@@ -64,6 +66,6 @@ class Lock extends TerminusModel
      */
     public function disable()
     {
-        return $this->environment->getWorkflows()->create('unlock_environment');
+        return $this->getEnvironment()->getWorkflows()->create('unlock_environment');
     }
 }
