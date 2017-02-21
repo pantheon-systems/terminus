@@ -25,7 +25,7 @@ class RemoveCommand extends TerminusCommand
      */
     public function remove($organization, $member)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
         $workflow = $membership->delete();
         while (!$workflow->checkProgress()) {

@@ -6,7 +6,6 @@ use League\Container\Container;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\DataStore\FileStore;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\User;
 
@@ -82,17 +81,22 @@ class SavedTokensTest extends CollectionTestCase
         $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->token->id = $email;
 
         $this->container->expects($this->once())
             ->method('get')
             ->with(
                 $this->equalTo(SavedToken::class),
-                $this->equalTo([(object)['token' => $token_string,], ['collection' => $this->collection,]])
+                $this->equalTo([(object)['token' => $token_string,], ['collection' => $this->collection,],])
             )
             ->willReturn($this->token);
         $this->token->expects($this->once())
             ->method('setDataStore')
             ->with($this->equalTo($this->data_store));
+        $this->token->expects($this->once())
+            ->method('getReferences')
+            ->with()
+            ->willReturn([$this->token->id, $token_string,]);
         $this->token->expects($this->once())
             ->method('logIn')
             ->with()
@@ -128,50 +132,6 @@ class SavedTokensTest extends CollectionTestCase
             ->with();
 
         $out = $this->collection->deleteAll();
-        $this->assertNull($out);
-    }
-
-    /**
-     * Tests SavedTokens::get(string) when searching by model ID
-     */
-    public function testGetByID()
-    {
-        $this->makeTokensFetchable();
-        $out = $this->collection->get(0);
-        $this->assertEquals($out, $this->token);
-    }
-
-    /**
-     * Tests SavedTokens::get(string) when searching by token
-     */
-    public function testGetByToken()
-    {
-        $token = '111111111111111111111111111111111111111111111';
-        $this->makeTokensFetchable();
-
-        $this->token->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('token'))
-            ->willReturn($token);
-
-        $out = $this->collection->get($token);
-        $this->assertEquals($out, $this->token);
-    }
-
-    /**
-     * Tests SavedTokens::get(string) when the token is not present
-     */
-    public function testGetDNE()
-    {
-        $token_name = 'invalid';
-        $this->makeTokensFetchable();
-
-        $this->setExpectedException(
-            TerminusException::class,
-            "Could not find a saved token identified by $token_name."
-        );
-
-        $out = $this->collection->get($token_name);
         $this->assertNull($out);
     }
 

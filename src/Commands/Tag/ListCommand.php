@@ -3,18 +3,13 @@
 namespace Pantheon\Terminus\Commands\Tag;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Tag
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TagCommand
 {
-    use SiteAwareTrait;
-
     /**
      * Displays the list of tags for a site within an organization.
      *
@@ -32,15 +27,14 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listTags($site_name, $organization)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
-        $site = $org->getSiteMemberships()->get($site_name)->getSite();
-        $tags = $site->tags->ids();
-        if (empty($tags)) {
+        list($org, $site, $tags) = $this->getModels($site_name, $organization);
+        $tag_list = $tags->ids();
+        if (empty($tag_list)) {
             $this->log()->notice(
                 '{org} does not have any tags for {site}.',
-                ['org' => $org->get('profile')->name, 'site' => $site->get('name'),]
+                ['org' => $org->getName(), 'site' => $site->getName(),]
             );
         }
-        return new PropertyList($tags);
+        return new PropertyList($tag_list);
     }
 }

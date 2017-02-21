@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\EnvironmentInterface;
+use Pantheon\Terminus\Friends\EnvironmentTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -10,22 +12,12 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class Backup
  * @package Pantheon\Terminus\Models
  */
-class Backup extends TerminusModel implements ConfigAwareInterface
+class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentInterface
 {
     use ConfigAwareTrait;
-    /**
-     * @var environment
-     */
-    public $environment;
+    use EnvironmentTrait;
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->environment = $options['collection']->environment;
-    }
+    public static $pretty_name = 'backup';
 
     /**
      * Determines whether the backup has been completed or not
@@ -86,6 +78,14 @@ class Backup extends TerminusModel implements ConfigAwareInterface
     }
 
     /**
+     * @return string[]
+     */
+    public function getReferences()
+    {
+        return [$this->id, $this->get('filename'),];
+    }
+
+    /**
      * Returns the size of the backup in MB
      *
      * @return string A number (an integer or a float) followed by 'MB'.
@@ -111,10 +111,11 @@ class Backup extends TerminusModel implements ConfigAwareInterface
      */
     public function getUrl()
     {
+        $env = $this->getEnvironment();
         $path = sprintf(
             'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
-            $this->environment->site->id,
-            $this->environment->id,
+            $env->getSite()->id,
+            $env->id,
             $this->get('folder'),
             $this->get('type')
         );
@@ -147,11 +148,12 @@ class Backup extends TerminusModel implements ConfigAwareInterface
                 break;
         }
         $modified_id = str_replace("_$type", '', $this->id);
-        $workflow = $this->environment->getWorkflows()->create(
+        $env = $this->getEnvironment();
+        $workflow = $env->getWorkflows()->create(
             $wf_name,
             [
                 'params' => [
-                    'key' => "{$this->environment->site->id}/{$this->environment->id}/{$modified_id}/{$this->get('filename')}",
+                    'key' => "{$env->getSite()->id}/{$env->id}/{$modified_id}/{$this->get('filename')}",
                     'bucket' => $this->getBucket(),
                 ],
             ]

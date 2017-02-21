@@ -63,7 +63,7 @@ abstract class OrgSiteCommandTest extends CommandTestCase
         $this->session->method('getUser')
             ->with()
             ->willReturn($this->user);
-        $this->user->method('getOrgMemberships')
+        $this->user->method('getOrganizationMemberships')
             ->with()
             ->willReturn($this->user_org_memberships);
         $this->user_org_memberships->method('get')

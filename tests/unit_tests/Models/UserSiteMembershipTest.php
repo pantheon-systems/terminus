@@ -20,21 +20,9 @@ class UserSiteMembershipTest extends \PHPUnit_Framework_TestCase
      */
     protected $collection;
     /**
-     * @var Container
-     */
-    protected $container;
-    /**
-     * @var Site
-     */
-    protected $site;
-    /**
      * @var array
      */
     protected $site_data;
-    /**
-     * @var User
-     */
-    protected $user;
 
     /**
      * @inheritdoc
@@ -46,32 +34,16 @@ class UserSiteMembershipTest extends \PHPUnit_Framework_TestCase
         $this->collection = $this->getMockBuilder(UserSiteMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $this->site_data = [
             'id' => 'site id',
             'name' => 'site name',
             'label' => 'Site Label',
         ];
-        $this->user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user->id = 'user ID';
-
-        $this->collection->expects($this->once())
-            ->method('getUser')
-            ->with()
-            ->willReturn($this->user);
 
         $this->model = new UserSiteMembership(
-            (object)['site' => $this->site_data,],
+            (object)['site' => $this->site_data, 'id' => 'model id',],
             ['collection' => (object)$this->collection,]
         );
-        $this->model->setContainer($this->container);
     }
 
     /**
@@ -79,24 +51,9 @@ class UserSiteMembershipTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString()
     {
+        $user = $this->expectGetUser();
         $out = (string)$this->model;
-        $this->assertEquals("{$this->user->id}: Team", $out);
-    }
-
-    /**
-     * Tests the UserSiteMemberships::getSite() function
-     */
-    public function testGetSite()
-    {
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with(
-                $this->equalTo(Site::class),
-                $this->equalTo([$this->site_data,])
-            )
-            ->willReturn($this->site);
-        $out = $this->model->getSite();
-        $this->assertEquals($this->site, $out);
+        $this->assertEquals("{$user->id}: Team", $out);
     }
 
     /**
@@ -104,7 +61,52 @@ class UserSiteMembershipTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetUser()
     {
+        $user = $this->expectGetUser();
         $out = $this->model->getUser();
-        $this->assertEquals($this->user, $out);
+        $this->assertEquals($user, $out);
+    }
+
+    /**
+     * Prepares the test case for the getSite() function.
+     *
+     * @return Site The site object getSite() will return
+     */
+    protected function expectGetSite()
+    {
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Site::class),
+                $this->equalTo([$this->site_data,])
+            )
+            ->willReturn($site);
+
+        $this->model->setContainer($container);
+        return $site;
+    }
+
+    /**
+     * Prepares the test case for the getUser() function.
+     *
+     * @return User The user object getUser() will return
+     */
+    protected function expectGetUser()
+    {
+        $user = $this->getMockBuilder(User::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $user->id = 'user ID';
+        $this->collection->expects($this->once())
+            ->method('getUser')
+            ->with()
+            ->willReturn($user);
+        return $user;
     }
 }

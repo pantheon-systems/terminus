@@ -15,9 +15,18 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class SavedTokenTest extends ModelTestCase
 {
-
-    protected $token;
+    /**
+     * @var FileStore
+     */
     protected $data_store;
+    /**
+     * @var Token
+     */
+    protected $token;
+    /**
+     * @var array
+     */
+    protected $token_data;
 
     public function setUp()
     {
@@ -26,8 +35,9 @@ class SavedTokenTest extends ModelTestCase
         $this->data_store = $this->getMockBuilder(FileStore::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->token_data = (object)['email' => 'dev@example.com', 'token' => '123',];
 
-        $this->token = new SavedToken((object)['email' => 'dev@example.com', 'token' => '123']);
+        $this->token = new SavedToken($this->token_data);
         $this->token ->setDataStore($this->data_store);
     }
 
@@ -42,10 +52,10 @@ class SavedTokenTest extends ModelTestCase
         $this->request->expects($this->once())
             ->method('request')
             ->with('authorize/machine-token', [
-                'form_params' => ['machine_token' => '123', 'client' => 'terminus',],
+                'form_params' => ['machine_token' => $this->token_data->token, 'client' => 'terminus',],
                 'method' => 'post',
             ])
-            ->willReturn(['data' => (object)$session_data]);
+            ->willReturn(['data' => (object)$session_data,]);
 
         $session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
@@ -70,11 +80,11 @@ class SavedTokenTest extends ModelTestCase
         $this->data_store->expects($this->once())
             ->method('set')
             ->with(
-                'dev@example.com',
+                $this->token_data->email,
                 (object)[
-                    'email' => 'dev@example.com',
-                    'id' => 'dev@example.com',
-                    'token' => '123',
+                    'email' => $this->token_data->email,
+                    'id' => $this->token_data->email,
+                    'token' => $this->token_data->token,
                     'date' => time()
                 ]
             );
@@ -84,17 +94,21 @@ class SavedTokenTest extends ModelTestCase
 
     public function testDelete()
     {
-
         $this->data_store->expects($this->once())
             ->method('remove')
-            ->with('dev@example.com');
+            ->with($this->token_data->email);
 
         $this->token->delete();
     }
 
+    public function testGetReferences()
+    {
+        $this->assertEquals([$this->token_data->email, $this->token_data->token,], $this->token->getReferences());
+    }
+
     public function testInvalidID()
     {
-        $this->token = new SavedToken((object)['email' => '', 'token' => '123']);
+        $this->token = new SavedToken((object)['email' => '', 'token' => $this->token_data->token,]);
         $this->token ->setDataStore($this->data_store);
 
         $this->data_store->expects($this->never())

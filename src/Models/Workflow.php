@@ -17,10 +17,11 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     use ContainerAwareTrait;
     use SessionAwareTrait;
 
+    public static $pretty_name = 'workflow';
     /**
      * @var TerminusModel
      */
-    protected $owner;
+    private $owner;
 
     // @TODO: Make this configurable.
     const POLLING_PERIOD = 3;
@@ -90,7 +91,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
         $owner = $this->getOwnerObject();
         switch (get_class($owner)) {
             case Environment::class:
-                $this->url = "sites/{$owner->site->id}/workflows/{$this->id}";
+                $this->url = "sites/{$owner->getSite()->id}/workflows/{$this->id}";
                 break;
             case Organization::class:
                 $this->url = "users/{$this->session()->getUser()->id}/organizations/{$owner->id}/workflows/{$this->id}";

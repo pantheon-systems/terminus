@@ -20,6 +20,27 @@ use Pantheon\Terminus\Collections\Tags;
 abstract class TagCommandTest extends CommandTestCase
 {
     /**
+     * @var string
+     */
+    protected $org_name;
+    /**
+     * @var Organization
+     */
+    protected $organization;
+    /**
+     * @var Session
+     */
+    protected $session;
+    /**
+     * @var string
+     */
+    protected $site_name;
+    /**
+     * @var Tags
+     */
+    protected $tags;
+
+    /**
      * @inheritdoc
      */
     protected function setUp()
@@ -27,17 +48,19 @@ abstract class TagCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->site->id = 'site_id';
-
+        $this->site_name = 'site_name';
+        $this->org_name = 'org_name';
+        $this->organization = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $this->tags = $this->getMockBuilder(Tags::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
         $user_org_memberships = $this->getMockBuilder(UserOrganizationMemberships::class)
@@ -46,28 +69,23 @@ abstract class TagCommandTest extends CommandTestCase
         $user_org_membership = $this->getMockBuilder(UserOrganizationMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $this->organization->id = 'org_id';
-        $this->org_site_memberships = $this->getMockBuilder(OrganizationSiteMemberships::class)
+        $org_site_memberships = $this->getMockBuilder(OrganizationSiteMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
+        $org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->tags = $this->getMockBuilder(Tags::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->tags = $this->tags;
-        $this->org_site_membership->method('getSite')->willReturn($this->site);
 
         $this->session->expects($this->once())
             ->method('getUser')
             ->with()
             ->willReturn($user);
         $user->expects($this->once())
-            ->method('getOrgMemberships')
+            ->method('getOrganizationMemberships')
             ->with()
             ->willReturn($user_org_memberships);
         $user_org_memberships->expects($this->once())
@@ -81,10 +99,33 @@ abstract class TagCommandTest extends CommandTestCase
         $this->organization->expects($this->once())
             ->method('getSiteMemberships')
             ->with()
-            ->willReturn($this->org_site_memberships);
-        $this->org_site_memberships->expects($this->once())
+            ->willReturn($org_site_memberships);
+        $org_site_memberships->expects($this->once())
             ->method('get')
             ->with($this->site->id)
-            ->willReturn($this->org_site_membership);
+            ->willReturn($org_site_membership);
+        $org_site_membership->expects($this->once())
+            ->method('getSite')
+            ->with()
+            ->willReturn($this->site);
+        $org_site_membership->expects($this->once())
+            ->method('getTags')
+            ->with()
+            ->willReturn($this->tags);
+    }
+
+    /**
+     * Set the test to expect Organization::getName() and Site::getName()
+     */
+    protected function expectGetNames()
+    {
+        $this->site->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($this->site_name);
+        $this->organization->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($this->org_name);
     }
 }

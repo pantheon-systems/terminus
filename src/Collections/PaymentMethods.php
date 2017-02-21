@@ -12,6 +12,7 @@ use Pantheon\Terminus\Models\PaymentMethod;
  */
 class PaymentMethods extends UserOwnedCollection
 {
+    public static $pretty_name = 'payment methods';
     /**
      * @var string
      */

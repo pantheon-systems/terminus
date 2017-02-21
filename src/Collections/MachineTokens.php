@@ -10,6 +10,7 @@ use Pantheon\Terminus\Models\MachineToken;
  */
 class MachineTokens extends UserOwnedCollection
 {
+    public static $pretty_name = 'machine tokens';
     /**
      * @var string
      */

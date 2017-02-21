@@ -28,7 +28,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function add($site, $organization)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);
 
         $workflow = $site->getOrganizationMemberships()->create($organization, 'team_member');

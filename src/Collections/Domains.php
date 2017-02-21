@@ -11,6 +11,7 @@ use Pantheon\Terminus\Models\Domain;
  */
 class Domains extends EnvironmentOwnedCollection
 {
+    public static $pretty_name = 'domains';
     /**
      * @var string
      */
@@ -32,23 +33,13 @@ class Domains extends EnvironmentOwnedCollection
      */
     public function create($domain)
     {
-        $url = $this->replaceUrlTokens('sites/{site_id}/environments/{environment_id}/hostnames/');
-        $url .= rawurlencode($domain);
+        $url = $this->replaceUrlTokens("{$this->url}/") . rawurlencode($domain);
         $this->request->request($url, ['method' => 'put',]);
     }
 
     /**
-     * Changes the value of the hydration property
-     *
-     * @param mixed $value Value to set the hydration property to
-     * @return Domains
+     * @return string
      */
-    public function setHydration($value)
-    {
-        $this->hydrate = $value;
-        return $this;
-    }
-
     public function getUrl()
     {
         return parent::getUrl() . '?hydrate=' . $this->hydrate;
@@ -68,5 +59,17 @@ class Domains extends EnvironmentOwnedCollection
         } catch (TerminusNotFoundException $e) {
             return false;
         }
+    }
+
+    /**
+     * Changes the value of the hydration property
+     *
+     * @param mixed $value Value to set the hydration property to
+     * @return Domains
+     */
+    public function setHydration($value)
+    {
+        $this->hydrate = $value;
+        return $this;
     }
 }

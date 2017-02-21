@@ -2,25 +2,24 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\EnvironmentInterface;
+use Pantheon\Terminus\Friends\EnvironmentTrait;
+
 /**
  * Class UpstreamStatus
  * @package Pantheon\Terminus\Models
  */
-class UpstreamStatus extends TerminusModel
+class UpstreamStatus extends TerminusModel implements EnvironmentInterface
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
+    use EnvironmentTrait;
 
-    /**
-     * @inheritdoc
-     */
+    public static $pretty_name = 'upstream status';
+
     public function __construct($attributes, array $options = [])
     {
         parent::__construct($attributes, $options);
         if (isset($options['environment'])) {
-            $this->environment = $options['environment'];
+            $this->setEnvironment($options['environment']);
         }
     }
 
@@ -41,8 +40,9 @@ class UpstreamStatus extends TerminusModel
      */
     public function getUpdates()
     {
-        $base_branch = 'refs/heads/' . $this->environment->getBranchName();
-        return $this->request()->request("sites/{$this->environment->site->id}/code-upstream-updates?base_branch=$base_branch")['data'];
+        $env = $this->getEnvironment();
+        $base_branch = 'refs/heads/' . $env->getBranchName();
+        return $this->request()->request("sites/{$env->getSite()->id}/code-upstream-updates?base_branch=$base_branch")['data'];
     }
 
     /**

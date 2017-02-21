@@ -3,29 +3,18 @@
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Friends\UserInterface;
+use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class SSHKey
  * @package Pantheon\Terminus\Models
  */
-class SSHKey extends TerminusModel
+class SSHKey extends TerminusModel implements UserInterface
 {
-    /**
-     * @var User
-     */
-    public $user;
+    use UserTrait;
 
-    /**
-     * Object constructor
-     *
-     * @param object $attributes Attributes of this model
-     * @param array $options Options to configure this model
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->user = $options['collection']->getUser();
-    }
+    public static $pretty_name = 'SSH key';
 
     /**
      * Deletes a specific SSH key
@@ -35,7 +24,7 @@ class SSHKey extends TerminusModel
     public function delete()
     {
         $response = $this->request->request(
-            'users/' . $this->user->id . '/keys/' . $this->id,
+            'users/' . $this->getUser()->id . '/keys/' . $this->id,
             ['method' => 'delete',]
         );
         if ($response['status_code'] !== 200) {

@@ -33,7 +33,7 @@ class ListCommand extends TerminusCommand
      */
     public function listPeople($organization)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $members = $org->getUserMemberships()->serialize();
         if (empty($members)) {
             $this->log()->notice('{org} has no members.', ['org' => $org->get('profile')->name,]);

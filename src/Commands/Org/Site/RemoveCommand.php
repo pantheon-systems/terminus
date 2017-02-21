@@ -29,7 +29,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function remove($organization, $site)
     {
-        $org = $this->session()->getUser()->getOrgMemberships()->get($organization)->getOrganization();
+        $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getSiteMemberships()->get($site);
         $workflow = $membership->delete();
         while (!$workflow->checkProgress()) {
@@ -37,7 +37,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         }
         $this->log()->notice(
             '{site} has been removed from the {org} organization.',
-            ['site' => $membership->site->get('name'), 'org' => $org->get('profile')->name,]
+            ['site' => $membership->getSite()->get('name'), 'org' => $org->get('profile')->name,]
         );
     }
 }

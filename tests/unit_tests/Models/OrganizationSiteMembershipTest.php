@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
+use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
@@ -17,16 +18,59 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class OrganizationSiteMembershipTest extends ModelTestCase
 {
+    /**
+     * @var OrganizationSiteMemberships
+     */
+    protected $collection;
+    /**
+     * @var OrganizationSiteMembership
+     */
+    protected $model;
+    /**
+     * @var Organization
+     */
+    protected $organization;
+    /**
+     * @var array
+     */
+    protected $site_data;
+
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->collection = $this->getMockBuilder(OrganizationSiteMemberships::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site_data = ['id' => 'site id', 'name' => 'site name', 'label' => 'site label',];
+
+        $this->model = new OrganizationSiteMembership(
+            (object)['site' => $this->site_data, 'tags' => (object)[],],
+            ['collection' => $this->collection,]
+        );
+    }
+
+    /**
+     * Tests the UserSiteMemberships::__toString() function.
+     */
     public function testToString()
     {
-        $org = new Organization((object)['id' => '123', 'profile' => (object)['name' => 'My Org',],]);
-        $org_site = new OrganizationSiteMembership(
-            (object)['site' => (object)[], 'tags' => (object)[],],
-            ['collection' => (object)['organization' => $org,],]
-        );
-        $this->assertEquals('123: My Org', (string)$org_site);
+        $org_name = 'org name';
+        $organization = $this->expectGetOrganization();
+        $organization->expects($this->once())
+            ->method('getName')
+            ->with()
+            ->willReturn($org_name);
+
+        $this->assertEquals("{$organization->id}: $org_name", (string)$this->model);
     }
-    
+
+    /**
+     * Tests the UserSiteMemberships::delete() function.
+     */
     public function testDelete()
     {
         $site_data = ['site_id' => '123',];
@@ -35,37 +79,59 @@ class OrganizationSiteMembershipTest extends ModelTestCase
         $site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $site->method('get')->with('id')->willReturn('123');
+        $site->id = $site_data['site_id'];
         $container->add(Site::class, $site);
         $container->add(Tags::class);
 
-        $org = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
+        $organization = $this->expectGetOrganization();
         $workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $wf = $this->getMockBuilder(Workflow::class)
+        $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $workflows ->expects($this->once())
+        $organization->expects($this->once())
+            ->method('getWorkflows')
+            ->with()
+            ->willReturn($workflows);
+        $workflows->expects($this->once())
             ->method('create')
             ->with(
                 'remove_organization_site_membership',
                 ['params' => $site_data,]
             )
-            ->willReturn($wf);
-        $org->method('getWorkflows')->willReturn($workflows);
+            ->willReturn($workflow);
 
-        $org_site = new OrganizationSiteMembership(
-            (object)['site' => (object)$site_data, 'tags' => (object)[],],
-            ['collection' => (object)['organization' => $org,],]
-        );
-        $org_site->setContainer($container);
-        $out = $org_site->delete();
-        $this->assertEquals($wf, $out);
+        $this->model->setContainer($container);
+        $out = $this->model->delete();
+        $this->assertEquals($workflow, $out);
+    }
+
+    /**
+     * Tests the UserSiteMemberships::getOrganization() function.
+     */
+    public function testGetOrganization()
+    {
+        $organization = $this->expectGetOrganization();
+        $this->assertEquals($organization, $this->model->getOrganization());
+    }
+
+    /**
+     * Prepares the test case for the getOrganization() function.
+     *
+     * @return Organization The organization object getOrganization() will return
+     */
+    protected function expectGetOrganization()
+    {
+        $organization = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $organization->id = 'organization ID';
+        $this->collection->expects($this->once())
+            ->method('getOrganization')
+            ->with()
+            ->willReturn($organization);
+        return $organization;
     }
 }

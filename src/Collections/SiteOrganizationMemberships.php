@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
 
@@ -39,63 +37,5 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
             'add_site_organization_membership',
             ['params' => ['organization_name' => $name, 'role' => $role,],]
         );
-    }
-
-    /**
-     * Returns UUID of organization with given name
-     *
-     * @param string $name A name to search for
-     * @return SiteOrganizationMembership|null
-     */
-    public function findByName($name)
-    {
-        foreach ($this->models as $org_member) {
-            $org = $org_member->getName();
-            if ($name == $org) {
-                return $org_member;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves the model with organization of the given UUID or name
-     *
-     * @param string $id UUID or name of desired site membership instance
-     * @return OrganizationSiteMembership
-     */
-    public function get($id)
-    {
-        $models = $this->getMembers();
-        if (isset($models[$id])) {
-            return $models[$id];
-        } else {
-            foreach ($models as $membership) {
-                if (in_array($id, [$membership->getOrganization()->id, $membership->getOrganization()->getName()])) {
-                    return $membership;
-                }
-            }
-        }
-        throw new TerminusNotFoundException(
-            'Could not find an association for {org} organization with {site}.',
-            ['org' => $id, 'site' => $this->site->getName(),]
-        );
-    }
-
-    /**
-     * Returns UUID of organization with given name
-     *
-     * @param string $name A name to search for
-     * @return SiteOrganizationMembership|null
-     */
-    public function getUUID($name)
-    {
-        foreach ($this->models as $org_member) {
-            $org = $org_member->getName();
-            if ($name == $org) {
-                return $org_member;
-            }
-        }
-        return null;
     }
 }

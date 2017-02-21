@@ -2,28 +2,18 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\EnvironmentInterface;
+use Pantheon\Terminus\Friends\EnvironmentTrait;
+
 /**
  * Class Domain
  * @package Pantheon\Terminus\Models
  */
-class Domain extends TerminusModel
+class Domain extends TerminusModel implements EnvironmentInterface
 {
-    /**
-     * @var Environment
-     */
-    public $environment;
+    use EnvironmentTrait;
 
-    /**
-     * Object constructor
-     *
-     * @param object $attributes Attributes of this model
-     * @param array $options Options with which to configure this model
-     */
-    public function __construct($attributes, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->environment = $options['collection']->environment;
-    }
+    public static $pretty_name = 'domain';
 
     /**
      * Delete a domain from an environment
@@ -32,10 +22,11 @@ class Domain extends TerminusModel
      */
     public function delete()
     {
+        $env = $this->getEnvironment();
         $url = sprintf(
             'sites/%s/environments/%s/hostnames/%s',
-            $this->environment->site->id,
-            $this->environment->id,
+            $env->getSite()->id,
+            $env->id,
             rawurlencode($this->id)
         );
         $response = $this->request->request($url, ['method' => 'delete']);

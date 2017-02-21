@@ -2,25 +2,18 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteTrait;
+
 /**
  * Class Branch
  * @package Pantheon\Terminus\Models
  */
-class Branch extends TerminusModel
+class Branch extends TerminusModel implements SiteInterface
 {
-    /**
-     * @var Site
-     */
-    public $site;
+    use SiteTrait;
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site = $options['collection']->site;
-    }
+    public static $pretty_name = 'branch';
 
     /**
      * Deletes this branch from the site
@@ -29,7 +22,7 @@ class Branch extends TerminusModel
      */
     public function delete()
     {
-        return $this->site->getWorkflows()->create(
+        return $this->getSite()->getWorkflows()->create(
             'delete_environment_branch',
             ['params' => ['environment_id' => $this->id,],]
         );

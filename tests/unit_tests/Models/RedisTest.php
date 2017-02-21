@@ -48,7 +48,7 @@ class RedisTest extends ModelTestCase
         $workflows = $this->getMockBuilder(Workflows::class)
           ->disableOriginalConstructor()
           ->getMock();
-        $environment->workflows = $workflows;
+        $environment->method('getWorkflows')->willReturn($workflows);
 
         $this->site->id = 'site_id';
         $environment->id = 'env_id';

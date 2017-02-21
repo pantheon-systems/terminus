@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 
 /**
  * Class CommitsTest
@@ -17,12 +18,15 @@ class CommitsTest extends CollectionTestCase
         $this->environment = $this->getMockBuilder(Environment::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
+        $this->environment->method('getSite')->willReturn($site);
 
-        $commits = new Commits(['environment' => $this->environment]);
+        $commits = new Commits(['environment' => $this->environment,]);
 
-        $this->assertEquals('sites/abc/environments/dev/code-log', $commits->getUrl());
+        $this->assertEquals("sites/{$site->id}/environments/{$this->environment->id}/code-log", $commits->getUrl());
     }
 }

@@ -191,7 +191,7 @@ class CreateCommandTest extends CommandTestCase
 
         $this->expectUpstreams();
         $this->user->expects($this->once())
-            ->method('getOrgMemberships')
+            ->method('getOrganizationMemberships')
             ->with()
             ->willReturn($user_org_memberships);
         $user_org_memberships->expects($this->once())

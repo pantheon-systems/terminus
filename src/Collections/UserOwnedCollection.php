@@ -2,20 +2,19 @@
 
 namespace Pantheon\Terminus\Collections;
 
-use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Friends\UserInterface;
+use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class UserOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-class UserOwnedCollection extends TerminusCollection
+class UserOwnedCollection extends TerminusCollection implements UserInterface
 {
-    protected $user;
+    use UserTrait;
 
     /**
-     * Object constructor
-     *
-     * @param array $options Options to set as $this->key
+     * @inheritdoc
      */
     public function __construct($options = [])
     {
@@ -24,27 +23,11 @@ class UserOwnedCollection extends TerminusCollection
     }
 
     /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUser($user)
-    {
-        $this->user = $user;
-    }
-
-    /**
      * @inheritdoc
      */
     public function getUrl()
     {
         // Replace the {user_id} token with the actual user id.
-        return str_replace('{user_id}', $this->getUser()->get('id'), parent::getUrl());
+        return str_replace('{user_id}', $this->getUser()->id, parent::getUrl());
     }
 }

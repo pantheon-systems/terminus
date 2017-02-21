@@ -21,7 +21,6 @@ class RemoveCommandTest extends TagCommandTest
 
         $this->command = new RemoveCommand($this->config);
         $this->command->setLogger($this->logger);
-        $this->command->setSites($this->sites);
         $this->command->setSession($this->session);
     }
 
@@ -30,8 +29,6 @@ class RemoveCommandTest extends TagCommandTest
      */
     public function testRemove()
     {
-        $site_name = 'site_name';
-        $org_name = 'org_name';
         $tag_string = 'tag';
 
         $tag = $this->getMockBuilder(Tag::class)
@@ -44,21 +41,13 @@ class RemoveCommandTest extends TagCommandTest
         $tag->expects($this->once())
             ->method('delete')
             ->with();
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site_name);
-        $this->organization->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)['name' => $org_name,]);
-
+        $this->expectGetNames();
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('{org} has removed the {tag} tag from {site}.'),
-                $this->equalTo(['site' => $site_name, 'org' => $org_name, 'tag' => $tag_string,])
+                $this->equalTo(['site' => $this->site_name, 'org' => $this->org_name, 'tag' => $tag_string,])
             );
 
         $out = $this->command->remove($this->site->id, $this->organization->id, $tag_string);

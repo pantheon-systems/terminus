@@ -19,10 +19,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     use RequestAwareTrait;
 
     /**
-     * @var array
-     */
-    protected $args = [];
-    /**
      * @var string
      */
     protected $collected_class = TerminusModel::class;
@@ -118,13 +114,17 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function get($id)
     {
-        $models = $this->getMembers();
-        if (isset($models[$id])) {
-            return $models[$id];
+        foreach ($this->getMembers() as $member) {
+            if (in_array($id, $member->getReferences())) {
+                return $member;
+            }
         }
+        $class_name = $this->collected_class;
+        $pretty_name = $class_name::$pretty_name;
+        $particle = in_array(substr($pretty_name, 0, 1), ['a', 'e', 'i', 'o', 'u',]) ? 'an' : 'a';
         throw new TerminusNotFoundException(
-            'Could not find {model} "{id}"',
-            ['model' => $this->collected_class, 'id' => $id,],
+            "Could not find $particle {model} identified by {id}.",
+            ['model' => $pretty_name, 'id' => $id,],
             1
         );
     }
@@ -208,7 +208,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     protected function getCollectionData($options = [])
     {
-        $args = array_merge(['options' => ['method' => 'get',],], $this->args);
+        $args = ['options' => ['method' => 'get',],];
         if (isset($options['fetch_args'])) {
             $args = array_merge($args, $options['fetch_args']);
         }

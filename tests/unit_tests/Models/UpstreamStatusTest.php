@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\UpstreamStatus;
 
 /**
@@ -36,9 +37,13 @@ class UpstreamStatusTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->environment->id = 'environment id';
-        $this->environment->site = (object)['id' => 'site id',];
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
         $base_branch = "refs/heads/{$this->environment->id}";
-        $this->request_url = "sites/{$this->environment->site->id}/code-upstream-updates?base_branch=$base_branch";
+        $this->request_url = "sites/{$site->id}/code-upstream-updates?base_branch=$base_branch";
+        $this->environment->method('getSite')->willReturn($site);
 
         $this->environment->expects($this->once())
             ->method('getBranchName')

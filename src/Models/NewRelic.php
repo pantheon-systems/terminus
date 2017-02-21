@@ -2,31 +2,18 @@
 
 namespace Pantheon\Terminus\Models;
 
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
-
 /**
  * Class NewRelic
  * @package Pantheon\Terminus\Models
  */
-class NewRelic extends TerminusModel implements ConfigAwareInterface
+class NewRelic extends AddOnModel
 {
-    use ConfigAwareTrait;
 
+    public static $pretty_name = 'New Relic';
     /**
-     * @var Site
+     * @var string
      */
-    public $site;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site = $options['site'];
-        $this->url = "sites/{$this->site->id}/new-relic";
-    }
+    protected $url = 'sites/{site_id}/new-relic';
 
     /**
      * Disables New Relic
@@ -35,7 +22,8 @@ class NewRelic extends TerminusModel implements ConfigAwareInterface
      */
     public function disable()
     {
-        return $this->site->getWorkflows()->create('disable_new_relic_for_site', ['site' => $this->site->id,]);
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('disable_new_relic_for_site', ['site' => $site->id,]);
     }
 
     /**
@@ -45,7 +33,8 @@ class NewRelic extends TerminusModel implements ConfigAwareInterface
      */
     public function enable()
     {
-        return $this->site->getWorkflows()->create('enable_new_relic_for_site', ['site' => $this->site->id,]);
+        $site = $this->getSite();
+        return $site->getWorkflows()->create('enable_new_relic_for_site', ['site' => $site->id,]);
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
+use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -14,15 +16,23 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class DomainTest extends ModelTestCase
 {
+    /**
+     * @var Domain
+     */
+    protected $model;
+
     public function setUp()
     {
         parent::setUp();
 
-        $this->domain = $this->_createDomain(['id' => 'dev.example.com']);
+        $this->model = $this->_createDomain(['id' => 'dev.example.com']);
     }
 
     protected function _createDomain($attr)
     {
+        $collection = $this->getMockBuilder(Domains::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -33,11 +43,16 @@ class DomainTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->environment->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->environment->site = (object)['id' => 'abc'];
         $this->environment->id = 'dev';
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site->id = 'site id';
 
-        $domain = new Domain((object)$attr, ['collection' => (object)['environment' => $this->environment]]);
+        $this->environment->method('getSite')->willReturn($site);
+        $collection->method('getEnvironment')->willReturn($this->environment);
+
+        $domain = new Domain((object)$attr, ['collection' => $collection,]);
 
         $domain->setRequest($this->request);
         return $domain;
@@ -47,9 +62,8 @@ class DomainTest extends ModelTestCase
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with('sites/abc/environments/dev/hostnames/dev.example.com', ['method' => 'delete']);
-
-        $this->domain->delete();
+            ->with("sites/site id/environments/{$this->environment->id}/hostnames/dev.example.com", ['method' => 'delete',]);
+        $this->model->delete();
     }
     
     public function testSerialize()

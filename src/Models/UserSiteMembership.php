@@ -4,64 +4,28 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteJoinTrait;
+use Pantheon\Terminus\Friends\UserInterface;
+use Pantheon\Terminus\Friends\UserTrait;
 
 /**
  * Class UserSiteMembership
  * @package Pantheon\Terminus\Models
  */
-class UserSiteMembership extends TerminusModel implements ContainerAwareInterface
+class UserSiteMembership extends TerminusModel implements ContainerAwareInterface, SiteInterface, UserInterface
 {
     use ContainerAwareTrait;
+    use SiteJoinTrait;
+    use UserTrait;
 
-    /**
-     * @var Site
-     */
-    public $site;
-    /**
-     * @var User
-     */
-    public $user;
-
-    /**
-     * @var \stdClass
-     */
-    protected $site_info;
-
-    /**
-     * @inheritdoc
-     */
-    public function __construct($attributes = null, array $options = [])
-    {
-        parent::__construct($attributes, $options);
-        $this->site_info = $attributes->site;
-        $this->user = $options['collection']->getUser();
-    }
+    public static $pretty_name = 'user-site membership';
 
     /**
      * @inheritdoc
      */
     public function __toString()
     {
-        return "{$this->user->id}: Team";
-    }
-
-    /**
-     * @return Site
-     */
-    public function getSite()
-    {
-        if (!$this->site) {
-            $this->site = $this->getContainer()->get(Site::class, [$this->site_info]);
-            $this->site->memberships = [$this,];
-        }
-        return $this->site;
-    }
-
-    /**
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->user;
+        return "{$this->getUser()->id}: Team";
     }
 }
