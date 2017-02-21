@@ -18,7 +18,7 @@ class AddCommand extends TerminusCommand
      * @command org:people:add
      * @aliases org:ppl:add
      *
-     * @param string $organization Organization name or ID
+     * @param string $organization Organization name, label, or ID
      * @param string $email Email address
      * @param string $role [admin|unprivileged|team_member|developer] Role
      *
@@ -33,7 +33,7 @@ class AddCommand extends TerminusCommand
         }
         $this->log()->notice(
             '{email} has been added to the {org} organization as a(n) {role}.',
-            ['email' => $email, 'org' => $org->get('profile')->name, 'role' => $role,]
+            ['email' => $email, 'org' => $org->getName(), 'role' => $role,]
         );
     }
 }

@@ -76,38 +76,6 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return string[]
-     */
-    public function getReferences()
-    {
-        return [$this->id, $this->getProfile()->full_name, $this->get('email'),];
-    }
-
-    /**
-     * Formats User object into an associative array for output
-     *
-     * @return array $data associative array of data for output
-     */
-    public function serialize()
-    {
-        $first_name = $last_name = null;
-        if (isset($this->get('profile')->firstname)) {
-            $first_name = $this->get('profile')->firstname;
-        }
-        if (isset($this->get('profile')->lastname)) {
-            $last_name = $this->get('profile')->lastname;
-        }
-
-        $data = [
-            'firstname' => $first_name,
-            'lastname' => $last_name,
-            'email' => $this->get('email'),
-            'id' => $this->id,
-        ];
-        return $data;
-    }
-
-    /**
      * Retrieves Drush aliases for this user
      *
      * @return string
@@ -130,17 +98,6 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
         $response = $this->request->request($path, $options);
 
         $this->aliases = $response['data']->drush_aliases;
-    }
-
-    /**
-     * @return PaymentMethods
-     */
-    public function getPaymentMethods()
-    {
-        if (empty($this->payment_methods)) {
-            $this->payment_methods = $this->getContainer()->get(PaymentMethods::class, [['user' => $this,],]);
-        }
-        return $this->payment_methods;
     }
 
     /**
@@ -167,6 +124,17 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * @return PaymentMethods
+     */
+    public function getPaymentMethods()
+    {
+        if (empty($this->payment_methods)) {
+            $this->payment_methods = $this->getContainer()->get(PaymentMethods::class, [['user' => $this,],]);
+        }
+        return $this->payment_methods;
+    }
+
+    /**
      * @return object
      */
     public function getProfile()
@@ -182,6 +150,14 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getName()
     {
         return $this->getProfile()->full_name;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getReferences()
+    {
+        return [$this->id, $this->getProfile()->full_name, $this->get('email'),];
     }
 
     /**
@@ -226,5 +202,21 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->workflows = $this->getContainer()->get(Workflows::class, [['user' => $this,],]);
         }
         return $this->workflows;
+    }
+
+    /**
+     * Formats User object into an associative array for output
+     *
+     * @return array $data associative array of data for output
+     */
+    public function serialize()
+    {
+        $profile = $this->getProfile();
+        return [
+            'firstname' => isset($profile->firstname) ? $profile->firstname : null,
+            'lastname' => isset($profile->lastname) ? $profile->lastname : null,
+            'email' => $this->get('email'),
+            'id' => $this->id,
+        ];
     }
 }

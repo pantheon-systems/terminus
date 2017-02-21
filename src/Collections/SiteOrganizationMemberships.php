@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
 
@@ -25,17 +26,17 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
     protected $url = 'sites/{site_id}/memberships/organizations';
 
     /**
-     * Adds this org as a member to the site
+     * Adds this organization as a member of the site.
      *
-     * @param string $name Name of site to add org to
+     * @param Organization $organization An object representing the organization
      * @param string $role Role for supporting organization to take
      * @return Workflow
      **/
-    public function create($name, $role)
+    public function create(Organization $organization, $role)
     {
         return $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
-            ['params' => ['organization_name' => $name, 'role' => $role,],]
+            ['params' => ['organization_name' => $organization->getLabel(), 'role' => $role,],]
         );
     }
 }

@@ -61,7 +61,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
      */
     public function testRemove()
     {
-        $org_name = 'Organization Name';
+        $org_name = 'organization-name';
         $site_name = 'Site Name';
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
@@ -75,13 +75,13 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->method('checkProgress')
             ->willReturn(true);
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
+            ->method('getName')
+            ->with()
             ->willReturn($site_name);
         $this->organization->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)['name' => $org_name,]);
+            ->method('getName')
+            ->with()
+            ->willReturn($org_name);
 
         $this->logger->expects($this->once())
             ->method('log')

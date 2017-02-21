@@ -21,13 +21,13 @@ class ListCommand extends TerminusCommand
      *
      * @field-labels
      *     id: ID
-     *     first_name: First Name
-     *     last_name: Last Name
+     *     firstname: First Name
+     *     lastname: Last Name
      *     email: Email
      *     role: Role
      * @return RowsOfFields
      *
-     * @param string $organization Organization name or ID
+     * @param string $organization Organization name, label, or ID
      *
      * @usage <organization> Displays the list of users associated with <organization>.
      */
@@ -36,7 +36,7 @@ class ListCommand extends TerminusCommand
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $members = $org->getUserMemberships()->serialize();
         if (empty($members)) {
-            $this->log()->notice('{org} has no members.', ['org' => $org->get('profile')->name,]);
+            $this->log()->notice('{org} has no members.', ['org' => $org->getName(),]);
         }
         return new RowsOfFields($members);
     }

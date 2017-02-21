@@ -33,7 +33,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     tags: Tags
      * @return RowsOfFields
      *
-     * @param string $organization Organization name or ID
+     * @param string $organization Organization name, label, or ID
      * @option string $tag Tag name to filter
      *
      * @usage <organization> Displays the list of sites associated with <organization>.

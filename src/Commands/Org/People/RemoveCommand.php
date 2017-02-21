@@ -18,7 +18,7 @@ class RemoveCommand extends TerminusCommand
      * @command org:people:remove
      * @aliases org:people:rm org:ppl:remove org:ppl:rm
      *
-     * @param string $organization Organization name or ID
+     * @param string $organization Organization name, label, or ID
      * @param string $member User UUID, email address, or full name
      *
      * @usage <organization> <user> Removes the user, <user>, from <organization>.
@@ -33,7 +33,7 @@ class RemoveCommand extends TerminusCommand
         }
         $this->log()->notice(
             '{member} has been removed from the {org} organization.',
-            ['member' => $membership->getUser()->get('profile')->full_name, 'org' => $org->get('profile')->name,]
+            ['member' => $membership->getUser()->getName(), 'org' => $org->getName(),]
         );
     }
 }

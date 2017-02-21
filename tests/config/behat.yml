@@ -16,7 +16,7 @@ default:
               other_user:              'otheruser@pantheon.io'
               php_site_domain:         'pantheonsite.io'
               payment_method_label:    'Visa - 1111'
-              organization_name:       'Organization Name'
+              organization_name:       'organization-name'
               machine_token:           '111111111111111111111111111111111111111111111'
               machine_token_device:    'Behat Testing Token'
               machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
