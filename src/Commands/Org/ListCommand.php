@@ -22,6 +22,7 @@ class ListCommand extends TerminusCommand
      * @field-labels
      *     id: ID
      *     name: Name
+     *     label: Label
      * @return RowsOfFields
      *
      * @usage Displays the list of organizations.

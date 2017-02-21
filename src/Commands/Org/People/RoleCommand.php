@@ -18,7 +18,7 @@ class RoleCommand extends TerminusCommand
      * @command org:people:role
      * @aliases org:ppl:role
      *
-     * @param string $organization Organization name or ID
+     * @param string $organization Organization name, label, or ID
      * @param string $member User UUID, email address, or full name
      * @param string $role [unprivileged|admin|team_member|developer] Role
      *
@@ -35,9 +35,9 @@ class RoleCommand extends TerminusCommand
         $this->log()->notice(
             "{member}'s role has been changed to {role} in the {org} organization.",
             [
-                'member' => $membership->getUser()->get('profile')->full_name,
+                'member' => $membership->getUser()->getName(),
                 'role' => $role,
-                'org' => $org->get('profile')->name,
+                'org' => $org->getName(),
             ]
         );
     }

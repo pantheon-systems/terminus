@@ -31,10 +31,10 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $site = $this->getSite($site);
 
-        $workflow = $site->getOrganizationMemberships()->create($organization, 'team_member');
+        $workflow = $site->getOrganizationMemberships()->create($org, 'team_member');
         $this->log()->notice(
             'Adding {org} as a supporting organization to {site}.',
-            ['site' => $site->getName(), 'org' => $org->getName()]
+            ['site' => $site->getName(), 'org' => $org->getName(),]
         );
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

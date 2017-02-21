@@ -27,7 +27,7 @@ class ListCommand extends SiteCommand
      *
      * @option team Team-only filter
      * @option owner Owner filter; "me" or user UUID
-     * @option org Organization filter; "all" or organization UUID
+     * @option org Organization filter; "all" or an organization's name, label, or ID
      * @option name Name filter
      *
      * @usage Displays the list of all sites accessible to the currently logged-in user.

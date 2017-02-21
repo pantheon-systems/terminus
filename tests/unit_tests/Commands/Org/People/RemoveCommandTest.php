@@ -48,17 +48,17 @@ class RemoveCommandTest extends OrgPeopleCommandTest
             ->method('checkProgress')
             ->willReturn(true);
         $this->organization->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)['name' => $org_name,]);
+            ->method('getName')
+            ->with()
+            ->willReturn($org_name);
         $this->org_user_membership->expects($this->once())
             ->method('getUser')
             ->with()
             ->willReturn($this->user);
         $this->user->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn((object)compact('full_name'));
+            ->method('getName')
+            ->with()
+            ->willReturn($full_name);
 
         $this->logger->expects($this->once())
             ->method('log')

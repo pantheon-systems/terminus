@@ -53,14 +53,14 @@ class AddCommandTest extends OrgSiteCommandTest
 
         $this->org_memberships->expects($this->once())
             ->method('create')
-            ->with('org_id', 'team_member')
+            ->with($this->organization, 'team_member')
             ->willReturn($workflow);
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Adding {org} as a supporting organization to {site}.'),
-                $this->equalTo(['site' => 'my-site', 'org' => 'org_id'])
+                $this->equalTo(['site' => 'my-site', 'org' => 'org_id',])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(

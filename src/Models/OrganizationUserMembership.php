@@ -39,15 +39,7 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
      */
     public function serialize()
     {
-        $user = $this->getUser();
-        $profile = $user->get('profile');
-        return [
-            'id' => $user->id,
-            'first_name' => $profile->firstname,
-            'last_name' => $profile->lastname,
-            'email' => $user->get('email'),
-            'role' => $this->get('role'),
-        ];
+        return array_merge($this->getUser()->serialize(), ['role' => $this->get('role'),]);
     }
 
     /**

@@ -140,23 +140,19 @@ class OrganizationUserMembershipTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerialize()
     {
-        $expected = [
+        $user_data = [
             'id' => $this->user_data['id'],
             'first_name' => $this->user_data['profile']->firstname,
             'last_name' => $this->user_data['profile']->lastname,
             'email' => $this->user_data['email'],
-            'role' => $this->role,
         ];
+        $expected = array_merge($user_data, ['role' => $this->role,]);
 
         $user = $this->expectGetUser();
-        $user->expects($this->at(0))
-            ->method('get')
-            ->with($this->equalTo('profile'))
-            ->willReturn($this->user_data['profile']);
-        $user->expects($this->at(1))
-            ->method('get')
-            ->with($this->equalTo('email'))
-            ->willReturn($this->user_data['email']);
+        $user->expects($this->once())
+            ->method('serialize')
+            ->with()
+            ->willReturn($user_data);
 
         $out = $this->model->serialize();
         $this->assertEquals($expected, $out);

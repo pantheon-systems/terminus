@@ -16,7 +16,7 @@ class AddCommand extends TagCommand
      * @command tag:add
      *
      * @param string $site_name Site name
-     * @param string $organization Organization name or UUID
+     * @param string $organization Organization name, label, or ID
      * @param string $tag Tag
      *
      * @usage <site> <org> <tag> Adds the <tag> tag to <site> within <org>.

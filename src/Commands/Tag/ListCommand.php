@@ -19,7 +19,7 @@ class ListCommand extends TagCommand
      * @aliases tags
      *
      * @param string $site_name Site name
-     * @param string $organization Organization name or UUID
+     * @param string $organization Organization name, label, or ID
      *
      * @return PropertyList
      *
