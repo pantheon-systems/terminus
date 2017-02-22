@@ -7,6 +7,8 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Friends\ProfileInterface;
+use Pantheon\Terminus\Friends\ProfileTrait;
 use Pantheon\Terminus\Friends\SitesInterface;
 use Pantheon\Terminus\Friends\SitesTrait;
 use Pantheon\Terminus\Friends\UsersInterface;
@@ -16,9 +18,14 @@ use Pantheon\Terminus\Friends\UsersTrait;
  * Class Organization
  * @package Pantheon\Terminus\Models
  */
-class Organization extends TerminusModel implements ContainerAwareInterface, SitesInterface, UsersInterface
+class Organization extends TerminusModel implements
+    ContainerAwareInterface,
+    ProfileInterface,
+    SitesInterface,
+    UsersInterface
 {
     use ContainerAwareTrait;
+    use ProfileTrait;
     use SitesTrait;
     use UsersTrait;
 
@@ -65,7 +72,7 @@ class Organization extends TerminusModel implements ContainerAwareInterface, Sit
      */
     public function getLabel()
     {
-        return $this->getProfile()->name;
+        return $this->getProfile()->get('name');
     }
 
     /**
@@ -75,15 +82,7 @@ class Organization extends TerminusModel implements ContainerAwareInterface, Sit
      */
     public function getName()
     {
-        return $this->getProfile()->machine_name;
-    }
-
-    /**
-     * @return object
-     */
-    public function getProfile()
-    {
-        return $this->get('profile');
+        return $this->getProfile()->get('machine_name');
     }
 
     /**
@@ -99,7 +98,7 @@ class Organization extends TerminusModel implements ContainerAwareInterface, Sit
      */
     public function getSiteMemberships()
     {
-        if (!$this->site_memberships) {
+        if (empty($this->site_memberships)) {
             $this->site_memberships = $this->getContainer()
                 ->get(OrganizationSiteMemberships::class, [['organization' => $this,],]);
         }
@@ -124,8 +123,7 @@ class Organization extends TerminusModel implements ContainerAwareInterface, Sit
     public function getWorkflows()
     {
         if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()
-                ->get(Workflows::class, [['organization' => $this,],]);
+            $this->workflows = $this->getContainer()->get(Workflows::class, [['organization' => $this,],]);
         }
         return $this->workflows;
     }
@@ -134,8 +132,9 @@ class Organization extends TerminusModel implements ContainerAwareInterface, Sit
      * Formats the Organization object into an associative array for output
      *
      * @return array Associative array of data for output
-     *         string id   The UUID of the organization
-     *         string name The name of the organization
+     *         string id    The UUID of the organization
+     *         string name  The name of the organization
+     *         string label The human-readable name of the organization
      */
     public function serialize()
     {

@@ -6,7 +6,6 @@ use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
-use League\Container\Argument\RawArgument;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\Backups;
@@ -47,6 +46,7 @@ use Pantheon\Terminus\Models\NewRelic;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
+use Pantheon\Terminus\Models\Profile;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\SavedToken;
 use Pantheon\Terminus\Models\Site;
@@ -279,6 +279,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(NewRelic::class);
         $container->add(Tags::class);
         $container->add(Tag::class);
+        $container->add(Profile::class);
 
         // Helpers
         $container->add(LocalMachineHelper::class);
