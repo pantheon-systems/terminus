@@ -9,7 +9,7 @@ use Pantheon\Terminus\Friends\OrganizationTrait;
  * Class OrganizationOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-class OrganizationOwnedCollection extends TerminusCollection implements OrganizationInterface
+abstract class OrganizationOwnedCollection extends TerminusCollection implements OrganizationInterface
 {
     use OrganizationTrait;
 
