@@ -8,60 +8,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Collections\Backups;
-use Pantheon\Terminus\Collections\Bindings;
-use Pantheon\Terminus\Collections\Branches;
-use Pantheon\Terminus\Collections\Commits;
-use Pantheon\Terminus\Collections\Environments;
-use Pantheon\Terminus\Collections\Domains;
-use Pantheon\Terminus\Collections\Loadbalancers;
-use Pantheon\Terminus\Collections\PaymentMethods;
-use Pantheon\Terminus\Collections\MachineTokens;
-use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
-use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\SavedTokens;
-use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Collections\SiteUserMemberships;
-use Pantheon\Terminus\Collections\SSHKeys;
-use Pantheon\Terminus\Collections\Tags;
-use Pantheon\Terminus\Collections\Upstreams;
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
-use Pantheon\Terminus\Collections\UserSiteMemberships;
-use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\Backup;
-use Pantheon\Terminus\Models\Binding;
-use Pantheon\Terminus\Models\Branch;
-use Pantheon\Terminus\Models\Commit;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Domain;
-use Pantheon\Terminus\Models\PaymentMethod;
-use Pantheon\Terminus\Models\Loadbalancer;
-use Pantheon\Terminus\Models\Lock;
-use Pantheon\Terminus\Models\MachineToken;
-use Pantheon\Terminus\Models\NewRelic;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\OrganizationSiteMembership;
-use Pantheon\Terminus\Models\OrganizationUserMembership;
-use Pantheon\Terminus\Models\Profile;
-use Pantheon\Terminus\Models\Redis;
-use Pantheon\Terminus\Models\SavedToken;
-use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\SiteOrganizationMembership;
-use Pantheon\Terminus\Models\SiteUserMembership;
-use Pantheon\Terminus\Models\Solr;
-use Pantheon\Terminus\Models\SSHKey;
-use Pantheon\Terminus\Models\Tag;
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\UpstreamStatus;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
-use Pantheon\Terminus\Models\UserSiteMembership;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Plugins\PluginAutoload;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
@@ -83,6 +34,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 use VCR\VCR;
 
 /**
@@ -137,7 +89,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     /**
      * Runs the instantiated Terminus application
      *
-     * @param InputInterface  $input  An input object to run the application with
+     * @param InputInterface $input An input object to run the application with
      * @param OutputInterface $output An output object to run the application with
      * @return integer $status_code The exiting status code of the application
      */
@@ -178,7 +130,28 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     private function addDefaultArgumentsAndOptions(Application $app)
     {
-        $app->getDefinition()->addOption(new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"'));
+        $app->getDefinition()->addOption(
+            new InputOption('--yes', '-y', InputOption::VALUE_NONE, 'Answer all confirmations with "yes"')
+        );
+    }
+
+    /**
+     * Adds every non-abstract class in a directory to the container
+     *
+     * @param string $relative_dir
+     */
+    private function addDirToContainer($relative_dir)
+    {
+        $container = $this->getContainer();
+        $files = Finder::create()->files()->in(__DIR__ . DIRECTORY_SEPARATOR . $relative_dir)->name('*.php');
+        foreach ($files as $file) {
+            $file = str_replace(PHP_EOL, ' ', file_get_contents($file->getRealpath()));
+            if (strpos($file, 'abstract class') === false) {
+                preg_match('/namespace (.*?);/', $file, $namespace);
+                preg_match('/class (.*?) /', $file, $class);
+                $container->add($namespace[1] . '\\' . $class[1]);
+            }
+        }
     }
 
     /**
@@ -187,7 +160,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     private function addPluginsCommandsAndHooks()
     {
         // Rudimentary plugin loading.
-        $discovery = $this->getContainer()->get(PluginDiscovery::class, [$this->getConfig()->get('plugins_dir')]);
+        $discovery = $this->getContainer()->get(PluginDiscovery::class, [$this->getConfig()->get('plugins_dir'),]);
         $plugins = $discovery->discover();
         $version = $this->config->get('version');
         foreach ($plugins as $plugin) {
@@ -230,56 +203,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             ->invokeMethod('setDataStore', [$token_store]);
 
         // Add the models and collections
-        $container->add(User::class);
-        $container->add(SavedTokens::class);
-        $container->add(SavedToken::class);
-        $container->add(PaymentMethods::class);
-        $container->add(PaymentMethod::class);
-        $container->add(SSHKeys::class);
-        $container->add(SSHKey::class);
-        $container->add(Workflows::class);
-        $container->add(Workflow::class);
-        $container->add(WorkflowOperation::class);
-        $container->add(Loadbalancers::class);
-        $container->add(MachineTokens::class);
-        $container->add(MachineToken::class);
-        $container->add(Upstream::class);
-        $container->add(Upstreams::class);
-        $container->add(UpstreamStatus::class);
-        $container->add(UserSiteMemberships::class);
-        $container->add(UserSiteMembership::class);
-        $container->add(UserOrganizationMemberships::class);
-        $container->add(UserOrganizationMembership::class);
-        $container->add(OrganizationSiteMemberships::class);
-        $container->add(OrganizationSiteMembership::class);
-        $container->add(OrganizationUserMemberships::class);
-        $container->add(OrganizationUserMembership::class);
-        $container->add(Organization::class);
-        $container->add(Branches::class);
-        $container->add(Branch::class);
-        $container->add(SiteUserMemberships::class);
-        $container->add(SiteUserMembership::class);
-        $container->add(SiteOrganizationMemberships::class);
-        $container->add(SiteOrganizationMembership::class);
-        $container->add(Site::class);
-        $container->add(Redis::class);
-        $container->add(Solr::class);
-        $container->add(Environments::class);
-        $container->add(Environment::class);
-        $container->add(Backups::class);
-        $container->add(Backup::class);
-        $container->add(Loadbalancer::class);
-        $container->add(Lock::class);
-        $container->add(Bindings::class);
-        $container->add(Binding::class);
-        $container->add(Domains::class);
-        $container->add(Domain::class);
-        $container->add(Commits::class);
-        $container->add(Commit::class);
-        $container->add(NewRelic::class);
-        $container->add(Tags::class);
-        $container->add(Tag::class);
-        $container->add(Profile::class);
+        $this->addDirToContainer('Models');
+        $this->addDirToContainer('Collections');
 
         // Helpers
         $container->add(LocalMachineHelper::class);
@@ -340,7 +265,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      * @param string[] $options Elements as follow:
      *        string cassette The name of the fixture in tests/fixtures to record or run in this feature test run
      *        string mode     Mode in which to run PHP-VCR (options are none, once, strict, and new_episodes)
-     * @return void
      */
     private function startVCR(array $options = ['cassette' => 'tmp', 'mode' => 'none',])
     {
@@ -352,8 +276,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
     /**
      * Stops PHP-VCR's recording and playback
-     *
-     * @return void
      */
     private function stopVCR()
     {

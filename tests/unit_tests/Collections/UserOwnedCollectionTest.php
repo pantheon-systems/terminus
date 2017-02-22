@@ -7,21 +7,27 @@ use Pantheon\Terminus\Models\User;
 
 /**
  * Class UserOwnedCollectionTest
+ * Testing class for Pantheon\Terminus\Collections\UserOwnedCollection
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-class UserOwnedCollectionTest extends CollectionTestCase
+abstract class UserOwnedCollectionTest extends CollectionTestCase
 {
     /**
      * @var string
      */
     protected $class = UserOwnedCollection::class;
     /**
+     * @var UserOwnedCollection
+     */
+    protected $collection;
+    /**
      * @var null|string
      */
     protected $url = null;
 
-    protected $collection;
-
+    /**
+     * @inheritdoc
+     */
     public function setUp()
     {
         parent::setUp();
@@ -32,6 +38,9 @@ class UserOwnedCollectionTest extends CollectionTestCase
         $this->collection->setContainer($this->container);
     }
 
+    /**
+     * Tests the UserOwnedCollection::getUrl() function
+     */
     public function testGetURL()
     {
         $this->assertEquals($this->url, $this->collection->getUrl());

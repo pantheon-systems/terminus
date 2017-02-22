@@ -49,6 +49,7 @@ class TerminusTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $config = $this->getMockBuilder(Config::class)
+            ->setMethods(['get',])
             ->disableOriginalConstructor()
             ->getMock();
         $config->expects($this->at(0))
@@ -57,58 +58,73 @@ class TerminusTest extends \PHPUnit_Framework_TestCase
             ->willReturn(self::CURRENT_VERSION);
         $config->expects($this->at(1))
             ->method('get')
-            ->with($this->equalTo('time_zone'))
-            ->willReturn('UTC');
-        $config->expects($this->at(2))
-            ->method('get')
             ->with($this->equalTo('cache_dir'))
             ->willReturn(sys_get_temp_dir());
-        $config->expects($this->at(3))
+        $config->expects($this->at(2))
             ->method('get')
             ->with($this->equalTo('tokens_dir'))
             ->willReturn(sys_get_temp_dir());
-        $config->expects($this->at(4))
+        $config->expects($this->at(3))
             ->method('get')
-            ->with($this->equalTo('cache_dir'))
+            ->with($this->equalTo('command_cache_dir'))
             ->willReturn(sys_get_temp_dir());
-        $config->expects($this->at(5))
+        $config->expects($this->at(4))
             ->method('get')
             ->with($this->equalTo('plugins_dir'))
             ->willReturn(sys_get_temp_dir());
-        $config->expects($this->at(6))
+        $config->expects($this->at(5))
             ->method('get')
             ->with($this->equalTo('version'))
             ->willReturn(self::CURRENT_VERSION);
-        $config->expects($this->at(7))
+        $config->expects($this->at(6))
             ->method('get')
             ->with($this->equalTo('time_zone'))
-            ->willReturn('utc');
+            ->willReturn('UTC');
 
         $this->terminus = new Terminus($config, $this->input, $this->output);
 
-        // Setting a new config mock object so the counts won't start at 8
+        // Setting a new config mock object so the counts won't start at 7
         $this->config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->terminus->setConfig($this->config);
     }
 
+    /**
+     * Tests Terminus::run($input, $output) when not using VCR
+     */
     public function testRun()
     {
-        $formatter = $this->getMockBuilder(FormatterInterface::class)
-            ->setMethods(['format', 'write',])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $formatted_string = 'Formatted String';
-
-        $this->config->expects($this->any())
+        $this->config->expects($this->at(0))
             ->method('get')
-            ->willReturn('');
-        $this->output->expects($this->once())
-            ->method('getFormatter')
-            ->with()
-            ->willReturn($formatter);
-        $formatter->method('format')->willReturn($formatted_string);
+            ->with($this->equalTo('vcr_cassette'))
+            ->willReturn(null);
+        $this->config->expects($this->at(1))
+            ->method('get')
+            ->with($this->equalTo('cache_dir'))
+            ->willReturn(sys_get_temp_dir());
+
+        $out = $this->terminus->run($this->input, $this->output);
+        $this->equalTo(0, $out);
+    }
+
+    /**
+     * Tests Terminus::run($input, $output) when using VCR
+     */
+    public function testRunWithVCR()
+    {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestIncomplete("Windows CI doesn't have the necessary extensions.");
+        }
+
+        $this->config->expects($this->at(0))
+            ->method('get')
+            ->with($this->equalTo('vcr_cassette'))
+            ->willReturn('some_cassette');
+        $this->config->expects($this->at(1))
+            ->method('get')
+            ->with($this->equalTo('vcr_mode'))
+            ->willReturn('new_episodes');
 
         $out = $this->terminus->run($this->input, $this->output);
         $this->equalTo(0, $out);

@@ -9,7 +9,7 @@ use Pantheon\Terminus\Friends\SiteTrait;
  * Class SiteOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-class SiteOwnedCollection extends TerminusCollection implements SiteInterface
+abstract class SiteOwnedCollection extends TerminusCollection implements SiteInterface
 {
     use SiteTrait;
 
