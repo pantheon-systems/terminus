@@ -10,6 +10,7 @@ use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Profile;
 use Robo\Config;
 use Pantheon\Terminus\Models\User;
 
@@ -21,9 +22,17 @@ use Pantheon\Terminus\Models\User;
 class UserTest extends ModelTestCase
 {
     /**
+     * @var Container
+     */
+    protected $container;
+    /**
      * @var User
      */
-    protected $user;
+    protected $model;
+    /**
+     * @var Profile
+     */
+    protected $profile;
     /**
      * @var array
      */
@@ -36,6 +45,13 @@ class UserTest extends ModelTestCase
     {
         parent::setUp();
 
+        $this->container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->profile = $this->getMockBuilder(Profile::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->user_data = [
             'id' => '123',
             'email' => 'dev@example.com',
@@ -45,8 +61,9 @@ class UserTest extends ModelTestCase
                 'full_name' => 'Peter Pantheor',
             ],
         ];
-        $this->user = new User((object)$this->user_data);
-        $this->user->setRequest($this->request);
+        $this->model = new User((object)$this->user_data);
+        $this->model->setRequest($this->request);
+        $this->model->setContainer($this->container);
     }
 
     /**
@@ -68,9 +85,9 @@ class UserTest extends ModelTestCase
                 'https',
                 'dashboard.pantheon.io'
             );
-        $this->user->setConfig($config);
+        $this->model->setConfig($config);
 
-        $this->assertEquals('https://dashboard.pantheon.io/users/123#sites', $this->user->dashboardUrl());
+        $this->assertEquals("https://dashboard.pantheon.io/users/{$this->user_data['id']}#sites", $this->model->dashboardUrl());
     }
 
     /**
@@ -84,18 +101,10 @@ class UserTest extends ModelTestCase
             ->with("users/123/drush_aliases", ['method' => 'get',])
             ->willReturn(['data' => (object)['drush_aliases' => $aliases,],]);
 
-        $out = $this->user->getAliases();
+        $out = $this->model->getAliases();
         $this->assertEquals($aliases, $out);
         // Confirm that it returns the same output twice without calling to the API twice.
-        $this->assertEquals($aliases, $this->user->getAliases());
-    }
-
-    /**
-     * Tests the User::getProfile() function
-     */
-    public function testGetProfile()
-    {
-        $this->assertEquals($this->user->getProfile(), $this->user_data['profile']);
+        $this->assertEquals($aliases, $this->model->getAliases());
     }
 
     /**
@@ -103,7 +112,20 @@ class UserTest extends ModelTestCase
      */
     public function testGetName()
     {
-        $this->assertEquals($this->user_data['profile']->full_name, $this->user->getName());
+        $user_name = 'User Name';
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Profile::class),
+                $this->equalTo([$this->user_data['profile'],])
+            )
+            ->willReturn($this->profile);
+        $this->profile->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('full_name'))
+            ->willReturn($user_name);
+
+        $this->assertEquals($user_name, $this->model->getName());
     }
 
     /**
@@ -112,7 +134,19 @@ class UserTest extends ModelTestCase
     public function testGetReferences()
     {
         $data = $this->user_data;
-        $this->assertEquals([$data['id'], $data['profile']->full_name, $data['email'],], $this->user->getReferences());
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Profile::class),
+                $this->equalTo([$this->user_data['profile'],])
+            )
+            ->willReturn($this->profile);
+        $this->profile->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('full_name'))
+            ->willReturn($data['profile']->full_name);
+
+        $this->assertEquals([$data['id'], $data['profile']->full_name, $data['email'],], $this->model->getReferences());
     }
 
     /**
@@ -120,10 +154,6 @@ class UserTest extends ModelTestCase
      */
     public function testGetSubCollections()
     {
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $classes = [
             PaymentMethods::class,
             MachineTokens::class,
@@ -134,21 +164,19 @@ class UserTest extends ModelTestCase
             Workflows::class
         ];
         foreach ($classes as $i => $class) {
-            $container->expects($this->at($i))
+            $this->container->expects($this->at($i))
                 ->method('get')
-                ->with($class, [['user' => $this->user,],])
-                ->willReturn(new $class(['user' => $this->user,]));
+                ->with($class, [['user' => $this->model,],])
+                ->willReturn(new $class(['user' => $this->model,]));
         }
 
-        $this->user->setContainer($container);
-
-        $this->user->getPaymentMethods();
-        $this->user->getMachineTokens();
-        $this->user->getOrganizationMemberships();
-        $this->user->getSiteMemberships();
-        $this->user->getSSHKeys();
-        $this->user->getUpstreams();
-        $this->user->getWorkflows();
+        $this->model->getPaymentMethods();
+        $this->model->getMachineTokens();
+        $this->model->getOrganizationMemberships();
+        $this->model->getSiteMemberships();
+        $this->model->getSSHKeys();
+        $this->model->getUpstreams();
+        $this->model->getWorkflows();
     }
 
     /**
@@ -156,11 +184,30 @@ class UserTest extends ModelTestCase
      */
     public function testSerialize()
     {
-        $expected = array_merge($this->user_data, (array)$this->user_data['profile']);
-        unset($expected['profile']);
-        unset($expected['full_name']);
+        $data = $this->user_data;
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(Profile::class),
+                $this->equalTo([$this->user_data['profile'],])
+            )
+            ->willReturn($this->profile);
+        $this->profile->expects($this->at(0))
+            ->method('get')
+            ->with($this->equalTo('firstname'))
+            ->willReturn($data['profile']->firstname);
+        $this->profile->expects($this->at(1))
+            ->method('get')
+            ->with($this->equalTo('lastname'))
+            ->willReturn($data['profile']->lastname);
 
-        $data = $this->user->serialize();
-        $this->assertEquals($expected, $data);
+        $expected = [
+            'firstname' => $data['profile']->firstname,
+            'lastname' => $data['profile']->lastname,
+            'email' => $data['email'],
+            'id' => $data['id'],
+        ];
+
+        $this->assertEquals($expected, $this->model->serialize());
     }
 }

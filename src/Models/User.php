@@ -13,6 +13,8 @@ use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
+use Pantheon\Terminus\Friends\ProfileInterface;
+use Pantheon\Terminus\Friends\ProfileTrait;
 use Pantheon\Terminus\Friends\SitesInterface;
 use Pantheon\Terminus\Friends\SitesTrait;
 use Robo\Common\ConfigAwareTrait;
@@ -22,11 +24,17 @@ use Robo\Contract\ConfigAwareInterface;
  * Class User
  * @package Pantheon\Terminus\Models
  */
-class User extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface, OrganizationsInterface, SitesInterface
+class User extends TerminusModel implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    OrganizationsInterface,
+    ProfileInterface,
+    SitesInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
     use OrganizationsTrait;
+    use ProfileTrait;
     use SitesTrait;
 
     public static $pretty_name = 'user';
@@ -112,6 +120,16 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Get the user's full name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getProfile()->get('full_name');
+    }
+
+    /**
      * @return UserOrganizationMemberships
      */
     public function getOrganizationMemberships()
@@ -135,29 +153,11 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * @return object
-     */
-    public function getProfile()
-    {
-        return $this->get('profile');
-    }
-
-    /**
-     * Get the user's full name.
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->getProfile()->full_name;
-    }
-
-    /**
      * @return string[]
      */
     public function getReferences()
     {
-        return [$this->id, $this->getProfile()->full_name, $this->get('email'),];
+        return [$this->id, $this->getName(), $this->get('email'),];
     }
 
     /**
@@ -213,8 +213,8 @@ class User extends TerminusModel implements ConfigAwareInterface, ContainerAware
     {
         $profile = $this->getProfile();
         return [
-            'firstname' => isset($profile->firstname) ? $profile->firstname : null,
-            'lastname' => isset($profile->lastname) ? $profile->lastname : null,
+            'firstname' => $profile->get('firstname'),
+            'lastname' => $profile->get('lastname'),
             'email' => $this->get('email'),
             'id' => $this->id,
         ];

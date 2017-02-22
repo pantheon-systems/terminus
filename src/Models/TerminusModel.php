@@ -78,10 +78,7 @@ abstract class TerminusModel implements RequestAwareInterface
      */
     public function get($attribute)
     {
-        if ($this->has($attribute)) {
-            return $this->attributes->$attribute;
-        }
-        return null;
+        return $this->has($attribute) ? $this->attributes->$attribute : null;
     }
 
     /**
