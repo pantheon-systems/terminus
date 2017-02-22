@@ -22,4 +22,13 @@ trait OrganizationsTrait
         }
         return $orgs;
     }
+
+    /**
+     * @return SiteOrganizationMemberships|UserOrganizationMemberships
+     * @deprecated 1.0.1 Please use getOrganizationMemberships() instead.
+     */
+    public function getOrgMemberships()
+    {
+        return $this->getOrganizationMemberships();
+    }
 }

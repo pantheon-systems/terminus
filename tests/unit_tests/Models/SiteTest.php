@@ -307,12 +307,12 @@ class SiteTest extends ModelTestCase
     }
 
     /**
-     * Tests Site::getOrganizationMemberships()
+     * Tests Site::getOrganizationMemberships() and OrganizationsTrait::getOrgMemberships()
      */
     public function testGetOrganizationMemberships()
     {
-        $org_memberships = $this->model->getOrganizationMemberships();
-        $this->assertEquals($this->org_memberships, $org_memberships);
+        $this->assertEquals($this->org_memberships, $this->model->getOrganizationMemberships());
+        $this->assertEquals($this->org_memberships, $this->model->getOrgMemberships());
     }
 
     /**
