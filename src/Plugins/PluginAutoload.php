@@ -16,16 +16,26 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
+    protected $src_dir;
+
+    /**
+     * Pass in the source directory where Terminus sources are located.
+     */
+    public function __construct($src_dir)
+    {
+        $this->src_dir = $src_dir;
+    }
+
     /**
      * Called at the beginning of every command dispatch.
      * If this commandfile is a plugin, then search for its
      * autoload file and load it if necessary.
      */
-    public function initialize(InputInterface $input, AnnotationData $annotationData)
+    public function initialize(InputInterface $input, AnnotationData $annotation_data)
     {
-        $autoloadFile = $this->findAutoloadFile($annotationData['_path']);
-        if (!empty($autoloadFile)) {
-            include $autoloadFile;
+        $autoload_file = $this->findAutoloadFile($annotation_data['_path']);
+        if (!empty($autoload_file)) {
+            include $autoload_file;
         }
     }
 
@@ -38,17 +48,10 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
         if (!$path) {
             return;
         }
-        $terminusSrcDir = $this->findTerminusSrcDir();
-        if (!$terminusSrcDir) {
-            $this->logger->debug(
-                'Plugin Autoload: Could not find Terminus source directory.'
-            );
-            return;
-        }
 
         // If the commandfile path is inside Terminus, then
         // the autoload file has already been loaded.
-        if ($this->pathIsInside($path, $terminusSrcDir)) {
+        if ($this->pathIsInside($path, $this->src_dir)) {
             $this->logger->debug(
                 'Plugin Autoload: %dir is a Terminus source file.',
                 ['dir' => $path]
@@ -59,8 +62,8 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
         // Find the plugin's base directory -- the one that
         // contains the composer.json file. Abort if we cannot
         // find a base directory for the plugin.
-        $pluginBaseDir = $this->findPluginBaseDir($path);
-        if (!$pluginBaseDir) {
+        $plugin_dir = $this->findPluginBaseDir($path);
+        if (!$plugin_dir) {
             $this->logger->warning(
                 'Plugin Autoload: Could not find the plugin base dir for %dir.',
                 ['dir' => $path]
@@ -69,49 +72,30 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
         }
 
         // If there is no autoload file, then we might as well give up
-        $autoloadFile = $this->checkAutoloadPath($pluginBaseDir);
-        if (!$autoloadFile) {
-            // TODO: Maybe we should give a warning if there IS a composer.lock,
-            // but there is NOT an autoload file, so that we can tell the
-            // user to run 'composer install' (or do it for them).
-            // We don't support the composer.lock
-            // at this point anyway. It might be better to have the plugin
-            // manager take care of this at install time. This will happen
-            // automatically if installing via 'composer create-project'.
+        $autoload_file = $this->checkAutoloadPath($plugin_dir);
+        if (!$autoload_file) {
             $this->logger->debug(
                 'Plugin Autoload: %dir does not have an autoload file.',
-                ['dir' => $pluginBaseDir]
+                ['dir' => $plugin_dir]
             );
             return;
         }
 
         // If there is a composer.lock file here, then
         // validate that it is safe to load.
-        $this->validateComposerLock($pluginBaseDir, $terminusSrcDir);
+        $composer_validator = new ComposerDependencyValidator($this->src_dir);
+        $composer_validator->validate($plugin_dir);
 
-        return $autoloadFile;
-    }
-
-    /**
-     * Determine whether the provided path is inside Terminus itself.
-     */
-    protected function findTerminusSrcDir()
-    {
-        // The Terminus class is located at the root of our 'src'
-        // directory. Get the path to the class to determine
-        // whether or not the path we are testing is inside this
-        // same directory.
-        $terminusClass = new \ReflectionClass(\Pantheon\Terminus\Terminus::class);
-        return dirname($terminusClass->getFileName());
+        return $autoload_file;
     }
 
     /**
      * Return 'true' if $path is contained anywhere inside
-     * the provided $terminusSrcDir.
+     * the provided $src_dir.
      */
-    protected function pathIsInside($path, $terminusSrcDir)
+    protected function pathIsInside($path, $src_dir)
     {
-        return substr($path, 0, strlen($terminusSrcDir)) == $terminusSrcDir;
+        return substr($path, 0, strlen($src_dir)) == $src_dir;
     }
 
     /**
@@ -122,8 +106,8 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
     {
         // Walk up one directory. If we are already at the root,
         // then return.
-        $checkDir = dirname($path);
-        if ($checkDir == $path) {
+        $check_dir = dirname($path);
+        if ($check_dir == $path) {
             return;
         }
 
@@ -133,12 +117,12 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
         }
 
         // If there is a 'composer.json' file here, then we are done.
-        if (file_exists("$checkDir/composer.json")) {
-            return $checkDir;
+        if (file_exists("$check_dir/composer.json")) {
+            return $check_dir;
         }
 
         // Otherwise, keep scanning.
-        return $this->findPluginBaseDir($checkDir);
+        return $this->findPluginBaseDir($check_dir);
     }
 
     /**
@@ -147,137 +131,9 @@ class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
      */
     protected function checkAutoloadPath($path)
     {
-        $autoloadFile = "$path/vendor/autoload.php";
-        if (file_exists($autoloadFile)) {
-            return $autoloadFile;
+        $autoload_file = "$path/vendor/autoload.php";
+        if (file_exists($autoload_file)) {
+            return $autoload_file;
         }
-    }
-
-    /**
-     * Compare the contents of the composer.json and composer.lock files
-     * of the plugin being used, and see if anything contaied therein is
-     * incompatible with the projects loaded by Terminus itself.
-     */
-    protected function validateComposerLock($pluginBaseDir, $terminusSrcDir)
-    {
-        $pluginComposerJsonFile = $pluginBaseDir . '/composer.json';
-        $pluginComposerLockFile = $pluginBaseDir . '/composer.lock';
-        $pluginComposerJson = $this->loadJson($pluginComposerJsonFile);
-        $pluginComposerLock = $this->loadJson($pluginComposerLockFile);
-
-        // If there is no composer.lock file, that means that
-        // the plugin has autoload classes, but requires no dependencies.
-        // In this case, we know it is safe to load the autoload file.
-        if (empty($pluginComposerLock)) {
-            return;
-        }
-
-        $terminusComposerJsonFile = dirname($terminusSrcDir) . '/composer.json';
-        $terminusComposerLockFile = dirname($terminusSrcDir) . '/composer.lock';
-        $terminusComposerJson = $this->loadJson($terminusComposerJsonFile);
-        $terminusComposerLock = $this->loadJson($terminusComposerLockFile);
-
-        if (empty($terminusComposerJson) || empty($terminusComposerLock)) {
-            throw new TerminusException("Could not load Terminus composer data.");
-        }
-
-        // If the plugin contains a requirement for something that is part
-        // of Terminus' autoload file, reject the plugin. These should be
-        // fixed by the plugin author by removing .
-        $this->validatePluginDoesNotRequireTerminusDependencies($pluginComposerJsonFile, $terminusComposerLockFile);
-
-        // If the plugin's lock file contains a project that is also in
-        // Terminus' lock file, require them to be at exactly the same
-        // version number.
-        $this->validateLockFilesCompatible($pluginComposerJsonFile, $pluginComposerLockFile, $terminusComposerLockFile);
-    }
-
-    /**
-     * Ensure that the plugin does not directly 'require' any dependency
-     * that Terminus already provides. If it does, we will reject the
-     * plugin. The plugin author may remove this dependency from the
-     * plugin's composer.json file via 'composer remove'.
-     */
-    protected function validatePluginDoesNotRequireTerminusDependencies($pluginComposerJsonFile, $terminusComposerLockFile)
-    {
-        $pluginName = $pluginComposerJsonFile['name'];
-        $terminusPackages = $this->getLockFilePackages($terminusComposerLockFile);
-
-        // No requirements, no issue. This condition should never be
-        // true, though, for if it were, there would be no composer.lock.
-        if (!isset($pluginComposerJsonFile['require'])) {
-            return;
-        }
-        $pluginRequirements = $pluginComposerJsonFile['require'];
-        unset($pluginRequirements['php']);
-
-        foreach ($pluginRequirements as $project => $versionConstraints) {
-            if (array_key_exists($project, $terminusPackages)) {
-                throw new TerminusException("The plugin {name} requires the project {dependency}, which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer remove {dependency}' in the {name} plugin directory.", ['name' => $pluginName, 'dependency' => $project]);
-            }
-        }
-    }
-
-    /**
-     * Ensure that either:
-     *  a) nothing in the plugin composer.lock exists in Terminus's composer.lock (ideal)
-     * or
-     *  b) anything that does appear in both places exists as exactly the same version.
-     */
-    protected function validateLockFilesCompatible($pluginComposerJsonFile, $pluginComposerLockFile, $terminusComposerLockFile)
-    {
-        $pluginName = $pluginComposerJsonFile['name'];
-        $pluginPackages = $this->getLockFilePackages($pluginComposerLockFile);
-        $terminusPackages = $this->getLockFilePackages($terminusComposerLockFile);
-
-        foreach ($pluginPackages as $project => $version) {
-            if (array_key_exists($project, $terminusPackages)) {
-                if ($version != $terminusPackages[$project]) {
-                    throw new TerminusException("The plugin {name} has installed the project {dependency}: {version}, but Terminus has installed {dependency}: {otherversion}. To resolve this, try running 'composer update' in both the plugin directory, and the terminus directory.", ['name' => $pluginName, 'dependency' => $project, 'version' => $version, 'otherversion' => $terminusPackages[$project]]);
-                }
-            }
-        }
-    }
-
-    /**
-     * Look through the composer.lock file and gather up all of the
-     * projects contained therein. Return them as a simple associative
-     * array of name => version mappings.
-     */
-    protected function getLockFilePackages($lockFile)
-    {
-        $lockFile += ['packages' => [], 'packages-dev' => []];
-
-        return collectLockFilePackages($lockFile['packages']) + collectLockFilePackages($lockFile['packages-dev']);
-    }
-
-    /**
-     * Like 'getLockFilePackages', but operates on just one
-     * packages section.
-     */
-    protected function collectLockFilePackages($packages)
-    {
-        $result;
-
-        foreach ($packages as $package) {
-            $result[$packages['name']] = $packages['version'];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Read the contents of a file and convert to a json array.
-     */
-    protected function loadJson($pathToJson)
-    {
-        if (!file_exists($pathToJson)) {
-            return [];
-        }
-        $contents = file_get_contents($pathToJson);
-        if (empty($contents)) {
-            return [];
-        }
-        return json_decode($contents, true);
     }
 }
