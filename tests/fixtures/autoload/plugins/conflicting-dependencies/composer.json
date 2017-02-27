@@ -1,0 +1,6 @@
+{
+    "name": "org/conflicting-dependencies-plugin",
+    "require": {
+        "consolidation/log": "^1.0"
+    }
+}

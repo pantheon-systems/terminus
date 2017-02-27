@@ -1,0 +1,6 @@
+{
+    "name": "org/nested-dependencies-plugin",
+    "require": {
+        "org/project-with-dependencies": "^1.0"
+    }
+}

@@ -210,7 +210,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(LocalMachineHelper::class);
 
         // Plugin handlers
-        $container->share('pluginAutoload', PluginAutoload::class);
+        $container->share('pluginAutoload', PluginAutoload::class)
+            ->withArgument(__DIR__);
         $container->add(PluginDiscovery::class);
         $container->add(PluginInfo::class);
 
