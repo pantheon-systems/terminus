@@ -15,7 +15,7 @@
     "symfony/console": "^3.2",
     "symfony/finder": "~2.7|^3.2",
     "symfony/yaml": "~2.1|^3.2",
-    "consolidation/annotated-command": "^2.4.4"
+    "consolidation/annotated-command": "^2.4.5"
   },
   "autoload": {
     "psr-4": {
