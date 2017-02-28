@@ -302,7 +302,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'id' => $this->id,
             'name' => $this->get('name'),
             'label' => $this->get('label'),
-            'created' => date($this->getConfig()->get('date_format'), $this->get('created')),
+            'created' => date($this->getConfig()->get('date_format'), strtotime($this->get('created'))),
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
