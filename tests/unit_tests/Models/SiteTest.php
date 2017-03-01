@@ -391,7 +391,7 @@ class SiteTest extends ModelTestCase
             'id' => $this->model->id,
             'name' => 'site name',
             'label' => 'site label',
-            'created' => '-10318838400',
+            'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
             'service_level' => 'service level',
@@ -405,7 +405,64 @@ class SiteTest extends ModelTestCase
             'id' => $this->model->id,
             'name' => 'site name',
             'label' => 'site label',
-            'created' => '1643-01-04 00:00:00',
+            'created' => '1991-08-19 22:39:00',
+            'framework' => 'framework name',
+            'organization' => 'organization name',
+            'service_level' => 'service level',
+            'upstream' => '***UPSTREAM***',
+            'php_version' => '7.5',
+            'holder_type' => 'holder type',
+            'holder_id' => 'holder id',
+            'owner' => 'owner id',
+            'frozen' => 'true',
+            'memberships' => implode(',', $this->model->memberships),
+            'tags' => implode(',', $tags),
+        ];
+
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with($this->equalTo("sites/{$this->model->id}?site_state=true"))
+            ->willReturn(compact('data'));
+        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
+        $this->model->tags->expects($this->once())
+            ->method('ids')
+            ->with()
+            ->willReturn($tags);
+
+        $returned_data = $this->model->fetch()->serialize();
+        $this->assertEquals($expected_data, $returned_data);
+    }
+
+    /**
+     * Tests Site::serialize() when the given datetime is not a Unix timestamp
+     */
+    public function testSerializeNotTimestamp()
+    {
+        $this->configSet(['date_format' => 'Y-m-d H:i:s',]);
+        $this->model->tags = $this->getMockBuilder(Tags::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->model->memberships = ['membership1', 'membership2',];
+        $tags = ['tag1', 'tag2',];
+        $data = (object)[
+            'id' => $this->model->id,
+            'name' => 'site name',
+            'label' => 'site label',
+            'created' => 'August 19, 1991 10:39PM',
+            'framework' => 'framework name',
+            'organization' => 'organization name',
+            'service_level' => 'service level',
+            'php_version' => '75',
+            'holder_type' => 'holder type',
+            'holder_id' => 'holder id',
+            'owner' => 'owner id',
+            'frozen' => 'yes',
+        ];
+        $expected_data = [
+            'id' => $this->model->id,
+            'name' => 'site name',
+            'label' => 'site label',
+            'created' => '1991-08-19 22:39:00',
             'framework' => 'framework name',
             'organization' => 'organization name',
             'service_level' => 'service level',

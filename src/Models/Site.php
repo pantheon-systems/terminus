@@ -298,11 +298,12 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function serialize()
     {
+        $created_date = is_numeric($created = $this->get('created')) ? $created : strtotime($created);
         $data = [
             'id' => $this->id,
             'name' => $this->get('name'),
             'label' => $this->get('label'),
-            'created' => date($this->getConfig()->get('date_format'), $this->get('created')),
+            'created' => date($this->getConfig()->get('date_format'), $created_date),
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
