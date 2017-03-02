@@ -417,6 +417,7 @@ class SiteTest extends ModelTestCase
             'frozen' => 'true',
             'memberships' => implode(',', $this->model->memberships),
             'tags' => implode(',', $tags),
+            'max_num_cdes' => null,
         ];
 
         $this->request->expects($this->once())
@@ -474,6 +475,7 @@ class SiteTest extends ModelTestCase
             'frozen' => 'true',
             'memberships' => implode(',', $this->model->memberships),
             'tags' => implode(',', $tags),
+            'max_num_cdes' => null,
         ];
 
         $this->request->expects($this->once())

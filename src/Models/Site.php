@@ -307,6 +307,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
+            'max_num_cdes' => $this->get('max_num_cdes'),
             'upstream' => (string)$this->getUpstream(),
             'php_version' => $this->getPHPVersion(),
             'holder_type' => $this->get('holder_type'),
