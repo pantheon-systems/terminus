@@ -11,7 +11,10 @@ Terminus is Pantheon's Command Line Interface (CLI), providing at least equivale
 browser-based Dashboard and easier scripting.
 
 If you would like to contribute, pull requests are welcome!
- 
+
+## The Manual
+Our documentation is kept in the Terminus Manual, located here: https://pantheon.io/docs/terminus
+
 ## Dependencies
 ### Required
 - A command-line client
