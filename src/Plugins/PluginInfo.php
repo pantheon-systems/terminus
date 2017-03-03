@@ -52,13 +52,24 @@ class PluginInfo
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([])->setSearchDepth(self::MAX_COMMAND_DEPTH);
         $command_files = $discovery->discover($path, $namespace);
 
-        // @TODO: Decide if we should require an autoloader for plugins or just include the command files here.
-        $file_names = array_keys($command_files);
-        foreach ($file_names as $file) {
-            include $file;
-        }
-
         return $command_files;
+    }
+
+    /**
+     * Register an autoloader for the class files from the plugin itself
+     * at plugin discovery time.  Note that the classes from libraries that
+     * the plugin dependes on (from the `require` section of its composer.json)
+     * are not available until one of its commands is called.
+     * @param Composer\Autoload\ClassLoader $loader
+     */
+    public function autoloadPlugin($loader)
+    {
+        $info = $this->getInfo();
+        if (isset($info['autoload']['psr-4'])) {
+            foreach ($info['autoload']['psr-4'] as $prefix => $path) {
+                $loader->addPsr4($prefix, $this->plugin_dir . DIRECTORY_SEPARATOR . $path);
+            }
+        }
     }
 
     /**
@@ -85,7 +96,7 @@ class PluginInfo
 
         $composer_json = $this->plugin_dir . '/composer.json';
         if (!file_exists($composer_json)) {
-            throw new TerminusException('The file "{file}" is does not exist', ['file' => $composer_json]);
+            throw new TerminusException('The file "{file}" does not exist', ['file' => $composer_json]);
         }
         if (!is_readable($composer_json)) {
             throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);

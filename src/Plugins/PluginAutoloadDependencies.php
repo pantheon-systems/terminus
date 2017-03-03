@@ -10,9 +10,15 @@ use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
- * Class PluginAutoload
+ * Class PluginAutoloadDependencies
+ *
+ * Autoload the dependencies of a plugin -- libraries in the `require` section
+ * of the plugin's composer.json file.
+ *
+ * Note that an autoloader for the plugin's classes itself is registered
+ * by the PluginInfo class at plugin load time.
  */
-class PluginAutoload implements InitializeHookInterface, LoggerAwareInterface
+class PluginAutoloadDependencies implements InitializeHookInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

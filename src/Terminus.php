@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus;
 
+use Composer\Autoload\ClassLoader;
 use Composer\Semver\Semver;
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
@@ -13,7 +14,7 @@ use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Plugins\PluginAutoload;
+use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\Request\Request;
@@ -163,8 +164,10 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $discovery = $this->getContainer()->get(PluginDiscovery::class, [$this->getConfig()->get('plugins_dir'),]);
         $plugins = $discovery->discover();
         $version = $this->config->get('version');
+        $classLoader = $this->getContainer()->get('pluginClassLoader');
         foreach ($plugins as $plugin) {
             if (Semver::satisfies($version, $plugin->getCompatibleTerminusVersion())) {
+                $plugin->autoloadPlugin($classLoader);
                 $this->commands += $plugin->getCommandsAndHooks();
             } else {
                 $this->logger->warning(
@@ -210,10 +213,11 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(LocalMachineHelper::class);
 
         // Plugin handlers
-        $container->share('pluginAutoload', PluginAutoload::class)
+        $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
             ->withArgument(__DIR__);
         $container->add(PluginDiscovery::class);
-        $container->add(PluginInfo::class);
+        $container->share('pluginClassLoader', ClassLoader::class)
+            ->withMethodCall('register');
 
         // Update checker
         $container->add(LatestRelease::class);
@@ -232,8 +236,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $factory->setDataStore($commandCacheDataStore);
 
         // Call our autoload loader at the beginning of any command dispatch.
-        $pluginAutoload = $container->get('pluginAutoload');
-        $factory->hookManager()->addInitializeHook($pluginAutoload);
+        $pluginAutoloadDependencies = $container->get('pluginAutoloadDependencies');
+        $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
     }
 
     /**
