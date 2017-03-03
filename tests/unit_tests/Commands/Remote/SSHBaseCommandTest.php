@@ -72,7 +72,7 @@ class SSHBaseCommandTest extends CommandTestCase
         $this->environment->id = 'env_id';
         $command = 'dummy ' . implode(' ', $options);
 
-        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
+        $expectedLoggedCommand = 'dummy arg1';
 
         $this->environment->expects($this->once())
             ->method('get')
@@ -96,7 +96,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 $this->equalTo([
                     'site' => $site_name,
                     'env' => $this->environment->id,
-                    'command' => "$expectedEscapedCommand",
+                    'command' => "$expectedLoggedCommand",
                     'exit' => $status_code,
                 ])
             );
@@ -119,7 +119,7 @@ class SSHBaseCommandTest extends CommandTestCase
         $status_code = 0;
         $command = 'dummy ' . implode(' ', $options);
 
-        $expectedEscapedCommand = ProcessUtils::escapeArgument($command);
+        $expectedLoggedCommand = 'dummy arg1';
 
         $this->environment->expects($this->once())
             ->method('get')
@@ -148,7 +148,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 $this->equalTo([
                     'site' => $site_name,
                     'env' => $this->environment->id,
-                    'command' => "$expectedEscapedCommand",
+                    'command' => "$expectedLoggedCommand",
                     'exit' => $status_code,
                 ])
             );
