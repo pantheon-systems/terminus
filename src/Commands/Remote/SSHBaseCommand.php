@@ -52,6 +52,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         $this->validateEnvironment($this->site, $this->environment);
 
+        $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
         $output = $this->output();
@@ -66,7 +67,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
             'site'    => $this->site->get('name'),
             'env'     => $this->environment->id,
-            'command' => ProcessUtils::escapeArgument($command_line),
+            'command' => $command_summary,
             'exit'    => $exit,
         ]);
 
@@ -113,6 +114,36 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         array_unshift($command_args, $this->command);
         return implode(" ", $this->escapeArguments($command_args));
+    }
+
+    /**
+     * Return a summary of the command that does not include the
+     * arguments. This avoids potential information disclosure in
+     * CI scripts.
+     *
+     * @param array $command_args
+     * @return string
+     */
+    private function getCommandSummary($command_args)
+    {
+        return $this->command . ' ' . $this->firstArgument($command_args);
+    }
+
+    /**
+     * Return the first item of the $command_args that is not an option.
+     *
+     * @param array $command_args
+     * @return string
+     */
+    private function firstArgument($command_args)
+    {
+        while (!empty($command_args)) {
+            $first = array_shift($command_args);
+            if ($first[0] != '-') {
+                return $first;
+            }
+        }
+        return '';
     }
 
     /**
