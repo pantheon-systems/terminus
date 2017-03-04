@@ -17,7 +17,14 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
             $this->plugins_dir . 'invalid-no-composer-json',
             $this->plugins_dir . 'invalid-wrong-composer-type',
             $this->plugins_dir . 'with-namespace',
-            $this->plugins_dir . 'without-namespace'
+            $this->plugins_dir . 'without-namespace',
+            $this->plugins_dir . 'invalid-DNE',
+            $this->plugins_dir . 'invalid-is-a-file',
+            $this->plugins_dir . 'invalid-unreadable',
+            $this->plugins_dir . 'invalid-composer-json',
+            $this->plugins_dir . 'invalid-no-terminus-extras',
+            $this->plugins_dir . 'invalid-no-compatible-version',
+            $this->plugins_dir . 'invalid-namespace',
         ];
     }
 
@@ -32,10 +39,99 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('MIT', $info['license']);
     }
 
+    public function testFailDNE()
+    {
+        $this->setExpectedException(TerminusException::class);
+        new PluginInfo($this->paths[4]);
+    }
+
+    public function testFailFalsy()
+    {
+        $this->setExpectedException(TerminusException::class, 'No plugin directory was specified.');
+        new PluginInfo(false);
+    }
+
+    public function testFailInvalidComposerJson()
+    {
+        $this->setExpectedException(TerminusException::class);
+        new PluginInfo($this->paths[7]);
+    }
+
+    public function testFailIsAFile()
+    {
+        $this->setExpectedException(TerminusException::class);
+        new PluginInfo($this->paths[5]);
+    }
+
+    public function testFailIsUnreadable()
+    {
+        chmod($this->paths[6], 000);
+        $this->setExpectedException(TerminusException::class);
+        new PluginInfo($this->paths[6]);
+        chmod($this->paths[6], 755);
+    }
+
+    public function testFailInvalidComposerType()
+    {
+        $this->setExpectedException(
+            TerminusException::class,
+            'The composer.json must contain a "type" attribute with the value "terminus-plugin".'
+        );
+        new PluginInfo($this->paths[1]);
+    }
+
+    public function testFailInvalidNamespace()
+    {
+        $this->setExpectedException(
+            TerminusException::class,
+            'The namespace "OrgName\\\\PluginName" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "OrgName\\\\PluginName\\\\"'
+        );
+        new PluginInfo($this->paths[10]);
+    }
+
+    public function testFailNoCompatibleVersion()
+    {
+        $this->setExpectedException(
+            TerminusException::class,
+            'The composer.json must contain a "compatible-version" field in "extras/terminus"'
+        );
+        new PluginInfo($this->paths[9]);
+    }
+
+    public function testFailNoComposer()
+    {
+        $this->setExpectedException(TerminusException::class);
+        new PluginInfo($this->paths[0]);
+    }
+
+    public function testFailNoComposerExtras()
+    {
+        $this->setExpectedException(
+            TerminusException::class,
+            'The composer.json must contain a "terminus" section in "extras".'
+        );
+        new PluginInfo($this->paths[8]);
+    }
+
+    public function testGetName()
+    {
+        $plugin = new PluginInfo($this->paths[2]);
+        $this->assertEquals('orgname/with-namespace', $plugin->getName());
+
+        $plugin = new PluginInfo($this->paths[3]);
+        $this->assertEquals('without-namespace', $plugin->getName());
+    }
+
+    public function testGetTerminusVersion()
+    {
+        $plugin = new PluginInfo($this->paths[2]);
+        $this->assertEquals('1.*', $plugin->getCompatibleTerminusVersion());
+    }
+
     public function testLoadCommands()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->markTestIncomplete("Plugins not supported on Windows yet.");
+            $this->markTestIncomplete('Plugins not supported on Windows yet.');
         }
 
         $plugin = new PluginInfo($this->paths[2]);
@@ -55,32 +151,5 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         ];
         $actual = $plugin->getCommandsAndHooks();
         $this->assertEquals($expected, $actual);
-    }
-
-    public function testFailNoComposer()
-    {
-        $this->setExpectedException(TerminusException::class);
-        new PluginInfo($this->paths[0]);
-    }
-
-    public function testFailInvalidType()
-    {
-        $this->setExpectedException(TerminusException::class);
-        new PluginInfo($this->paths[0]);
-    }
-
-    public function testGetName()
-    {
-        $plugin = new PluginInfo($this->paths[2]);
-        $this->assertEquals('orgname/with-namespace', $plugin->getName());
-
-        $plugin = new PluginInfo($this->paths[3]);
-        $this->assertEquals('without-namespace', $plugin->getName());
-    }
-
-    public function testGetTerminusVersion()
-    {
-        $plugin = new PluginInfo($this->paths[2]);
-        $this->assertEquals('1.*', $plugin->getCompatibleTerminusVersion());
     }
 }

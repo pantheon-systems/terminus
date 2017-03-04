@@ -120,7 +120,7 @@ class TerminusTest extends \PHPUnit_Framework_TestCase
         $this->config->expects($this->at(0))
             ->method('get')
             ->with($this->equalTo('vcr_cassette'))
-            ->willReturn('some_cassette');
+            ->willReturn('some_cassette.yml');
         $this->config->expects($this->at(1))
             ->method('get')
             ->with($this->equalTo('vcr_mode'))
