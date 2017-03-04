@@ -40,7 +40,9 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->setMethods(['warning',])
             ->getMock();
-        $this->plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+
+        $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        $this->plugins_dir = str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $plugins_dir);
 
         $this->discovery = new PluginDiscovery($this->plugins_dir);
         $this->discovery->setContainer($this->container);
@@ -50,9 +52,8 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
     public function testDiscover()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->markTestIncomplete("Plugins not supported on Windows yet.");
+            //$this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
-
 
         $paths = [
             $this->plugins_dir  . 'invalid-no-composer-json',

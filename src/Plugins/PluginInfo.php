@@ -25,7 +25,7 @@ class PluginInfo
      */
     public function __construct($plugin_dir)
     {
-        $this->plugin_dir = $plugin_dir;
+        $this->plugin_dir = str_replace('/', DIRECTORY_SEPARATOR, $plugin_dir);
         $this->info = $this->parsePluginInfo();
     }
 
@@ -74,7 +74,7 @@ class PluginInfo
             throw new TerminusException('No plugin directory was specified');
         }
         if (!file_exists($this->plugin_dir)) {
-            throw new TerminusException('The directory "{dir}" is does not exist', ['dir' => $this->plugin_dir]);
+            throw new TerminusException('The directory "{dir}" does not exist', ['dir' => $this->plugin_dir]);
         }
         if (!is_dir($this->plugin_dir)) {
             throw new TerminusException('The file "{dir}" is not a directory', ['dir' => $this->plugin_dir]);
@@ -83,9 +83,9 @@ class PluginInfo
             throw new TerminusException('The directory "{dir}" is not readable', ['dir' => $this->plugin_dir]);
         }
 
-        $composer_json = $this->plugin_dir . '/composer.json';
+        $composer_json = $this->plugin_dir . DIRECTORY_SEPARATOR . 'composer.json';
         if (!file_exists($composer_json)) {
-            throw new TerminusException('The file "{file}" is does not exist', ['file' => $composer_json]);
+            throw new TerminusException('The file "{file}" does not exist', ['file' => $composer_json]);
         }
         if (!is_readable($composer_json)) {
             throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);
@@ -160,7 +160,7 @@ class PluginInfo
     private function getCommandFileDirectory()
     {
         $autoload = $this->getAutoloadInfo();
-        return $this->plugin_dir . '/' . $autoload['dir'];
+        return $this->plugin_dir . DIRECTORY_SEPARATOR . $autoload['dir'];
     }
 
     /**

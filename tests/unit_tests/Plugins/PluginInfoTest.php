@@ -11,7 +11,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        $plugins_dir = __DIR__ . '/../../fixtures/plugins/';
+        $this->plugins_dir = str_replace(['/', '\\',], DIRECTORY_SEPARATOR, $plugins_dir);
 
         $this->paths = [
             $this->plugins_dir . 'invalid-no-composer-json',
@@ -35,25 +36,36 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     public function testLoadCommands()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->markTestIncomplete("Plugins not supported on Windows yet.");
+            //$this->markTestIncomplete("Plugins not supported on Windows yet.");
         }
 
         $plugin = new PluginInfo($this->paths[2]);
 
+        $ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'with-namespace/src/Commands/NullCommand.php');
+        $opt_ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php');
         $expected = [
-            $this->plugins_dir . 'with-namespace/src/Commands/NullCommand.php' => 'OrgName\\PluginName\\Commands\\NullCommand',
-            $this->plugins_dir . 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php' => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
+            $this->plugins_dir . $ns_command => 'OrgName\\PluginName\\Commands\\NullCommand',
+            $this->plugins_dir . $opt_ns_command => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
-        $actual = $plugin->getCommandsAndHooks();
+        $actual = [];
+        foreach ($plugin->getCommandsAndHooks() as $key => $command) {
+            $key = str_replace('/', DIRECTORY_SEPARATOR, $key);
+            $actual[$key] = $command;
+        }
         $this->assertEquals($expected, $actual);
 
 
         $plugin = new PluginInfo($this->paths[3]);
 
+        $no_ns_command = str_replace('/', DIRECTORY_SEPARATOR, 'without-namespace/src/NullCommand.php');
         $expected = [
-            $this->plugins_dir . 'without-namespace/src/NullCommand.php' => 'NullCommand',
+            $this->plugins_dir . $no_ns_command => 'NullCommand',
         ];
-        $actual = $plugin->getCommandsAndHooks();
+        $actual = [];
+        foreach ($plugin->getCommandsAndHooks() as $key => $command) {
+            $key = str_replace('/', DIRECTORY_SEPARATOR, $key);
+            $actual[$key] = $command;
+        }
         $this->assertEquals($expected, $actual);
     }
 
