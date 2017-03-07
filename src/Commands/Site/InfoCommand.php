@@ -25,6 +25,7 @@ class InfoCommand extends SiteCommand
      *     framework: Framework
      *     organization: Organization
      *     service_level: Service Level
+     *     max_num_cdes: Max Multidevs
      *     upstream: Upstream
      *     php_version: PHP Version
      *     holder_type: Holder Type
