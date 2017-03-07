@@ -36,6 +36,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     use SessionAwareTrait;
 
     const PAGED_REQUEST_ENTRY_LIMIT = 100;
+    const HIDDEN_VALUE_REPLACEMENT = '**HIDDEN**';
+    const DEBUG_REQUEST_STRING = "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}";
+    const DEBUG_RESPONSE_STRING =  "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}";
 
     /**
      * Download file from target URL
@@ -122,17 +125,17 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     public function request($path, array $options = [])
     {
         $response = $this->send($path, $options);
-        $body = $response->getBody()->getContents();
+        $body = json_decode($response->getBody()->getContents());
         $data = [
-            'data' => json_decode($body),
+            'data' => $body,
             'headers' => $response->getHeaders(),
             'status_code' => $response->getStatusCode(),
         ];
         $this->logger->debug(
-            "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}",
+            self::DEBUG_RESPONSE_STRING,
             [
-                'data' => $body,
-                'headers' => json_encode($data['headers']),
+                'data' => json_encode($this->stripSensitiveInfo((array)$body)),
+                'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
                 'status_code' => $data['status_code'],
             ]
         );
@@ -169,7 +172,11 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $uri .= '?' . http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
         }
 
-        $body = isset($options['form_params']) ? json_encode($options['form_params']) : null;
+        $body = $debug_body = null;
+        if (isset($options['form_params'])) {
+            $body = json_encode($options['form_params']);
+            $debug_body = $options['form_params'];
+        }
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
 
@@ -179,18 +186,18 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         ]]);
 
         $this->logger->debug(
-            "#### REQUEST ####\nHeaders: {headers}\nURI: {uri}\nMethod: {method}\nBody: {body}",
+            self::DEBUG_REQUEST_STRING,
             [
-                'headers' => json_encode($headers),
+                'headers' => json_encode($this->stripSensitiveInfo($headers)),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => json_encode($body),
+                'body' => json_encode($this->stripSensitiveInfo($debug_body)),
             ]
         );
 
         //Required objects and arrays stir benign warnings.
         error_reporting(E_ALL ^ E_WARNING);
-        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body]);
+        $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
         error_reporting(E_ALL);
         $response = $client->send($request);
 
@@ -204,11 +211,12 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      */
     private function getBaseURI()
     {
+        $config = $this->getConfig();
         return sprintf(
             '%s://%s:%s',
-            $this->getConfig()->get('protocol'),
-            $this->getConfig()->get('host'),
-            $this->getConfig()->get('port')
+            $config->get('protocol'),
+            $config->get('host'),
+            $config->get('port')
         );
     }
 
@@ -220,9 +228,26 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     private function getDefaultHeaders()
     {
         return [
-            'User-Agent' => $this->userAgent(),
             'Content-type' => 'application/json',
+            'User-Agent' => $this->userAgent(),
         ];
+    }
+
+    /**
+     * @param array
+     * @return array
+     */
+    private function stripSensitiveInfo($data = [])
+    {
+        if (is_array($data)) {
+            $do_not_permit = ['machine_token', 'Authorization', 'session',];
+            foreach ($do_not_permit as $verboten) {
+                if (isset($data[$verboten])) {
+                    $data[$verboten] = self::HIDDEN_VALUE_REPLACEMENT;
+                }
+            }
+        }
+        return $data;
     }
 
     /**
@@ -232,11 +257,12 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      */
     private function userAgent()
     {
+        $config = $this->getConfig();
         return sprintf(
             'Terminus/%s (php_version=%s&script=%s)',
-            $this->getConfig()->get('version'),
-            $this->getConfig()->get('php_version'),
-            $this->getConfig()->get('script')
+            $config->get('version'),
+            $config->get('php_version'),
+            $config->get('script')
         );
     }
 }
