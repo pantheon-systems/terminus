@@ -10,6 +10,22 @@ Feature: Plugin Commands
     Command "hello" is not defined.
     """
 
+  Scenario: Running a simple plugin command that does not need autoloading
+    When I am using "no-namespace" plugins
+    And I run "terminus global:hello"
+    Then I should get:
+    """
+    [notice] Hello, World!
+    """
+
+  Scenario: Running a simple plugin command that does not need autoloading
+    When I am using "no-namespace" plugins
+    And I run "terminus with-global-base-class:hello"
+    Then I should get:
+    """
+    [notice] Hello, everyone!
+    """
+
   Scenario: Running a simple plugin command that uses autoloading but does not have dependencies
     When I am using "with-namespace" plugins
     And I run "terminus hello"
@@ -26,21 +42,16 @@ Feature: Plugin Commands
     [notice] Hello, everyone!
     """
 
-
-
-
-  Scenario: Running a simple plugin command that does not need autoloading
-    When I am using "no-namespace" plugins
-    And I run "terminus global:hello"
+  Scenario: Running a simple plugin command that has trivial dependencies
+    When I am using "with-dependencies" plugins
+    And I run "terminus dependencies:hello"
     Then I should get:
     """
-    [notice] Hello, World!
-    """
+    [notice] LengthUnits class NOT found in pre-init.
+    [notice] LengthUnits class found in post-init.
+    [notice] LengthUnits class found in main command implementation.
+    [notice] Hello, yd!
+     """
 
-  Scenario: Running a simple plugin command that does not need autoloading
-    When I am using "no-namespace" plugins
-    And I run "terminus with-global-base-class:hello"
-    Then I should get:
-    """
-    [notice] Hello, everyone!
-    """
+
+

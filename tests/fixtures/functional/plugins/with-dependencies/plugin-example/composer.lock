@@ -1,0 +1,51 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "cbde7ccf37c8080ce145f9a9d4df97f8",
+    "packages": [
+        {
+            "name": "example/trivial",
+            "version": "0.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/example/trivial.git",
+                "reference": "f50b3844ea6d5cb44bc32b9efd91b0d99d391753"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/example/trivial/zipball/f50b3844ea6d5cb44bc32b9efd91b0d99d391753",
+                "reference": "f50b3844ea6d5cb44bc32b9efd91b0d99d391753",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Example\\Trivial\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Trivial example",
+            "keywords": [
+                "trivial"
+            ],
+            "time": "2015-11-16T08:31:54+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

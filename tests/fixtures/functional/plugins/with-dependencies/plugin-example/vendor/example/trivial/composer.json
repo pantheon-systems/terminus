@@ -1,0 +1,15 @@
+{
+    "name": "example/trivial",
+    "description": "Trivial example",
+    "keywords": ["trivial"],
+    "type": "library",
+    "license": "MIT",
+    "require" : {
+        "php": ">=5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Example\\Trivial\\": "src/"
+        }
+    }
+}
