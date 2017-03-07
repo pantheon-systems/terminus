@@ -83,6 +83,9 @@ class SiteTest extends ModelTestCase
         $this->branches = $this->getMockBuilder(Branches::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->branches = $this->getMockBuilder(Branches::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->container = new Container();
         $this->environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
@@ -263,6 +266,48 @@ class SiteTest extends ModelTestCase
     {
         $environments = $this->model->getEnvironments();
         $this->assertEquals($this->environments, $environments);
+    }
+
+    /**
+     * Tests Site::getEnvironments()
+     */
+    public function testUnsetEnvironments()
+    {
+        $container = $this->getMockBuilder(Container::class)
+            ->setMethods(['get'])
+            ->getMock();
+
+        $model = new Site($this->site_data);
+
+        $model->setContainer($container);
+        $model->setRequest($this->request);
+        $model->setConfig($this->config);
+
+        // We can call 'getEnvironments()' as many times as we like;
+        // it will not be re-fetched from the container until after
+        // unsetEnvironments() is called.
+        $container->expects($this->exactly(2))
+            ->method('get')
+            ->with(
+                $this->equalTo(Environments::class),
+                $this->equalTo([['site' => $model,],])
+            )
+            ->willReturn($this->environments);
+
+        // First call fetches from container
+        $environments = $model->getEnvironments();
+
+        // Does not fetch from container
+        $environments = $model->getEnvironments();
+
+        // Erases Site::$environments
+        $model->unsetEnvironments();
+
+        // Re-fetches environments from container
+        $environments = $model->getEnvironments();
+
+        // Does not fetch from container
+        $environments = $model->getEnvironments();
     }
 
     /**
