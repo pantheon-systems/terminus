@@ -11,7 +11,7 @@ use Example\Trivial\Unit\LengthUnits;
 /**
  * Say hello to the user
  */
-class HelloCommand extends TerminusCommand
+class HelloDependenciesCommand extends TerminusCommand
 {
     /**
      * @hook pre-init dependencies:hello
