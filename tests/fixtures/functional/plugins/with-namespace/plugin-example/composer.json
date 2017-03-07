@@ -1,0 +1,14 @@
+{
+    "name": "pantheon-systems/terminus-plugin-example",
+    "description": "An example Terminus command",
+    "type": "terminus-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": { "Pantheon\\TerminusHello\\": "src" }
+    },
+    "extra": {
+        "terminus": {
+            "compatible-version": "1.*"
+        }
+    }
+}
