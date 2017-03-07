@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
-use Pantheon\Terminus\Plugins\PluginAutoload;
+use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 
 use League\Container\Container;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -13,7 +13,7 @@ use Psr\Log\NullLogger;
 class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var PluginAutoload
+     * @var PluginAutoloadDependencies
      */
     protected $autoload;
     /**
@@ -37,7 +37,7 @@ class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->plugins_dir = dirname(dirname(__DIR__)) . '/fixtures/autoload/plugins/';
 
-        $this->autoload = new PluginAutoload($this->findTerminusSrcDir());
+        $this->autoload = new PluginAutoloadDependencies($this->findTerminusSrcDir());
         $this->autoload->setLogger($this->logger);
     }
 
@@ -102,7 +102,7 @@ class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
     public function testMissingTerminusComposerData()
     {
         $path = $this->plugins_dir . 'with-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
-        $misconfigured = new PluginAutoload(__DIR__);
+        $misconfigured = new PluginAutoloadDependencies(__DIR__);
         $actual = $this->callProtected($misconfigured, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);
     }

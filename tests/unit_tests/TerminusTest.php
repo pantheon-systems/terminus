@@ -66,11 +66,11 @@ class TerminusTest extends \PHPUnit_Framework_TestCase
             ->willReturn(sys_get_temp_dir());
         $config->expects($this->at(3))
             ->method('get')
-            ->with($this->equalTo('command_cache_dir'))
+            ->with($this->equalTo('plugins_dir'))
             ->willReturn(sys_get_temp_dir());
         $config->expects($this->at(4))
             ->method('get')
-            ->with($this->equalTo('plugins_dir'))
+            ->with($this->equalTo('command_cache_dir'))
             ->willReturn(sys_get_temp_dir());
         $config->expects($this->at(5))
             ->method('get')

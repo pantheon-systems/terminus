@@ -52,13 +52,34 @@ class PluginInfo
         $discovery->setSearchPattern('*Command.php')->setSearchLocations([])->setSearchDepth(self::MAX_COMMAND_DEPTH);
         $command_files = $discovery->discover($path, $namespace);
 
-        // @TODO: Decide if we should require an autoloader for plugins or just include the command files here.
-        $file_names = array_keys($command_files);
-        foreach ($file_names as $file) {
-            include $file;
+        // If this plugin uses autoloading, then its autoloader will
+        // have already been configured via autoloadPlugin(), below.
+        // Otherwise, we will include all of its source files here.
+        if (!$this->usesAutoload()) {
+            $file_names = array_keys($command_files);
+            foreach ($file_names as $file) {
+                include $file;
+            }
         }
 
         return $command_files;
+    }
+
+    /**
+     * Register an autoloader for the class files from the plugin itself
+     * at plugin discovery time.  Note that the classes from libraries that
+     * the plugin dependes on (from the `require` section of its composer.json)
+     * are not available until one of its commands is called.
+     * @param Composer\Autoload\ClassLoader $loader
+     */
+    public function autoloadPlugin($loader)
+    {
+        if ($this->usesAutoload()) {
+            $info = $this->getInfo();
+            foreach ($info['autoload']['psr-4'] as $prefix => $path) {
+                $loader->addPsr4($prefix, $this->plugin_dir . DIRECTORY_SEPARATOR . $path);
+            }
+        }
     }
 
     /**
@@ -85,7 +106,7 @@ class PluginInfo
 
         $composer_json = $this->plugin_dir . '/composer.json';
         if (!file_exists($composer_json)) {
-            throw new TerminusException('The file "{file}" is does not exist', ['file' => $composer_json]);
+            throw new TerminusException('The file "{file}" does not exist', ['file' => $composer_json]);
         }
         if (!is_readable($composer_json)) {
             throw new TerminusException('The file "{file}" is not readable', ['file' => $composer_json]);
@@ -109,7 +130,7 @@ class PluginInfo
             throw new TerminusException('The composer.json must contain a "compatible-version" field in "extras/terminus"');
         }
 
-        if (isset($info['autoload']) && isset($info['autoload']['psr-4'])) {
+        if ($this->hasAutoload($info)) {
             $namespaces = array_keys($info['autoload']['psr-4']);
             foreach ($namespaces as $namespace) {
                 if (substr($namespace, -1) != '\\') {
@@ -120,6 +141,25 @@ class PluginInfo
         }
 
         return (array)$info;
+    }
+
+    /**
+     * Check to see if the provided info object has autoload info
+     * @param type $info
+     * @return boolean
+     */
+    protected function hasAutoload($info)
+    {
+        return isset($info['autoload']) && isset($info['autoload']['psr-4']);
+    }
+
+    /**
+     * Check to see if this plugin uses autloading
+     * @return boolean
+     */
+    protected function usesAutoload()
+    {
+        return $this->hasAutoload($this->getInfo());
     }
 
     /**

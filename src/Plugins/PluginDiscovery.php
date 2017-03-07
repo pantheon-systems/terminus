@@ -11,9 +11,8 @@ use Psr\Log\LoggerAwareTrait;
 /**
  * Class PluginDiscovery
  */
-class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
+class PluginDiscovery implements LoggerAwareInterface
 {
-    use ContainerAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -44,7 +43,8 @@ class PluginDiscovery implements ContainerAwareInterface, LoggerAwareInterface
             foreach ($di as $dir) {
                 if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                     try {
-                        $out[] = $this->getContainer()->get(PluginInfo::class, [$dir->getPathname()]);
+                        $plugin = new PluginInfo($dir->getPathname());
+                        $out[] = $plugin;
                     } catch (TerminusException $e) {
                         $this->logger->warning(
                             'Plugin Discovery: Ignoring directory {dir} because: {msg}.',

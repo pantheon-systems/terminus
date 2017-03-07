@@ -16,9 +16,14 @@ class FeatureContext implements Context
     public $cliroot = '';
     private $cache_file_name;
     private $cache_token_dir;
+    private $fixtures_dir;
+    private $plugin_dir;
+    private $plugin_dir_name;
     private $parameters;
     private $output;
     private $start_time;
+
+    const DEFAULT_PLUGIN_DIR_NAME = 'default';
 
     /**
      * Initializes context
@@ -29,7 +34,9 @@ class FeatureContext implements Context
     public function __construct($parameters)
     {
         date_default_timezone_set('UTC');
-        $this->cliroot          = dirname(dirname(__DIR__)) . '/..';
+        $tests_root            = dirname(dirname(__DIR__));
+        $this->fixtures_dir    = $tests_root . '/fixtures/functional';
+        $this->cliroot         = dirname($tests_root);
         $this->parameters      = $parameters;
         $this->start_time      = time();
         $this->connection_info = [
@@ -40,6 +47,8 @@ class FeatureContext implements Context
 
         $this->cache_dir = $parameters['cache_dir'];
         $this->cache_token_dir = $this->cache_dir . "/tokens";
+        $this->plugin_dir = $this->fixtures_dir . '/plugins';
+        $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
     }
 
     /**
@@ -91,6 +100,18 @@ class FeatureContext implements Context
     public function before($event)
     {
         $this->setCassetteName($event);
+        $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
+    }
+
+    /**
+     * Select which plugin directory will be used for the
+     * rest of the statements in the current scenario.
+     * @When /^I am using "([^"]*)" plugins/
+     * @param string $dir_name
+     */
+    public function selectPluginDir($dir_name)
+    {
+        $this->plugin_dir_name = $dir_name;
     }
 
     /**
@@ -595,8 +616,10 @@ class FeatureContext implements Context
             $command = "TERMINUS_VCR_MODE=$mode $command";
         }
 
+        // Determine which plugin dir we should use
+        $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
         // Pass the cache directory to the command so that tests don't poison the user's cache.
-        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir $command";
+        $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
 
         ob_start();
         passthru($command . ' 2>&1');

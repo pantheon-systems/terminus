@@ -1,0 +1,37 @@
+[
+    {
+        "name": "example/trivial",
+        "version": "0.2.4",
+        "version_normalized": "0.2.4.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/example/trivial.git",
+            "reference": "f50b3844ea6d5cb44bc32b9efd91b0d99d391753"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/example/trivial/zipball/f50b3844ea6d5cb44bc32b9efd91b0d99d391753",
+            "reference": "f50b3844ea6d5cb44bc32b9efd91b0d99d391753",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5"
+        },
+        "time": "2015-11-16T08:31:54+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Example\\Trivial\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "Trivial example",
+        "keywords": [
+            "trivial"
+        ]
+    }
+]
