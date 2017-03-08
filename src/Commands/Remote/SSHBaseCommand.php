@@ -126,7 +126,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     private function getCommandSummary($command_args)
     {
-        return $this->command . ' ' . $this->firstArgument($command_args);
+        return $this->command . $this->firstArguments($command_args);
     }
 
     /**
@@ -135,15 +135,17 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @param array $command_args
      * @return string
      */
-    private function firstArgument($command_args)
+    private function firstArguments($command_args)
     {
+        $result = '';
         while (!empty($command_args)) {
             $first = array_shift($command_args);
-            if ($first[0] != '-') {
-                return $first;
+            if ($first[0] == '-') {
+                return $result;
             }
+            $result .= " $first";
         }
-        return '';
+        return $result;
     }
 
     /**
