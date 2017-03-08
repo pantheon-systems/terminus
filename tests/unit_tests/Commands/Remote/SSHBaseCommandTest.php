@@ -72,7 +72,7 @@ class SSHBaseCommandTest extends CommandTestCase
         $this->environment->id = 'env_id';
         $command = 'dummy ' . implode(' ', $options);
 
-        $expectedLoggedCommand = 'dummy arg1';
+        $expectedLoggedCommand = 'dummy arg1 arg2';
 
         $this->environment->expects($this->once())
             ->method('get')
@@ -113,13 +113,13 @@ class SSHBaseCommandTest extends CommandTestCase
     public function testExecuteCommandInGitMode()
     {
         $dummy_output = 'dummy output';
-        $options = ['arg1', 'arg2',];
+        $options = ['arg1', 'arg2', '--secret', 'somesecret'];
         $site_name = 'site name';
         $mode = 'git';
         $status_code = 0;
         $command = 'dummy ' . implode(' ', $options);
 
-        $expectedLoggedCommand = 'dummy arg1';
+        $expectedLoggedCommand = 'dummy arg1 arg2';
 
         $this->environment->expects($this->once())
             ->method('get')
