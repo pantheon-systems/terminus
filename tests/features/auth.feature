@@ -9,6 +9,19 @@ Feature: Authorization command
     When I run "terminus auth:login --machine-token=[[machine_token]]"
     Then I should get: "Logging in via machine token."
 
+  @vcr auth-login.yml
+  Scenario: Logging in while in debug mode does not expose sensitive information
+    Given I am not authenticated
+    When I run "terminus auth:login --machine-token=[[machine_token]] -vvv"
+    Then I should get: "Logging in via machine token."
+    And I should get:
+    """
+Body: {"machine_token":"**HIDDEN**","client":"terminus"}
+[debug] #### RESPONSE ####
+Headers: {"Date":["Tue, 16 Aug 2016 22:51:26 GMT"],"Content-Type":["application\/json; charset=utf-8"],"Content-Length":["182"],"Connection":["keep-alive"],"X-Pantheon-Trace-Id":["f535ebd0-6403-11e6-9844-1524ed28772c"],"X-Frame-Options":["deny"],"Access-Control-Allow-Methods":["GET"],"Access-Control-Allow-Headers":["Origin, Content-Type, Accept"],"Cache-Control":["no-cache"],"Pragma":["no-cache"],"Vary":["Accept-Encoding"],"Strict-Transport-Security":["max-age=31536000"]}
+Data: {"session":"**HIDDEN**","expires_at":1473807086,"user_id":"11111111-1111-1111-1111-111111111111"}
+  """
+
   @vcr auth-login-machine-token-invalid.yml
   Scenario: Failing to log in via invalid machine token
     Given I am not authenticated

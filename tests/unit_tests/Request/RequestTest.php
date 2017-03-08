@@ -29,6 +29,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     protected $client;
     /**
+     * @var array
+     */
+    protected $client_options;
+    /**
      * @var TerminusConfig
      */
     protected $config;
@@ -53,13 +57,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     protected $request;
     /**
+     * @var array
+     */
+    protected $request_headers;
+    /**
+     * @var array
+     */
+    protected $response_data;
+    /**
+     * @var array
+     */
+    protected $response_headers;
+    /**
      * @var Session
      */
     protected $session;
-    /**
-     * @var string
-     */
-    protected $user_agent;
 
     /**
      * @inheritdoc
@@ -84,7 +96,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $phpVersion = '7.0.0';
         $script = 'foo/bar/baz.php';
         $platformScript = str_replace('/', DIRECTORY_SEPARATOR, $script);
-        $this->user_agent = "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
+        $this->client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true,];
+        $this->request_headers = $this->response_headers = ['Content-type' => 'application/json',];
+        $this->request_headers['User-Agent'] = "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
+        $this->response_data = ['abc' => '123',];
 
         $this->config = new TerminusConfig();
         $this->config->set('host', 'example.com');
@@ -180,41 +195,58 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->method('get')->with('session')->willReturn(false);
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
-
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'foo' => 'bar',
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
-        $actual = $this->makeRequest($client_options, $request_options, 'foo/bar', ['headers' => ['foo' => 'bar']]);
+        $this->request_headers = array_merge($this->request_headers, ['foo' => 'bar',]);
+        $request_options = [$method, $uri, $this->request_headers, null,];
+        $actual = $this->makeRequest($request_options, 'foo/bar', ['headers' => $this->request_headers,]);
         $expected = [
-            'data' => (object)['abc' => '123'],
-            'headers' => ['Content-type' => 'application/json'],
+            'data' => (object)$this->response_data,
+            'headers' => $this->response_headers,
             'status_code' => 200,
         ];
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * Tests Request::request() when there is sensitive information to send to the debug log
+     */
     public function testRequestAuth()
     {
         $this->session->method('get')->with('session')->willReturn('abc123');
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-            'Authorization' => 'Bearer abc123'
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
-        $this->makeRequest($client_options, $request_options, 'foo/bar');
+        $this->request_headers['Authorization'] = 'Bearer abc123';
+        $headers = $debug_expected_headers = $this->request_headers;
+        $debug_expected_headers['Authorization'] = Request::HIDDEN_VALUE_REPLACEMENT;
+        $body = $debug_expected_body = ['machine_token' => 'sometokenhere', 'other_data' => 'hi',];
+        $debug_expected_body['machine_token'] = Request::HIDDEN_VALUE_REPLACEMENT;
+        $request_options = [$method, $uri, $headers, json_encode($body),];
+
+        $this->logger->expects($this->at(0))
+            ->method('debug')
+            ->with(
+                Request::DEBUG_REQUEST_STRING,
+                [
+                    'headers' => json_encode($debug_expected_headers),
+                    'uri' => $uri,
+                    'method' => $method,
+                    'body' => json_encode($debug_expected_body),
+                ]
+            );
+        $this->logger->expects($this->at(1))
+            ->method('debug')
+            ->with(
+                Request::DEBUG_RESPONSE_STRING,
+                [
+                    'headers' => json_encode($this->response_headers),
+                    'data' => json_encode((object)$this->response_data),
+                    'status_code' => 200,
+                ]
+            );
+
+        $this->makeRequest($request_options, 'foo/bar', ['form_params' => $body,]);
     }
 
     public function testRequestFullPath()
@@ -222,60 +254,43 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->config->set('verify_host_cert', false);
         $this->session->method('get')->with('session')->willReturn('abc123');
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => false];
+        $this->client_options[RequestOptions::VERIFY] = false;
 
         $method = 'GET';
         $uri = 'http://foo.bar/a/b/c';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
-        $this->makeRequest($client_options, $request_options, 'http://foo.bar/a/b/c');
+        $request_options = [$method, $uri, $this->request_headers, null,];
+        $this->makeRequest($request_options, 'http://foo.bar/a/b/c');
     }
-
-    public function testRequestWithQuery()
-    {
-        $this->session->method('get')->with('session')->willReturn(false);
-
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
-
-        $method = 'GET';
-        $uri = 'https://example.com:443/api/foo/bar?foo=bar';
-        $headers = [
-          'Content-type' => 'application/json',
-          'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
-        $actual = $this->makeRequest($client_options, $request_options, 'foo/bar', ['query' => ['foo' => 'bar']]);
-        $expected = [
-          'data' => (object)['abc' => '123'],
-          'headers' => ['Content-type' => 'application/json'],
-          'status_code' => 200,
-        ];
-        $this->assertEquals($expected, $actual);
-    }
-
 
     public function testRequestNoVerify()
     {
         $this->config->set('verify_host_cert', false);
         $this->session->method('get')->with('session')->willReturn(false);
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => false];
+        $this->client_options[RequestOptions::VERIFY] = false;
 
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
-        $this->makeRequest($client_options, $request_options, 'foo/bar');
+        $request_options = [$method, $uri, $this->request_headers, null,];
+        $this->makeRequest($request_options, 'foo/bar');
     }
+
+    public function testRequestWithQuery()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar?foo=bar';
+        $request_options = [$method, $uri, $this->request_headers, null,];
+        $actual = $this->makeRequest($request_options, 'foo/bar', ['query' => ['foo' => 'bar',],]);
+        $expected = [
+            'data' => (object)$this->response_data,
+            'headers' => $this->response_headers,
+            'status_code' => 200,
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
 
     /**
      * Test Request::pagedRequest() when the second query's data comes back empty
@@ -284,16 +299,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->method('get')->with('session')->willReturn(false);
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
-
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
+        $request_options = [$method, $uri, $this->request_headers, null,];
 
         $prefix = 'abc_';
         $expected_options = $expected_options_2 = $request_options;
@@ -308,7 +316,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(1))
             ->method('get')
@@ -316,7 +324,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->http_request);
         $this->container->expects($this->at(2))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(3))
             ->method('get')
@@ -339,7 +347,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($body);
         $message->expects($this->exactly(2))
             ->method('getHeaders')
-            ->willReturn(['Content-type' => 'application/json',]);
+            ->willReturn($this->response_headers);
         $message->expects($this->exactly(2))
             ->method('getStatusCode')
             ->willReturn(200);
@@ -359,16 +367,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->method('get')->with('session')->willReturn(false);
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
-
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
+        $request_options = [$method, $uri, $this->request_headers, null,];
 
         $prefix = 'abc_';
         $expected_options = $expected_options_2 = $request_options;
@@ -388,7 +389,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(1))
             ->method('get')
@@ -396,7 +397,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->http_request);
         $this->container->expects($this->at(2))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(3))
             ->method('get')
@@ -419,7 +420,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($body);
         $message->expects($this->exactly(2))
             ->method('getHeaders')
-            ->willReturn(['Content-type' => 'application/json',]);
+            ->willReturn($this->response_headers);
         $message->expects($this->exactly(2))
             ->method('getStatusCode')
             ->willReturn(200);
@@ -439,16 +440,9 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->method('get')->with('session')->willReturn(false);
 
-        $client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true];
-
         $method = 'GET';
         $uri = 'https://example.com:443/api/foo/bar';
-        $headers = [
-            'Content-type' => 'application/json',
-            'User-Agent' => $this->user_agent,
-        ];
-        $body = '';
-        $request_options = [$method, $uri, $headers, $body];
+        $request_options = [$method, $uri, $this->request_headers, null,];
 
         $prefix = 'abc_';
         $expected_options = $expected_options_2 = $request_options;
@@ -463,7 +457,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(1))
             ->method('get')
@@ -471,7 +465,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->http_request);
         $this->container->expects($this->at(2))
             ->method('get')
-            ->with(Client::class, [$client_options,])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(3))
             ->method('get')
@@ -494,7 +488,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
             ->willReturn($body);
         $message->expects($this->exactly(2))
             ->method('getHeaders')
-            ->willReturn(['Content-type' => 'application/json',]);
+            ->willReturn($this->response_headers);
         $message->expects($this->exactly(2))
             ->method('getStatusCode')
             ->willReturn(200);
@@ -507,11 +501,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['data' => $expected_objects,], $actual);
     }
 
-    private function makeRequest($client_options, $request_options, $url, $options = [])
+    /**
+     * @param array $request_options
+     * @param string $url
+     * @param array $options
+     * @return array
+     */
+    private function makeRequest(array $request_options, $url, array $options = [])
     {
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$client_options])
+            ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
         $this->container->expects($this->at(1))
             ->method('get')
@@ -522,13 +522,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $body->method('getContents')->willReturn(json_encode(['abc' => '123']));
+        $body->method('getContents')->willReturn(json_encode($this->response_data));
         $message->expects($this->once())
             ->method('getBody')
             ->willReturn($body);
         $message->expects($this->once())
             ->method('getHeaders')
-            ->willReturn(['Content-type' => 'application/json']);
+            ->willReturn($this->response_headers);
         $message->expects($this->once())
             ->method('getStatusCode')
             ->willReturn(200);
