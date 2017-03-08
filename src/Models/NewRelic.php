@@ -44,6 +44,7 @@ class NewRelic extends AddOnModel
      */
     public function serialize()
     {
+        $this->fetch();
         if (empty($name = $this->get('name'))) {
             return [];
         }

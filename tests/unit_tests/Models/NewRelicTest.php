@@ -113,7 +113,7 @@ class NewRelicTest extends ModelTestCase
             )
             ->willReturn(['data' => $attributes,]);
 
-        $data = $this->model->fetch()->serialize();
+        $data = $this->model->serialize();
         $this->assertEquals($desired_data, $data);
     }
 
@@ -122,10 +122,13 @@ class NewRelicTest extends ModelTestCase
      */
     public function testSerializeNoName()
     {
-        $this->request->expects($this->never())
-            ->method('request');
-        $this->model = new NewRelic((object)[], ['site' => $this->site,]);
-        $this->model->setRequest($this->request);
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with(
+                $this->equalTo("sites/{$this->site->id}/new-relic"),
+                $this->equalTo(['options' => ['method' => 'get',],])
+            )
+            ->willReturn(['data' => (object)[],]);
 
         $out = $this->model->serialize();
         $this->assertEquals([], $out);
