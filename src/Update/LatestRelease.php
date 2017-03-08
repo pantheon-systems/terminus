@@ -60,7 +60,7 @@ class LatestRelease implements ContainerAwareInterface, DataStoreAwareInterface,
      */
     private function fetch()
     {
-        $saved_data = $this->getSavedReleaseFromFile();
+        $saved_data = (object)$this->getSavedReleaseFromFile();
 
         if (!isset($saved_data->check_date)
             || (int)$saved_data->check_date < strtotime('-' . self::TIME_BETWEEN_CHECKS)
