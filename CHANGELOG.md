@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.1.0 - 2017-03-09
 ### Added
 - Added an `--element=` option to `backup:list`. (#1563)
 - Added the label column to `org:list`'s output. (#1612)
@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Fixed the base branch in the URL when checking for upstream updates. (#1581)
-- Fixed `new-relic:info` by changing NewRelic::serialize() to fetch its data before attempting to return it. (#1648)
+- Fixed `new-relic:info` by changing `NewRelic::serialize()` to fetch its data before attempting to return it. (#1648)
 - Removed login information from the debug output. (#1642)
 
 ## 1.0.0 - 2017-01-20
