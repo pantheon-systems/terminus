@@ -28,6 +28,9 @@
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
     }
   },
+  "bin": [
+    "bin/terminus"
+  ],
   "scripts": {
       "behat": "COMPOSER_PROCESS_TIMEOUT=3600 SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/unit_tests/* bin/terminus src/*",
