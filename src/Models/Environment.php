@@ -642,6 +642,16 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
+     * Is this branch a development environment?
+     *
+     * @return bool True if ths environment is a development environment
+     */
+    public function isDevelopment()
+    {
+        return !in_array($this->id, ['test', 'live',]);
+    }
+
+    /**
      * Have the environment's bindings have been initialized?
      *
      * @return bool True if environment has been instantiated
@@ -665,7 +675,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function isMultidev()
     {
-        return !in_array($this->id, ['dev', 'test', 'live']);
+        return !in_array($this->id, ['dev', 'test', 'live',]);
     }
 
     /**

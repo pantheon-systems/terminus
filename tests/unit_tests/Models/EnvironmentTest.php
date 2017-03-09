@@ -771,6 +771,21 @@ class EnvironmentTest extends ModelTestCase
         $this->assertFalse($model->isInitialized());
     }
 
+    public function testIsDevelopment()
+    {
+        $model = $this->createModel(['id' => 'test',]);
+        $this->assertFalse($model->isDevelopment());
+
+        $model = $this->createModel(['id' => 'live',]);
+        $this->assertFalse($model->isDevelopment());
+
+        $model = $this->createModel(['id' => 'mymulti',]);
+        $this->assertTrue($model->isDevelopment());
+
+        $model = $this->createModel(['id' => 'dev',]);
+        $this->assertTrue($model->isDevelopment());
+    }
+
     public function testIsMultidev()
     {
         $this->assertFalse($this->model->isMultidev());

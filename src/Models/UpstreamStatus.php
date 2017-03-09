@@ -52,6 +52,12 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
      */
     public function hasUpdates()
     {
-        return ($this->getUpdates()->behind > 0);
+        $updates = $this->getUpdates();
+        $env = $this->getEnvironment();
+        if ($env->isDevelopment()) {
+            return ($updates->behind > 0);
+        }
+        $parent_env_id = ($env->id === 'test') ? 'dev' : 'test';
+        return !($updates->{$env->id}->is_up_to_date_with_upstream && $updates->$parent_env_id->is_up_to_date_with_upstream);
     }
 }
