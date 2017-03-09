@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Added an `--element=` option to `backup:list`. (#1563)
 - Added the label column to `org:list`'s output. (#1612)
+- Added the `upstream:updates:status` command to report whether any site environment is outdated or current. (#1654)
 
 ### Changed
 - `self:cc` now acts to delete all files in the command cache directory. (#1569)

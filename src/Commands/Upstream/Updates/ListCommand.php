@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class ListCommand
@@ -26,8 +25,6 @@ class ListCommand extends UpdatesCommand
      * @return RowsOfFields
      *
      * @param string $site_env Site & development environment
-     *
-     * @throws TerminusException
      *
      * @usage <site>.<env> Displays a list of new code commits available from the upstream for <site>'s <env> environment.
      */
