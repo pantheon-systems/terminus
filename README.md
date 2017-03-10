@@ -38,7 +38,7 @@ Run this in your Terminal client:
 ```bash
 curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar install
 ```
-For more information on installation options, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
+For more information on installation options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
 ### Installing with Composer
 Run this in your terminal client:
@@ -86,7 +86,7 @@ Run this in your Terminal client:
 ```bash
 curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update
 ```
-For more information on update options, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
+For more information on update options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
 ### Updating with Composer
 Run this in your terminal client:
