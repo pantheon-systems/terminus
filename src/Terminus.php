@@ -108,7 +108,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $status_code = $this->runner->run($input, $output, null, $this->commands);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
-        } else {
+        } elseif ($input->isInteractive()) {
             $this->runUpdateChecker();
         }
         return $status_code;
@@ -420,13 +420,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     private function runUpdateChecker()
     {
-        // Skip the update check when in non-interactive mode; this is
-        // particularly helpful for scripts.
-        $container = $this->getContainer();
-        $input = $container->get('input');
-        if (!$input->isInteractive()) {
-            return;
-        }
         $file_store = new FileStore($this->getConfig()->get('cache_dir'));
         $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
     }

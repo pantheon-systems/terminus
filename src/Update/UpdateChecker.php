@@ -28,7 +28,7 @@ class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, Da
     const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update';
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
-You are currently using version v{running_version}. 
+You are currently using version v{running_version}.
 You can update Terminus by running `composer update` or using the Terminus installer:
 {update_command}
 EOT;
@@ -45,6 +45,9 @@ EOT;
 
     public function run()
     {
+        if (!$this->shouldCheckForUpdates()) {
+            return;
+        }
         $running_version = $this->getRunningVersion();
         try {
             $latest_version = $this->getContainer()->get(LatestRelease::class, [$this->getDataStore(),])->get('version');
@@ -62,6 +65,19 @@ EOT;
                 'update_command' => self::UPDATE_VARS_COLOR . self::UPDATE_COMMAND,
             ]);
         }
+    }
+
+    /**
+     * Avoid running the update checker in instances where the output might
+     * interfere with scripts.
+     */
+    private function shouldCheckForUpdates()
+    {
+        // Also skip the update check whenever output is redirected.
+        if (function_exists('posix_isatty')) {
+            return (posix_isatty(STDOUT) && posix_isatty(STDIN));
+        }
+        return true;
     }
 
     /**
