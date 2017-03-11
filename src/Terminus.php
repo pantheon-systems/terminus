@@ -420,6 +420,13 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
      */
     private function runUpdateChecker()
     {
+        // Skip the update check when in non-interactive mode; this is
+        // particularly helpful for scripts.
+        $container = $this->getContainer();
+        $input = $container->get('input');
+        if (!$input->isInteractive()) {
+            return;
+        }
         $file_store = new FileStore($this->getConfig()->get('cache_dir'));
         $this->runner->getContainer()->get(UpdateChecker::class, [$file_store,])->run();
     }
