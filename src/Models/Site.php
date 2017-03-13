@@ -308,6 +308,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function serialize()
     {
+        $settings = $this->get('settings');
+
         $created_date = is_numeric($created = $this->get('created')) ? $created : strtotime($created);
         $data = [
             'id' => $this->id,
@@ -317,7 +319,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'service_level' => $this->get('service_level'),
-            'max_num_cdes' => $this->get('max_num_cdes'),
+            'max_num_cdes' => $settings ? $settings->max_num_cdes : 0,
             'upstream' => (string)$this->getUpstream(),
             'php_version' => $this->getPHPVersion(),
             'holder_type' => $this->get('holder_type'),
