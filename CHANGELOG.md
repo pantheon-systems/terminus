@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Changed
+- Reenabled the `self:console` command in PHP 7.1. (#1664)
 ### Fixed
 - Corrected typo in `aliases` command which prevented the authorization hook from working on it. (#1663)
 
