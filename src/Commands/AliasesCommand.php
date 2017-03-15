@@ -13,7 +13,7 @@ class AliasesCommand extends TerminusCommand implements ContainerAwareInterface
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
-     * @authorized
+     * @authorize
      *
      * @command aliases
      * @aliases drush:aliases
