@@ -18,6 +18,8 @@ class DotEnvConfig extends TerminusConfig
      */
     public function __construct($dir)
     {
+        parent::__construct();
+
         $file = $dir . '/.env';
         $this->setSourceName($file);
 
