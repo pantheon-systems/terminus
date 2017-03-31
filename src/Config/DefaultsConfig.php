@@ -15,6 +15,8 @@ class DefaultsConfig extends TerminusConfig
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->set('root', $this->getTerminusRoot());
         $this->set('php', $this->getPhpBinary());
         $this->set('php_version', PHP_VERSION);

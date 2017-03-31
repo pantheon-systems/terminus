@@ -90,7 +90,7 @@ class TerminusConfig extends \Robo\Config
      */
     public function keys()
     {
-        return array_keys($this->config);
+        return array_keys($this->export());
     }
 
     /**
