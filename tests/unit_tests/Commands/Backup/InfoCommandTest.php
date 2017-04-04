@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Backup\InfoCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Class InfoCommandTest
@@ -13,6 +12,10 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  */
 class InfoCommandTest extends BackupCommandTest
 {
+    /**
+     * @var array
+     */
+    protected $expected_data;
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -22,14 +25,18 @@ class InfoCommandTest extends BackupCommandTest
     {
         parent::setUp();
 
-        $this->sample_data = [
+        $sample_data = [
             'file' => 'file name',
             'size' => 'file size',
             'date' => 459880805,
             'expiry' => 3615640805,
             'initiator' => 'backup initiator',
         ];
-        $this->backup->method('serialize')->willReturn($this->sample_data);
+        $url = 'https://url.to/backup.tgz';
+        $this->expected_data = array_merge($sample_data, compact('url'));
+
+        $this->backup->method('serialize')->willReturn($sample_data);
+        $this->backup->method('getUrl')->willReturn($url);
 
         $this->command = new InfoCommand($this->sites);
         $this->command->setLogger($this->logger);
@@ -50,7 +57,7 @@ class InfoCommandTest extends BackupCommandTest
 
         $output = $this->command->info('mysite.dev', ['file' => $test_filename,]);
         $this->assertInstanceOf(PropertyList::class, $output);
-        $this->assertEquals($this->sample_data, $output->getArrayCopy());
+        $this->assertEquals($this->expected_data, $output->getArrayCopy());
     }
 
     /**
@@ -65,6 +72,6 @@ class InfoCommandTest extends BackupCommandTest
 
         $output = $this->command->info('mysite.dev', ['element' => 'db',]);
         $this->assertInstanceOf(PropertyList::class, $output);
-        $this->assertEquals($this->sample_data, $output->getArrayCopy());
+        $this->assertEquals($this->expected_data, $output->getArrayCopy());
     }
 }

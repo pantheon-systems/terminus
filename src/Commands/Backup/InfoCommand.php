@@ -23,6 +23,7 @@ class InfoCommand extends SingleBackupCommand
      *     date: Date
      *     expiry: Expiry
      *     initiator: Initiator
+     *     url: URL
      * @return PropertyList
      *
      * @param string $site_env Site & environment in the format `site-name.env`
@@ -35,6 +36,7 @@ class InfoCommand extends SingleBackupCommand
      */
     public function info($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
-        return new PropertyList($this->getBackup($site_env, $options)->serialize());
+        $backup = $this->getBackup($site_env, $options);
+        return new PropertyList(array_merge($backup->serialize(), ['url' => $backup->getUrl(),]));
     }
 }

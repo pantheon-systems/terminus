@@ -119,15 +119,16 @@ class BackupTest extends ModelTestCase
     public function testGetUrl()
     {
         $expected = '**URL**';
+        $folder = 'xyz_manual';
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                'sites/abc/environments/dev/backups/catalog/xyz_manual/type/s3token',
+                "sites/abc/environments/dev/backups/catalog/$folder/type/s3token",
                 ['method' => 'post', 'form_params' => ['method' => 'get',],]
             )
             ->willReturn(['data' => (object)['url' => $expected,],]);
 
-        $backup = $this->_getBackup(['folder' => 'xyz_manual',]);
+        $backup = $this->_getBackup(compact('folder'));
         $this->assertEquals($expected, $backup->getUrl());
     }
 
@@ -191,10 +192,11 @@ class BackupTest extends ModelTestCase
     public function testSerialize()
     {
         $this->configSet(['date_format' => 'Y-m-d',]);
+        $folder = 'xyz_automated';
         $backup = $this->_getBackup([
             'size' => 4508876,
             'finish_time' => 1479742685,
-            'folder' => 'xyz_automated',
+            'folder' => $folder,
             'filename' => 'test.tar.gz',
         ]);
 
@@ -205,6 +207,7 @@ class BackupTest extends ModelTestCase
             'expiry' => '2016-11-21',
             'initiator' => 'automated',
         ];
+
         $actual = $backup->serialize();
         $this->assertEquals($expected, $actual);
     }
