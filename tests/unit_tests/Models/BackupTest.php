@@ -56,21 +56,16 @@ class BackupTest extends ModelTestCase
     public function testGetDate()
     {
         $this->configSet(['date_format' => 'Y-m-d',]);
-        $expected = '2016-11-21';
+        $stamp = 1479742685;
 
-        $backup = $this->_getBackup(['finish_time' => 1479742685,]);
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $backup = $this->_getBackup(['finish_time' => $stamp,]);
+        $this->assertEquals($stamp, $backup->getDate());
 
-
-        $backup = $this->_getBackup(['timestamp' => 1479742685,]);
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $backup = $this->_getBackup(['timestamp' => $stamp,]);
+        $this->assertEquals($stamp, $backup->getDate());
 
         $backup = $this->_getBackup([]);
-        $expected = 'Pending';
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals('Pending', $backup->getDate());
     }
 
     public function testGetInitiator()
@@ -192,6 +187,7 @@ class BackupTest extends ModelTestCase
             'file' => 'test.tar.gz',
             'size' => '4.3MB',
             'date' => '2016-11-21',
+            'expiry' => '2016-11-21',
             'initiator' => 'automated',
         ];
         $actual = $backup->serialize();

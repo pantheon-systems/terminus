@@ -56,14 +56,26 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
      */
     public function getDate()
     {
-        if (!is_null($this->get('finish_time'))) {
-            $datetime = $this->get('finish_time');
-        } elseif (!is_null($this->get('timestamp'))) {
-            $datetime = $this->get('timestamp');
-        } else {
-            return 'Pending';
+        if (!is_null($finish_time = $this->get('finish_time'))) {
+            return $finish_time;
         }
-        return date($this->getConfig()->get('date_format'), $datetime);
+        if (!is_null($timestamp = $this->get('timestamp'))) {
+            return $timestamp;
+        }
+        return 'Pending';
+    }
+
+    /**
+     * Returns the backup expiry datetime
+     *
+     * @return string Expiry datetime or null
+     */
+    public function getExpiry()
+    {
+        if (is_numeric($datetime = $this->getDate())) {
+            return $datetime + $this->get('ttl');
+        }
+        return null;
     }
 
     /**
@@ -168,10 +180,12 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
      */
     public function serialize()
     {
+        $date_format = $this->getConfig()->get('date_format');
         return [
             'file'      => $this->get('filename'),
             'size'      => $this->getSizeInMb(),
-            'date'      => $this->getDate(),
+            'date'      => date($date_format, $this->getDate()),
+            'expiry'    => date($date_format, $this->getExpiry()),
             'initiator' => $this->getInitiator(),
         ];
     }
