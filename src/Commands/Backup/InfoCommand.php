@@ -21,7 +21,7 @@ class InfoCommand extends SingleBackupCommand
      *     file: Filename
      *     size: Size
      *     date: Date
-     *     expiry: Expiry Date
+     *     expiry: Expiry
      *     initiator: Initiator
      * @return PropertyList
      *

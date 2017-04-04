@@ -55,7 +55,6 @@ class BackupTest extends ModelTestCase
 
     public function testGetDate()
     {
-        $this->configSet(['date_format' => 'Y-m-d',]);
         $stamp = 1479742685;
 
         $backup = $this->_getBackup(['finish_time' => $stamp,]);
@@ -66,6 +65,22 @@ class BackupTest extends ModelTestCase
 
         $backup = $this->_getBackup([]);
         $this->assertEquals('Pending', $backup->getDate());
+    }
+
+    public function testGetExpiry()
+    {
+        $stamp = 1479742685;
+        $ttl = 12345;
+        $expected = $stamp + $ttl;
+
+        $backup = $this->_getBackup(['finish_time' => $stamp, 'ttl' => $ttl,]);
+        $this->assertEquals($expected, $backup->getExpiry());
+
+        $backup = $this->_getBackup(['timestamp' => $stamp, 'ttl' => $ttl,]);
+        $this->assertEquals($expected, $backup->getExpiry());
+
+        $backup = $this->_getBackup([]);
+        $this->assertNull($backup->getExpiry());
     }
 
     public function testGetInitiator()
