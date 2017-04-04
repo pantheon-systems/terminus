@@ -3,13 +3,12 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 
 /**
  * Class RestoreCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class RestoreCommand extends BackupCommand
+class RestoreCommand extends SingleBackupCommand
 {
     /**
      * Restores a specific backup or the latest backup.
@@ -30,20 +29,7 @@ class RestoreCommand extends BackupCommand
     public function restoreBackup($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
         list($site, $env) = $this->getSiteEnv($site_env);
-
-        if (isset($options['file']) && !is_null($file_name = $options['file'])) {
-            $backup = $env->getBackups()->getBackupByFileName($file_name);
-        } else {
-            $element = isset($options['element']) ? $this->getElement($options['element']) : null;
-            $backups = $env->getBackups()->getFinishedBackups($this->getElement($element));
-            if (empty($backups)) {
-                throw new TerminusNotFoundException(
-                    'No backups available. Create one with `terminus backup:create {site}.{env}`',
-                    ['site' => $site->get('name'), 'env' => $env->id,]
-                );
-            }
-            $backup = array_shift($backups);
-        }
+        $backup = $this->getBackup($site_env, $options);
 
         $tr = ['site' => $site->getName(), 'env' => $env->getName()];
         if (!$this->confirm('Are you sure you want to restore to {env} on {site}?', $tr)) {

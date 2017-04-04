@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Changed
+- `Backup::getDate()` now returns a Unix datetime instead of a formatted date. (#1676)
+
+### Added
+- The `backup:info` command has been added. (#1676)
+- Added expiration dates to backups in `backup:list`. (#1676)
+- `Backup::getExpiry()` calculates the Unix datetime of a backup's expiry. (#1676)
+
 ## 1.1.2 - 2017-03-31
 ### Changed
 - Reenabled the `self:console` command in PHP 7.1. (#1664)

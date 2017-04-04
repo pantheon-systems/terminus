@@ -67,6 +67,24 @@ class ListCommandTest extends BackupCommandTest
     }
 
     /**
+     * Tests the backup:list command when the options array appears in the second parameter
+     */
+    public function testListBackupsWithOptionsInSecondParameter()
+    {
+        $element = "don't care";
+
+        $this->backups->expects($this->once())
+            ->method('getFinishedBackups')
+            ->with($this->equalTo($element))
+            ->willReturn([$this->backup,]);
+
+
+        $out = $this->command->listBackups('mysite.dev', compact('element'));
+        $this->assertInstanceOf(RowsOfFields::class, $out);
+        $this->assertEquals([$this->sample_data,], $out->getArrayCopy());
+    }
+
+    /**
      * Tests the backup:list command with 'files' element
      */
     public function testListBackupsWithSomeOtherElement()

@@ -55,22 +55,32 @@ class BackupTest extends ModelTestCase
 
     public function testGetDate()
     {
-        $this->configSet(['date_format' => 'Y-m-d',]);
-        $expected = '2016-11-21';
+        $stamp = 1479742685;
 
-        $backup = $this->_getBackup(['finish_time' => 1479742685,]);
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $backup = $this->_getBackup(['finish_time' => $stamp,]);
+        $this->assertEquals($stamp, $backup->getDate());
 
-
-        $backup = $this->_getBackup(['timestamp' => 1479742685,]);
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $backup = $this->_getBackup(['timestamp' => $stamp,]);
+        $this->assertEquals($stamp, $backup->getDate());
 
         $backup = $this->_getBackup([]);
-        $expected = 'Pending';
-        $actual = $backup->getDate();
-        $this->assertEquals($expected, $actual);
+        $this->assertEquals('Pending', $backup->getDate());
+    }
+
+    public function testGetExpiry()
+    {
+        $stamp = 1479742685;
+        $ttl = 12345;
+        $expected = $stamp + $ttl;
+
+        $backup = $this->_getBackup(['finish_time' => $stamp, 'ttl' => $ttl,]);
+        $this->assertEquals($expected, $backup->getExpiry());
+
+        $backup = $this->_getBackup(['timestamp' => $stamp, 'ttl' => $ttl,]);
+        $this->assertEquals($expected, $backup->getExpiry());
+
+        $backup = $this->_getBackup([]);
+        $this->assertNull($backup->getExpiry());
     }
 
     public function testGetInitiator()
@@ -109,15 +119,16 @@ class BackupTest extends ModelTestCase
     public function testGetUrl()
     {
         $expected = '**URL**';
+        $folder = 'xyz_manual';
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                'sites/abc/environments/dev/backups/catalog/xyz_manual/type/s3token',
+                "sites/abc/environments/dev/backups/catalog/$folder/type/s3token",
                 ['method' => 'post', 'form_params' => ['method' => 'get',],]
             )
             ->willReturn(['data' => (object)['url' => $expected,],]);
 
-        $backup = $this->_getBackup(['folder' => 'xyz_manual',]);
+        $backup = $this->_getBackup(compact('folder'));
         $this->assertEquals($expected, $backup->getUrl());
     }
 
@@ -181,10 +192,11 @@ class BackupTest extends ModelTestCase
     public function testSerialize()
     {
         $this->configSet(['date_format' => 'Y-m-d',]);
+        $folder = 'xyz_automated';
         $backup = $this->_getBackup([
             'size' => 4508876,
             'finish_time' => 1479742685,
-            'folder' => 'xyz_automated',
+            'folder' => $folder,
             'filename' => 'test.tar.gz',
         ]);
 
@@ -192,8 +204,10 @@ class BackupTest extends ModelTestCase
             'file' => 'test.tar.gz',
             'size' => '4.3MB',
             'date' => '2016-11-21',
+            'expiry' => '2016-11-21',
             'initiator' => 'automated',
         ];
+
         $actual = $backup->serialize();
         $this->assertEquals($expected, $actual);
     }
