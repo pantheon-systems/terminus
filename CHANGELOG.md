@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 1.1.3 - 2017-04-10
+## MASTER
 ### Changed
 - `Backup::getDate()` now returns a Unix datetime instead of a formatted date. (#1676)
 
@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Updates to dependencies have been applied. (#1675)
+- Fixed ambiguous text in `env:commit` and `env:diffstat` help description. (#1685)
 
 ## 1.1.2 - 2017-03-31
 ### Changed
