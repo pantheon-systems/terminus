@@ -16,7 +16,7 @@ class DiffStatCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Displays the diff of uncommitted code changes on the development environment.
+     * Displays the diff of uncommitted code changes on a development environment.
      *
      * @command env:diffstat
      *
