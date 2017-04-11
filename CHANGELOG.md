@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## 1.2.1 - 2017-04-11
+### Fixed
+- Corrected the command to be used to update Terminus displayed by the `UpdateChecker`. (#1687)
+
 ## 1.2.0 - 2017-04-10
 ### Changed
 - `Backup::getDate()` now returns a Unix datetime instead of a formatted date. (#1676)
