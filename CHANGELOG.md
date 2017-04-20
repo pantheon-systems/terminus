@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Changed
+- `env:commit` now has a `--force` option to force a commit even if no changes are found. (#1115)
+
 ## 1.2.1 - 2017-04-11
 ### Fixed
 - Corrected the command to be used to update Terminus displayed by the `UpdateChecker`. (#1687)
