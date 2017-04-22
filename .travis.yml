@@ -24,14 +24,14 @@ before_script:
   - composer install --no-interaction --prefer-dist
 
 script:
-  - composer clover
+#  - composer clover
   - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
   - composer cs
   - composer phpunit
-  - composer behat
+#  - composer behat
 
-after_success:
-    - if [ $(phpenv version-name) = "7.0" ]; then composer coveralls; fi
+#after_success:
+#    - if [ $(phpenv version-name) = "7.0" ]; then composer coveralls; fi
 
 notifications:
   email:
