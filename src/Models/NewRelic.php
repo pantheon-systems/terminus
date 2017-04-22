@@ -38,7 +38,7 @@ class NewRelic extends AddOnModel
     }
 
     /**
-     * Formats the Backup object into an associative array for output
+     * Formats the New Relic object into an associative array for output
      *
      * @return array Associative array of data for output
      */
