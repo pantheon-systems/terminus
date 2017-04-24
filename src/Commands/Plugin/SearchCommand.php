@@ -54,7 +54,9 @@ class SearchCommand extends PluginBaseCommand
                 ];
             }
         }
+        asort($results);
 
+        // Output the plugin list in table format.
         return new RowsOfFields($results);
     }
 
