@@ -67,8 +67,9 @@ class ShowCommand extends PluginBaseCommand
 
         $count = count($rows);
         $plural = ($count > 1) ? 's' : '';
-        $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install <project>...' to add more plugins.";
+        $message = "You have {$count} plugin{$plural} installed.  Use 'terminus plugin:install <org/project>...' to add more plugins.";
         $this->log()->notice($message);
+        asort($rows);
 
         // Output the plugin list in table format.
         return new RowsOfFields($rows);

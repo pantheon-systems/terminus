@@ -108,7 +108,7 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         // Get the Terminus major version.
         $terminus_major_version = $this->getTerminusMajorVersion();
-        exec("cd \"$plugin\" && git fetch --all && git tag -l | grep ^{$terminus_major_version} | sort -r | head -1", $tag);
+        exec("cd \"$plugin\" && git fetch --all && git tag -l | grep ^[v$terminus_major_version] | sort -Vr | head -1", $tag);
         if (!empty($tag)) {
             $version = array_pop($tag);
         } else {
