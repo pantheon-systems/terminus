@@ -55,11 +55,21 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
+        $input = $this->input();
+        $useTty = $input->isInteractive() ? null : false;
+
         $output = $this->output();
+        $echoOutputFn = function ($type, $buffer) {};
+        if ($useTty === false) {
+            $echoOutputFn = function ($type, $buffer) use ($output) {
+                $output->write($buffer);
+            };
+        }
+
         $result = $this->environment->sendCommandViaSsh(
             $command_line,
-            function ($type, $buffer) use ($output) {
-            }
+            $echoOutputFn,
+            $useTty
         );
         $output = $result['output'];
         $exit = $result['exit_code'];
@@ -74,8 +84,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($exit != 0) {
             throw new TerminusProcessException($output);
         }
-
-        return rtrim($output);
     }
 
     /**
