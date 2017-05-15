@@ -59,7 +59,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $useTty = $input->isInteractive() ? null : false;
 
         $output = $this->output();
-        $echoOutputFn = function ($type, $buffer) {};
+        $echoOutputFn = function ($type, $buffer) {
+        };
         if ($useTty === false) {
             $echoOutputFn = function ($type, $buffer) use ($output) {
                 $output->write($buffer);
@@ -84,6 +85,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($exit != 0) {
             throw new TerminusProcessException($output);
         }
+
+        return rtrim($output);
     }
 
     /**
