@@ -43,18 +43,22 @@ class LocalMachineHelper implements ConfigAwareInterface
      *
      * @param string $cmd The command to execute
      * @param callable $callback A function to run while waiting for the process to complete
+     * @param boolean $useTty Whether to allocate a tty when running. Null to autodetect.
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback = null)
+    public function execInteractive($cmd, $callback = null, $useTty = null)
     {
         $process = $this->getProcess($cmd);
         // Set tty mode if the user is running terminus iteractively.
         if (function_exists('posix_isatty')) {
-            $process->setTty(posix_isatty(STDOUT) && posix_isatty(STDIN));
+            if (!isset($useTty)) {
+                $useTty = (posix_isatty(STDOUT) && posix_isatty(STDIN));
+            }
             if (!posix_isatty(STDIN)) {
                 $process->setInput(STDIN);
             }
         }
+        $process->setTty($useTty);
         $process->start();
         $process->wait($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
