@@ -33,6 +33,10 @@ class InfoCommandTest extends UpstreamCommandTest
             ->method('get')
             ->with($this->equalTo($upstream_id))
             ->willReturn($this->upstream);
+        $this->upstream->expects($this->once())
+            ->method('fetch')
+            ->with()
+            ->willReturn($this->upstream);
 
         $out = $this->command->info($upstream_id);
         $this->assertInstanceOf(PropertyList::class, $out);

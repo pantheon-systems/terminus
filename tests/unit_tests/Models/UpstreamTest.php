@@ -2,9 +2,13 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Upstream;
 
+/**
+ * Class UpstreamTest
+ * Testing class for Pantheon\Terminus\Models\Upstream
+ * @package Pantheon\Terminus\UnitTests\Models
+ */
 class UpstreamTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -14,8 +18,8 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'id' => 'upstream id',
-            'longname' => 'upstream label',
-            'machinename' => 'upstream machine name',
+            'label' => 'upstream label',
+            'machine_name' => 'upstream machine name',
         ];
 
         $model = new Upstream((object)$data);
@@ -33,11 +37,13 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
             'branch' => 'repo branch',
             'key' => 'value',
         ];
-        $model = new Upstream((object)['attributes' => (object)$data,]);
+        $model = new Upstream((object)$data);
         foreach ($data as $key => $value) {
             $this->assertEquals($value, $model->get($key));
         }
         $this->assertEquals($data['product_id'], $model->id);
+        $this->assertEquals($data['url'], $model->get('repository_url'));
+        $this->assertEquals($data['branch'], $model->get('repository_branch'));
     }
 
     /**
@@ -45,25 +51,29 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerialize()
     {
-        $expected = $data = [
+        $data = [
             'product_id' => 'upstream id',
             'url' => 'repository.url',
             'branch' => 'repo branch',
             'key' => 'value',
         ];
-        $expected['id'] = $data['product_id'];
+        $expected = array_merge(
+            $data,
+            [
+                'id' => $data['product_id'],
+                'repository_url' => $data['url'],
+                'repository_branch' => $data['branch'],
+            ]
+        );
         $model = new Upstream((object)$data);
         $this->assertEquals($expected, $model->serialize());
 
-        unset($expected['id']);
-        unset($expected['key']);
-        $model2 = new Upstream((object)$data);
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $site->id = 'site id';
-        $model2->site = $site;
-        $this->assertEquals($expected, $model2->serialize());
+        $data2 = [
+            'id' => $data['product_id'],
+            'repository_url' => $data['url'],
+        ];
+        $model2 = new Upstream((object)$data2);
+        $this->assertEquals($data2, $model2->serialize());
     }
 
     /**
@@ -73,9 +83,9 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'id' => 'upstream id',
-            'url' => 'repository.url',
+            'repository_url' => 'repository.url',
         ];
         $model = new Upstream((object)$data);
-        $this->assertEquals("{$data['id']}: {$data['url']}", (string)$model);
+        $this->assertEquals("{$data['id']}: {$data['repository_url']}", (string)$model);
     }
 }

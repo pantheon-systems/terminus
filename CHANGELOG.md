@@ -8,6 +8,15 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - Added an experimental `site:upstream:set` command to switch a site's upstream. (#1713)
 
+### Changed
+- Updated the `longname` field name to `label` in `upstream:list`. (#1703)
+- Updated the `longname` field name to `label` in `upstream:info`. (#1703)
+- Updated the `url` field to contain the Git repository URL (rather than its host's page) in `upstream:info`. (#1703)
+
+### Removed
+- The obsolete `type` and `category` fields have been removed from the output of `upstream:list`. (#1703)
+- The obsolete `type`, `category`, and `author` fields have been removed from the output of `upstream:info`. (#1703)
+
 ## 1.3.0 - 2017-04-20
 ### Added
 - `env:commit` now has a `--force` option to force a commit even if no changes are found. (#1115)

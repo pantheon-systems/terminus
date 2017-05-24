@@ -23,7 +23,7 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
      *
      * @param string $site_name Site name
      * @param string $label Site label
-     * @param string $upstream_id Upstream name or UUID
+     * @param string $upstream_id Upstream name, label, or UUID
      * @option org Organization name, label, or ID
      *
      * @usage <site> <label> <upstream> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
