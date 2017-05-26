@@ -22,7 +22,7 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option string $file [filename.tgz] Name of backup file
-     * @option string $element [all|code|files|database|db] Backup element to retrieve
+     * @option string $element [code|files|database|db] Backup element to retrieve
      * @option string $to Local path to save to
      * @throws TerminusNotFoundException
      *
@@ -32,7 +32,7 @@ class GetCommand extends SingleBackupCommand implements RequestAwareInterface
      * @usage <site>.<env> --to=<path> Saves the most recent backup of any type in <site>'s <env> environment to <path>.
      * @usage <site>.<env> --to=<path> Saves the most recent <element> backup in <site>'s <env> environment to <path>.
      */
-    public function get($site_env, array $options = ['file' => null, 'element' => 'all', 'to' => null,])
+    public function get($site_env, array $options = ['file' => null, 'element' => 'files', 'to' => null,])
     {
         $backup_url = $this->getBackup($site_env, $options)->getUrl();
         if (!isset($options['to']) || is_null($save_path = $options['to'])) {
