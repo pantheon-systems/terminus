@@ -158,10 +158,7 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
      */
     public function fetchWithOperations($options = [])
     {
-        $options = array_merge(
-            $options,
-            ['fetch_args' => ['query' => ['hydrate' => 'operations',],],]
-        );
+        $options = array_merge($options, ['fetch_args' => ['query' => ['hydrate' => 'operations',],],]);
         $this->fetch($options);
     }
 
@@ -173,12 +170,9 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     public function findLatestWithLogs()
     {
         $workflows = $this->allWithLogs();
-        usort(
-            $workflows,
-            function ($a, $b) {
-                return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
-            }
-        );
+        usort($workflows, function ($a, $b) {
+            return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
+        });
 
         if (count($workflows) > 0) {
             return $workflows[0];
@@ -194,12 +188,9 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     public function lastCreatedAt()
     {
         $workflows = $this->all();
-        usort(
-            $workflows,
-            function ($a, $b) {
-                return ($a->wasCreatedAfter($b->get('created_at'))) ? -1 : 1;
-            }
-        );
+        usort($workflows, function ($a, $b) {
+            return ($a->wasCreatedAfter($b->get('created_at'))) ? -1 : 1;
+        });
         if (!empty($workflows)) {
             $workflow = array_shift($workflows);
             return $workflow->get('created_at');
@@ -215,12 +206,9 @@ class Workflows extends TerminusCollection implements SessionAwareInterface
     public function lastFinishedAt()
     {
         $workflows = $this->all();
-        usort(
-            $workflows,
-            function ($a, $b) {
-                return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
-            }
-        );
+        usort($workflows, function ($a, $b) {
+            return ($a->wasFinishedAfter($b->get('finished_at'))) ? -1 : 1;
+        });
         if (!empty($workflows)) {
             $workflow = array_shift($workflows);
             return $workflow->get('finished_at');
