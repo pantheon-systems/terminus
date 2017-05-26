@@ -1,0 +1,6 @@
+{
+    "type": "terminus-plugin",
+    "extra": {
+        "terminus": {}
+    }
+}

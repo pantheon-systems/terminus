@@ -78,7 +78,7 @@ class DomainsTest extends CollectionTestCase
     }
 
     /**
-     * Tets the Domains::has(string) function
+     * Tests the Domains::has(string) function
      */
     public function testHas()
     {

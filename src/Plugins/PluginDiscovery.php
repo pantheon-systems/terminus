@@ -40,21 +40,23 @@ class PluginDiscovery implements LoggerAwareInterface
         $out = [];
         try {
             $di = new \DirectoryIterator($this->directory_path);
-            foreach ($di as $dir) {
-                if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
-                    try {
-                        $plugin = new PluginInfo($dir->getPathname());
-                        $out[] = $plugin;
-                    } catch (TerminusException $e) {
-                        $this->logger->warning(
-                            'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
-                            ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
-                        );
-                    }
+        } catch (\Exception $e) {
+            return $out;
+            // Plugin directory probably didn't exist or wasn't writable. Do nothing.
+        }
+
+        foreach ($di as $dir) {
+            if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
+                try {
+                    $plugin = new PluginInfo($dir->getPathname());
+                    $out[] = $plugin;
+                } catch (TerminusException $e) {
+                    $this->logger->warning(
+                        'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
+                        ['dir' => $dir->getPathName(), 'msg' => $e->getMessage()]
+                    );
                 }
             }
-        } catch (\Exception $e) {
-            // Plugin directory probably didn't exist or wasn't writable. Do nothing.
         }
         return $out;
     }
