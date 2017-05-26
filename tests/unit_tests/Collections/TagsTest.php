@@ -21,6 +21,10 @@ class TagsTest extends CollectionTestCase
      */
     protected $collection;
     /**
+     * @var OrganizationSiteMembership
+     */
+    protected $org_site_membership;
+    /**
      * @var Organization
      */
     protected $organization;
@@ -39,7 +43,7 @@ class TagsTest extends CollectionTestCase
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
+        $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
           ->disableOriginalConstructor()
           ->getMock();
         $this->organization = $this->getMockBuilder(Organization::class)
@@ -51,10 +55,10 @@ class TagsTest extends CollectionTestCase
             ->getMock();
         $this->site->id = 'site_uuid';
 
-        $org_site_membership->method('getOrganization')->willReturn($this->organization);
-        $org_site_membership->method('getSite')->willReturn($this->site);
+        $this->org_site_membership->method('getOrganization')->willReturn($this->organization);
+        $this->org_site_membership->method('getSite')->willReturn($this->site);
 
-        $this->collection = new Tags(compact('org_site_membership'));
+        $this->collection = new Tags(['org_site_membership' => $this->org_site_membership,]);
         $this->collection->setRequest($this->request);
         $this->collection->setContainer($container);
     }
@@ -97,5 +101,13 @@ class TagsTest extends CollectionTestCase
         $this->collection->fetch($data);
         $this->assertTrue($this->collection->has($data[0]));
         $this->assertFalse($this->collection->has('invalid'));
+    }
+
+    /**
+     * Tests the Tags::getMembership() function
+     */
+    public function testGetMembership()
+    {
+        $this->assertEquals($this->org_site_membership, $this->collection->getMembership());
     }
 }

@@ -46,6 +46,9 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         $this->discovery->setLogger($this->logger);
     }
 
+    /**
+     * Tests the PluginDiscovery::discover() function
+     */
     public function testDiscover()
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -53,6 +56,10 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         }
 
         $invalid_paths = [
+            'invalid-compat-versionless-composer' => 'The composer.json must contain a "compatible-version" field in "extras/terminus"',
+            'invalid-composer-json' => 'The file "{path}/composer.json" does not contain valid JSON',
+            'invalid-composer-namespace' => 'The namespace "{namespace}" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "{correct}"',
+            'invalid-extraless-composer' => 'The composer.json must contain a "terminus" section in "extras"',
             'invalid-no-composer-json' => 'The file "{path}/composer.json" does not exist',
             'invalid-wrong-composer-type' => 'The composer.json must contain a "type" attribute with the value "terminus-plugin"',
         ];
@@ -61,23 +68,24 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
             'without-namespace',
         ];
 
-        $expected = [];
         $log = 0;
         foreach ($invalid_paths as $path => $msg) {
             $path = $this->plugins_dir . $path;
-            $msg = str_replace('{path}', $path, $msg);
             $this->logger->expects($this->at($log++))
                 ->method('warning')
-                ->with(
-                    'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
-                    ['dir' => $path, 'msg' => $msg,]
-                );
+                ->with('Plugin Discovery: Ignoring directory {dir} because: {msg}.');
         }
 
         $pluginList = $this->discovery->discover();
         $actual = $this->composeActualCommandFileDirectories($pluginList);
         $expected = $this->composeExpectedCommandFileDirectories($valid_paths, $this->plugins_dir);
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testDiscoverFailDirDNE()
+    {
+        $discovery = new PluginDiscovery(null);
+        $this->assertEmpty($discovery->discover());
     }
 
     protected function composeActualCommandFileDirectories($pluginList)

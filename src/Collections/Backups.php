@@ -161,12 +161,9 @@ class Backups extends EnvironmentOwnedCollection
     public function getFinishedBackups($element = null)
     {
         $all_backups = !is_null($element) ? $this->getBackupsByElement($element) : $this->all();
-        $finished_backups = array_filter(
-            $all_backups,
-            function ($backup) {
-                return $backup->backupIsFinished();
-            }
-        );
+        $finished_backups = array_filter($all_backups, function ($backup) {
+            return $backup->backupIsFinished();
+        });
         $backup_ids = array_keys($finished_backups);
         rsort($backup_ids);
         $backups = [];

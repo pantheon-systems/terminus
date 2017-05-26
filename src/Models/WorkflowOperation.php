@@ -24,6 +24,21 @@ class WorkflowOperation extends TerminusModel
     }
 
     /**
+     * Formats operation object into a descriptive string
+     *
+     * @return string
+     */
+    public function description()
+    {
+        $description = sprintf(
+            'Operation: %s finished in %s',
+            $this->get('description'),
+            $this->duration()
+        );
+        return $description;
+    }
+
+    /**
      * Formats operation object into an associative array for output
      *
      * @return array
@@ -43,21 +58,6 @@ class WorkflowOperation extends TerminusModel
         }
 
         return $data;
-    }
-
-    /**
-     * Formats operation object into a descriptive string
-     *
-     * @return string
-     */
-    public function description()
-    {
-        $description = sprintf(
-            'Operation: %s finished in %s',
-            $this->get('description'),
-            $this->duration()
-        );
-        return $description;
     }
 
     /**

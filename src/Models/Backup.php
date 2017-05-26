@@ -161,15 +161,12 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
         }
         $modified_id = str_replace("_$type", '', $this->id);
         $env = $this->getEnvironment();
-        $workflow = $env->getWorkflows()->create(
-            $wf_name,
-            [
-                'params' => [
-                    'key' => "{$env->getSite()->id}/{$env->id}/{$modified_id}/{$this->get('filename')}",
-                    'bucket' => $this->getBucket(),
-                ],
-            ]
-        );
+        $workflow = $env->getWorkflows()->create($wf_name, [
+            'params' => [
+                'key' => "{$env->getSite()->id}/{$env->id}/{$modified_id}/{$this->get('filename')}",
+                'bucket' => $this->getBucket(),
+            ],
+        ]);
         return $workflow;
     }
 

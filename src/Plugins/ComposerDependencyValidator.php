@@ -143,9 +143,6 @@ class ComposerDependencyValidator
             return [];
         }
         $contents = file_get_contents($json_file);
-        if (empty($contents)) {
-            return [];
-        }
-        return json_decode($contents, true);
+        return empty($contents) ? [] : json_decode($contents, true);
     }
 }

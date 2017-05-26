@@ -38,16 +38,13 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
         $domains = $env->getDomains()->setHydration('recommendations')->all();
         $settings = [];
         foreach ($domains as $domain) {
-            $settings = array_merge(
-                $settings,
-                array_map(
-                    function ($recommendation) use ($domain) {
-                        $recommendation->name = $domain->id;
-                        return (array)$recommendation;
-                    },
-                    $domain->get('dns_recommendations')
-                )
-            );
+            $settings = array_merge($settings, array_map(
+                function ($recommendation) use ($domain) {
+                    $recommendation->name = $domain->id;
+                    return (array)$recommendation;
+                },
+                $domain->get('dns_recommendations')
+            ));
         }
         return new RowsOfFields($settings);
     }

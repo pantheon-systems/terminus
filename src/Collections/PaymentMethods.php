@@ -36,12 +36,9 @@ class PaymentMethods extends UserOwnedCollection
         if (isset($payment_methods[$id])) {
             return $payment_methods[$id];
         }
-        $matches = array_filter(
-            $payment_methods,
-            function ($payment_method) use ($id) {
-                return ($payment_method->get('label') == $id);
-            }
-        );
+        $matches = array_filter($payment_methods, function ($payment_method) use ($id) {
+            return ($payment_method->get('label') == $id);
+        });
         if (empty($matches)) {
             throw new TerminusNotFoundException(
                 'Could not locate a payment method identified by {id} on this account.',
