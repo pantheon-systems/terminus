@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\UnitTests\Friends\Site;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Friends\SiteJoinInterface;
 use Pantheon\Terminus\Friends\SiteJoinTrait;
 use Pantheon\Terminus\Models\TerminusModel;
@@ -11,7 +13,8 @@ use Pantheon\Terminus\Models\TerminusModel;
  * Testing aid for Pantheon\Terminus\Friends\SiteJoinTrait & Pantheon\Terminus\Friends\SiteJoinInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Site
  */
-class JoinDummyClass extends TerminusModel implements SiteJoinInterface
+class JoinDummyClass extends TerminusModel implements ContainerAwareInterface, SiteJoinInterface
 {
+    use ContainerAwareTrait;
     use SiteJoinTrait;
 }
