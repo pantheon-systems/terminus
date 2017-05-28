@@ -18,17 +18,26 @@ if (file_exists($path = __DIR__ . '/../vendor/autoload.php')
     throw new \Exception('Could not locate autoload.php');
 }
 
-
 use Pantheon\Terminus\Terminus;
 use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
 use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 // Create the input and output objects for Terminus to run against.
-$input = new ArgvInput($_SERVER['argv']);
+$argv = $_SERVER['argv'];
+if (posix_isatty(STDIN)) {
+    $input = new ArgvInput($argv);
+} else {
+    $stdin = file_get_contents('php://stdin');
+    if (isset($argv[1])) {
+        $stdin = $argv[1] . ' ' . $stdin;
+    }
+    $input = new StringInput($stdin);
+}
 $output = new ConsoleOutput();
 
 // Create a config object.
