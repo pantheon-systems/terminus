@@ -17,7 +17,7 @@ use Robo\Common\IO;
  * Class TerminusCommand
  * @package Pantheon\Terminus\Commands
  */
-abstract class TerminusCommand implements
+abstract class TerminusCommand extends \Robo\Tasks implements
     IOAwareInterface,
     LoggerAwareInterface,
     ConfigAwareInterface,
