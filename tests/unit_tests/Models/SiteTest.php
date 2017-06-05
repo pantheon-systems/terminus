@@ -232,7 +232,7 @@ class SiteTest extends ModelTestCase
     /**
      * Tests Site::deployProduct($upstream_id)
      */
-    public function testSwitchUpstream()
+    public function testSetUpstream()
     {
         $upstream_id = 'upstream_id';
 
@@ -244,7 +244,7 @@ class SiteTest extends ModelTestCase
           )
           ->willReturn($this->workflow);
 
-        $workflow = $this->model->switchUpstream($upstream_id);
+        $workflow = $this->model->setUpstream($upstream_id);
         $this->assertEquals($workflow, $this->workflow);
     }
 

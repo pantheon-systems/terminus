@@ -2,16 +2,16 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
-use Pantheon\Terminus\Commands\Site\SwitchUpstreamCommand;
+use Pantheon\Terminus\Commands\Site\Upstream\SetUpstreamCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
- * Class SwitchUpstreamCommandTest
- * Test suite class for Pantheon\Terminus\Commands\Site\SwitchUpstreamCommand
+ * Class SetUpstreamCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Site\Upstream\SetUpstreamCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Site
  */
-class SwitchUpstreamCommandTest extends CommandTestCase
+class SetUpstreamCommandTest extends CommandTestCase
 {
     protected $command;
     protected $workflow;
@@ -23,7 +23,7 @@ class SwitchUpstreamCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->command = new SwitchUpstreamCommand($this->getConfig());
+        $this->command = new \Pantheon\Terminus\Commands\Site\Upstream\SetUpstreamCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
@@ -35,9 +35,9 @@ class SwitchUpstreamCommandTest extends CommandTestCase
 
 
   /**
-   * Exercises the site:switchupstream command
+   * Exercises the site:upstream:set command
    */
-    public function testSwitchUpstream()
+    public function testSetUpstream()
     {
         $site_name = 'my-site';
         $upstream_id = 'upstreamid';
@@ -54,7 +54,7 @@ class SwitchUpstreamCommandTest extends CommandTestCase
 
         $this->expectConfirmation();
         $this->site->expects($this->once())
-            ->method('switchUpstream')
+            ->method('setUpstream')
             ->with($upstream_id)
             ->willReturn($this->workflow);
 
@@ -66,20 +66,20 @@ class SwitchUpstreamCommandTest extends CommandTestCase
         $this->logger->expects($this->at(1))
           ->method('log')->with(
               $this->equalTo('notice'),
-              $this->equalTo('Switched upstream for {site}'),
+              $this->equalTo('Set upstream for {site}'),
               $this->equalTo(['site' => $site_name,])
           );
 
-        $out = $this->command->switchUpstream($site_name, $upstream_id);
+        $out = $this->command->setUpstream($site_name, $upstream_id);
         $this->assertNull($out);
     }
 
   /**
-   * Exercises the site:switchupstream command when declining the confirmation
+   * Exercises the site:upstream:set command when declining the confirmation
    *
    * @todo Remove this when removing TerminusCommand::confirm()
    */
-    public function testSwitchUpstreamConfirmationDecline()
+    public function testSetUpstreamConfirmationDecline()
     {
         $site_name = 'my-site';
         $upstream_id = 'upstreamid';
@@ -92,16 +92,16 @@ class SwitchUpstreamCommandTest extends CommandTestCase
 
         $this->expectConfirmation(false);
         $this->site->expects($this->never())
-        ->method('switchUpstream');
+        ->method('setUpstream');
 
-        $out = $this->command->switchUpstream($site_name, $upstream_id);
+        $out = $this->command->setUpstream($site_name, $upstream_id);
         $this->assertNull($out);
     }
 
   /**
-   * Exercises the site:delete command when Site::delete fails to ensure message gets through
+   * Exercises the site:upstream:set command when Site::delete fails to ensure message gets through
    */
-    public function testSwitchUpstreamFailure()
+    public function testSetUpstreamFailure()
     {
         $site_name = 'my-site';
         $upstream_id = 'upstreamid';
@@ -115,13 +115,13 @@ class SwitchUpstreamCommandTest extends CommandTestCase
 
         $this->expectConfirmation();
         $this->site->expects($this->once())
-        ->method('switchUpstream')
+        ->method('setUpstream')
         ->with()
         ->will($this->throwException(new \Exception($exception_message)));
 
         $this->setExpectedException(\Exception::class, $exception_message);
 
-        $out = $this->command->switchUpstream($site_name, $upstream_id);
+        $out = $this->command->setUpstream($site_name, $upstream_id);
         $this->assertNull($out);
     }
 }

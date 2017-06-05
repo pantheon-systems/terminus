@@ -139,7 +139,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      * @param string $upstream_id The UUID for the product to deploy.
      * @return Workflow
      */
-    public function switchUpstream($upstream_id)
+    public function setUpstream($upstream_id)
     {
         return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
     }

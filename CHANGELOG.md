@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 - Removed the element option's erroneous "all" value from `backup:get`, changed its default to "files". (#1705)
 
 ### Added
-- Added an experimental `site:switchupstream` command to switch a site's upstream
+- Added an experimental `site:upstream:set` command to switch a site's upstream
 
 ## 1.3.0 - 2017-04-20
 ### Added

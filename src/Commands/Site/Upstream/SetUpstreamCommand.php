@@ -1,26 +1,28 @@
 <?php
 
-namespace Pantheon\Terminus\Commands\Site;
+namespace Pantheon\Terminus\Commands\Site\Upstream;
+
+use Pantheon\Terminus\Commands\Site\SiteCommand;
 
 /**
- * Class SwitchUpstreamCommand
+ * Class SetUpstreamCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class SwitchUpstreamCommand extends SiteCommand
+class SetUpstreamCommand extends SiteCommand
 {
   /**
    * Changes a site's Upstream.
    *
    * @authorize
    *
-   * @command site:switchupstream
+   * @command site:upstream:set
    *
    * @param string $site_name Site name
    * @param string $upstream_id Upstream ID
    *
    * @usage <site> <upstreamid> Changes the <site> upstream to the one identified by <upstream_id>
    */
-    public function switchUpstream($site_name, $upstream_id)
+    public function setUpstream($site_name, $upstream_id)
     {
 
         $site = $this->getSite($site_name);
@@ -30,10 +32,10 @@ class SwitchUpstreamCommand extends SiteCommand
             return;
         }
 
-        $workflow = $site->switchUpstream($upstream_id);
+        $workflow = $site->setUpstream($upstream_id);
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.
         }
-        $this->log()->notice('Switched upstream for {site}', ['site' => $site->getName()]);
+        $this->log()->notice('Set upstream for {site}', ['site' => $site->getName()]);
     }
 }
