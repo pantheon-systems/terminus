@@ -134,6 +134,18 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Creates a new site for migration
+     *
+     * @param string $upstream_id The UUID for the product to deploy.
+     * @return Workflow
+     */
+    public function switchUpstream($upstream_id)
+    {
+        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
+    }
+
+
+    /**
      * @return Branches
      */
     public function getBranches()
