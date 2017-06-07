@@ -230,6 +230,25 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::deployProduct($upstream_id)
+     */
+    public function testSetUpstream()
+    {
+        $upstream_id = 'upstream_id';
+
+        $this->workflows->expects($this->once())
+          ->method('create')
+          ->with(
+              $this->equalTo('switch_upstream'),
+              $this->equalTo(['params' => ['upstream_id' => $upstream_id,],])
+          )
+          ->willReturn($this->workflow);
+
+        $workflow = $this->model->setUpstream($upstream_id);
+        $this->assertEquals($workflow, $this->workflow);
+    }
+
+    /**
      * Tests Site::fetch($options)
      */
     public function testFetch()

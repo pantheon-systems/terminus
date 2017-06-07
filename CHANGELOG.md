@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 - Removed the element option's erroneous "all" value from `backup:get`, changed its default to "files". (#1705)
 
+### Added
+- Added an experimental `site:upstream:set` command to switch a site's upstream. (#1713)
+
 ## 1.3.0 - 2017-04-20
 ### Added
 - `env:commit` now has a `--force` option to force a commit even if no changes are found. (#1115)
