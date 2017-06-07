@@ -209,7 +209,8 @@ class SetCommandTest extends CommandTestCase
      * @param $upstream_id
      * @return Upstream
      */
-    protected function expectGetUpstream($upstream_id) {
+    protected function expectGetUpstream($upstream_id)
+    {
         $this->upstreams->expects($this->once())
             ->method('get')
             ->with($upstream_id)
