@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-### MASTER
+## 1.4.0 - 2014-06-07
 ### Fixed
 - Removed the element option's erroneous "all" value from `backup:get`, changed its default to "files". (#1705)
 
