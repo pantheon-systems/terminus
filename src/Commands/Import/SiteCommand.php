@@ -23,15 +23,14 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
      * @command import:site
      * @aliases site:import
      *
-     * @option string $site Site name
-     * @option string $url Publicly accessible URL of the site archive
+     * @param string $site_name Site name
+     * @param string $url Publicly accessible URL of the site archive
      *
-     * @usage <site> <archive_url> Imports the site archive at <archive_url> to <site>.
+     * @usage <site_name> <url> Imports the site archive at <url> to <site_name>.
      */
-    public function import($sitename, $url)
+    public function import($site_name, $url)
     {
-        $site = $sitename;
-        list($site, $env) = $this->getSiteEnv($site, 'dev');
+        list($site, $env) = $this->getSiteEnv($site_name, 'dev');
 
         $tr = ['site' => $site->getName(), 'env' => $env->getName()];
         if (!$this->confirm('Are you sure you overwrite the code, database and files for {env} on {site}?', $tr)) {
