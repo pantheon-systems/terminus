@@ -741,10 +741,12 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
 
         // Catch Terminus running in test mode
         if ($this->getConfig()->get('test_mode')) {
-            return [
-                'output' => "Terminus is in test mode. "
+            $output = "Terminus is in test mode. "
                     . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                    . "SSH Command: ${ssh_command}",
+                    . "SSH Command: ${ssh_command}";
+            print "$output";
+            return [
+                'output' => $output,
                 'exit_code' => 0
             ];
         }

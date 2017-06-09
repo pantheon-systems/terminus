@@ -56,7 +56,7 @@ class SSHBaseCommandTest extends CommandTestCase
             ->willReturn(['output' => $dummy_output, 'exit_code' => 0,]);
 
         $out = $this->command->dummyCommand("$site_name.env", $options);
-        $this->assertEquals($dummy_output, $out);
+        $this->assertNull($out);
     }
 
     /**
@@ -158,6 +158,6 @@ class SSHBaseCommandTest extends CommandTestCase
             ->willReturn(['output' => $dummy_output, 'exit_code' => $status_code,]);
 
         $out = $this->command->dummyCommand("$site_name.env", $options);
-        $this->assertEquals($dummy_output, $out);
+        $this->assertNull($out);
     }
 }

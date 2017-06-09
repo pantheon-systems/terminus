@@ -81,8 +81,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($exit != 0) {
             throw new TerminusProcessException($output);
         }
-
-        return rtrim($output);
     }
 
     /**
