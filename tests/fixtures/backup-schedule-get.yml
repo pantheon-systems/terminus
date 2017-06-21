@@ -10,11 +10,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:32e32812-6599-11e6-8af0-bc764e1022a9:fSNAfL5kd6deXJy8PmUXN'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:32e32812-6599-11e6-8af0-bc764e1022a9:fSNAfL5kd6deXJy8PmUXN'
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: terminus
             Accept: null
         body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
@@ -47,11 +42,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
@@ -83,10 +73,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -118,10 +104,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -153,10 +135,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -188,10 +166,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -224,9 +198,6 @@
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
             headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -259,9 +230,6 @@
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
             headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -293,11 +261,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
@@ -329,10 +292,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:3fdd03bc-6599-11e6-bfab-bc764e1141f9:snKmcdvEuDYQrv1Z0CIvA'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
