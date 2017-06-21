@@ -9,10 +9,6 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: terminus
             Accept: null
         body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
@@ -45,10 +41,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -80,10 +72,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
             Accept: null
     response:
         status:
@@ -115,11 +103,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
@@ -152,11 +135,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: ''
             Accept: null
         body: '{"type":"do_export","params":{"code":true,"database":true,"files":true,"entry_type":"backup","ttl":31536000}}'
     response:
@@ -188,11 +166,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
@@ -225,11 +198,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: ''
             Accept: null
         body: '{"type":"do_export","params":{"code":false,"database":true,"files":false,"entry_type":"backup","ttl":31536000}}'
     response:
@@ -261,11 +229,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
@@ -298,11 +261,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: ''
             Accept: null
         body: '{"type":"do_export","params":{"code":true,"database":true,"files":true,"entry_type":"backup","ttl":7776000}}'
     response:
@@ -334,11 +292,6 @@
             User-Agent: 'Terminus/1.0.0-alpha (php_version=7.0.11&script=bin/terminus)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:dc7ae180-9ae6-11e6-adbf-bc764e1141f9:D7Qrpgexf0PL5PLLkiG6E'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:

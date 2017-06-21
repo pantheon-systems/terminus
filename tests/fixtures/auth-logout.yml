@@ -9,12 +9,6 @@
             Accept-Encoding: null
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:f658daf4-6403-11e6-bc71-bc764e1141f9:IhFR9be2Zk37T8nJg0S9M'
-            verify: '1'
-            method: post
-            absolute_url: ''
-            json: terminus
             Accept: null
         body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
@@ -47,11 +41,6 @@
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
             Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:f8f16e3e-6403-11e6-87eb-bc764e11bdd3:GEmF1B1TFimZZjcmjmvNd'
-            headers: 'Bearer 11111111-1111-1111-1111-111111111111:f8f16e3e-6403-11e6-87eb-bc764e11bdd3:GEmF1B1TFimZZjcmjmvNd'
-            verify: '1'
-            method: get
-            absolute_url: ''
-            options: get
             Accept: null
     response:
         status:
