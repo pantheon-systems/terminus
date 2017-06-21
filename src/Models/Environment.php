@@ -744,7 +744,9 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             $output = "Terminus is in test mode. "
                     . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
                     . "SSH Command: ${ssh_command}";
-            print "$output";
+            if ($this->getContainer()->has('output')) {
+                $this->getContainer()->get('output')->write($output);
+            }
             return [
                 'output' => $output,
                 'exit_code' => 0
