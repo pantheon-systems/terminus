@@ -104,7 +104,7 @@
             Accept-Encoding: null
             Content-type: application/json
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:001e5ca6-56bd-11e7-aeea-bc764e10d7c2:H1EeyYjwNJ33N8BMfoC4H'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:2451deea-6410-11e6-9e4d-bc764e1022a9:R9TlyOTQKwVbRuEf7KhoF'
             Accept: null
         body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"onebox"}'
     response:
@@ -136,7 +136,7 @@
             Accept-Encoding: null
             Content-type: application/json
             User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
-            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:022f0440-56be-11e7-a593-bc764e11bdd3:Sc1c9ILWfxR6rrkFMOdsL'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:2451deea-6410-11e6-9e4d-bc764e1022a9:R9TlyOTQKwVbRuEf7KhoF'
             Accept: null
     response:
         status:
