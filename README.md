@@ -97,7 +97,7 @@ cd /install/location ; composer update
 ### Updating with [Homebrew](http://brew.sh/) (for Macs)
 Update Terminus with this command:
 ```bash
-brew update homebrew/php/terminus
+brew upgrade homebrew/php/terminus
 ```
 
 ### Updating with Git
