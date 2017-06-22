@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 - Added a Collection::filter(callable) function. (#1725)
+- Added a `frozen` column to the output of `org:site:list`. (#1726)
 
 ## 1.4.0 - 2014-06-07
 ### Fixed

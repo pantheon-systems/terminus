@@ -31,6 +31,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     owner: Owner
      *     created: Created
      *     tags: Tags
+     *     frozen: Is Frozen?
      * @return RowsOfFields
      *
      * @param string $organization Organization name, label, or ID
