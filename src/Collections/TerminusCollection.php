@@ -45,16 +45,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Get the listing URL for this collection
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
      * Adds a model to this collection
      *
      * @param object $model_data Data to feed into attributes of new model
@@ -106,6 +96,17 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
+     * Filters the members of this collection
+     *
+     * @param callable $filter Filter function
+     */
+    public function filter(callable $filter)
+    {
+        $this->models = array_filter($this->getMembers(), $filter);
+        return $this;
+    }
+
+    /**
      * Retrieves the model of the given ID
      *
      * @param string $id ID of desired model instance
@@ -128,6 +129,17 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
             1
         );
     }
+
+    /**
+     * Get the listing URL for this collection
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
 
     /**
      * Determines whether the models contain an object with a specific ID

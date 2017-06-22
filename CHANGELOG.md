@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 - Corrected the help text of `import:site`/`site:import` to call the params params rather than options. (#1718)
 
+### Added
+- Added a Collection::filter(callable) function. (#1725)
+
 ## 1.4.0 - 2014-06-07
 ### Fixed
 - Removed the element option's erroneous "all" value from `backup:get`, changed its default to "files". (#1705)
