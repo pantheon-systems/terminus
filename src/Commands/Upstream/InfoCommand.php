@@ -20,12 +20,9 @@ class InfoCommand extends TerminusCommand
      *
      * @field-labels
      *     id: ID
-     *     longname: Name
-     *     category: Category
-     *     type: Type
+     *     label: Name
      *     framework: Framework
-     *     upstream: URL
-     *     author: Author
+     *     repository_url: URL
      *     description: Description
      * @return PropertyList
      *
@@ -33,6 +30,6 @@ class InfoCommand extends TerminusCommand
      */
     public function info($upstream)
     {
-        return new PropertyList($this->session()->getUser()->getUpstreams()->get($upstream)->serialize());
+        return new PropertyList($this->session()->getUser()->getUpstreams()->get($upstream)->fetch()->serialize());
     }
 }

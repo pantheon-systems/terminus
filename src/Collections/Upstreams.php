@@ -18,5 +18,5 @@ class Upstreams extends UserOwnedCollection
     /**
      * @var string
      */
-    protected $url = 'products';
+    protected $url = 'users/{user_id}/upstreams';
 }

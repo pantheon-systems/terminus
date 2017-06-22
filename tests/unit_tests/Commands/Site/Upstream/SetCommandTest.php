@@ -61,7 +61,7 @@ class SetCommandTest extends CommandTestCase
         $this->upstream = $this->getMockBuilder(Upstream::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'longname' => 'Upstream Name',];
+        $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'label' => 'Upstream Name',];
 
         $this->session->expects($this->once())
             ->method('getUser')
@@ -119,7 +119,7 @@ class SetCommandTest extends CommandTestCase
           ->method('log')->with(
               $this->equalTo('notice'),
               $this->equalTo('Set upstream for {site} to {upstream}'),
-              $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['longname']])
+              $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['label']])
           );
 
         $out = $this->command->set($site_name, $upstream_id);
@@ -217,8 +217,8 @@ class SetCommandTest extends CommandTestCase
             ->willReturn($this->upstream);
         $this->upstream->expects($this->once())
             ->method('get')
-            ->with('longname')
-            ->willReturn($this->upstream_data['longname']);
+            ->with('label')
+            ->willReturn($this->upstream_data['label']);
         $this->upstream->id = $this->upstream_data['id'];
         return $this->upstream;
     }

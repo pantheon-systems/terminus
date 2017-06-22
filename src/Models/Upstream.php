@@ -9,13 +9,17 @@ namespace Pantheon\Terminus\Models;
 class Upstream extends TerminusModel
 {
     public static $pretty_name = 'upstream';
+    /**
+     * @var string
+     */
+    protected $url = 'upstreams/{id}';
 
     /**
      * @inheritdoc
      */
     public function __toString()
     {
-        return "{$this->id}: {$this->get('url')}";
+        return "{$this->id}: {$this->get('repository_url')}";
     }
 
     /**
@@ -23,34 +27,25 @@ class Upstream extends TerminusModel
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('longname'), $this->get('machinename'),];
+        return [$this->id, $this->get('label'), $this->get('machine_name'),];
     }
 
     /**
-     * @inheritdoc
-     */
-    public function serialize()
-    {
-        if (!empty($this->site)) {
-            return [
-                'url' => $this->get('url'),
-                'product_id' => $this->get('product_id'),
-                'branch' => $this->get('branch'),
-            ];
-        }
-        return (array)$this->attributes;
-    }
-
-    /**
-     * @inheritdoc
+     * Modify response data from Site between fetch and assignment
+     *
+     * @param object $data attributes received from API response
+     * @return object $data
      */
     protected function parseAttributes($data)
     {
-        if (property_exists($data, 'attributes')) {
-            $data = $data->attributes;
-        }
         if (property_exists($data, 'product_id')) {
             $data->id = $data->product_id;
+        }
+        if (property_exists($data, 'url')) {
+            $data->repository_url = $data->url;
+        }
+        if (property_exists($data, 'branch')) {
+            $data->repository_branch = $data->branch;
         }
         return $data;
     }

@@ -18,7 +18,7 @@ class SetCommand extends SiteCommand
    * @command site:upstream:set
    *
    * @param string $site_name Site name
-   * @param string $upstream_id Upstream name or UUID
+   * @param string $upstream_id Upstream name, label, or UUID
    *
    * @usage <site> <upstream_id> Updates <site>'s upstream to <upstream_id>.
    */
@@ -26,7 +26,7 @@ class SetCommand extends SiteCommand
     {
         $site = $this->getSite($site_name);
         $upstream = $this->session()->getUser()->getUpstreams()->get($upstream_id);
-        $msg_params = ['site' => $site->getName(), 'upstream' => $upstream->get('longname'),];
+        $msg_params = ['site' => $site->getName(), 'upstream' => $upstream->get('label'),];
 
         $this->log()->warning('This functionality is experimental. Do not use this on production sites.');
         if (!$this->confirm('Are you sure you want change the upstream for {site} to {upstream}?', $msg_params)) {

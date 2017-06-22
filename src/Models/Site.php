@@ -157,16 +157,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Reset our environments cache. This may be necessary after calling
-     * $site->getEnvironments()->create($to_env_id, $from_env), as Terminus
-     * will not have any information about the new environment in its cache.
-     */
-    public function unsetEnvironments()
-    {
-        unset($this->environments);
-    }
-
-    /**
      * @return Environments
      */
     public function getEnvironments()
@@ -377,5 +367,15 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             }
             throw $e;
         }
+    }
+
+    /**
+     * Reset our environments cache. This may be necessary after calling
+     * $site->getEnvironments()->create($to_env_id, $from_env), as Terminus
+     * will not have any information about the new environment in its cache.
+     */
+    public function unsetEnvironments()
+    {
+        unset($this->environments);
     }
 }

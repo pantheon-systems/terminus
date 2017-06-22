@@ -19,9 +19,7 @@ class ListCommand extends TerminusCommand
      *
      * @field-labels
      *     id: ID
-     *     longname: Name
-     *     category: Category
-     *     type: Type
+     *     label: Name
      *     framework: Framework
      * @return RowsOfFields
      *
