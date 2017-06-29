@@ -9,8 +9,7 @@
   "require": {
     "php": ">=5.5.9",
     "composer/semver": "^1.4",
-    "consolidation/robo": "dev-extract-config",
-    "consolidation/config": "dev-master",
+    "consolidation/robo": "^1.1.0",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
     "symfony/console": "^3.3",
