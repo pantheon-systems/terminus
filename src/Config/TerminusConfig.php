@@ -80,7 +80,9 @@ class TerminusConfig extends \Robo\Config
     {
         $value = parent::get($key, $defaultOverride);
         // Replace placeholders.
-        $value = $this->replacePlaceholders($value);
+        if (is_string($value)) {
+            $value = $this->replacePlaceholders($value);
+        }
         return $value;
     }
 
