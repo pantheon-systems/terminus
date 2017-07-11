@@ -55,11 +55,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
-        $input = $this->input();
-        $useTty = $input->isInteractive() ? null : false;
-        if ($input->isInteractive() && function_exists('posix_isatty') && !posix_isatty(STDOUT)) {
-            $useTty = false;
-        }
+        $useTty = $this->useTty($this->input());
 
         $output = $this->output();
         $echoOutputFn = function ($type, $buffer) {
@@ -84,6 +80,25 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         if ($exit != 0) {
             throw new TerminusProcessException($output);
         }
+    }
+
+    /**
+     * Determine whether the use of a tty is appropriate for the current command.
+     */
+    protected function useTty($input)
+    {
+        // If we are not in interactive mode, then never use a tty.
+        if (!$input->isInteractive()) {
+            return false;
+        }
+        // If we are in interactive mode (or at least the user did not
+        // specify -n / --no-interaction), then also prevent the use
+        // of a tty if stdout is redirected.
+        if (function_exists('posix_isatty') && !posix_isatty(STDOUT)) {
+            return false;
+        }
+        // Otherwise, let the local machine helper decide whether to use a tty.
+        return null;
     }
 
     /**
