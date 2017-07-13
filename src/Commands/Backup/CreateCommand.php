@@ -1,6 +1,7 @@
 <?php
 
 namespace Pantheon\Terminus\Commands\Backup;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 /**
  * Class CreateCommand
@@ -29,8 +30,13 @@ class CreateCommand extends BackupCommand
         list(, $env) = $this->getSiteEnv($site_env);
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
         $workflow = $env->getBackups()->create($options);
+
+        // @todo, the ProgressBar Class probably should be injected somewhere before this line.
+        $progress = new ProgressBar($this->output());
         while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
+            // @todo, what formatting to use?
+            // http://symfony.com/doc/current/components/console/helpers/progressbar.html
+            $progress->advance();
         }
         $this->log()->notice('Created a backup of the {env} environment.', ['env' => $env->id,]);
     }
