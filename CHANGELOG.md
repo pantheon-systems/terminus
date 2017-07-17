@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 ## MASTER
 ### Fixed
 - Corrected the help text of `import:site`/`site:import` to call the params params rather than options. (#1718)
+- Pin the version of reflection-docblock to prevent syntax-checking problems with @usage tags. (#1740)
 
 ### Added
 - Added a Collection::filter(callable) function. (#1725)
