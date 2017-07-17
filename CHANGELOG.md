@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.4.1 - 2017-07-17
 ### Fixed
 - Corrected the help text of `import:site`/`site:import` to call the params params rather than options. (#1718)
 - Pin the version of reflection-docblock to prevent syntax-checking problems with @usage tags. (#1740)
@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file. This projec
 - Added a Collection::filter(callable) function. (#1725)
 - Added a `frozen` column to the output of `org:site:list`. (#1726)
 
-## 1.4.0 - 2014-06-07
+## 1.4.0 - 2017-06-07
 ### Fixed
 - Removed the element option's erroneous "all" value from `backup:get`, changed its default to "files". (#1705)
 
