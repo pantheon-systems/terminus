@@ -71,7 +71,7 @@ class UpdateCommand extends PluginBaseCommand
                 $installed_version = $this->getInstalledVersion($plugin_dir);
                 $latest_version = $this->getLatestVersion($plugin_dir);
                 if ($installed_version != 'unknown' && $latest_version != 'unknown') {
-                    if ($installed_version < $latest_version) {
+                    if ($this->semverCompare($latest_version, $installed_version)) {
                         exec("cd \"$plugin_dir\" && git checkout {$latest_version}", $messages);
                     } else {
                         $messages[] = "Already up-to-date.";
@@ -109,5 +109,30 @@ class UpdateCommand extends PluginBaseCommand
         foreach ($messages as $message) {
             $this->log()->notice($message);
         }
+    }
+
+    /**
+     * Compare two semver releases and return true if the first is greater than the second value.
+     *
+     * Based on the JavaScript function at https://github.com/substack/semver-compare.
+     *
+     * @param string $a Semver release
+     * @param string $b Semver release
+     *
+     * @return true if $a > $b, false otherwise.
+     */
+    protected function semverCompare($a, $b)
+    {
+        $pa = explode('.', $a);
+        $pb = explode('.', $b);
+        for ($i = 0; $i < 3; $i++) {
+            $na = $pa[$i];
+            $nb = $pb[$i];
+            if ($na > $nb) return true;
+            if ($nb > $na) return false;
+            if (is_numeric($na) && !is_numeric($nb)) return true;
+            if (!is_numeric($na) && is_numeric($nb)) return false;
+        }
+        return false;
     }
 }
