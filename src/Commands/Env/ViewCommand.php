@@ -27,9 +27,9 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface, Contain
      * @option boolean $print Print URL only
      * @return string
      *
-     * @usage: terminus env:view <site>.<env>
+     * @usage terminus env:view <site>.<env>
      *    Opens the browser to <site>'s <env> environment.
-     * @usage: terminus env:view <site>.<env> --print
+     * @usage terminus env:view <site>.<env> --print
      *    Prints the URL for <site>'s <env> environment.
      *
      * @throws TerminusException
