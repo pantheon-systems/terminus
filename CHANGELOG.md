@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 - Added an experimental `site:upstream:set` command to switch a site's upstream. (#1713)
+- Added the `site:upstream:info` command. (#1715)
 
 ## 1.3.0 - 2017-04-20
 ### Added
