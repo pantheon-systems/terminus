@@ -99,11 +99,27 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * Filters the members of this collection
      *
      * @param callable $filter Filter function
+     * TODO: This should not affect the original member array, but a copy should be kept and manipulated.
      */
     public function filter(callable $filter)
     {
         $this->models = array_filter($this->getMembers(), $filter);
         return $this;
+    }
+
+    /**
+     * Filters the models by a regex checked against a specific attribute
+     *
+     * @param string $attribute Name of the attribute to apply the regex filter to
+     * @param string $regex Non-delimited PHP regex to filter site names by
+     * @return TerminusCollection
+     */
+    public function filterByRegex($attribute, $regex = '(.*)')
+    {
+        return $this->filter(function ($model) use ($attribute, $regex) {
+            preg_match("~$regex~", $model->get($attribute), $matches);
+            return !empty($matches);
+        });
     }
 
     /**

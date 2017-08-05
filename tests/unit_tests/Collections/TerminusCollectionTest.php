@@ -44,6 +44,7 @@ class TerminusCollectionTest extends CollectionTestCase
             'a' => (object)['id' => 'a', 'foo' => '123', 'category' => 'a',],
             'b' => (object)['id' => 'b', 'foo' => '456', 'category' => 'a',],
             'c' => (object)['id' => 'c', 'foo' => '678', 'category' => 'b',],
+            'd' => (object)['id' => 'd', 'foo' => ['key' => 'value',], 'category' => 'b',],
         ];
 
         $this->request->expects($this->once())
@@ -92,6 +93,7 @@ class TerminusCollectionTest extends CollectionTestCase
             'a' => '123',
             'b' => '456',
             'c' => '678',
+            'd' => ['key' => 'value',],
         ];
         $this->assertEquals($listing, $collection->listing('id', 'foo'));
     }

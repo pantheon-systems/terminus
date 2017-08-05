@@ -20,6 +20,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Process\ProcessUtils;
 
 /**
@@ -862,13 +863,33 @@ class EnvironmentTest extends ModelTestCase
         $actual = $this->model->sendCommandViaSsh($command);
         $this->assertEquals($expected, $actual);
 
-        $this->configSet(['test_mode' => 1]);
+        $this->configSet(['test_mode' => 1,]);
         $expected = [
             'output' => "Terminus is in test mode. "
                 . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
                 . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" $expectedCommand",
             'exit_code' => 0
         ];
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $outputter = $this->getMockBuilder(Output::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->model->setContainer($container);
+        $container->expects($this->once())
+            ->method('has')
+            ->with('output')
+            ->willReturn(true);
+        $container->expects($this->once())
+            ->method('get')
+            ->with('output')
+            ->willReturn($outputter);
+        $outputter->expects($this->once())
+            ->method('write')
+            ->with($expected['output']);
+
         $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');
         $this->assertEquals($expected, $actual);
     }

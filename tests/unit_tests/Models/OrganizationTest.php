@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
+use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Organization;
@@ -157,9 +158,28 @@ class OrganizationTest extends ModelTestCase
     }
 
     /**
+     * Tests the Organization::getUpstreams() function
+     */
+    public function testGetUpstreams()
+    {
+        $upstreams = $this->getMockBuilder(OrganizationUpstreams::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(OrganizationUpstreams::class),
+                $this->equalTo([['organization' => $this->model,],])
+            )
+            ->willReturn($upstreams);
+
+        $this->assertEquals($upstreams, $this->model->getUpstreams());
+    }
+
+    /**
      * Tests the Organization::getUserMemberships() function
      */
-    public function testUserMemberships()
+    public function testGetUserMemberships()
     {
         $org_user_memberships = $this->getMockBuilder(OrganizationUserMemberships::class)
             ->disableOriginalConstructor()
@@ -218,5 +238,26 @@ class OrganizationTest extends ModelTestCase
             ->willReturn($label);
 
         $this->assertEquals($expected, $this->model->serialize());
+    }
+
+    /**
+     * Tests the Organization::__toString() function
+     */
+    public function testToString()
+    {
+        $label = 'Organization Label';
+        $this->model->id = 'org id';
+        $expected = "{$this->model->id}: $label";
+
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(Profile::class)
+            ->willReturn($this->profile);
+        $this->profile->expects($this->at(0))
+            ->method('get')
+            ->with($this->equalTo('name'))
+            ->willReturn($label);
+
+        $this->assertEquals($expected, $this->model->__toString());
     }
 }

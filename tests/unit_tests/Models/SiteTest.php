@@ -14,7 +14,7 @@ use Pantheon\Terminus\Models\NewRelic;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Solr;
-use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\SiteUpstream;
 use Pantheon\Terminus\Models\Workflow;
 
 /**
@@ -57,7 +57,7 @@ class SiteTest extends ModelTestCase
      */
     protected $solr;
     /**
-     * @var Upstream
+     * @var SiteUpstream
      */
     protected $upstream;
     /**
@@ -102,7 +102,7 @@ class SiteTest extends ModelTestCase
         $this->solr = $this->getMockBuilder(Solr::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->upstream = $this->getMockBuilder(Upstream::class)
+        $this->upstream = $this->getMockBuilder(SiteUpstream::class)
             ->disableOriginalConstructor()
             ->getMock();
         $this->user_memberships = $this->getMockBuilder(SiteUserMemberships::class)
@@ -124,7 +124,7 @@ class SiteTest extends ModelTestCase
         $this->container->add(Redis::class, $this->redis);
         $this->container->add(SiteUserMemberships::class, $this->user_memberships);
         $this->container->add(Solr::class, $this->solr);
-        $this->container->add(Upstream::class, $this->upstream);
+        $this->container->add(SiteUpstream::class, $this->upstream);
         $this->container->add(Workflows::class, $this->workflows);
 
         $this->model = new Site($this->site_data);
@@ -586,14 +586,14 @@ class SiteTest extends ModelTestCase
         $attributes = (object)['id' => 'site_id', 'upstream' => (object)['product_id' => 'product id',],];
         $site = new Site($attributes);
         $site->setContainer($container);
-        $upstream = $this->getMockBuilder(Upstream::class)
+        $upstream = $this->getMockBuilder(SiteUpstream::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $container->expects($this->once())
             ->method('get')
             ->with(
-                $this->equalTo(Upstream::class),
+                $this->equalTo(SiteUpstream::class),
                 $this->equalTo([$attributes->upstream, compact('site'),])
             )
             ->willReturn($upstream);
@@ -616,14 +616,14 @@ class SiteTest extends ModelTestCase
         ];
         $site = new Site($attributes);
         $site->setContainer($container);
-        $upstream = $this->getMockBuilder(Upstream::class)
+        $upstream = $this->getMockBuilder(SiteUpstream::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $container->expects($this->once())
             ->method('get')
             ->with(
-                $this->equalTo(Upstream::class),
+                $this->equalTo(SiteUpstream::class),
                 $this->equalTo([$attributes->settings->upstream, compact('site'),])
             )
             ->willReturn($upstream);
