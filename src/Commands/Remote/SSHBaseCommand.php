@@ -7,6 +7,7 @@ use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Process\ProcessUtils;
 
 /**
@@ -84,6 +85,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
 
     /**
      * Determine whether the use of a tty is appropriate for the current command.
+     *
+     * @param InputInterface $input
+     * @return bool|null
      */
     protected function useTty($input)
     {
@@ -94,11 +98,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         // If we are in interactive mode (or at least the user did not
         // specify -n / --no-interaction), then also prevent the use
         // of a tty if stdout is redirected.
-        if (function_exists('posix_isatty') && !posix_isatty(STDOUT)) {
-            return false;
-        }
         // Otherwise, let the local machine helper decide whether to use a tty.
-        return null;
+        return (function_exists('posix_isatty') && !posix_isatty(STDOUT)) ? false : null;
     }
 
     /**

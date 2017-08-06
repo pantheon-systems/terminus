@@ -278,7 +278,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
         ) {
             $upstream_data = $settings->upstream;
         }
-        return $this->getContainer()->get(Upstream::class, [$upstream_data, ['site' => $this,],]);
+        return $this->getContainer()->get(SiteUpstream::class, [$upstream_data, ['site' => $this,],]);
     }
 
     /**

@@ -1,6 +1,30 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+### Changed
+- Updated the name of the `longname` field output by `upstream:list` to `label`. (#1747)
+- Updated the name of the `longname` field output by `upstream:info` to `label`. (#1747)
+- Upstreams of types `core` and `custom` are the only ones which appear by default when using `upstream:list`. (#1747)
+- The `--org` option of the `site:list` command now defaults to `"all"` instead of `null`, but its behavior is unchanged. (#1747)
+
+### Added
+- Added a `machine_name` field to the output of `upstream:list`. (#1747)
+- Added a `organization` field to the output of `upstream:list`. (#1747)
+- Added a `machine_name` field to the output of `upstream:info`. (#1747)
+- Added a `organization` field to the output of `upstream:info`. (#1747)
+- Added a `repository_url` field to the output of `upstream:info`. (#1747)
+- Added a `org:upstream:list` command to list the upstreams of a specific organization. (#1747)
+- Added an `--org` option to `upstream:list` to list the upstreams of a specific organization. (#1747)
+- Added an `--all` option to list upstreams of all types in the output of `upstream:list`. (#1747)
+- Added a `--framework` option to `upstream:list` to filter the list by framework. (#1747)
+- Added a `--name` option to `upstream:list` to filter the list by name regex. (#1747)
+
+### Removed
+- Removed the `category` field from the output of `upsteram:info`. (#1747)
+
+### Fixed
+- The `org` option of `site:create` now works with machine names and labels as well as UUIDs. (#1747)
+
 ## 1.4.1 - 2017-07-17
 ### Fixed
 - Corrected the help text of `import:site`/`site:import` to call the params params rather than options. (#1718)

@@ -72,7 +72,7 @@ class Sites extends TerminusCollection implements SessionAwareInterface
 
         if (!$options['team_only']) {
             $memberships = $this->getUser()->getOrganizationMemberships()->fetch()->all();
-            if (!is_null($org_id = $options['org_id']) && ($org_id != 'all')) {
+            if (!is_null($org_id = $options['org_id'])) {
                 $memberships = array_filter($memberships, function ($membership) use ($org_id) {
                     return $membership->id == $org_id;
                 });
@@ -102,17 +102,14 @@ class Sites extends TerminusCollection implements SessionAwareInterface
     }
 
     /**
-     * Filters an array of sites by whether the user is an organizational member
+     * Filters the members of this collection by their names
      *
      * @param string $regex Non-delimited PHP regex to filter site names by
      * @return Sites
      */
     public function filterByName($regex = '(.*)')
     {
-        return $this->filter(function ($site) use ($regex) {
-            preg_match("~$regex~", $site->get('name'), $matches);
-            return !empty($matches);
-        });
+        return $this->filterByRegex('name', $regex);
     }
 
     /**

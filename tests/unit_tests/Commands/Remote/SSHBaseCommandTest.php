@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Process\ProcessUtils;
 
 /**
@@ -159,5 +160,35 @@ class SSHBaseCommandTest extends CommandTestCase
 
         $out = $this->command->dummyCommand("$site_name.env", $options);
         $this->assertNull($out);
+    }
+
+    /**
+     * Tests the SSHBaseCommand::useTty(InputInterface) command when in interactive mode
+     */
+    public function testUseTtyInteractive()
+    {
+        $input = $this->getMockBuilder(InputInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $input->expects($this->once())
+            ->method('isInteractive')
+            ->with()
+            ->willReturn(true);
+        $this->assertFalse($this->command->useUseTty($input));
+    }
+
+    /**
+     * Tests the SSHBaseCommand::useTty(InputInterface) command when not in interactive mode
+     */
+    public function testUseTtyNoninteractive()
+    {
+        $input = $this->getMockBuilder(InputInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $input->expects($this->once())
+            ->method('isInteractive')
+            ->with()
+            ->willReturn(false);
+        $this->assertFalse($this->command->useUseTty($input));
     }
 }

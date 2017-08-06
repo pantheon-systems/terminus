@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Models;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
+use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Collections\OrganizationUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Friends\ProfileInterface;
@@ -39,6 +40,10 @@ class Organization extends TerminusModel implements
      */
     private $site_memberships;
     /**
+     * @var Upstreams
+     */
+    private $upstreams;
+    /**
      * @var OrganizationUserMemberships
      */
     private $user_memberships;
@@ -46,6 +51,14 @@ class Organization extends TerminusModel implements
      * @var Workflows
      */
     private $workflows;
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return "{$this->id}: {$this->getLabel()}";
+    }
 
     /**
      * Returns a specific organization feature value
@@ -103,6 +116,17 @@ class Organization extends TerminusModel implements
                 ->get(OrganizationSiteMemberships::class, [['organization' => $this,],]);
         }
         return $this->site_memberships;
+    }
+
+    /**
+     * @return OrganizationUpstreams
+     */
+    public function getUpstreams()
+    {
+        if (empty($this->workflows)) {
+            $this->workflows = $this->getContainer()->get(OrganizationUpstreams::class, [['organization' => $this,],]);
+        }
+        return $this->workflows;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream;
 
 use Pantheon\Terminus\Collections\Upstreams;
+use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
@@ -18,6 +19,10 @@ abstract class UpstreamCommandTest extends CommandTestCase
      * @var string[]
      */
     protected $data;
+    /**
+     * @var Organization
+     */
+    protected $organization;
     /**
      * @var Session
      */
@@ -40,7 +45,15 @@ abstract class UpstreamCommandTest extends CommandTestCase
      */
     public function setUp()
     {
-        $this->data = ['framework' => 'Framework', 'id' => 'upstream_id', 'name' => 'Upstream Name',];
+        $this->data = [
+            'upstream_id' => ['framework' => 'backdrop', 'id' => 'upstream_id', 'label' => 'Upstream Name', 'type' => 'core', 'organization_id' => '',],
+            'upstream_id2' => ['framework' => 'wordpress', 'id' => 'upstream_id2', 'label' => 'Name Upstream', 'type' => 'core', 'organization_id' => '',],
+            'upstream_id3' => ['framework' => 'drupal', 'id' => 'upstream_id3', 'label' => 'Something Else', 'type' => 'project', 'organization_id' => '',],
+            'upstream_id4' => ['framework' => 'drupal', 'id' => 'upstream_id4', 'label' => 'Not even', 'type' => 'custom', 'organization_id' => '',],
+        ];
+        $this->organization = $this->getMockBuilder(Organization::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -58,7 +71,10 @@ abstract class UpstreamCommandTest extends CommandTestCase
             ->method('getUser')
             ->with()
             ->willReturn($this->user);
-        $this->user->expects($this->once())
+        $this->user->method('getOrganizations')
+            ->with()
+            ->willReturn([$this->organization,]);
+        $this->user->expects($this->any())
             ->method('getUpstreams')
             ->with()
             ->willReturn($this->upstreams);

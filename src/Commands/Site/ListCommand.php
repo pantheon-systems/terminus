@@ -25,24 +25,25 @@ class ListCommand extends SiteCommand
      *     frozen: Is Frozen?
      * @return RowsOfFields
      *
-     * @option team Team-only filter
-     * @option owner Owner filter; "me" or user UUID
-     * @option org Organization filter; "all" or an organization's name, label, or ID
      * @option name Name filter
+     * @option org Organization filter; "all" or an organization's name, label, or ID
+     * @option owner Owner filter; "me" or user UUID
+     * @option team Team-only filter
      *
      * @usage Displays the list of all sites accessible to the currently logged-in user.
-     * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
-     * @usage --owner=<user> Displays the list of accessible sites owned by the user with UUID <user>.
-     * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
+     * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
      * @usage --org=<org> Displays a list of accessible sites associated with the <org> organization.
      * @usage --org=all Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
-     * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
+     * @usage --owner=<user> Displays the list of accessible sites owned by the user with UUID <user>.
+     * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
+     * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
      */
-    public function index($options = ['team' => false, 'owner' => null, 'org' => null, 'name' => null,])
+    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'team' => false,])
     {
+        $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
-                'org_id' => isset($options['org']) ? $options['org'] : null,
+                'org_id' => (isset($options['org']) && ($options['org'] !== 'all')) ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id : null,
                 'team_only' => isset($options['team']) ? $options['team'] : false,
             ]
         );
@@ -52,7 +53,7 @@ class ListCommand extends SiteCommand
         }
         if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
             if ($owner == 'me') {
-                $owner = $this->session()->getUser()->id;
+                $owner = $user->id;
             }
             $this->sites->filterByOwner($owner);
         }

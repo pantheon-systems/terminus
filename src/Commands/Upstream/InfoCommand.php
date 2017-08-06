@@ -20,13 +20,13 @@ class InfoCommand extends TerminusCommand
      *
      * @field-labels
      *     id: ID
-     *     longname: Name
-     *     category: Category
+     *     label: Name
+     *     machine_name: Machine Name
      *     type: Type
      *     framework: Framework
-     *     upstream: URL
-     *     author: Author
+     *     repository_url: URL
      *     description: Description
+     *     organization: Organization
      * @return PropertyList
      *
      * @usage <upstream> Displays information about the <upstream> upstream.
