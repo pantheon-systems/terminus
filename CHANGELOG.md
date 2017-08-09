@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 - Updated the name of the `longname` field output by `upstream:info` to `label`. (#1747)
 - Upstreams of types `core` and `custom` are the only ones which appear by default when using `upstream:list`. (#1747)
 - The `--org` option of the `site:list` command now defaults to `"all"` instead of `null`, but its behavior is unchanged. (#1747)
+- The `role` parameter of the `site:team:add` command defaults to `team_member`. (#1750)
 
 ### Added
 - Added a `machine_name` field to the output of `upstream:list`. (#1747)
@@ -24,6 +25,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - The `org` option of `site:create` now works with machine names and labels as well as UUIDs. (#1747)
+- If the `change_management` feature is not enabled on a site, no warning is displayed only if the `role` has been supplied and is not `team_member`. (#1750)
 
 ## 1.4.1 - 2017-07-17
 ### Fixed
