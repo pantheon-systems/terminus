@@ -100,4 +100,30 @@ class AddCommandTest extends TeamCommandTest
         $out = $this->command->add('mysite', $new_member, $role);
         $this->assertNull($out);
     }
+
+
+    /**
+     * Tests the site:team:add command when change_management is not enabled and the role param is not given
+     */
+    public function testAddCommandRestrictedNoRole()
+    {
+        $new_member = 'test@example.com';
+        $default_role = 'team_member';
+
+        $this->site->expects($this->never())
+            ->method('getFeature');
+        $this->user_memberships->expects($this->once())
+            ->method('create')
+            ->willReturn($this->workflow)
+            ->with($new_member, $default_role);
+        $this->logger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->equalTo($this->message)
+            );
+
+        $out = $this->command->add('mysite', $new_member);
+        $this->assertNull($out);
+    }
 }

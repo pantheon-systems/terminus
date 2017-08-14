@@ -26,14 +26,15 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $member Email of user
      * @param string $role [developer|team_member] Role
      *
+     * @usage <site> <user> Adds <user> as a team_member to <site>'s team.
      * @usage <site> <user> <role> Adds <user> as a <role> to <site>'s team.
      */
-    public function add($site_id, $member, $role)
+    public function add($site_id, $member, $role = 'team_member')
     {
         $site = $this->getSite($site_id);
         $team = $site->getUserMemberships();
 
-        if (!(boolean)$site->getFeature('change_management')) {
+        if (($role !== 'team_member') && !(boolean)$site->getFeature('change_management')) {
             $role = 'team_member';
             $this->log()->warning(
                 'Site does not have change management enabled, defaulting to user role {role}.',
