@@ -33,4 +33,13 @@ trait EnvironmentTrait
     {
         $this->environment = $environment;
     }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        $env = $this->getEnvironment();
+        return str_replace(['{site_id}', '{env_id}'], [$env->getSite()->id, $env->id,], parent::getUrl());
+    }
 }

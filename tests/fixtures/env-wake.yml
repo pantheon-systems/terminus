@@ -182,7 +182,7 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments/dev/hostnames?hydrate='
+        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/environments/dev/domains'
         headers:
             Host: onebox
             Accept-Encoding: null

@@ -55,8 +55,11 @@ Feature: Adding domains to an environment
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
     When I run "terminus domain:dns [[test_site_name]].dev"
-    Then I should get: "--------------------------------- ------------- ---------------------------------"
-    And I should get: "Name                              Record Type   Value"
-    And I should get: "--------------------------------- ------------- ---------------------------------"
-    And I should get: "dev-[[test_site_name]].[[php_site_domain]]   CNAME         dev-[[test_site_name]].[[php_site_domain]]"
-    And I should get: "--------------------------------- ------------- ---------------------------------"
+    Then I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"
+    And I should get: "Name                 Record Type   Recommended Value                  Detected Value                     Status"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"
+    And I should get: "www.behat-tests.me   CNAME         live-behat-tests.pantheonsite.io   live-behat-tests.pantheonsite.io   okay"
+    And I should get: "behat-tests.me       A             23.185.0.2                         23.185.0.2                         okay"
+    And I should get: "behat-tests.me       AAAA          2620:12a:8000::2                   2620:12a:8000::2                   okay"
+    And I should get: "behat-tests.me       AAAA          2620:12a:8001::2                   2620:12a:8001::2                   okay"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- --------"

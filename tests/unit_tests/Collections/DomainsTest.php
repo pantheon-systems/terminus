@@ -72,7 +72,7 @@ class DomainsTest extends CollectionTestCase
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames/dev.example.com", ['method' => 'put']);
+            ->with("sites/{$this->site->id}/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'put']);
 
         $this->collection->create('dev.example.com');
     }
@@ -89,36 +89,25 @@ class DomainsTest extends CollectionTestCase
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                $this->equalTo("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames?hydrate="),
+                $this->equalTo("sites/{$this->site->id}/environments/{$this->environment->id}/domains"),
                 $this->equalTo(['options' => ['method' => 'get',],])
             )
             ->willReturn(compact('data'));
         $i = 0;
-        foreach ($data as $hostname => $obj) {
+        foreach ($data as $domain_str => $obj) {
             $domain = $this->getMockBuilder(Domain::class)
                 ->disableOriginalConstructor()
                 ->getMock();
-            $domain->id = $hostname;
-            $domain->method('getReferences')->willReturn([$hostname,]);
+            $domain->id = $domain_str;
+            $domain->method('getReferences')->willReturn([$domain_str,]);
             $this->container->expects($this->at($i))
                 ->method('get')
-                ->with(Domain::class, [$obj, ['id' => $hostname, 'collection' => $this->collection,],])
+                ->with(Domain::class, [$obj, ['id' => $domain_str, 'collection' => $this->collection,],])
                 ->willReturn($domain);
             $i++;
         }
 
         $this->assertTrue($this->collection->has('foo.net'));
         $this->assertFalse($this->collection->has('hello.world'));
-    }
-
-    /**
-     * Tests the Domains::setHydration() and Domains::getUrl() functions
-     */
-    public function testSetHydration()
-    {
-        $this->assertEquals($this->collection, $this->collection->setHydration('test'));
-        $this->assertEquals("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames?hydrate=test", $this->collection->getUrl());
-        $this->assertEquals($this->collection, $this->collection->setHydration(''));
-        $this->assertEquals("sites/{$this->site->id}/environments/{$this->environment->id}/hostnames?hydrate=", $this->collection->getUrl());
     }
 }

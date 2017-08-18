@@ -24,18 +24,33 @@ class DNSCommandTest extends DomainTest
     }
 
     /**
-     * Tests the domain:remove command
+     * Tests the domain:dns command
      */
     public function testDNS()
     {
         $site_name = 'site_name';
         $this->environment->id = 'env_id';
         $this->domain->id = 'domain_id';
-        $dummy_data = ['value' => 'value', 'type' => 'type',];
+        $dummy_data = (object)[
+            'dns_records' => [
+                (object)[
+                    'detected_value' => 'detected value',
+                    'status' => 'status',
+                    'target_value' => 'value',
+                    'type' => 'type',
+                ],
+            ]
+        ];
+        $expected = [
+            'name' => $this->domain->id,
+            'detected_value' => $dummy_data->dns_records[0]->detected_value,
+            'status' => $dummy_data->dns_records[0]->status,
+            'value' => $dummy_data->dns_records[0]->target_value,
+            'type' => $dummy_data->dns_records[0]->type,
+        ];
 
         $this->domains->expects($this->once())
-            ->method('setHydration')
-            ->with($this->equalTo('recommendations'))
+            ->method('filter')
             ->willReturn($this->domains);
         $this->domains->expects($this->once())
             ->method('all')
@@ -44,14 +59,14 @@ class DNSCommandTest extends DomainTest
 
         $this->domain->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('dns_recommendations'))
-            ->willReturn([(object)$dummy_data,]);
+            ->with($this->equalTo('dns_status_details'))
+            ->willReturn($dummy_data);
 
         $this->logger->expects($this->never())
             ->method('log');
 
         $out = $this->command->getRecommendations("$site_name.{$this->environment->id}");
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
-        $this->assertEquals([array_merge(['name' => $this->domain->id,], $dummy_data),], $out->getArrayCopy());
+        $this->assertEquals([$expected,], $out->getArrayCopy());
     }
 }
