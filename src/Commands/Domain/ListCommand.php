@@ -21,7 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command domain:list
-     * @alias domains
+     * @aliases domains
      *
      * @field-labels
      *     domain: Domain

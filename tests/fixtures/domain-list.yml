@@ -158,7 +158,7 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/1fdf3bf6-50e3-42d8-ae56-fb4051481404/environments/live/hostnames?hydrate='
+        url: 'https://onebox/api/sites/1fdf3bf6-50e3-42d8-ae56-fb4051481404/environments/live/domains?hydrate='
         headers:
             Host: onebox
             Accept-Encoding: null

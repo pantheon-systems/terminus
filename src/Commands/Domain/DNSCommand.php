@@ -25,7 +25,9 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      * @field-labels
      *     name: Name
      *     type: Record Type
-     *     value: Value
+     *     value: Recommended Value
+     *     detected_value: Detected Value
+     *     status: Status
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
@@ -35,16 +37,23 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
     public function getRecommendations($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $domains = $env->getDomains()->setHydration('recommendations')->all();
+        $domains = $env->getDomains()->filter(
+            function ($domain) {
+                return $domain->get('type') === 'custom';
+            }
+        )->all();
         $settings = [];
         foreach ($domains as $domain) {
-            $settings = array_merge($settings, array_map(
-                function ($recommendation) use ($domain) {
-                    $recommendation->name = $domain->id;
-                    return (array)$recommendation;
-                },
-                $domain->get('dns_recommendations')
-            ));
+            $recommendations = $domain->get('dns_status_details')->dns_records;
+            foreach ($recommendations as $recommendation) {
+                $settings[] = [
+                    'name' => $domain->id,
+                    'type' => $recommendation->type,
+                    'value' => $recommendation->target_value,
+                    'detected_value' => $recommendation->detected_value,
+                    'status' => $recommendation->status,
+                ];
+            }
         }
         return new RowsOfFields($settings);
     }

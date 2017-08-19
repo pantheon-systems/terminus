@@ -25,7 +25,7 @@ class DomainTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = $this->_createDomain(['id' => 'dev.example.com']);
+        $this->model = $this->_createDomain(['id' => 'dev.example.com',]);
     }
 
     protected function _createDomain($attr)
@@ -62,7 +62,7 @@ class DomainTest extends ModelTestCase
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/site id/environments/{$this->environment->id}/hostnames/dev.example.com", ['method' => 'delete',]);
+            ->with("sites/site id/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'delete',]);
         $this->model->delete();
     }
     

@@ -14,6 +14,10 @@ class Domain extends TerminusModel implements EnvironmentInterface
     use EnvironmentTrait;
 
     public static $pretty_name = 'domain';
+    /**
+     * @var string
+     */
+    protected $url = 'sites/{site_id}/environments/{env_id}/domains/{id}';
 
     /**
      * Delete a domain from an environment
@@ -22,15 +26,7 @@ class Domain extends TerminusModel implements EnvironmentInterface
      */
     public function delete()
     {
-        $env = $this->getEnvironment();
-        $url = sprintf(
-            'sites/%s/environments/%s/hostnames/%s',
-            $env->getSite()->id,
-            $env->id,
-            rawurlencode($this->id)
-        );
-        $response = $this->request->request($url, ['method' => 'delete']);
-        return $response['data'];
+        return $this->request->request($this->getUrl(), ['method' => 'delete',])['data'];
     }
 
     /**

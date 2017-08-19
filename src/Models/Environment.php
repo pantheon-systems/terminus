@@ -93,13 +93,13 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
             } while (!is_null($cache_binding) && $cache_binding->get('environment') != $this->id);
 
             $password = $cache_binding->get('password');
-            $hostname = $cache_binding->get('host');
+            $domain = $cache_binding->get('host');
             $port = $cache_binding->get('port');
-            $url = "redis://pantheon:$password@$hostname:$port";
-            $command = "redis-cli -h $hostname -p $port -a $password";
+            $url = "redis://pantheon:$password@$domain:$port";
+            $command = "redis-cli -h $domain -p $port -a $password";
             return [
                 'password' => $password,
-                'host' => $hostname,
+                'host' => $domain,
                 'port' => $port,
                 'url' => $url,
                 'command' => $command,
@@ -293,13 +293,13 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
 
             $username = 'pantheon';
             $password = $db_binding->get('password');
-            $hostname = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
+            $domain = "dbserver.{$this->id}.{$this->getSite()->id}.drush.in";
             $port = $db_binding->get('port');
             $database = 'pantheon';
-            $url = "mysql://$username:$password@$hostname:$port/$database";
-            $command = "mysql -u $username -p$password -h $hostname -P $port $database";
+            $url = "mysql://$username:$password@$domain:$port/$database";
+            $command = "mysql -u $username -p$password -h $domain -P $port $database";
             return [
-                'host' => $hostname,
+                'host' => $domain,
                 'username' => $username,
                 'password' => $password,
                 'port' => $port,
@@ -557,13 +557,13 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     {
         $site = $this->getSite();
         $username = "codeserver.dev.{$site->id}";
-        $hostname = "codeserver.dev.{$site->id}.drush.in";
+        $domain = "codeserver.dev.{$site->id}.drush.in";
         $port = '2222';
-        $url = "ssh://$username@$hostname:$port/~/repository.git";
+        $url = "ssh://$username@$domain:$port/~/repository.git";
         $command = trim("git clone $url {$site->get('name')}");
         return [
             'username' => $username,
-            'host' => $hostname,
+            'host' => $domain,
             'port' => $port,
             'url' => $url,
             'command' => $command,
@@ -806,21 +806,21 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $site = $this->getSite();
         if (!empty($ssh_host = $this->getConfig()->get('ssh_host'))) {
             $username = "appserver.{$this->id}.{$site->id}";
-            $hostname = $ssh_host;
+            $domain = $ssh_host;
         } elseif (strpos($this->getConfig()->get('host'), 'onebox') !== false) {
             $username = "appserver.{$this->id}.{$site->id}";
-            $hostname = $this->getConfig()->get('host');
+            $domain = $this->getConfig()->get('host');
         } else {
             $username = "{$this->id}.{$site->id}";
-            $hostname = "appserver.{$this->id}.{$site->id}.drush.in";
+            $domain = "appserver.{$this->id}.{$site->id}.drush.in";
         }
         $password = 'Use your account password';
         $port = '2222';
-        $url = "sftp://$username@$hostname:$port";
-        $command = "sftp -o Port=$port $username@$hostname";
+        $url = "sftp://$username@$domain:$port";
+        $command = "sftp -o Port=$port $username@$domain";
         return [
             'username' => $username,
-            'host' => $hostname,
+            'host' => $domain,
             'port' => $port,
             'password' => $password,
             'url' => $url,

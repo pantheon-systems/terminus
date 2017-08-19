@@ -112,13 +112,13 @@ class EnvironmentTest extends ModelTestCase
         $this->site->id = 'site id';
         $password = 'password';
         $port = 'port';
-        $hostname = 'hostname';
+        $domain = 'domain';
         $expected = [
             'password' => $password,
-            'host' => $hostname,
+            'host' => $domain,
             'port' => $port,
-            'url' => "redis://pantheon:$password@$hostname:$port",
-            'command' => "redis-cli -h $hostname -p $port -a $password",
+            'url' => "redis://pantheon:$password@$domain:$port",
+            'command' => "redis-cli -h $domain -p $port -a $password",
         ];
 
         $this->bindings->expects($this->once())
@@ -136,7 +136,7 @@ class EnvironmentTest extends ModelTestCase
         $this->binding->expects($this->at(2))
             ->method('get')
             ->with($this->equalTo('host'))
-            ->willReturn($hostname);
+            ->willReturn($domain);
         $this->binding->expects($this->at(3))
             ->method('get')
             ->with($this->equalTo('port'))
@@ -267,19 +267,19 @@ class EnvironmentTest extends ModelTestCase
         $port = '2222';
         $username = $database = 'pantheon';
         $sftp_username = "{$this->model->id}.{$this->site->id}";
-        $sftp_hostname = "appserver.$sftp_username.drush.in";
-        $db_hostname = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
-        $cache_hostname = 'hostname';
-        $git_hostname = "codeserver.dev.{$this->site->id}.drush.in";
+        $sftp_domain = "appserver.$sftp_username.drush.in";
+        $db_domain = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
+        $cache_domain = 'domain';
+        $git_domain = "codeserver.dev.{$this->site->id}.drush.in";
         $git_username = "codeserver.dev.{$this->site->id}";
 
         $sftp_expected = [
             'sftp_username' => $sftp_username,
-            'sftp_host' => $sftp_hostname,
+            'sftp_host' => $sftp_domain,
             'sftp_port' => '2222',
             'sftp_password' => 'Use your account password',
-            'sftp_url' => "sftp://$sftp_username@$sftp_hostname:$port",
-            'sftp_command' => "sftp -o Port=$port $sftp_username@$sftp_hostname",
+            'sftp_url' => "sftp://$sftp_username@$sftp_domain:$port",
+            'sftp_command' => "sftp -o Port=$port $sftp_username@$sftp_domain",
         ];
 
         $this->bindings->expects($this->at(0))
@@ -302,11 +302,11 @@ class EnvironmentTest extends ModelTestCase
         $db_expected = [
             'mysql_username' => $username,
             'mysql_password' => $password,
-            'mysql_host' => $db_hostname,
+            'mysql_host' => $db_domain,
             'mysql_port' => $port,
             'mysql_database' => $database,
-            'mysql_url' => "mysql://$username:$password@$db_hostname:$port/$database",
-            'mysql_command' => "mysql -u $username -p$password -h $db_hostname -P $port $database",
+            'mysql_url' => "mysql://$username:$password@$db_domain:$port/$database",
+            'mysql_command' => "mysql -u $username -p$password -h $db_domain -P $port $database",
         ];
 
         $this->bindings->expects($this->at(1))
@@ -324,7 +324,7 @@ class EnvironmentTest extends ModelTestCase
         $this->binding->expects($this->at(5))
             ->method('get')
             ->with($this->equalTo('host'))
-            ->willReturn($cache_hostname);
+            ->willReturn($cache_domain);
         $this->binding->expects($this->at(6))
             ->method('get')
             ->with($this->equalTo('port'))
@@ -332,18 +332,18 @@ class EnvironmentTest extends ModelTestCase
 
         $cache_expected = [
             'redis_password' => $password,
-            'redis_host' => $cache_hostname,
+            'redis_host' => $cache_domain,
             'redis_port' => $port,
-            'redis_url' => "redis://pantheon:$password@$cache_hostname:$port",
-            'redis_command' => "redis-cli -h $cache_hostname -p $port -a $password",
+            'redis_url' => "redis://pantheon:$password@$cache_domain:$port",
+            'redis_command' => "redis-cli -h $cache_domain -p $port -a $password",
         ];
 
         $git_expected = [
             'git_username' => $git_username,
-            'git_host' => $git_hostname,
+            'git_host' => $git_domain,
             'git_port' => $port,
-            'git_url' => "ssh://$git_username@$git_hostname:$port/~/repository.git",
-            'git_command' => "git clone ssh://$git_username@$git_hostname:$port/~/repository.git",
+            'git_url' => "ssh://$git_username@$git_domain:$port/~/repository.git",
+            'git_command' => "git clone ssh://$git_username@$git_domain:$port/~/repository.git",
         ];
 
         $out = $this->model->connectionInfo();
@@ -418,15 +418,15 @@ class EnvironmentTest extends ModelTestCase
         $password = 'password';
         $port = 'port';
         $username = $database = 'pantheon';
-        $hostname = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
+        $domain = "dbserver.{$this->model->id}.{$this->model->getSite()->id}.drush.in";
         $expected = [
             'username' => $username,
             'password' => $password,
-            'host' => $hostname,
+            'host' => $domain,
             'port' => $port,
             'database' => $database,
-            'url' => "mysql://$username:$password@$hostname:$port/$database",
-            'command' => "mysql -u $username -p$password -h $hostname -P $port $database",
+            'url' => "mysql://$username:$password@$domain:$port/$database",
+            'command' => "mysql -u $username -p$password -h $domain -P $port $database",
         ];
 
         $this->bindings->expects($this->once())
@@ -1005,7 +1005,7 @@ class EnvironmentTest extends ModelTestCase
         $domain->id = 'domain.ext';
         $response = [
             'status_code' => 200,
-            'headers'=> ['X-Pantheon-Styx-Hostname' => 'styx hostname',]
+            'headers'=> ['X-Pantheon-Styx-Hostname' => 'styx domain',]
         ];
         $expected = [
             'success' => true,
