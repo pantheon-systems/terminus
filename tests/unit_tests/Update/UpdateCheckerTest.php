@@ -78,11 +78,12 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
     {
         $running_version_num = '1.0.0-beta.2';
         $latest_version_num = '1.0.0-beta.2';
+        $hide_update_message = null;
 
-        $this->config->expects($this->once())
+        $this->config->expects($this->exactly(2))
             ->method('get')
-            ->with($this->equalTo('version'))
-            ->willReturn($running_version_num);
+            ->withConsecutive(['version'], ['hide_update_message'])
+            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -110,11 +111,12 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
     {
         $running_version_num = '1.0.0-beta.1';
         $latest_version_num = '1.0.0-beta.2';
+        $hide_update_message = null;
 
-        $this->config->expects($this->once())
+        $this->config->expects($this->exactly(2))
             ->method('get')
-            ->with($this->equalTo('version'))
-            ->willReturn($running_version_num);
+            ->withConsecutive(['version'], ['hide_update_message'])
+            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -127,6 +129,40 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('version'))
             ->willReturn($latest_version_num);
         $this->logger->expects($this->once())
+            ->method('notice');
+        $this->logger->expects($this->never())
+            ->method('debug');
+
+        $out = $this->update_checker->run();
+        $this->assertNull($out);
+    }
+
+    /**
+     * Tests the run function when the client is out-of-date, but the update
+     * message is configured to be hidden.
+     */
+    public function testClientIsOutOfDateButHideMessage()
+    {
+        $running_version_num = '1.0.0-beta.1';
+        $latest_version_num = '1.0.0-beta.2';
+        $hide_update_message = '1';
+
+        $this->config->expects($this->exactly(2))
+            ->method('get')
+            ->withConsecutive(['version'], ['hide_update_message'])
+            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(LatestRelease::class),
+                $this->equalTo([$this->data_store,])
+            )
+           ->willReturn($this->latest_release);
+        $this->latest_release->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('version'))
+            ->willReturn($latest_version_num);
+        $this->logger->expects($this->never())
             ->method('notice');
         $this->logger->expects($this->never())
             ->method('debug');
