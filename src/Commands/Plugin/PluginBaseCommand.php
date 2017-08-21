@@ -108,14 +108,14 @@ abstract class PluginBaseCommand extends TerminusCommand
     {
         // Get the Terminus major version.
         $terminus_major_version = $this->getTerminusMajorVersion();
-        exec("cd \"$plugin\" && git fetch --all && git tag -l | grep ^[v$terminus_major_version] | sort -Vr | head -1", $tag);
+        exec("cd \"$plugin\" && git fetch --all && git tag -l --sort=version:refname | grep ^[v$terminus_major_version] | sort -r | head -1", $tag);
         if (!empty($tag)) {
             $version = array_pop($tag);
             // Check for non-stable semantic version (ie. -beta1 or -rc2).
             preg_match('/(v*.*)\-(.*)/', $version, $matches);
             if (!empty($matches[1])) {
                 $stable_release = $matches[1];
-                exec("cd \"$plugin\" && git tag -l | grep ^[v$terminus_major_version] | sort -Vr | xargs", $releases);
+                exec("cd \"$plugin\" && git tag -l --sort=version:refname | grep ^[v$terminus_major_version] | sort -r | xargs", $releases);
                 if (!empty($releases)) {
                     foreach ($releases as $release) {
                         // Update to stable release, if available.
