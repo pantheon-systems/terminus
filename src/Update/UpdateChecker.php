@@ -53,7 +53,9 @@ EOT;
             return;
         }
 
-        if (version_compare($latest_version, $running_version, '>')) {
+        $update_exists = version_compare($latest_version, $running_version, '>');
+        $should_hide_update = (bool) $this->getConfig()->get('hide_update_message');
+        if ($update_exists && !$should_hide_update) {
             $this->logger->notice($this->getUpdateNotice(), [
                 'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
                 'running_version' => self::UPDATE_VARS_COLOR . $running_version,
