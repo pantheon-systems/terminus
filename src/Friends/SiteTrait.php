@@ -16,6 +16,17 @@ trait SiteTrait
     private $site;
 
     /**
+     * @inheritdoc
+     */
+    public function __construct($attributes = null, array $options = [])
+    {
+        if (isset($options['site'])) {
+            $this->setSite($options['site']);
+        }
+        parent::__construct($attributes, $options);
+    }
+
+    /**
      * @return Site Returns a Site-type object
      */
     public function getSite()

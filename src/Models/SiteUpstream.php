@@ -2,12 +2,17 @@
 
 namespace Pantheon\Terminus\Models;
 
+use Pantheon\Terminus\Friends\SiteInterface;
+use Pantheon\Terminus\Friends\SiteTrait;
+
 /**
  * Class SiteUpstream
  * @package Pantheon\Terminus\Models
  */
-class SiteUpstream extends TerminusModel
+class SiteUpstream extends TerminusModel implements SiteInterface
 {
+    use SiteTrait;
+
     public static $pretty_name = 'upstream';
 
     /**
@@ -16,6 +21,16 @@ class SiteUpstream extends TerminusModel
     public function __toString()
     {
         return "{$this->id}: {$this->get('url')}";
+    }
+
+    /**
+     * Clears a site's code cache
+     *
+     * @return Workflow
+     */
+    public function clearCache()
+    {
+        return $this->getSite()->getWorkflows()->create('clear_code_cache');
     }
 
     /**

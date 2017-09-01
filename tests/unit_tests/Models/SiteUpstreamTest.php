@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
+use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteUpstream;
+use Pantheon\Terminus\Models\Workflow;
 
 /**
  * Class SiteUpstreamTest
@@ -11,6 +14,39 @@ use Pantheon\Terminus\Models\SiteUpstream;
  */
 class SiteUpstreamTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Tests the Upstream::clearCache() function
+     */
+    public function testClearCache()
+    {
+        $data = [
+            'product_id' => 'upstream id',
+        ];
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $site->expects($this->once())
+            ->method('getWorkflows')
+            ->with()
+            ->willReturn($workflows);
+        $workflows->expects($this->once())
+            ->method('create')
+            ->with('clear_code_cache')
+            ->willReturn($workflow);
+
+        $model = new SiteUpstream((object)$data);
+        $model->setSite($site);
+
+        $this->assertEquals($workflow, $model->clearCache());
+    }
+
     /**
      * Tests the Upstream::parseAttributes() function
      */
