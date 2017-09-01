@@ -30,7 +30,7 @@ class CreateCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function create($site_env, $multidev)
     {
-        list($site, $env) = $this->getSiteEnv($site_env, 'dev');
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
         $workflow = $site->getEnvironments()->create($multidev, $env);
         while (!$workflow->checkProgress()) {
             // @TODO: Add Symfony progress bar to indicate that something is happening.

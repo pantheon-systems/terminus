@@ -26,7 +26,7 @@ class CreateCommand extends BackupCommand
      */
     public function create($site_env, $options = ['element' => 'all', 'keep-for' => 365,])
     {
-        list(, $env) = $this->getSiteEnv($site_env);
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env);
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
         $workflow = $env->getBackups()->create($options);
         while (!$workflow->checkProgress()) {

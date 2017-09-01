@@ -25,7 +25,7 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function import($site_env, $url)
     {
-        list($site, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
 
         $tr = ['site' => $site->getName(), 'env' => $env->getName()];
         if (!$this->confirm('Are you sure you overwrite the database for {env} on {site}?', $tr)) {

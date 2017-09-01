@@ -28,26 +28,27 @@ class ClearCacheCommandTest extends EnvCommandTest
     public function testGetClearCache()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+          ->disableOriginalConstructor()
+          ->getMock();
         $site_name = 'site_name';
         $this->environment->id = 'site_id';
         $this->environment->expects($this->once())
-            ->method('clearCache')
-            ->with()
-            ->willReturn($workflow);
+          ->method('clearCache')
+          ->with()
+          ->willReturn($workflow);
         $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-        $this->site->method('get')->willReturn($site_name);
+          ->method('checkProgress')
+          ->with()
+          ->willReturn(true);
+        $this->site->expects($this->any())
+          ->method('get')
+          ->willReturn(null);
         $this->logger->expects($this->once())
-            ->method('log')
-            ->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Caches cleared on {site}.{env}.'),
-                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
-            );
+          ->method('log')
+          ->with(
+              $this->equalTo('notice'),
+              $this->equalTo('Caches cleared on {site}.{env}.')
+          );
 
         $out = $this->command->clearCache("$site_name.{$this->environment->id}");
         $this->assertNull($out);

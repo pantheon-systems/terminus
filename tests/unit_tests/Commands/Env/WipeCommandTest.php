@@ -36,31 +36,30 @@ class WipeCommandTest extends EnvCommandTest
         $this->expectConfirmation();
 
         $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
+          ->method('checkProgress')
+          ->with()
+          ->willReturn(true);
         $this->workflow->expects($this->once())
-            ->method('getMessage')
-            ->with()
-            ->willReturn($message);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->willReturn($site_name);
+          ->method('getMessage')
+          ->with()
+          ->willReturn($message);
+        $this->site->expects($this->any())
+          ->method('get')
+          ->willReturn(null);
         $this->environment->expects($this->once())
-            ->method('wipe')
-            ->willReturn($this->workflow);
+          ->method('wipe')
+          ->willReturn($this->workflow);
 
         $this->logger->expects($this->at(0))
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Wiping the "{env}" environment of "{site}"'),
-                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
-            );
+          ->method('log')->with(
+              $this->equalTo('notice'),
+              $this->equalTo('Wiping the "{env}" environment of "{site}"')
+          );
         $this->logger->expects($this->at(1))
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo($message)
-            );
+          ->method('log')->with(
+              $this->equalTo('notice'),
+              $this->equalTo($message)
+          );
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);
@@ -78,15 +77,17 @@ class WipeCommandTest extends EnvCommandTest
 
         $this->expectConfirmation(false);
         $this->workflow->expects($this->never())
-            ->method('checkProgress');
+          ->method('checkProgress');
         $this->workflow->expects($this->never())
-            ->method('getMessage');
-        $this->site->expects($this->never())
-            ->method('get');
+          ->method('getMessage');
+        $this->site->expects($this->once())
+          ->method('get')
+          ->with('frozen')
+          ->willReturn(null);
         $this->environment->expects($this->never())
-            ->method('wipe');
+          ->method('wipe');
         $this->logger->expects($this->never())
-            ->method('log');
+          ->method('log');
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);

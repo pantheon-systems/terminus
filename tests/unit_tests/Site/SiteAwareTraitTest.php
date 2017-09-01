@@ -81,7 +81,7 @@ class SiteAwareTraitTest extends CommandTestCase
 
         $this->setExpectedException(
             TerminusException::class,
-            'This site is frozen. Its test and live environments are unavailable.'
+            'This site is frozen. Its test and live environments and many commands will be unavailable while it remains frozen.'
         );
 
         $out = $this->class->getUnfrozenSiteEnv("{$this->site->id}.{$this->environment->id}");
