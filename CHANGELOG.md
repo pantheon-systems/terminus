@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 - `domain:dns` has returns a new field, `detected_value`, which indicates the live DNS settings for a given domain. (#1756)
 - `domain:dns` has returns a new field, `status`, which indicates whether live DNS settings for a given domain match the recommended setting. (#1756)
+- Added new command `site:upstream:clear-cache` to clear code caches on a site. (#1762)
 
 ### Fixed
 - Changed the Domains collection to use a newer API call, fixing `domain:dns`. (#1756)

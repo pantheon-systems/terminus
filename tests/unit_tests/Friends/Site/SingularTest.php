@@ -19,6 +19,10 @@ class SingularTest extends \PHPUnit_Framework_TestCase
      * @var SingularDummyClass
      */
     protected $model;
+    /**
+     * @var Site
+     */
+    protected $site;
 
     /**
      * @inheritdoc
@@ -30,7 +34,26 @@ class SingularTest extends \PHPUnit_Framework_TestCase
         $this->collection = $this->getMockBuilder(SingularDummyClass::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->model = new SingularDummyClass(null, ['collection' => $this->collection,]);
+    }
+
+    /**
+     * Tests SiteTrait::__construct(object, array)
+     */
+    public function testConstruct()
+    {
+        $this->collection->expects($this->once())
+            ->method('getSite')
+            ->with()
+            ->willReturn($this->site);
+        $model = new SingularDummyClass(null, ['collection' => $this->collection,]);
+        $this->assertEquals($this->site, $model->getSite());
+
+        $model = new SingularDummyClass(null, ['site' => $this->site,]);
+        $this->assertEquals($this->site, $model->getSite());
     }
 
     /**
@@ -38,16 +61,12 @@ class SingularTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetSite()
     {
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->collection->expects($this->once())
             ->method('getSite')
             ->with()
-            ->willReturn($site);
+            ->willReturn($this->site);
 
-        $this->assertEquals($site, $this->model->getSite());
+        $this->assertEquals($this->site, $this->model->getSite());
     }
 
     /**
@@ -55,13 +74,9 @@ class SingularTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetSite()
     {
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->collection->expects($this->never())->method('getSite');
 
-        $this->model->setSite($site);
-        $this->assertEquals($site, $this->model->getSite());
+        $this->model->setSite($this->site);
+        $this->assertEquals($this->site, $this->model->getSite());
     }
 }
