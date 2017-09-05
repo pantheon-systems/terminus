@@ -13,6 +13,11 @@ All notable changes to this project will be documented in this file. This projec
 ### Removed
 - Removed the now-obsolete `Domains::setHydration(string)` function. (#1756)
 
+### Changed
+- `multidev:create` is now checked for whether the site is frozen before attempting to execute. (#1761)
+- `import:database` is now checked for whether the site is frozen before attempting to execute. (#1761)
+- Checks for frozen sites will now throw errors on dev and multidev environments as well as test and live. (#1761)
+
 ## 1.5.0 - 2017-08-17
 ### Changed
 - Updated the name of the `longname` field output by `upstream:list` to `label`. (#1747)

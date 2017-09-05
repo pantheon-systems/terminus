@@ -46,23 +46,21 @@ class DatabaseCommandTest extends CommandTestCase
 
         $this->expectConfirmation();
         $this->environment->expects($this->once())
-            ->method('importDatabase')
-            ->with($this->equalTo($valid_url))
-            ->willReturn($this->workflow);
+          ->method('importDatabase')
+          ->with($this->equalTo($valid_url))
+          ->willReturn($this->workflow);
         $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site_name);
+          ->method('checkProgress')
+          ->with()
+          ->willReturn(true);
+        $this->site->expects($this->any())
+          ->method('get')
+          ->willReturn(null);
         $this->logger->expects($this->once())
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Imported database to {site}.{env}.'),
-                $this->equalTo(['site' => $site_name, 'env' => $this->environment->id,])
-            );
+          ->method('log')->with(
+              $this->equalTo('notice'),
+              $this->equalTo('Imported database to {site}.{env}.')
+          );
 
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);
@@ -81,13 +79,15 @@ class DatabaseCommandTest extends CommandTestCase
 
         $this->expectConfirmation(false);
         $this->environment->expects($this->never())
-            ->method('importDatabase');
+          ->method('importDatabase');
         $this->workflow->expects($this->never())
-            ->method('checkProgress');
-        $this->site->expects($this->never())
-            ->method('get');
+          ->method('checkProgress');
+        $this->site->expects($this->once())
+          ->method('get')
+          ->with('frozen')
+          ->willReturn(null);
         $this->logger->expects($this->never())
-            ->method('log');
+          ->method('log');
 
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);
