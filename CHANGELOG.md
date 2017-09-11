@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file. This projec
 - `multidev:create` is now checked for whether the site is frozen before attempting to execute. (#1761)
 - `import:database` is now checked for whether the site is frozen before attempting to execute. (#1761)
 - Checks for frozen sites will now throw errors on dev and multidev environments as well as test and live. (#1761)
+- `domain:list` now lists `id`, `type`, and `deleteable` attributes. (#1763)
+- `https:info` now lists `id`, `type`, `status`, `status_message`, and `deleteable` attributes. (#1763)
+- `https:info` emits a `RowsOfFields` object instead of a `PropertyList`. (#1763)
 
 ## 1.5.0 - 2017-08-17
 ### Changed

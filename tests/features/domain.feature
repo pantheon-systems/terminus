@@ -26,12 +26,12 @@ Feature: Adding domains to an environment
   @vcr domain-list.yml
   Scenario: Listing all domains belonging to an environment
     When I run "terminus domain:list [[test_site_name]].live"
-    Then I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
-    And I should get: "Domain                             DNS Zone Name     Key                                Is Deletable"
-    And I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
-    And I should get: "testdomain.com                                       testdomain.com                     1"
-    And I should get: "live-[[test_site_name]].[[php_site_domain]]   [[php_site_domain]]   live-[[test_site_name]].[[php_site_domain]]"
-    And I should get: "---------------------------------- ----------------- ---------------------------------- --------------"
+    Then I should get: "--------------------------------- ---------- --------------"
+    And I should get: "Domain/ID                          Type       Is Deletable"
+    And I should get: "---------------------------------- ---------- --------------"
+    And I should get: "testdomain.com                     custom     true"
+    And I should get: "live-[[test_site_name]].[[php_site_domain]]   platform   false"
+    And I should get: "---------------------------------- ---------- --------------"
 
   @vcr domain-lookup.yml
   Scenario: Looking up a domain belonging to [[test_site_name]]

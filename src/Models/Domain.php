@@ -36,14 +36,12 @@ class Domain extends TerminusModel implements EnvironmentInterface
      */
     public function serialize()
     {
-        $data = [
-            'domain' => $this->id,
-            'dns_zone_name' => $this->get('dns_zone_name'),
-            'environment' => $this->get('environment'),
-            'site_id' => $this->get('site_id'),
-            'key' => $this->get('key'),
-            'deletable' => $this->get('deletable'),
+        return [
+            'id' => $this->id,
+            'type' => $this->get('type'),
+            'status' => in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status'),
+            'status_message' => $this->get('status_message'),
+            'deletable' => $this->get('deletable') ? 'true' : 'false',
         ];
-        return $data;
     }
 }

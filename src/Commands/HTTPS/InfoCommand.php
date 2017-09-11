@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\HTTPS;
 
-use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -16,17 +16,19 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     /**
-     * Displays HTTPS configuration for the environment.
+     * Provides information for HTTPS on being used for the environment.
      *
      * @authorize
      *
      * @command https:info
      *
      * @field-labels
-     *     enabled: Enabled?
-     *     ipv4: IPv4
-     *     ipv6: IPv6
-     * @return PropertyList
+     *     id: Domain/ID
+     *     type: Type
+     *     status: Status
+     *     status_message: Status Message
+     *     deletable: Is Deletable
+     * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      *
@@ -35,17 +37,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     public function info($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        $https_balancers = array_filter(
-            $env->getLoadbalancers()->all(),
-            function ($loadbalancer) {
-                return $loadbalancer->isSSL();
-            }
-        );
-        if (empty($https_balancers)) {
-            return new PropertyList(['enabled' => 'false', 'ipv4' => null, 'ipv6' => null,]);
-        }
-        $https = array_shift($https_balancers);
-        $https_info = array_merge(['enabled' => 'true'], $https->serialize());
-        return new PropertyList($https_info);
+        return new RowsOfFields($env->getDomains()->fetchWithRecommendations()->serialize());
     }
 }
