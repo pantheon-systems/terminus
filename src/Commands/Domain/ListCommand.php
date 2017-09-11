@@ -24,9 +24,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases domains
      *
      * @field-labels
-     *     domain: Domain
-     *     dns_zone_name: DNS Zone Name
-     *     key: Key
+     *     id: Domain/ID
+     *     type: Type
      *     deletable: Is Deletable
      * @return RowsOfFields
      *

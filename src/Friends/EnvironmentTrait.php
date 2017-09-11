@@ -40,6 +40,10 @@ trait EnvironmentTrait
     public function getUrl()
     {
         $env = $this->getEnvironment();
-        return str_replace(['{site_id}', '{env_id}'], [$env->getSite()->id, $env->id,], parent::getUrl());
+        return str_replace(
+            ['{site_id}', '{env_id}', '{id}',],
+            [$env->getSite()->id, $env->id, $this->id,],
+            parent::getUrl()
+        );
     }
 }

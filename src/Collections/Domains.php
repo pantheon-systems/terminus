@@ -34,6 +34,27 @@ class Domains extends EnvironmentOwnedCollection
     }
 
     /**
+     * Fetches domain data hydrated with recommendations
+     *
+     * @param array $options Additional information for the request
+     * @return void
+     */
+    public function fetchWithRecommendations($options = [])
+    {
+        $options = array_merge(
+            $options,
+            [
+                'fetch_args' => [
+                    'query' => [
+                       'hydrate' => ['as_list', 'recommendations',],
+                    ],
+                ],
+            ]
+        );
+        return $this->fetch($options);
+    }
+
+    /**
      * Does the Domains collection contain the given domain?
      *
      * @param $domain

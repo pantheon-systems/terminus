@@ -69,24 +69,22 @@ class DomainTest extends ModelTestCase
     public function testSerialize()
     {
         $data = [
-            'dns_zone_name' => 'pantheonsite.io',
-            'environment' => 'live',
-            'site_id' => '1111-1111-1111-1111-1111',
             'type' => 'platform',
             'id' => 'live-mysite.pantheonsite.io',
-            'key' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
             'deletable' => false,
+            'extraneous' => 'info',
         ];
-        $domain = $this->_createDomain($data);
-
         $expected = [
-            'domain' => 'live-mysite.pantheonsite.io',
-            'dns_zone_name' => 'pantheonsite.io',
-            'environment' => 'live',
-            'site_id' => '1111-1111-1111-1111-1111',
-            'key' =>  'live-mysite.pantheonsite.io',
-            'deletable' => false,
+            'type' => 'platform',
+            'id' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
+            'deletable' => 'false',
         ];
+
+        $domain = $this->_createDomain($data);
         $actual = $domain->serialize();
         $this->assertEquals($expected, $actual);
     }
