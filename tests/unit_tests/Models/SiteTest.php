@@ -424,6 +424,27 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::isFrozen()
+     */
+    public function testIsFrozen()
+    {
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(false, $frozen);
+
+        $this->model->set('frozen', null);
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(false, $frozen);
+
+        $this->model->set('frozen', true);
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(true, $frozen);
+
+        $this->model->set('frozen', 'yes');
+        $frozen = $this->model->isFrozen();
+        $this->assertEquals(true, $frozen);
+    }
+
+    /**
      * Tests Site::removePaymentMethod()
      */
     public function testRemovePaymentMethod()

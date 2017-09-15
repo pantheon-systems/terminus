@@ -56,9 +56,8 @@ class SiteAwareTraitTest extends CommandTestCase
         $this->environment->id = 'live';
 
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
 
         list($site, $env) = $this->class->getUnfrozenSiteEnv("{$this->site->id}.{$this->environment->id}");
 
@@ -75,9 +74,8 @@ class SiteAwareTraitTest extends CommandTestCase
         $this->environment->id = 'live';
 
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn('anything but null');
+            ->method('isFrozen')
+            ->willReturn(true);
 
         $this->setExpectedException(
             TerminusException::class,

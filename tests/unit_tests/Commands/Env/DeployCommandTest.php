@@ -164,6 +164,9 @@ class DeployCommandTest extends EnvCommandTest
             ->method('deploy');
         $this->workflow->expects($this->never())
             ->method('checkProgress');
+        $this->site->expects($this->once())
+            ->method('isFrozen')
+            ->willReturn(false);
 
         $this->setExpectedException(
             TerminusException::class,

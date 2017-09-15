@@ -52,11 +52,9 @@ class ListCommandTest extends EnvCommandTest
      */
     public function testListEnvs()
     {
-
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
         $this->logger->expects($this->never())
             ->method('warning');
 
@@ -71,9 +69,8 @@ class ListCommandTest extends EnvCommandTest
     public function testListFrozenEnvs()
     {
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn('anything but null');
+            ->method('isFrozen')
+            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('warning')
             ->with(

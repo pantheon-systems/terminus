@@ -88,7 +88,7 @@ class Environments extends SiteOwnedCollection
      */
     public function serialize()
     {
-        $site_is_frozen = !is_null($this->getSite()->get('frozen'));
+        $site_is_frozen = $this->getSite()->isFrozen();
         $models = [];
         foreach ($this->getMembers() as $id => $model) {
             if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {

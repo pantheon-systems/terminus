@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Fixed
 - Changed the Domains collection to use a newer API call, fixing `domain:dns`. (#1756)
+- Fixed operations for sites that have been unfrozen. (#1766)
 
 ### Removed
 - Removed the now-obsolete `Domains::setHydration(string)` function. (#1756)

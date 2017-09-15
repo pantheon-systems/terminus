@@ -304,6 +304,16 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * Returns whether the site is frozen or not.
+     *
+     * @return boolean
+     */
+    public function isFrozen()
+    {
+        return !empty($this->get('frozen'));
+    }
+
+    /**
      * Remove this site's payment method
      *
      * @return Workflow
@@ -337,7 +347,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
-            'frozen' => is_null($this->get('frozen')) ? 'false' : 'true',
+            'frozen' => $this->isFrozen() ? 'true' : 'false',
         ];
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());
