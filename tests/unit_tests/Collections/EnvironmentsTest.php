@@ -136,8 +136,7 @@ class EnvironmentsTest extends CollectionTestCase
     public function testSerializeFrozen()
     {
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
+            ->method('isFrozen')
             ->willReturn(true);
         $this->makeEnvironmentsFetchable();
         $expected = array_map(function ($data) {
@@ -154,9 +153,8 @@ class EnvironmentsTest extends CollectionTestCase
     public function testSerializeUnfrozen()
     {
         $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('frozen'))
-            ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
         $this->makeEnvironmentsFetchable();
         $expected = array_map(function ($env) {
             return (array)$env;

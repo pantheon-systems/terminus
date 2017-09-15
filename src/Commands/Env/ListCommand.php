@@ -40,7 +40,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function listEnvs($site_id)
     {
         $site = $this->getSite($site_id);
-        if (!is_null($site->get('frozen'))) {
+        if ($site->isFrozen()) {
             $this->log()->warning('This site is frozen. Its test and live environments are unavailable.');
         }
         return new RowsOfFields($site->getEnvironments()->serialize());

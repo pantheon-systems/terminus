@@ -83,9 +83,8 @@ class DatabaseCommandTest extends CommandTestCase
         $this->workflow->expects($this->never())
           ->method('checkProgress');
         $this->site->expects($this->once())
-          ->method('get')
-          ->with('frozen')
-          ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
         $this->logger->expects($this->never())
           ->method('log');
 

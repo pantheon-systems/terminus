@@ -103,7 +103,7 @@ trait SiteAwareTrait
     {
         list($site, $env) = $this->getSiteEnv($site_env_id, $default_env);
 
-        if (!is_null($site->get('frozen'))) {
+        if ($site->isFrozen()) {
             throw new TerminusException(
                 'This site is frozen. Its test and live environments and many commands will be '
                 . 'unavailable while it remains frozen.'

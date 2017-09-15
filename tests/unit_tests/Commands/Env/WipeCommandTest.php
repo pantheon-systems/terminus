@@ -81,9 +81,8 @@ class WipeCommandTest extends EnvCommandTest
         $this->workflow->expects($this->never())
           ->method('getMessage');
         $this->site->expects($this->once())
-          ->method('get')
-          ->with('frozen')
-          ->willReturn(null);
+            ->method('isFrozen')
+            ->willReturn(false);
         $this->environment->expects($this->never())
           ->method('wipe');
         $this->logger->expects($this->never())
