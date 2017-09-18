@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\WorkflowOperations;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
@@ -220,6 +221,39 @@ class WorkflowTest extends ModelTestCase
     }
 
     /**
+     * Tests the Workflow::getOperations() function
+     */
+    public function testGetOperations()
+    {
+        $operations = [
+            (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
+            (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
+            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
+            (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
+        ];
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $wf_operations = $this->getMockBuilder(WorkflowOperations::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $container->expects($this->once())
+            ->method('get')
+            ->with(WorkflowOperations::class, [['data' => $operations,]])
+            ->willReturn($wf_operations);
+
+        $workflow = new Workflow((object)['id' => '123', 'operations' => $operations,], ['site' => $site,]);
+        $workflow->setContainer($container);
+
+        $this->assertEquals($wf_operations, $workflow->getOperations());
+    }
+
+    /**
      * Tests the Workflow::getUrl() function when accessed multiple times
      */
     public function testGetUrlDuplicate()
@@ -236,32 +270,43 @@ class WorkflowTest extends ModelTestCase
 
     /**
      * Tests the Workflow::operations() function
+     * @deprecated 1.5.1-dev
      */
     public function testOperations()
     {
         $operations = [
-            ['id' => 'bar', 'description' => 'Dumbo Drop',],
-            ['id' => 'baz', 'description' => 'Dumbo Pick Back Up Again',],
+            (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
+            (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
+            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
+            (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
         ];
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-
-        foreach ($operations as $i => $op) {
-            $container->expects($this->at($i))
-                ->method('get')
-                ->with(WorkflowOperation::class, [$op])
-                ->willReturn(new WorkflowOperation($op));
-        }
-
+        $wf_operations = $this->getMockBuilder(WorkflowOperations::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $wf_operation = $this->getMockBuilder(WorkflowOperation::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $workflow = new Workflow(['id' => '123',], ['site' => $site,]);
-        $workflow->setContainer($container);
-        $workflow->set('operations', $operations);
 
-        $workflow->operations();
+        $container->expects($this->once())
+            ->method('get')
+            ->with(WorkflowOperations::class, [['data' => $operations,]])
+            ->willReturn($wf_operations);
+        $wf_operations->expects($this->once())
+            ->method('all')
+            ->with()
+            ->willReturn([$wf_operation, $wf_operation,]);
+
+        $workflow = new Workflow((object)['id' => '123', 'operations' => $operations,], ['site' => $site,]);
+        $workflow->setContainer($container);
+
+        $this->assertEquals([$wf_operation, $wf_operation,], $workflow->operations());
     }
 
     /**
@@ -274,13 +319,21 @@ class WorkflowTest extends ModelTestCase
         $email = 'handle@domain.ext';
         $workflow_id = 'workflow id';
         $status = 'succeeded';
-        $ops_array = [(object)['id' => 'operation1',] , (object)['id' => 'operation2',],];
-        $ops_serialized = ['ops' => 'data',];
-
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflow = new Workflow((object)[
+        $operations = [
+            (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
+            (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
+            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
+            (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
+        ];
+        $operations_serialized = [
+            ['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
+            ['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
+            ['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            ['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
+            ['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
+        ];
+        $data = (object)[
             'id' => $workflow_id,
             'description' => $workflow_description,
             'environment' => $env,
@@ -289,12 +342,8 @@ class WorkflowTest extends ModelTestCase
             'finished_at' => 1,
             'started_at' => 0,
             'user' => (object)compact('email'),
-            'operations' => $ops_array,
-        ], ['site' => $site,]);
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflow->setContainer($container);
+            'operations' => $operations,
+        ];
         $expected = [
             'id' => $workflow_id,
             'env' => $env,
@@ -304,25 +353,32 @@ class WorkflowTest extends ModelTestCase
             'finished_at' => 1,
             'started_at' => 0,
             'time' => time() . 's',
-            'operations' => [$ops_serialized, $ops_serialized,],
+            'operations' => $operations_serialized,
         ];
-        $operation = $this->getMockBuilder(WorkflowOperation::class)
+
+
+        $container = $this->getMockBuilder(Container::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $site = $this->getMockBuilder(Site::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $wf_operations = $this->getMockBuilder(WorkflowOperations::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $container->expects($this->any())
+        $container->expects($this->once())
             ->method('get')
-            ->with(
-                $this->equalTo(WorkflowOperation::class)
-            )
-            ->willReturn($operation);
-        $operation->expects($this->any())
+            ->with(WorkflowOperations::class, [['data' => $operations,]])
+            ->willReturn($wf_operations);
+        $wf_operations->expects($this->once())
             ->method('serialize')
-            ->with()
-            ->willReturn($ops_serialized);
+            ->willReturn($operations_serialized);
 
-        $out = $workflow->serialize();
-        $this->assertEquals($expected, $out);
+        $workflow = new Workflow($data, compact('site'));
+        $workflow->setContainer($container);
+
+        $this->assertEquals($expected, $workflow->serialize());
     }
 
     /**

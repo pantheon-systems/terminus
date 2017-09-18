@@ -11,6 +11,7 @@ use Robo\Contract\ConfigAwareInterface;
 /**
  * Class SavedTokens
  * @package Pantheon\Terminus\Collections
+ * TODO: Convert to FetchlessCollection
  */
 class SavedTokens extends TerminusCollection implements ConfigAwareInterface, DataStoreAwareInterface
 {

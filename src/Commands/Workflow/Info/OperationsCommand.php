@@ -32,20 +32,10 @@ class OperationsCommand extends InfoBaseCommand
      */
     public function operations($site_id, $options = ['id' => null,])
     {
-        $operations = $this->getWorkflow($site_id, $options['id'])->operations();
-        if (count($operations)) {
-            $operations_data = array_map(
-                function ($operation) {
-                    $operation_data = $operation->serialize();
-                    unset($operation_data['id']);
-                    unset($operation_data['log_output']);
-                    return $operation_data;
-                },
-                $operations
-            );
-            return new RowsOfFields($operations_data);
-        } else {
+        $data = $this->getWorkflow($site_id, $options['id'])->getOperations()->serialize();
+        if (empty($data)) {
             $this->log()->notice('Workflow does not contain any operations.');
         }
+        return new RowsOfFields($data);
     }
 }

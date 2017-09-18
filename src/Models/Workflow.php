@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Collections\WorkflowOperations;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -22,6 +23,10 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * @var TerminusModel
      */
     private $owner;
+    /**
+     * @var WorkflowOperations
+     */
+    private $workflow_operations;
 
     // @TODO: Make this configurable.
     const POLLING_PERIOD = 3;
@@ -74,6 +79,20 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return WorkflowOperations
+     */
+    public function getOperations()
+    {
+        if (empty($this->workflow_operations)) {
+            $this->workflow_operations = $this->getContainer()->get(
+                WorkflowOperations::class,
+                [['data' => $this->get('operations'),],]
+            );
+        }
+        return $this->workflow_operations;
     }
 
     /**
@@ -197,20 +216,11 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      * Returns a list of WorkflowOperations for this workflow
      *
      * @return WorkflowOperation[]
+     * @deprecated 1.5.1-dev Use $this->getOperations->all() for equivalent functionality
      */
     public function operations()
     {
-        $operations_data = [];
-        if (is_array($this->get('operations'))) {
-            $operations_data = $this->get('operations');
-        }
-
-        $operations = [];
-        foreach ($operations_data as $operation_data) {
-            $operations[] = $this->getContainer()->get(WorkflowOperation::class, [$operation_data]);
-        }
-
-        return $operations;
+        return $this->getOperations()->all();
     }
 
     /**
@@ -228,11 +238,6 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             $elapsed_time = time() - $this->get('created_at');
         }
 
-        $operations_data = [];
-        foreach ($this->operations() as $operation) {
-            $operations_data[] = $operation->serialize();
-        }
-
         return [
             'id' => $this->id,
             'env' => $this->get('environment'),
@@ -242,7 +247,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             'time' => sprintf('%ds', $elapsed_time),
             'finished_at' => $this->get('finished_at'),
             'started_at' => $this->get('started_at'),
-            'operations' => $operations_data,
+            'operations' => $this->getOperations()->serialize(),
         ];
     }
 

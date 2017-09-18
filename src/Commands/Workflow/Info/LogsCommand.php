@@ -17,31 +17,29 @@ class LogsCommand extends InfoBaseCommand
      *
      * @param string $site_id Site name
      * @option string $id Workflow UUID
+     * @return string
      *
      * @usage <site> --id=<workflow> Displays the details of <site>'s workflow <workflow>.
      * @usage <site> Displays the details of <site>'s most recently created workflow.
      */
     public function logs($site_id, $options = ['id' => null,])
     {
-        $operations = $this->getWorkflow($site_id, $options['id'])->operations();
+        $workflow_ops = $this->getWorkflow($site_id, $options['id'])->getOperations();
+        $operations = $workflow_ops->all();
+        $log_operations = array_filter(
+            $operations,
+            function ($op) {
+                return !is_null($op->get('log_output'));
+            }
+        );
 
-        if (count($operations)) {
-            $output = '';
-            foreach ($operations as $operation) {
-                if ($operation->has('log_output')) {
-                    $output .= sprintf(
-                        "\n------ %s ------\n%s\n",
-                        $operation->description(),
-                        $operation->get('log_output')
-                    );
-                }
-            }
-            if (empty($output)) {
-                $this->log()->notice('Workflow operations did not contain any logs.');
-            }
-            return $output;
-        } else {
+        if (empty($operations)) {
             $this->log()->notice('Workflow does not contain any operations.');
+        } else if (empty($log_operations)) {
+            $this->log()->notice('Workflow operations did not contain any logs.');
         }
+
+        $top_op = array_shift($log_operations);
+        return "$top_op";
     }
 }

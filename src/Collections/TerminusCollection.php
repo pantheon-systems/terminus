@@ -77,15 +77,13 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * Fetches model data from API and instantiates its model instances
      *
      * @param array $options params to pass configure fetching
-     *        array $data Data to fill in the model members of this collection
      * @return TerminusCollection $this
      */
     public function fetch(array $options = [])
     {
-        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
-        $results = array_filter((array)$data);
+        $all_data = array_filter((array)$this->getCollectionData($options));
 
-        foreach ($results as $id => $model_data) {
+        foreach ($all_data as $id => $model_data) {
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
             }
