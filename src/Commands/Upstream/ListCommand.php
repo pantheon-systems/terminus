@@ -14,6 +14,8 @@ class ListCommand extends TerminusCommand
     /**
      * Displays the list of upstreams accessible to the currently logged-in user.
      *
+     * @authorize
+     *
      * @command upstream:list
      * @aliases upstreams
      *
