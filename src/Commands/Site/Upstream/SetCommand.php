@@ -28,10 +28,13 @@ class SetCommand extends SiteCommand
         $upstream = $this->session()->getUser()->getUpstreams()->get($upstream_id);
         $msg_params = ['site' => $site->getName(), 'upstream' => $upstream->get('label'),];
 
-        $this->log()->warning('This functionality is experimental. Do not use this on production sites.');
         if (!$this->confirm('Are you sure you want change the upstream for {site} to {upstream}?', $msg_params)) {
             return;
         }
+        $this->log()->info(
+            'To undo this change run `terminus site:upstream:set {site} {upstream}`',
+            ['site' => $site->id, 'upstream' => $site->getUpstream()->id,]
+        );
 
         $workflow = $site->setUpstream($upstream->id);
         while (!$workflow->checkProgress()) {
