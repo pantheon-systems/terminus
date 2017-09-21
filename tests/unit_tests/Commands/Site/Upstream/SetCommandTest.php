@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Commands\Site\Upstream\SetCommand;
+use Pantheon\Terminus\Models\SiteUpstream;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
@@ -21,6 +22,10 @@ class SetCommandTest extends CommandTestCase
      * @var Session
      */
     protected $session;
+    /**
+     * @var SiteUpstream
+     */
+    protected $site_upstream;
     /**
      * @var Upstream
      */
@@ -61,6 +66,10 @@ class SetCommandTest extends CommandTestCase
         $this->upstream = $this->getMockBuilder(Upstream::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->site_upstream = $this->getMockBuilder(SiteUpstream::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->site_upstream->id = 'Site upstream ID';
         $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'label' => 'Upstream Name',];
 
         $this->session->expects($this->once())
@@ -94,11 +103,16 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->site->expects($this->once())
+            ->method('getUpstream')
+            ->with()
+            ->willReturn($this->site_upstream);
         $this->logger->expects($this->at(0))
-        ->method('log')->with(
-            $this->equalTo('warning'),
-            $this->equalTo('This functionality is experimental. Do not use this on production sites.')
-        );
+            ->method('log')->with(
+                'info',
+                'To undo this change run `terminus site:upstream:set {site} {upstream}`',
+                ['site' => $this->site->id, 'upstream' => $this->site_upstream->id,]
+            );
 
         $this->site
             ->method('getName')
@@ -138,11 +152,10 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
-        $this->logger->expects($this->once())
-          ->method('log')->with(
-              $this->equalTo('warning'),
-              $this->equalTo('This functionality is experimental. Do not use this on production sites.')
-          );
+        $this->site->expects($this->never())
+            ->method('getUpstream');
+        $this->logger->expects($this->never())
+          ->method('log');
 
         $this->expectConfirmation(false);
         $this->site->expects($this->never())
@@ -163,12 +176,16 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
-        $this->logger->expects($this->once())
-        ->method('log')->with(
-            $this->equalTo('warning'),
-            $this->equalTo('This functionality is experimental. Do not use this on production sites.')
-        );
-
+        $this->site->expects($this->once())
+            ->method('getUpstream')
+            ->with()
+            ->willReturn($this->site_upstream);
+        $this->logger->expects($this->at(0))
+            ->method('log')->with(
+                'info',
+                'To undo this change run `terminus site:upstream:set {site} {upstream}`',
+                ['site' => $this->site->id, 'upstream' => $this->site_upstream->id,]
+            );
         $this->expectConfirmation();
         $this->site->expects($this->once())
         ->method('setUpstream')
