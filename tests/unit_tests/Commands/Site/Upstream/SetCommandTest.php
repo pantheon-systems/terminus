@@ -104,7 +104,7 @@ class SetCommandTest extends CommandTestCase
         $this->expectGetUpstream($upstream_id);
 
         $this->site->expects($this->once())
-            ->method('getUpsteam')
+            ->method('getUpstream')
             ->with()
             ->willReturn($this->site_upstream);
         $this->logger->expects($this->at(0))
@@ -152,6 +152,8 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->site->expects($this->never())
+            ->method('getUpstream');
         $this->logger->expects($this->never())
           ->method('log');
 
@@ -174,12 +176,16 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
-        $this->logger->expects($this->once())
-        ->method('log')->with(
-            $this->equalTo('warning'),
-            $this->equalTo('This functionality is experimental. Do not use this on production sites.')
-        );
-
+        $this->site->expects($this->once())
+            ->method('getUpstream')
+            ->with()
+            ->willReturn($this->site_upstream);
+        $this->logger->expects($this->at(0))
+            ->method('log')->with(
+                'info',
+                'To undo this change run `terminus site:upstream:set {site} {upstream}`',
+                ['site' => $this->site->id, 'upstream' => $this->site_upstream->id,]
+            );
         $this->expectConfirmation();
         $this->site->expects($this->once())
         ->method('setUpstream')
