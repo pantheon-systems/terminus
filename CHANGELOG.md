@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file. This projec
 - `domain:list` now lists `id`, `type`, and `deleteable` attributes. (#1763)
 - `https:info` now lists `id`, `type`, `status`, `status_message`, and `deleteable` attributes. (#1763)
 - `https:info` emits a `RowsOfFields` object instead of a `PropertyList`. (#1763)
+- `domain:dns` now emits an info log instead of a warning. (#1772)
 
 ## 1.5.0 - 2017-08-17
 ### Changed
