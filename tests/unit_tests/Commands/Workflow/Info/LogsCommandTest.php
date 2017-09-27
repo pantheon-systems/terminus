@@ -61,31 +61,28 @@ class LogsCommandTest extends WorkflowCommandTest
             ->method('all')
             ->with()
             ->willReturn([$this->workflow,]);
-        $this->operations->expects($this->at(0))
+        $this->operations->expects($this->once())
             ->method('all')
             ->with()
             ->willReturn([$this->operation,]);
-        $this->operations->expects($this->at(1))
-            ->method('filter')
-            ->willReturn($this->operations);
-        $this->operations->expects($this->at(2))
-            ->method('all')
-            ->with()
-            ->willReturn([$this->operation,]);
-        $this->logger->expects($this->at(0))
+        $this->operation->expects($this->at(0))
+            ->method('get')
+            ->with('log_output')
+            ->willReturn(true);
+        $this->logger->expects($this->once())
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Showing latest workflow on {site}.'),
                 $this->equalTo(['site' => $this->site_name,])
             );
-        $this->operation->expects($this->once())
+        $this->operation->expects($this->at(1))
             ->method('__toString')
             ->with()
             ->willReturn($this->expected_logs);
 
         $out = $this->command->logs($this->site_name);
-        $this->assertEquals($out, $this->expected_logs);
+        $this->assertEquals($this->expected_logs, $out);
     }
 
     /**
@@ -105,11 +102,11 @@ class LogsCommandTest extends WorkflowCommandTest
             ->method('all')
             ->with()
             ->willReturn([$this->operation,]);
-        $this->operation->expects($this->once())
-            ->method('has')
+        $this->operation->expects($this->at(0))
+            ->method('get')
             ->with('log_output')
             ->willReturn(true);
-        $this->operation->expects($this->once())
+        $this->operation->expects($this->at(1))
             ->method('__toString')
             ->with()
             ->willReturn($this->expected_logs);
@@ -174,17 +171,10 @@ class LogsCommandTest extends WorkflowCommandTest
             ->method('all')
             ->with()
             ->willReturn([$this->operation,]);
-        $this->operation->expects($this->once())
-            ->method('has')
-            ->with($this->equalTo('log_output'))
+        $this->operation->expects($this->at(0))
+            ->method('get')
+            ->with('log_output')
             ->willReturn(false);
-        $this->logger->expects($this->at(0))
-            ->method('log')
-            ->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Showing latest workflow on {site}.'),
-                $this->equalTo(['site' => $this->site_name,])
-            );
         $this->logger->expects($this->at(1))
             ->method('log')
             ->with(

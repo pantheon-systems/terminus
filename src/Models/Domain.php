@@ -2,6 +2,9 @@
 
 namespace Pantheon\Terminus\Models;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Collections\DNSRecords;
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
 
@@ -9,9 +12,15 @@ use Pantheon\Terminus\Friends\EnvironmentTrait;
  * Class Domain
  * @package Pantheon\Terminus\Models
  */
-class Domain extends TerminusModel implements EnvironmentInterface
+class Domain extends TerminusModel implements ContainerAwareInterface, EnvironmentInterface
 {
+    use ContainerAwareTrait;
     use EnvironmentTrait;
+
+    /**
+     * @var DNSRecords
+     */
+    private $dns_records;
 
     public static $pretty_name = 'domain';
     /**
@@ -27,6 +36,20 @@ class Domain extends TerminusModel implements EnvironmentInterface
     public function delete()
     {
         return $this->request->request($this->getUrl(), ['method' => 'delete',])['data'];
+    }
+
+    /**
+     * @return DNSRecords
+     */
+    public function getDNSRecords()
+    {
+        if (empty($this->dns_records)) {
+            $this->dns_records = $this->getContainer()->get(
+                DNSRecords::class,
+                [['data' => $this->get('dns_status_details')->dns_records,], ['domain' => $this,],]
+            );
+        }
+        return $this->dns_records;
     }
 
     /**

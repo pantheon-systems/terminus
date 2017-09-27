@@ -29,7 +29,7 @@ class LogsCommand extends InfoBaseCommand
         $log_operations = array_filter(
             $operations,
             function ($op) {
-                return !is_null($op->get('log_output'));
+                return !is_null($got_output = $op->get('log_output')) && $got_output;
             }
         );
 
@@ -39,7 +39,10 @@ class LogsCommand extends InfoBaseCommand
             $this->log()->notice('Workflow operations did not contain any logs.');
         }
 
-        $top_op = array_shift($log_operations);
-        return "$top_op";
+        $logs = [];
+        foreach ($log_operations as $op) {
+            $logs[] = "$op";
+        }
+        return implode("\n", $logs);
     }
 }
