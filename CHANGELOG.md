@@ -23,6 +23,9 @@ All notable changes to this project will be documented in this file. This projec
 - `https:info` emits a `RowsOfFields` object instead of a `PropertyList`. (#1763)
 - `domain:dns` now emits an info log instead of a warning. (#1772)
 
+### Deprecated
+- `Workflow:operations()` is deprecated. Use the `Workflow::getOperations()` to retrieve workflow operations. (#1769)
+
 ## 1.5.0 - 2017-08-17
 ### Changed
 - Updated the name of the `longname` field output by `upstream:list` to `label`. (#1747)

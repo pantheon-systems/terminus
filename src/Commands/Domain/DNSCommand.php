@@ -23,11 +23,12 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      * @command domain:dns
      *
      * @field-labels
-     *     name: Name
+     *     id: Name
      *     type: Record Type
      *     value: Recommended Value
      *     detected_value: Detected Value
      *     status: Status
+     *     status_message: Status Message
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
@@ -44,16 +45,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
         )->all();
         $settings = [];
         foreach ($domains as $domain) {
-            $recommendations = $domain->get('dns_status_details')->dns_records;
-            foreach ($recommendations as $recommendation) {
-                $settings[] = [
-                    'name' => $domain->id,
-                    'type' => $recommendation->type,
-                    'value' => $recommendation->target_value,
-                    'detected_value' => $recommendation->detected_value,
-                    'status' => $recommendation->status,
-                ];
-            }
+            $settings = array_merge($settings, $domain->getDNSRecords()->serialize());
         }
         return new RowsOfFields($settings);
     }

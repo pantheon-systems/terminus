@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
+use Pantheon\Terminus\Collections\WorkflowOperations;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Models\WorkflowOperation;
 use Pantheon\Terminus\Collections\Workflows;
 
 /**
@@ -19,9 +19,9 @@ abstract class WorkflowCommandTest extends CommandTestCase
      */
     protected $expected_logs;
     /**
-     * @var WorkflowOperation
+     * @var WorkflowOperations
      */
-    protected $operation;
+    protected $operations;
     /**
      * @var Workflow
      */
@@ -38,33 +38,6 @@ abstract class WorkflowCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->site->method('getWorkflows')->willReturn($this->workflows);
-
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->operation = $this->getMockBuilder(WorkflowOperation::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->operation->expects($this->any())
-            ->method('description')
-            ->willReturn('Mock operation');
-
-        $this->operation->expects($this->any())
-            ->method('get')
-            ->with('log_output')
-            ->willReturn('The mock operation log output.');
-
-        $this->operation->expects($this->any())
-            ->method('serialize')
-            ->willReturn(['id' => '12345', 'log_output' => 'The mock operation log output.', 'description' => 'Mock operation']);
-
         $this->expected_logs = <<<'EOT'
 
 ------ Mock operation ------
@@ -74,5 +47,17 @@ The mock operation log output.
 The mock operation log output.
 
 EOT;
+        $this->operations = $this->getMockBuilder(WorkflowOperations::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->workflow = $this->getMockBuilder(Workflow::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->workflows = $this->getMockBuilder(Workflows::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->workflow->method('getOperations')->willReturn($this->operations);
+        $this->site->method('getWorkflows')->willReturn($this->workflows);
     }
 }

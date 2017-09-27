@@ -116,7 +116,6 @@ class ApplyCommandTest extends UpdatesCommandTest
             ->method('applyUpstreamUpdates')
             ->with($this->equalTo(true), $this->equalTo(true))
             ->willReturn($workflow);
-
         $this->site->expects($this->once())
             ->method('get')
             ->with('name')

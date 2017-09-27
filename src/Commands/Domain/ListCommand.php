@@ -27,6 +27,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     id: Domain/ID
      *     type: Type
      *     deletable: Is Deletable
+     *     status: status
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
