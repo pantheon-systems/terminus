@@ -92,7 +92,6 @@ class SetCommandTest extends CommandTestCase
             ->getMock();
     }
 
-
     /**
      * Exercises the site:upstream:set command
      */
@@ -193,6 +192,48 @@ class SetCommandTest extends CommandTestCase
         ->will($this->throwException(new \Exception($exception_message)));
 
         $this->setExpectedException(\Exception::class, $exception_message);
+
+        $out = $this->command->set($site_name, $upstream_id);
+        $this->assertNull($out);
+    }
+
+    /**
+     * Exercises the site:upstream:set command when the site being set did not have a valid previous upstream
+     */
+    public function testSetNoPreviousUpstream()
+    {
+        $site_name = 'my-site';
+        $upstream_id = $this->upstream_data['id'];
+        $this->site_upstream->id = null;
+
+        $this->expectGetUpstream($upstream_id);
+
+        $this->site->expects($this->once())
+            ->method('getUpstream')
+            ->with()
+            ->willReturn($this->site_upstream);
+
+        $this->site
+            ->method('getName')
+            ->willReturn($site_name);
+
+        $this->expectConfirmation();
+        $this->site->expects($this->once())
+            ->method('setUpstream')
+            ->with($upstream_id)
+            ->willReturn($this->workflow);
+
+        $this->workflow->expects($this->once())
+            ->method('checkProgress')
+            ->with()
+            ->willReturn(true);
+
+        $this->logger->expects($this->once())
+            ->method('log')->with(
+                $this->equalTo('notice'),
+                $this->equalTo('Set upstream for {site} to {upstream}'),
+                $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['label'],])
+            );
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);
