@@ -31,10 +31,13 @@ class SetCommand extends SiteCommand
         if (!$this->confirm('Are you sure you want change the upstream for {site} to {upstream}?', $msg_params)) {
             return;
         }
-        $this->log()->info(
-            'To undo this change run `terminus site:upstream:set {site} {upstream}`',
-            ['site' => $site->id, 'upstream' => $site->getUpstream()->id,]
-        );
+        $previous_upstream_id = $site->getUpstream()->id;
+        if ($previous_upstream_id) {
+            $this->log()->info(
+                'To undo this change run `terminus site:upstream:set {site} {upstream}`',
+                ['site' => $site->id, 'upstream' => $previous_upstream_id,]
+            );
+        }
 
         $workflow = $site->setUpstream($upstream->id);
         while (!$workflow->checkProgress()) {
