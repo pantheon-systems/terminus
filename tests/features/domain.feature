@@ -55,11 +55,12 @@ Feature: Adding domains to an environment
   @vcr domain-dns.yml
   Scenario: Looking up the DNS recommendations for [[test_site_name]]
     When I run "terminus domain:dns [[test_site_name]].dev"
-    Then I should get: "------------- ---------------------------------- ---------------------------------- -------- ------------------------"
-    And I should get: "Record Type   Recommended Value                  Detected Value                     Status   Status Message"
-    And I should get: "------------- ---------------------------------- ---------------------------------- -------- ------------------------"
-    And I should get: "CNAME         live-[[test_site_name]].[[php_site_domain]]   live-[[test_site_name]].[[php_site_domain]]   okay     Correct value detected"
-    And I should get: "A             23.185.0.2                         23.185.0.2                         okay     Correct value detected"
-    And I should get: "AAAA          2620:12a:8000::2                   2620:12a:8000::2                   okay     Correct value detected"
-    And I should get: "AAAA          2620:12a:8001::2                   2620:12a:8001::2                   okay     Correct value detected"
-    And I should get: "------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+    Then I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+    And I should get: "Domain               Record Type   Recommended Value                  Detected Value                     Status   Status Message"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+    And I should get: "www.[[test_site_name]].me   CNAME         live-[[test_site_name]].[[php_site_domain]]   live-[[test_site_name]].[[php_site_domain]]   okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       A             23.185.0.2                         23.185.0.2                         okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       AAAA          2620:12a:8000::2                   2620:12a:8000::2                   okay     Correct value detected"
+    And I should get: "[[test_site_name]].me       AAAA          2620:12a:8001::2                   2620:12a:8001::2                   okay     Correct value detected"
+    And I should get: "-------------------- ------------- ---------------------------------- ---------------------------------- -------- ------------------------"
+

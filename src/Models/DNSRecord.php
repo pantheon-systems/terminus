@@ -16,6 +16,7 @@ class DNSRecord extends TerminusModel
     public function serialize()
     {
         return [
+            'domain' => $this->collection->getDomain()->id,
             'status' => $this->get('status'),
             'status_message' => $this->get('status_message'),
             'type' => $this->get('type'),

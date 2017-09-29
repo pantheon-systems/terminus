@@ -23,7 +23,7 @@ class DNSCommand extends TerminusCommand implements SiteAwareInterface
      * @command domain:dns
      *
      * @field-labels
-     *     id: Name
+     *     domain: Domain
      *     type: Record Type
      *     value: Recommended Value
      *     detected_value: Detected Value

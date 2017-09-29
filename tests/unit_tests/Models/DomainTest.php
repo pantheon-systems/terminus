@@ -116,7 +116,7 @@ class DomainTest extends ModelTestCase
             ->method('get')
             ->with(
                 DNSRecords::class,
-                [['data' => $data->dns_status_details->dns_records,], ['domain' => $domain,],]
+                [['data' => $data->dns_status_details->dns_records, 'domain' => $domain,],]
             )
             ->willReturn($records);
 
