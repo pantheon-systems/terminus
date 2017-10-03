@@ -78,36 +78,10 @@ class DomainsTest extends CollectionTestCase
     }
 
     /**
-     * Tests the Domains::has(string) function
+     * Tests the Domains::fetchWithRecommendations() function
      */
-    public function testHas()
+    public function testFetchWithRecommendations()
     {
-        $data = [
-            'foo.net' => (object)[],
-            'bar.org' => (object)[],
-        ];
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                $this->equalTo("sites/{$this->site->id}/environments/{$this->environment->id}/domains"),
-                $this->equalTo(['options' => ['method' => 'get',],])
-            )
-            ->willReturn(compact('data'));
-        $i = 0;
-        foreach ($data as $domain_str => $obj) {
-            $domain = $this->getMockBuilder(Domain::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-            $domain->id = $domain_str;
-            $domain->method('getReferences')->willReturn([$domain_str,]);
-            $this->container->expects($this->at($i))
-                ->method('get')
-                ->with(Domain::class, [$obj, ['id' => $domain_str, 'collection' => $this->collection,],])
-                ->willReturn($domain);
-            $i++;
-        }
 
-        $this->assertTrue($this->collection->has('foo.net'));
-        $this->assertFalse($this->collection->has('hello.world'));
     }
 }
