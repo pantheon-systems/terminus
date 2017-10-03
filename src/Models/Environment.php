@@ -8,7 +8,6 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
-use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Friends\SiteInterface;
@@ -49,10 +48,6 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      * @var Domains
      */
     private $domains;
-    /**
-     * @var Loadbalancers
-     */
-    private $loadbalancers;
     /**
      * @var Lock
      */
@@ -459,17 +454,6 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function getDrushVersion()
     {
         return $this->settings('drush_version');
-    }
-
-    /**
-     * @return Loadbalancers
-     */
-    public function getLoadbalancers()
-    {
-        if (empty($this->loadbalancers)) {
-            $this->loadbalancers = $this->getContainer()->get(Loadbalancers::class, [['environment' => $this,],]);
-        }
-        return $this->loadbalancers;
     }
 
     /**

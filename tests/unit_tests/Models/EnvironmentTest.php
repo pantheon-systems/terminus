@@ -7,7 +7,6 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Environments;
-use Pantheon\Terminus\Collections\Loadbalancers;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Binding;
@@ -54,10 +53,6 @@ class EnvironmentTest extends ModelTestCase
      * @var Domains
      */
     protected $domains;
-    /**
-     * @var Loadbalancers
-     */
-    protected $loadbalancers;
     /**
      * @var LocalMachineHelper
      */
@@ -634,12 +629,6 @@ class EnvironmentTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetLoadbalancers()
-    {
-        $out = $this->model->getLoadbalancers();
-        $this->assertEquals($this->loadbalancers, $out);
-    }
-
     public function testGetLock()
     {
         $out = $this->model->getLock();
@@ -1069,9 +1058,6 @@ class EnvironmentTest extends ModelTestCase
         $this->domains = $this->getMockBuilder(Domains::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->loadbalancers = $this->getMockBuilder(Loadbalancers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
         $this->local_machine = $this->getMockBuilder(LocalMachineHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -1092,7 +1078,6 @@ class EnvironmentTest extends ModelTestCase
         $this->container->add(Bindings::class, $this->bindings);
         $this->container->add(Commits::class, $this->commits);
         $this->container->add(Domains::class, $this->domains);
-        $this->container->add(Loadbalancers::class, $this->loadbalancers);
         $this->container->add(LocalMachineHelper::class, $this->local_machine);
         $this->container->add(Lock::class, $this->lock);
         $this->container->add(UpstreamStatus::class, $this->upstream_status);
