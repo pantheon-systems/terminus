@@ -72,12 +72,15 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @inheritdoc
      */
-    protected function getCollectionData($options = [])
+    public function getData()
     {
-        $tokens = [];
-        foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = (object)$this->getDataStore()->get($key);
+        if (empty($this->data)) {
+            $tokens = [];
+            foreach ($this->getDataStore()->keys() as $key) {
+                $tokens[] = (object)$this->getDataStore()->get($key);
+            }
+            $this->setData($tokens);
         }
-        return $tokens;
+        return parent::getData();
     }
 }

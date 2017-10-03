@@ -11,7 +11,7 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class Sites
  * @package Pantheon\Terminus\Collections
  */
-class Sites extends TerminusCollection implements SessionAwareInterface
+class Sites extends APICollection implements SessionAwareInterface
 {
     use SessionAwareTrait;
 

@@ -3,9 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Collections\WorkflowOperations;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Models\PaymentMethod;
 use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\Models\WorkflowOperation;
 
 /**
  * Class TerminusCollectionTest
@@ -13,6 +15,23 @@ use Pantheon\Terminus\Models\TerminusModel;
  */
 class TerminusCollectionTest extends CollectionTestCase
 {
+    /**
+     * @inheritdoc
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->data = [
+            (object)['id' => 'op-id-1', 'type' => 'type', 'description' => 'an operation', 'result' => 'succeeded', 'duration' => 100,],
+            (object)['id' => 'op-id-2', 'type' => 'type2', 'description' => 'another operation', 'result' => null, 'duration' => 0,],
+            (object)['id' => 'op-id-3', 'type' => 'type', 'description' => 'more operation', 'result' => 'failed', 'duration' => 300,],
+        ];
+    }
+
+    /**
+     * Tests the TerminusCollection::add(object) function
+     */
     public function testAdd()
     {
         $collection = $this->getMockForAbstractClass(TerminusCollection::class);
@@ -38,66 +57,40 @@ class TerminusCollectionTest extends CollectionTestCase
         $this->assertEquals($model, $out);
     }
 
-    public function testFetch()
+    /**
+     * Tests the TerminusCollection data functions
+     */
+    public function testDataFunctions()
     {
-        $data = [
-            'a' => (object)['id' => 'a', 'foo' => '123', 'category' => 'a',],
-            'b' => (object)['id' => 'b', 'foo' => '456', 'category' => 'a',],
-            'c' => (object)['id' => 'c', 'foo' => '678', 'category' => 'b',],
-            'd' => (object)['id' => 'd', 'foo' => ['key' => 'value',], 'category' => 'b',],
-        ];
+        $operations = new WorkflowOperations(['data' => $this->data,]);
+        $operations->setContainer($this->container);
 
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with('TESTURL', ['options' => ['method' => 'get',],])
-            ->willReturn(['data' => $data]);
-
-        $collection = $this->getMockBuilder(TerminusCollection::class)
-            ->setMethods(['getUrl',])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $collection->expects($this->once())
-            ->method('getUrl')
-            ->willReturn('TESTURL');
-
-        $models = [];
-        $options = ['collection' => $collection,];
-        $i = 0;
-        foreach ($data as $key => $model_data) {
-            $models[$model_data->id] = $this->getMockForAbstractClass(TerminusModel::class, [$model_data, $options,]);
-            $options['id'] = $model_data->id;
-            $this->container->expects($this->at($i++))
+        for ($i = 0; $i < count($this->data); $i++) {
+            $data = $this->data[$i];
+            $op = $this->getMockBuilder(WorkflowOperation::class)
+                ->enableOriginalConstructor()
+                ->setConstructorArgs(compact('data'))
+                ->getMock();
+            $this->container->expects($this->at($i))
                 ->method('get')
-                ->with(TerminusModel::class, [$model_data, $options,])
-                ->willReturn($models[$key]);
-            $models[$model_data->id]->method('serialize')->willReturn((array)$model_data);
+                ->with(WorkflowOperation::class, [$data, ['id' => $data->id, 'collection' => $operations,],])
+                ->willReturn($op);
         }
 
-        $collection->setRequest($this->request);
-        $collection->setContainer($this->container);
+        $this->assertEquals($this->data, $operations->getData());
 
-        $collection->fetch();
-
-        $this->assertEquals(array_keys($models), $collection->ids());
-        $this->assertEquals($models, $collection->all());
-        foreach ($models as $id => $model) {
-            $this->assertEquals($model, $collection->get($id));
+        $ops = $operations->fetch()->all();
+        foreach ($ops as $op) {
+            $this->assertInstanceOf(WorkflowOperation::class, $op);
         }
 
-        $expected = array_map(function ($d) {
-            return (array)$d;
-        }, $data);
-        $this->assertEquals($expected, $collection->serialize());
-
-        $listing = [
-            'a' => '123',
-            'b' => '456',
-            'c' => '678',
-            'd' => ['key' => 'value',],
-        ];
-        $this->assertEquals($listing, $collection->listing('id', 'foo'));
+        $operations->setData([]);
+        $this->assertEmpty($operations->getData());
     }
 
+    /**
+     * Tests the TerminusCollection::get(string) function
+     */
     public function testGet()
     {
         $model_data = [
@@ -115,17 +108,15 @@ class TerminusCollectionTest extends CollectionTestCase
             ],
         ];
         $url = 'a url';
-        $collection = new DummyCollection(['url' => $url, 'collected_class' => PaymentMethod::class,]);
+        $collection = new DummyCollection(
+            [
+                'url' => $url,
+                'collected_class' => PaymentMethod::class,
+                'data' => $model_data,
+            ]
+        );
         $collection->setContainer($this->container);
         $collection->setRequest($this->request);
-
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                $this->equalTo($url),
-                $this->equalTo(['options' => ['method' => 'get',],])
-            )
-            ->willReturn(['data' => $model_data,]);
 
         $i = 0;
         foreach ($model_data as $data) {

@@ -19,6 +19,10 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     use RequestAwareTrait;
 
     /**
+     * @var array
+     */
+    private $data = [];
+    /**
      * @var string
      */
     protected $collected_class = TerminusModel::class;
@@ -26,14 +30,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * @var TerminusModel[]
      */
     protected $models = null;
-    /**
-     * @var boolean
-     */
-    protected $paged = false;
-    /**
-     * @var string
-     */
-    protected $url;
 
     /**
      * Instantiates the collection, sets param members as properties
@@ -42,6 +38,9 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function __construct(array $options = [])
     {
+        if (isset($options['data'])) {
+            $this->setData($options['data']);
+        }
     }
 
     /**
@@ -64,32 +63,31 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
 
     /**
      * Retrieves all models
-     * TODO: Remove automatic fetching and make fetches explicit
      *
      * @return TerminusModel[]
      */
     public function all()
     {
-        return $this->getMembers();
+        if (is_null($this->models)) {
+            $this->models = [];
+            $this->fetch();
+        }
+        return $this->models;
     }
 
     /**
      * Fetches model data from API and instantiates its model instances
      *
-     * @param array $options params to pass configure fetching
      * @return TerminusCollection $this
      */
-    public function fetch(array $options = [])
+    public function fetch()
     {
-        $all_data = array_filter((array)$this->getCollectionData($options));
-
-        foreach ($all_data as $id => $model_data) {
+        foreach ($this->getData() as $id => $model_data) {
             if (!isset($model_data->id)) {
                 $model_data->id = $id;
             }
             $this->add($model_data);
         }
-
         return $this;
     }
 
@@ -97,11 +95,10 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      * Filters the members of this collection
      *
      * @param callable $filter Filter function
-     * TODO: This should not affect the original member array, but a copy should be kept and manipulated.
      */
     public function filter(callable $filter)
     {
-        $this->models = array_filter($this->getMembers(), $filter);
+        $this->models = array_filter($this->all(), $filter);
         return $this;
     }
 
@@ -129,7 +126,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function get($id)
     {
-        foreach ($this->getMembers() as $member) {
+        foreach ($this->all() as $member) {
             if (in_array($id, $member->getReferences())) {
                 return $member;
             }
@@ -145,15 +142,12 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Get the listing URL for this collection
-     *
-     * @return string
+     * @return array Returns data array
      */
-    public function getUrl()
+    public function getData()
     {
-        return $this->url;
+        return $this->data;
     }
-
 
     /**
      * Determines whether the models contain an object with a specific ID
@@ -163,7 +157,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function has($id)
     {
-        return !is_null($models = $this->getMembers()) && array_key_exists($id, $models);
+        return !is_null($models = $this->all()) && array_key_exists($id, $models);
     }
 
     /**
@@ -173,7 +167,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function ids()
     {
-        return array_keys($this->getMembers());
+        return array_keys($this->all());
     }
 
     /**
@@ -187,7 +181,7 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
      */
     public function listing($key = 'id', $value = 'name')
     {
-        $models = $this->getMembers();
+        $models = $this->all();
         $members = array_combine(
             array_map(
                 function ($member) use ($key) {
@@ -213,6 +207,17 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
+     * Resets the model array for reprocessing of the collection data
+     *
+     * @return $this
+     */
+    public function reset()
+    {
+        $this->models = null;
+        return $this;
+    }
+
+    /**
      * Retrieves all models serialized into arrays.
      *
      * @return array
@@ -220,45 +225,39 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function serialize()
     {
         $models = [];
-        foreach ($this->getMembers() as $id => $model) {
+        foreach ($this->all() as $id => $model) {
             $models[$id] = $model->serialize();
         }
         return $models;
     }
 
     /**
-     * Retrieves collection data from the API
-     *
-     * @param array $options params to pass to url request
-     * @return array
+     * @param array $data
      */
-    protected function getCollectionData($options = [])
+    public function setData(array $data = [])
     {
-        $args = ['options' => ['method' => 'get',],];
-        if (isset($options['fetch_args'])) {
-            $args = array_merge($args, $options['fetch_args']);
-        }
+        $this->data = $data;
+    }
 
-        if ($this->paged) {
-            $results = $this->request()->pagedRequest($this->getUrl(), $args);
-        } else {
-            $results = $this->request()->request($this->getUrl(), $args);
-        }
-
-        return $results['data'];
+    /**
+     * Retrieves the data for this collection
+     *
+     * @return TerminusModel[]
+     * @deprecated 1.5.1-dev Use getData()
+     */
+    protected function getCollectionData()
+    {
+        return $this->getData();
     }
 
     /**
      * Retrieves all members of this collection
      *
      * @return TerminusModel[]
+     * @deprecated 1.5.1-dev Use all()
      */
     protected function getMembers()
     {
-        if (is_null($this->models)) {
-            $this->models = [];
-            $this->fetch();
-        }
-        return $this->models;
+        return $this->all();
     }
 }

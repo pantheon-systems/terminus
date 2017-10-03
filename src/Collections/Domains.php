@@ -41,17 +41,8 @@ class Domains extends EnvironmentOwnedCollection
      */
     public function fetchWithRecommendations($options = [])
     {
-        $options = array_merge(
-            $options,
-            [
-                'fetch_args' => [
-                    'query' => [
-                       'hydrate' => ['as_list', 'recommendations',],
-                    ],
-                ],
-            ]
-        );
-        return $this->fetch($options);
+        $this->setFetchArgs(['query' => ['hydrate' => ['as_list', 'recommendations',],],]);
+        return $this->fetch();
     }
 
     /**
