@@ -64,13 +64,5 @@ class APICollectionTest extends CollectionTestCase
             return (array)$d;
         }, $data);
         $this->assertEquals($expected, $collection->serialize());
-
-        $listing = [
-            'a' => '123',
-            'b' => '456',
-            'c' => '678',
-            'd' => ['key' => 'value',],
-        ];
-        $this->assertEquals($listing, $collection->listing('id', 'foo'));
     }
 }

@@ -67,26 +67,20 @@ class Backups extends EnvironmentOwnedCollection
     }
 
     /**
-     * Fetches model data from API and instantiates its model instances
+     * Fetches model data from API and instantiates its model instances only if a filename is present in the model data
      *
-     * @param array $options params to pass configure fetching
-     *        array $data Data to fill in the model members of this collection
      * @return Backups $this
      */
-    public function fetch(array $options = [])
+    public function fetch()
     {
-        $data = isset($options['data']) ? $options['data'] : $this->getCollectionData($options);
-        $results = array_filter((array)$data);
-
-        foreach ($results as $id => $model_data) {
-            if (!isset($model_data->id)) {
-                $model_data->id = $id;
-            }
+        foreach ($this->getData() as $id => $model_data) {
             if (isset($model_data->filename)) {
+                if (!isset($model_data->id)) {
+                    $model_data->id = $id;
+                }
                 $this->add($model_data);
             }
         }
-
         return $this;
     }
 

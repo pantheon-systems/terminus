@@ -52,9 +52,19 @@ abstract class APICollection extends TerminusCollection
     /**
      * @param array $fetch_args
      */
-    public function setFetchArgs(array $fetch_args = [])
+    public function setFetchArgs(array $fetch_args)
     {
         $this->fetch_args = $fetch_args;
+    }
+
+    /**
+     * @param bool $paged
+     * @return APICollection $this
+     */
+    public function setPaging($paged)
+    {
+        $this->paged = $paged;
+        return $this;
     }
 
     /**

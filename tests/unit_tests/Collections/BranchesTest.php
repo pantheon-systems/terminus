@@ -33,7 +33,7 @@ class BranchesTest extends CollectionTestCase
           ->getMock();
         $this->collection_data = ['a' => 'sha1', 'b' => 'sha2', 'c' => 'sha3',];
         $this->collection = $this->getMockBuilder(Branches::class)
-            ->setMethods(['getCollectionData', 'add',])
+            ->setMethods(['getData', 'add',])
             ->enableOriginalConstructor()
             ->setConstructorArgs([['site' => $this->site,],])
             ->getMock();
@@ -45,23 +45,10 @@ class BranchesTest extends CollectionTestCase
     public function testFetch()
     {
         $this->collection->expects($this->once())
-            ->method('getCollectionData')
+            ->method('getData')
             ->willReturn($this->collection_data);
 
         $out = $this->collection->fetch();
-        $this->assertEquals($out, $this->collection);
-    }
-
-    /**
-     * Tests Branches::fetch($options) when data is provided via the options
-     */
-    public function testFetchFromOptions()
-    {
-        $this->collection->expects($this->never())
-            ->method('getCollectionData');
-        $this->expectAdditions();
-
-        $out = $this->collection->fetch(['data' => $this->collection_data,]);
         $this->assertEquals($out, $this->collection);
     }
 

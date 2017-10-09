@@ -29,6 +29,10 @@ class DomainsTest extends CollectionTestCase
      */
     protected $site;
     /**
+     * @var string
+     */
+    protected $url;
+    /**
      * @var Workflows
      */
     protected $workflows;
@@ -48,6 +52,7 @@ class DomainsTest extends CollectionTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->site->id = 'site id';
+        $this->url = "sites/{$this->site->id}/environments/{$this->environment->id}/domains";
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -70,11 +75,12 @@ class DomainsTest extends CollectionTestCase
      */
     public function testCreate()
     {
+        $domain = 'dev.example.com';
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/{$this->site->id}/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'put']);
+            ->with("{$this->url}/$domain", ['method' => 'put',]);
 
-        $this->collection->create('dev.example.com');
+        $this->assertNull($this->collection->create($domain));
     }
 
     /**
@@ -82,6 +88,22 @@ class DomainsTest extends CollectionTestCase
      */
     public function testFetchWithRecommendations()
     {
+        $dummy_data = [
+            (object)['id' => 'domain.com', 'type' => 'custom',]
+        ];
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with(
+                $this->url,
+                [
+                    'options' => ['method' => 'get',],
+                    'query' => ['hydrate' => ['as_list', 'recommendations',],],
+                ]
+            )
+            ->willReturn(['data' => $dummy_data,]);
 
+        $out = $this->collection->fetchWithRecommendations();
+        $this->assertEquals($this->collection, $out);
+        $this->assertEquals($this->collection->getData(), $dummy_data);
     }
 }

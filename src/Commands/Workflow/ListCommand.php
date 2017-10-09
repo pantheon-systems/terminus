@@ -42,7 +42,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function wfList($site_id)
     {
         $site = $this->getSite($site_id);
-        $workflows = $site->getWorkflows()->fetch(['paged' => false])->serialize();
+        $workflows = $site->getWorkflows()->setPaging(false)->fetch()->serialize();
 
         if (count($workflows) == 0) {
             $this->log()->warning(

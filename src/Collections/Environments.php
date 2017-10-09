@@ -55,7 +55,7 @@ class Environments extends SiteOwnedCollection
      */
     public function ids()
     {
-        $ids = array_keys($this->getMembers());
+        $ids = array_keys($this->all());
 
         //Reorder environments to put dev/test/live first
         $default_ids = ['dev', 'test', 'live'];
@@ -72,13 +72,11 @@ class Environments extends SiteOwnedCollection
      */
     public function multidev()
     {
-        $environments = array_filter(
-            $this->getMembers(),
-            function ($environment) {
-                return $environment->isMultidev();
-            }
-        );
-        return $environments;
+        $multidev_envs = $this->filter(function ($environment) {
+            return $environment->isMultidev();
+        })->all();
+        $this->reset();
+        return $multidev_envs;
     }
 
     /**
@@ -90,7 +88,7 @@ class Environments extends SiteOwnedCollection
     {
         $site_is_frozen = $this->getSite()->isFrozen();
         $models = [];
-        foreach ($this->getMembers() as $id => $model) {
+        foreach ($this->all() as $id => $model) {
             if (!$site_is_frozen || !in_array($id, ['test', 'live',])) {
                 $models[$id] = $model->serialize();
             }

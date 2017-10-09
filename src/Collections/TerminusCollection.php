@@ -171,42 +171,6 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
-     * Returns an array of data where the keys are the attribute $key and the
-     *   values are the attribute $value
-     *
-     * @param string $key Name of attribute to make array keys
-     * @param mixed $value Name(s) of attribute(s) to comprise array values
-     * @return array Array rendered as requested
-     *         $this->attribute->$key = $this->attribute->$value
-     */
-    public function listing($key = 'id', $value = 'name')
-    {
-        $models = $this->all();
-        $members = array_combine(
-            array_map(
-                function ($member) use ($key) {
-                    return $member->get($key);
-                },
-                $models
-            ),
-            array_map(
-                function ($member) use ($value) {
-                    if (is_scalar($value)) {
-                        return $member->get($value);
-                    }
-                    $list = [];
-                    foreach ($value as $item) {
-                        $list[$item] = $member->get($item);
-                    }
-                    return $list;
-                },
-                $models
-            )
-        );
-        return $members;
-    }
-
-    /**
      * Resets the model array for reprocessing of the collection data
      *
      * @return $this
@@ -237,27 +201,5 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     public function setData(array $data = [])
     {
         $this->data = $data;
-    }
-
-    /**
-     * Retrieves the data for this collection
-     *
-     * @return TerminusModel[]
-     * @deprecated 1.5.1-dev Use getData()
-     */
-    protected function getCollectionData()
-    {
-        return $this->getData();
-    }
-
-    /**
-     * Retrieves all members of this collection
-     *
-     * @return TerminusModel[]
-     * @deprecated 1.5.1-dev Use all()
-     */
-    protected function getMembers()
-    {
-        return $this->all();
     }
 }

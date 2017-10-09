@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 - `domain:dns` has returns a new field, `detected_value`, which indicates the live DNS settings for a given domain. (#1756)
 - `domain:dns` has returns a new field, `status`, which indicates whether live DNS settings for a given domain match the recommended setting. (#1756)
 - Added new command `site:upstream:clear-cache` to clear code caches on a site. (#1762)
+- `TerminusCollection::reset()` to reset the model array (after filtering or sorting). (#1779)
 
 ### Fixed
 - Changed the Domains collection to use a newer API call, fixing `domain:dns`. (#1756)
@@ -13,6 +14,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Removed
 - Removed the now-obsolete `Domains::setHydration(string)` function. (#1756)
+- Removed `TerminusCollection::listing(string, string)`. (#1779)
+- Removed the `Loadbalancer` model. (#1779)
+- Removed the `Loadbalancers` collection. (#1779)
 
 ### Changed
 - `multidev:create` is now checked for whether the site is frozen before attempting to execute. (#1761)
@@ -22,6 +26,7 @@ All notable changes to this project will be documented in this file. This projec
 - `https:info` now lists `id`, `type`, `status`, `status_message`, and `deleteable` attributes. (#1763)
 - `https:info` emits a `RowsOfFields` object instead of a `PropertyList`. (#1763)
 - `domain:dns` now emits an info log instead of a warning. (#1772)
+- `TerminusCollection::fetch()` no longer accepts an array of options. Use `setData(array)` to pass in data and `setFetchArgs(array)` for the same functionality. (#1779)
 
 ### Deprecated
 - `Workflow:operations()` is deprecated. Use the `Workflow::getOperations()` to retrieve workflow operations. (#1769)

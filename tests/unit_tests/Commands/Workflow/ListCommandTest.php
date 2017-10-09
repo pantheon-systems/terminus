@@ -29,8 +29,12 @@ class ListCommandTest extends WorkflowCommandTest
     public function testListCommand()
     {
         $this->workflows->expects($this->once())
+            ->method('setPaging')
+            ->with(false)
+            ->willReturn($this->workflows);
+        $this->workflows->expects($this->once())
             ->method('fetch')
-            ->with($this->equalTo(['paged' => false,]))
+            ->with()
             ->willReturn($this->workflows);
         $this->workflows->expects($this->once())
             ->method('serialize')
@@ -54,8 +58,12 @@ class ListCommandTest extends WorkflowCommandTest
         $site = 'site_name';
 
         $this->workflows->expects($this->once())
+            ->method('setPaging')
+            ->with(false)
+            ->willReturn($this->workflows);
+        $this->workflows->expects($this->once())
             ->method('fetch')
-            ->with($this->equalTo(['paged' => false,]))
+            ->with()
             ->willReturn($this->workflows);
         $this->workflows->expects($this->once())
             ->method('serialize')
