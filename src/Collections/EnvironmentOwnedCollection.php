@@ -8,7 +8,7 @@ use Pantheon\Terminus\Models\Environment;
  * Class EnvironmentOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-abstract class EnvironmentOwnedCollection extends TerminusCollection
+abstract class EnvironmentOwnedCollection extends APICollection
 {
     /**
      * @var Environment

@@ -64,7 +64,7 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
      */
     public function deleteAll()
     {
-        foreach ($this->getMembers() as $token) {
+        foreach ($this->all() as $token) {
             $token->delete();
         }
     }
@@ -72,12 +72,15 @@ class SavedTokens extends TerminusCollection implements ConfigAwareInterface, Da
     /**
      * @inheritdoc
      */
-    protected function getCollectionData($options = [])
+    public function getData()
     {
-        $tokens = [];
-        foreach ($this->getDataStore()->keys() as $key) {
-            $tokens[] = (object)$this->getDataStore()->get($key);
+        if (empty(parent::getData())) {
+            $tokens = [];
+            foreach ($this->getDataStore()->keys() as $key) {
+                $tokens[] = (object)$this->getDataStore()->get($key);
+            }
+            $this->setData($tokens);
         }
-        return $tokens;
+        return parent::getData();
     }
 }

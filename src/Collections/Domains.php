@@ -29,7 +29,7 @@ class Domains extends EnvironmentOwnedCollection
      */
     public function create($domain)
     {
-        $url = $this->replaceUrlTokens("{$this->url}/") . rawurlencode($domain);
+        $url = $this->getUrl() . '/' . rawurlencode($domain);
         $this->request->request($url, ['method' => 'put',]);
     }
 
@@ -41,32 +41,7 @@ class Domains extends EnvironmentOwnedCollection
      */
     public function fetchWithRecommendations($options = [])
     {
-        $options = array_merge(
-            $options,
-            [
-                'fetch_args' => [
-                    'query' => [
-                       'hydrate' => ['as_list', 'recommendations',],
-                    ],
-                ],
-            ]
-        );
-        return $this->fetch($options);
-    }
-
-    /**
-     * Does the Domains collection contain the given domain?
-     *
-     * @param $domain
-     * @return bool True if the domain exists in the collection.
-     */
-    public function has($domain)
-    {
-        try {
-            $this->get($domain);
-            return true;
-        } catch (TerminusNotFoundException $e) {
-            return false;
-        }
+        $this->setFetchArgs(['query' => ['hydrate' => ['as_list', 'recommendations',],],]);
+        return $this->fetch();
     }
 }

@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Pantheon\Terminus\Models\WorkflowOperation;
-use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
 
 /**
@@ -11,7 +10,7 @@ use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\LogsCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
-class LogsCommandTest extends WorkflowCommandTest
+class LogsCommandTest extends InfoCommandTest
 {
     /**
      * @var WorkflowOperation
@@ -33,10 +32,6 @@ class LogsCommandTest extends WorkflowCommandTest
             ->disableOriginalConstructor()
             ->getMock();
         $this->site_name = 'Site Name';
-        $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->with()
-            ->willReturn($this->workflows);
 
         $this->workflow->expects($this->once())
             ->method('getOperations')

@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\UnitTests\Commands\Workflow\WorkflowCommandTest;
 use Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand;
 
 /**
@@ -11,7 +10,7 @@ use Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand;
  * Testing class for Pantheon\Terminus\Commands\Workflow\Info\OperationsCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Workflow\Info
  */
-class OperationsCommandTest extends WorkflowCommandTest
+class OperationsCommandTest extends InfoCommandTest
 {
     /**
      * @var string
@@ -27,10 +26,6 @@ class OperationsCommandTest extends WorkflowCommandTest
 
         $this->site_name = 'Site Name';
 
-        $this->workflows->expects($this->once())
-            ->method('fetch')
-            ->with()
-            ->willReturn($this->workflows);
         $this->workflow->expects($this->once())
             ->method('getOperations')
             ->with()

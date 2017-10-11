@@ -2,13 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Collections;
 
-use Pantheon\Terminus\Collections\Upstreams;
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\Models\OrganizationUpstream;
 
 /**
  * Class OrganizationUpstreamsTest
@@ -21,18 +17,6 @@ class OrganizationUpstreamsTest extends CollectionTestCase
      * @var Organization
      */
     protected $organization;
-    /**
-     * @var User
-     */
-    protected $user;
-    /**
-     * @var UserOrganizationMembership
-     */
-    protected $user_org_membership;
-    /**
-     * @var UserOrganizationMemberships
-     */
-    protected $user_org_memberships;
 
     /**
      * @inheritdoc
@@ -43,23 +27,9 @@ class OrganizationUpstreamsTest extends CollectionTestCase
         $this->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user_org_membership = $this->getMockBuilder(UserOrganizationMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user_org_memberships = $this->getMockBuilder(UserOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->organization->id = 'org id';
 
-        $this->user->method('getOrganizationMemberships')
-            ->with()
-            ->willReturn($this->user_org_memberships);
-        $this->user_org_membership->method('getOrganization')
-            ->willReturn($this->organization);
-
-        $this->collection = new Upstreams(['user' => $this->user,]);
+        $this->collection = new OrganizationUpstreams(['organization' => $this->organization,]);
         $this->collection->setContainer($this->container);
     }
 
@@ -69,17 +39,17 @@ class OrganizationUpstreamsTest extends CollectionTestCase
     public function testFilterByName()
     {
         $data = [
-            'a' => (object)['id' => 'a', 'label' => 'WordPress', 'organization_id' => '',],
-            'b' => (object)['id' => 'b', 'label' => 'Drupal 7', 'organization_id' => '',],
-            'c' => (object)['id' => 'c', 'label' => 'Drupal8', 'organization_id' => '',],
+            'a' => (object)['id' => 'a', 'label' => 'WordPress',],
+            'b' => (object)['id' => 'b', 'label' => 'Drupal 7',],
+            'c' => (object)['id' => 'c', 'label' => 'Drupal8',],
         ];
         $i = 0;
         foreach ($data as $model_data) {
             $options = ['collection' => $this->collection, 'id' => $model_data->id,];
             $this->container->expects($this->at($i++))
                 ->method('get')
-                ->with(Upstream::class, [$model_data, $options,])
-                ->willReturn(new Upstream($model_data, $options));
+                ->with(OrganizationUpstream::class, [$model_data, $options,])
+                ->willReturn(new OrganizationUpstream($model_data, $options));
         }
         foreach ($data as $model_data) {
             $this->collection->add($model_data);

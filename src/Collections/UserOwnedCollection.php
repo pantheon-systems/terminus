@@ -9,7 +9,7 @@ use Pantheon\Terminus\Friends\UserTrait;
  * Class UserOwnedCollection
  * @package Pantheon\Terminus\Collections
  */
-abstract class UserOwnedCollection extends TerminusCollection implements UserInterface
+abstract class UserOwnedCollection extends APICollection implements UserInterface
 {
     use UserTrait;
 

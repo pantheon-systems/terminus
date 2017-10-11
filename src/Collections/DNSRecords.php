@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\DNSRecord;
  * Class DNSRecords
  * @package Pantheon\Terminus\Collections
  */
-class DNSRecords extends FetchlessCollection implements DomainInterface
+class DNSRecords extends TerminusCollection implements DomainInterface
 {
     use DomainTrait;
 

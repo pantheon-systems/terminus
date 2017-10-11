@@ -47,10 +47,10 @@ class MachineTokenDeleteAllCommandTest extends MachineTokenCommandTest
 
         $tokens = $this->getMockBuilder(SavedTokens::class)
           ->disableOriginalConstructor()
-          ->setMethods(['getMembers'])
+          ->setMethods(['all',])
           ->getMock();
         $tokens->expects($this->any())
-          ->method('getMembers')
+          ->method('all')
           ->willReturn([$token, $token2]);
 
         $this->session->expects($this->any())
