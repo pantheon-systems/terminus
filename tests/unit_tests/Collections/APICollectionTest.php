@@ -65,4 +65,16 @@ class APICollectionTest extends CollectionTestCase
         }, $data);
         $this->assertEquals($expected, $collection->serialize());
     }
+
+    /**
+     * Tests APICollection::setPaging(bool) and APICollection::isPaged()
+     */
+    public function testPaging()
+    {
+        $collection = $this->getMockForAbstractClass(APICollection::class);
+
+        $this->assertEquals($collection, $collection->setPaging(false));
+        $this->assertTrue($collection->setPaging(true)->isPaged());
+        $this->assertFalse($collection->setPaging(false)->isPaged());
+    }
 }

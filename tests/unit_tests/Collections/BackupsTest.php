@@ -479,7 +479,6 @@ class BackupsTest extends CollectionTestCase
         $i = 0;
         foreach ((array)$this->backup_data as $id => $data) {
             if (isset($data->filename)) {
-                $data->id = $id;
                 $this->container->expects($this->at($i++))
                     ->method('get')
                     ->with(
@@ -489,7 +488,12 @@ class BackupsTest extends CollectionTestCase
                             ['id' => $id, 'collection' => $backups,]
                         ]
                     )
-                    ->willReturn(new Backup($data, ['collection' => $backups,]));
+                    ->willReturn(
+                        new Backup(
+                            (object)array_merge((array)$data, compact('id')),
+                            ['collection' => $backups,]
+                        )
+                    );
             }
         }
         return $backups;
