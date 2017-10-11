@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+
 ## 1.6.0 - 2017-10-11
 ### Added
 - `domain:dns` has returns a new field, `detected_value`, which indicates the live DNS settings for a given domain. (#1756)
@@ -29,7 +31,7 @@ All notable changes to this project will be documented in this file. This projec
 - `TerminusCollection::fetch()` no longer accepts an array of options. Use `setData(array)` to pass in data and `setFetchArgs(array)` for the same functionality. (#1779)
 
 ### Deprecated
-- `Workflow:operations()` is deprecated. Use the `Workflow::getOperations()` to retrieve workflow operations. (#1769)
+- `Workflow::operations()` is deprecated. Use the `Workflow::getOperations()` to retrieve workflow operations. (#1769)
 
 ## 1.5.0 - 2017-08-17
 ### Changed
