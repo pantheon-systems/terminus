@@ -253,9 +253,6 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 usleep($sleep * 1000);
             }
         }
-
-        // Retry timeout exceeded. Throw an error.
-        new TerminusException('Unable to complete https request. Maximum retry timeout exceeded after {tries} attempts.', compact('tries'));
     }
 
     /**
