@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\TooManyRedirectsException;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerAwareInterface;
@@ -124,21 +126,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      */
     public function request($path, array $options = [])
     {
-        $response = $this->send($path, $options);
-        $body = json_decode($response->getBody()->getContents());
-        $data = [
-            'data' => $body,
-            'headers' => $response->getHeaders(),
-            'status_code' => $response->getStatusCode(),
-        ];
-        $this->logger->debug(
-            self::DEBUG_RESPONSE_STRING,
-            [
-                'data' => json_encode($this->stripSensitiveInfo((array)$body)),
-                'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
-                'status_code' => $data['status_code'],
-            ]
-        );
+        $data = $this->send($path, $options);
         return $data;
     }
 
@@ -199,9 +187,75 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         error_reporting(E_ALL ^ E_WARNING);
         $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
         error_reporting(E_ALL);
-        $response = $client->send($request);
+        $response = $this->sendWithRetry($client, $request);
 
         return $response;
+    }
+
+    /**
+     * Send the request using the Guzzle client. Retry the request if a server or network error occurs.
+     *
+     * @param Client $client
+     * @param HttpRequest $request
+     * @return array
+     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     */
+    private function sendWithRetry($client, $request)
+    {
+
+        $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
+        $retry_multiplier = $this->getConfig()->get('http_retry_backoff_multiplier', 2);
+        $retry_jitter = $this->getConfig()->get('http_retry_jitter_ms', 100);
+        $retry_max = $this->getConfig()->get('http_max_retries', 5);
+
+        $tries = 0;
+        while (true) {
+            $tries++;
+
+            try {
+                $response = $client->send($request);
+                $body = json_decode($response->getBody()->getContents());
+                $data = [
+                  'data' => $body,
+                  'headers' => $response->getHeaders(),
+                  'status_code' => $response->getStatusCode(),
+                ];
+                $this->logger->debug(
+                    self::DEBUG_RESPONSE_STRING,
+                    [
+                    'data' => json_encode($this->stripSensitiveInfo((array)$body)),
+                    'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
+                    'status_code' => $data['status_code'],
+                    ]
+                );
+
+                return $data;
+            } catch (\Exception $e) {
+                // Don't retry on Client errors or redirect loops.
+                if ($e instanceof ClientException or $e instanceof TooManyRedirectsException) {
+                    throw $e;
+                }
+
+                // If we're out of retries then throw an error.
+                if ($tries > $retry_max) {
+                    throw new TerminusException('HTTPS request failed with error {error}. Maximum retry attempts reached.', ['error' => $e->getMessage()]);
+                }
+
+                // For server or connection errors, retry the request until we have reached our maximum retries.
+                // Sleep for a specified interval. Jitter is added to prevent clients syncing up accidentally.
+                $sleep = $retry_interval + rand(0, $retry_jitter);
+
+                // Increase the retry interval so that we're backing off request to prevent overloading
+                $retry_interval = $retry_interval * $retry_multiplier;
+                $this->logger->warning('HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..', ['error' => $e->getMessage(), 'sleep' => $sleep]);
+
+                // Sleep the specified number if milliseconds.
+                usleep($sleep * 1000);
+            }
+        }
+
+        // Retry timeout exceeded. Throw an error.
+        new TerminusException('Unable to complete https request. Maximum retry timeout exceeded after {tries} attempts.', compact('tries'));
     }
 
     /**

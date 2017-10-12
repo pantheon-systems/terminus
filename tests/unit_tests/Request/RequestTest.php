@@ -3,6 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use GuzzleHttp\Psr7\Response;
@@ -14,6 +16,7 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\Terminus;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -108,6 +111,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->config->set('version', $terminusVersion);
         $this->config->set('script', $script);
         $this->config->set('php_version', $phpVersion);
+
+
+        $this->config->set('http_retry_delay_ms', 10);
+        $this->config->set('http_retry_backoff_multiplier', 2);
+        // Remove jitter since it's hard to test randomness.
+        $this->config->set('http_retry_jitter_ms', 0);
+        $this->config->set('http_max_retries', 3);
 
         $this->container = $this->getMock(Container::class);
         $this->session = $this->getMockBuilder(Session::class)
@@ -208,6 +218,137 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    public function testRequestRetryFails()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $this->request_headers = array_merge($this->request_headers);
+        $request_options = [$method, $uri, $this->request_headers, null,];
+
+        $this->container->expects($this->at(0))
+          ->method('get')
+          ->with(Client::class, [$this->client_options,])
+          ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+          ->method('get')
+          ->with(HttpRequest::class, $request_options)
+          ->willReturn($this->http_request);
+
+        $e = new ServerException('Something bad happened', $this->http_request);
+
+        $this->client->expects($this->exactly(4))
+          ->method('send')
+          ->with($this->http_request)
+          ->will($this->throwException($e));
+
+        foreach ([1 => 10, 2 => 20, 3 => 40] as $at => $sleep) {
+            $this->logger->expects($this->at($at))
+              ->method('warning')
+              ->with(
+                  'HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..',
+                  [
+                  'error' => 'Something bad happened',
+                  'sleep' => $sleep
+                  ]
+              );
+        }
+
+        $this->setExpectedException(TerminusException::class, "HTTPS request failed with error Something bad happened. Maximum retry attempts reached.");
+
+        $this->request->request($uri, $request_options);
+    }
+
+    public function testRequestDontRetry()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $this->request_headers = array_merge($this->request_headers);
+        $request_options = [$method, $uri, $this->request_headers, null,];
+
+        $this->container->expects($this->at(0))
+          ->method('get')
+          ->with(Client::class, [$this->client_options,])
+          ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+          ->method('get')
+          ->with(HttpRequest::class, $request_options)
+          ->willReturn($this->http_request);
+
+        $e = new ClientException('Something bad happened. And it is your fault.', $this->http_request);
+
+        $this->client->expects($this->exactly(1))
+          ->method('send')
+          ->with($this->http_request)
+          ->will($this->throwException($e));
+
+        $this->setExpectedException(ClientException::class, "Something bad happened. And it is your fault.");
+
+        $this->request->request($uri, $request_options);
+    }
+
+
+    public function testRequestRetrySucceeds()
+    {
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $this->request_headers = array_merge($this->request_headers);
+        $request_options = [$method, $uri, $this->request_headers, null,];
+
+        $this->container->expects($this->at(0))
+          ->method('get')
+          ->with(Client::class, [$this->client_options,])
+          ->willReturn($this->client);
+        $this->container->expects($this->at(1))
+          ->method('get')
+          ->with(HttpRequest::class, $request_options)
+          ->willReturn($this->http_request);
+
+        $e = new ServerException('Something bad happened', $this->http_request);
+
+        $message = $this->getMock(Response::class);
+        $body = $this->getMockBuilder(Stream::class)
+          ->disableOriginalConstructor()
+          ->getMock();
+        $body->method('getContents')->willReturn(json_encode($this->response_data));
+        $message->expects($this->once())
+          ->method('getBody')
+          ->willReturn($body);
+        $message->expects($this->once())
+          ->method('getHeaders')
+          ->willReturn($this->response_headers);
+        $message->expects($this->once())
+          ->method('getStatusCode')
+          ->willReturn(200);
+
+
+        // Fail the first time
+        $this->client->expects($this->at(0))
+          ->method('send')
+          ->with($this->http_request)
+          ->will($this->throwException($e));
+
+        // Succeed on retry
+        $this->client->expects($this->at(1))
+          ->method('send')
+          ->with($this->http_request)
+          ->willReturn($message);
+
+        $actual = $this->request->request($uri, $request_options);
+
+        $expected = [
+          'data' => (object)$this->response_data,
+          'headers' => $this->response_headers,
+          'status_code' => 200,
+        ];
+        $this->assertEquals($expected, $actual);
+    }
+
     /**
      * Tests Request::request() when there is sensitive information to send to the debug log
      */
@@ -224,17 +365,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $debug_expected_body['machine_token'] = Request::HIDDEN_VALUE_REPLACEMENT;
         $request_options = [$method, $uri, $headers, json_encode($body),];
 
-        $this->logger->expects($this->at(0))
-            ->method('debug')
-            ->with(
-                Request::DEBUG_REQUEST_STRING,
-                [
-                    'headers' => json_encode($debug_expected_headers),
-                    'uri' => $uri,
-                    'method' => $method,
-                    'body' => json_encode($debug_expected_body),
-                ]
-            );
         $this->logger->expects($this->at(1))
             ->method('debug')
             ->with(
