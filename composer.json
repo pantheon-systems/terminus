@@ -50,6 +50,14 @@
     "squizlabs/php_codesniffer": "^2.7",
     "satooshi/php-coveralls": "^1.0"
   },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "platform": {
+      "php": "5.5.9"
+    }
+  },
   "extra": {
     "branch-alias": {
         "dev-master": "1.x-dev"
