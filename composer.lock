@@ -74,12 +74,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/annotated-command.git",
-                "reference": "b50bdc406ad3d437fa6dba987d5f4044b39c7fcd"
+                "reference": "1bf9f0a6e8ed50540672f9c8798778a6c0c93fc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/b50bdc406ad3d437fa6dba987d5f4044b39c7fcd",
-                "reference": "b50bdc406ad3d437fa6dba987d5f4044b39c7fcd",
+                "url": "https://api.github.com/repos/consolidation/annotated-command/zipball/1bf9f0a6e8ed50540672f9c8798778a6c0c93fc1",
+                "reference": "1bf9f0a6e8ed50540672f9c8798778a6c0c93fc1",
                 "shasum": ""
             },
             "require": {
@@ -117,7 +117,7 @@
                 }
             ],
             "description": "Initialize Symfony Console commands from annotated command class methods.",
-            "time": "2017-10-12T23:31:59+00:00"
+            "time": "2017-10-13T05:08:10+00:00"
         },
         {
             "name": "consolidation/config",
