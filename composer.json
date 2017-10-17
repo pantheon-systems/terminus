@@ -14,8 +14,7 @@
     "psy/psysh": "^0.8",
     "symfony/console": "^3.3",
     "symfony/finder": "~2.7|^3.2",
-    "symfony/yaml": "~2.1|^3.2",
-    "consolidation/annotated-command": "2.4.11"
+    "symfony/yaml": "~2.1|^3.2"
   },
   "autoload": {
     "psr-4": {
@@ -49,6 +48,14 @@
     "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.7",
     "satooshi/php-coveralls": "^1.0"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "platform": {
+      "php": "5.5.9"
+    }
   },
   "extra": {
     "branch-alias": {
