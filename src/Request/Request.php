@@ -126,19 +126,6 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      */
     public function request($path, array $options = [])
     {
-        $data = $this->send($path, $options);
-        return $data;
-    }
-
-    /**
-     * Sends a request to the API
-     *
-     * @param string $path API path (URL)
-     * @param array $arg_options Request parameters
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function send($path, array $options = [])
-    {
         // Set headers
         $headers = $this->getDefaultHeaders();
         if (isset($options['headers'])) {
@@ -169,8 +156,8 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
 
         $client = $this->getContainer()->get(Client::class, [[
-            'base_uri' => $base_uri,
-            RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
+           'base_uri' => $base_uri,
+           RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
         ]]);
 
         $this->logger->debug(
