@@ -42,7 +42,7 @@ class SearchCommand extends PluginBaseCommand
         // @TODO: Bonus: Add the ability to search and prompt to install new plugins.
 
         $results = [];
-        exec("composer search -t terminus-plugin {$keyword}", $messages);
+        exec("composer search -t terminus-plugin -- {$keyword}", $messages);
         foreach ($messages as $message) {
             list($project, $description) = explode(' ', $message, 2);
             $status = $this->checkStatus($project);
