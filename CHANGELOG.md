@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- Added a `last_frozen_at` field to the output of `site:info` and the `Site::serialize()` function. (#1788)
 
 ## 1.6.1 - 2017-11-01
 ### Changed
