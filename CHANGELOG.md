@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
+## 1.6.1 - 2017-11-01
+### Changed
+- Added exponentially backing-off retries to HTTP requests. (#1782)
+
 ## 1.6.0 - 2017-10-11
 ### Added
 - `domain:dns` has returns a new field, `detected_value`, which indicates the live DNS settings for a given domain. (#1756)

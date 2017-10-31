@@ -64,8 +64,8 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
             'invalid-wrong-composer-type' => 'The composer.json must contain a "type" attribute with the value "terminus-plugin"',
         ];
         $valid_paths = [
-            'with-namespace',
             'without-namespace',
+            'with-namespace',
         ];
 
         $log = 0;

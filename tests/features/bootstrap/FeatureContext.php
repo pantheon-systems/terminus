@@ -948,10 +948,10 @@ class FeatureContext implements Context
         foreach ($unformatted_tags as $tag) {
             $tag_elements = explode(' ', $tag);
             $index        = null;
-            if (count($tag_elements < 1)) {
+            if (count($tag_elements) < 1) {
                 $index = array_shift($tag_elements);
             }
-            if (count($tag_elements == 1)) {
+            if (count($tag_elements) == 1) {
                 $tag_elements = array_shift($tag_elements);
             }
             $tags[$index] = $tag_elements;
