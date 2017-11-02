@@ -79,7 +79,8 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         $pluginList = $this->discovery->discover();
         $actual = $this->composeActualCommandFileDirectories($pluginList);
         $expected = $this->composeExpectedCommandFileDirectories($valid_paths, $this->plugins_dir);
-        $this->assertEquals($expected, $actual);
+        $reverse_expected = $this->composeExpectedCommandFileDirectories($valid_paths, $this->plugins_dir, true);
+        $this->assertTrue(($expected == $actual) || ($reverse_expected == $actual));
     }
 
     public function testDiscoverFailDirDNE()
@@ -99,14 +100,18 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         return $actual;
     }
 
-    protected function composeExpectedCommandFileDirectories($valid_paths, $dir)
+    protected function composeExpectedCommandFileDirectories($valid_paths, $dir, $reverse = false)
     {
-        return implode(',', array_map(
+        $array = array_map(
             function ($item) use ($dir) {
                 return "$dir$item/src";
             },
             $valid_paths
-        ));
+        );
+        if ($reverse) {
+            $array = array_reverse($array);
+        }
+        return implode(',', $array);
     }
 
     protected function callProtected($object, $method, $args = [])
