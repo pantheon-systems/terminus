@@ -55,7 +55,7 @@ before requiring it.
 This only installs stable versions of Terminus, and will install the latest 0.13.x release until 1.0 is out of beta.
 If you do not have `homebrew-php` already tapped, here are the commands for the taps:
 ```bash
-brew tap homebrew/dupes ; brew tap homebrew/versions ; brew tap homebrew/php
+brew tap homebrew/php
 ```
 And after you're all tapped out, install Terminus with this command:
 ```bash
