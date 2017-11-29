@@ -13,14 +13,4 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class TerminusStyle extends SymfonyStyle
 {
-    /**
-     * TerminusStyle constructor.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     */
-    public function __construct(InputInterface $input, OutputInterface $output)
-    {
-        parent::__construct($input, $output);
-    }
 }
