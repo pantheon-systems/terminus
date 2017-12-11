@@ -4,7 +4,7 @@ Contribute
 Creating Issues
 ---------------
 
-Run `terminus cli version` to confirm you are [running the latest version](https://github.com/pantheon-systems/terminus/releases) before opening a new issue.
+Run `terminus self:info` to confirm you are [running the latest version](https://github.com/pantheon-systems/terminus/releases) before opening a new issue.
 
 Setting Up
 ----------
