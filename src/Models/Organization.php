@@ -123,10 +123,10 @@ class Organization extends TerminusModel implements
      */
     public function getUpstreams()
     {
-        if (empty($this->workflows)) {
-            $this->workflows = $this->getContainer()->get(OrganizationUpstreams::class, [['organization' => $this,],]);
+        if (empty($this->upstreams)) {
+            $this->upstreams = $this->getContainer()->get(OrganizationUpstreams::class, [['organization' => $this,],]);
         }
-        return $this->workflows;
+        return $this->upstreams;
     }
 
     /**
