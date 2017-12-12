@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Collections\SiteAuthorizations;
 use Pantheon\Terminus\Friends\OrganizationsInterface;
 use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Robo\Common\ConfigAwareTrait;
@@ -59,13 +60,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     protected $user_memberships;
     /**
-     * @var Workflows
+     * @var SiteAuthorizations
      */
-    private $workflows;
+    private $authorizations;
     /**
      * @var array
      */
     private $features;
+    /**
+     * @var Workflows
+     */
+    private $workflows;
 
     /**
      * Add a payment method to the given site
@@ -134,16 +139,15 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
-     * Creates a new site for migration
-     *
-     * @param string $upstream_id The UUID for the product to deploy.
-     * @return Workflow
+     * @return SiteAuthorizations
      */
-    public function setUpstream($upstream_id)
+    public function getAuthorizations()
     {
-        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
+        if (empty($this->authorizations)) {
+            $this->authorizations = $this->getContainer()->get(SiteAuthorizations::class, [['site' => $this,],]);
+        }
+        return $this->authorizations;
     }
-
 
     /**
      * @return Branches
@@ -372,6 +376,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function setOwner($user_id)
     {
         return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
+    }
+
+    /**
+     * Creates a new site for migration
+     *
+     * @param string $upstream_id The UUID for the product to deploy.
+     * @return Workflow
+     */
+    public function setUpstream($upstream_id)
+    {
+        return $this->getWorkflows()->create('switch_upstream', ['params' => ['upstream_id' => $upstream_id,],]);
     }
 
     /**

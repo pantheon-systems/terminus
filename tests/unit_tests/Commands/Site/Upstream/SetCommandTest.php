@@ -2,8 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
+use Pantheon\Terminus\Collections\SiteAuthorizations;
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Commands\Site\Upstream\SetCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\SiteAuthorization;
 use Pantheon\Terminus\Models\SiteUpstream;
 use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\User;
@@ -18,6 +21,10 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class SetCommandTest extends CommandTestCase
 {
+    /**
+     * @var SiteAuthorization
+     */
+    protected $authorizations;
     /**
      * @var Session
      */
@@ -54,6 +61,9 @@ class SetCommandTest extends CommandTestCase
     {
         parent::setUp();
 
+        $this->authorizations = $this->getMockBuilder(SiteAuthorizations::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -72,14 +82,10 @@ class SetCommandTest extends CommandTestCase
         $this->site_upstream->id = 'Site upstream ID';
         $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'label' => 'Upstream Name',];
 
-        $this->session->expects($this->once())
-            ->method('getUser')
+        $this->site->expects($this->once())
+            ->method('getAuthorizations')
             ->with()
-            ->willReturn($this->user);
-        $this->user->expects($this->once())
-            ->method('getUpstreams')
-            ->with()
-            ->willReturn($this->upstreams);
+            ->willReturn($this->authorizations);
 
         $this->command = new SetCommand($this->getConfig());
         $this->command->setSites($this->sites);
@@ -102,6 +108,10 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
             ->with()
@@ -151,6 +161,10 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(true);
         $this->site->expects($this->never())
             ->method('getUpstream');
         $this->logger->expects($this->never())
@@ -175,6 +189,10 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
             ->with()
@@ -198,6 +216,31 @@ class SetCommandTest extends CommandTestCase
     }
 
     /**
+     * Exercises the site:upstream:set command when the user does not have permission to do this
+     */
+    public function testSetInsufficientPermission()
+    {
+        $site_name = 'my-site';
+        $upstream_id = $this->upstream_data['id'];
+
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(false);
+        $this->site->expects($this->never())
+            ->method('getUpstream');
+        $this->site->expects($this->never())
+            ->method('setUpstream');
+        $this->setExpectedException(
+            TerminusException::class,
+            'You do not have permission to change the upstream of this site.'
+        );
+
+        $out = $this->command->set($site_name, $upstream_id);
+        $this->assertNull($out);
+    }
+
+    /**
      * Exercises the site:upstream:set command when the site being set did not have a valid previous upstream
      */
     public function testSetNoPreviousUpstream()
@@ -208,6 +251,10 @@ class SetCommandTest extends CommandTestCase
 
         $this->expectGetUpstream($upstream_id);
 
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
             ->with()
@@ -248,6 +295,12 @@ class SetCommandTest extends CommandTestCase
         $upstream_id = $this->upstream_data['id'];
         $exception_message = 'Error message';
 
+        $this->expectGetUpstreams();
+
+        $this->authorizations->expects($this->once())
+            ->method('can')
+            ->with('update_site_setting')
+            ->willReturn(true);
         $this->upstreams->expects($this->once())
             ->method('get')
             ->with($upstream_id)
@@ -269,6 +322,7 @@ class SetCommandTest extends CommandTestCase
      */
     protected function expectGetUpstream($upstream_id)
     {
+        $this->expectGetUpstreams();
         $this->upstreams->expects($this->once())
             ->method('get')
             ->with($upstream_id)
@@ -279,5 +333,17 @@ class SetCommandTest extends CommandTestCase
             ->willReturn($this->upstream_data['label']);
         $this->upstream->id = $this->upstream_data['id'];
         return $this->upstream;
+    }
+
+    protected function expectGetUpstreams()
+    {
+        $this->session->expects($this->once())
+            ->method('getUser')
+            ->with()
+            ->willReturn($this->user);
+        $this->user->expects($this->once())
+            ->method('getUpstreams')
+            ->with()
+            ->willReturn($this->upstreams);
     }
 }
