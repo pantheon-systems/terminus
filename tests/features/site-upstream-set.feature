@@ -22,3 +22,8 @@ Feature: Set a site's upstream
   Scenario: Failing to change the upstream of a site because the requested upstream cannot be found
     When I run "terminus site:upstream:set [[test_site_name]] invalid -v -y"
     Then I should get: "Could not find an upstream identified by invalid."
+
+  @vcr site-upstream-set-unauthorized.yml
+  Scenario: Failing to change the upstream of a site because the user is not authorized to make that change
+    When I run "terminus site:upstream:set [[test_site_name]] 'WordPress' -v -y"
+    Then I should get: "You do not have permission to change the upstream of this site."

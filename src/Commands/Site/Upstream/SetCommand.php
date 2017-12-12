@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site\Upstream;
 
 use Pantheon\Terminus\Commands\Site\SiteCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class SetCommand
@@ -10,21 +11,26 @@ use Pantheon\Terminus\Commands\Site\SiteCommand;
  */
 class SetCommand extends SiteCommand
 {
-  /**
-   * Changes a site's upstream.
-   *
-   * @authorize
-   *
-   * @command site:upstream:set
-   *
-   * @param string $site_name Site name
-   * @param string $upstream_id Upstream name or UUID
-   *
-   * @usage <site> <upstream_id> Updates <site>'s upstream to <upstream_id>.
-   */
+    /**
+     * Changes a site's upstream.
+     *
+     * @authorize
+     *
+     * @command site:upstream:set
+     *
+     * @param string $site_name Site name
+     * @param string $upstream_id Upstream name or UUID
+     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     *
+     * @usage <site> <upstream_id> Updates <site>'s upstream to <upstream_id>.
+     */
     public function set($site_name, $upstream_id)
     {
         $site = $this->getSite($site_name);
+        if (!$site->getAuthorizations()->can('update_site_setting')) {
+            throw new TerminusException('You do not have permission to change the upstream of this site.');
+        }
+
         $upstream = $this->session()->getUser()->getUpstreams()->get($upstream_id);
         $msg_params = ['site' => $site->getName(), 'upstream' => $upstream->get('label'),];
 
