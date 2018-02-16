@@ -949,7 +949,7 @@ class FeatureContext implements Context
             $tag_elements = explode(' ', $tag);
             $index        = null;
             // TODO: Fix this. The following two statements are erroneous but only are caught by PHP ^7.2. Fixing them breaks PHP-VCR.
-            if (count($tag_elements < 1)) {
+            if (count($tag_elements) > 1) {
                 $index = array_shift($tag_elements);
             }
             if (count($tag_elements) == 1) {

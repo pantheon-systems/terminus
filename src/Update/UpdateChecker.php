@@ -29,8 +29,10 @@ class UpdateChecker implements
     use LoggerAwareTrait;
 
     const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/'
-        . 'builds/installer.phar && php installer.phar update';
+    const INSTALL_COMMAND =
+        'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar';
+    const RUN_UPDATE_COMMAND = 'php installer.phar update';
+    const UPDATE_COMMAND = self::INSTALL_COMMAND . ' && ' . self::RUN_UPDATE_COMMAND;
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
 You are currently using version v{running_version}. 
