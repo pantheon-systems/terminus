@@ -174,7 +174,8 @@ class SSHBaseCommandTest extends CommandTestCase
             ->method('isInteractive')
             ->with()
             ->willReturn(true);
-        $this->assertFalse($this->command->useUseTty($input));
+        $useTty = $this->command->useUseTty($input);
+        $this->assertTrue(in_array($useTty, [false, null,]));
     }
 
     /**
