@@ -57,10 +57,10 @@ class DatabaseCommandTest extends CommandTestCase
           ->method('get')
           ->willReturn(null);
         $this->logger->expects($this->once())
-          ->method('log')->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Imported database to {site}.{env}.')
-          );
+        ->method('log')->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Imported database to {site}.{env}.')
+        );
 
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);

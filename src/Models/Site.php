@@ -226,7 +226,10 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function getOrganizationMemberships()
     {
         if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,],]);
+            $this->org_memberships = $this->getContainer()->get(
+                SiteOrganizationMemberships::class,
+                [['site' => $this,],]
+            );
         }
         return $this->org_memberships;
     }
@@ -238,7 +241,9 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function getPHPVersion()
     {
-        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
+        return !is_null($php_ver = $this->get('php_version'))
+            ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1)
+            : null;
     }
 
     /**
@@ -375,7 +380,10 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function setOwner($user_id)
     {
-        return $this->getWorkflows()->create('promote_site_user_to_owner', ['params' => compact('user_id'),]);
+        return $this->getWorkflows()->create(
+            'promote_site_user_to_owner',
+            ['params' => compact('user_id'),]
+        );
     }
 
     /**
@@ -399,10 +407,15 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     public function updateServiceLevel($service_level)
     {
         try {
-            return $this->getWorkflows()->create('change_site_service_level', ['params' => compact('service_level'),]);
+            return $this->getWorkflows()->create(
+                'change_site_service_level',
+                ['params' => compact('service_level'),]
+            );
         } catch (\Exception $e) {
             if ($e->getCode() == 403) {
-                throw new TerminusException('A payment method is required to increase the service level of this site.');
+                throw new TerminusException(
+                    'A payment method is required to increase the service level of this site.'
+                );
             }
             throw $e;
         }

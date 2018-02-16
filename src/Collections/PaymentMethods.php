@@ -44,7 +44,7 @@ class PaymentMethods extends UserOwnedCollection
                 'Could not locate a payment method identified by {id} on this account.',
                 compact('id')
             );
-        } else if (count($matches) > 1) {
+        } elseif (count($matches) > 1) {
             throw new TerminusException('More than one payment method matched {id}.', compact('id'));
         }
         return array_shift($matches);

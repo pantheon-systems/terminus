@@ -144,7 +144,12 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         }
 
         if (!empty($options['query'])) {
-            $uri .= '?' . http_build_query($options['query'], null, '&', PHP_QUERY_RFC3986);
+            $uri .= '?' . http_build_query(
+                $options['query'],
+                null,
+                '&',
+                PHP_QUERY_RFC3986
+            );
         }
 
         $body = $debug_body = null;
@@ -225,7 +230,10 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
                 // If we're out of retries then throw an error.
                 if ($tries > $retry_max) {
-                    throw new TerminusException('HTTPS request failed with error {error}. Maximum retry attempts reached.', ['error' => $e->getMessage()]);
+                    throw new TerminusException(
+                        'HTTPS request failed with error {error}. Maximum retry attempts reached.',
+                        ['error' => $e->getMessage(),]
+                    );
                 }
 
                 // For server or connection errors, retry the request until we have reached our maximum retries.
@@ -234,7 +242,10 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
                 // Increase the retry interval so that we're backing off request to prevent overloading
                 $retry_interval = $retry_interval * $retry_multiplier;
-                $this->logger->warning('HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..', ['error' => $e->getMessage(), 'sleep' => $sleep]);
+                $this->logger->warning(
+                    'HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..',
+                    ['error' => $e->getMessage(), 'sleep' => $sleep,]
+                );
 
                 // Sleep the specified number if milliseconds.
                 usleep($sleep * 1000);

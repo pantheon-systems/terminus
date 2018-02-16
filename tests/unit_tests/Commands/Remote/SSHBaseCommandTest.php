@@ -131,8 +131,9 @@ class SSHBaseCommandTest extends CommandTestCase
             ->with(
                 $this->equalTo('warning'),
                 $this->equalTo(
-                    'This environment is in read-only Git mode. If you want to make changes to the codebase of this site '
-                    . '(e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first.'
+                    'This environment is in read-only Git mode. If you want to make changes to the codebase of '
+                    . 'this site (e.g. updating modules or plugins), you will need to toggle into read/write SFTP '
+                    . 'mode first.'
                 )
             );
         $this->site->expects($this->any())->method('get')

@@ -98,7 +98,8 @@ class UpstreamStatusTest extends ModelTestCase
     }
 
     /**
-     * Tests UpstreamStatus::hasUpdates() when there are updates and the environment is test or live and the named env is outdated
+     * Tests UpstreamStatus::hasUpdates() when there are updates and the environment is test or live and the named env
+     * is outdated
      */
     public function testHasUpdates()
     {
@@ -112,7 +113,8 @@ class UpstreamStatusTest extends ModelTestCase
     }
 
     /**
-     * Tests UpstreamStatus::hasUpdates() when there are updates and the environment is test or live and the named env's parent is outdated
+     * Tests UpstreamStatus::hasUpdates() when there are updates and the environment is test or live and the named
+     * env's parent is outdated
      */
     public function testHasUpdatesFromParent()
     {

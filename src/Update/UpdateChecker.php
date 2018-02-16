@@ -17,7 +17,11 @@ use Robo\Contract\ConfigAwareInterface;
  * Class UpdateChecker
  * @package Pantheon\Terminus\Update
  */
-class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, DataStoreAwareInterface, LoggerAwareInterface
+class UpdateChecker implements
+    ConfigAwareInterface,
+    ContainerAwareInterface,
+    DataStoreAwareInterface,
+    LoggerAwareInterface
 {
     use ConfigAwareTrait;
     use ContainerAwareTrait;
@@ -25,7 +29,8 @@ class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, Da
     use LoggerAwareTrait;
 
     const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update';
+    const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/'
+        . 'builds/installer.phar && php installer.phar update';
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
 You are currently using version v{running_version}. 
@@ -47,7 +52,10 @@ EOT;
     {
         $running_version = $this->getRunningVersion();
         try {
-            $latest_version = $this->getContainer()->get(LatestRelease::class, [$this->getDataStore(),])->get('version');
+            $latest_version = $this->getContainer()->get(
+                LatestRelease::class,
+                [$this->getDataStore(),]
+            )->get('version');
         } catch (TerminusNotFoundException $e) {
             $this->logger->debug('Terminus has no saved release information.');
             return;

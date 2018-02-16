@@ -566,7 +566,10 @@ class EnvironmentTest extends ModelTestCase
             )
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(TerminusException::class, 'There was an problem disabling https for this environment.');
+        $this->setExpectedException(
+            TerminusException::class,
+            'There was an problem disabling https for this environment.'
+        );
         $this->model->disableHttpsCertificate();
     }
 
@@ -856,7 +859,8 @@ class EnvironmentTest extends ModelTestCase
         $expected = [
             'output' => "Terminus is in test mode. "
                 . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" $expectedCommand",
+                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "
+                . "\"AddressFamily inet\" $expectedCommand",
             'exit_code' => 0
         ];
 
@@ -932,7 +936,9 @@ class EnvironmentTest extends ModelTestCase
         $this->request->expects($this->once())
             ->method('request')
             ->with(
-                $this->equalTo("sites/{$this->model->getSite()->id}/environments/{$this->model->id}/add-ssl-cert"),
+                $this->equalTo(
+                    "sites/{$this->model->getSite()->id}/environments/{$this->model->id}/add-ssl-cert"
+                ),
                 $this->equalTo(['method' => 'POST', 'form_params' => $expected_params,])
             )
             ->willReturn($response);

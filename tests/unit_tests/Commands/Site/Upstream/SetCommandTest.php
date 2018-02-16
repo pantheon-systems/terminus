@@ -139,11 +139,11 @@ class SetCommandTest extends CommandTestCase
             ->willReturn(true);
 
         $this->logger->expects($this->at(1))
-          ->method('log')->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Set upstream for {site} to {upstream}'),
-              $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['label']])
-          );
+        ->method('log')->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Set upstream for {site} to {upstream}'),
+            $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['label']])
+        );
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);

@@ -62,10 +62,10 @@ class MachineTokenDeleteAllCommandTest extends MachineTokenCommandTest
 
         $this->logger->expects($this->once())
           ->method('log')
-          ->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Your saved machine tokens have been deleted and you have been logged out.')
-          );
+        ->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Your saved machine tokens have been deleted and you have been logged out.')
+        );
 
         $this->command->deleteAll();
     }

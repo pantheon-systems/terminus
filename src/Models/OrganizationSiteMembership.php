@@ -14,7 +14,10 @@ use Pantheon\Terminus\Friends\SiteJoinTrait;
  * Class OrganizationSiteMembership
  * @package Pantheon\Terminus\Models
  */
-class OrganizationSiteMembership extends TerminusModel implements ContainerAwareInterface, OrganizationInterface, SiteJoinInterface
+class OrganizationSiteMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    OrganizationInterface,
+    SiteJoinInterface
 {
     use ContainerAwareTrait;
     use OrganizationTrait;

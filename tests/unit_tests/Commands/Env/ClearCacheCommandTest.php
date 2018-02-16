@@ -45,10 +45,10 @@ class ClearCacheCommandTest extends EnvCommandTest
           ->willReturn(null);
         $this->logger->expects($this->once())
           ->method('log')
-          ->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Caches cleared on {site}.{env}.')
-          );
+        ->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Caches cleared on {site}.{env}.')
+        );
 
         $out = $this->command->clearCache("$site_name.{$this->environment->id}");
         $this->assertNull($out);

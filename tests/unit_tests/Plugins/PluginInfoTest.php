@@ -72,12 +72,16 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests PluginInfo failing to construct because the composer.json does not contain a terminus property in its extras
+     * Tests PluginInfo failing to construct because the composer.json does not contain a terminus property in its
+     * extras
      */
     public function testFailExtralessComposer()
     {
         $dir = $this->paths[5];
-        $this->setExpectedException(TerminusException::class, 'The composer.json must contain a "terminus" section in "extras"');
+        $this->setExpectedException(
+            TerminusException::class,
+            'The composer.json must contain a "terminus" section in "extras"'
+        );
         new PluginInfo($dir);
     }
 
@@ -99,7 +103,8 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $dir = $this->paths[7];
         $this->setExpectedException(
             TerminusException::class,
-            'The namespace "OrgName\\\\PluginName" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "OrgName\\\\PluginName\\\\"'
+            'The namespace "OrgName\\\\PluginName" in the composer.json autoload psr-4 section must end with a '
+            . 'namespace separator. Should be "OrgName\\\\PluginName\\\\"'
         );
         new PluginInfo($dir);
     }
@@ -174,8 +179,10 @@ class PluginInfoTest extends \PHPUnit_Framework_TestCase
         $plugin = new PluginInfo($this->paths[2]);
 
         $expected = [
-            $this->plugins_dir . 'with-namespace/src/Commands/NullCommand.php' => 'OrgName\\PluginName\\Commands\\NullCommand',
-            $this->plugins_dir . 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php' => 'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
+            $this->plugins_dir . 'with-namespace/src/Commands/NullCommand.php' =>
+                'OrgName\\PluginName\\Commands\\NullCommand',
+            $this->plugins_dir . 'with-namespace/src/Commands/OptionalCommandGroup/NullCommand.php' =>
+                'OrgName\\PluginName\\Commands\\OptionalCommandGroup\\NullCommand',
         ];
         $actual = $plugin->getCommandsAndHooks();
         $this->assertEquals($expected, $actual);

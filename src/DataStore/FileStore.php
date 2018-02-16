@@ -146,10 +146,13 @@ class FileStore implements DataStoreInterface
     {
         // Reality check to prevent stomping on the local filesystem if there is something wrong with the config.
         if (!$this->directory) {
-            throw new TerminusException('Could not save data to a file because the path setting is mis-configured.');
+            throw new TerminusException(
+                'Could not save data to a file because the path setting is mis-configured.'
+            );
         }
 
-        $writable = is_dir($this->directory) || (!file_exists($this->directory) && @mkdir($this->directory, 0777, true));
+        $writable = is_dir($this->directory)
+            || (!file_exists($this->directory) && @mkdir($this->directory, 0777, true));
         $writable = $writable && is_writable($this->directory);
         if (!$writable) {
             throw new TerminusException(

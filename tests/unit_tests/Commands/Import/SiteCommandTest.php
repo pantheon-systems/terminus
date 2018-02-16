@@ -110,7 +110,8 @@ class SiteCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:import command when the workflow throws an exception with a message other than "Successfully queued import_site"
+     * Exercises site:import command when the workflow throws an exception with a message other than "Successfully
+     * queued import_site"
      */
     public function testSiteImportUnspecifiedException()
     {

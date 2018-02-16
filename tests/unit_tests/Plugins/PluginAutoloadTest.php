@@ -112,7 +112,9 @@ class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
      * directly requires a component already (indirectly) provided by Terminus.
      *
      * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The plugin org/conflicting-dependencies-plugin requires the project consolidation/log, which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer remove consolidation/log' in the org/conflicting-dependencies-plugin plugin directory.
+     * @expectedExceptionMessage The plugin org/conflicting-dependencies-plugin requires the project consolidation/log,
+     *     which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer
+     *     remove consolidation/log' in the org/conflicting-dependencies-plugin plugin directory.
      */
     public function testPluginWithConflictingDependency()
     {
@@ -126,7 +128,8 @@ class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
      * indirectly requires a component already provided by Terminus.
      *
      * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The plugin org/nested-dependencies-plugin has installed the project consolidation/log: 1.0.0, but Terminus has installed
+     * @expectedExceptionMessage The plugin org/nested-dependencies-plugin has installed the project consolidation/log:
+     *     1.0.0, but Terminus has installed
      */
     public function testPluginWithConflictingNestedDependency()
     {

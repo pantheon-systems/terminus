@@ -23,9 +23,27 @@ class TerminusCollectionTest extends CollectionTestCase
         parent::setUp();
 
         $this->data = [
-            (object)['id' => 'op-id-1', 'type' => 'type', 'description' => 'an operation', 'result' => 'succeeded', 'duration' => 100,],
-            (object)['id' => 'op-id-2', 'type' => 'type2', 'description' => 'another operation', 'result' => null, 'duration' => 0,],
-            (object)['id' => 'op-id-3', 'type' => 'type', 'description' => 'more operation', 'result' => 'failed', 'duration' => 300,],
+            (object)[
+                'id' => 'op-id-1',
+                'type' => 'type',
+                'description' => 'an operation',
+                'result' => 'succeeded',
+                'duration' => 100,
+            ],
+            (object)[
+                'id' => 'op-id-2',
+                'type' => 'type2',
+                'description' => 'another operation',
+                'result' => null,
+                'duration' => 0,
+            ],
+            (object)[
+                'id' => 'op-id-3',
+                'type' => 'type',
+                'description' => 'more operation',
+                'result' => 'failed',
+                'duration' => 300,
+            ],
         ];
     }
 

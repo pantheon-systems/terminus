@@ -72,11 +72,11 @@ class CreateCommandTest extends BackupCommandTest
 
         $this->logger->expects($this->once())
           ->method('log')
-          ->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Created a backup of the {env} environment.'),
-              $this->equalTo(['env' => $this->environment->id,])
-          );
+        ->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Created a backup of the {env} environment.'),
+            $this->equalTo(['env' => $this->environment->id,])
+        );
 
         $out = $this->command->create("mysite.{$this->environment->id}", $params);
         $this->assertNull($out);

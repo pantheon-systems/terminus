@@ -36,10 +36,33 @@ class WorkflowsTest extends CollectionTestCase
     public function testAll()
     {
         $data = [
-            'a' => ['id' => 'a', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 4, 'created_at' => 1],
-            'b' => ['id' => 'b', 'has_operation_log_output' => false, 'result' => 'failed', 'finished_at' => 5, 'created_at' => 4],
-            'c' => ['id' => 'c', 'has_operation_log_output' => true, 'finished_at' => 2, 'created_at' => 3],
-            'd' => ['id' => 'd', 'has_operation_log_output' => true, 'result' => 'succeeded', 'finished_at' => 1, 'created_at' => 2],
+            'a' => [
+                'id' => 'a',
+                'has_operation_log_output' => true,
+                'result' => 'succeeded',
+                'finished_at' => 4,
+                'created_at' => 1,
+            ],
+            'b' => [
+                'id' => 'b',
+                'has_operation_log_output' => false,
+                'result' => 'failed',
+                'finished_at' => 5,
+                'created_at' => 4,
+            ],
+            'c' => [
+                'id' => 'c',
+                'has_operation_log_output' => true,
+                'finished_at' => 2,
+                'created_at' => 3,
+            ],
+            'd' => [
+                'id' => 'd',
+                'has_operation_log_output' => true,
+                'result' => 'succeeded',
+                'finished_at' => 1,
+                'created_at' => 2,
+            ],
         ];
 
         $workflows = $this->getMockBuilder(Workflows::class)
@@ -166,9 +189,9 @@ class WorkflowsTest extends CollectionTestCase
     public function testFetchWithOperations()
     {
         $data = [
-            (object)['id' => 'a', 'result' => 'succeeded', 'finished_at' => 4, 'created_at' => 1],
-            (object)['id' => 'b', 'result' => 'failed', 'finished_at' => 5, 'created_at' => 4],
-            (object)['id' => 'c', 'finished_at' => 2, 'created_at' => 3],
+            (object)['id' => 'a', 'result' => 'succeeded', 'finished_at' => 4, 'created_at' => 1,],
+            (object)['id' => 'b', 'result' => 'failed', 'finished_at' => 5, 'created_at' => 4,],
+            (object)['id' => 'c', 'finished_at' => 2, 'created_at' => 3,],
         ];
         $this->request->expects($this->once())
             ->method('request')

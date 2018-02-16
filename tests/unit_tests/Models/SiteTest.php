@@ -192,7 +192,10 @@ class SiteTest extends ModelTestCase
     public function testDashboardUrl()
     {
         $this->configSet(['dashboard_protocol' => 'https', 'dashboard_host' => 'dashboard.pantheon.io',]);
-        $this->assertEquals("https://dashboard.pantheon.io/sites/" . $this->site_data->id, $this->model->dashboardUrl());
+        $this->assertEquals(
+            "https://dashboard.pantheon.io/sites/" . $this->site_data->id,
+            $this->model->dashboardUrl()
+        );
     }
 
     /**
@@ -238,10 +241,10 @@ class SiteTest extends ModelTestCase
 
         $this->workflows->expects($this->once())
           ->method('create')
-          ->with(
-              $this->equalTo('switch_upstream'),
-              $this->equalTo(['params' => ['upstream_id' => $upstream_id,],])
-          )
+        ->with(
+            $this->equalTo('switch_upstream'),
+            $this->equalTo(['params' => ['upstream_id' => $upstream_id,],])
+        )
           ->willReturn($this->workflow);
 
         $workflow = $this->model->setUpstream($upstream_id);

@@ -76,10 +76,10 @@ class NewRelicTest extends ModelTestCase
 
         $this->workflows->expects($this->once())
           ->method('create')
-          ->with(
-              $this->equalTo('enable_new_relic_for_site'),
-              $this->equalTo(['site' => $this->site->id,])
-          )
+        ->with(
+            $this->equalTo('enable_new_relic_for_site'),
+            $this->equalTo(['site' => $this->site->id,])
+        )
           ->willReturn($this->workflow);
 
         $workflow = $this->model->enable();

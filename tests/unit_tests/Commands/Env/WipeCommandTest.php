@@ -51,15 +51,15 @@ class WipeCommandTest extends EnvCommandTest
           ->willReturn($this->workflow);
 
         $this->logger->expects($this->at(0))
-          ->method('log')->with(
-              $this->equalTo('notice'),
-              $this->equalTo('Wiping the "{env}" environment of "{site}"')
-          );
+        ->method('log')->with(
+            $this->equalTo('notice'),
+            $this->equalTo('Wiping the "{env}" environment of "{site}"')
+        );
         $this->logger->expects($this->at(1))
-          ->method('log')->with(
-              $this->equalTo('notice'),
-              $this->equalTo($message)
-          );
+        ->method('log')->with(
+            $this->equalTo('notice'),
+            $this->equalTo($message)
+        );
 
         $out = $this->command->wipe("$site_name.{$this->environment->id}");
         $this->assertNull($out);

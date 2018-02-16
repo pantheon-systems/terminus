@@ -51,7 +51,10 @@ class NewRelic extends AddOnModel
         return [
             'name' => $name,
             'status' => $this->get('status'),
-            'subscribed' => date($this->getConfig()->get('date_format'), strtotime($this->get('subscription')->starts_on)),
+            'subscribed' => date(
+                $this->getConfig()->get('date_format'),
+                strtotime($this->get('subscription')->starts_on)
+            ),
             'state' => $this->get('primary admin')->state,
         ];
     }

@@ -365,7 +365,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function disableHttpsCertificate()
     {
         if (!$this->settings('ssl_enabled')) {
-            throw new TerminusException('The {env} environment does not have https enabled.', ['env' => $this->id,]);
+            throw new TerminusException(
+                'The {env} environment does not have https enabled.',
+                ['env' => $this->id,]
+            );
         }
         try {
             $this->request()->request(
@@ -507,7 +510,9 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function getPHPVersion()
     {
-        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
+        return !is_null($php_ver = $this->get('php_version'))
+            ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1)
+            : null;
     }
 
     /**
@@ -516,7 +521,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     public function getUpstreamStatus()
     {
         if (empty($this->upstream_status)) {
-            $this->upstream_status = $this->getContainer()->get(UpstreamStatus::class, [[], ['environment' => $this,],]);
+            $this->upstream_status = $this->getContainer()->get(
+                UpstreamStatus::class,
+                [[], ['environment' => $this,],]
+            );
         }
         return $this->upstream_status;
     }
@@ -682,7 +690,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $default_params = ['updatedb' => false,];
         $params = array_merge($default_params, $options);
 
-        return $this->getWorkflows()->create('merge_dev_into_cloud_development_environment', compact('params'));
+        return $this->getWorkflows()->create(
+            'merge_dev_into_cloud_development_environment',
+            compact('params')
+        );
     }
 
     /**
@@ -702,7 +713,10 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $default_params = ['updatedb' => false, 'from_environment' => null,];
         $params = array_merge($default_params, $options);
 
-        return $this->getWorkflows()->create('merge_cloud_development_environment_into_dev', compact('params'));
+        return $this->getWorkflows()->create(
+            'merge_cloud_development_environment_into_dev',
+            compact('params')
+        );
     }
 
     /**

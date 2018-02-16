@@ -65,7 +65,7 @@ class ListCommand extends BackupCommand
         $element = $default = 'all';
         if (isset($options['element']) && ($options['element'] !== $default)) {
             $element = $options['element'];
-        } else if (is_array($param)) { // Sometimes the options come through as the second parameter
+        } elseif (is_array($param)) { // Sometimes the options come through as the second parameter
             if (isset($param['element'])) {
                 $element = $param['element'];
             }

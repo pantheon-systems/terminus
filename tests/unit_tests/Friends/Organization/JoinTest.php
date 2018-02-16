@@ -6,7 +6,7 @@ use Pantheon\Terminus\Models\Organization;
 
 /**
  * Class JoinTest
- * Testing class for Pantheon\Terminus\Friends\OrganizationJoinTrait & Pantheon\Terminus\Friends\OrganizationJoinInterface
+ * Test class for Pantheon\Terminus\Friends\OrganizationJoinTrait & Pantheon\Terminus\Friends\OrganizationJoinInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Organization
  */
 class JoinTest extends \PHPUnit_Framework_TestCase

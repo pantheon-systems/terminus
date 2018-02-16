@@ -119,7 +119,10 @@ class ListCommandTest extends UpdatesCommandTest
             ->willReturn([]);
         $this->logger->expects($this->never())
             ->method('log');
-        $this->setExpectedException(TerminusException::class, 'There was a problem checking your upstream status. Please try again.');
+        $this->setExpectedException(
+            TerminusException::class,
+            'There was a problem checking your upstream status. Please try again.'
+        );
 
         $out = $this->command->listUpstreamUpdates('123');
         $this->assertNull($out);

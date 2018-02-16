@@ -13,7 +13,10 @@ use Pantheon\Terminus\Friends\UserJoinTrait;
  * Class OrganizationUserMembership
  * @package Pantheon\Terminus\Models
  */
-class OrganizationUserMembership extends TerminusModel implements ContainerAwareInterface, OrganizationInterface, UserJoinInterface
+class OrganizationUserMembership extends TerminusModel implements
+    ContainerAwareInterface,
+    OrganizationInterface,
+    UserJoinInterface
 {
     use ContainerAwareTrait;
     use OrganizationTrait;

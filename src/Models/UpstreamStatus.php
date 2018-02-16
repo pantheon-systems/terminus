@@ -42,7 +42,9 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     {
         $env = $this->getEnvironment();
         $base_branch = 'refs/heads/' . $env->getBranchName();
-        return $this->request()->request("sites/{$env->getSite()->id}/code-upstream-updates?base_branch=$base_branch")['data'];
+        return $this->request()->request(
+            "sites/{$env->getSite()->id}/code-upstream-updates?base_branch=$base_branch"
+        )['data'];
     }
 
     /**
@@ -58,6 +60,9 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
             return ($updates->behind > 0);
         }
         $parent_env_id = ($env->id === 'test') ? 'dev' : 'test';
-        return !($updates->{$env->id}->is_up_to_date_with_upstream && $updates->$parent_env_id->is_up_to_date_with_upstream);
+        return !(
+            $updates->{$env->id}->is_up_to_date_with_upstream
+            && $updates->$parent_env_id->is_up_to_date_with_upstream
+        );
     }
 }
