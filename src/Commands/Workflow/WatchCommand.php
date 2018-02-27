@@ -50,6 +50,8 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
             $last_wf_created_at = $site->getWorkflows()->lastCreatedAt();
             $last_wf_finished_at = $site->getWorkflows()->lastFinishedAt();
             sleep(self::WORKFLOWS_WATCH_INTERVAL);
+            // Clear cached data
+            $site->getWorkflows()->setData([]);
             $site->getWorkflows()->fetchWithOperations();
 
             $workflows = $site->getWorkflows()->all();
