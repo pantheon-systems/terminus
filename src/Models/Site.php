@@ -276,7 +276,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
      */
     public function getUpstream()
     {
-        if (is_null($upstream_data = $this->get('upstream'))
+        $upstream_data = (object)array_merge((array)$this->get('upstream'), (array)$this->get('product'));
+        if (empty((array)$upstream_data)
             && !is_null($settings = $this->get('settings'))
             && isset($settings->upstream)
         ) {

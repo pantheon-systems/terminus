@@ -608,7 +608,11 @@ class SiteTest extends ModelTestCase
         $container = $this->getMockBuilder(Container::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $attributes = (object)['id' => 'site_id', 'upstream' => (object)['product_id' => 'product id',],];
+        $attributes = (object)[
+            'id' => 'site_id',
+            'product' => (object)['id' => 'product id',],
+            'upstream' => (object)['product_id' => 'product id',],
+        ];
         $site = new Site($attributes);
         $site->setContainer($container);
         $upstream = $this->getMockBuilder(SiteUpstream::class)
@@ -619,7 +623,10 @@ class SiteTest extends ModelTestCase
             ->method('get')
             ->with(
                 $this->equalTo(SiteUpstream::class),
-                $this->equalTo([$attributes->upstream, compact('site'),])
+                $this->equalTo([
+                    (object)array_merge((array)$attributes->product, (array)$attributes->upstream),
+                    compact('site'),
+                ])
             )
             ->willReturn($upstream);
 

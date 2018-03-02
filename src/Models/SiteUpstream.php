@@ -50,7 +50,9 @@ class SiteUpstream extends TerminusModel implements SiteInterface
      */
     protected function parseAttributes($data)
     {
-        $data->id = $data->product_id;
+        if (!property_exists($data, 'id') && property_exists($data, 'product_id')) {
+            $data->id = $data->product_id;
+        }
         return $data;
     }
 }
