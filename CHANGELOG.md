@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Fixed
+- Prevented missing data about a site's upstream from preventing functioning of the SiteUpstream model. (#1833)
+
 ## 1.7.1 - 2018-02-27
 ### Fixed
 - Fixed `workflow:watch` command by preventing cached data from being pulled. (#1827)
