@@ -41,7 +41,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
      */
-    public function codeLog(
+    public function metrics(
         $site_env,
         $options = [
             'series' => 'pageviews',
