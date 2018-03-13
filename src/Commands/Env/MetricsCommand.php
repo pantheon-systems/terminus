@@ -2,10 +2,12 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
+use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class MetricsCommand
@@ -16,9 +18,14 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
 
     const DAILY_GRANULARITY = 'day';
+    const WEEKLY_GRANULARITY = 'week';
     const MONTHLY_GRANULARITY = 'month';
 
+    const PAGEVIEW_SERIES = 'pageviews';
+    const UNIQUES_SERIES = 'uniques';
+
     const DEFAULT_MONTHLY_DATAPOINTS = 12;
+    const DEFAULT_WEEKLY_DATAPOINTS = 12;
     const DEFAULT_DAILY_DATAPOINTS = 28;
 
     /**
@@ -58,19 +65,53 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries');
     }
 
-    // TODO: validate that:
-    //   series is 'pageviews' or 'uniques' (future value for unique monthly visitors)
-    //   granularity is 'month' or 'day'
-    //   'datapoints' is no greater than 12 (month) or 28 (day)
+    /**
+     * Ensure that the user did not supply an invalid value for 'granularity'.
+     *
+     * @hook validate alpha:env:metrics
+     */
+    public function validateOptions(CommandData $commandData)
+    {
+        $validGranularities = [
+            self::DAILY_GRANULARITY,
+            self::WEEKLY_GRANULARITY,
+            self::MONTHLY_GRANULARITY,
+        ];
+        $validSeries = [
+            self::PAGEVIEW_SERIES,
+            self::UNIQUES_SERIES,
+        ];
+
+        $input = $commandData->input();
+        $this->validateOptionValue($input, 'series', $validSeries);
+        $this->validateOptionValue($input, 'granularity', $validGranularities);
+    }
+
+    /**
+     * Test to see if an option value is one
+     * @param InputInterface $input
+     * @param string $optionName
+     * @param string[] $validValues
+     */
+    protected function validateOptionValue(InputInterface $input, $optionName, array $validValues)
+    {
+        $value = $input->getOption($optionName);
+        if (!in_array($value, $validValues)) {
+            throw new \Exception("Invalid value for {$optionName}: must be one of " . implode(', ', $validValues));
+        }
+    }
 
     /**
      * Default datapoints to 12 / 28 if it is not specified
      */
     public function defaultDatapoints($granularity)
     {
-        if ($granularity == 'day') {
-            return self::DEFAULT_DAILY_DATAPOINTS;
-        }
-        return self::DEFAULT_MONTHLY_DATAPOINTS;
+        $defaultGranularityValues = [
+            self::DAILY_GRANULARITY => self::DEFAULT_DAILY_DATAPOINTS,
+            self::WEEKLY_GRANULARITY => self::DEFAULT_WEEKLY_DATAPOINTS,
+            self::MONTHLY_GRANULARITY => self::DEFAULT_MONTHLY_DATAPOINTS,
+        ];
+
+        return $defaultGranularityValues[$granularity];
     }
 }
