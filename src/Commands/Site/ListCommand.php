@@ -23,6 +23,8 @@ class ListCommand extends SiteCommand
      *     created: Created
      *     memberships: Memberships
      *     frozen: Is Frozen?
+     *     last_frozen_at: Date frozen
+     * @default-fields name,id,service_level,framework,owner,created,memberships,frozen
      * @return RowsOfFields
      *
      * @option name Name filter
