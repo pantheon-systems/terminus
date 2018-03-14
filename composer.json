@@ -33,7 +33,7 @@
     "bin/terminus"
   ],
   "scripts": {
-      "behat": "COMPOSER_PROCESS_TIMEOUT=3600 SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
+      "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/unit_tests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
       "coveralls": "coveralls -v -c tests/config/coveralls.xml",
@@ -52,6 +52,7 @@
     "squizlabs/php_codesniffer": "^2.7"
   },
   "config": {
+    "process-timeout": 3600,
     "optimize-autoloader": true,
     "preferred-install": "dist",
     "sort-packages": true,
