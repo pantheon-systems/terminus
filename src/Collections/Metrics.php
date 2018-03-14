@@ -12,7 +12,7 @@ class Metrics extends EnvironmentOwnedCollection
 {
     protected $metadata;
     protected $seriesId;
-    protected $granularity;
+    protected $period;
     protected $datapoints;
 
     public static $pretty_name = 'metrics';
@@ -23,7 +23,7 @@ class Metrics extends EnvironmentOwnedCollection
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/environments/{environment_id}/{series}?granularity={granularity}&datapoints={datapoints}';
+    protected $url = 'sites/{site_id}/environments/{environment_id}/{series}?granularity={period}&datapoints={datapoints}';
 
     /**
      * Supported series:
@@ -46,14 +46,14 @@ class Metrics extends EnvironmentOwnedCollection
         return $this->setParameter('seriesId', $value);
     }
 
-    public function getGranularity()
+    public function getPeriod()
     {
-        return $this->granularity;
+        return $this->period;
     }
 
-    public function setGranularity($value)
+    public function setPeriod($value)
     {
-        return $this->setParameter('granularity', $value);
+        return $this->setParameter('period', $value);
     }
 
     public function getDatapoints()
@@ -132,7 +132,7 @@ class Metrics extends EnvironmentOwnedCollection
     }
 
     /**
-     * Fill in the selected values for the data series, granularity
+     * Fill in the selected values for the data series, period
      * and datapoints.
      */
     protected function replaceUrlTokens($url)
@@ -140,7 +140,7 @@ class Metrics extends EnvironmentOwnedCollection
         $url = parent::replaceUrlTokens($url);
         $tr = [
             '{series}' => $this->getSeriesId(),
-            '{granularity}' => $this->getGranularity(),
+            '{period}' => $this->getPeriod(),
             '{datapoints}' => $this->getDatapoints(),
         ];
         return strtr($url, $tr);

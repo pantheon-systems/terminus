@@ -17,9 +17,9 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
 
-    const DAILY_GRANULARITY = 'day';
-    const WEEKLY_GRANULARITY = 'week';
-    const MONTHLY_GRANULARITY = 'month';
+    const DAILY_PERIOD = 'day';
+    const WEEKLY_PERIOD = 'week';
+    const MONTHLY_PERIOD = 'month';
 
     const PAGEVIEW_SERIES = 'pageviews';
     const UNIQUES_SERIES = 'uniques';
@@ -43,7 +43,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @option series The data series to display (pageviews or uniques)
-     * @option granularity The time period for each data point (month or day)
+     * @option period The time period for each data point (month or day)
      * @option datapoints How much data to return in total
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
@@ -52,30 +52,30 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         $site_env,
         $options = [
             'series' => 'pageviews',
-            'granularity' => self::MONTHLY_GRANULARITY,
+            'period' => self::MONTHLY_PERIOD,
             'datapoints' => ''
         ]
     ) {
         list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
         $data = $env->getMetrics()
             ->setSeriesId($options['series'])
-            ->setGranularity($options['granularity'])
-            ->setDatapoints($options['datapoints'] ?: $this->defaultDatapoints($options['granularity']))
+            ->setPeriod($options['period'])
+            ->setDatapoints($options['datapoints'] ?: $this->defaultDatapoints($options['period']))
             ->serialize();
         return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries');
     }
 
     /**
-     * Ensure that the user did not supply an invalid value for 'granularity'.
+     * Ensure that the user did not supply an invalid value for 'period'.
      *
      * @hook validate alpha:env:metrics
      */
     public function validateOptions(CommandData $commandData)
     {
         $validGranularities = [
-            self::DAILY_GRANULARITY,
-            self::WEEKLY_GRANULARITY,
-            self::MONTHLY_GRANULARITY,
+            self::DAILY_PERIOD,
+            self::WEEKLY_PERIOD,
+            self::MONTHLY_PERIOD,
         ];
         $validSeries = [
             self::PAGEVIEW_SERIES,
@@ -84,7 +84,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 
         $input = $commandData->input();
         $this->validateOptionValue($input, 'series', $validSeries);
-        $this->validateOptionValue($input, 'granularity', $validGranularities);
+        $this->validateOptionValue($input, 'period', $validGranularities);
     }
 
     /**
@@ -104,14 +104,14 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Default datapoints to 12 / 28 if it is not specified
      */
-    public function defaultDatapoints($granularity)
+    public function defaultDatapoints($period)
     {
-        $defaultGranularityValues = [
-            self::DAILY_GRANULARITY => self::DEFAULT_DAILY_DATAPOINTS,
-            self::WEEKLY_GRANULARITY => self::DEFAULT_WEEKLY_DATAPOINTS,
-            self::MONTHLY_GRANULARITY => self::DEFAULT_MONTHLY_DATAPOINTS,
+        $defaultPeriodValues = [
+            self::DAILY_PERIOD => self::DEFAULT_DAILY_DATAPOINTS,
+            self::WEEKLY_PERIOD => self::DEFAULT_WEEKLY_DATAPOINTS,
+            self::MONTHLY_PERIOD => self::DEFAULT_MONTHLY_DATAPOINTS,
         ];
 
-        return $defaultGranularityValues[$granularity];
+        return $defaultPeriodValues[$period];
     }
 }
