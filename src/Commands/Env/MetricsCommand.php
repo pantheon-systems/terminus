@@ -70,15 +70,33 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             ->setPeriod($options['period'])
             ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
             ->serialize();
+
+        // Precalculate the width we'd like for the 'value' column. Note that
+        // we only need this if our render function is called. We could
+        // potentially lazy-evaluate this. Also we are currently right-justifying
+        // in csv mode too.
+        $valueColumnWidth = $this->findWidth($data['timeseries'], 'value');
+
         return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries')->addRendererFunction(
-            function ($key, $cellData, FormatterOptions $options, $rowData) {
+            function ($key, $cellData, FormatterOptions $options, $rowData) use ($valueColumnWidth) {
                 if (($key == 'value') && is_numeric($cellData)) {
-                    return number_format($cellData);
+                    return str_pad(number_format($cellData), $valueColumnWidth, " ", STR_PAD_LEFT);
                 }
                 return $cellData;
             }
         );
     }
+
+    protected function findWidth($data, $column)
+    {
+        $maxWidth = 0;
+        foreach ($data as $row) {
+            $str = number_format($row[$column]);
+            $maxWidth = max($maxWidth, strlen($str));
+        }
+        return $maxWidth;
+    }
+
 
     /**
      * Determine the value we should use for 'datapoints'.
