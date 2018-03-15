@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Env;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -35,6 +36,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command alpha:env:metrics
+     * @aliases alpha:metrics
      *
      * @field-labels
      *     datetime: Timestamp
@@ -53,17 +55,29 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         $site_env,
         $options = [
             'series' => 'pageviews',
-            'period' => self::MONTHLY_PERIOD,
+            'period' => self::DAILY_PERIOD,
             'datapoints' => 'auto'
         ]
     ) {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
+        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'live');
+
+        if ($env->getName() != 'live') {
+            throw new \Exception('Metrics are only supported for the "live" environment for now.');
+        }
+
         $data = $env->getMetrics()
             ->setSeriesId($options['series'])
             ->setPeriod($options['period'])
             ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
             ->serialize();
-        return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries');
+        return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries')->addRendererFunction(
+            function ($key, $cellData, FormatterOptions $options, $rowData) {
+                if (($key == 'value') && is_numeric($cellData)) {
+                    return number_format($cellData);
+                }
+                return $cellData;
+            }
+        );
     }
 
     /**
