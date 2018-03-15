@@ -22,7 +22,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     const MONTHLY_PERIOD = 'month';
 
     const PAGEVIEW_SERIES = 'pageviews';
-    const UNIQUES_SERIES = 'uniques';
+    const UNIQUE_VISITS_SERIES = 'visits';
 
     const DEFAULT_MONTHLY_DATAPOINTS = 12;
     const DEFAULT_WEEKLY_DATAPOINTS = 12;
@@ -42,9 +42,10 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * @return RowsOfFieldsWithMetadata
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option series The data series to display (pageviews or uniques)
+     * @option series The data series to display (pageviews or visits)
      * @option period The time period for each data point (month or day)
-     * @option datapoints How much data to return in total
+     * @option datapoints How much data to return in total, or 'auto' to select
+     *   a resonable default based on the selected period.
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
      */
@@ -53,16 +54,27 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         $options = [
             'series' => 'pageviews',
             'period' => self::MONTHLY_PERIOD,
-            'datapoints' => ''
+            'datapoints' => 'auto'
         ]
     ) {
         list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
         $data = $env->getMetrics()
             ->setSeriesId($options['series'])
             ->setPeriod($options['period'])
-            ->setDatapoints($options['datapoints'] ?: $this->defaultDatapoints($options['period']))
+            ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
             ->serialize();
         return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries');
+    }
+
+    /**
+     * Determine the value we should use for 'datapoints'.
+     */
+    protected function selectDatapoints($datapoints, $period)
+    {
+        if (!$datapoints || ($datapoints == 'auto')) {
+            return $this->defaultDatapoints($period);
+        }
+        return $datapoints;
     }
 
     /**
@@ -79,16 +91,17 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         ];
         $validSeries = [
             self::PAGEVIEW_SERIES,
-            self::UNIQUES_SERIES,
+            self::UNIQUE_VISITS_SERIES,
         ];
 
         $input = $commandData->input();
         $this->validateOptionValue($input, 'series', $validSeries);
         $this->validateOptionValue($input, 'period', $validGranularities);
+        $this->validateItemWithinRange($input, 'datapoints', 1, $this->datapointsMaximum($input->getOption('period')), ['auto']);
     }
 
     /**
-     * Test to see if an option value is one
+     * Test to see if an option value is one of the provided values
      * @param InputInterface $input
      * @param string $optionName
      * @param string[] $validValues
@@ -97,14 +110,36 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     {
         $value = $input->getOption($optionName);
         if (!in_array($value, $validValues)) {
-            throw new \Exception("Invalid value for {$optionName}: must be one of " . implode(', ', $validValues));
+            throw new \Exception("'{$value}' is an invalid value for {$optionName}: must be one of " . implode(', ', $validValues));
         }
+    }
+
+    protected function validateItemWithinRange(InputInterface $input, $optionName, $minimum, $maximum, $exceptionalValues = [])
+    {
+        $value = $input->getOption($optionName);
+        if (in_array($value, $exceptionalValues)) {
+            return;
+        }
+        $orOneOf = (count($exceptionalValues) == 0) ? '' : (count($exceptionalValues) == 1) ? 'or ' : 'or one of ';
+        if (($value < $minimum) || ($value > $maximum)) {
+            throw new \Exception("'{$value}' is an invalid value for {$optionName}: must be between {$minimum} and {$maximum} (inclusive) {$orOneOf}" . implode(', ', $exceptionalValues));
+        }
+    }
+
+    /**
+     * Default datapoints to 12 / 28 if 'auto' is specified
+     */
+    public function defaultDatapoints($period)
+    {
+        // For now, out default values will just be the maximums for the period.
+        // We should change this if we increase the maximums.
+        return $this->datapointsMaximum($period);
     }
 
     /**
      * Default datapoints to 12 / 28 if it is not specified
      */
-    public function defaultDatapoints($period)
+    public function datapointsMaximum($period)
     {
         $defaultPeriodValues = [
             self::DAILY_PERIOD => self::DEFAULT_DAILY_DATAPOINTS,
