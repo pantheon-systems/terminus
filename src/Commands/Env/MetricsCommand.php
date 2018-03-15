@@ -73,13 +73,13 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 
         // Precalculate the width we'd like for the 'value' column. Note that
         // we only need this if our render function is called. We could
-        // potentially lazy-evaluate this. Also we are currently right-justifying
-        // in csv mode too.
+        // potentially lazy-evaluate this for improved performance. For the
+        // small datasets we are currently providing, though, this is not an issue.
         $valueColumnWidth = $this->findWidth($data['timeseries'], 'value');
 
         return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries')->addRendererFunction(
             function ($key, $cellData, FormatterOptions $options, $rowData) use ($valueColumnWidth) {
-                if (($key == 'value') && is_numeric($cellData)) {
+                if (($options->get(FormatterOptions::FORMAT) == 'table') && ($key == 'value') && is_numeric($cellData)) {
                     return str_pad(number_format($cellData), $valueColumnWidth, " ", STR_PAD_LEFT);
                 }
                 return $cellData;
