@@ -32,6 +32,7 @@ class MetricsCommandTest extends EnvCommandTest
         $this->metrics->method('setDatapoints')->willReturn($this->metrics);
 
         $this->environment->method('getMetrics')->willReturn($this->metrics);
+        $this->environment->method('getName')->willReturn('live');
 
         $this->metric_1_attribs = [
             'id' => '1517443200',
