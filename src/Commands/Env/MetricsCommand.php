@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\Commands\Env;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\OutputFormatters\Options\FormatterOptions;
+use Consolidation\OutputFormatters\StructuredData\NumericCellRenderer;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
@@ -71,20 +72,11 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
             ->serialize();
 
-        // Precalculate the width we'd like for the 'value' column. Note that
-        // we only need this if our render function is called. We could
-        // potentially lazy-evaluate this for improved performance. For the
-        // small datasets we are currently providing, though, this is not an issue.
-        $valueColumnWidth = $this->findWidth($data['timeseries'], 'value');
-
-        return (new RowsOfFieldsWithMetadata($data))->setDataKey('timeseries')->addRendererFunction(
-            function ($key, $cellData, FormatterOptions $options, $rowData) use ($valueColumnWidth) {
-                if (($options->get(FormatterOptions::FORMAT) == 'table') && ($key == 'value') && is_numeric($cellData)) {
-                    return str_pad(number_format($cellData), $valueColumnWidth, " ", STR_PAD_LEFT);
-                }
-                return $cellData;
-            }
-        );
+        return (new RowsOfFieldsWithMetadata($data))
+            ->setDataKey('timeseries')
+            ->addRenderer(
+               new NumericCellRenderer($data['timeseries'], ['value' => 0])
+            );
     }
 
     protected function findWidth($data, $column)
