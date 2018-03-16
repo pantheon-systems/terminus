@@ -28,8 +28,9 @@ class MetricsCommandTest extends EnvCommandTest
 
         // Ignore the calls to the fluid initializers in the Metrics class.
         $this->metrics->method('setSeriesId')->willReturn($this->metrics);
-        $this->metrics->method('setGranularity')->willReturn($this->metrics);
+        $this->metrics->method('setPeriod')->willReturn($this->metrics);
         $this->metrics->method('setDatapoints')->willReturn($this->metrics);
+        $this->metrics->method('selectDatapoints')->willReturn(2);
 
         $this->environment->method('getMetrics')->willReturn($this->metrics);
         $this->environment->method('getName')->willReturn('live');
