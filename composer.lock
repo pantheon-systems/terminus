@@ -228,12 +228,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/output-formatters.git",
-                "reference": "8bec6ad51bd85d0c6d00bdeec05fe99f7a86a200"
+                "reference": "4ec7c48766809dc7d168c3ceb9676c7beefe8b3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/8bec6ad51bd85d0c6d00bdeec05fe99f7a86a200",
-                "reference": "8bec6ad51bd85d0c6d00bdeec05fe99f7a86a200",
+                "url": "https://api.github.com/repos/consolidation/output-formatters/zipball/4ec7c48766809dc7d168c3ceb9676c7beefe8b3d",
+                "reference": "4ec7c48766809dc7d168c3ceb9676c7beefe8b3d",
                 "shasum": ""
             },
             "require": {
@@ -271,7 +271,7 @@
                 }
             ],
             "description": "Format text by applying transformations provided by plug-in formatters.",
-            "time": "2018-03-12T02:09:31+00:00"
+            "time": "2018-03-16T16:59:34+00:00"
         },
         {
             "name": "consolidation/robo",
