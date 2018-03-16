@@ -23,9 +23,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     const WEEKLY_PERIOD = 'week';
     const MONTHLY_PERIOD = 'month';
 
-    const PAGEVIEW_SERIES = 'pageviews';
-    const UNIQUE_VISITS_SERIES = 'visits';
-
     const DEFAULT_MONTHLY_DATAPOINTS = 12;
     const DEFAULT_WEEKLY_DATAPOINTS = 12;
     const DEFAULT_DAILY_DATAPOINTS = 28;
@@ -41,11 +38,11 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @field-labels
      *     datetime: Timestamp
-     *     value: Value
+     *     visits: Visits
+     *     pages_served: Pages Served
      * @return RowsOfFieldsWithMetadata
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option series The data series to display (pageviews or visits)
      * @option period The time period for each data point (month or day)
      * @option datapoints How much data to return in total, or 'auto' to select
      *   a resonable default based on the selected period.
@@ -55,7 +52,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     public function metrics(
         $site_env,
         $options = [
-            'series' => 'pageviews',
             'period' => self::DAILY_PERIOD,
             'datapoints' => 'auto'
         ]
@@ -67,7 +63,6 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $data = $env->getMetrics()
-            ->setSeriesId($options['series'])
             ->setPeriod($options['period'])
             ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
             ->serialize();
@@ -75,7 +70,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         return (new RowsOfFieldsWithMetadata($data))
             ->setDataKey('timeseries')
             ->addRenderer(
-               new NumericCellRenderer($data['timeseries'], ['value' => 0])
+                new NumericCellRenderer($data['timeseries'], ['visits' => 6, 'pages_served' => 12])
             );
     }
 
@@ -113,13 +108,8 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             self::WEEKLY_PERIOD,
             self::MONTHLY_PERIOD,
         ];
-        $validSeries = [
-            self::PAGEVIEW_SERIES,
-            self::UNIQUE_VISITS_SERIES,
-        ];
 
         $input = $commandData->input();
-        $this->validateOptionValue($input, 'series', $validSeries);
         $this->validateOptionValue($input, 'period', $validGranularities);
         $this->validateItemWithinRange($input, 'datapoints', 1, $this->datapointsMaximum($input->getOption('period')), ['auto']);
     }

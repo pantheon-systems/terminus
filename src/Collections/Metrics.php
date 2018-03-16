@@ -11,7 +11,6 @@ use Pantheon\Terminus\Models\Metric;
 class Metrics extends EnvironmentOwnedCollection
 {
     protected $metadata;
-    protected $seriesId;
     protected $period;
     protected $datapoints;
 
@@ -31,19 +30,8 @@ class Metrics extends EnvironmentOwnedCollection
      * - pageviews
      * - uniques
      */
-    public function __constructor($seriesId)
+    public function __constructor()
     {
-        $this->seriesId = $seriesId;
-    }
-
-    public function getSeriesId()
-    {
-        return $this->seriesId;
-    }
-
-    public function setSeriesId($value)
-    {
-        return $this->setParameter('seriesId', $value);
     }
 
     public function getPeriod()
@@ -84,11 +72,13 @@ class Metrics extends EnvironmentOwnedCollection
      */
     protected function requestData()
     {
-        $rawdata = parent::requestData();
+        $rawPageviews = $this->requestDataAtUrl($this->getUrlForSeries('pageviews'), $this->getFetchArgs());
 
-        if (empty($rawdata->timeseries)) {
+        if (empty($rawPageviews->timeseries)) {
             throw new \Exception("No data available.");
         }
+
+        $rawVisits = $this->requestDataAtUrl($this->getUrlForSeries('visits'), $this->getFetchArgs());
 
         // The data is passed to us with the data series of primary
         // interest to us nested inside a 'timeseries' element. The
@@ -98,7 +88,9 @@ class Metrics extends EnvironmentOwnedCollection
         // (@see TerminusCollection::fetch())
         // We also need to ensure that the elements of our timeseries
         // have unique IDs. We will use the time value for this.
-        $data = $this->assignIds($rawdata->timeseries, 'timestamp');
+        $pageviewData = $this->assignIds($rawPageviews->timeseries, 'timestamp');
+        $visitData = $this->assignIds($rawVisits->timeseries, 'timestamp');
+        $combineddata = $this->combineRawData($pageviewData, $visitData);
 
         // Convert the timestamp to a datetime. The timestamp will remain
         // as the row key.
@@ -108,17 +100,28 @@ class Metrics extends EnvironmentOwnedCollection
                 unset($item->timestamp);
                 return $item;
             },
-            $data
+            $combineddata
         );
 
         // Our parent class is already caching our data series; we will
         // store the other items in a 'metadata' field. We will avoid
         // caching the raw data because that would duplicate data
         // already cached.
-        unset($rawdata->timeseries);
-        $this->metadata = $rawdata;
+        unset($rawPageviews->timeseries);
+        $this->metadata = $rawPageviews;
 
         return $data;
+    }
+
+    protected function combineRawData($rawPageviews, $rawVisits)
+    {
+        $result = $rawVisits;
+        foreach ($result as $time => $item) {
+            $item->visits = $item->value;
+            $result[$time]->pages_served = $rawPageviews[$time]->value;
+            unset($result[$time]->value);
+        }
+        return $result;
     }
 
     /**
@@ -129,21 +132,6 @@ class Metrics extends EnvironmentOwnedCollection
     {
         $timeseries = parent::serialize();
         return (array) $this->metadata + ['timeseries' => $timeseries];
-    }
-
-    /**
-     * Fill in the selected values for the data series, period
-     * and datapoints.
-     */
-    protected function replaceUrlTokens($url)
-    {
-        $url = parent::replaceUrlTokens($url);
-        $tr = [
-            '{series}' => $this->getSeriesId(),
-            '{period}' => $this->getPeriod(),
-            '{datapoints}' => $this->getDatapoints(),
-        ];
-        return strtr($url, $tr);
     }
 
     /**
@@ -164,5 +152,16 @@ class Metrics extends EnvironmentOwnedCollection
         );
 
         return array_combine($keys, $data);
+    }
+
+    protected function getUrlForSeries($seriesId)
+    {
+        $url = $this->getUrl();
+        $tr = [
+            '{series}' => $seriesId,
+            '{period}' => $this->getPeriod(),
+            '{datapoints}' => $this->getDatapoints(),
+        ];
+        return strtr($url, $tr);
     }
 }

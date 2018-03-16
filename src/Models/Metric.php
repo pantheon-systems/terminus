@@ -14,7 +14,8 @@ class Metric extends TerminusModel
     {
         return [
             'datetime' => $this->get('datetime'),
-            'value' => $this->get('value'),
+            'pages_served' => $this->get('pages_served'),
+            'visits' => $this->get('visits'),
         ];
     }
 }
