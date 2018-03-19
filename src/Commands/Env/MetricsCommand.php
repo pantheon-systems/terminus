@@ -37,7 +37,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases alpha:metrics
      *
      * @field-labels
-     *     datetime: Timestamp
+     *     datetime: Period
      *     visits: Visits
      *     pages_served: Pages Served
      * @return RowsOfFieldsWithMetadata
@@ -71,6 +71,14 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             ->setDataKey('timeseries')
             ->addRenderer(
                 new NumericCellRenderer($data['timeseries'], ['visits' => 6, 'pages_served' => 12])
+            )
+            ->addRendererFunction(
+                function ($key, $cellData, FormatterOptions $options, $rowData) {
+                    if ($key == 'datetime') {
+                        $cellData = str_replace('T00:00:00', '', $cellData);
+                    }
+                    return $cellData;
+                }
             );
     }
 
