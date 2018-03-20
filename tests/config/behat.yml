@@ -7,12 +7,12 @@ default:
         - Pantheon\Terminus\FeatureTests\FeatureContext:
             parameters:
               user_id:                 '11111111-1111-1111-1111-111111111111'
-              username:                'greg@getpantheon.com'
-              host:                    'terminus.pantheon.io:443'
+              username:                'devuser@pantheon.io'
+              host:                    'onebox'
               verify_host_cert:        false
               dashboard_host:          'dashboard.pantheon.io'
-              vcr_mode:                'new_episodes'
-              test_site_name:          'couture-costume'
+              vcr_mode:                'none'
+              test_site_name:          'behat-tests'
               other_user:              'otheruser@pantheon.io'
               php_site_domain:         'pantheonsite.io'
               payment_method_label:    'Visa - 1111'

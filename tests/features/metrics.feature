@@ -9,12 +9,7 @@ Feature: Checking metrics for an environment
 
   @vcr metrics.yml
   Scenario: Checking metrics
-    When I run "terminus whoami"
-    Then I should get: "@"
-    When I run "terminus site:info [[test_site_name]]"
-    Then I should get: "couture-costume"
-    When I run "terminus alpha:env:metrics [[test_site_name]].live --fields=value"
-    Then I should get: " -------"
-    And I should get: "  Value"
-    And I should get: " -------"
-    And I should get: "1197"
+    When I run "terminus alpha:env:metrics [[test_site_name]]"
+    Then I should get: "Period       Visits   Pages Served"
+    And I should get: "2018-03-14      159          1,335"
+    And I should get: "2018-03-15      172            650"
