@@ -82,6 +82,12 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             );
     }
 
+    /**
+     * Find the maximum width of any data item in the specified column.
+     * @param array $data
+     * @param string $column
+     * @return int
+     */
     protected function findWidth($data, $column)
     {
         $maxWidth = 0;
@@ -92,9 +98,11 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         return $maxWidth;
     }
 
-
     /**
-     * Determine the value we should use for 'datapoints'.
+     * Determine the value we should use for 'datapoints' given a specific period.
+     * @param string $datapoints
+     * @param string $period
+     * @return string
      */
     protected function selectDatapoints($datapoints, $period)
     {
@@ -108,6 +116,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      * Ensure that the user did not supply an invalid value for 'period'.
      *
      * @hook validate alpha:env:metrics
+     * @param CommandData $commandData
      */
     public function validateOptions(CommandData $commandData)
     {
@@ -136,6 +145,14 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         }
     }
 
+    /**
+     * Check to see if the specified item is within the specified minimum/maximum range.
+     * @param InputInterface $input
+     * @param string $optionName
+     * @param string $minimum
+     * @param string $maximum
+     * @param string $exceptionalValues
+     */
     protected function validateItemWithinRange(InputInterface $input, $optionName, $minimum, $maximum, $exceptionalValues = [])
     {
         $value = $input->getOption($optionName);
@@ -150,6 +167,8 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Default datapoints to 12 / 28 if 'auto' is specified
+     * @param string $period
+     * @return string
      */
     public function defaultDatapoints($period)
     {
@@ -159,7 +178,9 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
-     * Default datapoints to 12 / 28 if it is not specified
+     * Return the maximum datapoint value for the provided period.
+     * @param string $period
+     * @return string
      */
     public function datapointsMaximum($period)
     {

@@ -10,55 +10,81 @@ use Pantheon\Terminus\Models\Metric;
  */
 class Metrics extends EnvironmentOwnedCollection
 {
-    protected $metadata;
-    protected $period;
-    protected $datapoints;
-
     public static $pretty_name = 'metrics';
+
     /**
      * @var string
      */
     protected $collected_class = Metric::class;
+
     /**
-     * @var string
+     * @var string base URL to fetch
      */
     protected $url = 'sites/{site_id}/environments/{environment_id}/{series}?granularity={period}&datapoints={datapoints}';
 
     /**
-     * Supported series:
-     *
-     * - pageviews
-     * - uniques
+     * @var array
+     */
+    protected $metadata;
+
+    /**
+     * @var string The period of data to fix (month/week/day)
+     */
+    protected $period;
+
+    /**
+     * @var string The number of data points to fetch (28/12 max)
+     */
+    protected $datapoints;
+
+    /**
+     * Metrics constructor
      */
     public function __constructor()
     {
     }
 
+    /**
+     * @return string
+     */
     public function getPeriod()
     {
         return $this->period;
     }
 
+    /**
+     * @param string $value
+     */
     public function setPeriod($value)
     {
         return $this->setParameter('period', $value);
     }
 
+    /**
+     * @return string
+     */
     public function getDatapoints()
     {
         return $this->datapoints;
     }
 
+    /**
+     * @param string $value
+     */
     public function setDatapoints($value)
     {
         return $this->setParameter('datapoints', $value);
     }
 
+    /**
+     * @param string $value
+     */
     protected function setParameter($parameter, $value)
     {
         if ($this->$parameter === $value) {
             return $this;
         }
+        // Clear our cache whenever our parameters are changed
         $this->setData([]);
         $this->$parameter = $value;
         return $this;
@@ -72,9 +98,9 @@ class Metrics extends EnvironmentOwnedCollection
      */
     protected function requestData()
     {
-        $rawPageviews = $this->requestDataAtUrl($this->getUrlForSeries('pageviews'), $this->getFetchArgs());
+        $rawPagesServed = $this->requestDataAtUrl($this->getUrlForSeries('pageviews'), $this->getFetchArgs());
 
-        if (empty($rawPageviews->timeseries)) {
+        if (empty($rawPagesServed->timeseries)) {
             throw new \Exception("No data available.");
         }
 
@@ -88,7 +114,7 @@ class Metrics extends EnvironmentOwnedCollection
         // (@see TerminusCollection::fetch())
         // We also need to ensure that the elements of our timeseries
         // have unique IDs. We will use the time value for this.
-        $pageviewData = $this->assignIds($rawPageviews->timeseries, 'timestamp');
+        $pageviewData = $this->assignIds($rawPagesServed->timeseries, 'timestamp');
         $visitData = $this->assignIds($rawVisits->timeseries, 'timestamp');
         $combineddata = $this->combineRawData($pageviewData, $visitData);
 
@@ -107,18 +133,24 @@ class Metrics extends EnvironmentOwnedCollection
         // store the other items in a 'metadata' field. We will avoid
         // caching the raw data because that would duplicate data
         // already cached.
-        unset($rawPageviews->timeseries);
-        $this->metadata = $rawPageviews;
+        unset($rawPagesServed->timeseries);
+        $this->metadata = $rawPagesServed;
 
         return $data;
     }
 
-    protected function combineRawData($rawPageviews, $rawVisits)
+    /**
+     * Combine the raw pages served data with the raw unique visits data
+     * @param array $rawPagesServed
+     * @param array $rawVisits
+     * @return array
+     */
+    protected function combineRawData($rawPagesServed, $rawVisits)
     {
         $result = $rawVisits;
         foreach ($result as $time => $item) {
             $item->visits = $item->value;
-            $result[$time]->pages_served = $rawPageviews[$time]->value;
+            $result[$time]->pages_served = $rawPagesServed[$time]->value;
             unset($result[$time]->value);
         }
         return $result;
@@ -127,6 +159,7 @@ class Metrics extends EnvironmentOwnedCollection
     /**
      * When serializing the metrics again, wrap the timeseries data
      * back inside a 'timeseries' element and then union in the metadata.
+     * @return array
      */
     public function serialize()
     {
@@ -135,6 +168,8 @@ class Metrics extends EnvironmentOwnedCollection
     }
 
     /**
+     * Convert an array with numeric indexes to an associative array whose
+     * indexes are taken from one of the data elements.
      * @param $data An array of items with numeric indexes
      * @param $keyId The id of the element in each item that is the key
      *
@@ -154,6 +189,11 @@ class Metrics extends EnvironmentOwnedCollection
         return array_combine($keys, $data);
     }
 
+    /**
+     * Fill in the parameters for the desired request.
+     * @param string $seriesId
+     * @return string
+     */
     protected function getUrlForSeries($seriesId)
     {
         $url = $this->getUrl();

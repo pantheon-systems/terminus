@@ -89,6 +89,9 @@ abstract class APICollection extends TerminusCollection
 
     /**
      * Make a request at a specific URL
+     * @param string $url address to fetch
+     * @param array $args request arguments (@see APICollection::getFetchArgs())
+     * @return array
      */
     protected function requestDataAtUrl($url, $args = [])
     {
