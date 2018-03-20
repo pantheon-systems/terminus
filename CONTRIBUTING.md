@@ -111,7 +111,7 @@ Then, run a single test as described above. VCR will then call the backend and r
 
 Once the VCR .yml file has been saved, you may restore your behat.yml configuration file to its previous state (at a minimum, set `vcr_mode` back to `none`). Subsequent test runs will pull data from the VCR .yml file to satisfy future web requests.
 
-You may need to add yourself to the [team of the behat-tests site](https://admin.dashboard.pantheon.io/sites/e885f5fe-6644-4df6-a292-68b2b57c33ad#dev/code) (Pantheon employees) or use a different test site.
+You may need to add yourself to the [team of the behat-tests site](https://admin.dashboard.pantheon.io/sites/e885f5fe-6644-4df6-a292-68b2b57c33ad#dev/code) (Pantheon employees) or use a different test site. Once you have captured the events you would like to record, hand-sanitize them of any sensitive information such as machine tokens and bearer authorization headers.
 
 Versioning
 ----------

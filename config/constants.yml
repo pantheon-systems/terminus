@@ -24,7 +24,7 @@ TERMINUS_DATE_FORMAT: 'Y-m-d H:i:s'
 TERMINUS_TIME_ZONE:   'UTC'
 
 # File Storage
-TERMINUS_CACHE_DIR:         '/tmp/.terminus/cache'
+TERMINUS_CACHE_DIR:         '[[ TERMINUS_USER_HOME ]]/.terminus/cache'
 TERMINUS_PLUGINS_DIR:       '[[ TERMINUS_USER_HOME ]]/.terminus/plugins'
 TERMINUS_COMMAND_CACHE_DIR: '[[ TERMINUS_CACHE_DIR ]]/commands'
 TERMINUS_TOKENS_DIR:        '[[ TERMINUS_CACHE_DIR ]]/tokens'
