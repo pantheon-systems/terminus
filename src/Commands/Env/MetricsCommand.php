@@ -28,8 +28,8 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     const DEFAULT_DAILY_DATAPOINTS = 28;
 
     /**
-     * Displays the metrics (page views, unique visits, etc.) for the
-     * environment. The most recent data up to the current day is returned.
+     * Displays the pages served and unique visit metrics for the specified
+     * site's environment. The most recent data up to the current day is returned.
      *
      * @authorize
      *
@@ -42,12 +42,16 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *     pages_served: Pages Served
      * @return RowsOfFieldsWithMetadata
      *
-     * @param string $site_env Site & environment in the format `site-name.env`
-     * @option period The time period for each data point (month or day)
+     * @param string $site_env Site & environment in the format `site-name.env`.
+     *   Defaults to the live environment if `.env` is not specified.
+     * @option period The time period for each data point (month|week|day)
      * @option datapoints How much data to return in total, or 'auto' to select
      *   a resonable default based on the selected period.
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
+     * @usage <site> Displays metrics for <site>'s live environment.
+     * @usage <site> --fields=datetime,pages_served Displays only the pages
+     *   served for each date period.
      */
     public function metrics(
         $site_env,
