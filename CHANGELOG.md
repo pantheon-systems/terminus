@@ -1,7 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.8.0 - 2018-03-29
+### Added
+- `alpha:env:metrics` command has been added. (#1835)
+
 ### Fixed
 - Prevented missing data about a site's upstream from preventing functioning of the SiteUpstream model. (#1833)
 
