@@ -1,7 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.8.0 - 2018-03-29
+### Added
+- `alpha:env:metrics` command has been added. (#1835)
+
+### Fixed
+- Prevented missing data about a site's upstream from preventing functioning of the SiteUpstream model. (#1833)
+
+## 1.7.1 - 2018-02-27
+### Fixed
+- Fixed `workflow:watch` command by preventing cached data from being pulled. (#1827)
+
+## 1.7.0 - 2018-01-29
 ### Added
 - Added a `last_frozen_at` field to the output of `site:info` and the `Site::serialize()` function. (#1788)
 

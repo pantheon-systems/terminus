@@ -84,9 +84,19 @@ abstract class APICollection extends TerminusCollection
      */
     protected function requestData()
     {
+        return $this->requestDataAtUrl($this->getUrl(), $this->getFetchArgs());
+    }
+
+    /**
+     * Make a request at a specific URL
+     * @param string $url address to fetch
+     * @param array $args request arguments (@see APICollection::getFetchArgs())
+     * @return array
+     */
+    protected function requestDataAtUrl($url, $args = [])
+    {
         $default_args = ['options' => ['method' => 'get',],];
-        $args = array_merge($default_args, $this->getFetchArgs());
-        $url = $this->getUrl();
+        $args = array_merge($default_args, $args);
 
         if ($this->isPaged()) {
             $results = $this->request()->pagedRequest($url, $args);

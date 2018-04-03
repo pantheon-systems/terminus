@@ -48,9 +48,23 @@ class SiteUpstreamTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the Upstream::parseAttributes() function
+     * Tests the Upstream::parseAttributes() function when the data has neither an ID nor a product ID
      */
-    public function testParseAttributes()
+    public function testParseAttributesWithoutIDAndWithoutProductID()
+    {
+        $data = [
+            'repository_url' => 'repository.url',
+            'repository_branch' => 'repo branch',
+            'type' => 'custom',
+        ];
+        $model = new SiteUpstream((object)$data);
+        $this->assertNull($model->id);
+    }
+
+    /**
+     * Tests the Upstream::parseAttributes() function when the data has no ID but has a product ID
+     */
+    public function testParseAttributesWithoutIDButWithProductID()
     {
         $data = [
             'product_id' => 'upstream id',
@@ -60,6 +74,37 @@ class SiteUpstreamTest extends \PHPUnit_Framework_TestCase
         ];
         $model = new SiteUpstream((object)$data);
         $this->assertEquals($data['product_id'], $model->id);
+    }
+
+    /**
+     * Tests the Upstream::parseAttributes() function when the data has an ID and no product ID
+     */
+    public function testParseAttributesWithoutProductIDButWithID()
+    {
+        $data = [
+            'id' => 'upstream id',
+            'repository_url' => 'repository.url',
+            'repository_branch' => 'repo branch',
+            'type' => 'custom',
+        ];
+        $model = new SiteUpstream((object)$data);
+        $this->assertEquals($data['id'], $model->id);
+    }
+
+    /**
+     * Tests the Upstream::parseAttributes() function when the data has both an ID and a Product ID
+     */
+    public function testParseAttributesWithIDAndProductID()
+    {
+        $data = [
+            'id' => 'upstream id',
+            'product_id' => 'product id',
+            'repository_url' => 'repository.url',
+            'repository_branch' => 'repo branch',
+            'type' => 'custom',
+        ];
+        $model = new SiteUpstream((object)$data);
+        $this->assertEquals($data['id'], $model->id);
     }
 
     /**

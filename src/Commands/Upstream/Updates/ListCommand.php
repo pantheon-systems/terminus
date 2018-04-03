@@ -11,7 +11,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 class ListCommand extends UpdatesCommand
 {
     /**
-     * Displays a list of new code commits available from the upstream for a site's development environment.
+     * Displays a cached list of new code commits available from the upstream for a site's development environment.
+     * Note: To refresh the cache you will need to run site:upstream:clear-cache before running this command.
      *
      * @authorize
      *

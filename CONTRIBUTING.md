@@ -4,7 +4,7 @@ Contribute
 Creating Issues
 ---------------
 
-Run `terminus cli version` to confirm you are [running the latest version](https://github.com/pantheon-systems/terminus/releases) before opening a new issue.
+Run `terminus self:info` to confirm you are [running the latest version](https://github.com/pantheon-systems/terminus/releases) before opening a new issue.
 
 Setting Up
 ----------
@@ -75,7 +75,11 @@ The Terminus 1.x unit tests can be run via:
 
 ### Functional Tests
 
-The functional test files are in the `tests/features` directory. To run the entire test suite for Terminus 0.x:
+The functional test files are in the `tests/features` directory. Any test which touches the backed is mocked with [VCR](http://php-vcr.github.io).
+
+#### Running existing tests
+
+To run the entire test suite for Terminus 0.x:
 
   `vendor/bin/behat -c=tests/config/behat.yml`
 
@@ -92,6 +96,22 @@ The functional test files for the new version of Terminus are in the `tests/acti
 
 More information can be found by running `vendor/bin/behat --help`.
 
+#### Recording new tests
+
+To record a new test, configure the `parameters` section of the file [tests/config/behat.yml](tests/config/behat.yml) as follows:
+```
+parameters:
+  user_id:                 '[[YOUR-USER-ID-HERE]]'
+  username:                '[[YOUR-EMAIL-ADDRESS-HERE]]'
+  host:                    'terminus.pantheon.io:443'
+  vcr_mode:                'new_episodes'
+  machine_token:           '[[YOUR-MACHINE-TOKEN-HERE]]'
+```
+Then, run a single test as described above. VCR will then call the backend and record the results received in the specified .yml file. This is done for any Behat scenario labeled `@vcr filename.yml`. Pick a filename appropriate for the test.
+
+Once the VCR .yml file has been saved, you may restore your behat.yml configuration file to its previous state (at a minimum, set `vcr_mode` back to `none`). Subsequent test runs will pull data from the VCR .yml file to satisfy future web requests.
+
+You may need to add yourself to the [team of the behat-tests site](https://admin.dashboard.pantheon.io/sites/e885f5fe-6644-4df6-a292-68b2b57c33ad#dev/code) (Pantheon employees) or use a different test site. Once you have captured the events you would like to record, hand-sanitize them of any sensitive information such as machine tokens and bearer authorization headers.
 
 Versioning
 ----------
