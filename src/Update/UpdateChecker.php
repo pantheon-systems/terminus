@@ -46,7 +46,7 @@ EOT;
     public function run()
     {
         $should_hide_update = (bool) $this->getConfig()->get('hide_update_message');
-        if ($should_hide_update || !empty(getenv("CI"))) {
+        if ($should_hide_update) {
             return;
         }
         $running_version = $this->getRunningVersion();
