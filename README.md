@@ -51,17 +51,6 @@ composer remove pantheon-systems/terminus
 ```
 before requiring it.
 
-### Installing with [Homebrew](http://brew.sh/) (for Macs)
-This only installs stable versions of Terminus, and will install the latest 0.13.x release until 1.0 is out of beta.
-If you do not have `homebrew-php` already tapped, here are the commands for the taps:
-```bash
-brew tap homebrew/php
-```
-And after you're all tapped out, install Terminus with this command:
-```bash
-brew install homebrew/php/terminus
-```
-
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would
 like to contribute to the Terminus source, this is the way you should install it. You will require Composer for this installation.
