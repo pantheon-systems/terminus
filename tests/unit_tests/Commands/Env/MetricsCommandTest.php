@@ -2,7 +2,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\MetricsCommand;
-use Pantheon\Terminus\Collections\Metrics;
+use Pantheon\Terminus\Collections\EnvironmentMetrics;
 use Pantheon\Terminus\Models\Metric;
 
 /**
@@ -22,17 +22,17 @@ class MetricsCommandTest extends EnvCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
 
-        $this->metrics = $this->getMockBuilder(Metrics::class)
+        $this->metrics = $this->getMockBuilder(EnvironmentMetrics::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        // Ignore the calls to the fluid initializers in the Metrics class.
+        // Ignore the calls to the fluid initializers in the EnvironmentMetrics class.
         $this->metrics->method('setSeriesId')->willReturn($this->metrics);
         $this->metrics->method('setPeriod')->willReturn($this->metrics);
         $this->metrics->method('setDatapoints')->willReturn($this->metrics);
         $this->metrics->method('selectDatapoints')->willReturn(2);
 
-        $this->environment->method('getMetrics')->willReturn($this->metrics);
+        $this->environment->method('getEnvironmentMetrics')->willReturn($this->metrics);
         $this->environment->method('getName')->willReturn('live');
 
         $this->metric_1_attribs = [

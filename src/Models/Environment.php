@@ -8,7 +8,7 @@ use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Collections\Bindings;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Collections\Domains;
-use Pantheon\Terminus\Collections\Metrics;
+use Pantheon\Terminus\Collections\EnvironmentMetrics;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Friends\SiteInterface;
@@ -437,14 +437,14 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     }
 
     /**
-     * @return Metrics
+     * @return EnvironmentMetrics
      */
-    public function getMetrics()
+    public function getEnvironmentMetrics()
     {
-        if (empty($this->metrics)) {
-            $this->metrics = $this->getContainer()->get(Metrics::class, [['environment' => $this,],]);
+        if (empty($this->environment_metrics)) {
+            $this->environment_metrics = $this->getContainer()->get(EnvironmentMetrics::class, [['environment' => $this,],]);
         }
-        return $this->metrics;
+        return $this->environment_metrics;
     }
 
     /**

@@ -11,6 +11,7 @@ use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\SiteMetrics;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
@@ -306,6 +307,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,],]);
         }
         return $this->workflows;
+    }
+
+    /**
+     * @return SiteMetrics
+     */
+    public function getSiteMetrics()
+    {
+        if (empty($this->site_metrics)) {
+            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class, [['site' => $this,],]);
+        }
+        return $this->site_metrics;
     }
 
     /**
