@@ -56,7 +56,6 @@ class ApplyCommand extends UpdatesCommand
                 // @TODO: Add Symfony progress bar to indicate that something is happening.
             }
             $this->log()->notice($workflow->getMessage());
-            $this->log()->notice('Applied upstream updates to "dev"');
         } else {
             $this->log()->warning('There are no available updates for this site.');
         }
