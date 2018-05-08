@@ -44,7 +44,8 @@ class ListCommand extends UpdatesCommand
         }
 
         usort(
-            $data, function ($a, $b) {
+            $data,
+            function ($a, $b) {
                 if (strtotime($a['datetime']) === strtotime($b['datetime'])) {
                     return 0;
                 }
