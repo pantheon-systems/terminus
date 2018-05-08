@@ -93,17 +93,17 @@ class ListCommandTest extends UpdatesCommandTest
         $out = $this->command->listUpstreamUpdates('123');
         $result = [
             [
-                'hash' => '1bc423f65b3cc527b77d91da5c95eb240d9484f0',
-                'datetime' => '2016-06-16T04:21:14',
-                'message' => 'Update to Drupal 7.44. For more information, see ' .
-                    'https://www.drupal.org/project/drupal/releases/7.44.',
-                'author' => 'Pantheon Automation',
-            ],
-            [
                 'hash' => '2f1c945d01cd03250e2b6668ad77bf24f54a5a56',
                 'datetime' => '2016-07-07T20:24:52',
                 'message' => 'Update to Drupal 7.50. For more information, see ' .
                     'https://www.drupal.org/project/drupal/releases/7.50',
+                'author' => 'Pantheon Automation',
+            ],
+            [
+                'hash' => '1bc423f65b3cc527b77d91da5c95eb240d9484f0',
+                'datetime' => '2016-06-16T04:21:14',
+                'message' => 'Update to Drupal 7.44. For more information, see ' .
+                    'https://www.drupal.org/project/drupal/releases/7.44.',
                 'author' => 'Pantheon Automation',
             ],
         ];
