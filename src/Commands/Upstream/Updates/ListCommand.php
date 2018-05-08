@@ -43,6 +43,15 @@ class ListCommand extends UpdatesCommand
             ];
         }
 
+        usort(
+            $data, function ($a, $b) {
+                if (strtotime($a['datetime']) === strtotime($b['datetime'])) {
+                    return 0;
+                }
+                return (strtotime($a['datetime']) > strtotime($b['datetime'])) ? -1 : 1;
+            }
+        );
+
         if (empty($data)) {
             $this->log()->warning('There are no available updates for this site.');
         }
