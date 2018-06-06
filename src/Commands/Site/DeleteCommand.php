@@ -27,7 +27,13 @@ class DeleteCommand extends SiteCommand
             return;
         }
 
-        $site->delete();
-        $this->log()->notice('Deleted {site} from Pantheon', ['site' => $site_name,]);
+        // This is a holdover until Pantheon\Terminus\Models\Site's delete()
+        // function is refactored to use workflows.
+        if ($site->get('service_level') != 'free') {
+            $this->log()->warning('You must downgrade {site} to free tier before deleting', ['site' => $site_name,]);
+        } else {
+            $site->delete();
+            $this->log()->notice('Deleted {site} from Pantheon', ['site' => $site_name,]);
+        }
     }
 }

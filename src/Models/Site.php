@@ -125,6 +125,8 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     {
         $this->request()->request("sites/{$this->id}", ['method' => 'delete',]);
         //TODO: Change this function to use a workflow. The workflow returned always gets 404 on status check.
+        //TODO: After converting this function to use workflows, refactor
+        //      Pantheon\Terminus\Commands\Site\DeleteCommand to display correct message.
         //return $this->workflows->create('delete_site');
     }
 
