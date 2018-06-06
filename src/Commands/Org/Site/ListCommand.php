@@ -39,16 +39,21 @@ class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, Site
      *
      * @param string $organization Organization name, label, or ID
      * @option string $tag Tag name to filter
+     * @option string $upstream Upstream name to filter
      *
      * @usage <organization> Displays the list of sites associated with <organization>.
      * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have the <tag> tag.
+     * @usage <organization> --upstream=<upstream_uuid> Displays the list of sites associated with <organization> on the upstream with id <upstream_uuid>.
      */
-    public function listSites($organization, $options = ['tag' => null,])
+    public function listSites($organization, $options = ['tag' => null, 'upstream' => null])
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
+        }
+        if (!is_null($upstream = $options['upstream'])) {
+            $this->sites->filterByUpstream($upstream);
         }
         return $this->getRowsOfFields(
             $this->sites,

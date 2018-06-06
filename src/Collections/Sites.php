@@ -141,6 +141,19 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
+     * Filters sites list by upstream
+     *
+     * @param string $upstream An upstream to filter by
+     * @return Sites
+     */
+    public function filterByUpstream($upstream_uuid)
+    {
+        return $this->filter(function ($model) use ($upstream_uuid) {
+            return ($model->getUpstream()->get('product_id') == $upstream_uuid);
+        });
+    }
+
+    /**
      * Retrieves the site of the given UUID or name
      *
      * If the site list has already been fetched then this function will search for the site in the fetched list.
