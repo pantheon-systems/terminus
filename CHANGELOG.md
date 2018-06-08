@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 1.8.1 - 2018-06-08
 ### Fixed
 - Fixed bug wherein messages that are passed in as arrays to TerminusException cause failure. (#1863)
 
