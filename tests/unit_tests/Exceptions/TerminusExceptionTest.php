@@ -48,4 +48,18 @@ class TerminusExceptionTest extends \PHPUnit_Framework_TestCase
         $out = $exception->getMessage();
         $this->assertEquals($out, $expected_message);
     }
+
+    /**
+     * Indirectly tests the interpolateString function when the message is an array
+     */
+    public function testInterpolateStringWithArray()
+    {
+        $raw_message = ['{key} is a', 'key'];
+        $replacements = ['key' => 'value',];
+        $expected_message = 'value is a' . PHP_EOL . 'key';
+        $exception = new TerminusException($raw_message, $replacements);
+
+        $out = $exception->getMessage();
+        $this->assertEquals($out, $expected_message);
+    }
 }
