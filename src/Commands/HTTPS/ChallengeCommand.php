@@ -22,8 +22,8 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command https:challenge-file
-     * @aliases challenge
+     * @command https:challenge:file
+     * @aliases acme-file
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $domain The domain to produce a challenge for.
@@ -31,6 +31,62 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
      * @usage <site>.<env> Displays domains associated with <site>'s <env> environment.
      */
     public function writeChallengeFile($site_env, $domain)
+    {
+        list($data, $acmeStatus) = $this->getACMEStatus($site_env, $domain);
+        if (!$acmeStatus) {
+            return;
+        }
+
+        // Sanity check: this should never happen, as getACMEStatus should throw
+        // in any instance where there is no verification file data.
+        if (empty($data->verification_file_name) || empty($data->verification_file_link)) {
+            throw new TerminusException('No challenge file information available for domain {domain}.', compact('status', 'domain'));
+        }
+
+        $filename = $data->verification_file_name;
+        $contents = file_get_contents($data->verification_file_link);
+
+        file_put_contents($filename, $contents);
+        $this->log()->notice('Wrote ACME challenge to file {filename}', compact('filename'));
+        $this->log()->notice('Please copy this file to your web server so that it will be served from the URL');
+        $this->log()->notice('{url}', ['url' => "http://$domain/.well-known/acme-challenge/$filename"]);
+    }
+
+    /**
+     * Get a DNS-txt record challenge.
+     *
+     * @authorize
+     *
+     * @command https:challenge:dns-txt
+     * @aliases acme-txt
+     *
+     * @param string $site_env Site & environment in the format `site-name.env`
+     * @param string $domain The domain to produce a challenge for.
+     *
+     * @usage <site>.<env> Displays domains associated with <site>'s <env> environment.
+     */
+    public function getChallengeDNStxt($site_env, $domain)
+    {
+        list($data, $acmeStatus) = $this->getACMEStatus($site_env, $domain);
+        if (!$acmeStatus) {
+            return;
+        }
+
+        // Sanity check: this should never happen, as getACMEStatus should throw
+        // in any instance where there is no verification file data.
+        if (empty($data->verification_file_name) || empty($data->verification_file_link)) {
+            throw new TerminusException('No challenge file information available for domain {domain}.', compact('status', 'domain'));
+        }
+
+        $contents = file_get_contents($data->verification_file_link);
+        $this->log()->notice('Put something like {contents} in a DNS txt record for {domain}. I don\'t know, it\'s going to be something like that. We\'re still working on this thing, you know?', compact('contents', 'domain'));
+    }
+
+    /**
+     * Look up the HTTPS ACME verification status for a site & environment
+     * that need verification.
+     */
+    protected function getACMEStatus($site_env, $domain)
     {
         list(, $env) = $this->getSiteEnv($site_env);
 
@@ -48,28 +104,18 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
 
         if ($status == 'completed') {
             $this->log()->notice('Domain verification for {domain} has been completed.', compact('domain'));
-            return;
+            return [$data, false];
         }
 
         if ($status == 'not_required') {
             $this->log()->notice('Domain verification for {domain} is not necessary; https has not been configured for this domain in its current location.', compact('domain'));
-            return;
+            return [$data, false];
         }
 
         if ($status != 'required') {
             throw new TerminusException('Unimplemented status {status} for domain {domain}.', compact('status', 'domain'));
         }
 
-        if (empty($data->verification_file_name) || empty($data->verification_file_link)) {
-            throw new TerminusException('No challenge file information available for domain {domain}.', compact('status', 'domain'));
-        }
-
-        $filename = $data->verification_file_name;
-        $contents = file_get_contents($data->verification_file_link);
-
-        file_put_contents($filename, $contents);
-        $this->log()->notice('Wrote ACME challenge to file {filename}', compact('filename'));
-        $this->log()->notice('Please copy this file to your web server so that it will be served from the URL');
-        $this->log()->notice('{url}', ['url' => "http://$domain/.well-known/acme-challenge/$filename"]);
+        return [$data, true];
     }
 }
