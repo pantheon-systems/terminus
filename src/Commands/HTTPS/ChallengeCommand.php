@@ -42,7 +42,7 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
         }
         $domainToVerify = $domains->get($domain);
 
-        $data = $env->validateACMEChallenge($domainToVerify->id);
+        $data = $domains->getACMEStatus($domainToVerify->id);
         $data = $data->ownership_status;
         $status = $data->status;
 
