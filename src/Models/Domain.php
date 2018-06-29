@@ -53,6 +53,14 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
     }
 
     /**
+     * @return string
+     */
+    public function getStatus()
+    {
+        return in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status');
+    }
+
+    /**
      * Formats Domain object into an associative array for output
      *
      * @return array $data associative array of data for output
@@ -62,7 +70,7 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
         return [
             'id' => $this->id,
             'type' => $this->get('type'),
-            'status' => in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status'),
+            'status' => $this->getStatus(),
             'status_message' => $this->get('status_message'),
             'deletable' => $this->get('deletable') ? 'true' : 'false',
         ];

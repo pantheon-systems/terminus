@@ -339,6 +339,19 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         return $this->getWorkflows()->create('deploy', compact('params'));
     }
 
+    public function validateACMEChallenge($domain)
+    {
+        $path = sprintf(
+            'sites/%s/environments/%s/domains/%s',
+            $this->getSite()->id,
+            $this->id,
+            $domain
+        );
+        $options = ['method' => 'get',];
+        $data = $this->request()->request($path, $options);
+        return $data['data'];
+    }
+
     /**
      * Gets diff from multidev environment
      *
