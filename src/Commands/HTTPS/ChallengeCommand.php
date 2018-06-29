@@ -73,13 +73,14 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         // Sanity check: this should never happen, as getACMEStatus should throw
-        // in any instance where there is no verification file data.
-        if (empty($data->verification_file_name) || empty($data->verification_file_link)) {
-            throw new TerminusException('No challenge file information available for domain {domain}.', compact('status', 'domain'));
+        // in any instance where there is no verification dns txt record.
+        if (empty($data->verification_dns_txt)) {
+            throw new TerminusException('No DNS txt record challenge information available for domain {domain}.', compact('status', 'domain'));
         }
 
-        $contents = file_get_contents($data->verification_file_link);
-        $this->log()->notice('Put something like {contents} in a DNS txt record for {domain}. I don\'t know, it\'s going to be something like that. We\'re still working on this thing, you know?', compact('contents', 'domain'));
+        $contents = $data->verification_dns_txt;
+        $this->log()->notice('Create a DNS txt record:', compact('contents', 'domain'));
+        $this->log()->notice('_acme-challenge.{domain}. 300 IN TXT "{contents}"', compact('contents', 'domain'));
     }
 
     /**
