@@ -47,7 +47,6 @@ class VerifyACMEChallengeCommand extends TerminusCommand implements SiteAwareInt
         }
 
         foreach ($domainsToVerify as $domainToVerify) {
-
             $data = $env->validateACMEChallenge($domainToVerify->id);
 
             // Probably we can check $data->ownership_status to determine
