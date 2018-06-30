@@ -79,7 +79,7 @@ For more information on update options or to report an issue with this method, p
 ### Updating with Composer
 Run this in your terminal client:
 ```bash
-cd /install/location ; composer update
+cd /install/location ; composer update pantheon-systems/terminus
 ```
 
 ### Updating with [Homebrew](http://brew.sh/) (for Macs)
