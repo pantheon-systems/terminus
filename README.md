@@ -100,7 +100,7 @@ cd /install/location/terminus ; git pull
 composer update
 ```
 
-**Optionally**, for ease of development, we suggest aliasing or setting the path bash configuration file, or
+**Optionally**, for ease of development we suggest aliasing, setting the PATH in the bash configuration file, or
 symlinking to it. This file is located at `~/.bashrc` on Linux systems and at `~/.bash_profile` on Mac.
 #### Alias
 ```bash
