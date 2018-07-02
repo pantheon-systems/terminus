@@ -95,7 +95,7 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
         if (!$domains->has($domain)) {
             $command = "terminus domain:add $site_env $domain";
             $this->log()->notice('The domain {domain} has not been added to this site and environment. Use the command {command} to add it.', compact('domain', 'command'));
-            throw new TerminusException('Cannot create challenge file.');
+            throw new TerminusException('Cannot create challenge for missing domain.');
         }
         $domainToVerify = $domains->get($domain);
 
