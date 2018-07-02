@@ -62,10 +62,19 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $domain The domain to produce a challenge for.
+     * @default-string-field challenge
+     * @field-labels
+     *     domain: Domain
+     *     record-name: Record Name
+     *     ttl: TTL
+     *     class: Class
+     *     record-type: Record Type
+     *     challenge: Challenge
+     * @return RowsOfFields
      *
      * @usage <site>.<env> Displays domains associated with <site>'s <env> environment.
      */
-    public function getChallengeDNStxt($site_env, $domain)
+    public function getChallengeDNStxt($site_env, $domain, $options = ['format' => 'list'])
     {
         list($data, $acmeStatus) = $this->getACMEStatus($site_env, $domain);
         if (!$acmeStatus) {
@@ -78,9 +87,21 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('No DNS txt record challenge information available for domain {domain}.', compact('status', 'domain'));
         }
 
-        $contents = $data->verification_dns_txt;
-        $this->log()->notice('Create a DNS txt record:', compact('contents', 'domain'));
-        $this->log()->notice('_acme-challenge.{domain}. 300 IN TXT "{contents}"', compact('contents', 'domain'));
+        $txt_record_components = [
+            'domain' => $domain,
+            'record-name' => "_acme-challenge.$domain.",
+            'ttl' => '300',
+            'class' => 'IN',
+            'record-type' => 'TXT',
+            'challenge' => $data->verification_dns_txt,
+        ];
+
+        $dns_txt_record_tmpl = 'record-name ttl class record-type "challenge"';
+        $txt_record = str_replace(array_keys($txt_record_components), array_values($txt_record_components), $dns_txt_record_tmpl);
+
+        $this->log()->notice('Create a DNS txt record containing:', compact('contents', 'domain'));
+
+        return new RowsOfFields([$txt_record => $txt_record_components]);
     }
 
     /**
