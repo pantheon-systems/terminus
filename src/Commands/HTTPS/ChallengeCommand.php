@@ -99,8 +99,12 @@ class ChallengeCommand extends TerminusCommand implements SiteAwareInterface
         $dns_txt_record_tmpl = 'record-name ttl class record-type "challenge"';
         $txt_record = str_replace(array_keys($txt_record_components), array_values($txt_record_components), $dns_txt_record_tmpl);
 
-        $this->log()->notice('Create a DNS txt record containing:', compact('contents', 'domain'));
-
+        // Provide instructions in a log message when the format is 'list'
+        // n.b. 'list' format prints out each line's key, which for this
+        // command is the full dns txt record.
+        if ($options['format'] == 'list') {
+            $this->log()->notice('Create a DNS txt record containing:', compact('contents', 'domain'));
+        }
         return new RowsOfFields([$txt_record => $txt_record_components]);
     }
 
