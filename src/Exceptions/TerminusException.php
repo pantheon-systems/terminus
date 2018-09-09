@@ -69,6 +69,9 @@ class TerminusException extends \Exception
         foreach ($replacements as $key => $val) {
             $tr['{' . $key . '}'] = $val;
         }
+        if (is_array($message)) {
+            $message = implode(PHP_EOL, $message);
+        }
         return strtr($message, $tr);
     }
 }

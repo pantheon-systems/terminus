@@ -49,7 +49,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *   a resonable default based on the selected period.
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
-     * @usage <site> Displays metrics for <site>'s live environment.
+     * @usage <site> Displays the combined metrics for all of <site>'s environments.
      * @usage <site> --fields=datetime,pages_served Displays only the pages
      *   served for each date period.
      */
@@ -60,16 +60,23 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
             'datapoints' => 'auto'
         ]
     ) {
-        list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'live');
+        list($site_id, $env_id) = array_pad(explode('.', $site_env), 2, null);
 
-        if ($env->getName() != 'live') {
-            throw new \Exception('Metrics are only supported for the "live" environment for now.');
+        if (empty($env_id)) {
+            $site = $this->getSite($site_id);
+
+            $data = $site->getSiteMetrics()
+                ->setPeriod($options['period'])
+                ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
+                ->serialize();
+        } else {
+            list(, $env) = $this->getUnfrozenSiteEnv($site_env, 'live');
+
+            $data = $env->getEnvironmentMetrics()
+                ->setPeriod($options['period'])
+                ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
+                ->serialize();
         }
-
-        $data = $env->getMetrics()
-            ->setPeriod($options['period'])
-            ->setDatapoints($this->selectDatapoints($options['datapoints'], $options['period']))
-            ->serialize();
 
         return (new RowsOfFieldsWithMetadata($data))
             ->setDataKey('timeseries')

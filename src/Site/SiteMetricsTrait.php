@@ -1,26 +1,16 @@
 <?php
 
-namespace Pantheon\Terminus\Collections;
+namespace Pantheon\Terminus\Site;
 
 use Pantheon\Terminus\Models\Metric;
 
 /**
- * Class Metrics
- * @package Pantheon\Terminus\Collections
+ * SiteMetricsTrait
+ * @package Pantheon\Terminus\Site
  */
-class Metrics extends EnvironmentOwnedCollection
+trait SiteMetricsTrait
 {
     public static $pretty_name = 'metrics';
-
-    /**
-     * @var string
-     */
-    protected $collected_class = Metric::class;
-
-    /**
-     * @var string base URL to fetch
-     */
-    protected $url = 'sites/{site_id}/environments/{environment_id}/{series}?granularity={period}&datapoints={datapoints}';
 
     /**
      * @var array

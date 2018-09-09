@@ -3,7 +3,6 @@
 ## Status
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus)
 [![Windows CI](https://ci.appveyor.com/api/projects/status/niiheng08p25mgnm?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/terminus)
-[![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/github.com/pantheon-systems/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
  
 ## About
@@ -50,17 +49,6 @@ If you are having issues installing, please see to it that any old versions of T
 composer remove pantheon-systems/terminus
 ```
 before requiring it.
-
-### Installing with [Homebrew](http://brew.sh/) (for Macs)
-This only installs stable versions of Terminus, and will install the latest 0.13.x release until 1.0 is out of beta.
-If you do not have `homebrew-php` already tapped, here are the commands for the taps:
-```bash
-brew tap homebrew/php
-```
-And after you're all tapped out, install Terminus with this command:
-```bash
-brew install homebrew/php/terminus
-```
 
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would
