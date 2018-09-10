@@ -846,7 +846,7 @@ class EnvironmentTest extends ModelTestCase
         $expected = ['output' => 'Hello, World!', 'exit_code' => 0,];
         $this->local_machine->expects($this->at(0))
             ->method('execInteractive')
-            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "AddressFamily inet" ' . $expectedCommand)
+            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "StrictHostKeyChecking=no" -o "AddressFamily inet" ' . $expectedCommand)
             ->willReturn($expected);
 
         $actual = $this->model->sendCommandViaSsh($command);
@@ -856,7 +856,7 @@ class EnvironmentTest extends ModelTestCase
         $expected = [
             'output' => "Terminus is in test mode. "
                 . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"AddressFamily inet\" $expectedCommand",
+                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"StrictHostKeyChecking=no\" -o \"AddressFamily inet\" $expectedCommand",
             'exit_code' => 0
         ];
 
