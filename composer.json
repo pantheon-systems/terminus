@@ -7,7 +7,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=5.5.9",
+    "php": ">=5.5.38",
     "composer/semver": "^1.4",
     "consolidation/output-formatters": "^3.2",
     "consolidation/robo": "^1.1.0",
