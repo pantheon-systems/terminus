@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 ## MASTER
 ### Fixed
 - Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
+- Set minimum PHP version to 5.5.38; some earlier versions of PHP 5.5 do not work with Terminus. (#1875)
 
 ## 1.8.1 - 2018-06-08
 ### Fixed
