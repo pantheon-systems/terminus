@@ -731,7 +731,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     {
         $sftp = $this->sftpConnectionInfo();
         $ssh_command = vsprintf(
-            'ssh -T %s@%s -p %s -o "AddressFamily inet" %s',
+            'ssh -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet" %s',
             [$sftp['username'], $sftp['host'], $sftp['port'], ProcessUtils::escapeArgument($command),]
         );
 
