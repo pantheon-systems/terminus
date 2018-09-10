@@ -6,8 +6,9 @@ All notable changes to this project will be documented in this file. This projec
 - Added a `hide_git_mode_warning` option to disable the warning presented when users run Drush or WP-CLI commands on Pantheon sites that are in git mode.  (#1882)
 
 ### Fixed
-- Removed the prompt displayed when running Drush or wp-cli commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
 - Prevent spurious dependency validation failures with Terminus plugins that have `dev` components named in their composer.lock file that have not been installed. (#1880)
+- Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
+- Set minimum PHP version to 5.5.38; some earlier versions of PHP 5.5 do not work with Terminus. (#1875)
 
 ## 1.8.1 - 2018-06-08
 ### Fixed
