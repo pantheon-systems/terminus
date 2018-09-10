@@ -110,7 +110,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function validateEnvironment($site, $environment)
     {
-        $this->validateConnectionMode($environment->get('connection_mode'));
+        // Only warn in dev / multidev
+        if ($environment->isDevelopment()) {
+            $this->validateConnectionMode($environment->get('connection_mode'));
+        }
     }
 
     /**
@@ -120,7 +123,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function validateConnectionMode($mode)
     {
-        if ($mode == 'git') {
+        if ((!$this->getConfig()->get('hide_git_mode_warning')) && ($mode == 'git')) {
             $this->log()->warning(
                 'This environment is in read-only Git mode. If you want to make changes to the codebase of this site '
                 . '(e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first.'

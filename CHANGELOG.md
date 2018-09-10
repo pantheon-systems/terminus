@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- Added a `hide_git_mode_warning` option to disable the warning presented when users run Drush or WP-CLI commands on Pantheon sites that are in git mode.  (#1882)
+
 ### Fixed
 - Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
 
