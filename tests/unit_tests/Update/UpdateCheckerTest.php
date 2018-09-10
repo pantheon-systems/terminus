@@ -82,8 +82,8 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
 
         $this->config->expects($this->exactly(2))
             ->method('get')
-            ->withConsecutive(['version'], ['hide_update_message'])
-            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
+            ->withConsecutive(['hide_update_message'], ['version'])
+            ->willReturnOnConsecutiveCalls($hide_update_message, $running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -115,8 +115,8 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
 
         $this->config->expects($this->exactly(2))
             ->method('get')
-            ->withConsecutive(['version'], ['hide_update_message'])
-            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
+            ->withConsecutive(['hide_update_message'], ['version'])
+            ->willReturnOnConsecutiveCalls($hide_update_message, $running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
@@ -147,21 +147,10 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $latest_version_num = '1.0.0-beta.2';
         $hide_update_message = '1';
 
-        $this->config->expects($this->exactly(2))
+        $this->config->expects($this->once())
             ->method('get')
-            ->withConsecutive(['version'], ['hide_update_message'])
-            ->willReturnOnConsecutiveCalls($running_version_num, $hide_update_message);
-        $this->container->expects($this->once())
-            ->method('get')
-            ->with(
-                $this->equalTo(LatestRelease::class),
-                $this->equalTo([$this->data_store,])
-            )
-           ->willReturn($this->latest_release);
-        $this->latest_release->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('version'))
-            ->willReturn($latest_version_num);
+            ->with($this->equalTo('hide_update_message'))
+            ->willReturn($hide_update_message);
         $this->logger->expects($this->never())
             ->method('notice');
         $this->logger->expects($this->never())
@@ -177,11 +166,12 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
     public function testCannotCheckVersion()
     {
         $running_version_num = '1.0.0-beta.2';
+        $hide_update_message = false;
 
-        $this->config->expects($this->once())
+        $this->config->expects($this->exactly(2))
             ->method('get')
-            ->with($this->equalTo('version'))
-            ->willReturn($running_version_num);
+            ->withConsecutive(['hide_update_message'], ['version'])
+            ->willReturnOnConsecutiveCalls($hide_update_message, $running_version_num);
         $this->container->expects($this->once())
             ->method('get')
             ->with(
