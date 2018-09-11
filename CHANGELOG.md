@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 ## MASTER
 ### Fixed
 - Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
+- Fixed php warning when ssh key is missing its comment field. (#1843)
 
 ## 1.8.1 - 2018-06-08
 ### Fixed

@@ -40,7 +40,7 @@ class SSHKey extends TerminusModel implements UserInterface
     public function getComment()
     {
         $key_parts = explode(' ', $this->get('key'));
-        $comment = $key_parts[2];
+        $comment = isset($key_parts[2]) ? $key_parts[2] : '';
         return $comment;
     }
 
