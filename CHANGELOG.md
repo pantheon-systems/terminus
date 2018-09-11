@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file. This projec
 - Prevent spurious dependency validation failures with Terminus plugins that have `dev` components named in their composer.lock file that have not been installed. (#1880)
 - Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
 - Set minimum PHP version to 5.5.38; some earlier versions of PHP 5.5 do not work with Terminus. (#1875)
+- Fixed php warning when ssh key is missing its comment field. (#1843)
 
 ## 1.8.1 - 2018-06-08
 ### Fixed
