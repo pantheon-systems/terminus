@@ -10,6 +10,7 @@ use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
+use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class MetricsCommand
@@ -55,6 +56,10 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     ) {
         list($site_id, $env_id) = array_pad(explode('.', $site_env), 2, null);
 
+        if (!$this->validateDuration($options['duration'])) {
+            throw new TerminusException("Invalid duration parameter. Acceptable format: 7d, 15d, 30d, etc.");
+        }
+
         if (empty($env_id)) {
             $site = $this->getSite($site_id);
 
@@ -87,6 +92,24 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
                     return $cellData;
                 }
             );
+    }
+
+    /**
+     * Ensure that the user did not supply an invalid value for 'duration'.
+     *
+     * @param string $duration
+     * @return bool
+     */
+    protected function validateDuration($duration) {
+        $timeUnit = substr($duration, -1);
+        switch ($timeUnit) {
+            case 'd':
+                $daysAgo = explode($timeUnit, $duration)[0];
+                return preg_match('/^[0-9]+$/', $daysAgo);
+            default:
+                return false;
+        }
+        return false;
     }
 
     /**
