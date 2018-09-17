@@ -13,19 +13,9 @@ trait SiteMetricsTrait
     public static $pretty_name = 'metrics';
 
     /**
-     * @var array
+     * @var string How far back do you wish to retreive data
      */
-    protected $metadata;
-
-    /**
-     * @var string The period of data to fix (month/week/day)
-     */
-    protected $period;
-
-    /**
-     * @var string The number of data points to fetch (28/12 max)
-     */
-    protected $datapoints;
+    protected $duration;
 
     /**
      * Metrics constructor
@@ -37,33 +27,17 @@ trait SiteMetricsTrait
     /**
      * @return string
      */
-    public function getPeriod()
+    public function getDuration()
     {
-        return $this->period;
+        return $this->duration;
     }
 
     /**
      * @param string $value
      */
-    public function setPeriod($value)
+    public function setDuration($value)
     {
-        return $this->setParameter('period', $value);
-    }
-
-    /**
-     * @return string
-     */
-    public function getDatapoints()
-    {
-        return $this->datapoints;
-    }
-
-    /**
-     * @param string $value
-     */
-    public function setDatapoints($value)
-    {
-        return $this->setParameter('datapoints', $value);
+        return $this->setParameter('duration', $value);
     }
 
     /**
@@ -88,26 +62,7 @@ trait SiteMetricsTrait
      */
     protected function requestData()
     {
-        $rawPagesServed = $this->requestDataAtUrl($this->getUrlForSeries('pageviews'), $this->getFetchArgs());
-
-        if (empty($rawPagesServed->timeseries)) {
-            throw new \Exception("No data available.");
-        }
-
-        $rawVisits = $this->requestDataAtUrl($this->getUrlForSeries('visits'), $this->getFetchArgs());
-
-        // The data is passed to us with the data series of primary
-        // interest to us nested inside a 'timeseries' element. The
-        // requirements for an EnvironmentOwnedCollection or any
-        // TerminusCollection is that the request data must return
-        // a list of all of our data items.
-        // (@see TerminusCollection::fetch())
-        // We also need to ensure that the elements of our timeseries
-        // have unique IDs. We will use the time value for this.
-        $pageviewData = $this->assignIds($rawPagesServed->timeseries, 'timestamp');
-        $visitData = $this->assignIds($rawVisits->timeseries, 'timestamp');
-        $combineddata = $this->combineRawData($pageviewData, $visitData);
-
+        $trafficData = $this->requestDataAtUrl($this->getUrlForSeries('traffic'), $this->getFetchArgs());
         // Convert the timestamp to a datetime. The timestamp will remain
         // as the row key.
         $data = array_map(
@@ -116,16 +71,8 @@ trait SiteMetricsTrait
                 unset($item->timestamp);
                 return $item;
             },
-            $combineddata
+            $trafficData->timeseries
         );
-
-        // Our parent class is already caching our data series; we will
-        // store the other items in a 'metadata' field. We will avoid
-        // caching the raw data because that would duplicate data
-        // already cached.
-        unset($rawPagesServed->timeseries);
-        $this->metadata = $rawPagesServed;
-
         return $data;
     }
 
@@ -154,7 +101,7 @@ trait SiteMetricsTrait
     public function serialize()
     {
         $timeseries = parent::serialize();
-        return (array) $this->metadata + ['timeseries' => $timeseries];
+        return (array) ['timeseries' => $timeseries];
     }
 
     /**
@@ -186,11 +133,10 @@ trait SiteMetricsTrait
      */
     protected function getUrlForSeries($seriesId)
     {
+
         $url = $this->getUrl();
         $tr = [
-            '{series}' => $seriesId,
-            '{period}' => $this->getPeriod(),
-            '{datapoints}' => $this->getDatapoints(),
+            '{duration}' => $this->getDuration()
         ];
         return strtr($url, $tr);
     }
