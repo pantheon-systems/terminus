@@ -68,6 +68,12 @@ You can now run the bleeding-edge version of Terminus via:
 bin/terminus
 ```
 
+### Installing with [Homebrew](http://brew.sh/) (for Macs)
+Update Terminus with this command:
+```bash
+brew install terminus
+```
+
 ## Updating
 ### Updating via the Terminus installer
 Run this in your Terminal client:
@@ -82,12 +88,6 @@ Run this in your terminal client:
 cd /install/location ; composer update
 ```
 
-### Updating with [Homebrew](http://brew.sh/) (for Macs)
-Update Terminus with this command:
-```bash
-brew upgrade homebrew/php/terminus
-```
-
 ### Updating with Git
 To update with Git and use Terminus HEAD, you should update this repository and then update its dependencies via Composer.
 
@@ -98,6 +98,12 @@ cd /install/location/terminus ; git pull
 - Update the Composer dependencies:
 ```bash
 composer update
+```
+
+### Updating with [Homebrew](http://brew.sh/) (for Macs)
+Update Terminus with this command:
+```bash
+brew upgrade terminus
 ```
 
 **Optionally**, for ease of development we suggest aliasing, setting the PATH in the bash configuration file, or
