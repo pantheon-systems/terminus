@@ -598,8 +598,9 @@ class FeatureContext implements Context
      */
     public function iRun($command)
     {
+        $terminus_bin = getenv('TERMINUS_BIN') ?: 'bin/terminus';
         $regex        = '/(?<!\.)terminus/';
-        $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
+        $command = preg_replace($regex, $terminus_bin, $command);
         $command = $this->replacePlaceholders($command);
 
         if (isset($this->connection_info['host'])) {
