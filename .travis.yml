@@ -6,12 +6,16 @@ branches:
     - master
     - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
 
-php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.5
+    - php: 5.6
+    - php: 7.0
+    - php: 7.1
+    - php: 7.2
+    - php: 7.2
+      env: TERMINUS_BIN=terminus.phar
 
 sudo: false
 
@@ -19,7 +23,6 @@ env:
   global:
     - TERMINUS_TEST_MODE=1
     - COMPOSER_PROCESS_TIMEOUT=3600
-    - TERMINUS_BIN=terminus.phar
 
 before_script:
   - set -ex
@@ -30,7 +33,7 @@ script:
   - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
   - composer cs
   - composer phpunit
-  - if [ -n "$TERMINUS_BIN" ] ; then phar:install-tools; composer phar:build ; fi
+  - if [ -n "$TERMINUS_BIN" ] ; then composer phar:build ; fi
   - composer behat
 
 after_success:
