@@ -1,42 +1,38 @@
 language: php
 
 branches:
+  # Only test the master branch and semantic version tags.
   only:
-  - master
-  - "/^[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+.*$/"
+    - master
+    - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
 
 php:
-- 5.5
-- 5.6
-- 7.0
-- 7.1
-- 7.2
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
 
 sudo: false
 
 env:
   global:
-  - TERMINUS_TEST_MODE=1
-  - COMPOSER_PROCESS_TIMEOUT=3600
+    - TERMINUS_TEST_MODE=1
+    - COMPOSER_PROCESS_TIMEOUT=3600
 
 before_script:
-- set -ex
-- composer install --no-interaction --prefer-dist
+  - set -ex
+  - composer install --no-interaction --prefer-dist
 
 script:
-- composer clover
-- phpenv config-rm xdebug.ini
-- composer cs
-- composer phpunit
-- composer behat
+  - composer clover
+  - phpenv config-rm xdebug.ini # XDebug is needed for code coverage, but makes things slow. It's enabled by default in Travis, we disable it here post-coverage run for speedy builds.
+  - composer cs
+  - composer phpunit
+  - composer behat
 
 after_success:
-- if [ $(phpenv version-name) = "7.0" ]; then composer coveralls; fi
-
-before_deploy:
-- composer phar:install-tools
-- composer install --prefer-dist --no-dev --no-interaction
-- php box.phar build
+    - if [ $(phpenv version-name) = "7.0" ]; then composer coveralls; fi
 
 notifications:
   email:
@@ -44,8 +40,13 @@ notifications:
 
 cache:
   directories:
-  - "$HOME/.cache/composer"
-  - "$HOME/.composer/cache"
+    - $HOME/.cache/composer
+    - $HOME/.composer/cache
+
+before_deploy:
+  - composer phar:install-tools
+  - composer install --prefer-dist --no-dev --no-interaction
+  - php box.phar build
 
 deploy:
   provider: releases
