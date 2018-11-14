@@ -85,6 +85,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $this->setLogger($container->get('logger'));
 
         date_default_timezone_set($config->get('time_zone'));
+        setlocale(LC_MONETARY, $config->get('monetary_locale'));
     }
 
     /**
