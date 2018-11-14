@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New `plan:list` command lists the plans available to a site. (#1901)
+- New `plan:set` command sets a site's plan. (#1901)
+- New `Plans` collection interacts with plans available to a Site. (#1901)
+- New `Plan` model represents a plan available to a Site or set on a site. (#1901)
+- New `Site::getPlan()` function to retrieve a model representing the Site's present plan. (#1901)
+- New `Site::getPlans()` function to retrieve a collection representing all available plans for the Site. (#1901)
+
+### Changed
+- `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- `site:info` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- `site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+
+### Deprecated
+- `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
+- `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
 
 ## 1.9.0 - 2018-09-11
 ### Added
