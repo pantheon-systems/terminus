@@ -15,7 +15,7 @@ Feature: Organization sites
         Name
         ID
         Created
-        Service Level
+        Plan
         Framework
         Owner
         Created
@@ -31,7 +31,7 @@ Feature: Organization sites
         Name
         ID
         Created
-        Service Level
+        Plan
         Framework
         Owner
         Created

@@ -17,14 +17,14 @@ class ListCommand extends SiteCommand
      * @field-labels
      *     name: Name
      *     id: ID
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     framework: Framework
      *     owner: Owner
      *     created: Created
      *     memberships: Memberships
      *     frozen: Is Frozen?
      *     last_frozen_at: Date frozen
-     * @default-fields name,id,service_level,framework,owner,created,memberships,frozen
+     * @default-fields name,id,plan_name,framework,owner,created,memberships,frozen
      * @return RowsOfFields
      *
      * @option name Name filter
