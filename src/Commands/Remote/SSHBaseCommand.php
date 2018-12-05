@@ -167,7 +167,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $result = '';
         while (!empty($command_args)) {
             $first = array_shift($command_args);
-            if ($first[0] == '-') {
+            if (strlen($first) && $first[0] == '-') {
                 return $result;
             }
             $result .= " $first";
