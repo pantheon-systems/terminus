@@ -10,8 +10,6 @@ use Pantheon\Terminus\Models\Metric;
  */
 trait SiteMetricsTrait
 {
-    public static $pretty_name = 'metrics';
-
     /**
      * @var array
      */

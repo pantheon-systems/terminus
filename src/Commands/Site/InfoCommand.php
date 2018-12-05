@@ -24,7 +24,7 @@ class InfoCommand extends SiteCommand
      *     created: Created
      *     framework: Framework
      *     organization: Organization
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     max_num_cdes: Max Multidevs
      *     upstream: Upstream
      *     php_version: PHP Version

@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Connection;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Connection
  */
-class SetCommand extends TerminusCommand implements SiteAwareInterface
+class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -44,9 +48,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         if (is_string($workflow)) {
             $this->log()->notice($workflow);
         } else {
-            while (!$workflow->checkProgress()) {
-                // TODO: (ajbarry) Add workflow progress output
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice($workflow->getMessage());
         }
     }

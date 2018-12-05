@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Site\Team;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class RoleCommand
  * @package Pantheon\Terminus\Commands\Site\Team
  */
-class RoleCommand extends TerminusCommand implements SiteAwareInterface
+class RoleCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -35,9 +39,7 @@ class RoleCommand extends TerminusCommand implements SiteAwareInterface
             throw new TerminusException('This site does not have its change-management option enabled.');
         }
         $workflow = $site->getUserMemberships()->get($member)->setRole($role);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

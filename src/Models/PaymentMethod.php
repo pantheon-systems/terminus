@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class PaymentMethod extends TerminusModel
 {
-    public static $pretty_name = 'payment method';
+    const PRETTY_NAME = 'payment method';
 
     /**
      * @inheritdoc

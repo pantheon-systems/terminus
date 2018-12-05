@@ -13,6 +13,7 @@ use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -21,6 +22,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var SiteAuthorization
      */
@@ -92,6 +95,7 @@ class SetCommandTest extends CommandTestCase
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -132,11 +136,6 @@ class SetCommandTest extends CommandTestCase
             ->method('setUpstream')
             ->with($upstream_id)
             ->willReturn($this->workflow);
-
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         $this->logger->expects($this->at(1))
           ->method('log')->with(
@@ -269,11 +268,6 @@ class SetCommandTest extends CommandTestCase
             ->method('setUpstream')
             ->with($upstream_id)
             ->willReturn($this->workflow);
-
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')->with(

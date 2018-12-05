@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 use Symfony\Component\Console\Input\Input;
 
 /**
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Input\Input;
  */
 class DeleteCommandTest extends MultidevCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -26,6 +29,7 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -39,10 +43,6 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('delete')
             ->with();
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -67,8 +67,6 @@ class DeleteCommandTest extends MultidevCommandTest
         $this->expectConfirmation(false);
         $this->environment->expects($this->never())
             ->method('delete');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
         $this->logger->expects($this->never())
             ->method('log');
 
@@ -88,10 +86,6 @@ class DeleteCommandTest extends MultidevCommandTest
             ->method('delete')
             ->with($this->equalTo(['delete_branch' => true,]))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -121,8 +115,7 @@ class DeleteCommandTest extends MultidevCommandTest
             ->method('delete')
             ->with($this->equalTo(['delete_branch' => false,]))
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
+        $this->progress_bar->method('cycle')
             ->with()
             ->will($this->throwException(new TerminusException($message, ['env' => $this->environment->id,])));
 

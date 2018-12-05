@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\MergeToDevCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class MergeToDevCommandTest
@@ -11,6 +12,8 @@ use Pantheon\Terminus\Commands\Multidev\MergeToDevCommand;
  */
 class MergeToDevCommandTest extends MultidevCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -22,6 +25,7 @@ class MergeToDevCommandTest extends MultidevCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environment->method('mergeToDev')->willReturn($this->workflow);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -34,10 +38,6 @@ class MergeToDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeToDev')
             ->with($this->equalTo(['from_environment' => $this->environment->id, 'updatedb' => false,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->method('isSuccessful')->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
@@ -61,10 +61,6 @@ class MergeToDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeToDev')
             ->with($this->equalTo(['from_environment' => $this->environment->id, 'updatedb' => true,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->method('isSuccessful')->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
@@ -90,10 +86,6 @@ class MergeToDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeToDev')
             ->with($this->equalTo(['from_environment' => $this->environment->id, 'updatedb' => false,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->method('isSuccessful')->willReturn(false);
         $this->workflow->method('getMessage')->willReturn("The {env} environment could not be merged into dev.");
 

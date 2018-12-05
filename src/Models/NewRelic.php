@@ -9,7 +9,7 @@ namespace Pantheon\Terminus\Models;
 class NewRelic extends AddOnModel
 {
 
-    public static $pretty_name = 'New Relic';
+    const PRETTY_NAME = 'New Relic';
     /**
      * @var string
      */

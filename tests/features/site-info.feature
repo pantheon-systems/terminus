@@ -18,7 +18,7 @@ Feature: View site information
       Created
       Framework
       Organization
-      Service Level
+      Plan
       Upstream
       PHP Version
       Holder Type

@@ -14,7 +14,7 @@ class SSHKey extends TerminusModel implements UserInterface
 {
     use UserTrait;
 
-    public static $pretty_name = 'SSH key';
+    const PRETTY_NAME = 'SSH key';
 
     /**
      * Deletes a specific SSH key

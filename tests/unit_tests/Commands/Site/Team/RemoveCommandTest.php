@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\Site\Team\RemoveCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RemoveCommandTest
@@ -11,6 +12,8 @@ use Pantheon\Terminus\Commands\Site\Team\RemoveCommand;
  */
 class RemoveCommandTest extends TeamCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * Setup the test fixture.
      */
@@ -20,6 +23,7 @@ class RemoveCommandTest extends TeamCommandTest
         $this->command = new RemoveCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -32,10 +36,6 @@ class RemoveCommandTest extends TeamCommandTest
         $this->user_membership->expects($this->once())
             ->method('delete')
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->expects($this->once())
             ->method('getMessage')
             ->with()

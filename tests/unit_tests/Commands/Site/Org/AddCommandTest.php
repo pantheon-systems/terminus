@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Site\Org\AddCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\Org\Site\OrgSiteCommandTest;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class AddCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
  */
 class AddCommandTest extends OrgSiteCommandTest
 {
+    use WorkflowProgressTrait;
+
     protected $org_memberships;
 
     /**
@@ -40,6 +43,7 @@ class AddCommandTest extends OrgSiteCommandTest
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     public function testAdd()
@@ -48,7 +52,6 @@ class AddCommandTest extends OrgSiteCommandTest
             ->disableOriginalConstructor()
             ->getMock();
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->org_memberships->expects($this->once())

@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\Tag;
  */
 class Tags extends APICollection
 {
-    public static $pretty_name = 'tags';
+    const PRETTY_NAME = 'tags';
     /**
      * @var string
      */

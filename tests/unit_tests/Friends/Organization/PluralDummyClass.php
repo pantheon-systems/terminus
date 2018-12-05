@@ -34,4 +34,12 @@ class PluralDummyClass implements OrganizationsInterface
     {
         $this->organization_memberships = $organization_memberships;
     }
+
+    /**
+     * @return array
+     */
+    public function serialize()
+    {
+        return $this->attributes;
+    }
 }
