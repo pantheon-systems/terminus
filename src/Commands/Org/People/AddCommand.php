@@ -2,14 +2,19 @@
 
 namespace Pantheon\Terminus\Commands\Org\People;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class AddCommand
  * @package Pantheon\Terminus\Commands\Org\People
  */
-class AddCommand extends TerminusCommand
+class AddCommand extends TerminusCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Adds a user to an organization.
      *
@@ -28,9 +33,7 @@ class AddCommand extends TerminusCommand
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $workflow = $org->getUserMemberships()->create($email, $role);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             '{email} has been added to the {org} organization as a(n) {role}.',
             ['email' => $email, 'org' => $org->getName(), 'role' => $role,]

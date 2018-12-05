@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Multidev;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class MergeToDevCommand
  * @package Pantheon\Terminus\Commands\Multidev
  */
-class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
+class MergeToDevCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -34,9 +38,7 @@ class MergeToDevCommand extends TerminusCommand implements SiteAwareInterface
         $workflow = $site->getEnvironments()->get('dev')->mergeToDev(
             ['from_environment' => $env->id, 'updatedb' => $options['updatedb'],]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice('Merged the {env} environment into dev.', ['env' => $env->id,]);
     }
 }

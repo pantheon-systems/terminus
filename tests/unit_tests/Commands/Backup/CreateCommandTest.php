@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\CreateCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class CreateCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class CreateCommandTest extends BackupCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -21,6 +24,7 @@ class CreateCommandTest extends BackupCommandTest
         $this->command = new CreateCommand($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -34,11 +38,6 @@ class CreateCommandTest extends BackupCommandTest
             ->method('create')
             ->with($this->equalTo(['element' => null, 'keep-for' => 365,]))
             ->willReturn($this->workflow);
-
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -65,11 +64,6 @@ class CreateCommandTest extends BackupCommandTest
             ->with($this->equalTo($params + ['element' => null,]))
             ->willReturn($this->workflow);
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-
         $this->logger->expects($this->once())
           ->method('log')
           ->with(
@@ -95,11 +89,6 @@ class CreateCommandTest extends BackupCommandTest
             ->with($this->equalTo(['element' => 'database',]))
             ->willReturn($this->workflow);
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -124,11 +113,6 @@ class CreateCommandTest extends BackupCommandTest
             ->method('create')
             ->with($this->equalTo(['element' => 'database', 'keep-for' => 89,]))
             ->willReturn($this->workflow);
-
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -156,9 +140,6 @@ class CreateCommandTest extends BackupCommandTest
 
         $this->logger->expects($this->never())
             ->method('log');
-
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
 
         $this->setExpectedException(TerminusException::class);
 

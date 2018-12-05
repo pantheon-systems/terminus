@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\Commands\Lock\DisableCommand;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DisableCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class DisableCommandTest extends LockCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -23,6 +26,7 @@ class DisableCommandTest extends LockCommandTest
         $this->command = new DisableCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
     /**
      * Tests the lock:disable command
@@ -38,10 +42,6 @@ class DisableCommandTest extends LockCommandTest
             ->method('disable')
             ->with()
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))

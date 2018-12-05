@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Site\Team;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Site\Team
  */
-class RemoveCommand extends TerminusCommand implements SiteAwareInterface
+class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -30,9 +34,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
     public function remove($site_id, $member)
     {
         $workflow = $this->getSite($site_id)->getUserMemberships()->get($member)->delete();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

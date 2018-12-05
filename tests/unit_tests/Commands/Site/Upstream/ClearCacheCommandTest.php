@@ -7,6 +7,7 @@ use Pantheon\Terminus\Commands\Site\Upstream\ClearCacheCommand;
 use Pantheon\Terminus\Models\SiteUpstream;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class ClearCacheCommandTest
@@ -15,6 +16,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class ClearCacheCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -25,6 +28,7 @@ class ClearCacheCommandTest extends CommandTestCase
         $this->command = new ClearCacheCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     public function testClearCache()
@@ -45,10 +49,6 @@ class ClearCacheCommandTest extends CommandTestCase
             ->method('clearCache')
             ->with()
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->site->method('get')->willReturn($site_name);
         $this->logger->expects($this->once())
             ->method('log')

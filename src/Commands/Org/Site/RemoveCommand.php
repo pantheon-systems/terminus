@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Org\Site;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Org\Site
  */
-class RemoveCommand extends TerminusCommand implements SiteAwareInterface
+class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -32,9 +36,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getSiteMemberships()->get($site);
         $workflow = $membership->delete();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             '{site} has been removed from the {org} organization.',
             ['site' => $membership->getSite()->getName(), 'org' => $org->getName(),]

@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\ServiceLevel;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\ServiceLevel
  */
-class SetCommand extends TerminusCommand implements SiteAwareInterface
+class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -33,9 +37,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSite($site_id);
         $workflow = $site->updateServiceLevel($level);
         $this->log()->notice('Setting plan of "{site_id}" to "{level}".', compact('site_id', 'level'));
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }
