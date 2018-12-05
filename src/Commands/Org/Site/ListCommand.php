@@ -26,7 +26,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @field-labels
      *     name: Name
      *     id: ID
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     framework: Framework
      *     owner: Owner
      *     created: Created
