@@ -41,7 +41,7 @@ class ListCommandTest extends OrgPeopleCommandTest
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
-                $this->equalTo('notice'),
+                $this->equalTo('warning'),
                 $this->equalTo('{org} has no members.'),
                 $this->equalTo(['org' => $org_name,])
             );

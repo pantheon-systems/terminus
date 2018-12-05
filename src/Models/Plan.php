@@ -16,7 +16,7 @@ class Plan extends TerminusModel implements ConfigAwareInterface, SiteInterface
     use ConfigAwareTrait;
     use SiteTrait;
 
-    public static $pretty_name = 'plan';
+    const PRETTY_NAME = 'plan';
     /**
      * @var string
      */

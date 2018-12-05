@@ -13,7 +13,7 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
 {
     use EnvironmentTrait;
 
-    public static $pretty_name = 'upstream status';
+    const PRETTY_NAME = 'upstream status';
 
     public function __construct($attributes, array $options = [])
     {

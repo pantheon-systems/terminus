@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\PaymentMethod;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\PaymentMethod
  */
-class ListCommand extends TerminusCommand
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Displays the list of payment methods for the currently logged-in user.
      *
@@ -28,10 +32,9 @@ class ListCommand extends TerminusCommand
      */
     public function listPaymentMethods()
     {
-        $methods = $this->session()->getUser()->getPaymentMethods()->serialize();
-        if (empty($methods)) {
-            $this->log()->notice('There are no payment methods attached to this account.');
-        }
-        return new RowsOfFields($methods);
+        return $this->getRowsOfFields(
+            $this->session()->getUser()->getPaymentMethods(),
+            ['message' => 'There are no payment methods attached to this account.']
+        );
     }
 }

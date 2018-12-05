@@ -28,7 +28,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     use ConfigAwareTrait;
     use SiteTrait;
 
-    public static $pretty_name = 'environment';
+    const PRETTY_NAME = 'environment';
     /**
      * @var string
      */

@@ -19,7 +19,7 @@ class UserSiteMembership extends TerminusModel implements ContainerAwareInterfac
     use SiteJoinTrait;
     use UserTrait;
 
-    public static $pretty_name = 'user-site membership';
+    const PRETTY_NAME = 'user-site membership';
 
     /**
      * @inheritdoc

@@ -16,7 +16,7 @@ class SiteOrganizationMembership extends TerminusModel implements ContainerAware
     use OrganizationJoinTrait;
     use SiteTrait;
 
-    public static $pretty_name = 'site-organization membership';
+    const PRETTY_NAME = 'site-organization membership';
 
     /**
      * Remove membership of organization

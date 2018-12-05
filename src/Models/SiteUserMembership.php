@@ -19,7 +19,7 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
     use SiteTrait;
     use UserJoinTrait;
 
-    public static $pretty_name = 'site-user membership';
+    const PRETTY_NAME = 'site-user membership';
 
     /**
      * Remove membership, either org or user

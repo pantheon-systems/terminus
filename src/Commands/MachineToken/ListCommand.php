@@ -2,15 +2,19 @@
 
 namespace Pantheon\Terminus\Commands\MachineToken;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\MachineToken
  */
-class ListCommand extends TerminusCommand
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Lists the currently logged-in user's machine tokens.
      *
@@ -28,10 +32,6 @@ class ListCommand extends TerminusCommand
      */
     public function listTokens()
     {
-        $data = $this->session()->getUser()->getMachineTokens()->serialize();
-        if (count($data) == 0) {
-            $this->log()->warning('You have no machine tokens.');
-        }
-        return new RowsOfFields($data);
+        return $this->getRowsOfFields($this->session()->getUser()->getMachineTokens());
     }
 }

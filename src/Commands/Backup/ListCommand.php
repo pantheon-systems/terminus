@@ -3,13 +3,17 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class ListCommand extends BackupCommand
+class ListCommand extends BackupCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Lists backups for a specific site and environment.
      *
@@ -41,15 +45,17 @@ class ListCommand extends BackupCommand
         list(, $env) = $this->getSiteEnv($site_env, 'dev');
         // If the element option is set to default, it looks to the element parameter.
 
-        $data = array_map(
-            function ($backup) {
-                return $backup->serialize();
-            },
-            $env->getBackups()->getFinishedBackups($this->getElement($element, $options))
-        );
+        $filter = function ($collection) use ($element, $options) {
+            return array_map(
+                function ($backup) {
+                    return $backup->serialize();
+                },
+                $collection->getFinishedBackups($this->getElement($element, $options))
+            );
+        };
 
         // Return the output data.
-        return new RowsOfFields($data);
+        return $this->getRowsOfFields($env->getBackups(), compact('filter'));
     }
 
     /**

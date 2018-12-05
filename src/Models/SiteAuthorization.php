@@ -8,5 +8,5 @@ namespace Pantheon\Terminus\Models;
  */
 class SiteAuthorization extends TerminusModel
 {
-    public static $pretty_name = 'authorization';
+    const PRETTY_NAME = 'authorization';
 }

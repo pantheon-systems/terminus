@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class OrganizationUpstream extends TerminusModel
 {
-    public static $pretty_name = 'upstream';
+    const PRETTY_NAME = 'upstream';
 
     /**
      * @return string[]
