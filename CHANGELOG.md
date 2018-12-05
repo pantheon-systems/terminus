@@ -19,6 +19,9 @@ All notable changes to this project will be documented in this file. This projec
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
 - `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
 
+### Fixed
+- Updated the URL used by the Plans collection. (#1905)
+
 ## 1.9.0 - 2018-09-11
 ### Added
 - Added a `hide_git_mode_warning` option to disable the warning presented when users run Drush or WP-CLI commands on Pantheon sites that are in git mode.  (#1882)
