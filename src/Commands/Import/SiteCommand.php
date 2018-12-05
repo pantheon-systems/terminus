@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Import;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class SiteCommand
  * @package Pantheon\Terminus\Commands\Import
  */
-class SiteCommand extends TerminusCommand implements SiteAwareInterface
+class SiteCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -39,9 +43,7 @@ class SiteCommand extends TerminusCommand implements SiteAwareInterface
 
         $workflow = $env->import($url);
         try {
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         } catch (\Exception $e) {
             if ($e->getMessage() == 'Successfully queued import_site') {
                 throw new TerminusException('Site import failed');

@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\NewRelic;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class DisableCommand
  * @package Pantheon\Terminus\Commands\NewRelic
  */
-class DisableCommand extends TerminusCommand implements SiteAwareInterface
+class DisableCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -31,10 +35,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
         $site->getNewRelic()->disable();
         $this->log()->notice('New Relic disabled. Converging bindings.');
         $workflow = $site->converge();
-        // Wait for the workflow to complete.
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

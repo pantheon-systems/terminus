@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 use Pantheon\Terminus\Commands\Backup\RestoreCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class RestoreCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  */
 class RestoreCommandTest extends BackupCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -23,6 +26,7 @@ class RestoreCommandTest extends BackupCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -42,11 +46,6 @@ class RestoreCommandTest extends BackupCommandTest
         $this->backup->expects($this->once())
             ->method('restore')
             ->willReturn($this->workflow);
-
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         $this->logger->expects($this->once())
             ->method('log')
@@ -80,8 +79,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->method('restore')
             ->willReturn($this->workflow);
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
+        $this->progress_bar->method('cycle')
             ->with()
             ->will($this->throwException(new TerminusException($message)));
 
@@ -132,11 +130,6 @@ class RestoreCommandTest extends BackupCommandTest
             ->method('restore')
             ->willReturn($this->workflow);
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
-
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -167,8 +160,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->method('restore')
             ->willReturn($this->workflow);
 
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
+        $this->progress_bar->method('cycle')
             ->with()
             ->will($this->throwException(new TerminusException($message)));
 

@@ -7,6 +7,7 @@ use Pantheon\Terminus\Commands\Plan\SetCommand;
 use Pantheon\Terminus\Models\Plan;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -15,6 +16,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -25,6 +28,7 @@ class SetCommandTest extends CommandTestCase
         $this->command = new SetCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -58,10 +62,6 @@ class SetCommandTest extends CommandTestCase
             ->method('set')
             ->with($plan)
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $workflow->expects($this->once())
             ->method('getMessage')
             ->with()

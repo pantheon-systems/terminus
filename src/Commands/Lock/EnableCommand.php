@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Lock;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class EnableCommand
  * @package Pantheon\Terminus\Commands\Lock
  */
-class EnableCommand extends TerminusCommand implements SiteAwareInterface
+class EnableCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -32,9 +36,7 @@ class EnableCommand extends TerminusCommand implements SiteAwareInterface
     {
         list($site, $env) = $this->getSiteEnv($site_env);
         $workflow = $env->getLock()->enable(['username' => $username, 'password' => $password,]);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             '{site}.{env} has been locked.',
             ['site' => $site->get('name'), 'env' => $env->id,]
