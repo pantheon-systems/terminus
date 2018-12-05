@@ -14,6 +14,15 @@ Feature: Machine tokens command
     [[machine_token_id]]
     """
 
+  @vcr machine-token-list-empty.yml
+  Scenario: Fail to list the machine tokens
+    When I run "terminus machine-token:list"
+    Then I should get the warning:
+    """
+    You have no machine tokens.
+    """
+
+  @vcr machine-token-delete.yml
   @vcr machine-token-delete.yml
   Scenario: Delete machine token
     When I run "terminus machine-token:delete [[machine_token_id]] --yes"

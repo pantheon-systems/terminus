@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class Redis extends AddOnModel
 {
-    public static $pretty_name = 'Redis';
+    const PRETTY_NAME = 'Redis';
 
     /**
      * Clears the Redis cache on the named environment

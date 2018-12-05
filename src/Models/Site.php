@@ -28,7 +28,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     use ContainerAwareTrait;
     use OrganizationsTrait;
 
-    public static $pretty_name = 'site';
+    const PRETTY_NAME = 'site';
     /**
      * @var string
      */
@@ -293,6 +293,17 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     }
 
     /**
+     * @return SiteMetrics
+     */
+    public function getSiteMetrics()
+    {
+        if (empty($this->site_metrics)) {
+            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class, [['site' => $this,],]);
+        }
+        return $this->site_metrics;
+    }
+
+    /**
      * @return Solr
      */
     public function getSolr()
@@ -338,17 +349,6 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             $this->workflows = $this->getContainer()->get(Workflows::class, [['site' => $this,],]);
         }
         return $this->workflows;
-    }
-
-    /**
-     * @return SiteMetrics
-     */
-    public function getSiteMetrics()
-    {
-        if (empty($this->site_metrics)) {
-            $this->site_metrics = $this->getContainer()->get(SiteMetrics::class, [['site' => $this,],]);
-        }
-        return $this->site_metrics;
     }
 
     /**

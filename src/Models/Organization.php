@@ -30,7 +30,7 @@ class Organization extends TerminusModel implements
     use SitesTrait;
     use UsersTrait;
 
-    public static $pretty_name = 'organization';
+    const PRETTY_NAME = 'organization';
     /**
      * @var array
      */

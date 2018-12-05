@@ -20,7 +20,7 @@ class OrganizationSiteMembership extends TerminusModel implements ContainerAware
     use OrganizationTrait;
     use SiteJoinTrait;
 
-    public static $pretty_name = 'organization-site membership';
+    const PRETTY_NAME = 'organization-site membership';
     /**
      * @var Tags
      */

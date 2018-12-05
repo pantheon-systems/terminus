@@ -18,9 +18,16 @@ class ListCommandTest extends WorkflowCommandTest
     protected function setUp()
     {
         parent::setUp();
+        $site_name = 'site_name';
+
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+
+        $this->site->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('name'))
+            ->willReturn($site_name);
     }
 
     /**
@@ -28,6 +35,8 @@ class ListCommandTest extends WorkflowCommandTest
      */
     public function testListCommand()
     {
+        $site = 'site_name';
+
         $this->workflows->expects($this->once())
             ->method('setPaging')
             ->with(false)
@@ -39,8 +48,6 @@ class ListCommandTest extends WorkflowCommandTest
         $this->workflows->expects($this->once())
             ->method('serialize')
             ->willReturn(['12345' => ['id' => '12345', 'details' => 'test',],]);
-        $this->site->expects($this->never())
-            ->method('get');
 
         $out = $this->command->wfList('mysite');
         $this->assertInstanceOf(RowsOfFields::class, $out);
@@ -69,10 +76,6 @@ class ListCommandTest extends WorkflowCommandTest
             ->method('serialize')
             ->with()
             ->willReturn([]);
-        $this->site->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('name'))
-            ->willReturn($site);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(

@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Friends\OrganizationsTrait;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\SiteOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Models\Workflow;
  */
 class SiteOrganizationMemberships extends SiteOwnedCollection
 {
+    use OrganizationsTrait;
+
     /**
      * @var string
      */
@@ -37,6 +40,20 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
         return $this->getSite()->getWorkflows()->create(
             'add_site_organization_membership',
             ['params' => ['organization_name' => $organization->getLabel(), 'role' => $role,],]
+        );
+    }
+
+
+    /**
+     * @return array|void
+     */
+    public function serialize()
+    {
+        return array_map(
+            function ($member) {
+                return $member->getOrganization()->serialize();
+            },
+            $this->all()
         );
     }
 }

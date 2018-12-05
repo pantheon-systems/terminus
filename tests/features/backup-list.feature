@@ -19,3 +19,10 @@ Feature: List Backups for a Site
     Then I should have "2" records
     And I should get: "database.sql.gz"
     And I should not get: "code.tar.gz"
+
+  @vcr backup-list-empty.yml
+  Scenario: Fail to show any backups because the list is empty
+    When I run "terminus backup:list [[test_site_name]].dev --format=json"
+    Then I should have "0" records
+    And I should get the warning: "You have no backups."
+

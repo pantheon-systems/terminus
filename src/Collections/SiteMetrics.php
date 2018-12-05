@@ -11,6 +11,7 @@ use Pantheon\Terminus\Site\SiteMetricsTrait;
  */
 class SiteMetrics extends SiteOwnedCollection
 {
+    const PRETTY_NAME = 'metrics';
 
     use SiteMetricsTrait;
 

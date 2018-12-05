@@ -9,11 +9,24 @@ All notable changes to this project will be documented in this file. This projec
 - New `Plan` model represents a plan available to a Site or set on a site. (#1901)
 - New `Site::getPlan()` function to retrieve a model representing the Site's present plan. (#1901)
 - New `Site::getPlans()` function to retrieve a collection representing all available plans for the Site. (#1901)
+- `backup:list` now emits a warning when its list is empty. (#1906)
+- `branch:list` now emits a warning when its list is empty. (#1906)
+- `domain:list` now emits a warning when its list is empty. (#1906)
+- `env:list` now emits a warning when its list is empty. (#1906)
+- `plan:list` now emits a warning when its list is empty. (#1906)
+- `site:team:list` now emits a warning when its list is empty. (#1906)
+- `upstream:list` now emits a warning when its list is empty. (#1906)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
 - `site:info` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
 - `site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- Collections' and Models' `$pretty_name` static property has become const `PRETTY_NAME`. (#1906)
+- The empty-list notice on `org:people:list` has become a warning. (#1906)
+- The empty-list notice on `org:site:list` has become a warning. (#1906)
+- The empty-list notice on `payment-method:list` has become a warning. (#1906)
+- The empty-list notice on `site:list` has become a warning. (#1906)
+- The empty-list notice on `site:org:list` has become a warning. (#1906)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

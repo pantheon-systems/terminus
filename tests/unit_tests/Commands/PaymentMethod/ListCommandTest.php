@@ -95,7 +95,7 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
-                $this->equalTo('notice'),
+                $this->equalTo('warning'),
                 $this->equalTo('There are no payment methods attached to this account.')
             );
 

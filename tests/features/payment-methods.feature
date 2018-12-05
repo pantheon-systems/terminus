@@ -18,7 +18,7 @@ Feature: Payment method command
   @vcr payment-method-site-list-empty.yml
   Scenario: Listing a user's payment methods when they don't have any
     When I run "terminus payment-method:list"
-    Then I should get: "There are no payment methods attached to this account."
+    Then I should get the warning: "There are no payment methods attached to this account."
     And I should get: "------- ----"
     And I should get: "Label   ID"
     And I should get: "------- ----"

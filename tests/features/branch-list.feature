@@ -11,3 +11,8 @@ Feature: Listing site branches
   Scenario: Listing the branches of a site
     When I run "terminus branch:list [[test_site_name]]"
     Then I should get: "master"
+
+  @vcr branch-list-empty.yml
+  Scenario: Failing to list the branches of the site
+    When I run "terminus branch:list [[test_site_name]]"
+    Then I should get the warning: "You have no branches"

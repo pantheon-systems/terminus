@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class Tag extends TerminusModel
 {
-    public static $pretty_name = 'tag';
+    const PRETTY_NAME = 'tag';
 
     /**
      * Removes a tag from the organization/site membership
