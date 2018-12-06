@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\Commands\Site;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class CreateCommand
@@ -54,17 +55,13 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
         // Create the site
         $this->log()->notice('Creating a new site...');
         $workflow = $this->sites()->create($workflow_options);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
 
         // Deploy the upstream
         if ($site = $this->getSite($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
             $workflow = $site->deployProduct($upstream->id);
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice('Deployed CMS');
         }
     }

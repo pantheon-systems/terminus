@@ -2,15 +2,20 @@
 
 namespace Pantheon\Terminus\Commands\Site\Upstream;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class SetCommand extends SiteCommand
+class SetCommand extends SiteCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Changes a site's upstream.
      *
@@ -46,9 +51,7 @@ class SetCommand extends SiteCommand
         }
 
         $workflow = $site->setUpstream($upstream->id);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice('Set upstream for {site} to {upstream}', $msg_params);
     }
 }

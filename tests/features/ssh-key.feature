@@ -9,7 +9,13 @@ Feature: SSH Keys
   @vcr ssh-key-list.yml
   Scenario: List SSH keys
     When I run "terminus ssh-key:list"
-    Then I should get one of the following: "Fingerprint, You do not have any SSH keys saved."
+    Then I should get the warning: "You have no SSH keys."
+    And I should see a table with rows like:
+    """
+      ID
+      Fingerprint
+      Description
+    """
 
   @vcr ssh-key-add.yml
   Scenario: Add an SSH key

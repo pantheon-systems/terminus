@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Branch;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Branch
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -34,6 +37,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listBranches($site_id)
     {
-        return new RowsOfFields($this->getSite($site_id)->getBranches()->serialize());
+        return $this->getRowsOfFields($this->getSite($site_id)->getBranches());
     }
 }

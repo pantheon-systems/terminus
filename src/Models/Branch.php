@@ -13,7 +13,7 @@ class Branch extends TerminusModel implements SiteInterface
 {
     use SiteTrait;
 
-    public static $pretty_name = 'branch';
+    const PRETTY_NAME = 'branch';
 
     /**
      * Deletes this branch from the site

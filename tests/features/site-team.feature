@@ -38,9 +38,26 @@ Feature: Managing a site's team
   @vcr site-team-list.yml
   Scenario: Listing team members
     When I run "terminus site:team:list [[test_site_name]]"
-    Then I should get:
+    Then I should see a table with rows like:
     """
-    team_member
+      First name
+      Last name
+      Email
+      Role
+      User ID
+    """
+
+  @vcr site-team-list-empty.yml
+  Scenario: Listing team members when there aren't any
+    When I run "terminus site:team:list [[test_site_name]]"
+    Then I should get the warning: "[[test_site_name]] has no team members."
+    And I should see a table with rows like:
+    """
+      First name
+      Last name
+      Email
+      Role
+      User ID
     """
 
   @vcr site-team-remove.yml

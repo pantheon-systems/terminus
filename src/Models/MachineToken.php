@@ -14,7 +14,7 @@ class MachineToken extends TerminusModel implements UserInterface
 {
     use UserTrait;
 
-    public static $pretty_name = 'machine token';
+    const PRETTY_NAME = 'machine token';
 
     /**
      * Deletes machine token

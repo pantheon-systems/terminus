@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\Upstream;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Upstream
  */
-class ListCommand extends TerminusCommand
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Displays the list of upstreams accessible to the currently logged-in user.
      *
@@ -51,9 +55,12 @@ class ListCommand extends TerminusCommand
         $upstreams = $this->filterByName($upstreams, $options);
         $upstreams = $this->filterForCoreCustom($upstreams, $options);
 
-        $data = $upstreams->serialize();
-        usort($data, $this->sortFunction($options));
-        return new RowsOfFields($data);
+        $filter = function ($collection) use ($options) {
+            $data = $collection->serialize();
+            usort($data, $this->sortFunction($options));
+            return $data;
+        };
+        return $this->getRowsOfFields($upstreams, compact('filter'));
     }
 
     /**

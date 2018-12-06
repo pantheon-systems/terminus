@@ -37,7 +37,7 @@ class User extends TerminusModel implements
     use ProfileTrait;
     use SitesTrait;
 
-    public static $pretty_name = 'user';
+    const PRETTY_NAME = 'user';
     /**
      * @var string
      */

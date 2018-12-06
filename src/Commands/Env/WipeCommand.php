@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Testing class for Pantheon\Terminus\Commands\Env\WipeCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class WipeCommand extends TerminusCommand implements SiteAwareInterface
+class WipeCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -42,9 +46,7 @@ class WipeCommand extends TerminusCommand implements SiteAwareInterface
             'Wiping the "{env}" environment of "{site}"',
             ['site' => $site->get('name'), 'env' => $env->id,]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

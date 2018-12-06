@@ -6,6 +6,7 @@ use Pantheon\Terminus\Commands\Connection\SetCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class SetCommandTest
@@ -14,6 +15,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class SetCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -26,6 +29,7 @@ class SetCommandTest extends CommandTestCase
         // use the basic mocks from CommandTestCase
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -39,7 +43,6 @@ class SetCommandTest extends CommandTestCase
             ->getMock();
 
         // workflow succeeded
-        $workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
 
         $this->environment->expects($this->once())->method('changeConnectionMode')

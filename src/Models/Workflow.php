@@ -18,7 +18,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     use ContainerAwareTrait;
     use SessionAwareTrait;
 
-    public static $pretty_name = 'workflow';
+    const PRETTY_NAME = 'workflow';
     /**
      * @var TerminusModel
      */

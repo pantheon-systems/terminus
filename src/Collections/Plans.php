@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Plan;
  */
 class Plans extends SiteOwnedCollection
 {
-    public static $pretty_name = 'plans';
+    const PRETTY_NAME = 'plans';
     /**
      * @var string
      */

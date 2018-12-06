@@ -142,6 +142,12 @@ Feature: Listing upstreams
     And I should get: "Organization"
     And I should get: "-------------- ------------------------------------------------------------------------------------------"
 
+  @vcr upstream-list-empty.yml
+  Scenario: List upstreams when there aren't any available
+    When I run "terminus upstream:list"
+    Then I should get the warning: "You have no upstreams."
+    And I should have "0" records
+
   @vcr org-upstream-list.yml
   Scenario: List my organization's core and custom upstreams
     When I run "terminus upstream:list --org=the-upstreamers"

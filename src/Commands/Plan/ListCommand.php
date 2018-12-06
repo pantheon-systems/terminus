@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\Plan;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Plan
  */
-class ListCommand extends SiteCommand
+class ListCommand extends SiteCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Displays the list of available site plans.
      *
@@ -33,6 +37,6 @@ class ListCommand extends SiteCommand
      */
     public function listPlans($site_id)
     {
-        return new RowsOfFields($this->getSite($site_id)->getPlans()->serialize());
+        return $this->getRowsOfFields($this->getSite($site_id)->getPlans());
     }
 }

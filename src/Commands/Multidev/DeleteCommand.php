@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Multidev;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class DeleteCommand
  * @package Pantheon\Terminus\Commands\Multidev
  */
-class DeleteCommand extends TerminusCommand implements SiteAwareInterface
+class DeleteCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -40,10 +44,7 @@ class DeleteCommand extends TerminusCommand implements SiteAwareInterface
         $workflow = $env->delete(
             ['delete_branch' => isset($options['delete-branch']) ? $options['delete-branch'] : false,]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice('Deleted the multidev environment {env}.', ['env' => $env->id,]);
     }
 }

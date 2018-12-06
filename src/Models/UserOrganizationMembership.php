@@ -19,5 +19,5 @@ class UserOrganizationMembership extends TerminusModel implements ContainerAware
     use OrganizationJoinTrait;
     use UserTrait;
 
-    public static $pretty_name = 'user-organization membership';
+    const PRETTY_NAME = 'user-organization membership';
 }

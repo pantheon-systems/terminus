@@ -654,6 +654,21 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Then /^I should get the warning:$/
+     * @Then /^I should get the warning "([^"]*)"$/
+     * @Then /^I should get the warning: "([^"]*)"$/
+     * Checks the output for the given string that it is a warning with the given string
+     *
+     * @param [string] $string Content which ought not be in the output
+     * @return [boolean] $i_have_this True if $string exists in output
+     * @throws Exception
+     */
+    public function iShouldGetTheWarning($string)
+    {
+        return $this->iShouldGet("[warning] $string");
+    }
+
+    /**
      * Checks the output for a table with the given headers
      *
      * @Then /^I should see a table with the headers$/
