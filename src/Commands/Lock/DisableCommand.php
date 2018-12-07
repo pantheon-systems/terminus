@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Lock;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class DisableCommand
  * @package Pantheon\Terminus\Commands\Lock
  */
-class DisableCommand extends TerminusCommand implements SiteAwareInterface
+class DisableCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -29,9 +33,7 @@ class DisableCommand extends TerminusCommand implements SiteAwareInterface
     {
         list($site, $env) = $this->getSiteEnv($site_env);
         $workflow = $env->getLock()->disable();
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             '{site}.{env} has been unlocked.',
             ['site' => $site->get('name'), 'env' => $env->id,]

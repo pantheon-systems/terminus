@@ -34,7 +34,7 @@ class ListCommandTest extends SSHKeyCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('warning'), $this->equalTo('You have no ssh keys.'));
+            ->with($this->equalTo('warning'), $this->equalTo('You have no SSH keys.'));
 
         $out = $this->command->listSSHKeys();
         $this->assertInstanceOf(RowsOfFields::class, $out);

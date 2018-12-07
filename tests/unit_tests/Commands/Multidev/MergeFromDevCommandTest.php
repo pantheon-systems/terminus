@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\MergeFromDevCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class MergeFromDevCommandTest
@@ -11,6 +12,8 @@ use Pantheon\Terminus\Commands\Multidev\MergeFromDevCommand;
  */
 class MergeFromDevCommandTest extends MultidevCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -22,6 +25,7 @@ class MergeFromDevCommandTest extends MultidevCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environment->method('mergeFromDev')->willReturn($this->workflow);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -34,10 +38,6 @@ class MergeFromDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeFromDev')
             ->with($this->equalTo(['updatedb' => false,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -60,10 +60,6 @@ class MergeFromDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeFromDev')
             ->with($this->equalTo(['updatedb' => true,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -88,10 +84,6 @@ class MergeFromDevCommandTest extends MultidevCommandTest
         $this->environment->expects($this->once())
             ->method('mergeFromDev')
             ->with($this->equalTo(['updatedb' => false,]));
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->workflow->method('getMessage')->willReturn("The dev environment could not be merged into {env}.");
 
         $out = $this->command->mergeFromDev("site.{$this->environment->id}");

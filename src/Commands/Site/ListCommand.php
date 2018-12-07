@@ -3,9 +3,13 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
-class ListCommand extends SiteCommand
+class ListCommand extends SiteCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
+
     /**
      * Displays the list of sites accessible to the currently logged-in user.
      *
@@ -17,14 +21,14 @@ class ListCommand extends SiteCommand
      * @field-labels
      *     name: Name
      *     id: ID
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     framework: Framework
      *     owner: Owner
      *     created: Created
      *     memberships: Memberships
      *     frozen: Is Frozen?
      *     last_frozen_at: Date frozen
-     * @default-fields name,id,service_level,framework,owner,created,memberships,frozen
+     * @default-fields name,id,plan_name,framework,owner,created,memberships,frozen
      * @return RowsOfFields
      *
      * @option name Name filter
@@ -60,12 +64,6 @@ class ListCommand extends SiteCommand
             $this->sites->filterByOwner($owner);
         }
 
-        $sites = $this->sites->serialize();
-
-        if (empty($sites)) {
-            $this->log()->notice('You have no sites.');
-        }
-
-        return new RowsOfFields($sites);
+        return $this->getRowsOfFields($this->sites);
     }
 }

@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Org\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Org\Site
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -26,7 +29,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @field-labels
      *     name: Name
      *     id: ID
-     *     service_level: Service Level
+     *     plan_name: Plan
      *     framework: Framework
      *     owner: Owner
      *     created: Created
@@ -47,12 +50,9 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
         }
-        $sites = $this->sites->serialize();
-
-        if (empty($sites)) {
-            $this->log()->notice('This organization has no sites.');
-        }
-
-        return new RowsOfFields($sites);
+        return $this->getRowsOfFields(
+            $this->sites,
+            ['message' => 'This organization has no sites.',]
+        );
     }
 }

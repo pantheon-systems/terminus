@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class DNSRecord extends TerminusModel
 {
-    public static $pretty_name = 'DNS record';
+    const PRETTY_NAME = 'DNS record';
 
     /**
      * @inheritdoc

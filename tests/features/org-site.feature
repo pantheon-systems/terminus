@@ -15,7 +15,7 @@ Feature: Organization sites
         Name
         ID
         Created
-        Service Level
+        Plan
         Framework
         Owner
         Created
@@ -31,13 +31,20 @@ Feature: Organization sites
         Name
         ID
         Created
-        Service Level
+        Plan
         Framework
         Owner
         Created
         Tags
     """
 
+  @vcr org-site-list-empty.yml
+  Scenario: List an organization's sites when it hasn't any
+    Given a site named "[[test_site_name]]" belonging to "[[organization_name]]"
+    When I run "terminus org:site:list '[[organization_name]]'"
+    Then I should get the warning: "This organization has no sites."
+
+  @vcr org-site-list.yml
   @vcr organization-site-remove.yml
   Scenario: Remove a site from an organization
     Given a site named "[[test_site_name]]" belonging to "[[organization_name]]"

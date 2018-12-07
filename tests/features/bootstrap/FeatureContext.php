@@ -654,6 +654,21 @@ class FeatureContext implements Context
     }
 
     /**
+     * @Then /^I should get the warning:$/
+     * @Then /^I should get the warning "([^"]*)"$/
+     * @Then /^I should get the warning: "([^"]*)"$/
+     * Checks the output for the given string that it is a warning with the given string
+     *
+     * @param [string] $string Content which ought not be in the output
+     * @return [boolean] $i_have_this True if $string exists in output
+     * @throws Exception
+     */
+    public function iShouldGetTheWarning($string)
+    {
+        return $this->iShouldGet("[warning] $string");
+    }
+
+    /**
      * Checks the output for a table with the given headers
      *
      * @Then /^I should see a table with the headers$/
@@ -947,11 +962,7 @@ class FeatureContext implements Context
 
         foreach ($unformatted_tags as $tag) {
             $tag_elements = explode(' ', $tag);
-            $index        = null;
-            // TODO: Fix this. The following two statements are erroneous but only are caught by PHP ^7.2. Fixing them breaks PHP-VCR.
-            if (count($tag_elements < 1)) {
-                $index = array_shift($tag_elements);
-            }
+            $index = array_shift($tag_elements);
             if (count($tag_elements) == 1) {
                 $tag_elements = array_shift($tag_elements);
             }

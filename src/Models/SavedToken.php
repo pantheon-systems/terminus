@@ -17,7 +17,7 @@ class SavedToken extends TerminusModel implements SessionAwareInterface, DataSto
     use SessionAwareTrait;
     use DataStoreAwareTrait;
 
-    public static $pretty_name = 'saved token';
+    const PRETTY_NAME = 'saved token';
 
     /**
      * Delete the token.

@@ -21,7 +21,8 @@ class SSHBaseCommandTest extends CommandTestCase
     {
         parent::setUp();
 
-        $this->command = new DummyCommand($this->getConfig());
+        $this->command = new DummyCommand();
+        $this->command->setConfig($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
     }
@@ -36,6 +37,9 @@ class SSHBaseCommandTest extends CommandTestCase
         $site_name = 'site name';
         $mode = 'sftp';
 
+        $this->environment->expects($this->once())
+            ->method('isDevelopment')
+            ->willReturn(true);
         $this->environment->expects($this->once())
             ->method('get')
             ->with($this->equalTo('connection_mode'))
@@ -75,6 +79,9 @@ class SSHBaseCommandTest extends CommandTestCase
 
         $expectedLoggedCommand = 'dummy arg1 arg2';
 
+        $this->environment->expects($this->once())
+            ->method('isDevelopment')
+            ->willReturn(true);
         $this->environment->expects($this->once())
             ->method('get')
             ->with($this->equalTo('connection_mode'))
@@ -122,6 +129,9 @@ class SSHBaseCommandTest extends CommandTestCase
 
         $expectedLoggedCommand = 'dummy arg1 arg2';
 
+        $this->environment->expects($this->once())
+            ->method('isDevelopment')
+            ->willReturn(true);
         $this->environment->expects($this->once())
             ->method('get')
             ->with($this->equalTo('connection_mode'))

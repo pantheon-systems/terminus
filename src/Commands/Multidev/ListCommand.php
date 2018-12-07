@@ -4,11 +4,14 @@ namespace Pantheon\Terminus\Commands\Multidev;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -34,18 +37,20 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function listMultidevs($site_name)
     {
-        $envs = array_map(
-            function ($environment) {
-                return $environment->serialize();
-            },
-            $this->sites->get($site_name)->getEnvironments()->multidev()
+        $filter = function ($collection) {
+            return array_map(
+                function ($environment) {
+                    return $environment->serialize();
+                },
+                $collection->multidev()
+            );
+        };
+        return $this->getRowsOfFields(
+            $this->sites->get($site_name)->getEnvironments(),
+            [
+                'filter' => $filter,
+                'message' => 'You have no multidev environments.',
+            ]
         );
-
-        if (empty($envs)) {
-            $this->log()->warning('You have no multidev environments.');
-        }
-
-        // Return the output data.
-        return new RowsOfFields($envs);
     }
 }

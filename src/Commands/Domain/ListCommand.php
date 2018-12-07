@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Domain
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -37,6 +40,6 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function listDomains($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        return new RowsOfFields($env->getDomains()->serialize());
+        return $this->getRowsOfFields($env->getDomains());
     }
 }

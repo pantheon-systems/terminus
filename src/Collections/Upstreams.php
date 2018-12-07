@@ -15,7 +15,7 @@ class Upstreams extends UserOwnedCollection implements OrganizationsInterface
 {
     use OrganizationsTrait;
 
-    public static $pretty_name = 'upstreams';
+    const PRETTY_NAME = 'upstreams';
     /**
      * @var string
      */

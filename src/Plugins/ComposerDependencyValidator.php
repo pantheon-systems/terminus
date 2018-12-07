@@ -32,6 +32,7 @@ class ComposerDependencyValidator
         $composer_lock_file = $plugin_dir . DIRECTORY_SEPARATOR . 'composer.lock';
         $plugin_composer_json = $this->loadJson($composer_json_file);
         $plugin_composer_lock = $this->loadJson($composer_lock_file);
+        $plugin_vendor_dir = dirname($composer_json_file) . "/vendor";
 
         // If there is no composer.lock file, that means that
         // the plugin has autoload classes, but requires no dependencies.
@@ -57,7 +58,7 @@ class ComposerDependencyValidator
         // If the plugin's lock file contains a project that is also in
         // Terminus' lock file, require them to be at exactly the same
         // version number.
-        $this->validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock);
+        $this->validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock, $plugin_vendor_dir);
     }
 
     /**
@@ -92,7 +93,7 @@ class ComposerDependencyValidator
      * or
      *  b) anything that does appear in both places exists as exactly the same version.
      */
-    protected function validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock)
+    protected function validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock, $plugin_vendor_dir)
     {
         $plugin_name = $plugin_composer_json['name'];
         $plugin_packages = $this->getLockFilePackages($plugin_composer_lock);
@@ -101,7 +102,9 @@ class ComposerDependencyValidator
         foreach ($plugin_packages as $project => $version) {
             if (array_key_exists($project, $terminus_packages)) {
                 if ($version != $terminus_packages[$project]) {
-                    throw new TerminusException("The plugin {name} has installed the project {dependency}: {version}, but Terminus has installed {dependency}: {otherversion}. To resolve this, try running 'composer update' in both the plugin directory, and the terminus directory.", ['name' => $plugin_name, 'dependency' => $project, 'version' => $version, 'otherversion' => $terminus_packages[$project]]);
+                    if (is_dir("$plugin_vendor_dir/$project")) {
+                        throw new TerminusException("The plugin {name} has installed the project {dependency}: {version}, but Terminus has installed {dependency}: {otherversion}. To resolve this, try running 'composer update' in both the plugin directory, and the terminus directory.", ['name' => $plugin_name, 'dependency' => $project, 'version' => $version, 'otherversion' => $terminus_packages[$project]]);
+                    }
                 }
             }
         }

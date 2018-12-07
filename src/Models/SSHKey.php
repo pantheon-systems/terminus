@@ -14,7 +14,7 @@ class SSHKey extends TerminusModel implements UserInterface
 {
     use UserTrait;
 
-    public static $pretty_name = 'SSH key';
+    const PRETTY_NAME = 'SSH key';
 
     /**
      * Deletes a specific SSH key
@@ -40,7 +40,7 @@ class SSHKey extends TerminusModel implements UserInterface
     public function getComment()
     {
         $key_parts = explode(' ', $this->get('key'));
-        $comment = $key_parts[2];
+        $comment = isset($key_parts[2]) ? $key_parts[2] : '';
         return $comment;
     }
 
