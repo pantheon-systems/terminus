@@ -21,11 +21,6 @@ class LocalMachineHelper implements ConfigAwareInterface
     use ConfigAwareTrait;
 
     /**
-     * @var integer The number of seconds to wait on a command until it times out
-     */
-    const TIMEOUT = 3600;
-
-    /**
      * Executes the given command on the local machine and return the exit code and output.
      *
      * @param string $cmd The command to execute
@@ -156,7 +151,8 @@ class LocalMachineHelper implements ConfigAwareInterface
     protected function getProcess($cmd)
     {
         $process = new Process($cmd);
-        $process->setTimeout(self::TIMEOUT);
+        $config = $this->getConfig();
+        $process->setTimeout($config->get('timeout'));
         return $process;
     }
 }
