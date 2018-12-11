@@ -71,10 +71,17 @@ All notable changes to this project will be documented in this file. This projec
 - The empty-list notice on `payment-method:list` has become a warning. (#1906)
 - The empty-list notice on `site:list` has become a warning. (#1906)
 - The empty-list notice on `site:org:list` has become a warning. (#1906)
+- Slashes are no longer escaped when converting the body of requests to JSON before cURL. (#1909)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
 - `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
+
+### Fixed
+- Fixed `Environment::importDatabase()` by switching from using the `import_database` workflow to `do_import`. (#1909)
+- Fixed `Environment::importFiles()` by switching from using the `import_files` workflow to `do_import`. (#1909)
+- Fixed `import:database` by switching from using the `import_database` workflow to `do_import`. (#1909)
+- Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
 
 ## 1.9.0 - 2018-09-11
 ### Added
