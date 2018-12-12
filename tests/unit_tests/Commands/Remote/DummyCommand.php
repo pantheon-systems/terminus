@@ -22,13 +22,4 @@ class DummyCommand extends SSHBaseCommand
         $this->prepareEnvironment($site_env_id);
         return $this->executeCommand($dummy_args);
     }
-
-    /**
-     * @param InputInterface $input
-     * @return bool|null
-     */
-    public function useUseTty($input)
-    {
-        return $this->useTty($input);
-    }
 }

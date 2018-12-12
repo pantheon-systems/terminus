@@ -4,8 +4,6 @@ namespace Pantheon\Terminus\ProgressBars;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Workflow;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -16,14 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Pantheon\Terminus\ProgressBars
  */
-class WorkflowProgressBar implements ConfigAwareInterface
+class WorkflowProgressBar extends TerminusProgressBar
 {
-    use ConfigAwareTrait;
-
-    /**
-     * @var ProgressBar
-     */
-    protected $progress_bar;
     /**
      * @var Workflow
      */
@@ -41,8 +33,7 @@ class WorkflowProgressBar implements ConfigAwareInterface
         $this->progress_bar = new ProgressBar($output, $this->workflow->get('number_of_tasks'));
         $this->updateActiveMessage();
         $this->progress_bar->setFormat('custom');
-        $this->progress_bar->start();
-        $this->progress_bar->display();
+        $this->start();
     }
 
     /**
@@ -57,15 +48,6 @@ class WorkflowProgressBar implements ConfigAwareInterface
     }
 
     /**
-     * Sleeps to prevent spamming the API.
-     */
-    protected function sleep()
-    {
-        $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
-        usleep($retry_interval * 1000);
-    }
-
-    /**
      * Runs a single iteration of the progress bar.
      * @return bool
      * @throws TerminusException
@@ -74,9 +56,9 @@ class WorkflowProgressBar implements ConfigAwareInterface
     {
         $step_before_fetch = $this->workflow->get('step');
         $this->workflow->fetch();
+        $this->updateActiveMessage();
         if ($this->workflow->isFinished()) {
-            $this->progress_bar->finish();
-            $this->progress_bar->clear();
+            $this->end();
             // If the workflow failed then figure out the correct output message and throw an exception.
             if (!$this->workflow->isSuccessful()) {
                 throw new TerminusException($this->workflow->getMessage());
@@ -85,7 +67,6 @@ class WorkflowProgressBar implements ConfigAwareInterface
         }
         $step_after_fetch = $this->workflow->get('step');
 
-        $this->updateActiveMessage();
         $this->progress_bar->advance($step_after_fetch - $step_before_fetch);
         return true;
     }

@@ -844,51 +844,6 @@ class EnvironmentTest extends ModelTestCase
         $model->mergeToDev();
     }
 
-    public function testSendCommandViaSsh()
-    {
-        $command = 'echo "Hello, World!"';
-        $expectedCommand = ProcessUtils::escapeArgument($command);
-
-        $expected = ['output' => 'Hello, World!', 'exit_code' => 0,];
-        $this->local_machine->expects($this->at(0))
-            ->method('execInteractive')
-            ->with('ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o "StrictHostKeyChecking=no" -o "AddressFamily inet" ' . $expectedCommand)
-            ->willReturn($expected);
-
-        $actual = $this->model->sendCommandViaSsh($command);
-        $this->assertEquals($expected, $actual);
-
-        $this->configSet(['test_mode' => 1,]);
-        $expected = [
-            'output' => "Terminus is in test mode. "
-                . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                . "SSH Command: ssh -T dev.abc@appserver.dev.abc.drush.in -p 2222 -o \"StrictHostKeyChecking=no\" -o \"AddressFamily inet\" $expectedCommand",
-            'exit_code' => 0
-        ];
-
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $outputter = $this->getMockBuilder(Output::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->model->setContainer($container);
-        $container->expects($this->once())
-            ->method('has')
-            ->with('output')
-            ->willReturn(true);
-        $container->expects($this->once())
-            ->method('get')
-            ->with('output')
-            ->willReturn($outputter);
-        $outputter->expects($this->once())
-            ->method('write')
-            ->with($expected['output']);
-
-        $actual = $this->model->sendCommandViaSsh('echo "Hello, World!"');
-        $this->assertEquals($expected, $actual);
-    }
-
     public function testSerialize()
     {
         $this->config->method('get')->with('date_format')->willReturn('Y-m-d');

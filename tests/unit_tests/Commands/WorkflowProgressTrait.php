@@ -11,7 +11,6 @@ use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
  */
 trait WorkflowProgressTrait
 {
-    protected $container;
     protected $command;
     protected $progress_bar;
 
