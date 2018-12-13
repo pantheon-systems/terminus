@@ -15,6 +15,9 @@ TERMINUS_PORT:     443
 TERMINUS_PROTOCOL: 'https'
 TERMINUS_SSH_HOST: null
 
+# Settings
+TERMINUS_TIMEOUT: 86400
+
 # User Prompts
 TERMINUS_DASHBOARD_HOST:     'dashboard.pantheon.io'
 TERMINUS_DASHBOARD_PROTOCOL: 'https'

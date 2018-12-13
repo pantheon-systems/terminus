@@ -59,6 +59,7 @@ All notable changes to this project will be documented in this file. This projec
 - A progress bar has been added to the workflow processing portion of `solr:disable`. (#1907)
 - A progress bar has been added to the workflow processing portion of `solr:enable`. (#1907)
 - A progress bar has been added to the workflow processing portion of `upstream:updates:apply`. (#1907)
+- New const `TERMINUS_TIMEOUT` added to extend the timeout maximum for remote commands. (#1908)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
