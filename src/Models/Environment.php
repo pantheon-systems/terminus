@@ -584,7 +584,15 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function importDatabase($url)
     {
-        return $this->getWorkflows()->create('import_database', ['params' => compact('url'),]);
+        return $this->getWorkflows()->create(
+            'do_import',
+            [
+                'params' => [
+                    'database' => 1,
+                    'url' => $url,
+                ],
+            ]
+        );
     }
 
     /**
@@ -610,7 +618,15 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function importFiles($url)
     {
-        return $this->getWorkflows()->create('import_files', ['params' => compact('url'),]);
+        return $this->getWorkflows()->create(
+            'do_import',
+            [
+                'params' => [
+                    'files' => 1,
+                    'url' => $url,
+                ],
+            ]
+        );
     }
 
     /**

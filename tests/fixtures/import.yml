@@ -196,7 +196,7 @@
             absolute_url: ''
             json: ''
             Accept: null
-        body: '{"type":"do_migration","params":{"url":"https:\/\/s3.amazonaws.com\/pantheondemofiles\/archive.tar.gz"}}'
+        body: '{"type":"do_migration","params":{"url":"https://s3.amazonaws.com/pantheondemofiles/archive.tar.gz"}}'
     response:
         status:
             http_version: '1.1'

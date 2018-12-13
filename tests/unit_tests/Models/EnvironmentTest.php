@@ -685,8 +685,11 @@ class EnvironmentTest extends ModelTestCase
         $this->setUpWorkflowOperationTest(
             'importDatabase',
             ['https://example.com/myfile.sql',],
-            'import_database',
-            ['url' => 'https://example.com/myfile.sql',]
+            'do_import',
+            [
+                'url' => 'https://example.com/myfile.sql',
+                'database' => 1,
+            ]
         );
     }
 
@@ -705,8 +708,11 @@ class EnvironmentTest extends ModelTestCase
         $this->setUpWorkflowOperationTest(
             'importFiles',
             ['https://example.com/myfile.tar.gz',],
-            'import_files',
-            ['url' => 'https://example.com/myfile.tar.gz',]
+            'do_import',
+            [
+                'files' => 1,
+                'url' => 'https://example.com/myfile.tar.gz',
+            ]
         );
     }
 
