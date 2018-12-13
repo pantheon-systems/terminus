@@ -60,6 +60,8 @@ All notable changes to this project will be documented in this file. This projec
 - A progress bar has been added to the workflow processing portion of `solr:enable`. (#1907)
 - A progress bar has been added to the workflow processing portion of `upstream:updates:apply`. (#1907)
 - New const `TERMINUS_TIMEOUT` added to extend the timeout maximum for remote commands. (#1908)
+- A progess bar has been added to the process portion of `remote:drush`. (#1910)
+- A progess bar has been added to the process portion of `remote:wp`. (#1910)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -72,6 +74,8 @@ All notable changes to this project will be documented in this file. This projec
 - The empty-list notice on `site:list` has become a warning. (#1906)
 - The empty-list notice on `site:org:list` has become a warning. (#1906)
 - Slashes are no longer escaped when converting the body of requests to JSON before cURL. (#1909)
+- Moved the `sendCommandViaSsh` function from `Environment` to `SSHBaseCommand`. (#1910)
+- Moved the `useTty` function from `SSHBaseCommand` to `LocalMachineHelper`. (#1910)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

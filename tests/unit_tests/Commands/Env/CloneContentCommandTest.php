@@ -16,8 +16,6 @@ class CloneContentCommandTest extends EnvCommandTest
 {
     use WorkflowProgressTrait;
 
-    protected $command;
-
     /**
      * @inheritdoc
      */
