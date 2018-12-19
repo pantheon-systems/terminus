@@ -18,6 +18,7 @@ class SetCommand extends SiteCommand implements ContainerAwareInterface
 
     /**
      * Changes a site's upstream.
+     * Note: Only the site's owner or user in charge may change its upstream.
      *
      * @authorize
      *
