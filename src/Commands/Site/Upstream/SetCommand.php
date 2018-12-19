@@ -32,7 +32,7 @@ class SetCommand extends SiteCommand implements ContainerAwareInterface
     public function set($site_name, $upstream_id)
     {
         $site = $this->getSite($site_name);
-        if (!$site->getAuthorizations()->can('update_site_setting')) {
+        if (!$site->getAuthorizations()->can('switch_upstream')) {
             throw new TerminusException('You do not have permission to change the upstream of this site.');
         }
 

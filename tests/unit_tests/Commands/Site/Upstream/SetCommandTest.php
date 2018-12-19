@@ -114,7 +114,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
@@ -162,7 +162,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(true);
         $this->site->expects($this->never())
             ->method('getUpstream');
@@ -190,7 +190,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
@@ -224,7 +224,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(false);
         $this->site->expects($this->never())
             ->method('getUpstream');
@@ -252,7 +252,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(true);
         $this->site->expects($this->once())
             ->method('getUpstream')
@@ -293,7 +293,7 @@ class SetCommandTest extends CommandTestCase
 
         $this->authorizations->expects($this->once())
             ->method('can')
-            ->with('update_site_setting')
+            ->with('switch_upstream')
             ->willReturn(true);
         $this->upstreams->expects($this->once())
             ->method('get')

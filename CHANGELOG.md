@@ -86,6 +86,7 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `Environment::importFiles()` by switching from using the `import_files` workflow to `do_import`. (#1909)
 - Fixed `import:database` by switching from using the `import_database` workflow to `do_import`. (#1909)
 - Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
+- Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
 
 ## 1.9.0 - 2018-09-11
 ### Added
