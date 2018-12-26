@@ -67,3 +67,11 @@ Feature: Managing a site's team
     """
     Removed a user from site team
     """
+
+  @vcr site-team-remove-self.yml
+  Scenario: Removing a team member
+    When I run "terminus site:team:remove [[test_site_name]] [[other_user]]"
+    Then I should get:
+    """
+    Removed your user from site team
+    """

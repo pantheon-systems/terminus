@@ -87,6 +87,7 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `import:database` by switching from using the `import_database` workflow to `do_import`. (#1909)
 - Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
 - Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
+- Fixed `site:team:remove` when removing oneself from the team an error is no longer thrown upon success. (#1914)
 
 ## 1.9.0 - 2018-09-11
 ### Added

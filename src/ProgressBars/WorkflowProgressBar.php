@@ -55,7 +55,12 @@ class WorkflowProgressBar extends TerminusProgressBar
     protected function update()
     {
         $step_before_fetch = $this->workflow->get('step');
-        $this->workflow->fetch();
+        try {
+            $this->workflow->fetch();
+        } catch (\Exception $e) {
+            $this->end();
+            throw $e;
+        }
         $this->updateActiveMessage();
         if ($this->workflow->isFinished()) {
             $this->end();

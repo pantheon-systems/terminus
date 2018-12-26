@@ -34,7 +34,15 @@ class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, 
     public function remove($site_id, $member)
     {
         $workflow = $this->getSite($site_id)->getUserMemberships()->get($member)->delete();
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
-        $this->log()->notice($workflow->getMessage());
+        try {
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $message = $workflow->getMessage();
+        } catch (\Exception $e) {
+            if ($e->getCode() !== 404) {
+                throw $e;
+            }
+            $message = 'Removed your user from site team';
+        }
+        $this->log()->notice($message);
     }
 }
