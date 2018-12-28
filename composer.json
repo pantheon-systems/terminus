@@ -33,6 +33,16 @@
     "bin/terminus"
   ],
   "scripts": {
+      "phar:install-tools": [
+        "gem install mime-types -v 2.6.2",
+        "curl -LSs https://box-project.github.io/box2/installer.php | php",
+        "mkdir -p tools",
+        "mv -f box.phar tools/box"
+      ],
+      "phar:build": "env PATH=tools:$PATH box build",
+      "release": [
+          "release --pattern=\"^TERMINUS_VERSION:[ \t]*'SEMVER'$\" config/constants.yml"
+      ],
       "behat": "SHELL_INTERACTIVE=true behat --colors -c=tests/config/behat.yml --suite=default",
       "cbf": "phpcbf --standard=PSR2 -n tests/unit_tests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
