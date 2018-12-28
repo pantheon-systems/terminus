@@ -50,7 +50,7 @@ class DotEnvConfig extends TerminusConfig
     {
         $info = [];
 
-        foreach($lines as $line) {
+        foreach ($lines as $line) {
             list($key, $value) = array_pad(explode('=', trim($line)), 2, '');
             if (!empty($key)) {
                 $info[$key] = $this->trimQuotes($value);

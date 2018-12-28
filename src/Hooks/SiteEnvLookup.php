@@ -110,7 +110,7 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
      */
     protected function isValidSiteEnv($site_env)
     {
-        return strpos($site_env, '.') !== FALSE;
+        return strpos($site_env, '.') !== false;
     }
 
     /**
@@ -197,8 +197,7 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
                 array_unshift($value, $newArgValue);
                 $input->setArgument($key, $value);
                 return;
-            }
-            else {
+            } else {
                 $input->setArgument($key, $newArgValue);
                 $newArgValue = $value;
             }
