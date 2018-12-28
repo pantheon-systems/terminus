@@ -27,7 +27,8 @@
     "psr-4": {
       "Pantheon\\Terminus\\UnitTests\\": "tests/unit_tests/",
       "Pantheon\\Terminus\\FeatureTests\\": "tests/features/bootstrap/"
-    }
+    },
+    "classmap": ["scripts/UpdateClassLists.php"]
   },
   "bin": [
     "bin/terminus"
@@ -40,6 +41,7 @@
         "mv -f box.phar tools/box"
       ],
       "phar:build": "env PATH=tools:$PATH box build",
+      "update-class-lists": ["\\Terminus\\UpdateClassLists::update"],
       "release": [
           "release --pattern=\"^TERMINUS_VERSION:[ \t]*'SEMVER'$\" config/constants.yml"
       ],
