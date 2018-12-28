@@ -25,21 +25,10 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
     /**
      * Determine the site and environment that this command should target.
      * The Annotated Commands hook manager will call this function during
-     * the init phase of any command that has a 'site-env' annotation.
-     * If there is not already a commandline argument specifying the
-     * site and environment, then determine an appropriate site and
-     * environment to use, e.g. from environment variables, a .env file,
-     * et. al., and insert it as an argument.
-     *
-     * Requirement: command's first parameter should be named $site_env.
-     *
-     * This hook works under the assumption that it is possible to
-     * unambiguously determine whether or not the first parameter is
-     * a $site_env parameter. If it is not, then the site and env are
-     * looked up and inserted as the first parameter
-     *
-     * Note that we would want a different version of this hook to use
-     * with commands that take only a site_id.
+     * the init phase of all commands. For those commands that have a
+     * parameter  'site_env' or 'site', this hook will attempt to fill in
+     * a default value for that parameter if the user did not provide it
+     * on the command line.
      *
      * @hook init *
      */
@@ -50,13 +39,18 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
         if ($input->hasArgument('site_env')) {
             return $this->ensureSiteAndEnv($input, $annotationData);
         }
-        // For commands with a $site_env parameter, inject the site and
-        // environment if it has not already been defined.
+        // For commands with a $site parameter, inject the site
+        // if it has not already been defined.
         if ($input->hasArgument('site')) {
             return $this->ensureSite($input, $annotationData);
         }
     }
 
+    /**
+     * If the user did not provide a site_env paramter, then look
+     * up a value to use from environment variables, .env file or
+     * information from the current git repository.
+     */
     public function ensureSiteAndEnv($input, AnnotationData $annotationData)
     {
         // If the $site_env paramter is already set (indicates a
@@ -75,19 +69,8 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
     }
 
     /**
-     * Determine the site that this command should target.
-     * The Annotated Commands hook manager will call this function during
-     * the init phase of any command that has a 'site-env' annotation.
-     *
-     * This hook works under the assumption that the command takes
-     * a fixed number of parameters.  If the last parameter is not
-     * provided, then the site id is looked up and inserted.
-     *
-     * Note that this is not necessarily a good assumption; if the user
-     * mistakenly omitted a parameter, but did provide a site id, then
-     * the resulting error message would be strange.  It would be
-     * better if it were possible to unambiguously determine if the
-     * first parameter is a valid site id.
+     * Works like ensureSiteAndEnv, but is used for commands that
+     * take just a 'site' parameter.
      */
     public function ensureSite($input, AnnotationData $annotationData)
     {
@@ -130,11 +113,14 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
         return strpos($site_env, '.') !== FALSE;
     }
 
+    /**
+     * Look up the site to use with the current Terminus command.
+     */
     protected function determineSite()
     {
-        // If TERMINUS_SITE and TERMINUS_ENV are set, then
-        // return the site and env they indicate. The config
-        // will also be loaded from a .env file at the cwd if present.
+        // If TERMINUS_SITE is set, then return the site indicated.
+        // The config will also be loaded from a .env file at the cwd
+        // if present.
         $site = $this->getConfig()->get('site');
         if (!empty($site)) {
             return $site;
@@ -170,6 +156,10 @@ class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteA
         return '';
     }
 
+    /**
+     * Examine the url of the current git repository, and return a site
+     * and environment to use based on that information.
+     */
     protected function siteAndEnvFromRepo()
     {
         $repo_url = exec('git config --get remote.origin.url');
