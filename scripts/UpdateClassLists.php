@@ -118,7 +118,7 @@ __EOT__;
             if (strpos($file, 'abstract class') === false) {
                 preg_match('/namespace (.*?);/', $file, $namespace);
                 preg_match('/class (.*?) /', $file, $class);
-                $result[] = $namespace[1] . '\\' . $class[1];
+                $result[] = '\\' . $namespace[1] . '\\' . $class[1];
             }
         }
         return $result;

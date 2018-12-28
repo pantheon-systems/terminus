@@ -310,7 +310,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->inflector(SavedTokens::class)
             ->invokeMethod('setDataStore', [$token_store]);
 
-        $this->configureModulesAndCollections();
+        $this->configureModulesAndCollections($container);
 
         // Helpers
         $container->add(LocalMachineHelper::class);
@@ -346,77 +346,75 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $factory->hookManager()->addInitializeHook($pluginAutoloadDependencies);
     }
 
-    private function configureModulesAndCollections()
+    private function configureModulesAndCollections($container)
     {
-        $container = $this->getContainer();
-
         // List of all Models and Collections. Update via 'composer update-class-lists'
 
         // Models
-        $container->add(Pantheon\Terminus\Models\Backup::class);
-        $container->add(Pantheon\Terminus\Models\Binding::class);
-        $container->add(Pantheon\Terminus\Models\Branch::class);
-        $container->add(Pantheon\Terminus\Models\Commit::class);
-        $container->add(Pantheon\Terminus\Models\DNSRecord::class);
-        $container->add(Pantheon\Terminus\Models\Domain::class);
-        $container->add(Pantheon\Terminus\Models\Environment::class);
-        $container->add(Pantheon\Terminus\Models\Lock::class);
-        $container->add(Pantheon\Terminus\Models\MachineToken::class);
-        $container->add(Pantheon\Terminus\Models\Metric::class);
-        $container->add(Pantheon\Terminus\Models\NewRelic::class);
-        $container->add(Pantheon\Terminus\Models\Organization::class);
-        $container->add(Pantheon\Terminus\Models\OrganizationSiteMembership::class);
-        $container->add(Pantheon\Terminus\Models\OrganizationUpstream::class);
-        $container->add(Pantheon\Terminus\Models\OrganizationUserMembership::class);
-        $container->add(Pantheon\Terminus\Models\PaymentMethod::class);
-        $container->add(Pantheon\Terminus\Models\Plan::class);
-        $container->add(Pantheon\Terminus\Models\Profile::class);
-        $container->add(Pantheon\Terminus\Models\Redis::class);
-        $container->add(Pantheon\Terminus\Models\SSHKey::class);
-        $container->add(Pantheon\Terminus\Models\SavedToken::class);
-        $container->add(Pantheon\Terminus\Models\Site::class);
-        $container->add(Pantheon\Terminus\Models\SiteAuthorization::class);
-        $container->add(Pantheon\Terminus\Models\SiteOrganizationMembership::class);
-        $container->add(Pantheon\Terminus\Models\SiteUpstream::class);
-        $container->add(Pantheon\Terminus\Models\SiteUserMembership::class);
-        $container->add(Pantheon\Terminus\Models\Solr::class);
-        $container->add(Pantheon\Terminus\Models\Tag::class);
-        $container->add(Pantheon\Terminus\Models\Upstream::class);
-        $container->add(Pantheon\Terminus\Models\UpstreamStatus::class);
-        $container->add(Pantheon\Terminus\Models\User::class);
-        $container->add(Pantheon\Terminus\Models\UserOrganizationMembership::class);
-        $container->add(Pantheon\Terminus\Models\UserSiteMembership::class);
-        $container->add(Pantheon\Terminus\Models\Workflow::class);
-        $container->add(Pantheon\Terminus\Models\WorkflowOperation::class);
+        $container->add(\Pantheon\Terminus\Models\Backup::class);
+        $container->add(\Pantheon\Terminus\Models\Binding::class);
+        $container->add(\Pantheon\Terminus\Models\Branch::class);
+        $container->add(\Pantheon\Terminus\Models\Commit::class);
+        $container->add(\Pantheon\Terminus\Models\DNSRecord::class);
+        $container->add(\Pantheon\Terminus\Models\Domain::class);
+        $container->add(\Pantheon\Terminus\Models\Environment::class);
+        $container->add(\Pantheon\Terminus\Models\Lock::class);
+        $container->add(\Pantheon\Terminus\Models\MachineToken::class);
+        $container->add(\Pantheon\Terminus\Models\Metric::class);
+        $container->add(\Pantheon\Terminus\Models\NewRelic::class);
+        $container->add(\Pantheon\Terminus\Models\Organization::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationSiteMembership::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationUpstream::class);
+        $container->add(\Pantheon\Terminus\Models\OrganizationUserMembership::class);
+        $container->add(\Pantheon\Terminus\Models\PaymentMethod::class);
+        $container->add(\Pantheon\Terminus\Models\Plan::class);
+        $container->add(\Pantheon\Terminus\Models\Profile::class);
+        $container->add(\Pantheon\Terminus\Models\Redis::class);
+        $container->add(\Pantheon\Terminus\Models\SSHKey::class);
+        $container->add(\Pantheon\Terminus\Models\SavedToken::class);
+        $container->add(\Pantheon\Terminus\Models\Site::class);
+        $container->add(\Pantheon\Terminus\Models\SiteAuthorization::class);
+        $container->add(\Pantheon\Terminus\Models\SiteOrganizationMembership::class);
+        $container->add(\Pantheon\Terminus\Models\SiteUpstream::class);
+        $container->add(\Pantheon\Terminus\Models\SiteUserMembership::class);
+        $container->add(\Pantheon\Terminus\Models\Solr::class);
+        $container->add(\Pantheon\Terminus\Models\Tag::class);
+        $container->add(\Pantheon\Terminus\Models\Upstream::class);
+        $container->add(\Pantheon\Terminus\Models\UpstreamStatus::class);
+        $container->add(\Pantheon\Terminus\Models\User::class);
+        $container->add(\Pantheon\Terminus\Models\UserOrganizationMembership::class);
+        $container->add(\Pantheon\Terminus\Models\UserSiteMembership::class);
+        $container->add(\Pantheon\Terminus\Models\Workflow::class);
+        $container->add(\Pantheon\Terminus\Models\WorkflowOperation::class);
 
         // Collections
-        $container->add(Pantheon\Terminus\Collections\Backups::class);
-        $container->add(Pantheon\Terminus\Collections\Bindings::class);
-        $container->add(Pantheon\Terminus\Collections\Branches::class);
-        $container->add(Pantheon\Terminus\Collections\Commits::class);
-        $container->add(Pantheon\Terminus\Collections\DNSRecords::class);
-        $container->add(Pantheon\Terminus\Collections\Domains::class);
-        $container->add(Pantheon\Terminus\Collections\EnvironmentMetrics::class);
-        $container->add(Pantheon\Terminus\Collections\Environments::class);
-        $container->add(Pantheon\Terminus\Collections\MachineTokens::class);
-        $container->add(Pantheon\Terminus\Collections\OrganizationSiteMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\OrganizationUpstreams::class);
-        $container->add(Pantheon\Terminus\Collections\OrganizationUserMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\PaymentMethods::class);
-        $container->add(Pantheon\Terminus\Collections\Plans::class);
-        $container->add(Pantheon\Terminus\Collections\SSHKeys::class);
-        $container->add(Pantheon\Terminus\Collections\SavedTokens::class);
-        $container->add(Pantheon\Terminus\Collections\SiteAuthorizations::class);
-        $container->add(Pantheon\Terminus\Collections\SiteMetrics::class);
-        $container->add(Pantheon\Terminus\Collections\SiteOrganizationMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\SiteUserMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\Sites::class);
-        $container->add(Pantheon\Terminus\Collections\Tags::class);
-        $container->add(Pantheon\Terminus\Collections\Upstreams::class);
-        $container->add(Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\UserSiteMemberships::class);
-        $container->add(Pantheon\Terminus\Collections\WorkflowOperations::class);
-        $container->add(Pantheon\Terminus\Collections\Workflows::class);
+        $container->add(\Pantheon\Terminus\Collections\Backups::class);
+        $container->add(\Pantheon\Terminus\Collections\Bindings::class);
+        $container->add(\Pantheon\Terminus\Collections\Branches::class);
+        $container->add(\Pantheon\Terminus\Collections\Commits::class);
+        $container->add(\Pantheon\Terminus\Collections\DNSRecords::class);
+        $container->add(\Pantheon\Terminus\Collections\Domains::class);
+        $container->add(\Pantheon\Terminus\Collections\EnvironmentMetrics::class);
+        $container->add(\Pantheon\Terminus\Collections\Environments::class);
+        $container->add(\Pantheon\Terminus\Collections\MachineTokens::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationSiteMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationUpstreams::class);
+        $container->add(\Pantheon\Terminus\Collections\OrganizationUserMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\PaymentMethods::class);
+        $container->add(\Pantheon\Terminus\Collections\Plans::class);
+        $container->add(\Pantheon\Terminus\Collections\SSHKeys::class);
+        $container->add(\Pantheon\Terminus\Collections\SavedTokens::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteAuthorizations::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteMetrics::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteOrganizationMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\SiteUserMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\Sites::class);
+        $container->add(\Pantheon\Terminus\Collections\Tags::class);
+        $container->add(\Pantheon\Terminus\Collections\Upstreams::class);
+        $container->add(\Pantheon\Terminus\Collections\UserOrganizationMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\UserSiteMemberships::class);
+        $container->add(\Pantheon\Terminus\Collections\WorkflowOperations::class);
+        $container->add(\Pantheon\Terminus\Collections\Workflows::class);
     }
 
     /**
