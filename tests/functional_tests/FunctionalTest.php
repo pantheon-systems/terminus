@@ -11,7 +11,7 @@ class FunctionalTest extends TestCase
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
-            $this->terminus("auth:login --machine-token=$token");
+            static::terminus("auth:login --machine-token=$token");
         }
     }
 
@@ -22,7 +22,7 @@ class FunctionalTest extends TestCase
     public function testSiteInfo()
     {
         $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
-        $output = $this->terminus("site:info $site --format=yaml");
+        $output = static::("site:info $site --format=yaml");
 
         $this->assertContains('framework: wordpress', $output);
     }
@@ -34,7 +34,7 @@ class FunctionalTest extends TestCase
      * @param integer|bool $status The required status code for the
      *   provided command, or `false` to ignore the status.
      */
-    protected function terminus($command, $expected_status = 0)
+    protected static function terminus($command, $expected_status = 0)
     {
         $project_dir = dirname(dirname(__DIR__));
         exec("$project_dir/terminus.phar " . $command, $output, $status);
