@@ -11,7 +11,7 @@ class FunctionalTest extends TestCase
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
-            $this->terminus("auth:login --token=$token");
+            $this->terminus("auth:login --machine-token=$token");
         }
     }
 
