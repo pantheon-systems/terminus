@@ -7,7 +7,7 @@ class FunctionalTest extends TestCase
     /**
      * If there is a terminus token, then log in.
      */
-    public function setupForClass()
+    public function setUpBeforeClass()
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
