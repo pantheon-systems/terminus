@@ -11,7 +11,7 @@ class FunctionalTest extends TestCase
     {
         $token = getenv('TERMINUS_TOKEN');
         if ($token) {
-            static::terminus("auth:login --machine-token=$token");
+            static::call_terminus("auth:login --machine-token=$token");
         }
     }
 
@@ -22,7 +22,7 @@ class FunctionalTest extends TestCase
     public function testSiteInfo()
     {
         $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
-        $output = static::("site:info $site --format=yaml");
+        $output = $this->terminus("site:info $site --format=yaml");
 
         $this->assertContains('framework: wordpress', $output);
     }
@@ -31,18 +31,28 @@ class FunctionalTest extends TestCase
      * Run a terminus command.
      *
      * @param string $command The command to run
-     * @param integer|bool $status The required status code for the
-     *   provided command, or `false` to ignore the status.
+     * @param integer $status The required status code for the
+     *   provided command
      */
-    protected static function terminus($command, $expected_status = 0)
+    protected function terminus($command, $expected_status = 0)
+    {
+        list($output, $status) = static::call_terminus($command);
+        $this->assertEquals($expected_status, $status, $output);
+
+        return $output;
+    }
+
+    /**
+     * Run a terminus command.
+     *
+     * @param string $command The command to run
+     */
+    protected static function call_terminus($command)
     {
         $project_dir = dirname(dirname(__DIR__));
         exec("$project_dir/terminus.phar " . $command, $output, $status);
         $output = implode("\n", $output);
-        if ($expected_status !== false) {
-            $this->assertEquals($expected_status, $status, $output);
-        }
 
-        return $output;
+        return [$output, $status];
     }
 }
