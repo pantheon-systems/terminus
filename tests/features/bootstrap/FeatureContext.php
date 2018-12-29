@@ -22,6 +22,7 @@ class FeatureContext implements Context
     private $parameters;
     private $output;
     private $start_time;
+    private $environment_variables = [];
 
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
 
@@ -101,6 +102,7 @@ class FeatureContext implements Context
     {
         $this->setCassetteName($event);
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
+        $this->environment_variables = [];
     }
 
     /**
@@ -589,6 +591,18 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I set the environment variable :arg1 to :arg2
+     *
+     * @param [string] $var  Environment variable name
+     * @param [string] $value Environment variable value
+     * @return [void]
+     */
+    public function iSetTheEnvironmentVariableTo($var, $value)
+    {
+        $this->environment_variables[$var] = $value;
+    }
+
+    /**
      * @When /^I run "([^"]*)"$/
      * @When /^I run: (.*)$/
      * Runs command and saves output
@@ -620,6 +634,13 @@ class FeatureContext implements Context
         $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
         // Pass the cache directory to the command so that tests don't poison the user's cache.
         $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
+
+        // Insert any envrionment variables defined for this scenario
+        foreach ($this->environment_variables as $var => $value) {
+            $var = $this->replacePlaceholders($var);
+            $value = $this->replacePlaceholders($value);
+            $command = "{$var}={$value} $command";
+        }
 
         ob_start();
         passthru($command . ' 2>&1');
