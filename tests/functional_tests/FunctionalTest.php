@@ -4,6 +4,9 @@ use PHPUnit\Framework\TestCase;
 
 class FunctionalTest extends TestCase
 {
+    /**
+     * If there is a terminus token, then log in.
+     */
     public function setupForClass()
     {
         $token = getenv('TERMINUS_TOKEN');
@@ -12,8 +15,10 @@ class FunctionalTest extends TestCase
         }
     }
 
-    // Test to see if we can use terminus.phar and get rational results
-    // back from the Hermes API.
+    /**
+     * Test to see if we can use terminus.phar and get rational results
+     * back from the Hermes API.
+     */
     public function testSiteInfo()
     {
         $site = getenv('TERMINUS_SITE') ?: 'ci-wordpress-core';
@@ -22,14 +27,22 @@ class FunctionalTest extends TestCase
         $this->assertContains('framework: wordpress', $output);
     }
 
+    /**
+     * Run a terminus command.
+     *
+     * @param string $command The command to run
+     * @param integer|bool $status The required status code for the
+     *   provided command, or `false` to ignore the status.
+     */
     protected function terminus($command, $expected_status = 0)
     {
         $project_dir = dirname(dirname(__DIR__));
         exec("$project_dir/terminus.phar " . $command, $output, $status);
+        $output = implode("\n", $output);
         if ($expected_status !== false) {
-            $this->assertEquals($expected_status, $status);
+            $this->assertEquals($expected_status, $status, $output);
         }
 
-        return implode("\n", $output);
+        return $output;
     }
 }
