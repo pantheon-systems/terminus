@@ -53,12 +53,13 @@
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
-      "test": "set -ex ; composer cs ; composer phpunit ; composer behat"
+      "functional": "phpunit --colors=always -c tests/config/functional.phpunit.xml.dist --debug",
+      "test": "set -ex ; composer cs ; composer phpunit ; composer behat ; composer functional"
   },
   "require-dev": {
     "behat/behat": "^3.2.2",
     "php-vcr/php-vcr": "^1.4",
-    "phpunit/phpunit": "^4.0",
+    "phpunit/phpunit": "^4.8.36",
     "php-coveralls/php-coveralls": "^2.1",
     "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.7"
