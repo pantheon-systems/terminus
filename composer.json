@@ -10,7 +10,7 @@
     "php": ">=5.5.38",
     "composer/semver": "^1.4",
     "consolidation/output-formatters": "^3.2",
-    "consolidation/robo": "^1.1.0",
+    "consolidation/robo": "^1.3.5",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",
     "symfony/console": "3.4.4",
