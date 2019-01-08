@@ -3,23 +3,18 @@
 namespace Pantheon\Terminus\Hooks;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Pantheon\Terminus\Session\SessionAwareInterface;
-use Pantheon\Terminus\Session\SessionAwareTrait;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
-use Robo\Common\ConfigAwareTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class SiteEnvLookup
  * @package Pantheon\Terminus
  */
-class SiteEnvLookup implements ConfigAwareInterface, LoggerAwareInterface, SiteAwareInterface
+class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
 {
     use ConfigAwareTrait;
-    use LoggerAwareTrait;
     use SiteAwareTrait;
 
     /**
