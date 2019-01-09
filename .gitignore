@@ -1,6 +1,7 @@
 /vendor
 /*.phar
 /builds
+/tools
 /tests/logs
 
 .DS_Store

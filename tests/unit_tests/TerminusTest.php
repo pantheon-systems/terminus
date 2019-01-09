@@ -7,8 +7,9 @@ use League\Container\ContainerInterface;
 use Robo\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use PHPUnit\Framework\TestCase;
 
-class TerminusTest extends \PHPUnit_Framework_TestCase
+class TerminusTest extends TestCase
 {
     /**
      * @var Robo\Config
