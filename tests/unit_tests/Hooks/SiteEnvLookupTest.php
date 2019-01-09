@@ -256,11 +256,9 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         // site with a site id of "abc", which lines up with
         // the site id recognized by the mocked site 'site-from-repo'.
         $site_id = self::SITE_ID_FIXTURE;
-        if (getenv('CI')) {
-            passthru('git config --global user.email "ci@example.com"');
-            passthru('git config --global user.name "CI Bot"');
-        }
         passthru("git -C $tmp init");
+        passthru("git -C $tmp config user.email 'ci@example.com'");
+        passthru("git -C $tmp config user.name 'CI Bot'");
         passthru("git -C $tmp remote add origin 'ssh://codeserver.dev.{$site_id}@codeserver.dev.${site_id}.drush.in:2222/~/repository.git'");
         file_put_contents("$tmp/file", 'placeholder');
         passthru("git -C $tmp add file");
