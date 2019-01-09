@@ -262,7 +262,7 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         passthru("git -C $tmp remote add origin 'ssh://codeserver.dev.{$site_id}@codeserver.dev.${site_id}.drush.in:2222/~/repository.git'");
         file_put_contents("$tmp/file", 'placeholder');
         passthru("git -C $tmp add file");
-        passthru("git -C $tmp commit -m 'Initial commit'");
+        passthru("git -C $tmp commit -m Testing");
 
         chdir($tmp);
 
