@@ -8,6 +8,7 @@ use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\SiteEnvLookup;
 use Pantheon\Terminus\Models\Site;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class SiteEnvLookupTest
@@ -16,6 +17,8 @@ use Pantheon\Terminus\Models\Site;
  */
 class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
 {
+    const SITE_ID_FIXTURE = 'abc';
+
     /**
      * @var SiteEnvLookup
      */
@@ -37,6 +40,46 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
      */
     protected $sites;
 
+    // An input definition that takes a site_env and a variable list of arguments
+    protected function siteEnvVarArgsDef()
+    {
+        $commandArg = new \Symfony\Component\Console\Input\InputArgument('command');
+        $siteEnvArg = new \Symfony\Component\Console\Input\InputArgument('site_env');
+        $arrayArg = new \Symfony\Component\Console\Input\InputArgument('list', \Symfony\Component\Console\Input\InputArgument::IS_ARRAY);
+
+        return new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteEnvArg, $arrayArg]);
+    }
+
+    // An input definition that takes a site_env and a single additional argument
+    protected function siteEnvRequiredArgsDef()
+    {
+        $commandArg = new \Symfony\Component\Console\Input\InputArgument('command');
+        $siteEnvArg = new \Symfony\Component\Console\Input\InputArgument('site_env');
+        $singleRequiredArg = new \Symfony\Component\Console\Input\InputArgument('item');
+
+        return  new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteEnvArg, $singleRequiredArg]);
+    }
+
+    // An input definition that takes a site and a single additional argument
+    protected function siteRequiredArgsDef()
+    {
+        $commandArg = new \Symfony\Component\Console\Input\InputArgument('command');
+        $siteArg = new \Symfony\Component\Console\Input\InputArgument('site');
+        $singleRequiredArg = new \Symfony\Component\Console\Input\InputArgument('item');
+
+        return  new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteArg, $singleRequiredArg]);
+    }
+
+    // Configuration values that would be set via TERMINUS_SITE / TERMINUS_ENV
+    // or a .env file.
+    protected function terminusSiteWithTerminusEnv()
+    {
+        return [
+            'site' => 'site-from-config',
+            'env' => 'dev',
+        ];
+    }
+
     /**
      * @inheritdoc
      */
@@ -47,7 +90,10 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         $this->site = $this->getMockBuilder(Site::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->site->id = 'abc';
+        $this->site->id = self::SITE_ID_FIXTURE;
+
+        $this->site->method('getName')
+            ->willReturn('site-from-repo');
 
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
@@ -56,6 +102,13 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         $this->sites->method('get')
             ->willReturn($this->site);
 
+        $this->sites->expects($this->never())
+            ->method('someMethod');
+
+        $this->sites->expects($this->any())
+            ->method('getSite')
+            ->with(self::SITE_ID_FIXTURE)
+            ->willReturn($this->site);
 
         $this->siteEnvLookup = new SiteEnvLookup();
         $this->siteEnvLookup->setConfig($this->config);
@@ -67,50 +120,31 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
      */
     public function siteEnvLookupParameters()
     {
-        // Some argument definitions that we will use to build some input definitions
-        $commandArg = new \Symfony\Component\Console\Input\InputArgument('command');
-        $siteEnvArg = new \Symfony\Component\Console\Input\InputArgument('site_env');
-        $siteArg = new \Symfony\Component\Console\Input\InputArgument('site');
-        $arrayArg = new \Symfony\Component\Console\Input\InputArgument('list', \Symfony\Component\Console\Input\InputArgument::IS_ARRAY);
-        $singleRequiredArg = new \Symfony\Component\Console\Input\InputArgument('item');
-
-        // An input definition that takes a site_env and a variable list of arguments
-        $siteEnvVarArgsDef = new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteEnvArg, $arrayArg]);
-
-        // An input definition that takes a site and a single additional argument
-        $siteRequiredArgsDef = new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteEnvArg, $singleRequiredArg]);
-
-        // Some configuration values
-        $terminusSiteWithTerminusEnv = [
-            'site' => 'mysite',
-            'env' => 'dev',
-        ];
-
         return [
 
             // Site not specified on commandline
             // Command takes site_env and variable arguments
             // TERMINUS_SITE and TERMINUS_ENV set in configuration
             [
-                ['command: example:op', 'site_env: mysite.dev', 'list: [a, b]'],
+                ['command: example:op', 'site_env: site-from-config.dev', 'list: [a, b]'],
                 ['program', 'example:op', 'a', 'b'],
-                $siteEnvVarArgsDef,
-                $terminusSiteWithTerminusEnv,
+                $this->siteEnvVarArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
             ],
 
             // Like the previous test, but a different site is specified on the commandline
             [
                 ['command: example:op', 'site_env: othersite.test', 'list: [a, b]'],
                 ['program', 'example:op', 'othersite.test', 'a', 'b'],
-                $siteEnvVarArgsDef,
-                $terminusSiteWithTerminusEnv,
+                $this->siteEnvVarArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
             ],
 
             // Site not specified on commandline, and nothing provided in configuration
             [
                 ['command: example:op', 'site_env: a', 'list: [b]'],
                 ['program', 'example:op', 'a', 'b'],
-                $siteEnvVarArgsDef,
+                $this->siteEnvVarArgsDef(),
                 [],
             ],
 
@@ -118,25 +152,51 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
             // Command takes site_env and one other required argument
             // TERMINUS_SITE and TERMINUS_ENV set in configuration
             [
-                ['command: example:op', 'site_env: mysite.dev', 'item: a'],
+                ['command: example:op', 'site_env: site-from-config.dev', 'item: a'],
                 ['program', 'example:op', 'a'],
-                $siteRequiredArgsDef,
-                $terminusSiteWithTerminusEnv,
+                $this->siteEnvRequiredArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
             ],
 
             // Like the previous test, but a different site is specified on the commandline
             [
                 ['command: example:op', 'site_env: othersite.test', 'item: a'],
                 ['program', 'example:op', 'othersite.test', 'a'],
-                $siteRequiredArgsDef,
-                $terminusSiteWithTerminusEnv,
+                $this->siteEnvRequiredArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
             ],
 
             // Site not specified on commandline, and nothing provided in configuration
             [
                 ['command: example:op', 'site_env: a', 'item: EMPTY'],
                 ['program', 'example:op', 'a'],
-                $siteRequiredArgsDef,
+                $this->siteEnvRequiredArgsDef(),
+                [],
+            ],
+
+            // Site not speicifed on commandline
+            // Command takes site and one other required argument
+            // TERMINUS_SITE and TERMINUS_ENV set in configuration
+            [
+                ['command: example:op', 'site: site-from-config', 'item: a'],
+                ['program', 'example:op', 'a'],
+                $this->siteRequiredArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
+            ],
+
+            // Like the previous test, but a different site is specified on the commandline
+            [
+                ['command: example:op', 'site: othersite', 'item: a'],
+                ['program', 'example:op', 'othersite', 'a'],
+                $this->siteRequiredArgsDef(),
+                $this->terminusSiteWithTerminusEnv(),
+            ],
+
+            // Site not specified on commandline, and nothing provided in configuration
+            [
+                ['command: example:op', 'site: EMPTY', 'item: a'],
+                ['program', 'example:op', 'a'],
+                $this->siteRequiredArgsDef(),
                 [],
             ],
 
@@ -154,24 +214,15 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
     {
         $this->config->replace($configData);
 
-        $this->sites->expects($this->never())
-            ->method('getSite');
-
         $input = new \Symfony\Component\Console\Input\ArgvInput($args, $def);
         $annotationData = new AnnotationData();
-
-/*
-        $this->sites->expects($this->once())
-            ->method('getSite')
-            ->with('abc')
-            ->willReturn($this->site);
-*/
 
         $this->siteEnvLookup->siteAndEnvLookupHook($input, $annotationData);
 
         $expectedString = implode("\n", $expected);
         $actualArgs = $input->getArguments();
 
+        // Convert from associative key => value to list "key: value"
         $actualArgs = array_map(
             function ($key) use ($actualArgs) {
                 $value = $actualArgs[$key];
@@ -185,9 +236,54 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
             array_keys($actualArgs)
         );
 
-        //$actualString = var_export($input->getArguments(), true); // implode("\n", $input->getArguments());
         $actualString = implode("\n", $actualArgs);
 
         $this->assertEquals($expectedString, $actualString);
+    }
+
+    /**
+     * This test feeds more data to siteEnvLookupParameters
+     * after setting up a git repository fixture to test detecting
+     * a site via the git repository information.
+     */
+    public function testInjectSiteFromRepoUrlLookup()
+    {
+        $tmp = tempnam(sys_get_temp_dir(), 'terminus_test_');
+        unlink($tmp);
+        mkdir($tmp);
+
+        // Set up a fixture repository simulating a Pantheon
+        // site with a site id of "abc", which lines up with
+        // the site id recognized by the mocked site 'site-from-repo'.
+        $site_id = self::SITE_ID_FIXTURE;
+        passthru("git -C $tmp init");
+        passthru("git -C $tmp remote add origin 'ssh://codeserver.dev.{$site_id}@codeserver.dev.${site_id}.drush.in:2222/~/repository.git'");
+        file_put_contents("$tmp/file", 'placeholder');
+        passthru("git -C $tmp add file");
+        passthru("git -C $tmp commit -m 'Initial commit'");
+
+        chdir($tmp);
+
+        $this->testEnsureSiteEnvInjected(
+            ['command: example:op', 'site_env: site-from-repo.dev', 'item: a'],
+            ['program', 'example:op', 'a'],
+            $this->siteEnvRequiredArgsDef(),
+            [],
+        );
+
+        // Change our fixture repository to simulate a repository
+        // that is not a Pantheon site.
+        passthru("git -C $tmp remote set-url origin 'git@github.com:org/project.git'");
+
+        $this->testEnsureSiteEnvInjected(
+            ['command: example:op', 'site_env: a', 'item: EMPTY'],
+            ['program', 'example:op', 'a'],
+            $this->siteEnvRequiredArgsDef(),
+            [],
+        );
+
+        // Recursively remove tmp directory
+        $fs = new Filesystem();
+        $fs->remove($tmp);
     }
 }
