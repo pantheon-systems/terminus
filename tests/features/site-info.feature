@@ -27,6 +27,27 @@ Feature: View site information
       Date Last Frozen
     """
 
+  @vcr site-info.yml
+  Scenario: Site Info
+    When I set the environment variable "TERMINUS_SITE" to "[[test_site_name]]"
+    And I run "terminus site:info"
+    Then I should see a table with rows like:
+    """
+      ID
+      Name
+      Label
+      Created
+      Framework
+      Organization
+      Plan
+      Upstream
+      PHP Version
+      Holder Type
+      Holder ID
+      Owner
+      Date Last Frozen
+    """
+
   @vcr site-info-owner.yml
   Scenario: Site info for a specific field
     When I run "terminus site:info [[test_site_name]] --field=id"

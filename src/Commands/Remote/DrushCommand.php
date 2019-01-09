@@ -22,15 +22,15 @@ class DrushCommand extends SSHBaseCommand
      * @command remote:drush
      * @aliases drush
      *
-     * @param string $site_env_id Site & environment in the format `site-name.env`
+     * @param string $site_env Site & environment in the format `site-name.env`
      * @param array $drush_command Drush command
      * @return string Command output
      *
      * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
      */
-    public function drushCommand($site_env_id, array $drush_command)
+    public function drushCommand($site_env, array $drush_command)
     {
-        $this->prepareEnvironment($site_env_id);
+        $this->prepareEnvironment($site_env);
         return $this->executeCommand($drush_command);
     }
 }
