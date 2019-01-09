@@ -284,6 +284,13 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
             []
         );
 
+        // For some reason, Appveyor fails with "permission denied" when
+        // trying to remove objects in the .git directory. We'll just let
+        // Appveyor stay dirty.
+        if (getenv('APPVEYOR')) {
+            return;
+        }
+
         // Recursively remove tmp directory
         $fs = new Filesystem();
         $fs->remove($tmp);

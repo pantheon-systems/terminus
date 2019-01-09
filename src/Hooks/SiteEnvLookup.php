@@ -73,7 +73,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
             return;
         }
 
-        $site_id = $this->determineSite($input);
+        $site_id = $this->determineSite();
         $this->insertNewFirstArgument($input, $site_id);
     }
 
@@ -122,7 +122,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
         }
 
         // Check the url of the origin of the repo at the cwd
-        list($site, $env) = $this->siteAndEnvFromRepo();
+        list($site,) = $this->siteAndEnvFromRepo();
         if (!empty($site)) {
             return $site;
         }
