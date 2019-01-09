@@ -38,7 +38,7 @@ trait SiteAwareTrait
     /**
      * Look up a site by id.
      *
-     * @param Site $site_id Either a site's UUID or its name
+     * @param string $site_id Either a site's UUID or its name
      * @return mixed
      */
     public function getSite($site_id)
