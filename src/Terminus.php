@@ -28,7 +28,7 @@ use Pantheon\Terminus\Update\UpdateChecker;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Robo\Common\ConfigAwareTrait;
-use Robo\Config;
+use Robo\Config\Config;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
 use Robo\Runner as RoboRunner;
@@ -62,7 +62,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
     /**
      * Object constructor
      *
-     * @param \Robo\Config $config
+     * @param \Robo\Config\Config $config
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */

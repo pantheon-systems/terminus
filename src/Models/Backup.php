@@ -4,17 +4,14 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\EnvironmentInterface;
 use Pantheon\Terminus\Friends\EnvironmentTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Backup
  * @package Pantheon\Terminus\Models
  */
-class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentInterface
+class Backup extends TerminusModel implements EnvironmentInterface
 {
-    use ConfigAwareTrait;
     use EnvironmentTrait;
 
     const PRETTY_NAME = 'backup';
@@ -177,12 +174,11 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
      */
     public function serialize()
     {
-        $date_format = $this->getConfig()->get('date_format');
         return [
             'file'      => $this->get('filename'),
             'size'      => $this->getSizeInMb(),
-            'date'      => date($date_format, $this->getDate()),
-            'expiry'    => date($date_format, $this->getExpiry()),
+            'date'      => $this->getConfig()->formatDatetime($this->getDate()),
+            'expiry'    => $this->getConfig()->formatDatetime($this->getExpiry()),
             'initiator' => $this->getInitiator(),
         ];
     }

@@ -15,16 +15,13 @@ use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class Site
  * @package Pantheon\Terminus\Models
  */
-class Site extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface, OrganizationsInterface
+class Site extends TerminusModel implements ContainerAwareInterface, OrganizationsInterface
 {
-    use ConfigAwareTrait;
     use ContainerAwareTrait;
     use OrganizationsTrait;
 
@@ -378,15 +375,11 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
     {
         $settings = $this->get('settings');
 
-        $date_format = $this->getConfig()->get('date_format');
-        $format_date = function ($attribute) use ($date_format) {
-            return date($date_format, is_numeric($date = $this->get($attribute)) ? $date : strtotime($date));
-        };
         $data = [
             'id' => $this->id,
             'name' => $this->get('name'),
             'label' => $this->get('label'),
-            'created' => $format_date('created'),
+            'created' => $this->getDatetime('created'),
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'plan_name' => $this->get('plan_name'),
@@ -397,7 +390,7 @@ class Site extends TerminusModel implements ConfigAwareInterface, ContainerAware
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
             'frozen' => $this->isFrozen() ? 'true' : 'false',
-            'last_frozen_at' => $format_date('last_frozen_at'),
+            'last_frozen_at' => $this->getDatetime('last_frozen_at'),
         ];
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());

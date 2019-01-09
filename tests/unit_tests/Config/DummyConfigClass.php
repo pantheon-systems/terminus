@@ -7,6 +7,17 @@ use Pantheon\Terminus\Config\DefaultsConfig;
 class DummyConfigClass extends DefaultsConfig
 {
     /**
+     * Exposes the setSourceName function for testing purposes
+     *
+     * @param string $source
+     * @return string
+     */
+    public function runSetSourceName($source = null)
+    {
+        return $this->setSourceName($source);
+    }
+
+    /**
      * Exposes the getTerminusRoot function for testing purposes
      *
      * @param string $dir

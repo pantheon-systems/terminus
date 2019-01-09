@@ -63,6 +63,8 @@ All notable changes to this project will be documented in this file. This projec
 - A progess bar has been added to the process portion of `remote:drush`. (#1910)
 - A progess bar has been added to the process portion of `remote:wp`. (#1910)
 - A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
+- Added the TerminusModel::getDatetime() function in order to return formatted date attributes.  (#1923)
+- Added the TerminusConfig::formatDatetime() function in order to use the configuration to format datetimes.  (#1923)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -81,6 +83,7 @@ All notable changes to this project will be documented in this file. This projec
 - `Site::delete()` now returns a Workflow object. (#1922)
 - Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
 - `upstream:updates:list` now orders the pending updates in chronological order. (#1852)
+- TerminusConfig::setSource() changed from public to now protected. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

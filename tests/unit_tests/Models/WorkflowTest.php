@@ -374,9 +374,16 @@ class WorkflowTest extends ModelTestCase
         $wf_operations->expects($this->once())
             ->method('serialize')
             ->willReturn($operations_serialized);
+        $this->config->expects($this->at(0))
+            ->method('formatDatetime')
+            ->willReturn($expected['finished_at']);
+        $this->config->expects($this->at(1))
+            ->method('formatDatetime')
+            ->willReturn($expected['started_at']);
 
         $workflow = new Workflow($data, compact('site'));
         $workflow->setContainer($container);
+        $workflow->setConfig($this->config);
 
         $this->assertEquals($expected, $workflow->serialize());
     }

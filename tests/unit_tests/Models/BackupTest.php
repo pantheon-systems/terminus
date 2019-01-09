@@ -191,15 +191,13 @@ class BackupTest extends ModelTestCase
 
     public function testSerialize()
     {
-        $this->configSet(['date_format' => 'Y-m-d',]);
         $folder = 'xyz_automated';
-        $backup = $this->_getBackup([
+        $backup_data = [
             'size' => 4508876,
             'finish_time' => 1479742685,
             'folder' => $folder,
             'filename' => 'test.tar.gz',
-        ]);
-
+        ];
         $expected = [
             'file' => 'test.tar.gz',
             'size' => '4.3MB',
@@ -207,6 +205,18 @@ class BackupTest extends ModelTestCase
             'expiry' => '2016-11-21',
             'initiator' => 'automated',
         ];
+
+        $this->configSet(['date_format' => 'Y-m-d',]);
+        $this->config->expects($this->at(0))
+            ->method('formatDatetime')
+            ->with($backup_data['finish_time'])
+            ->willReturn($expected['date']);
+        $this->config->expects($this->at(1))
+            ->method('formatDatetime')
+            ->with($backup_data['finish_time'])
+            ->willReturn($expected['expiry']);
+
+        $backup = $this->_getBackup($backup_data);
 
         $actual = $backup->serialize();
         $this->assertEquals($expected, $actual);

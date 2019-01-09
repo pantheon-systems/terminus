@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Models;
 
-use Robo\Config;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Request\Request;
 
 /**
@@ -41,7 +41,7 @@ abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->config = $this->getMockBuilder(Config::class)
+        $this->config = $this->getMockBuilder(TerminusConfig::class)
           ->disableOriginalConstructor()
           ->getMock();
         $this->request = $this->getMockBuilder(Request::class)

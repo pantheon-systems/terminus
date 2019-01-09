@@ -5,13 +5,16 @@ namespace Pantheon\Terminus\Models;
 use Pantheon\Terminus\Collections\TerminusCollection;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class TerminusModel
  * @package Pantheon\Terminus\Models
  */
-abstract class TerminusModel implements RequestAwareInterface
+abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterface
 {
+    use ConfigAwareTrait;
     use RequestAwareTrait;
 
     const PRETTY_NAME = 'terminus model';
@@ -82,25 +85,21 @@ abstract class TerminusModel implements RequestAwareInterface
     }
 
     /**
-     * Checks whether the model has an attribute
+     * Retrieves attribute of the given name and formats it according to the TERMINUS_DATE_FORMAT setting
      *
-     * @param string $attribute Name of the attribute key
-     * @return boolean True if attribute exists, false otherwise
+     * @param string $attribute Name of the key of the desired date attribute
+     * @return string|null The date-formatted attribute, or null if not set.
      */
-    public function has($attribute)
+    public function getDatetime($attribute)
     {
-        return isset($this->attributes->$attribute);
-    }
-
-    /**
-     * Sets an attribute
-     *
-     * @param string $attribute Name of the attribute key
-     * @param mixed $value The value to assign to the attribute
-     */
-    public function set($attribute, $value)
-    {
-        $this->attributes->$attribute = $value;
+        $value = $this->get($attribute);
+        if (is_null($value)) {
+            return null;
+        }
+        if (!is_integer($value)) {
+            $value = strtotime($value);
+        }
+        return $this->getConfig()->formatDatetime($value);
     }
 
     /**
@@ -124,6 +123,17 @@ abstract class TerminusModel implements RequestAwareInterface
     }
 
     /**
+     * Checks whether the model has an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     * @return boolean True if attribute exists, false otherwise
+     */
+    public function has($attribute)
+    {
+        return isset($this->attributes->$attribute);
+    }
+
+    /**
      * Formats the object into an associative array for output
      *
      * @return array Associative array of data for output
@@ -131,6 +141,17 @@ abstract class TerminusModel implements RequestAwareInterface
     public function serialize()
     {
         return (array)$this->attributes;
+    }
+
+    /**
+     * Sets an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     * @param mixed $value The value to assign to the attribute
+     */
+    public function set($attribute, $value)
+    {
+        $this->attributes->$attribute = $value;
     }
 
     /**

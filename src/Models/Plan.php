@@ -4,16 +4,13 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class Plan
  * @package Pantheon\Terminus\Models
  */
-class Plan extends TerminusModel implements ConfigAwareInterface, SiteInterface
+class Plan extends TerminusModel implements SiteInterface
 {
-    use ConfigAwareTrait;
     use SiteTrait;
 
     const PRETTY_NAME = 'plan';
