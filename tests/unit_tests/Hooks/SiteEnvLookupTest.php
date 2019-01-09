@@ -268,7 +268,7 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
             ['command: example:op', 'site_env: site-from-repo.dev', 'item: a'],
             ['program', 'example:op', 'a'],
             $this->siteEnvRequiredArgsDef(),
-            [],
+            []
         );
 
         // Change our fixture repository to simulate a repository
@@ -279,7 +279,7 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
             ['command: example:op', 'site_env: a', 'item: EMPTY'],
             ['program', 'example:op', 'a'],
             $this->siteEnvRequiredArgsDef(),
-            [],
+            []
         );
 
         // Recursively remove tmp directory
