@@ -173,12 +173,11 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         $actualArgs = $input->getArguments();
 
         $actualArgs = array_map(
-            function ($key) use($actualArgs) {
+            function ($key) use ($actualArgs) {
                 $value = $actualArgs[$key];
                 if (is_array($value)) {
                     $value = '[' . implode(', ', $value) . ']';
-                }
-                elseif (empty($value)) {
+                } elseif (empty($value)) {
                     $value = 'EMPTY';
                 }
                 return "$key: $value";
@@ -192,5 +191,3 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedString, $actualString);
     }
 }
-
-
