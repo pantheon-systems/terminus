@@ -46,7 +46,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
      * up a value to use from environment variables, .env file or
      * information from the current git repository.
      */
-    public function ensureSiteAndEnv($input, AnnotationData $annotationData)
+    protected function ensureSiteAndEnv($input, AnnotationData $annotationData)
     {
         // If the $site_env paramter is already set (indicates a
         // valid site and environment), then do nothing.
@@ -67,7 +67,7 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
      * Works like ensureSiteAndEnv, but is used for commands that
      * take just a 'site' parameter.
      */
-    public function ensureSite($input, AnnotationData $annotationData)
+    protected function ensureSite($input, AnnotationData $annotationData)
     {
         if ($this->hasAllParameters($input)) {
             return;
