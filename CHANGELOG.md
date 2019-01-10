@@ -62,6 +62,7 @@ All notable changes to this project will be documented in this file. This projec
 - New const `TERMINUS_TIMEOUT` added to extend the timeout maximum for remote commands. (#1908)
 - A progess bar has been added to the process portion of `remote:drush`. (#1910)
 - A progess bar has been added to the process portion of `remote:wp`. (#1910)
+- A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -76,6 +77,8 @@ All notable changes to this project will be documented in this file. This projec
 - Slashes are no longer escaped when converting the body of requests to JSON before cURL. (#1909)
 - Moved the `sendCommandViaSsh` function from `Environment` to `SSHBaseCommand`. (#1910)
 - Moved the `useTty` function from `SSHBaseCommand` to `LocalMachineHelper`. (#1910)
+- `site:delete` now uses a workflow. (#1922)
+- `Site::delete()` now returns a Workflow object. (#1922)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

@@ -218,14 +218,13 @@ class SiteTest extends ModelTestCase
      */
     public function testDelete()
     {
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                $this->equalTo("sites/{$this->model->id}"),
-                $this->equalTo(['method' => 'delete',])
-            );
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with()
+            ->willReturn($this->workflow);
+
         $out = $this->model->delete();
-        $this->assertNull($out);
+        $this->assertEquals($this->workflow, $out);
     }
 
     /**
