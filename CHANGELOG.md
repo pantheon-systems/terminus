@@ -96,6 +96,8 @@ All notable changes to this project will be documented in this file. This projec
 - Lock::serialize() 'locked' attribute has changed from string to boolean. (#1923)
 - `Pantheon\Terminus\Friends\RowsOfFieldsTrait` has become `Pantheon\Terminus\Commands\StructuredDataTrait`. (#1923)
 - `Backup::getUrl()` has been changed to `Backup::getArchiveURL()`. (#1923)
+- Changed Environment::cloneDatabase() to accept an Environment object. (#1924)
+- Changed Environment::cloneFiles() to accept an Environment object. (#1924)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

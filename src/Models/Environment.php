@@ -143,24 +143,24 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     /**
      * Clones database from this environment to another
      *
-     * @param string $from_env Name of the environment to clone
+     * @param Environment $from_env An object representing the environment to clone
      * @return Workflow
      */
-    public function cloneDatabase($from_env)
+    public function cloneDatabase(Environment $from_env)
     {
-        $params = ['from_environment' => $from_env,];
+        $params = ['from_environment' => $from_env->getName(),];
         return $this->getWorkflows()->create('clone_database', compact('params'));
     }
 
     /**
      * Clones files from this environment to another
      *
-     * @param string $from_env Name of the environment to clone
+     * @param Environment $from_env An object representing the environment to clone
      * @return Workflow
      */
-    public function cloneFiles($from_env)
+    public function cloneFiles(Environment $from_env)
     {
-        $params = ['from_environment' => $from_env,];
+        $params = ['from_environment' => $from_env->getName(),];
         return $this->getWorkflows()->create('clone_files', compact('params'));
     }
 
