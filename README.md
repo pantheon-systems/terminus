@@ -32,6 +32,15 @@ Once you have at least the requirements installed, you can install Terminus via 
 You can install Terminus just about anywhere on your system. In this README, we'll use `/install/location` to stand in for your chosen installation location.
 
 ## Installation
+
+### Direct Installation
+
+Copy the following one-liner to your terminal:
+
+```
+curl -O https://github.com/pantheon-systems/terminus/blob/master/installer.php && php installer.php
+```
+
 ### Installing via the Terminus installer
 Run this in your Terminal client:
 ```bash

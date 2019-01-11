@@ -20,9 +20,16 @@ jobs:
       # Re-install with dev components so that we can run phpunit
       - run: composer install --no-interaction --prefer-dist
       - run: composer functional
+  installer-phar:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: php installer.php
+      - run: ~/.local/bin/terminus --version
 
 workflows:
   version: 2
   terminus:
     jobs:
       - functional
+      - installer-phar
