@@ -17,7 +17,8 @@ $rcfiles = array(                                  // Array of common .rc files 
 $package = "updatinate";                           // This _should_ be "terminus", but can be changed to test
                                                    // the script with other packages already configured.
 
-// Function to download Terminus executable file from GitHub to ~/.terminus/bin
+// Function to download Terminus executable file from GitHub to /tmp/ then move it to $installdir
+// prompts for sudo if required.
 function downloadTerminus($installdir, $package)
 {
     // $opts defines values required by the GitHub API to respond correclty. $context formats them for use.
@@ -35,20 +36,20 @@ function downloadTerminus($installdir, $package)
     $version  = $releases[0]->tag_name;
     $url      = $releases[0]->assets[0]->browser_download_url;
     // Do the needful
-    echo("\nDownloading Terminus " . $version . " from " . $url . "to /tmp \n");
+    echo("\nDownloading Terminus " . $version . " from " . $url . " to /tmp \n");
     $couldDownload = file_put_contents("/tmp/" . $package . ".phar", file_get_contents($url));
     echo("Moving to " . $installdir . "...\n");
     if(!rename("/tmp/" . $package . ".phar", $installdir . "/" . $package . ".phar")){
         echo("\n" . $installdir . " requires admin rights to write to...\n");
-        exec("sudo mv /tmp/" . $package . ".phar " . $installdir . "/" . $package . ".phar"); 
+        $couldMove = exec("sudo mv /tmp/" . $package . ".phar " . $installdir . "/" . $package . ".phar");
         echo("\n");
     }
     // Return true if successful
-    return $couldDownload;
+    return $couldMove;
 }
 
 
-// Function to add to any common shell configuration files a line to amend $PATH with  ~/.terminus/bin.
+// Function to add to any common shell configuration files a line to amend $PATH with  $installdir.
 function ammendPath($rcfile, $installdir, &$pathUpdated)
 {
     $pathUpdated = file_put_contents(getenv('HOME') . "/$rcfile", "# Adds Terminus to \$PATH\nPATH=\$PATH:" . $installdir . "\n\n", FILE_APPEND | LOCK_EX);
@@ -87,7 +88,7 @@ chmod($installdir . "/" . $package . ".phar", 0755)
 or exit("\nUnable to set Terminus as executable.\n");
 echo("Done.\n\n");
 
-// If ~/.terminus/bin isn't in path, add it.
+// If $installdir isn't in path, add it.
 if (checkpath($paths, $installdir) === false) {
     foreach ($rcfiles as $rcfile) {
         if (file_exists(getenv('HOME') . "/$rcfile") && is_writable(getenv('HOME') . "/$rcfile")) {
