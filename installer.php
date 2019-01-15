@@ -1,8 +1,11 @@
 <?php
 
-// Terminus Installer Script
-$pathcommand = false;
-$pathupdate = false;
+/* Terminus Installer Script
+Created by Alex Fornuto - alex@fornuto.com
+*/
+
+// Define environemnt variables.
+$pathUpdated = false;
 $paths = explode(":", getenv('PATH'));             // Creates an array with all paths in $PATH
 $installdir = (getenv('HOME') . "/.terminus/bin"); // Creates a string with the desired installation path
 $rcfiles = array(                                  // Array of common .rc files to look for.
@@ -11,96 +14,92 @@ $rcfiles = array(                                  // Array of common .rc files 
   ".config/fish/config.fish",
   ".profile",
 );
+$package = "updatinate";                           // This _should_ be "terminus", but can be changed to test
+                                                   // the script with other packages already configured.
 
+// Function to download Terminus executable file from GitHub to ~/.terminus/bin
+function downloadTerminus($installdir, $package)
+{
+    // $opts defines values required by the GitHub API to respond correclty. $context formats them for use.
+    $opts = [
+            'http' => [
+              'method' => 'GET',
+              'header' => [
+                'User-Agent: PHP'
+              ]
+            ]
+    ];
+    $context  = stream_context_create($opts);
+    $releases = file_get_contents("https://api.github.com/repos/pantheon-systems/" . $package . "/releases", false, $context);
+    $releases = json_decode($releases);
+    $version  = $releases[0]->tag_name;
+    $url      = $releases[0]->assets[0]->browser_download_url;
+    // Do the needful
+    echo("\nDownloading Terminus " . $version . " from " . $url . "\n");
+    $couldDownload = file_put_contents($installdir . "/" . $package . ".phar", file_get_contents($url));
 
-if (!in_array($installdir, $paths)) {              // Searches for ~/.terminus/bin within the existing $PATH
-    $pathcommand = true;                           // If it isn't there, we'll execute commands later to add it.
-    print_r("Creating " . $installdir . "/\n");
-    mkdir($installdir, 0700, true);                // Makes the directory
+    // Return true if successful
+    return $couldDownload;
 }
 
 
-// Build $url from which to download terminus
-$opts = [
-        'http' => [
-          'method' => 'GET',
-          'header' => [
-            'User-Agent: PHP'
-          ]
-        ]
-];
-$context  = stream_context_create($opts);
-$package  = "updatinate"; // Temporarily set to another Repo for testing
-$releases = file_get_contents("https://api.github.com/repos/pantheon-systems/" . $package . "/releases", false, $context);
-$releases = json_decode($releases);
-$version  = $releases[0]->tag_name;
-$url      = $releases[0]->assets[0]->browser_download_url; //  Currently broken, awaiting release phar to point to.
-
-
-// Download Terminus
-print_r("\nDownloading Terminus " . $version . " from " . $url . "\n");
-// Defines a function to download Terminus, which throws an exception on failure.
-function downloadterminus()
+// Function to add to any common shell configuration files a line to amend $PATH with  ~/.terminus/bin.
+function ammendPath($rcfile, $installdir, &$pathUpdated)
 {
-    global $installdir;
-    global $url;
-    global $package;
+    $pathUpdated = file_put_contents(getenv('HOME') . "/$rcfile", "# Adds Terminus to \$PATH\nPATH=\$PATH:" . $installdir . "\n\n", FILE_APPEND | LOCK_EX);
+    if (!$pathUpdated) {
+        throw new Exception($rcfile . " found, but unable to write to it.");
+    }
 
-    if (false === file_put_contents($installdir . "/" . $package . ".phar", file_get_contents($url))) {
-        throw new Exception('Unable to download Terminus.');
+    return $pathUpdated;
+}
+
+// Function to determine if ~/.terminus/bin is already in $PATH
+function checkpath($paths, $installdir)
+{
+
+    if (in_array($installdir, $paths)) {
+        return true;
+    } else {
+        return false;
     }
 }
-// Call the function, and handle the exception.
-try{
-    echo downloadterminus() . "\n";
-} catch (Exception $e){
-    echo "\n \n";
-    echo $e->getMessage(), "\n \n";
-    exit(1);
+
+// BEGIN ACUTAL DOING OF THINGS!
+
+//Makes ~/.terminus/bin if it doesn't exist.
+if (!file_exists($installdir)) {
+    echo("Creating " . $installdir . "/\n");
+    mkdir($installdir, 0700, true);
 }
 
+//Download terminus.phar
+if (downloadTerminus($installdir, $package)) {
+    echo("Downloaded to " . $installdir . "\n\n");
+} else {
+    echo("Download unsuccessful.\n\n");
+    exit();
+}
 
 // Make Terminus executable
-print_r("Making Terminus executable... \n\n");
+echo("Making Terminus executable... ");
 chmod($installdir . "/" . $package . ".phar", 0755)
-  or exit("\nUnable to set Terminus as executable.\n");
+or exit("\nUnable to set Terminus as executable.\n");
+echo("Done.\n\n");
 
-// If the installation directory wasn't found in $PATH earlier, define a function to add it to common shell conf files.
-if ($pathcommand == true) {
-    function ammendpath($rcfile)
-    {
-        global $installdir;
-        global $pathupdate;
-        $pathupdate = file_put_contents(getenv('HOME') . "/$rcfile", "# Adds Terminus to \$PATH\nPATH=\$PATH:" . $installdir . "\n\n", FILE_APPEND | LOCK_EX)
-        if (!$pathupdate) {
-            throw new Exception($rcfile . " found, but unable to write to it.");
+// If ~/.terminus/bin isn't in path, add it.
+if (checkpath($paths, $installdir) === false) {
+    foreach ($rcfiles as $rcfile) {
+        if (file_exists(getenv('HOME') . "/$rcfile") && is_writable(getenv('HOME') . "/$rcfile")) {
+            ammendpath($rcfile, $installdir, $pathUpdated);
+            echo("Found " . $rcfile . " and added " . $installdir .
+            " to your \$PATH.\nIn order to run Terminus, you must first run:\n\nsource ~/" . $rcfile . "\n");
         }
     }
-
-    // Iterates through common shell configuration file possibilities to write to.
-    foreach ($rcfiles as $rcfile){
-        if (file_exists(getenv('HOME') . "/$rcfile")) {
-            try{
-                ammendpath($rcfile);
-                print_r("Found " . $rcfile . " and added " . $installdir . " to your \$PATH.\nIn order to run Terminus, you must first run:\n\nsource ~/" . $rcfile . "\n");
-            }
-            catch (Exception $e){
-                echo "\n \n" . $e->getMessage(), "\n \n";
-            }
-        }
+    if (!$pathUpdated) {
+        echo("Terminus has been installed to " . $installdir .
+        " But no suitable configuration file was found to update \$PATH.\n\nYou must manually add " . $installdir .
+        " to your PATH, or execute Terminus from the full path.\n\n");
     }
-    // If no configuration file was updated to amend $PATH, this lets the user know.
-    if (!$pathcommand){
-        print_r("Terminus has been installed to " . $installdir . " But no suitable configuration file was found to update \$PATH.\n\nYou must manually add " . $installdir . " to your PATH, or execute Terminus from the full path.");
-    }
-
-}
-// If the installation directory was found in $PATH, exit with this message.
-else{
-    print_r("Terminus successfully installed.\n");
 }
 exit();
-?>
-
-
-
