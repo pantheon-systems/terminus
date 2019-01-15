@@ -2,16 +2,15 @@
 
 namespace Pantheon\Terminus\Collections;
 
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\Models\SavedToken;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class SavedTokens
  * @package Pantheon\Terminus\Collections
- * TODO: Convert to FetchlessCollection
  */
 class SavedTokens extends TerminusCollection implements ConfigAwareInterface, DataStoreAwareInterface
 {

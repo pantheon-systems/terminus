@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Request\RequestAwareTrait;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

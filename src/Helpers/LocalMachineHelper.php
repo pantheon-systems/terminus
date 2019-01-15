@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\Helpers;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;

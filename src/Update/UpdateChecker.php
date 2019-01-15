@@ -4,13 +4,13 @@ namespace Pantheon\Terminus\Update;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
 use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
 use Pantheon\Terminus\DataStore\DataStoreInterface;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

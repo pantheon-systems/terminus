@@ -4,14 +4,13 @@ namespace Pantheon\Terminus;
 
 use Composer\Autoload\ClassLoader;
 use Composer\Semver\Semver;
-use Consolidation\AnnotatedCommand\CommandFileDiscovery;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request as HttpRequest;
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
@@ -27,7 +26,6 @@ use Pantheon\Terminus\Update\LatestRelease;
 use Pantheon\Terminus\Update\UpdateChecker;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Config\Config;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Robo;
@@ -37,7 +35,6 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
 use VCR\VCR;
 
 /**
