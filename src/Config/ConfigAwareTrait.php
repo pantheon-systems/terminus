@@ -25,4 +25,3 @@ trait ConfigAwareTrait
         return $this->__getConfig();
     }
 }
-

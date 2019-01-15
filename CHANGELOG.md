@@ -84,6 +84,8 @@ All notable changes to this project will be documented in this file. This projec
 - Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
 - `upstream:updates:list` now orders the pending updates in chronological order. (#1852)
 - TerminusConfig::setSource() changed from public to now protected. (#1923)
+- The `started_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
+- The `finished_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
