@@ -58,11 +58,7 @@ function ammendPath($rcfile, $installdir, &$pathUpdated)
 function checkpath($paths, $installdir)
 {
 
-    if (in_array($installdir, $paths)) {
-        return true;
-    } else {
-        return false;
-    }
+    return in_array($installdir, $paths);
 }
 
 // BEGIN ACUTAL DOING OF THINGS!
@@ -77,8 +73,7 @@ if (!file_exists($installdir)) {
 if (downloadTerminus($installdir, $package)) {
     echo("Downloaded to " . $installdir . "\n\n");
 } else {
-    echo("Download unsuccessful.\n\n");
-    exit();
+    exit("Download unsuccessful.\n\n");
 }
 
 // Make Terminus executable
