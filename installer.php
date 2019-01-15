@@ -7,7 +7,7 @@ Created by Alex Fornuto - alex@fornuto.com
 // Define environemnt variables.
 $pathUpdated = false;
 $paths = explode(":", getenv('PATH'));             // Creates an array with all paths in $PATH
-$installdir = (getenv('HOME') . "/.terminus/bin"); // Creates a string with the desired installation path
+$installdir = ("/usr/local/bin");                  // Creates a string with the desired installation path
 $rcfiles = array(                                  // Array of common .rc files to look for.
   ".bashrc",
   ".zshrc",
@@ -35,9 +35,14 @@ function downloadTerminus($installdir, $package)
     $version  = $releases[0]->tag_name;
     $url      = $releases[0]->assets[0]->browser_download_url;
     // Do the needful
-    echo("\nDownloading Terminus " . $version . " from " . $url . "\n");
-    $couldDownload = file_put_contents($installdir . "/" . $package . ".phar", file_get_contents($url));
-
+    echo("\nDownloading Terminus " . $version . " from " . $url . "to /tmp \n");
+    $couldDownload = file_put_contents("/tmp/" . $package . ".phar", file_get_contents($url));
+    echo("Moving to " . $installdir . "...\n");
+    if(!rename("/tmp/" . $package . ".phar", $installdir . "/" . $package . ".phar")){
+        echo("\n" . $installdir . " requires admin rights to write to...\n");
+        exec("sudo mv /tmp/" . $package . ".phar " . $installdir . "/" . $package . ".phar"); 
+        echo("\n");
+    }
     // Return true if successful
     return $couldDownload;
 }
@@ -71,7 +76,7 @@ if (!file_exists($installdir)) {
 
 //Download terminus.phar
 if (downloadTerminus($installdir, $package)) {
-    echo("Downloaded to " . $installdir . "\n\n");
+    echo("Installed to " . $installdir . "\n\n");
 } else {
     exit("Download unsuccessful.\n\n");
 }
