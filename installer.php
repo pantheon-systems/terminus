@@ -2,12 +2,14 @@
 
 // Terminus Installer Script
 $pathcommand = false;
+$pathupdate = false;
 $paths = explode(":", getenv('PATH'));             // Creates an array with all paths in $PATH
 $installdir = (getenv('HOME') . "/.terminus/bin"); // Creates a string with the desired installation path
 $rcfiles = array(                                  // Array of common .rc files to look for.
   ".bashrc",
   ".zshrc",
   ".config/fish/config.fish",
+  ".profile",
 );
 
 
@@ -68,12 +70,14 @@ if ($pathcommand == true) {
     function ammendpath($rcfile)
     {
         global $installdir;
-        if (false === file_put_contents(getenv('HOME') . "/$rcfile", "# Adds Terminus to \$PATH\nPATH=\$PATH:" . $installdir . "\n\n", FILE_APPEND | LOCK_EX)) {
+        global $pathupdate;
+        $pathupdate = file_put_contents(getenv('HOME') . "/$rcfile", "# Adds Terminus to \$PATH\nPATH=\$PATH:" . $installdir . "\n\n", FILE_APPEND | LOCK_EX)
+        if (!$pathupdate) {
             throw new Exception($rcfile . " found, but unable to write to it.");
         }
     }
 
-
+    // Iterates through common shell configuration file possibilities to write to.
     foreach ($rcfiles as $rcfile){
         if (file_exists(getenv('HOME') . "/$rcfile")) {
             try{
@@ -85,6 +89,11 @@ if ($pathcommand == true) {
             }
         }
     }
+    // If no configuration file was updated to amend $PATH, this lets the user know.
+    if (!$pathcommand){
+        print_r("Terminus has been installed to " . $installdir . " But no suitable configuration file was found to update \$PATH.\n\nYou must manually add " . $installdir . " to your PATH, or execute Terminus from the full path.");
+    }
+
 }
 // If the installation directory was found in $PATH, exit with this message.
 else{
