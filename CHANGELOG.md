@@ -99,6 +99,10 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
 - Fixed `site:team:remove` when removing oneself from the team an error is no longer thrown upon success. (#1914)
 
+### Removed
+- Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
+- Removed `TerminusConfig::toArray()`. Use the inherited `TerminusConfig::export()`. (#1923)
+
 ## 1.9.0 - 2018-09-11
 ### Added
 - Added a `hide_git_mode_warning` option to disable the warning presented when users run Drush or WP-CLI commands on Pantheon sites that are in git mode.  (#1882)

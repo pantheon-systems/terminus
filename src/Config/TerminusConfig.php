@@ -153,20 +153,6 @@ class TerminusConfig extends RoboConfig
     }
 
     /**
-     * Convert the config to an array.
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        $out = [];
-        foreach ($this->keys() as $key) {
-            $out[$key] = $this->get($key);
-        }
-        return $out;
-    }
-
-    /**
      * Set a config value. Converts key from Terminus constant (TERMINUS_XXX) if needed.
      *
      * @param string $key
