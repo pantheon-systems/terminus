@@ -36,6 +36,33 @@ trait RowsOfFieldsTrait
             $options = isset($options['message_options']) ? $options['message_options'] : [];
             $this->log()->warning($message, $options);
         }
-        return new RowsOfFields($data);
+
+        return $this->addDatetimeRenderer(
+            new RowsOfFields($data),
+            $collection
+        );
+    }
+
+    /**
+     * Adds a renderer function to the RowsOfFields object to format datetimes when rendering
+     *
+     * @param RowsOfFields $table
+     * @param TerminusCollection $collection
+     * @return RowsOfFields
+     */
+    private function addDatetimeRenderer(RowsOfFields $table, TerminusCollection $collection)
+    {
+        $config = $this->getConfig();
+        $date_attributes = $collection->getCollectedClass()::DATE_ATTRIBUTES;
+
+        $table->addRendererFunction(
+            function ($key, $cell_data) use ($config, $date_attributes) {
+                if (in_array($key, $date_attributes)) {
+                    return $config->formatDatetime($cell_data);
+                }
+                return $cell_data;
+            }
+        );
+        return $table;
     }
 }

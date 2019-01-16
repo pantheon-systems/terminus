@@ -17,6 +17,7 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
     use ConfigAwareTrait;
     use RequestAwareTrait;
 
+    const DATE_ATTRIBUTES = [];
     const PRETTY_NAME = 'terminus model';
     /**
      * @var string

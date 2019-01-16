@@ -18,6 +18,7 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     use ContainerAwareTrait;
     use SessionAwareTrait;
 
+    const DATE_ATTRIBUTES = ['started_at', 'finished_at',];
     const PRETTY_NAME = 'workflow';
     /**
      * @var TerminusModel
@@ -245,8 +246,8 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             'user' => $user,
             'status' => $this->getStatus(),
             'time' => sprintf('%ds', $elapsed_time),
-            'finished_at' => $this->getDatetime('finished_at'),
-            'started_at' => $this->getDatetime('started_at'),
+            'finished_at' => $this->get('finished_at'),
+            'started_at' => $this->get('started_at'),
             'operations' => $this->getOperations()->serialize(),
         ];
     }
