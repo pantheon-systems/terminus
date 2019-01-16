@@ -21,7 +21,7 @@ $package = "updatinate";                           // This _should_ be "terminus
 // prompts for sudo if required.
 function downloadTerminus($installdir, $package)
 {
-    // $opts defines values required by the GitHub API to respond correclty. $context formats them for use.
+    // $opts defines values required by the GitHub API to respond correctly. $context formats them for use.
     $opts = [
             'http' => [
               'method' => 'GET',
