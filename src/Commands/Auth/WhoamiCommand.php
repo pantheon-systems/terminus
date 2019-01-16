@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\Auth;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class WhoamiCommand
  * @package Pantheon\Terminus\Commands\Auth
  */
-class WhoamiCommand extends TerminusCommand
+class WhoamiCommand extends TerminusCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays information about the currently logged-in user.
      *
@@ -32,7 +36,7 @@ class WhoamiCommand extends TerminusCommand
     {
         if ($this->session()->isActive()) {
             $user = $this->session()->getUser();
-            return new PropertyList($user->fetch()->serialize());
+            return $this->getPropertyList($user->fetch());
         } else {
             $this->log()->notice('You are not logged in.');
         }

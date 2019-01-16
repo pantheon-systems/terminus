@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\SSHKey;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class ListCommand
@@ -13,7 +13,7 @@ use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
  */
 class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
 
     /**
      * Displays the list of SSH public keys associated with the currently logged-in user.

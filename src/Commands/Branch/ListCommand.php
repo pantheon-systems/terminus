@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\Commands\Branch;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -15,7 +15,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  */
 class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
     use SiteAwareTrait;
 
     /**

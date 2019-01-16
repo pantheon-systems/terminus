@@ -3,13 +3,17 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class InfoCommand extends SiteCommand
+class InfoCommand extends SiteCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays a site's information.
      *
@@ -41,6 +45,6 @@ class InfoCommand extends SiteCommand
      */
     public function info($site)
     {
-        return new PropertyList($this->sites->get($site)->serialize());
+        return $this->getPropertyList($this->sites->get($site));
     }
 }

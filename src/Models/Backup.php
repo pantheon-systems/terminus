@@ -180,6 +180,7 @@ class Backup extends TerminusModel implements EnvironmentInterface
             'date'      => $this->getConfig()->formatDatetime($this->getDate()),
             'expiry'    => $this->getConfig()->formatDatetime($this->getExpiry()),
             'initiator' => $this->getInitiator(),
+            'url'       => $this->getUrl(),
         ];
     }
 

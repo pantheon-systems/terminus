@@ -2,22 +2,37 @@
 
 namespace Pantheon\Terminus\Friends;
 
+use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
+use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Collections\TerminusCollection;
+use Pantheon\Terminus\Models\TerminusModel;
 
 /**
- * Class RowsOfFieldsTrait
+ * Class StructuredListTrait
  * @package Pantheon\Terminus\Friends
  */
-trait RowsOfFieldsTrait
+trait StructuredListTrait
 {
     /**
-     * @param TerminusCollection $collection A collection of data to get the data from and display
+     * @param TerminusModel $model A model with data to extract
+     * @return PropertyList A PropertyList-type object with applied filters
+     */
+    public function getPropertyList(TerminusModel $model)
+    {
+        $list = new PropertyList($model->serialize());
+        $list = $this->addBooleanRenderer($list);
+        $list = $this->addDatetimeRenderer($list, $model::DATE_ATTRIBUTES);
+        return $list;
+    }
+
+    /**
+     * @param TerminusCollection $collection A collection of models to get the data from
      * @param array $options Elements as follow
      *        function filter A function to filter the collection with. Uses serialize by default.
      *        string message Message to emit if the collection is empty.
      *        array $message_options Values to interpolate into the error message.
-     * @return RowsOfFields Returns a RowsOfFields-type object
+     * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
     public function getRowsOfFields(TerminusCollection $collection, array $options = [])
     {
@@ -38,20 +53,21 @@ trait RowsOfFieldsTrait
         }
 
         $table = new RowsOfFields($data);
+        $date_attributes = $collection->getCollectedClass()::DATE_ATTRIBUTES;
         $table = $this->addBooleanRenderer($table);
-        $table = $this->addDatetimeRenderer($table, $collection);
+        $table = $this->addDatetimeRenderer($table, $date_attributes);
         return $table;
     }
 
     /**
      * Adds a renderer function to the RowsOfFields object to format booleans into strings
      *
-     * @param RowsOfFields $table
-     * @return RowsOfFields
+     * @param AbstractStructuredList $table
+     * @return AbstractStructuredList
      */
-    private function addBooleanRenderer(RowsOfFields $table)
+    private function addBooleanRenderer(AbstractStructuredList $list)
     {
-        $table->addRendererFunction(
+        $list->addRendererFunction(
             function ($key, $cell_data) {
                 if ($cell_data === true) {
                     return 'true';
@@ -61,22 +77,21 @@ trait RowsOfFieldsTrait
                 return $cell_data;
             }
         );
-        return $table;
+        return $list;
     }
 
     /**
-     * Adds a renderer function to the RowsOfFields object to format datetimes when rendering
+     * Adds a renderer function to the structured list to format datetimes when rendering
      *
-     * @param RowsOfFields $table
-     * @param TerminusCollection $collection
+     * @param AbstractStructuredList $table
+     * @param array $date_attributes
      * @return RowsOfFields
      */
-    private function addDatetimeRenderer(RowsOfFields $table, TerminusCollection $collection)
+    private function addDatetimeRenderer(AbstractStructuredList $list, array $date_attributes)
     {
         $config = $this->getConfig();
-        $date_attributes = $collection->getCollectedClass()::DATE_ATTRIBUTES;
 
-        $table->addRendererFunction(
+        $list->addRendererFunction(
             function ($key, $cell_data) use ($config, $date_attributes) {
                 if (in_array($key, $date_attributes)) {
                     return $config->formatDatetime($cell_data);
@@ -84,6 +99,6 @@ trait RowsOfFieldsTrait
                 return $cell_data;
             }
         );
-        return $table;
+        return $list;
     }
 }

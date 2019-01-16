@@ -3,13 +3,17 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class InfoCommand extends SingleBackupCommand
+class InfoCommand extends SingleBackupCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays information about a specific backup or the latest backup.
      *
@@ -37,6 +41,6 @@ class InfoCommand extends SingleBackupCommand
     public function info($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
         $backup = $this->getBackup($site_env, $options);
-        return new PropertyList(array_merge($backup->serialize(), ['url' => $backup->getUrl(),]));
+        return $this->getPropertyList($backup);
     }
 }

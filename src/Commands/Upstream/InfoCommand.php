@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\Upstream;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Upstream
  */
-class InfoCommand extends TerminusCommand
+class InfoCommand extends TerminusCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays information about an upstream.
      *
@@ -35,6 +39,6 @@ class InfoCommand extends TerminusCommand
      */
     public function info($upstream)
     {
-        return new PropertyList($this->session()->getUser()->getUpstreams()->get($upstream)->serialize());
+        return $this->getPropertyList($this->session()->getUser()->getUpstreams()->get($upstream));
     }
 }

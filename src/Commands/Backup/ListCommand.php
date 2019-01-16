@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class ListCommand
@@ -12,7 +12,7 @@ use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
  */
 class ListCommand extends BackupCommand implements RowsOfFieldsInterface
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
 
     /**
      * Lists backups for a specific site and environment.
@@ -29,7 +29,6 @@ class ListCommand extends BackupCommand implements RowsOfFieldsInterface
      *     expiry: Expiry
      *     initiator: Initiator
      * @return RowsOfFields
-     *
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $element [all|code|files|database|db] DEPRECATED Backup element filter

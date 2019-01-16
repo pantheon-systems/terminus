@@ -4,13 +4,17 @@ namespace Pantheon\Terminus\Commands\Plan;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Plan
  */
-class InfoCommand extends SiteCommand
+class InfoCommand extends SiteCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays information about a site's plan.
      *
@@ -42,6 +46,6 @@ class InfoCommand extends SiteCommand
      */
     public function info($site)
     {
-        return new PropertyList($this->sites->get($site)->getPlan()->fetch()->serialize());
+        return $this->getPropertyList($this->sites->get($site)->getPlan()->fetch());
     }
 }

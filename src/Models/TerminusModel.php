@@ -138,6 +138,16 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
     }
 
     /**
+     * Unsets an attribute
+     *
+     * @param string $attribute Name of the attribute key
+     */
+    public function unset($attribute)
+    {
+        unset($this->attributes->$attribute);
+    }
+
+    /**
      * Modify response data between fetch and assignment
      *
      * @param object $data attributes received from API response

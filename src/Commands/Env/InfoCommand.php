@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Env;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,9 +13,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class InfoCommand extends TerminusCommand implements SiteAwareInterface
+class InfoCommand extends TerminusCommand implements PropertyListInterface, SiteAwareInterface
 {
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Displays environment status and configuration.
@@ -41,6 +44,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     public function info($site_env)
     {
         list(, $env) = $this->getUnfrozenSiteEnv($site_env);
-        return new PropertyList($env->serialize());
+        return $this->getPropertyList($env);
     }
 }

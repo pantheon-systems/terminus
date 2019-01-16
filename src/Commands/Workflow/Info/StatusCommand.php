@@ -3,13 +3,17 @@
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Friends\PropertyListInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class StatusCommand
  * @package Pantheon\Terminus\Commands\Workflow\Info
  */
-class StatusCommand extends InfoBaseCommand
+class StatusCommand extends InfoBaseCommand implements PropertyListInterface
 {
+    use StructuredListTrait;
+
     /**
      * Displays the status of a workflow.
      *
@@ -36,8 +40,8 @@ class StatusCommand extends InfoBaseCommand
      */
     public function status($site_id, $options = ['id' => null,])
     {
-        $workflow_data = $this->getWorkflow($site_id, $options['id'])->serialize();
-        unset($workflow_data['operations']);
-        return new PropertyList($workflow_data);
+        $workflow = $this->getWorkflow($site_id, $options['id']);
+        $workflow->unset('operations');
+        return $this->getPropertyList($workflow);
     }
 }

@@ -86,6 +86,15 @@ All notable changes to this project will be documented in this file. This projec
 - TerminusConfig::setSource() changed from public to now protected. (#1923)
 - The `started_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
 - The `finished_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
+- Site::serialize() 'frozen' attribute has changed from string to boolean. (#1923)
+- Site::serialize() 'created' attribute has changed to a Unix timestamp. (#1923)
+- Site::serialize() 'last_frozen_at' attribute has changed to a Unix timestamp. (#1923)
+- Environment::serialize() 'environment_created' attribute has changed to a Unix timestamp. (#1923)
+- Environment::serialize() 'initialized' attribute has changed from string to boolean. (#1923)
+- Environment::serialize() 'locked' attribute has changed from string to boolean. (#1923)
+- Environment::serialize() 'onseverdev' attribute has changed from string to boolean. (#1923)
+- Domain::serialize() 'deletable' attribute has changed from string to boolean. (#1923)
+- Lock::serialize() 'locked' attribute has changed from string to boolean. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
