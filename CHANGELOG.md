@@ -79,6 +79,8 @@ All notable changes to this project will be documented in this file. This projec
 - Moved the `useTty` function from `SSHBaseCommand` to `LocalMachineHelper`. (#1910)
 - `site:delete` now uses a workflow. (#1922)
 - `Site::delete()` now returns a Workflow object. (#1922)
+- Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
+- `upstream:updates:list` now orders the pending updates in chronological order. (#1852)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
