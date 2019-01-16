@@ -14,7 +14,7 @@ class Backups extends EnvironmentOwnedCollection
     const DAILY_BACKUP_TTL = 691200;
     const WEEKLY_BACKUP_TTL = 2764800;
 
-    public static $pretty_name = 'backups';
+    const PRETTY_NAME = 'backups';
     /**
      * @var string
      */

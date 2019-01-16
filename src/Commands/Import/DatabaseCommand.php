@@ -2,12 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Import;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
-class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
+class DatabaseCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -33,9 +37,7 @@ class DatabaseCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $workflow = $env->importDatabase($url);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             'Imported database to {site}.{env}.',
             ['site' => $site->get('name'), 'env' => $env->id,]

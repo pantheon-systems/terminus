@@ -16,7 +16,6 @@ use Pantheon\Terminus\Friends\SiteTrait;
 use Robo\Common\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class Environment
@@ -28,7 +27,7 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     use ConfigAwareTrait;
     use SiteTrait;
 
-    public static $pretty_name = 'environment';
+    const PRETTY_NAME = 'environment';
     /**
      * @var string
      */
@@ -584,7 +583,15 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function importDatabase($url)
     {
-        return $this->getWorkflows()->create('import_database', ['params' => compact('url'),]);
+        return $this->getWorkflows()->create(
+            'do_import',
+            [
+                'params' => [
+                    'database' => 1,
+                    'url' => $url,
+                ],
+            ]
+        );
     }
 
     /**
@@ -610,7 +617,15 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
      */
     public function importFiles($url)
     {
-        return $this->getWorkflows()->create('import_files', ['params' => compact('url'),]);
+        return $this->getWorkflows()->create(
+            'do_import',
+            [
+                'params' => [
+                    'files' => 1,
+                    'url' => $url,
+                ],
+            ]
+        );
     }
 
     /**
@@ -715,41 +730,6 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
         $params = array_merge($default_params, $options);
 
         return $this->getWorkflows()->create('merge_cloud_development_environment_into_dev', compact('params'));
-    }
-
-    /**
-     * Sends a command to an environment via SSH.
-     *
-     * @param string $command The command to be run on the platform
-     * @param callable $callback An anonymous function to run while waiting for the command to finish
-     * @param boolean $useTty Whether to allocate a tty when running. Null to autodetect.
-     * @return string[] $response Elements as follow:
-     *         string output    The output from the command run
-     *         string exit_code The status code returned by the command run
-     */
-    public function sendCommandViaSsh($command, $callback = null, $useTty = null)
-    {
-        $sftp = $this->sftpConnectionInfo();
-        $ssh_command = vsprintf(
-            'ssh -T %s@%s -p %s -o "AddressFamily inet" %s',
-            [$sftp['username'], $sftp['host'], $sftp['port'], ProcessUtils::escapeArgument($command),]
-        );
-
-        // Catch Terminus running in test mode
-        if ($this->getConfig()->get('test_mode')) {
-            $output = "Terminus is in test mode. "
-                    . "Environment::sendCommandViaSsh commands will not be sent over the wire. "
-                    . "SSH Command: ${ssh_command}";
-            if ($this->getContainer()->has('output')) {
-                $this->getContainer()->get('output')->write($output);
-            }
-            return [
-                'output' => $output,
-                'exit_code' => 0
-            ];
-        }
-
-        return $this->getContainer()->get(LocalMachineHelper::class)->execInteractive($ssh_command, $callback, $useTty);
     }
 
     /**

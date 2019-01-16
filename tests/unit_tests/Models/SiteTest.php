@@ -5,12 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Branches;
 use Pantheon\Terminus\Collections\Environments;
+use Pantheon\Terminus\Collections\Plans;
 use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Tags;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\NewRelic;
+use Pantheon\Terminus\Models\Plan;
 use Pantheon\Terminus\Models\Redis;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Solr;
@@ -44,6 +46,14 @@ class SiteTest extends ModelTestCase
      * @var SiteOrganizationMemberships
      */
     protected $org_memberships;
+    /**
+     * @var Plan
+     */
+    protected $plan;
+    /**
+     * @var Plans
+     */
+    protected $plans;
     /**
      * @var Redis
      */
@@ -96,6 +106,12 @@ class SiteTest extends ModelTestCase
         $this->org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->plan = $this->getMockBuilder(Plan::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->plans = $this->getMockBuilder(Plans::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->redis = $this->getMockBuilder(Redis::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -121,6 +137,8 @@ class SiteTest extends ModelTestCase
         $this->container->add(Environments::class, $this->environments);
         $this->container->add(SiteOrganizationMemberships::class, $this->org_memberships);
         $this->container->add(NewRelic::class, $this->new_relic);
+        $this->container->add(Plan::class, $this->plan);
+        $this->container->add(Plans::class, $this->plans);
         $this->container->add(Redis::class, $this->redis);
         $this->container->add(SiteUserMemberships::class, $this->user_memberships);
         $this->container->add(Solr::class, $this->solr);
@@ -200,14 +218,13 @@ class SiteTest extends ModelTestCase
      */
     public function testDelete()
     {
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                $this->equalTo("sites/{$this->model->id}"),
-                $this->equalTo(['method' => 'delete',])
-            );
+        $this->workflows->expects($this->once())
+            ->method('create')
+            ->with()
+            ->willReturn($this->workflow);
+
         $out = $this->model->delete();
-        $this->assertNull($out);
+        $this->assertEquals($this->workflow, $out);
     }
 
     /**
@@ -380,6 +397,24 @@ class SiteTest extends ModelTestCase
     }
 
     /**
+     * Tests Site::getPlan()
+     */
+    public function testGetPlan()
+    {
+        $plan = $this->model->getPlan();
+        $this->assertEquals($this->plan, $plan);
+    }
+
+    /**
+     * Tests Site::getPlans()
+     */
+    public function testGetPlans()
+    {
+        $plans = $this->model->getPlans();
+        $this->assertEquals($this->plans, $plans);
+    }
+
+    /**
      * Tests Site::getReferences()
      */
     public function testGetReferences()
@@ -479,7 +514,7 @@ class SiteTest extends ModelTestCase
             'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
+            'plan_name' => 'plan name',
             'php_version' => '75',
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
@@ -494,7 +529,7 @@ class SiteTest extends ModelTestCase
             'created' => '1991-08-19 22:39:00',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
+            'plan_name' => 'plan name',
             'upstream' => '***UPSTREAM***',
             'php_version' => '7.5',
             'holder_type' => 'holder type',
@@ -539,7 +574,7 @@ class SiteTest extends ModelTestCase
             'created' => 'August 19, 1991 10:39PM',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
+            'plan_name' => 'plan name',
             'php_version' => '75',
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
@@ -554,7 +589,7 @@ class SiteTest extends ModelTestCase
             'created' => '1991-08-19 22:39:00',
             'framework' => 'framework name',
             'organization' => 'organization name',
-            'service_level' => 'service level',
+            'plan_name' => 'plan name',
             'upstream' => '***UPSTREAM***',
             'php_version' => '7.5',
             'holder_type' => 'holder type',

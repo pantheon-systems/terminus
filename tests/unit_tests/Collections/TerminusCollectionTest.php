@@ -136,7 +136,7 @@ class TerminusCollectionTest extends CollectionTestCase
 
         $this->setExpectedException(
             TerminusNotFoundException::class,
-            'Could not find a ' . PaymentMethod::$pretty_name . ' identified by invalid.'
+            'Could not find a ' . PaymentMethod::PRETTY_NAME . ' identified by invalid.'
         );
         $out = $collection->get('invalid');
         $this->assertNull($out);

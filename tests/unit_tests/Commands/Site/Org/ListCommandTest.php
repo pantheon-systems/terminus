@@ -64,7 +64,7 @@ class ListCommandTest extends CommandTestCase
 
         $this->logger->expects($this->at(0))
             ->method('log')->with(
-                $this->equalTo('notice'),
+                $this->equalTo('warning'),
                 $this->equalTo('This site has no supporting organizations.')
             );
 

@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Import;
 use Pantheon\Terminus\Commands\Import\DatabaseCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DatabaseCommandTest
@@ -13,6 +14,8 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class DatabaseCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
+
     /**
      * @var Workflow
      */
@@ -33,6 +36,7 @@ class DatabaseCommandTest extends CommandTestCase
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
     
     /**
@@ -49,10 +53,6 @@ class DatabaseCommandTest extends CommandTestCase
           ->method('importDatabase')
           ->with($this->equalTo($valid_url))
           ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-          ->method('checkProgress')
-          ->with()
-          ->willReturn(true);
         $this->site->expects($this->any())
           ->method('get')
           ->willReturn(null);
@@ -80,8 +80,6 @@ class DatabaseCommandTest extends CommandTestCase
         $this->expectConfirmation(false);
         $this->environment->expects($this->never())
           ->method('importDatabase');
-        $this->workflow->expects($this->never())
-          ->method('checkProgress');
         $this->site->expects($this->once())
             ->method('isFrozen')
             ->willReturn(false);

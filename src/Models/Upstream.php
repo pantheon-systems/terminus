@@ -13,7 +13,7 @@ class Upstream extends TerminusModel implements OrganizationInterface
 {
     use OrganizationTrait;
 
-    public static $pretty_name = 'upstream';
+    const PRETTY_NAME = 'upstream';
     /**
      * @var string
      */

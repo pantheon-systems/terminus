@@ -13,7 +13,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
 {
     use EnvironmentTrait;
 
-    public static $pretty_name = 'lock';
+    const PRETTY_NAME = 'lock';
 
     /**
      * @inheritdoc

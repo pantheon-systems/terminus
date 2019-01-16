@@ -17,7 +17,7 @@ class Backup extends TerminusModel implements ConfigAwareInterface, EnvironmentI
     use ConfigAwareTrait;
     use EnvironmentTrait;
 
-    public static $pretty_name = 'backup';
+    const PRETTY_NAME = 'backup';
 
     /**
      * Determines whether the backup has been completed or not

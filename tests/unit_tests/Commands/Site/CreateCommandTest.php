@@ -13,6 +13,7 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class CreateCommandTest
@@ -21,6 +22,7 @@ use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
  */
 class CreateCommandTest extends CommandTestCase
 {
+    use WorkflowProgressTrait;
     /**
      * @var Organization
      */
@@ -75,6 +77,7 @@ class CreateCommandTest extends CommandTestCase
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -101,10 +104,6 @@ class CreateCommandTest extends CommandTestCase
             ->method('create')
             ->with($this->equalTo(['site_name' => $site_name, 'label' => $label,]))
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
@@ -126,10 +125,6 @@ class CreateCommandTest extends CommandTestCase
             ->method('deployProduct')
             ->with($this->equalTo($this->upstream->id))
             ->willReturn($workflow2);
-        $workflow2->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->at(2))
             ->method('log')
             ->with(
@@ -211,10 +206,6 @@ class CreateCommandTest extends CommandTestCase
                 'organization_id' => $organization->id,
             ]))
             ->willReturn($workflow);
-        $workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
@@ -236,10 +227,6 @@ class CreateCommandTest extends CommandTestCase
             ->method('deployProduct')
             ->with($this->equalTo($this->upstream->id))
             ->willReturn($workflow2);
-        $workflow2->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
         $this->logger->expects($this->at(2))
             ->method('log')
             ->with(

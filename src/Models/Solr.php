@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Models;
 
 class Solr extends AddOnModel
 {
-    public static $pretty_name = 'Solr';
+    const PRETTY_NAME = 'Solr';
 
     /**
      * Disables Solr indexing

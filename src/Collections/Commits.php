@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Commit;
  */
 class Commits extends EnvironmentOwnedCollection
 {
-    public static $pretty_name = 'commits';
+    const PRETTY_NAME = 'commits';
     /**
      * @var string
      */

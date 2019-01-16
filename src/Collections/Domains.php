@@ -11,7 +11,7 @@ use Pantheon\Terminus\Models\Domain;
  */
 class Domains extends EnvironmentOwnedCollection
 {
-    public static $pretty_name = 'domains';
+    const PRETTY_NAME = 'domains';
     /**
      * @var string
      */

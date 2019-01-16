@@ -5,15 +5,16 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 use Pantheon\Terminus\Commands\Env\CloneContentCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
- * Class CloneCommandTesto
- * Testing class for Pantheon\Terminus\Commands\Env\CloneCommand
+ * Class CloneContentCommandTest
+ * Testing class for Pantheon\Terminus\Commands\Env\CloneContentCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Env
  */
-class CloneCommandTest extends EnvCommandTest
+class CloneContentCommandTest extends EnvCommandTest
 {
-    protected $command;
+    use WorkflowProgressTrait;
 
     /**
      * @inheritdoc
@@ -25,6 +26,7 @@ class CloneCommandTest extends EnvCommandTest
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
+        $this->expectWorkflowProcessing();
     }
 
     public function testCloneFiles()
@@ -48,7 +50,6 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->once())
             ->method('cloneFiles')
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $this->workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $this->logger->expects($this->at(0))
             ->method('log')->with(
@@ -91,8 +92,6 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->never())
             ->method('cloneFiles');
         $this->workflow->expects($this->never())
-            ->method('checkProgress');
-        $this->workflow->expects($this->never())
             ->method('getMessage');
         $this->logger->expects($this->never())
             ->method('log');
@@ -121,7 +120,6 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->once())
             ->method('cloneDatabase')
             ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())->method('checkProgress')->willReturn(true);
         $this->workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $this->logger->expects($this->at(0))
             ->method('log')->with(
@@ -163,7 +161,6 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->once())
             ->method('cloneFiles')
             ->willReturn($worlflow1);
-        $worlflow1->expects($this->once())->method('checkProgress')->willReturn(true);
         $worlflow1->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $worlflow2 = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -171,7 +168,6 @@ class CloneCommandTest extends EnvCommandTest
         $this->environment->expects($this->once())
             ->method('cloneDatabase')
             ->willReturn($worlflow2);
-        $worlflow2->expects($this->once())->method('checkProgress')->willReturn(true);
         $worlflow2->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $this->logger->expects($this->at(0))
             ->method('log')->with(
@@ -221,8 +217,6 @@ class CloneCommandTest extends EnvCommandTest
             ->willReturn(false);
         $this->environment->expects($this->never())
             ->method('cloneFiles');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
         $this->workflow->expects($this->never())
             ->method('getMessage');
         $this->logger->expects($this->never(0))

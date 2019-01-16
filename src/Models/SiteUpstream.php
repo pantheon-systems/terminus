@@ -13,7 +13,7 @@ class SiteUpstream extends TerminusModel implements SiteInterface
 {
     use SiteTrait;
 
-    public static $pretty_name = 'upstream';
+    const PRETTY_NAME = 'upstream';
 
     /**
      * @inheritdoc

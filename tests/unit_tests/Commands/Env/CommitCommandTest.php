@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\CommitCommand;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class CommitCommandTest
@@ -11,9 +12,11 @@ use Pantheon\Terminus\Commands\Env\CommitCommand;
  */
 class CommitCommandTest extends EnvCommandTest
 {
-  /**
-   * Sets up the test fixture.
-   */
+    use WorkflowProgressTrait;
+
+    /**
+     * Sets up the test fixture.
+     */
     protected function setUp()
     {
         parent::setUp();
@@ -21,11 +24,12 @@ class CommitCommandTest extends EnvCommandTest
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environment->id = 'dev';
+        $this->expectWorkflowProcessing();
     }
 
-  /**
-   * Tests the env:commit command to success with all parameters
-   */
+    /**
+     * Tests the env:commit command to success with all parameters
+     */
     public function testCommit()
     {
         $message = 'Custom message.';
@@ -41,10 +45,6 @@ class CommitCommandTest extends EnvCommandTest
         ->method('commitChanges')
         ->with($this->equalTo($message))
         ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-        ->method('checkProgress')
-        ->with()
-        ->willReturn(true);
         $this->logger->expects($this->once())
         ->method('log')
         ->with(
@@ -69,8 +69,6 @@ class CommitCommandTest extends EnvCommandTest
         ->willReturn([]);
         $this->environment->expects($this->never())
         ->method('commitChanges');
-        $this->workflow->expects($this->never())
-        ->method('checkProgress');
         $this->logger->expects($this->once())
         ->method('log')
         ->with(
@@ -97,10 +95,6 @@ class CommitCommandTest extends EnvCommandTest
         ->method('commitChanges')
         ->with($this->equalTo($message))
         ->willReturn($this->workflow);
-        $this->workflow->expects($this->once())
-        ->method('checkProgress')
-        ->with()
-        ->willReturn(true);
         $this->logger->expects($this->once())
         ->method('log')
         ->with(
@@ -126,8 +120,6 @@ class CommitCommandTest extends EnvCommandTest
         ->willReturn('git');
         $this->environment->expects($this->never())
         ->method('commitChanges');
-        $this->workflow->expects($this->never())
-        ->method('checkProgress');
         $this->logger->expects($this->once())
         ->method('log')
         ->with(

@@ -149,7 +149,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
         $body = $debug_body = null;
         if (isset($options['form_params'])) {
-            $body = json_encode($options['form_params']);
+            $body = json_encode($options['form_params'], JSON_UNESCAPED_SLASHES);
             $debug_body = $options['form_params'];
         }
 
@@ -163,10 +163,10 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         $this->logger->debug(
             self::DEBUG_REQUEST_STRING,
             [
-                'headers' => json_encode($this->stripSensitiveInfo($headers)),
+                'headers' => json_encode($this->stripSensitiveInfo($headers), JSON_UNESCAPED_SLASHES),
                 'uri' => $uri,
                 'method' => $method,
-                'body' => json_encode($this->stripSensitiveInfo($debug_body)),
+                'body' => json_encode($this->stripSensitiveInfo($debug_body), JSON_UNESCAPED_SLASHES),
             ]
         );
 

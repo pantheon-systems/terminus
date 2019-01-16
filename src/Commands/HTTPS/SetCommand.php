@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\HTTPS;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\HTTPS
  */
-class SetCommand extends TerminusCommand implements SiteAwareInterface
+class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -52,9 +56,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
 
         // Wait for the workflow to complete.
         $this->log()->notice('SSL certificate updated. Converging loadbalancer.');
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

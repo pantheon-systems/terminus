@@ -109,10 +109,6 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
             $this->config = new TerminusConfig();
         }
 
-        if (!$this->container) {
-            $this->container = new Container();
-        }
-
         // These are not used by every test but are useful for SiteAwareInterface commands. Which is a lot of them.
         // Use `$command->setSites($this->site());` after you create your command to test.
         $this->site = $this->getMockBuilder(Site::class)

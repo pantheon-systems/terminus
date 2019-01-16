@@ -21,7 +21,7 @@ class Authorizer implements ConfigAwareInterface, SessionAwareInterface
      * Authorize the current user prior to running a command. The Annotated Commands hook manager will call this
      * function during the pre-validate phase of any command that has an 'authorize' annotation.
      *
-     * @hook pre-validate @authorize
+     * @hook pre-init @authorize
      *
      * @throws TerminusException
      */

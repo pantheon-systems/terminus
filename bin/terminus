@@ -9,7 +9,10 @@
  *   - Exits with a status code
  */
 
-if (file_exists($path = __DIR__ . '/../vendor/autoload.php')
+$pharPath = \Phar::running(true);
+if ($pharPath) {
+    include_once("$pharPath/vendor/autoload.php");
+} elseif (file_exists($path = __DIR__ . '/../vendor/autoload.php')
     || file_exists($path = __DIR__ . '/../../autoload.php')
     || file_exists($path = __DIR__ . '/../../../autoload.php')
 ) {

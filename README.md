@@ -3,7 +3,6 @@
 ## Status
 [![Build Status](https://travis-ci.org/pantheon-systems/terminus.svg?branch=master)](https://travis-ci.org/pantheon-systems/terminus)
 [![Windows CI](https://ci.appveyor.com/api/projects/status/niiheng08p25mgnm?svg=true)](https://ci.appveyor.com/project/greg-1-anderson/terminus)
-[![Dependency Status](https://gemnasium.com/pantheon-systems/terminus.svg)](https://gemnasium.com/github.com/pantheon-systems/terminus)
 [![Coverage Status](https://coveralls.io/repos/github/pantheon-systems/terminus/badge.svg?branch=master)](https://coveralls.io/github/pantheon-systems/terminus?branch=master)
  
 ## About
@@ -18,7 +17,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 ## Dependencies
 ### Required
 - A command-line client
-- PHP version 5.5.9 or later
+- PHP version 5.5.38 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
@@ -101,7 +100,7 @@ cd /install/location/terminus ; git pull
 composer update
 ```
 
-**Optionally**, for ease of development, we suggest aliasing or setting the path bash configuration file, or
+**Optionally**, for ease of development we suggest aliasing, setting the PATH in the bash configuration file, or
 symlinking to it. This file is located at `~/.bashrc` on Linux systems and at `~/.bash_profile` on Mac.
 #### Alias
 ```bash

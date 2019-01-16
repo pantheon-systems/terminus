@@ -2,8 +2,11 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class CloneContentCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
+class CloneContentCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -62,9 +66,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
                 "Cloning files from {from_name} environment to {target_env} environment",
                 compact(['from_name', 'target_env'])
             );
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice($workflow->getMessage());
         }
 
@@ -74,9 +76,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
                 "Cloning database from {from_name} environment to {target_env} environment",
                 compact(['from_name', 'target_env'])
             );
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice($workflow->getMessage());
         }
     }
