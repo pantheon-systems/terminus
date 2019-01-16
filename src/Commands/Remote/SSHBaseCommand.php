@@ -2,12 +2,15 @@
 
 namespace Pantheon\Terminus\Commands\Remote;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
-use Symfony\Component\Console\Input\InputInterface;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Symfony\Component\Process\ProcessUtils;
 
 /**
@@ -15,8 +18,9 @@ use Symfony\Component\Process\ProcessUtils;
  * Base class for Terminus commands that deal with sending SSH commands
  * @package Pantheon\Terminus\Commands\Remote
  */
-abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterface
+abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -56,50 +60,35 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
 
-        $useTty = $this->useTty($this->input());
-
-        $output = $this->output();
-        $echoOutputFn = function ($type, $buffer) {
-        };
-        if ($useTty === false) {
-            $echoOutputFn = function ($type, $buffer) use ($output) {
-                $output->write($buffer);
-            };
-        }
-
-        $result = $this->environment->sendCommandViaSsh($command_line, $echoOutputFn, $useTty);
-        $output = $result['output'];
-        $exit = $result['exit_code'];
+        $ssh_data = $this->sendCommandViaSsh($command_line);
 
         $this->log()->notice('Command: {site}.{env} -- {command} [Exit: {exit}]', [
             'site'    => $this->site->get('name'),
             'env'     => $this->environment->id,
             'command' => $command_summary,
-            'exit'    => $exit,
+            'exit'    => $ssh_data['exit_code'],
         ]);
 
-        if ($exit != 0) {
-            throw new TerminusProcessException($output);
+        if ($ssh_data['exit_code'] != 0) {
+            throw new TerminusProcessException($ssh_data['output']);
         }
     }
 
     /**
-     * Determine whether the use of a tty is appropriate for the current command.
+     * Sends a command to an environment via SSH.
      *
-     * @param InputInterface $input
-     * @return bool|null
+     * @param string $command The command to be run on the platform
      */
-    protected function useTty($input)
+    protected function sendCommandViaSsh($command)
     {
-        // If we are not in interactive mode, then never use a tty.
-        if (!$input->isInteractive()) {
-            return false;
+        $ssh_command = $this->getConnectionString() . ' ' . ProcessUtils::escapeArgument($command);
+        if ($this->getConfig()->get('test_mode')) {
+            return $this->divertForTestMode($ssh_command);
         }
-        // If we are in interactive mode (or at least the user did not
-        // specify -n / --no-interaction), then also prevent the use
-        // of a tty if stdout is redirected.
-        // Otherwise, let the local machine helper decide whether to use a tty.
-        return (function_exists('posix_isatty') && !posix_isatty(STDOUT)) ? false : null;
+        return $this->getContainer()->get(LocalMachineHelper::class)->execInteractive(
+            $ssh_command,
+            $this->getOutputCallback()
+        );
     }
 
     /**
@@ -110,7 +99,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function validateEnvironment($site, $environment)
     {
-        $this->validateConnectionMode($environment->get('connection_mode'));
+        // Only warn in dev / multidev
+        if ($environment->isDevelopment()) {
+            $this->validateConnectionMode($environment->get('connection_mode'));
+        }
     }
 
     /**
@@ -120,7 +112,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      */
     protected function validateConnectionMode($mode)
     {
-        if ($mode == 'git') {
+        if ((!$this->getConfig()->get('hide_git_mode_warning')) && ($mode == 'git')) {
             $this->log()->warning(
                 'This environment is in read-only Git mode. If you want to make changes to the codebase of this site '
                 . '(e.g. updating modules or plugins), you will need to toggle into read/write SFTP mode first.'
@@ -129,47 +121,25 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     }
 
     /**
-     * Gets the command-line args
+     * Outputs a message if Terminus is in test mode and uses it to mock the command's response
      *
-     * @param string[] $command_args
-     * @return string
+     * @string $ssh_command
+     * @return string[] $response Elements as follow:
+     *         string output    The output from the command run
+     *         string exit_code The status code returned by the command run
      */
-    private function getCommandLine($command_args)
+    private function divertForTestMode($ssh_command)
     {
-        array_unshift($command_args, $this->command);
-        return implode(" ", $this->escapeArguments($command_args));
-    }
-
-    /**
-     * Return a summary of the command that does not include the
-     * arguments. This avoids potential information disclosure in
-     * CI scripts.
-     *
-     * @param array $command_args
-     * @return string
-     */
-    private function getCommandSummary($command_args)
-    {
-        return $this->command . $this->firstArguments($command_args);
-    }
-
-    /**
-     * Return the first item of the $command_args that is not an option.
-     *
-     * @param array $command_args
-     * @return string
-     */
-    private function firstArguments($command_args)
-    {
-        $result = '';
-        while (!empty($command_args)) {
-            $first = array_shift($command_args);
-            if ($first[0] == '-') {
-                return $result;
-            }
-            $result .= " $first";
+        $output = "Terminus is in test mode. SSH commands will not be sent over the wire. "
+            . PHP_EOL . "SSH Command: ${ssh_command}";
+        $container = $this->getContainer();
+        if ($container->has('output')) {
+            $container->get('output')->write($output);
         }
-        return $result;
+        return [
+            'output' => $output,
+            'exit_code' => 0
+        ];
     }
 
     /**
@@ -201,5 +171,77 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             return $arg;
         }
         return ProcessUtils::escapeArgument($arg);
+    }
+
+    /**
+     * Return the first item of the $command_args that is not an option.
+     *
+     * @param array $command_args
+     * @return string
+     */
+    private function firstArguments($command_args)
+    {
+        $result = '';
+        while (!empty($command_args)) {
+            $first = array_shift($command_args);
+            if (strlen($first) && $first[0] == '-') {
+                return $result;
+            }
+            $result .= " $first";
+        }
+        return $result;
+    }
+
+    /**
+     * @param boolean $usesTty
+     * @return \Closure
+     */
+    private function getOutputCallback()
+    {
+        if ($this->getContainer()->get(LocalMachineHelper::class)->useTty() === false) {
+            $output = $this->output();
+            return function ($type, $buffer) use ($output) {
+                $output->write($buffer);
+            };
+        }
+        return function ($type, $buffer) {
+        };
+    }
+
+    /**
+     * Gets the command-line args
+     *
+     * @param string[] $command_args
+     * @return string
+     */
+    private function getCommandLine($command_args)
+    {
+        array_unshift($command_args, $this->command);
+        return implode(" ", $this->escapeArguments($command_args));
+    }
+
+    /**
+     * Return a summary of the command that does not include the
+     * arguments. This avoids potential information disclosure in
+     * CI scripts.
+     *
+     * @param array $command_args
+     * @return string
+     */
+    private function getCommandSummary($command_args)
+    {
+        return $this->command . $this->firstArguments($command_args);
+    }
+
+    /**
+     * @return string SSH connection string
+     */
+    private function getConnectionString()
+    {
+        $sftp = $this->environment->sftpConnectionInfo();
+        return vsprintf(
+            'ssh -T %s@%s -p %s -o "StrictHostKeyChecking=no" -o "AddressFamily inet"',
+            [$sftp['username'], $sftp['host'], $sftp['port'],]
+        );
     }
 }

@@ -61,6 +61,10 @@ class DefaultsConfig extends TerminusConfig
         if (file_exists($current_dir . DIRECTORY_SEPARATOR . 'composer.json')) {
             return $current_dir;
         }
+        $pharPath = \Phar::running(true);
+        if ($pharPath) {
+            return $pharPath;
+        }
         $dir = explode(DIRECTORY_SEPARATOR, $current_dir);
         array_pop($dir);
         if (empty($dir)) {

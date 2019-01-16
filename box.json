@@ -1,0 +1,25 @@
+{
+  "alias": "terminus.phar",
+  "chmod": "0755",
+  "compactors": [],
+  "directories": ["assets", "bin", "config", "docs", "src"],
+  "files": ["README.md"],
+  "finder": [
+    {
+      "name": "*.php",
+      "exclude": [
+        "test",
+        "tests",
+        "Test",
+        "Tests",
+        "Tester"
+      ],
+      "in": "vendor"
+    }
+  ],
+  "git-commit": "git-commit",
+  "git-version": "git-version",
+  "output": "terminus.phar",
+  "main": "bin/terminus",
+  "stub": true
+}

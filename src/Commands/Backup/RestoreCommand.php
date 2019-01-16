@@ -2,14 +2,19 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class RestoreCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class RestoreCommand extends SingleBackupCommand
+class RestoreCommand extends SingleBackupCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Restores a specific backup or the latest backup.
      *
@@ -38,9 +43,7 @@ class RestoreCommand extends SingleBackupCommand
 
         $workflow = $backup->restore();
         try {
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice('Restored the backup to {env}.', ['env' => $env->id,]);
         } catch (\Exception $e) {
             $message = $workflow->getMessage();

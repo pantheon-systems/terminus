@@ -22,7 +22,7 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
      */
     private $dns_records;
 
-    public static $pretty_name = 'domain';
+    const PRETTY_NAME = 'domain';
     /**
      * @var string
      */

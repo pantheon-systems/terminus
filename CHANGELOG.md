@@ -1,6 +1,111 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+### Added
+- New `plan:list` command lists the plans available to a site. (#1901)
+- New `plan:set` command sets a site's plan. (#1901)
+- New `Plans` collection interacts with plans available to a Site. (#1901)
+- New `Plan` model represents a plan available to a Site or set on a site. (#1901)
+- New `Site::getPlan()` function to retrieve a model representing the Site's present plan. (#1901)
+- New `Site::getPlans()` function to retrieve a collection representing all available plans for the Site. (#1901)
+- `backup:list` now emits a warning when its list is empty. (#1906)
+- `branch:list` now emits a warning when its list is empty. (#1906)
+- `domain:list` now emits a warning when its list is empty. (#1906)
+- `env:list` now emits a warning when its list is empty. (#1906)
+- `plan:list` now emits a warning when its list is empty. (#1906)
+- `site:team:list` now emits a warning when its list is empty. (#1906)
+- `upstream:list` now emits a warning when its list is empty. (#1906)
+- A progress bar has been added to the workflow processing portion of `backup:restore`. (#1907)
+- A progress bar has been added to the workflow processing portion of `connection:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `env:clear-cache`. (#1907)
+- A progress bar has been added to the workflow processing portion of `env:clone-content`. (#1907)
+- A progress bar has been added to the workflow processing portion of `env:commit`. (#1907)
+- A progress bar has been added to the workflow processing portion of `env:deploy`. (#1907)
+- A progress bar has been added to the workflow processing portion of `env:wipe`. (#1907)
+- A progress bar has been added to the workflow processing portion of `https:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `https:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `import:complete`. (#1907)
+- A progress bar has been added to the workflow processing portion of `import:database`. (#1907)
+- A progress bar has been added to the workflow processing portion of `import:files`. (#1907)
+- A progress bar has been added to the workflow processing portion of `import:site`. (#1907)
+- A progress bar has been added to the workflow processing portion of `lock:disable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `lock:enable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `multidev:create`. (#1907)
+- A progress bar has been added to the workflow processing portion of `multidev:delete`. (#1907)
+- A progress bar has been added to the workflow processing portion of `multidev:merge-from-dev`. (#1907)
+- A progress bar has been added to the workflow processing portion of `multidev:merge-to-dev`. (#1907)
+- A progress bar has been added to the workflow processing portion of `new-relic:disable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `new-relic:enable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `org:people:add`. (#1907)
+- A progress bar has been added to the workflow processing portion of `org:people:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `org:people:role`. (#1907)
+- A progress bar has been added to the workflow processing portion of `org:site:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `owner:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `payment-method:add`. (#1907)
+- A progress bar has been added to the workflow processing portion of `payment-method:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `plan:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `redis:disable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `redis:enable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `service-level:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:create`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:org:add`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:org:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:team:add`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:team:remove`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:team:role`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:upstream:clear-cache`. (#1907)
+- A progress bar has been added to the workflow processing portion of `site:upstream:set`. (#1907)
+- A progress bar has been added to the workflow processing portion of `solr:disable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `solr:enable`. (#1907)
+- A progress bar has been added to the workflow processing portion of `upstream:updates:apply`. (#1907)
+- New const `TERMINUS_TIMEOUT` added to extend the timeout maximum for remote commands. (#1908)
+- A progess bar has been added to the process portion of `remote:drush`. (#1910)
+- A progess bar has been added to the process portion of `remote:wp`. (#1910)
+- A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
+
+### Changed
+- `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- `site:info` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- `site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
+- Collections' and Models' `$pretty_name` static property has become const `PRETTY_NAME`. (#1906)
+- The empty-list notice on `org:people:list` has become a warning. (#1906)
+- The empty-list notice on `org:site:list` has become a warning. (#1906)
+- The empty-list notice on `payment-method:list` has become a warning. (#1906)
+- The empty-list notice on `site:list` has become a warning. (#1906)
+- The empty-list notice on `site:org:list` has become a warning. (#1906)
+- Slashes are no longer escaped when converting the body of requests to JSON before cURL. (#1909)
+- Moved the `sendCommandViaSsh` function from `Environment` to `SSHBaseCommand`. (#1910)
+- Moved the `useTty` function from `SSHBaseCommand` to `LocalMachineHelper`. (#1910)
+- `site:delete` now uses a workflow. (#1922)
+- `Site::delete()` now returns a Workflow object. (#1922)
+
+### Deprecated
+- `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
+- `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
+
+### Fixed
+- Fixed `Environment::importDatabase()` by switching from using the `import_database` workflow to `do_import`. (#1909)
+- Fixed `Environment::importFiles()` by switching from using the `import_files` workflow to `do_import`. (#1909)
+- Fixed `import:database` by switching from using the `import_database` workflow to `do_import`. (#1909)
+- Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
+- Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
+- Fixed `site:team:remove` when removing oneself from the team an error is no longer thrown upon success. (#1914)
+
+## 1.9.0 - 2018-09-11
+### Added
+- Added a `hide_git_mode_warning` option to disable the warning presented when users run Drush or WP-CLI commands on Pantheon sites that are in git mode.  (#1882)
+
+### Fixed
+- Prevent spurious dependency validation failures with Terminus plugins that have `dev` components named in their composer.lock file that have not been installed. (#1880)
+- Removed the prompt displayed when running Drush or WP-CLI commands on a Pantheon server to avoid locking up auotmation scripts. (#1881)
+- Set minimum PHP version to 5.5.38; some earlier versions of PHP 5.5 do not work with Terminus. (#1875)
+- Fixed php warning when ssh key is missing its comment field. (#1843)
+
+## 1.8.1 - 2018-06-08
+### Fixed
+- Fixed bug wherein messages that are passed in as arrays to TerminusException cause failure. (#1863)
+
 ## 1.8.0 - 2018-03-29
 ### Added
 - `alpha:env:metrics` command has been added. (#1835)

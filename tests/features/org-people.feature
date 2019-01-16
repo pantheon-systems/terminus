@@ -19,7 +19,7 @@ Feature: Organizational users
   @vcr org-people-site-list-empty.yml
   Scenario: List an organization's members
     When I run "terminus org:people:list '[[organization_name]]'"
-    Then I should get: "[[organization_name]] has no members."
+    Then I should get the warning: "[[organization_name]] has no members."
     And I should get: "---- ------------ ----------- ------- ------"
     And I should get: "ID   First Name   Last Name   Email   Role"
     And I should get: "---- ------------ ----------- ------- ------"

@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\Environment;
  */
 class Environments extends SiteOwnedCollection
 {
-    public static $pretty_name = 'environments';
+    const PRETTY_NAME = 'environments';
     /**
      * @var string
      */

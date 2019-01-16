@@ -13,4 +13,5 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 // the user's real cache and session.
 // @TODO: Unit tests should not rely on side effects like these. When the Config object is properly injectable this
 // will not be necessary.
-putenv("TERMINUS_CACHE_DIR=~/.terminus/testcache");
+$home = getenv('HOME');
+putenv("TERMINUS_CACHE_DIR=$home/.terminus/testcache");

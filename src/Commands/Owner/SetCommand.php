@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Owner;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Owner
  */
-class SetCommand extends TerminusCommand implements SiteAwareInterface
+class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -38,10 +42,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
             );
         }
         $workflow = $site->setOwner($user->id);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
             ['user' => $user->getName(), 'site' => $site->getName(),]

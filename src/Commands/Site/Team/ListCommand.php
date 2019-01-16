@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Site\Team;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Site\Team
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -36,8 +39,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      */
     public function teamList($site_id)
     {
-        $site = $this->getSite($site_id);
-        $user_memberships = $site->getUserMemberships()->serialize();
-        return new RowsOfFields($user_memberships);
+        return $this->getRowsOfFields(
+            $this->getSite($site_id)->getUserMemberships(),
+            [
+                'message' => '{site} has no team members.',
+                'message_options' => ['site' => $site_id,],
+            ]
+        );
     }
 }

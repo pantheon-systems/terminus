@@ -2,14 +2,18 @@
 
 namespace Pantheon\Terminus\Commands\Upstream\Updates;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class ApplyCommand
  * @package Pantheon\Terminus\Commands\Upstream\Updates
  */
-class ApplyCommand extends UpdatesCommand
+class ApplyCommand extends UpdatesCommand implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
 
     /**
      * Applies upstream updates to a site's development environment.
@@ -52,9 +56,7 @@ class ApplyCommand extends UpdatesCommand
                 isset($options['accept-upstream']) ? $options['accept-upstream'] : false
             );
 
-            while (!$workflow->checkProgress()) {
-                // @TODO: Add Symfony progress bar to indicate that something is happening.
-            }
+            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice($workflow->getMessage());
         } else {
             $this->log()->warning('There are no available updates for this site.');

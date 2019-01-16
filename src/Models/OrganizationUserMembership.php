@@ -19,7 +19,7 @@ class OrganizationUserMembership extends TerminusModel implements ContainerAware
     use OrganizationTrait;
     use UserJoinTrait;
 
-    public static $pretty_name = 'organization-user membership';
+    const PRETTY_NAME = 'organization-user membership';
 
     /**
      * Removes a user from this organization

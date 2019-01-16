@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
  * Class DeployCommandTest
@@ -12,6 +13,8 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  */
 class DeployCommandTest extends EnvCommandTest
 {
+    use WorkflowProgressTrait;
+
     /**
      * @inheritdoc
      */
@@ -21,6 +24,7 @@ class DeployCommandTest extends EnvCommandTest
         $this->command = new DeployCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->expectWorkflowProcessing();
     }
 
     /**
@@ -50,10 +54,6 @@ class DeployCommandTest extends EnvCommandTest
                     'from_environment' => 'live'
                 ]
             ]);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy(
@@ -105,10 +105,6 @@ class DeployCommandTest extends EnvCommandTest
                 'clear_cache' => 1,
                 'annotation' => 'Deploy from Terminus',
             ]);
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy(
@@ -131,10 +127,6 @@ class DeployCommandTest extends EnvCommandTest
             ->method('initializeBindings')
             ->willReturn($this->workflow)
             ->with();
-        $this->workflow->expects($this->once())
-            ->method('checkProgress')
-            ->with()
-            ->willReturn(true);
 
         // Run the deploy.
         $this->command->deploy("mysite.{$this->environment->id}");
@@ -162,8 +154,6 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn($site_name);
         $this->environment->expects($this->never())
             ->method('deploy');
-        $this->workflow->expects($this->never())
-            ->method('checkProgress');
         $this->site->expects($this->once())
             ->method('isFrozen')
             ->willReturn(false);

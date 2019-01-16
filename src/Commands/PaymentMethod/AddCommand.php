@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\PaymentMethod;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -10,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class AddCommand
  * @package Pantheon\Terminus\Commands\PaymentMethod
  */
-class AddCommand extends TerminusCommand implements SiteAwareInterface
+class AddCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -32,10 +36,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         $site = $this->getSite($site_name);
         $pm = $this->session()->getUser()->getPaymentMethods()->fetch()->get($payment_method);
         $workflow = $site->addPaymentMethod($pm->id);
-        while (!$workflow->checkProgress()) {
-            // @TODO: Add Symfony progress bar to indicate that something is happening.
-        }
-
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice(
             '{method} has been applied to the {site} site.',
             ['method' => $pm->get('label'), 'site' => $site->get('name'),]

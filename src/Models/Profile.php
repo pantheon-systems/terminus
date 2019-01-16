@@ -8,5 +8,5 @@ namespace Pantheon\Terminus\Models;
  */
 class Profile extends TerminusModel
 {
-    public static $pretty_name = 'profile';
+    const PRETTY_NAME = 'profile';
 }

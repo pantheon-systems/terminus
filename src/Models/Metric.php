@@ -8,7 +8,7 @@ namespace Pantheon\Terminus\Models;
  */
 class Metric extends TerminusModel
 {
-    public static $pretty_name = 'Metric';
+    const PRETTY_NAME = 'Metric';
 
     public function serialize()
     {

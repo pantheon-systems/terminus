@@ -14,7 +14,7 @@ abstract class TerminusModel implements RequestAwareInterface
 {
     use RequestAwareTrait;
 
-    public static $pretty_name = 'terminus model';
+    const PRETTY_NAME = 'terminus model';
     /**
      * @var string
      */

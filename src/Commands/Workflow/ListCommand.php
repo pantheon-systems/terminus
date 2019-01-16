@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\Workflow;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,8 +13,9 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Workflow
  */
-class ListCommand extends TerminusCommand implements SiteAwareInterface
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
+    use RowsOfFieldsTrait;
     use SiteAwareTrait;
 
     /**
@@ -42,14 +45,12 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
     public function wfList($site_id)
     {
         $site = $this->getSite($site_id);
-        $workflows = $site->getWorkflows()->setPaging(false)->fetch()->serialize();
-
-        if (count($workflows) == 0) {
-            $this->log()->warning(
-                'No workflows have been run on {site}.',
-                ['site' => $site->get('name')]
-            );
-        }
-        return new RowsOfFields($workflows);
+        return $this->getRowsOfFields(
+            $site->getWorkflows()->setPaging(false)->fetch(),
+            [
+                'message' => 'No workflows have been run on {site}.',
+                'message_options' => ['site' => $site->get('name'),],
+            ]
+        );
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Pantheon\Terminus\Commands\Site\Org;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -11,8 +14,9 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Site\Org
  */
-class RemoveCommand extends TerminusCommand implements SiteAwareInterface
+class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
 {
+    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**
@@ -41,9 +45,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
             'Removing {org} as a supporting organization from {site}.',
             ['site' => $site->getName(), 'org' => $org->getName()]
         );
-        while (!$workflow->checkProgress()) {
-            // @TODO: Remove Symfony progress bar to indicate that something is happening.
-        }
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
         $this->log()->notice($workflow->getMessage());
     }
 }

@@ -22,15 +22,15 @@ class WPCommand extends SSHBaseCommand
      * @command remote:wp
      * @aliases wp
      *
-     * @param string $site_env_id Site & environment in the format `site-name.env`
+     * @param string $site_env Site & environment in the format `site-name.env`
      * @param array $wp_command WP-CLI command
      * @return string Command output
      *
      * @usage <site>.<env> -- <command> Runs the WP-CLI command <command> remotely on <site>'s <env> environment.
      */
-    public function wpCommand($site_env_id, array $wp_command)
+    public function wpCommand($site_env, array $wp_command)
     {
-        $this->prepareEnvironment($site_env_id);
+        $this->prepareEnvironment($site_env);
         return $this->executeCommand($wp_command);
     }
 }

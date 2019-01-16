@@ -4,13 +4,16 @@ namespace Pantheon\Terminus\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\SSHKey
  */
-class ListCommand extends TerminusCommand
+class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
 {
+    use RowsOfFieldsTrait;
 
     /**
      * Displays the list of SSH public keys associated with the currently logged-in user.
@@ -30,10 +33,6 @@ class ListCommand extends TerminusCommand
      */
     public function listSSHKeys()
     {
-        $data = $this->session()->getUser()->getSSHKeys()->serialize();
-        if (count($data) == 0) {
-            $this->log()->warning('You have no ssh keys.');
-        }
-        return new RowsOfFields($data);
+        return $this->getRowsOfFields($this->session()->getUser()->getSSHKeys());
     }
 }

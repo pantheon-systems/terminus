@@ -11,6 +11,7 @@ php:
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
 
 sudo: false
 
@@ -41,3 +42,18 @@ cache:
   directories:
     - $HOME/.cache/composer
     - $HOME/.composer/cache
+
+before_deploy:
+  - composer phar:install-tools
+  - composer install --prefer-dist --no-dev --no-interaction
+  - composer phar:build
+
+deploy:
+  provider: releases
+  api_key:
+    secure: LQSoZ2NKrPq+C4Ho1brcSCHKmQ7oWphvZY7wKurcaRm0hE7cTjk7Y3FTb2YaPTgO7mRaK0wQRzfR7iBOcW1vvU+0va0TvahameR8RnN9iI6V1NMJMtasBJoCy2dGlA5Wv1O37A4ueLTgPJHPmnTzFxbnxoEY/lDDOsvP73mKY20=
+  file: terminus.phar
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: pantheon-systems/terminus

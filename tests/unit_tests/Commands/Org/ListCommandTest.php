@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Org;
 
+use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Org\ListCommand;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\User;
@@ -27,6 +28,10 @@ class ListCommandTest extends CommandTestCase
      * @var User
      */
     protected $user;
+    /**
+     * @var UserOrganizationMemberships
+     */
+    protected $user_organization_memberships;
 
     /**
      * @inheritdoc
@@ -38,6 +43,9 @@ class ListCommandTest extends CommandTestCase
         $this->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->user_organization_memberships = $this->getMockBuilder(UserOrganizationMemberships::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->user = $this->getMockBuilder(User::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -47,6 +55,10 @@ class ListCommandTest extends CommandTestCase
         $this->session->method('getUser')
             ->with()
             ->willReturn($this->user);
+        $this->user->expects($this->once())
+            ->method('getOrganizationMemberships')
+            ->with()
+            ->willReturn($this->user_organization_memberships);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);
@@ -58,11 +70,10 @@ class ListCommandTest extends CommandTestCase
      */
     public function testOrgListEmpty()
     {
-        $this->user->expects($this->once())
-            ->method('getOrganizations')
+        $this->user_organization_memberships->expects($this->once())
+            ->method('serialize')
             ->with()
             ->willReturn([]);
-
         $this->logger->expects($this->once())
             ->method('log')
             ->with($this->equalTo('warning'), $this->equalTo('You are not a member of any organizations.'));
@@ -82,16 +93,12 @@ class ListCommandTest extends CommandTestCase
           'name' => 'Organization Name',
         ];
 
-        $this->user->expects($this->once())
-            ->method('getOrganizations')
-            ->with()
-            ->willReturn([$this->organization, $this->organization,]);
         $this->logger->expects($this->never())
             ->method('log');
-        $this->organization->expects($this->exactly(2))
+        $this->user_organization_memberships->expects($this->once())
             ->method('serialize')
             ->with()
-            ->willReturn($data);
+            ->willReturn([$data, $data,]);
 
         $out = $this->command->listOrgs();
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
