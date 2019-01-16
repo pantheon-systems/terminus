@@ -37,10 +37,31 @@ trait RowsOfFieldsTrait
             $this->log()->warning($message, $options);
         }
 
-        return $this->addDatetimeRenderer(
-            new RowsOfFields($data),
-            $collection
+        $table = new RowsOfFields($data);
+        $table = $this->addBooleanRenderer($table);
+        $table = $this->addDatetimeRenderer($table, $collection);
+        return $table;
+    }
+
+    /**
+     * Adds a renderer function to the RowsOfFields object to format booleans into strings
+     *
+     * @param RowsOfFields $table
+     * @return RowsOfFields
+     */
+    private function addBooleanRenderer(RowsOfFields $table)
+    {
+        $table->addRendererFunction(
+            function ($key, $cell_data) {
+                if ($cell_data === true) {
+                    return 'true';
+                } else if ($cell_data === false) {
+                    return 'false';
+                }
+                return $cell_data;
+            }
         );
+        return $table;
     }
 
     /**

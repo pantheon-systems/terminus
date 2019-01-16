@@ -86,24 +86,6 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
     }
 
     /**
-     * Retrieves attribute of the given name and formats it according to the TERMINUS_DATE_FORMAT setting
-     *
-     * @param string $attribute Name of the key of the desired date attribute
-     * @return string|null The date-formatted attribute, or null if not set.
-     */
-    public function getDatetime($attribute)
-    {
-        $value = $this->get($attribute);
-        if (is_null($value)) {
-            return null;
-        }
-        if (!is_integer($value)) {
-            $value = strtotime($value);
-        }
-        return $this->getConfig()->formatDatetime($value);
-    }
-
-    /**
      * Returns the fields by which this model can be found.
      *
      * @return array

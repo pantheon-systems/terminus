@@ -24,6 +24,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     use ContainerAwareTrait;
     use SiteTrait;
 
+    const DATE_ATTRIBUTES = ['environment_created',];
     const PRETTY_NAME = 'environment';
     /**
      * @var string
@@ -738,11 +739,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     {
         return [
             'id' => $this->id,
-            'created' => $this->getDatetime('environment_created'),
+            'created' => $this->get('environment_created'),
             'domain' => $this->domain(),
-            'onserverdev' => $this->get('on_server_development') ? 'true' : 'false',
-            'locked' => $this->getLock()->isLocked() ? 'true' : 'false',
-            'initialized' => $this->isInitialized() ? 'true' : 'false',
+            'onserverdev' => $this->get('on_server_development'),
+            'locked' => $this->getLock()->isLocked(),
+            'initialized' => $this->isInitialized(),
             'connection_mode' => $this->get('connection_mode'),
             'php_version' => $this->getPHPVersion(),
         ];

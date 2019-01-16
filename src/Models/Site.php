@@ -25,6 +25,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     use ContainerAwareTrait;
     use OrganizationsTrait;
 
+    const DATE_ATTRIBUTES = ['created', 'last_frozen_at',];
     const PRETTY_NAME = 'site';
     /**
      * @var string
@@ -379,7 +380,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'id' => $this->id,
             'name' => $this->get('name'),
             'label' => $this->get('label'),
-            'created' => $this->getDatetime('created'),
+            'created' => $this->get('created'),
             'framework' => $this->get('framework'),
             'organization' => $this->get('organization'),
             'plan_name' => $this->get('plan_name'),
@@ -389,8 +390,8 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
-            'frozen' => $this->isFrozen() ? 'true' : 'false',
-            'last_frozen_at' => $this->getDatetime('last_frozen_at'),
+            'frozen' => $this->isFrozen(),
+            'last_frozen_at' => $this->get('last_frozen_at'),
         ];
         if (isset($this->tags)) {
             $data['tags'] = implode(',', $this->tags->ids());
