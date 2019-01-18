@@ -3,14 +3,13 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class InfoCommand extends SingleBackupCommand implements PropertyListInterface
+class InfoCommand extends SingleBackupCommand
 {
     use StructuredListTrait;
 

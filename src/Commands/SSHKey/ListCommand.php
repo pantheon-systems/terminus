@@ -4,14 +4,13 @@ namespace Pantheon\Terminus\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\SSHKey
  */
-class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
+class ListCommand extends TerminusCommand
 {
     use StructuredListTrait;
 

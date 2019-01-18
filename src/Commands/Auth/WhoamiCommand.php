@@ -4,14 +4,13 @@ namespace Pantheon\Terminus\Commands\Auth;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class WhoamiCommand
  * @package Pantheon\Terminus\Commands\Auth
  */
-class WhoamiCommand extends TerminusCommand implements PropertyListInterface
+class WhoamiCommand extends TerminusCommand
 {
     use StructuredListTrait;
 

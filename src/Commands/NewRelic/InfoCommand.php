@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\Commands\NewRelic;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -13,7 +12,7 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\NewRelic
  */
-class InfoCommand extends TerminusCommand implements PropertyListInterface, SiteAwareInterface
+class InfoCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use StructuredListTrait;

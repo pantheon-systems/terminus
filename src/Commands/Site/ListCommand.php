@@ -3,10 +3,9 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
-class ListCommand extends SiteCommand implements RowsOfFieldsInterface
+class ListCommand extends SiteCommand
 {
     use StructuredListTrait;
 

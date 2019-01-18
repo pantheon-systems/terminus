@@ -4,14 +4,13 @@ namespace Pantheon\Terminus\Commands\Plan;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Plan
  */
-class InfoCommand extends SiteCommand implements PropertyListInterface
+class InfoCommand extends SiteCommand
 {
     use StructuredListTrait;
 

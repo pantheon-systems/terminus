@@ -3,14 +3,13 @@
 namespace Pantheon\Terminus\Commands\Workflow\Info;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class StatusCommand
  * @package Pantheon\Terminus\Commands\Workflow\Info
  */
-class StatusCommand extends InfoBaseCommand implements PropertyListInterface
+class StatusCommand extends InfoBaseCommand 
 {
     use StructuredListTrait;
 

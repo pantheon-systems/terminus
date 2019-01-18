@@ -4,14 +4,13 @@ namespace Pantheon\Terminus\Commands\PaymentMethod;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\PaymentMethod
  */
-class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
+class ListCommand extends TerminusCommand
 {
     use StructuredListTrait;
 

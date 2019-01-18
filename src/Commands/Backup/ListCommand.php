@@ -3,14 +3,13 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class ListCommand extends BackupCommand implements RowsOfFieldsInterface
+class ListCommand extends BackupCommand
 {
     use StructuredListTrait;
 

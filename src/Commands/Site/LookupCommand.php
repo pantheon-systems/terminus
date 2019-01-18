@@ -3,14 +3,13 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
-use Pantheon\Terminus\Friends\PropertyListInterface;
 use Pantheon\Terminus\Friends\StructuredListTrait;
 
 /**
  * Class LookupCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class LookupCommand extends SiteCommand implements PropertyListInterface
+class LookupCommand extends SiteCommand
 {
     use StructuredListTrait;
 
