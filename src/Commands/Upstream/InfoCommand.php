@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Commands\Upstream;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\StructuredListTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class InfoCommand

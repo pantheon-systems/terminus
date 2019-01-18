@@ -1,6 +1,6 @@
 <?php
 
-namespace Pantheon\Terminus\Friends;
+namespace Pantheon\Terminus\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
@@ -10,7 +10,7 @@ use Pantheon\Terminus\Models\TerminusModel;
 
 /**
  * Class StructuredListTrait
- * @package Pantheon\Terminus\Friends
+ * @package Pantheon\Terminus\Commands
  */
 trait StructuredListTrait
 {

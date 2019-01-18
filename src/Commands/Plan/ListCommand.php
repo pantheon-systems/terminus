@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Commands\Plan;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
-use Pantheon\Terminus\Friends\StructuredListTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class ListCommand

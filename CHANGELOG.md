@@ -94,6 +94,7 @@ All notable changes to this project will be documented in this file. This projec
 - Environment::serialize() 'onseverdev' attribute has changed from string to boolean. (#1923)
 - Domain::serialize() 'deletable' attribute has changed from string to boolean. (#1923)
 - Lock::serialize() 'locked' attribute has changed from string to boolean. (#1923)
+- `Pantheon\Terminus\Friends\RowsOfFieldsTrait` has become `Pantheon\Terminus\Commands\StructuredDataTrait`. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
@@ -110,6 +111,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Removed
 - Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
 - Removed `TerminusConfig::toArray()`. Use the inherited `TerminusConfig::export()`. (#1923)
+- Removed `Pantheon\Terminus\Friends\RowsOfFieldsInterface` (#1923)
 
 ## 1.9.0 - 2018-09-11
 ### Added
