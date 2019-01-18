@@ -24,7 +24,7 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     use ContainerAwareTrait;
     use SiteTrait;
 
-    const DATE_ATTRIBUTES = ['environment_created',];
+    const DATE_ATTRIBUTES = ['created',];
     const PRETTY_NAME = 'environment';
     /**
      * @var string

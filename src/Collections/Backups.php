@@ -85,6 +85,31 @@ class Backups extends EnvironmentOwnedCollection
     }
 
     /**
+     * Filters out backups which are not of the given type
+     *
+     * @param string [code|files|database] The element desired of the backup collection
+     * @return Backups
+     */
+    public function filterForElement($element)
+    {
+        return $this->filter(function ($backup) use ($element) {
+            return $backup->get('type') === $element;
+        });
+    }
+
+    /**
+     * Filters out unfinished backups
+     *
+     * @return Backups
+     */
+    public function filterForFinished()
+    {
+        return $this->filter(function ($backup) {
+            return $backup->backupIsFinished();
+        });
+    }
+
+    /**
      * Fetches backup for a specified filename
      *
      * @param string $filename Name of the file name to filter by

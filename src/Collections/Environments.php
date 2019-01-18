@@ -49,6 +49,19 @@ class Environments extends SiteOwnedCollection
     }
 
     /**
+     * Filters out non-multidev environments
+     *
+     * @return Environments $this
+     */
+    public function filterForMultidev()
+    {
+        $this->filter(function ($env) {
+            return $env->isMultidev();
+        });
+        return $this;
+    }
+
+    /**
      * List Environment IDs, with Dev/Test/Live first
      *
      * @return string[] $ids
@@ -72,9 +85,7 @@ class Environments extends SiteOwnedCollection
      */
     public function multidev()
     {
-        $multidev_envs = $this->filter(function ($environment) {
-            return $environment->isMultidev();
-        })->all();
+        $multidev_envs = $this->filterForMultidev()->all();
         $this->reset();
         return $multidev_envs;
     }

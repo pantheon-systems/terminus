@@ -55,12 +55,7 @@ class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
         $upstreams = $this->filterByName($upstreams, $options);
         $upstreams = $this->filterForCoreCustom($upstreams, $options);
 
-        $filter = function ($collection) use ($options) {
-            $data = $collection->serialize();
-            usort($data, $this->sortFunction($options));
-            return $data;
-        };
-        return $this->getRowsOfFields($upstreams, compact('filter'));
+        return $this->getRowsOfFields($upstreams, ['sort' => $this->sortFunction($options)]);
     }
 
     /**

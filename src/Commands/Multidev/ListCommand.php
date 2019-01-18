@@ -37,20 +37,9 @@ class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, Site
      */
     public function listMultidevs($site_name)
     {
-        $filter = function ($collection) {
-            return array_map(
-                function ($environment) {
-                    return $environment->serialize();
-                },
-                $collection->multidev()
-            );
-        };
         return $this->getRowsOfFields(
-            $this->sites->get($site_name)->getEnvironments(),
-            [
-                'filter' => $filter,
-                'message' => 'You have no multidev environments.',
-            ]
+            $this->sites->get($site_name)->getEnvironments()->filterForMultidev(),
+            ['message' => 'You have no multidev environments.',]
         );
     }
 }

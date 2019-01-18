@@ -82,17 +82,6 @@ class TerminusConfig extends RoboConfig
     }
 
     /**
-     * Set add all the values in the array to this Config object.
-     * @param array $array
-     */
-    public function fromArray(array $array = [])
-    {
-        foreach ($array as $key => $val) {
-            $this->set($key, $val);
-        }
-    }
-
-    /**
      * Get a configuration value
      *
      * @param string $key Which config item to look up
@@ -160,13 +149,13 @@ class TerminusConfig extends RoboConfig
     public function serialize()
     {
         return [
-            'php_binary_path'     => $config->get('php'),
-            'php_version'         => $config->get('php_version'),
-            'php_ini'             => $config->get('php_ini'),
-            'project_config_path' => $config->get('config_dir'),
-            'terminus_path'       => $config->get('root'),
-            'terminus_version'    => $config->get('version'),
-            'os_version'          => $config->get('os_version'),
+            'php_binary_path'     => $this->get('php'),
+            'php_version'         => $this->get('php_version'),
+            'php_ini'             => $this->get('php_ini'),
+            'project_config_path' => $this->get('config_dir'),
+            'terminus_path'       => $this->get('root'),
+            'terminus_version'    => $this->get('version'),
+            'os_version'          => $this->get('os_version'),
         ];
     }
 

@@ -4,6 +4,8 @@ namespace Pantheon\Terminus\Commands\HTTPS;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
+use Pantheon\Terminus\Friends\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -11,9 +13,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\HTTPS
  */
-class InfoCommand extends TerminusCommand implements SiteAwareInterface
+class InfoCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
 {
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Provides information for HTTPS on being used for the environment.
@@ -37,6 +40,6 @@ class InfoCommand extends TerminusCommand implements SiteAwareInterface
     public function info($site_env)
     {
         list(, $env) = $this->getSiteEnv($site_env);
-        return new RowsOfFields($env->getDomains()->fetchWithRecommendations()->serialize());
+        return $this->getRowsOfFields($env->getDomains()->fetchWithRecommendations());
     }
 }

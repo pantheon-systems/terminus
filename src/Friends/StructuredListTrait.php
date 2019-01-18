@@ -29,27 +29,24 @@ trait StructuredListTrait
     /**
      * @param TerminusCollection $collection A collection of models to get the data from
      * @param array $options Elements as follow
-     *        function filter A function to filter the collection with. Uses serialize by default.
-     *        string message Message to emit if the collection is empty.
+     *        string $message Message to emit if the collection is empty.
      *        array $message_options Values to interpolate into the error message.
+     *        function $sort A function to sort the data using
      * @return RowsOfFields Returns a RowsOfFields-type object with applied filters
      */
     public function getRowsOfFields(TerminusCollection $collection, array $options = [])
     {
-        if (isset($options['filter'])) {
-            $filter = $options['filter'];
-        } else {
-            $filter = function ($collection_argument) {
-                return $collection_argument->serialize();
-            };
-        }
-        $data = $filter($collection);
+        $data = $collection->serialize();
         if (count($data) === 0) {
             $message = isset($options['message'])
                 ? $options['message']
                 : 'You have no ' . $collection::PRETTY_NAME . '.';
             $options = isset($options['message_options']) ? $options['message_options'] : [];
             $this->log()->warning($message, $options);
+        }
+
+        if (!empty($options['sort'])) {
+            usort($data, $options['sort']);
         }
 
         $table = new RowsOfFields($data);
