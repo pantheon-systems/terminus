@@ -98,6 +98,7 @@ All notable changes to this project will be documented in this file. This projec
 - `Backup::getUrl()` has been changed to `Backup::getArchiveURL()`. (#1923)
 - Changed Environment::cloneDatabase() to accept an Environment object. (#1924)
 - Changed Environment::cloneFiles() to accept an Environment object. (#1924)
+- The target environment used in `env:clone-content` is now checked for initialization prior to cloning. (#1930)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
