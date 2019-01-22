@@ -4,8 +4,7 @@ namespace Pantheon\Terminus\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +12,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Domain
  */
-class ListCommand extends TerminusCommand implements RowsOfFieldsInterface, SiteAwareInterface
+class ListCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use RowsOfFieldsTrait;
     use SiteAwareTrait;
+    use StructuredListTrait;
 
     /**
      * Displays domains associated with the environment.

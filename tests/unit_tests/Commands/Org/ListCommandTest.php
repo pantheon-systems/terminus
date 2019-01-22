@@ -6,6 +6,7 @@ use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Org\ListCommand;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
@@ -55,6 +56,9 @@ class ListCommandTest extends CommandTestCase
         $this->session->method('getUser')
             ->with()
             ->willReturn($this->user);
+        $this->user_organization_memberships
+            ->method('getCollectedClass')
+            ->willReturn(UserOrganizationMembership::class);
         $this->user->expects($this->once())
             ->method('getOrganizationMemberships')
             ->with()

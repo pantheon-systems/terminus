@@ -40,7 +40,7 @@ class GetCommandTest extends BackupCommandTest
             ->willReturn($this->backup);
 
         $this->backup->expects($this->once())
-            ->method('getUrl')
+            ->method('getArchiveURL')
             ->willReturn($test_download_url);
 
         $output = $this->command->get('mysite.dev', ['file' => $test_filename,]);
@@ -58,7 +58,7 @@ class GetCommandTest extends BackupCommandTest
             ->willReturn([$this->backup]);
 
         $this->backup->expects($this->once())
-            ->method('getUrl')
+            ->method('getArchiveURL')
             ->willReturn('http://download');
 
         $output = $this->command->get('mysite.dev', ['element' => 'db',]);
@@ -97,7 +97,7 @@ class GetCommandTest extends BackupCommandTest
             ->with($this->equalTo($element))
             ->willReturn([]);
         $this->backup->expects($this->never())
-            ->method('getUrl');
+            ->method('getArchiveURL');
         $this->site->expects($this->once())
             ->method('get')
             ->with($this->equalTo('name'))
@@ -128,7 +128,7 @@ class GetCommandTest extends BackupCommandTest
             ->with($test_filename)
             ->willReturn($this->backup);
         $this->backup->expects($this->once())
-            ->method('getUrl')
+            ->method('getArchiveURL')
             ->willReturn($test_download_url);
         $request->expects($this->once())
             ->method('download')

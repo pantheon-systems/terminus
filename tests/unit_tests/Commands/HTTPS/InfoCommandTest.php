@@ -5,6 +5,7 @@ namespace Pantheon\Terminus\UnitTests\HTTPS;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Commands\HTTPS\InfoCommand;
+use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
@@ -38,6 +39,7 @@ class InfoCommandTest extends CommandTestCase
         $this->domains = $this->getMockBuilder(Domains::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->domains->method('getCollectedClass')->willReturn(Domain::class);
         $this->data = ['some' => 'data', 'for' => 'testing',];
 
         $this->environment->expects($this->once())

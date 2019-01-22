@@ -34,7 +34,7 @@ class DotEnvConfig extends TerminusConfig
                 return strpos(trim($line), '#') !== 0;
             });
             $info = $this->parse($lines);
-            $this->fromArray($info);
+            $this->combine($info);
         }
     }
 

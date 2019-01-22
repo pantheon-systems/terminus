@@ -66,18 +66,17 @@ class LockTest extends ModelTestCase
     public function testSerialize()
     {
         $expected = [
-            'locked' => 'false',
+            'locked' => false,
             'username' => null,
             'password' =>  null,
         ];
         $actual = $this->lock->serialize();
         $this->assertEquals($expected, $actual);
 
-
         $lock = $this->_getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
         $actual = $lock->serialize();
         $expected = [
-            'locked' => 'true',
+            'locked' => true,
             'username' => 'abc',
             'password' =>  '123',
         ];

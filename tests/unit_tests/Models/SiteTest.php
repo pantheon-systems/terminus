@@ -526,7 +526,7 @@ class SiteTest extends ModelTestCase
             'id' => $this->model->id,
             'name' => 'site name',
             'label' => 'site label',
-            'created' => '1991-08-19 22:39:00',
+            'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
             'plan_name' => 'plan name',
@@ -535,11 +535,11 @@ class SiteTest extends ModelTestCase
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
-            'frozen' => 'true',
+            'frozen' => true,
             'memberships' => implode(',', $this->model->memberships),
             'tags' => implode(',', $tags),
             'max_num_cdes' => 0,
-            'last_frozen_at' => '2023-04-28 00:25:40',
+            'last_frozen_at' => '1682641540',
         ];
 
         $this->request->expects($this->once())
@@ -551,66 +551,7 @@ class SiteTest extends ModelTestCase
             ->method('ids')
             ->with()
             ->willReturn($tags);
-
-        $returned_data = $this->model->fetch()->serialize();
-        $this->assertEquals($expected_data, $returned_data);
-    }
-
-    /**
-     * Tests Site::serialize() when the given datetime is not a Unix timestamp
-     */
-    public function testSerializeNotTimestamp()
-    {
-        $this->configSet(['date_format' => 'Y-m-d H:i:s',]);
-        $this->model->tags = $this->getMockBuilder(Tags::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->model->memberships = ['membership1', 'membership2',];
-        $tags = ['tag1', 'tag2',];
-        $data = (object)[
-            'id' => $this->model->id,
-            'name' => 'site name',
-            'label' => 'site label',
-            'created' => 'August 19, 1991 10:39PM',
-            'framework' => 'framework name',
-            'organization' => 'organization name',
-            'plan_name' => 'plan name',
-            'php_version' => '75',
-            'holder_type' => 'holder type',
-            'holder_id' => 'holder id',
-            'owner' => 'owner id',
-            'frozen' => 'yes',
-            'last_frozen_at' => 'April 28, 2023 9:20PM',
-        ];
-        $expected_data = [
-            'id' => $this->model->id,
-            'name' => 'site name',
-            'label' => 'site label',
-            'created' => '1991-08-19 22:39:00',
-            'framework' => 'framework name',
-            'organization' => 'organization name',
-            'plan_name' => 'plan name',
-            'upstream' => '***UPSTREAM***',
-            'php_version' => '7.5',
-            'holder_type' => 'holder type',
-            'holder_id' => 'holder id',
-            'owner' => 'owner id',
-            'frozen' => 'true',
-            'memberships' => implode(',', $this->model->memberships),
-            'tags' => implode(',', $tags),
-            'max_num_cdes' => 0,
-            'last_frozen_at' => '2023-04-28 21:20:00',
-        ];
-
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with($this->equalTo("sites/{$this->model->id}?site_state=true"))
-            ->willReturn(compact('data'));
-        $this->upstream->method('__toString')->willReturn('***UPSTREAM***');
-        $this->model->tags->expects($this->once())
-            ->method('ids')
-            ->with()
-            ->willReturn($tags);
+        $this->model->setConfig($this->config);
 
         $returned_data = $this->model->fetch()->serialize();
         $this->assertEquals($expected_data, $returned_data);

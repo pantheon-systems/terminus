@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\Commands\Site\Team\ListCommand;
+use Pantheon\Terminus\Models\SiteUserMembership;
 
 /**
  * Class ListCommandTest
@@ -47,6 +48,9 @@ class ListCommandTest extends TeamCommandTest
         $this->user_memberships->expects($this->once())
             ->method('serialize')
             ->willReturn($expected);
+        $this->user_memberships->expects($this->once())
+            ->method('getCollectedClass')
+            ->willReturn(SiteUserMembership::class);
 
         $actual = $this->command->teamList('mysite');
         $this->assertEquals($expected, $actual->getArrayCopy());

@@ -138,7 +138,7 @@ class DomainTest extends ModelTestCase
             'id' => 'live-mysite.pantheonsite.io',
             'status' => 'status',
             'status_message' => 'status message',
-            'deletable' => 'false',
+            'deletable' => false,
         ];
 
         $domain = $this->_createDomain($data);

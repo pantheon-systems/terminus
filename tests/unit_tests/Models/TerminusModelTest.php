@@ -11,7 +11,10 @@ use Pantheon\Terminus\Models\TerminusModel;
  */
 class TerminusModelTest extends ModelTestCase
 {
-    public function testConstructGetSet()
+    /**
+     * Tests TerminusModel::__construct(), ::get(), ::has(), and ::set()
+     */
+    public function testConstructGetHasSet()
     {
         $model = $this->getMockForAbstractClass(TerminusModel::class, [(object)['id' => '123', 'foo' => 'bar']]);
 
@@ -25,6 +28,9 @@ class TerminusModelTest extends ModelTestCase
         $this->assertEquals('bar', $model->get('foo'));
     }
 
+    /**
+     * Tests TerminusModel::fetch()
+     */
     public function testFetch()
     {
         $model = $this->getMockBuilder(TerminusModel::class)

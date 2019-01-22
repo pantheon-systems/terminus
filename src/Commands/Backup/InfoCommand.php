@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\Commands\Backup;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class InfoCommand
@@ -10,6 +11,8 @@ use Consolidation\OutputFormatters\StructuredData\PropertyList;
  */
 class InfoCommand extends SingleBackupCommand
 {
+    use StructuredListTrait;
+
     /**
      * Displays information about a specific backup or the latest backup.
      *
@@ -37,6 +40,8 @@ class InfoCommand extends SingleBackupCommand
     public function info($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
         $backup = $this->getBackup($site_env, $options);
-        return new PropertyList(array_merge($backup->serialize(), ['url' => $backup->getUrl(),]));
+        // By retrieving the archive URL it will appear in the model's serialize data
+        $backup->getArchiveURL();
+        return $this->getPropertyList($backup);
     }
 }

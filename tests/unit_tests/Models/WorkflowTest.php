@@ -78,23 +78,6 @@ class WorkflowTest extends ModelTestCase
     }
 
     /**
-     * Tests the response of the Workflow constructor when it is not given an owner object
-     */
-    public function testConstructWithoutOwner()
-    {
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflows->expects($this->once())
-            ->method('getOwnerObject')
-            ->will($this->throwException(new \Exception('exception message')));
-
-        $this->setExpectedException(TerminusException::class, 'Could not locate an owner for this Workflow object.');
-
-        new Workflow((object)['id' => 'workflow id',], ['collection' => $workflows,]);
-    }
-
-    /**
      * Tests the Workflow::fetchWithLogs() and ::getUrl() functions
      */
     public function testFetchWithLogs()
@@ -377,6 +360,7 @@ class WorkflowTest extends ModelTestCase
 
         $workflow = new Workflow($data, compact('site'));
         $workflow->setContainer($container);
+        $workflow->setConfig($this->config);
 
         $this->assertEquals($expected, $workflow->serialize());
     }

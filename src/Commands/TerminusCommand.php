@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Pantheon\Terminus\Config\ConfigAwareTrait;
 use Pantheon\Terminus\Session\SessionAwareInterface;
 use Pantheon\Terminus\Session\SessionAwareTrait;
 use Pantheon\Terminus\Style\TerminusStyle;
@@ -10,7 +11,6 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Robo\Contract\IOAwareInterface;
 use Robo\Contract\ConfigAwareInterface;
-use Robo\Common\ConfigAwareTrait;
 use Robo\Common\IO;
 
 /**

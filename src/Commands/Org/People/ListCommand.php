@@ -4,16 +4,15 @@ namespace Pantheon\Terminus\Commands\Org\People;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\Org\People
  */
-class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
+class ListCommand extends TerminusCommand
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
 
     /**
      * Displays the list of users associated with an organization.

@@ -19,6 +19,11 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
     use SessionAwareTrait;
 
     const PRETTY_NAME = 'workflow';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = ['started_at', 'finished_at',];
     /**
      * @var TerminusModel
      */
@@ -50,12 +55,8 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             $this->owner = $options['site'];
         } elseif (isset($options['user'])) {
             $this->owner = $options['user'];
-        } else {
-            try {
-                $this->owner = $options['collection']->getOwnerObject();
-            } catch (\Exception $e) {
-                throw new TerminusException('Could not locate an owner for this Workflow object.');
-            }
+        } elseif (isset($options['collection'])) {
+            $this->owner = $options['collection']->getOwnerObject();
         }
     }
 

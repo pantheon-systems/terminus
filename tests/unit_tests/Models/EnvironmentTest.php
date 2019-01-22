@@ -844,11 +844,41 @@ class EnvironmentTest extends ModelTestCase
         $model->mergeToDev();
     }
 
-    public function testSerialize()
+    /**
+     * Tests the Environment::serialize() function when the environment is in Git mode
+     */
+    public function testSerializeGitMode()
     {
-        $this->config->method('get')->with('date_format')->willReturn('Y-m-d');
-        $this->configSet(['date_format' => 'Y-m-d']);
+        $info = [
+            'id' => 'dev',
+            'environment_created' => '1479413982',
+            'on_server_development' => false,
+            'php_version' => '70',
+            'dns_zone' => 'example.com',
+        ];
+        $expected = [
+            'id' => 'dev',
+            'created' => '1479413982',
+            'domain' => 'dev-abc.example.com',
+            'onserverdev' => false,
+            'locked' => false,
+            'initialized' => true,
+            'connection_mode' => 'git',
+            'php_version' => '7.0',
+        ];
+        $this->lock->method('isLocked')->willReturn(false);
+        $this->configSet(['date_format' => 'Y-m-d',]);
 
+        $model = $this->createModel($info);
+        $actual = $model->serialize();
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Tests the Environment::serialize() function when the environment is in SFTP mode
+     */
+    public function testSerializeSFTPMode()
+    {
         $info = [
             'id' => 'dev',
             'environment_created' => '1479413982',
@@ -856,24 +886,19 @@ class EnvironmentTest extends ModelTestCase
             'php_version' => '70',
             'dns_zone' => 'example.com',
         ];
-        $this->lock->method('isLocked')->willReturn(false);
-        $model = $this->createModel($info);
-        $actual = $model->serialize();
         $expected = [
             'id' => 'dev',
-            'created' => '2016-11-17',
+            'created' => '1479413982',
             'domain' => 'dev-abc.example.com',
-            'onserverdev' => 'true',
-            'locked' => 'false',
-            'initialized' => 'true',
+            'onserverdev' => true,
+            'locked' => false,
+            'initialized' => true,
             'connection_mode' => 'sftp',
             'php_version' => '7.0',
         ];
-        $this->assertEquals($expected, $actual);
+        $this->lock->method('isLocked')->willReturn(false);
+        $this->configSet(['date_format' => 'Y-m-d',]);
 
-        $info['on_server_development'] = false;
-        $expected['onserverdev'] = 'false';
-        $expected['connection_mode'] = 'git';
         $model = $this->createModel($info);
         $actual = $model->serialize();
         $this->assertEquals($expected, $actual);

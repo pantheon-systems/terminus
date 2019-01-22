@@ -7,6 +7,8 @@ use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Upstream\ListCommand;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\OrganizationUpstream;
+use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 
 /**
@@ -22,6 +24,9 @@ class ListCommandTest extends UpstreamCommandTest
     public function setUp()
     {
         parent::setUp();
+        $this->upstreams->method('getCollectedClass')
+            ->with()
+            ->willReturn(Upstream::class);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setSession($this->session);
@@ -110,6 +115,9 @@ class ListCommandTest extends UpstreamCommandTest
         $upstreams = $this->getMockBuilder(OrganizationUpstreams::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $upstreams->method('getCollectedClass')
+            ->with()
+            ->willReturn(OrganizationUpstream::class);
 
         $this->user->expects($this->once())
             ->method('getOrganizationMemberships')

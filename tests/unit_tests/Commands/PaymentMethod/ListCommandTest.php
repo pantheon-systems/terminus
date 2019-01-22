@@ -46,6 +46,7 @@ class ListCommandTest extends CommandTestCase
         $this->payment_methods = $this->getMockBuilder(PaymentMethods::class)
           ->disableOriginalConstructor()
           ->getMock();
+        $this->payment_methods->method('getCollectedClass')->willReturn(PaymentMethod::class);
 
         $this->session->expects($this->once())
             ->method('getUser')

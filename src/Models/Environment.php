@@ -13,21 +13,23 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class Environment
  * @package Pantheon\Terminus\Models
  */
-class Environment extends TerminusModel implements ConfigAwareInterface, ContainerAwareInterface, SiteInterface
+class Environment extends TerminusModel implements ContainerAwareInterface, SiteInterface
 {
     use ContainerAwareTrait;
-    use ConfigAwareTrait;
     use SiteTrait;
 
     const PRETTY_NAME = 'environment';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = ['created',];
     /**
      * @var string
      */
@@ -741,11 +743,11 @@ class Environment extends TerminusModel implements ConfigAwareInterface, Contain
     {
         return [
             'id' => $this->id,
-            'created' => date($this->getConfig()->get('date_format'), $this->get('environment_created')),
+            'created' => $this->get('environment_created'),
             'domain' => $this->domain(),
-            'onserverdev' => $this->get('on_server_development') ? 'true' : 'false',
-            'locked' => $this->getLock()->isLocked() ? 'true' : 'false',
-            'initialized' => $this->isInitialized() ? 'true' : 'false',
+            'onserverdev' => $this->get('on_server_development'),
+            'locked' => $this->getLock()->isLocked(),
+            'initialized' => $this->isInitialized(),
             'connection_mode' => $this->get('connection_mode'),
             'php_version' => $this->getPHPVersion(),
         ];

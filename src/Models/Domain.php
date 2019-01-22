@@ -64,7 +64,7 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
             'type' => $this->get('type'),
             'status' => in_array($this->get('status'), ['ok', 'okay',]) ? 'OK' : $this->get('status'),
             'status_message' => $this->get('status_message'),
-            'deletable' => $this->get('deletable') ? 'true' : 'false',
+            'deletable' => (boolean)$this->get('deletable'),
         ];
     }
 }

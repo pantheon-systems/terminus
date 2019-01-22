@@ -4,16 +4,13 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class AddOnModel
  * @package Pantheon\Terminus\Models
  */
-abstract class AddOnModel extends TerminusModel implements ConfigAwareInterface, SiteInterface
+abstract class AddOnModel extends TerminusModel implements SiteInterface
 {
-    use ConfigAwareTrait;
     use SiteTrait;
 
     /**

@@ -3,12 +3,11 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
-class ListCommand extends SiteCommand implements RowsOfFieldsInterface
+class ListCommand extends SiteCommand
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
 
     /**
      * Displays the list of sites accessible to the currently logged-in user.

@@ -4,16 +4,13 @@ namespace Pantheon\Terminus\Models;
 
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
-use Robo\Common\ConfigAwareTrait;
-use Robo\Contract\ConfigAwareInterface;
 
 /**
  * Class Plan
  * @package Pantheon\Terminus\Models
  */
-class Plan extends TerminusModel implements ConfigAwareInterface, SiteInterface
+class Plan extends TerminusModel implements SiteInterface
 {
-    use ConfigAwareTrait;
     use SiteTrait;
 
     const PRETTY_NAME = 'plan';
@@ -27,7 +24,7 @@ class Plan extends TerminusModel implements ConfigAwareInterface, SiteInterface
      */
     public function __construct($attributes = null, array $options = [])
     {
-        if (property_exists($attributes, 'attributes')) {
+        if (($attributes !== null) && property_exists($attributes, 'attributes')) {
             $attributes = (object)$attributes->attributes;
         }
         parent::__construct($attributes, $options);

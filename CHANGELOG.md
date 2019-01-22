@@ -63,6 +63,7 @@ All notable changes to this project will be documented in this file. This projec
 - A progess bar has been added to the process portion of `remote:drush`. (#1910)
 - A progess bar has been added to the process portion of `remote:wp`. (#1910)
 - A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
+- Added the TerminusConfig::formatDatetime() function in order to use the configuration to format datetimes.  (#1923)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -81,6 +82,20 @@ All notable changes to this project will be documented in this file. This projec
 - `Site::delete()` now returns a Workflow object. (#1922)
 - Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
 - `upstream:updates:list` now orders the pending updates in chronological order. (#1852)
+- TerminusConfig::setSource() changed from public to now protected. (#1923)
+- The `started_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
+- The `finished_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
+- Site::serialize() 'frozen' attribute has changed from string to boolean. (#1923)
+- Site::serialize() 'created' attribute has changed to a Unix timestamp. (#1923)
+- Site::serialize() 'last_frozen_at' attribute has changed to a Unix timestamp. (#1923)
+- Environment::serialize() 'environment_created' attribute has changed to a Unix timestamp. (#1923)
+- Environment::serialize() 'initialized' attribute has changed from string to boolean. (#1923)
+- Environment::serialize() 'locked' attribute has changed from string to boolean. (#1923)
+- Environment::serialize() 'onseverdev' attribute has changed from string to boolean. (#1923)
+- Domain::serialize() 'deletable' attribute has changed from string to boolean. (#1923)
+- Lock::serialize() 'locked' attribute has changed from string to boolean. (#1923)
+- `Pantheon\Terminus\Friends\RowsOfFieldsTrait` has become `Pantheon\Terminus\Commands\StructuredDataTrait`. (#1923)
+- `Backup::getUrl()` has been changed to `Backup::getArchiveURL()`. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
@@ -93,6 +108,11 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
 - Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
 - Fixed `site:team:remove` when removing oneself from the team an error is no longer thrown upon success. (#1914)
+
+### Removed
+- Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
+- Removed `TerminusConfig::toArray()`. Use the inherited `TerminusConfig::export()`. (#1923)
+- Removed `Pantheon\Terminus\Friends\RowsOfFieldsInterface` (#1923)
 
 ## 1.9.0 - 2018-09-11
 ### Added

@@ -21,7 +21,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
     public function __construct($attributes, $options = [])
     {
         parent::__construct($attributes, $options);
-        $this->environment = $options['environment'];
+        $this->setEnvironment($options['environment']);
     }
 
     /**
@@ -53,7 +53,7 @@ class Lock extends TerminusModel implements EnvironmentInterface
     public function serialize()
     {
         return [
-            'locked' => $this->isLocked() ? 'true' : 'false',
+            'locked' => $this->isLocked(),
             'username' => $this->get('username'),
             'password' => $this->get('password'),
         ];

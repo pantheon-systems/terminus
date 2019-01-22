@@ -4,16 +4,15 @@ namespace Pantheon\Terminus\Commands\MachineToken;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Friends\RowsOfFieldsInterface;
-use Pantheon\Terminus\Friends\RowsOfFieldsTrait;
+use Pantheon\Terminus\Commands\StructuredListTrait;
 
 /**
  * Class ListCommand
  * @package Pantheon\Terminus\Commands\MachineToken
  */
-class ListCommand extends TerminusCommand implements RowsOfFieldsInterface
+class ListCommand extends TerminusCommand
 {
-    use RowsOfFieldsTrait;
+    use StructuredListTrait;
 
     /**
      * Lists the currently logged-in user's machine tokens.

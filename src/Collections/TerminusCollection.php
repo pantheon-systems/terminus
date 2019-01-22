@@ -142,6 +142,16 @@ abstract class TerminusCollection implements ContainerAwareInterface, RequestAwa
     }
 
     /**
+     * Returns the name of the model class this collection collects
+     *
+     * @return string
+     */
+    public function getCollectedClass()
+    {
+        return $this->collected_class;
+    }
+
+    /**
      * @return array Returns data array
      */
     public function getData()
