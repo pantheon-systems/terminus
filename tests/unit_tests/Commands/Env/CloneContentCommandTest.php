@@ -38,7 +38,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn($this->environment->id);
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->exactly(2))
             ->method('isInitialized')
             ->with()
             ->willReturn(true);
@@ -54,8 +54,8 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Cloning files from {from_name} environment to {target_env} environment'),
-                $this->equalTo(['from_name' => $this->environment->id, 'target_env' => $target_env,])
+                $this->equalTo('Cloning files from {source} environment to {target} environment'),
+                $this->equalTo(['source' => $this->environment->id, 'target' => $this->environment->id,])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
@@ -80,7 +80,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn($this->environment->id);
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->exactly(2))
             ->method('isInitialized')
             ->with()
             ->willReturn(true);
@@ -108,7 +108,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn($this->environment->id);
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->exactly(2))
             ->method('isInitialized')
             ->with()
             ->willReturn(true);
@@ -124,8 +124,8 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Cloning database from {from_name} environment to {target_env} environment'),
-                $this->equalTo(['from_name' => $this->environment->id, 'target_env' => $target_env,])
+                $this->equalTo('Cloning database from {source} environment to {target} environment'),
+                $this->equalTo(['source' => $this->environment->id, 'target' => $this->environment->id,])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
@@ -145,7 +145,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->expects($this->any())
             ->method('getName')
             ->willReturn($this->environment->id);
-        $this->environment->expects($this->once())
+        $this->environment->expects($this->exactly(2))
             ->method('isInitialized')
             ->with()
             ->willReturn(true);
@@ -172,8 +172,8 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Cloning files from {from_name} environment to {target_env} environment'),
-                $this->equalTo(['from_name' => $this->environment->id, 'target_env' => $target_env,])
+                $this->equalTo('Cloning files from {source} environment to {target} environment'),
+                $this->equalTo(['source' => $this->environment->id, 'target' => $this->environment->id,])
             );
         $this->logger->expects($this->at(1))
             ->method('log')->with(
@@ -183,8 +183,8 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(2))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Cloning database from {from_name} environment to {target_env} environment'),
-                $this->equalTo(['from_name' => $this->environment->id, 'target_env' => $target_env,])
+                $this->equalTo('Cloning database from {source} environment to {target} environment'),
+                $this->equalTo(['source' => $this->environment->id, 'target' => $this->environment->id,])
             );
         $this->logger->expects($this->at(3))
             ->method('log')->with(
@@ -196,6 +196,42 @@ class CloneContentCommandTest extends EnvCommandTest
     }
 
     /**
+     * Tests env:clone command when attempting to clone to an uninitialized environment
+     */
+    public function testCloneFilesToUninitialized()
+    {
+        $site_name = 'site-name';
+        $this->environment->id = 'dev';
+        $target_env = 'test';
+
+        $this->environment->expects($this->at(0))
+            ->method('isInitialized')
+            ->with()
+            ->willReturn(true);
+        $this->environment->expects($this->at(1))
+            ->method('isInitialized')
+            ->with()
+            ->willReturn(false);
+        $this->environment->expects($this->never())
+            ->method('cloneFiles');
+        $this->workflow->expects($this->never())
+            ->method('getMessage');
+        $this->logger->expects($this->never(0))
+            ->method('log');
+
+        $this->environment->method('getName')->willReturn($this->environment->id);
+        $this->environment->method('getSite')->willReturn($this->site);
+        $this->site->method('getName')->willReturn($site_name);
+
+        $this->setExpectedException(
+            TerminusException::class,
+            "$site_name's {$this->environment->id} environment cannot be cloned because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
+        );
+
+        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
+    }
+
+    /**
      * Tests env:clone command when attempting to clone from an uninitialized environment
      */
     public function testCloneFilesFromUninitialized()
@@ -204,13 +240,6 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->id = 'dev';
         $target_env = 'test';
 
-        $this->environment->expects($this->any())
-            ->method('getName')
-            ->willReturn($this->environment->id);
-        $this->site->expects($this->once())
-            ->method('getName')
-            ->with()
-            ->willReturn($site_name);
         $this->environment->expects($this->once())
             ->method('isInitialized')
             ->with()
@@ -221,6 +250,10 @@ class CloneContentCommandTest extends EnvCommandTest
             ->method('getMessage');
         $this->logger->expects($this->never(0))
             ->method('log');
+
+        $this->environment->method('getName')->willReturn($this->environment->id);
+        $this->environment->method('getSite')->willReturn($this->site);
+        $this->site->method('getName')->willReturn($site_name);
 
         $this->setExpectedException(
             TerminusException::class,

@@ -7,6 +7,7 @@ use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -84,7 +85,7 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
      * Checks to see whether the indicated environment is initialized and stops the process if it isn't
      *
      * @param Environment $env
-     * @throws TerminusExceptionCHecks Thrown if the passed-in environment is not initialized
+     * @throws TerminusException Thrown if the passed-in environment is not initialized
      */
     private function checkForInitialization(Environment $env)
     {
