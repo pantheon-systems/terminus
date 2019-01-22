@@ -24,7 +24,7 @@ class Plan extends TerminusModel implements SiteInterface
      */
     public function __construct($attributes = null, array $options = [])
     {
-        if (property_exists($attributes, 'attributes')) {
+        if (($attributes !== null) && property_exists($attributes, 'attributes')) {
             $attributes = (object)$attributes->attributes;
         }
         parent::__construct($attributes, $options);

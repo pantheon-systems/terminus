@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\Org\People\ListCommand;
+use Pantheon\Terminus\Models\UserOrganizationMembership;
 
 /**
  * Class ListCommandTest
@@ -17,6 +18,7 @@ class ListCommandTest extends OrgPeopleCommandTest
     protected function setUp()
     {
         parent::setUp();
+        $this->org_user_memberships->method('getCollectedClass')->willReturn(UserOrganizationMembership::class);
 
         $this->command = new ListCommand($this->getConfig());
         $this->command->setLogger($this->logger);

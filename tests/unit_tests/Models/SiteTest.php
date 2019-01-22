@@ -526,7 +526,7 @@ class SiteTest extends ModelTestCase
             'id' => $this->model->id,
             'name' => 'site name',
             'label' => 'site label',
-            'created' => '1991-08-19 22:39:00',
+            'created' => '682641540',
             'framework' => 'framework name',
             'organization' => 'organization name',
             'plan_name' => 'plan name',
@@ -535,11 +535,11 @@ class SiteTest extends ModelTestCase
             'holder_type' => 'holder type',
             'holder_id' => 'holder id',
             'owner' => 'owner id',
-            'frozen' => 'true',
+            'frozen' => true,
             'memberships' => implode(',', $this->model->memberships),
             'tags' => implode(',', $tags),
             'max_num_cdes' => 0,
-            'last_frozen_at' => '2023-04-28 00:25:40',
+            'last_frozen_at' => '1682641540',
         ];
 
         $this->request->expects($this->once())
@@ -551,12 +551,6 @@ class SiteTest extends ModelTestCase
             ->method('ids')
             ->with()
             ->willReturn($tags);
-        $this->config->expects($this->at(0))
-            ->method('formatDatetime')
-            ->willReturn($expected_data['created']);
-        $this->config->expects($this->at(1))
-            ->method('formatDatetime')
-            ->willReturn($expected_data['last_frozen_at']);
         $this->model->setConfig($this->config);
 
         $returned_data = $this->model->fetch()->serialize();

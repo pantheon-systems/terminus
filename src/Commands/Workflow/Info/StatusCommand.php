@@ -9,7 +9,7 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
  * Class StatusCommand
  * @package Pantheon\Terminus\Commands\Workflow\Info
  */
-class StatusCommand extends InfoBaseCommand 
+class StatusCommand extends InfoBaseCommand
 {
     use StructuredListTrait;
 
@@ -40,7 +40,7 @@ class StatusCommand extends InfoBaseCommand
     public function status($site_id, $options = ['id' => null,])
     {
         $workflow = $this->getWorkflow($site_id, $options['id']);
-        $workflow->unset('operations');
+        $workflow->unsetAttribute('operations');
         return $this->getPropertyList($workflow);
     }
 }

@@ -122,6 +122,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->environments = $this->getMockBuilder(Environments::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->environments->method('getCollectedClass')->willReturn(Environment::class);
 
         $this->environments->method('get')
             ->willReturn($this->environment);
@@ -142,6 +143,7 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
         $this->sites = $this->getMockBuilder(Sites::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->sites->method('getCollectedClass')->willReturn(Site::class);
 
         $this->sites->method('get')
             ->willReturn($this->site);

@@ -858,19 +858,16 @@ class EnvironmentTest extends ModelTestCase
         ];
         $expected = [
             'id' => 'dev',
-            'created' => '2016-11-17',
+            'created' => '1479413982',
             'domain' => 'dev-abc.example.com',
-            'onserverdev' => 'false',
-            'locked' => 'false',
-            'initialized' => 'true',
+            'onserverdev' => false,
+            'locked' => false,
+            'initialized' => true,
             'connection_mode' => 'git',
             'php_version' => '7.0',
         ];
         $this->lock->method('isLocked')->willReturn(false);
         $this->configSet(['date_format' => 'Y-m-d',]);
-        $this->config->expects($this->once())
-            ->method('formatDatetime')
-            ->willReturn($expected['created']);
 
         $model = $this->createModel($info);
         $actual = $model->serialize();
@@ -891,19 +888,16 @@ class EnvironmentTest extends ModelTestCase
         ];
         $expected = [
             'id' => 'dev',
-            'created' => '2016-11-17',
+            'created' => '1479413982',
             'domain' => 'dev-abc.example.com',
-            'onserverdev' => 'true',
-            'locked' => 'false',
-            'initialized' => 'true',
+            'onserverdev' => true,
+            'locked' => false,
+            'initialized' => true,
             'connection_mode' => 'sftp',
             'php_version' => '7.0',
         ];
         $this->lock->method('isLocked')->willReturn(false);
         $this->configSet(['date_format' => 'Y-m-d',]);
-        $this->config->expects($this->once())
-            ->method('formatDatetime')
-            ->willReturn($expected['created']);
 
         $model = $this->createModel($info);
         $actual = $model->serialize();

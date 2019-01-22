@@ -7,6 +7,7 @@ use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Org\Upstream\ListCommand;
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\Models\Upstream;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\UnitTests\Commands\Upstream\UpstreamCommandTest;
 
@@ -54,6 +55,7 @@ class ListCommandTest extends UpstreamCommandTest
             ->disableOriginalConstructor()
             ->getMock();
 
+        $upstreams->method('getCollectedClass')->willReturn(Upstream::class);
         $this->user->expects($this->once())
             ->method('getOrganizationMemberships')
             ->with()

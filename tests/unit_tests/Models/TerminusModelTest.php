@@ -29,31 +29,6 @@ class TerminusModelTest extends ModelTestCase
     }
 
     /**
-     * Tests TerminusModel::getDatetime()
-     */
-    public function testGetDatetime()
-    {
-        $happy_kirkday = '2233-03-22';
-        $model_data = (object)[
-            'id' => '123',
-            'missing_datetime' => null,
-            'textual_datetime' => 'March 22, 2233',
-            'unix_datetime' => 8306409600,
-        ];
-        $model = $this->getMockForAbstractClass(TerminusModel::class, [$model_data,]);
-
-        $this->config->expects($this->exactly(2))
-            ->method('formatDatetime')
-            ->with($model_data->unix_datetime)
-            ->willReturn($happy_kirkday);
-        $model->setConfig($this->config);
-
-        $this->assertNull($model->getDatetime('missing_datetime'));
-        $this->assertEquals($happy_kirkday, $model->getDatetime('textual_datetime'));
-        $this->assertEquals($happy_kirkday, $model->getDatetime('unix_datetime'));
-    }
-
-    /**
      * Tests TerminusModel::fetch()
      */
     public function testFetch()

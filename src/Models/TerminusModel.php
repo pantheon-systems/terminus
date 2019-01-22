@@ -17,8 +17,12 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
     use ConfigAwareTrait;
     use RequestAwareTrait;
 
-    const DATE_ATTRIBUTES = [];
     const PRETTY_NAME = 'terminus model';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = [];
     /**
      * @var string
      */
@@ -142,7 +146,7 @@ abstract class TerminusModel implements ConfigAwareInterface, RequestAwareInterf
      *
      * @param string $attribute Name of the attribute key
      */
-    public function unset($attribute)
+    public function unsetAttribute($attribute)
     {
         unset($this->attributes->$attribute);
     }

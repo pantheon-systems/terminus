@@ -25,8 +25,12 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     use ContainerAwareTrait;
     use OrganizationsTrait;
 
-    const DATE_ATTRIBUTES = ['created', 'last_frozen_at',];
     const PRETTY_NAME = 'site';
+
+    /**
+     * @var array
+     */
+    public static $date_attributes = ['created', 'last_frozen_at',];
     /**
      * @var string
      */

@@ -22,7 +22,7 @@ trait StructuredListTrait
     {
         $list = new PropertyList($model->serialize());
         $list = $this->addBooleanRenderer($list);
-        $list = $this->addDatetimeRenderer($list, $model::DATE_ATTRIBUTES);
+        $list = $this->addDatetimeRenderer($list, $model::$date_attributes);
         return $list;
     }
 
@@ -50,7 +50,9 @@ trait StructuredListTrait
         }
 
         $table = new RowsOfFields($data);
-        $date_attributes = $collection->getCollectedClass()::DATE_ATTRIBUTES;
+        $model_name = $collection->getCollectedClass();
+        $model = new $model_name();
+        $date_attributes = $model::$date_attributes;
         $table = $this->addBooleanRenderer($table);
         $table = $this->addDatetimeRenderer($table, $date_attributes);
         return $table;

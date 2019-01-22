@@ -17,6 +17,11 @@ class Backup extends TerminusModel implements EnvironmentInterface
     const PRETTY_NAME = 'backup';
 
     /**
+     * @var array
+     */
+    public static $date_attributes = ['date', 'expiry',];
+
+    /**
      * Determines whether the backup has been completed or not
      *
      * @return boolean True if backup is completed.
@@ -25,11 +30,32 @@ class Backup extends TerminusModel implements EnvironmentInterface
     {
         return (
             ($this->get('size') != 0)
-            && (
-                ($this->get('finish_time') != null)
-                || ($this->get('timestamp') != null)
-            )
+            && ($this->has('finish_time') || $this->has('timestamp'))
         );
+    }
+
+    /**
+     * Gets the URL of a backup's archive
+     *
+     * @return string
+     */
+    public function getArchiveURL()
+    {
+        if (!$this->has('archive_url')) {
+            $env = $this->getEnvironment();
+            $path = sprintf(
+                'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
+                $env->getSite()->id,
+                $env->id,
+                $this->get('folder'),
+                $this->get('type')
+            );
+            // The API makes this is necessary.
+            $options = ['method' => 'post', 'form_params' => ['method' => 'get',],];
+            $response = $this->request()->request($path, $options);
+            $this->set('archive_url', $response['data']->url);
+        }
+        return $this->get('archive_url');
     }
 
     /**
@@ -114,26 +140,6 @@ class Backup extends TerminusModel implements EnvironmentInterface
     }
 
     /**
-     * Gets the URL of a backup
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        $env = $this->getEnvironment();
-        $path = sprintf(
-            'sites/%s/environments/%s/backups/catalog/%s/%s/s3token',
-            $env->getSite()->id,
-            $env->id,
-            $this->get('folder'),
-            $this->get('type')
-        );
-        $options  = ['method' => 'post', 'form_params' => ['method' => 'get',],];
-        $response = $this->request()->request($path, $options);
-        return $response['data']->url;
-    }
-
-    /**
      * Restores this backup
      *
      * @return Workflow
@@ -177,9 +183,10 @@ class Backup extends TerminusModel implements EnvironmentInterface
         return [
             'file'      => $this->get('filename'),
             'size'      => $this->getSizeInMb(),
-            'date'      => $this->getConfig()->formatDatetime($this->getDate()),
-            'expiry'    => $this->getConfig()->formatDatetime($this->getExpiry()),
+            'date'      => $this->getDate(),
+            'expiry'    => $this->getExpiry(),
             'initiator' => $this->getInitiator(),
+            'url'       => $this->get('archive_url'),
         ];
     }
 

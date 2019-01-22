@@ -30,6 +30,7 @@ class ListCommandTest extends CommandTestCase
         $branches_collection->expects($this->once())
             ->method('serialize')
             ->willReturn($branches_info);
+        $branches_collection->method('getCollectedClass')->willReturn(Branch::class);
 
         $this->site->expects($this->once())
             ->method('getBranches')

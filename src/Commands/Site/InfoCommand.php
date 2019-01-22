@@ -9,7 +9,7 @@ use Pantheon\Terminus\Commands\StructuredListTrait;
  * Class InfoCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class InfoCommand extends SiteCommand 
+class InfoCommand extends SiteCommand
 {
     use StructuredListTrait;
 

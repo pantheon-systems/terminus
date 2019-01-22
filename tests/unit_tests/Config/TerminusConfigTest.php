@@ -23,8 +23,8 @@ class TerminusConfigTest extends \PHPUnit_Framework_TestCase
         $a->runSetSourceName('Source A');
         $b->runSetSourceName('Source B');
 
-        $a->fromArray(['foo' => 'bar', 'abc' => 123]);
-        $b->fromArray(['baz' => 'bar', 'abc' => 321]);
+        $a->combine(['foo' => 'bar', 'abc' => 123]);
+        $b->combine(['baz' => 'bar', 'abc' => 321]);
 
         $a->extend($b);
 
@@ -46,7 +46,7 @@ class TerminusConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testFromArray()
     {
-        $this->config->fromArray(['foo' => 'bar', 'abc' => '123']);
+        $this->config->combine(['foo' => 'bar', 'abc' => '123']);
         $this->assertEquals('bar', $this->config->get('foo'));
         $this->assertEquals('123', $this->config->get('abc'));
     }
@@ -62,15 +62,8 @@ class TerminusConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testKeys()
     {
-        $this->config->fromArray(['foo' => 'bar', 'abc' => '123']);
+        $this->config->combine(['foo' => 'bar', 'abc' => '123']);
         $this->assertEquals(['foo', 'abc'], $this->config->keys());
-    }
-
-    public function testToArray()
-    {
-        $this->config->set('foo', 'bar');
-        $this->config->set('abc', '123');
-        $this->assertEquals(['foo' => 'bar', 'abc' => '123'], $this->config->toArray());
     }
 
     public function testSet()

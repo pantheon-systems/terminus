@@ -40,6 +40,8 @@ class InfoCommand extends SingleBackupCommand
     public function info($site_env, array $options = ['file' => null, 'element' => 'all',])
     {
         $backup = $this->getBackup($site_env, $options);
+        // By retrieving the archive URL it will appear in the model's serialize data
+        $backup->getArchiveURL();
         return $this->getPropertyList($backup);
     }
 }

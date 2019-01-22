@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Plan;
 
 use Pantheon\Terminus\Commands\Plan\ListCommand;
+use Pantheon\Terminus\Models\Plan;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\Collections\Plans;
 
@@ -26,6 +27,7 @@ class ListCommandTest extends CommandTestCase
         $plans_collection = $this->getMockBuilder(Plans::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $plans_collection->method('getCollectedClass')->willReturn(Plan::class);
         $plans_collection->expects($this->once())
             ->method('serialize')
             ->willReturn($plans_info);

@@ -25,18 +25,18 @@ class InfoCommandTest extends BackupCommandTest
     {
         parent::setUp();
 
-        $sample_data = [
+        $url = 'https://url.to/backup.tgz';
+        $this->expected_data = [
             'file' => 'file name',
             'size' => 'file size',
             'date' => 459880805,
             'expiry' => 3615640805,
             'initiator' => 'backup initiator',
+            'url' => $url,
         ];
-        $url = 'https://url.to/backup.tgz';
-        $this->expected_data = array_merge($sample_data, compact('url'));
 
-        $this->backup->method('serialize')->willReturn($sample_data);
-        $this->backup->method('getUrl')->willReturn($url);
+        $this->backup->method('getArchiveURL')->willReturn($url);
+        $this->backup->method('serialize')->willReturn($this->expected_data);
 
         $this->command = new InfoCommand($this->sites);
         $this->command->setLogger($this->logger);

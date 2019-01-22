@@ -2,13 +2,11 @@
 
 namespace Pantheon\Terminus\Config;
 
-use Robo\Config\Config as RoboConfig;
-
 /**
  * Class TerminusConfig
  * @package Pantheon\Terminus\Config
  */
-class TerminusConfig extends RoboConfig
+class TerminusConfig extends \Robo\Config\Config
 {
     /**
      * @var string
@@ -24,6 +22,20 @@ class TerminusConfig extends RoboConfig
      * @var string
      */
     protected $source_name = 'Unknown';
+
+    /**
+     * Replaces missing combine function
+     *
+     * @param $array
+     * @return $this TerminusConfig
+     */
+    public function combine($data)
+    {
+        foreach ($data as $key => $val) {
+            $this->set($key, $val);
+        }
+        return $this;
+    }
 
     /**
      * Ensures a directory exists

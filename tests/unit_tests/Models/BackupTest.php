@@ -39,6 +39,22 @@ class BackupTest extends ModelTestCase
         $this->assertFalse($backup->backupIsFinished());
     }
 
+    public function testGetArchiveURL()
+    {
+        $expected = 'https://url.com';
+        $folder = 'xyz_manual';
+        $this->request->expects($this->once())
+            ->method('request')
+            ->with(
+                "sites/abc/environments/dev/backups/catalog/$folder/type/s3token",
+                ['method' => 'post', 'form_params' => ['method' => 'get',],]
+            )
+            ->willReturn(['data' => (object)['url' => $expected,],]);
+
+        $backup = $this->_getBackup(compact('folder'));
+        $this->assertEquals($expected, $backup->getArchiveURL());
+    }
+
     public function testGetBucket()
     {
         $backup = $this->_getBackup();
@@ -116,22 +132,6 @@ class BackupTest extends ModelTestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testGetUrl()
-    {
-        $expected = '**URL**';
-        $folder = 'xyz_manual';
-        $this->request->expects($this->once())
-            ->method('request')
-            ->with(
-                "sites/abc/environments/dev/backups/catalog/$folder/type/s3token",
-                ['method' => 'post', 'form_params' => ['method' => 'get',],]
-            )
-            ->willReturn(['data' => (object)['url' => $expected,],]);
-
-        $backup = $this->_getBackup(compact('folder'));
-        $this->assertEquals($expected, $backup->getUrl());
-    }
-
     public function testRestore()
     {
         $workflow = $this->getMockBuilder(Workflow::class)
@@ -201,21 +201,13 @@ class BackupTest extends ModelTestCase
         $expected = [
             'file' => 'test.tar.gz',
             'size' => '4.3MB',
-            'date' => '2016-11-21',
-            'expiry' => '2016-11-21',
+            'date' => 1479742685,
+            'expiry' => 1479742685,
             'initiator' => 'automated',
+            'url' => null,
         ];
 
         $this->configSet(['date_format' => 'Y-m-d',]);
-        $this->config->expects($this->at(0))
-            ->method('formatDatetime')
-            ->with($backup_data['finish_time'])
-            ->willReturn($expected['date']);
-        $this->config->expects($this->at(1))
-            ->method('formatDatetime')
-            ->with($backup_data['finish_time'])
-            ->willReturn($expected['expiry']);
-
         $backup = $this->_getBackup($backup_data);
 
         $actual = $backup->serialize();

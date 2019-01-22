@@ -95,6 +95,7 @@ All notable changes to this project will be documented in this file. This projec
 - Domain::serialize() 'deletable' attribute has changed from string to boolean. (#1923)
 - Lock::serialize() 'locked' attribute has changed from string to boolean. (#1923)
 - `Pantheon\Terminus\Friends\RowsOfFieldsTrait` has become `Pantheon\Terminus\Commands\StructuredDataTrait`. (#1923)
+- `Backup::getUrl()` has been changed to `Backup::getArchiveURL()`. (#1923)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
