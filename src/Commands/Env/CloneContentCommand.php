@@ -6,6 +6,8 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
@@ -18,6 +20,16 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
 {
     use ContainerAwareTrait;
     use SiteAwareTrait;
+
+    /**
+     * @var Environment
+     */
+    private $source_env;
+    /**
+     * @var Environment
+     */
+    private $target_env;
+
 
     /**
      * Clones database/files from one environment to another environment.
@@ -41,43 +53,90 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
     public function cloneContent($site_env, $target_env, array $options = ['db-only' => false, 'files-only' => false,])
     {
         if (!empty($options['db-only']) && !empty($options['files-only'])) {
-            throw new TerminusException("You cannot specify both --db-only and --files-only");
+            throw new TerminusException('You cannot specify both --db-only and --files-only');
         }
 
-        list($site, $env) = $this->getUnfrozenSiteEnv($site_env);
-        $from_name = $env->getName();
-        $target = $site->getEnvironments()->get($target_env);
-        $to_name = $target->getName();
+        list($site, $this->source_env) = $this->getUnfrozenSiteEnv($site_env);
+        $this->target_env = $site->getEnvironments()->get($target_env);
 
-        $tr = ['from' => $from_name, 'to' => $to_name, 'site' => $site->getName(),];
-        if (!$env->isInitialized()) {
-            throw new TerminusException(
-                "{site}'s {from} environment cannot be cloned because it has not been initialized. Please run `env:deploy {site}.{from}` to initialize it.",
-                $tr
-            );
-        }
-        if (!$this->confirm('Are you sure you want to clone content from {from} to {to} on {site}?', $tr)) {
+        $this->checkForInitialization($this->source_env, 'from');
+        $this->checkForInitialization($this->target_env, 'into');
+        if (!$this->confirm(
+            'Are you sure you want to clone content from {from} to {to} on {site}?',
+            [
+                'from' => $this->source_env->getName(),
+                'site' => $site->getName(),
+                'to' => $this->target_env->getName(),
+            ]
+        )) {
             return;
         }
 
         if (empty($options['db-only'])) {
-            $workflow = $target->cloneFiles($from_name);
-            $this->log()->notice(
-                "Cloning files from {from_name} environment to {target_env} environment",
-                compact(['from_name', 'target_env'])
-            );
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
-            $this->log()->notice($workflow->getMessage());
+            $this->cloneFiles();
         }
 
         if (empty($options['files-only'])) {
-            $workflow = $target->cloneDatabase($from_name);
-            $this->log()->notice(
-                "Cloning database from {from_name} environment to {target_env} environment",
-                compact(['from_name', 'target_env'])
-            );
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
-            $this->log()->notice($workflow->getMessage());
+            $this->cloneDatabase();
         }
+    }
+
+    /**
+     * Checks to see whether the indicated environment is initialized and stops the process if it isn't
+     *
+     * @param Environment $env
+     * @param string $direction "into" or "from" are recommended.
+     * @throws TerminusException Thrown if the passed-in environment is not initialized
+     */
+    private function checkForInitialization(Environment $env, $direction = '')
+    {
+        if (!$env->isInitialized()) {
+            throw new TerminusException(
+                "{site}'s {env} environment cannot be cloned ${direction} because it has not been initialized. Please run `env:deploy {site}.{env}` to initialize it.",
+                ['env' => $env->getName(), 'site' => $env->getSite()->getName(),]
+            );
+        }
+    }
+
+    /**
+     * Emits the cloning notice and clones runs the database cloning
+     */
+    private function cloneDatabase()
+    {
+        $this->emitNotice('database');
+        $this->runClone($this->target_env->cloneDatabase($this->source_env));
+    }
+
+    /**
+     * Emits the cloning notice and clones runs the files cloning
+     */
+    private function cloneFiles()
+    {
+        $this->emitNotice('files');
+        $this->runClone($this->target_env->cloneFiles($this->source_env));
+    }
+
+    /**
+     * Emits the cloning notice
+     *
+     * @param string $element
+     */
+    private function emitNotice($element)
+    {
+        $this->log()->notice(
+            "Cloning ${element} from {source} environment to {target} environment",
+            ['source' => $this->source_env->getName(), 'target' => $this->target_env->getName(),]
+        );
+    }
+
+    /**
+     * Runs the clone workflow with a progress bar
+     *
+     * @param Workflow $workflow
+     */
+    private function runClone(Workflow $workflow)
+    {
+        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->log()->notice($workflow->getMessage());
     }
 }
