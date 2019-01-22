@@ -225,7 +225,7 @@ class CloneContentCommandTest extends EnvCommandTest
 
         $this->setExpectedException(
             TerminusException::class,
-            "$site_name's {$this->environment->id} environment cannot be cloned because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
+            "$site_name's {$this->environment->id} environment cannot be cloned into because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
         );
 
         $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
@@ -257,7 +257,7 @@ class CloneContentCommandTest extends EnvCommandTest
 
         $this->setExpectedException(
             TerminusException::class,
-            "$site_name's {$this->environment->id} environment cannot be cloned because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
+            "$site_name's {$this->environment->id} environment cannot be cloned from because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
         );
 
         $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);

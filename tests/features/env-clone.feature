@@ -40,7 +40,7 @@ Feature: Cloning site content
     When I run "terminus env:clone-content [[test_site_name]].test dev --db-only --yes"
     Then I should get:
     """
-    [[test_site_name]]'s test environment cannot be cloned because it has not been initialized. Please run `env:deploy [[test_site_name]].test` to initialize it.
+    [[test_site_name]]'s test environment cannot be cloned from because it has not been initialized. Please run `env:deploy [[test_site_name]].test` to initialize it.
     """
 
   @vcr env-clone-to-uninitialized.yml
@@ -48,5 +48,5 @@ Feature: Cloning site content
     When I run "terminus env:clone-content [[test_site_name]].test live --db-only --yes"
     Then I should get:
     """
-    [[test_site_name]]'s live environment cannot be cloned because it has not been initialized. Please run `env:deploy [[test_site_name]].live` to initialize it.
+    [[test_site_name]]'s live environment cannot be cloned into because it has not been initialized. Please run `env:deploy [[test_site_name]].live` to initialize it.
     """

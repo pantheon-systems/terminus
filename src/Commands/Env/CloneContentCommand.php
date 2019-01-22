@@ -59,8 +59,8 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
         list($site, $this->source_env) = $this->getUnfrozenSiteEnv($site_env);
         $this->target_env = $site->getEnvironments()->get($target_env);
 
-        $this->checkForInitialization($this->source_env);
-        $this->checkForInitialization($this->target_env);
+        $this->checkForInitialization($this->source_env, 'from');
+        $this->checkForInitialization($this->target_env, 'into');
         if (!$this->confirm(
             'Are you sure you want to clone content from {from} to {to} on {site}?',
             [
@@ -85,13 +85,14 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
      * Checks to see whether the indicated environment is initialized and stops the process if it isn't
      *
      * @param Environment $env
+     * @param string $direction "into" or "from" are recommended.
      * @throws TerminusException Thrown if the passed-in environment is not initialized
      */
-    private function checkForInitialization(Environment $env)
+    private function checkForInitialization(Environment $env, $direction = '')
     {
         if (!$env->isInitialized()) {
             throw new TerminusException(
-                "{site}'s {env} environment cannot be cloned because it has not been initialized. Please run `env:deploy {site}.{env}` to initialize it.",
+                "{site}'s {env} environment cannot be cloned ${direction} because it has not been initialized. Please run `env:deploy {site}.{env}` to initialize it.",
                 ['env' => $env->getName(), 'site' => $env->getSite()->getName(),]
             );
         }
