@@ -143,7 +143,7 @@ class Sites extends APICollection implements SessionAwareInterface
     /**
      * Filters sites list by upstream
      *
-     * @param string $upstream An upstream to filter by
+     * @param string $upstream_id An upstream to filter by
      * @return Sites
      */
     public function filterByUpstream($upstream_id)
