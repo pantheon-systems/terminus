@@ -195,15 +195,15 @@ class EnvironmentTest extends ModelTestCase
     {
         $this->setUpWorkflowOperationTest(
             'cloneDatabase',
-            ['stage',],
+            [$this->model,],
             'clone_database',
-            ['from_environment' => 'stage',]
+            ['from_environment' => 'dev',]
         );
         $this->setUpWorkflowOperationTest(
             'cloneDatabase',
-            ['prod',],
+            [$this->model,],
             'clone_database',
-            ['from_environment' => 'prod',]
+            ['from_environment' => 'dev',]
         );
     }
 
@@ -211,15 +211,15 @@ class EnvironmentTest extends ModelTestCase
     {
         $this->setUpWorkflowOperationTest(
             'cloneFiles',
-            ['stage',],
+            [$this->model,],
             'clone_files',
-            ['from_environment' => 'stage',]
+            ['from_environment' => 'dev',]
         );
         $this->setUpWorkflowOperationTest(
             'cloneFiles',
-            ['prod',],
+            [$this->model,],
             'clone_files',
-            ['from_environment' => 'prod',]
+            ['from_environment' => 'dev',]
         );
     }
 
