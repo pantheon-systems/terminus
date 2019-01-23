@@ -46,7 +46,7 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
         // If the user specified a region, then include it in the workflow
         // options. We'll allow the API to decide whether the region is valid.
         if (isset($options['region'])) {
-            $workflow_options['region'] = $options['region'];
+            $workflow_options['preferred_zone'] = $this->lookupRegionShortcut($options['region']);
         }
         $user = $this->session()->getUser();
 
@@ -71,5 +71,29 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
             $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
             $this->log()->notice('Deployed CMS');
         }
+    }
+
+    /**
+     * The user may choose to select a very general or a very specific
+     * region. We will always pass a specific region to the API.
+     *
+     * The API may choose to reject the request or relocate it to a
+     * similar nearby region if the specifically-requested region is not
+     * available.
+     */
+    protected function lookupRegionShortcut($region)
+    {
+        $region = strtolower($region);
+
+        $regionShortcuts = [
+            'eu' => 'europe-west4',
+            'europe-west' => 'europe-west4',
+        ];
+
+        if (isset($regionShortcuts[$region])) {
+            return $regionShortcuts[$region];
+        }
+
+        return $region;
     }
 }
