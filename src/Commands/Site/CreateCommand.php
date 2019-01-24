@@ -45,9 +45,9 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
         ];
         // If the user specified a region, then include it in the workflow
         // options. We'll allow the API to decide whether the region is valid.
-        if (isset($options['region'])) {
-            $workflow_options['preferred_zone'] = $options['region'];
-        }
+        $region = isset($options['region']) ? $options['region'] : $this->config->get('command_site_options_region');
+        $workflow_options['preferred_zone'] = $region;
+
         $user = $this->session()->getUser();
 
         // Locate upstream
