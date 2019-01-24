@@ -64,6 +64,7 @@ All notable changes to this project will be documented in this file. This projec
 - A progess bar has been added to the process portion of `remote:wp`. (#1910)
 - A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
 - Added the TerminusConfig::formatDatetime() function in order to use the configuration to format datetimes.  (#1923)
+- Added the --region flag to `site:create`. (#1932)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
