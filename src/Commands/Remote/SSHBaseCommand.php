@@ -6,6 +6,8 @@ use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
@@ -26,13 +28,13 @@ abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareI
      */
     protected $command = '';
     /**
-     * @var Site
-     */
-    private $site;
-    /**
      * @var Environment
      */
     private $environment;
+    /**
+     * @var Site
+     */
+    private $site;
 
     /**
      * Define the environment and site properties
@@ -53,7 +55,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareI
      */
     protected function executeCommand(array $command_args)
     {
-        $this->validateEnvironment($this->site, $this->environment);
+        $this->validateEnvironment($this->environment);
 
         $command_summary = $this->getCommandSummary($command_args);
         $command_line = $this->getCommandLine($command_args);
@@ -83,7 +85,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareI
         if ($this->getConfig()->get('test_mode')) {
             return $this->divertForTestMode($ssh_command);
         }
-        return $this->getContainer()->get(LocalMachineHelper::class)->execInteractive(
+        return $this->getContainer()->get(LocalMachineHelper::class)->execute(
             $ssh_command,
             $this->getOutputCallback()
         );
@@ -92,10 +94,9 @@ abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareI
     /**
      * Validates that the environment's connection mode is appropriately set
      *
-     * @param Site $site
      * @param Environment $environment
      */
-    protected function validateEnvironment($site, $environment)
+    protected function validateEnvironment($environment)
     {
         // Only warn in dev / multidev
         if ($environment->isDevelopment()) {
