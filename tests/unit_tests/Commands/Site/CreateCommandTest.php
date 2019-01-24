@@ -5,12 +5,13 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
@@ -73,10 +74,11 @@ class CreateCommandTest extends CommandTestCase
             ->getMock();
         $this->upstream->id = 'upstream_id';
 
-        $this->command = new CreateCommand($this->getConfig());
+        $this->command = new CreateCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
+        $this->command->setConfig($this->config);
         $this->expectWorkflowProcessing();
     }
 
