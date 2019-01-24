@@ -17,6 +17,7 @@ Feature: View site information
       Label
       Created
       Framework
+      Region
       Organization
       Plan
       Upstream
@@ -38,6 +39,7 @@ Feature: View site information
       Label
       Created
       Framework
+      Region
       Organization
       Plan
       Upstream
