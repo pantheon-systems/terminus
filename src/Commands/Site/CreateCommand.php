@@ -26,12 +26,14 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
      * @param string $label Site label
      * @param string $upstream_id Upstream name or UUID
      * @option org Organization name, label, or ID
+     * @option region Specify the service region where the site should be
+     *   created. See documentation for valid regions.
      *
      * @usage <site> <label> <upstream> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>.
      * @usage <site> <label> <upstream> --org=<org> Creates a new site named <site>, human-readably labeled <label>, using code from <upstream>, associated with <organization>.
      */
 
-    public function create($site_name, $label, $upstream_id, $options = ['org' => null,])
+    public function create($site_name, $label, $upstream_id, $options = ['org' => null, 'region' => null,])
     {
         if ($this->sites()->nameIsTaken($site_name)) {
             throw new TerminusException('The site name {site_name} is already taken.', compact('site_name'));
@@ -39,8 +41,15 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
 
         $workflow_options = [
             'label' => $label,
-            'site_name' => $site_name
+            'site_name' => $site_name,
         ];
+        // If the user specified a region, then include it in the workflow
+        // options. We'll allow the API to decide whether the region is valid.
+        $region = isset($options['region']) ? $options['region'] : $this->config->get('command_site_options_region');
+        if ($region) {
+            $workflow_options['preferred_zone'] = $region;
+        }
+
         $user = $this->session()->getUser();
 
         // Locate upstream
