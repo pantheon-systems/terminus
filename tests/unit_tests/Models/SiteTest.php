@@ -540,6 +540,7 @@ class SiteTest extends ModelTestCase
             'tags' => implode(',', $tags),
             'max_num_cdes' => 0,
             'last_frozen_at' => '1682641540',
+            'region' => null,
         ];
 
         $this->request->expects($this->once())
