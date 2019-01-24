@@ -26,6 +26,7 @@ class InfoCommand extends SiteCommand
      *     label: Label
      *     created: Created
      *     framework: Framework
+     *     region: Region
      *     organization: Organization
      *     plan_name: Plan
      *     max_num_cdes: Max Multidevs
