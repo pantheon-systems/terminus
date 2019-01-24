@@ -104,7 +104,7 @@ class CreateCommandTest extends CommandTestCase
         $this->expectUpstreams();
         $this->sites->expects($this->once())
             ->method('create')
-            ->with($this->equalTo(['site_name' => $site_name, 'label' => $label,]))
+            ->with($this->equalTo(['site_name' => $site_name, 'label' => $label, 'preferred_zone' => 'eu']))
             ->willReturn($workflow);
         $this->logger->expects($this->at(0))
             ->method('log')
@@ -134,7 +134,7 @@ class CreateCommandTest extends CommandTestCase
                 $this->equalTo('Deployed CMS')
             );
 
-        $out = $this->command->create($site_name, $label, 'upstream');
+        $out = $this->command->create($site_name, $label, 'upstream', ['org' => null, 'region' => 'eu']);
         $this->assertNull($out);
     }
 
