@@ -33,9 +33,6 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
      */
     private $workflow_operations;
 
-    // @TODO: Make this configurable.
-    const POLLING_PERIOD = 3;
-
     /**
      * Object constructor
      *
@@ -250,44 +247,6 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
             'started_at' => $this->get('started_at'),
             'operations' => $this->getOperations()->serialize(),
         ];
-    }
-
-    /**
-     * Waits on this workflow to finish
-     *
-     * @deprecated 1.0.0 Use while($workflow->checkProgress) instead
-     *
-     * @return Workflow|void
-     * @throws TerminusException
-     *
-     * @deprecated 1.0.1 Use checkProgress to wait on workflows
-     */
-    public function wait()
-    {
-        while (!$this->isFinished()) {
-            $this->fetch();
-            sleep(self::POLLING_PERIOD);
-            /**
-             * TODO: Output this to stdout so that it doesn't get mixed with any
-             *   actual output. We can't use the logger here because that might be
-             *   redirected to a log file where each line is timestamped.
-             */
-            fwrite(STDERR, '.');
-        }
-        echo "\n";
-        if ($this->isSuccessful()) {
-            return $this;
-        } else {
-            $final_task = $this->get('final_task');
-            if (($final_task != null) && !empty($final_task->messages)) {
-                foreach ($final_task->messages as $data => $message) {
-                    if (!is_string($message->message)) {
-                        $message->message = print_r($message->message, true);
-                    }
-                    throw new TerminusException((string)$message->message);
-                }
-            }
-        }
     }
 
     /**

@@ -119,6 +119,8 @@ All notable changes to this project will be documented in this file. This projec
 - Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
 - Removed `TerminusConfig::toArray()`. Use the inherited `TerminusConfig::export()`. (#1923)
 - Removed `Pantheon\Terminus\Friends\RowsOfFieldsInterface` (#1923)
+- Removed deprecated `Workflow::wait` (#1937)
+- Removed const `Workflow::POLLING_PERIOD`. Please use `TERMINUS_HTTP_RETRY_DELAY_MS` (#1937)
 
 ## 1.9.0 - 2018-09-11
 ### Added
