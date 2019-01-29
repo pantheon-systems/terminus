@@ -18,7 +18,7 @@ class Plans extends SiteOwnedCollection
     /**
      * @var string
      */
-    protected $url = 'sites/{site_id}/plans';
+    protected $url = 'accounts/site-account-forwarding/{site_id}/plans';
 
     /**
      * Sets the site's plan to the plan indicated.
