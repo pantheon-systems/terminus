@@ -97,7 +97,7 @@
 -
     request:
         method: GET
-        url: 'https://onebox/api/sites/11111111-1111-1111-1111-111111111111/plans'
+        url: 'https://onebox/api/accounts/site-account-forwarding/11111111-1111-1111-1111-111111111111/plans'
         headers:
             Host: onebox
             Accept-Encoding: null

@@ -101,6 +101,7 @@ All notable changes to this project will be documented in this file. This projec
 - Changed Environment::cloneDatabase() to accept an Environment object. (#1930)
 - Changed Environment::cloneFiles() to accept an Environment object. (#1930)
 - The target environment used in `env:clone-content` is now checked for initialization prior to cloning. (#1930)
+- Updated Plans collection URL `accounts/site-account-forwarding/{site_id}/plans`. (#)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
