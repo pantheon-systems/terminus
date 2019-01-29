@@ -36,6 +36,11 @@ EOT;
     const UPDATE_VARS_COLOR = "\e[38;5;45m";
 
     /**
+     * @var boolean
+     */
+    private $should_check_for_updates;
+
+    /**
      * @param DataStoreInterface $data_store
      */
     public function __construct(DataStoreInterface $data_store)
@@ -68,16 +73,29 @@ EOT;
     }
 
     /**
+     * Stores information on whether or not Terminus should check for updates
+     *
+     * @param boolean $status True to check for updates
+     */
+    public function setCheckForUpdates($status)
+    {
+        $this->should_check_for_updates = $status;
+    }
+
+    /**
      * Avoid running the update checker in instances where the output might
      * interfere with scripts.
      */
     private function shouldCheckForUpdates()
     {
-        // Also skip the update check whenever output is redirected.
-        if (function_exists('posix_isatty')) {
-            return (posix_isatty(STDOUT) && posix_isatty(STDIN));
+        if (empty($this->should_check_for_updates)) {
+            if (!function_exists('posix_isatty')) {
+                $this->setCheckForUpdates(true);
+            } else {
+                $this->setCheckForUpdates(posix_isatty(STDOUT) && posix_isatty(STDIN));
+            }
         }
-        return true;
+        return $this->should_check_for_updates;
     }
 
     /**

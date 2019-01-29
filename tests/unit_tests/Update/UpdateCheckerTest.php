@@ -100,6 +100,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -133,6 +134,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -167,6 +169,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -201,7 +204,21 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo('Terminus has no saved release information.')
             );
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
+    }
+
+    /**
+     * Ensures that the checker does not run when inappropriate and that the
+     * state can be changed by using setCheckForUpdates
+     */
+    public function testShouldCheckForUpdates()
+    {
+        $out = $this->update_checker->run();
+        $this->assertNull($out);
+
+        $this->update_checker->setCheckForUpdates(true);
+        $this->testClientIsUpToDate();
     }
 }
