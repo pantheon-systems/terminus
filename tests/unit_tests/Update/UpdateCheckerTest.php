@@ -100,6 +100,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -133,6 +134,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -167,6 +169,7 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }
@@ -201,6 +204,47 @@ class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo('Terminus has no saved release information.')
             );
 
+        $this->update_checker->setCheckForUpdates(true);
+        $out = $this->update_checker->run();
+        $this->assertNull($out);
+    }
+
+    /**
+     * Ensures that the checker does not run when inappropriate and that the
+     * state can be changed by using setCheckForUpdates
+     */
+    public function testShouldCheckForUpdates()
+    {
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->markTestSkipped("Windows CI doesn't have the necessary extensions.");
+        }
+
+        $running_version_num = '1.0.0-beta.2';
+
+        $this->config->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('version'))
+            ->willReturn($running_version_num);
+        $this->container->expects($this->once())
+            ->method('get')
+            ->with(
+                $this->equalTo(LatestRelease::class),
+                $this->equalTo([$this->data_store,])
+            )
+            ->willReturn($this->latest_release);
+        $this->latest_release->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('version'))
+            ->will($this->throwException(new TerminusNotFoundException()));
+        $this->logger->expects($this->once())
+            ->method('debug')
+            ->with(
+                $this->equalTo('Terminus has no saved release information.')
+            );
+        $out = $this->update_checker->run();
+        $this->assertNull($out);
+
+        $this->update_checker->setCheckForUpdates(true);
         $out = $this->update_checker->run();
         $this->assertNull($out);
     }

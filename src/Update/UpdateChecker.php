@@ -28,12 +28,17 @@ class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, Da
     const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update';
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
-You are currently using version v{running_version}. 
+You are currently using version v{running_version}.
 You can update Terminus by running `composer update` or using the Terminus installer:
 {update_command}
 EOT;
     const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
     const UPDATE_VARS_COLOR = "\e[38;5;45m";
+
+    /**
+     * @var boolean
+     */
+    private $should_check_for_updates;
 
     /**
      * @param DataStoreInterface $data_store
@@ -45,6 +50,9 @@ EOT;
 
     public function run()
     {
+        if (!$this->shouldCheckForUpdates()) {
+            return;
+        }
         $running_version = $this->getRunningVersion();
         try {
             $latest_version = $this->getContainer()->get(LatestRelease::class, [$this->getDataStore(),])->get('version');
@@ -62,6 +70,32 @@ EOT;
                 'update_command' => self::UPDATE_VARS_COLOR . self::UPDATE_COMMAND,
             ]);
         }
+    }
+
+    /**
+     * Stores information on whether or not Terminus should check for updates
+     *
+     * @param boolean $status True to check for updates
+     */
+    public function setCheckForUpdates($status)
+    {
+        $this->should_check_for_updates = $status;
+    }
+
+    /**
+     * Avoid running the update checker in instances where the output might
+     * interfere with scripts.
+     */
+    private function shouldCheckForUpdates()
+    {
+        if (empty($this->should_check_for_updates)) {
+            if (!function_exists('posix_isatty')) {
+                $this->setCheckForUpdates(true);
+            } else {
+                $this->setCheckForUpdates(posix_isatty(STDOUT) && posix_isatty(STDIN));
+            }
+        }
+        return $this->should_check_for_updates;
     }
 
     /**

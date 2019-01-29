@@ -108,7 +108,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $status_code = $this->runner->run($input, $output, null, $this->commands);
         if (!empty($cassette) && !empty($mode)) {
             $this->stopVCR();
-        } else {
+        } elseif ($input->isInteractive()) {
             $this->runUpdateChecker();
         }
         return $status_code;
