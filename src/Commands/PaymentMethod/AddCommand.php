@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\PaymentMethod;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class AddCommand
  * @package Pantheon\Terminus\Commands\PaymentMethod
  */
-class AddCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Associates an existing payment method with a site.
@@ -35,8 +33,7 @@ class AddCommand extends TerminusCommand implements ContainerAwareInterface, Sit
     {
         $site = $this->getSite($site_name);
         $pm = $this->session()->getUser()->getPaymentMethods()->fetch()->get($payment_method);
-        $workflow = $site->addPaymentMethod($pm->id);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($site->addPaymentMethod($pm->id));
         $this->log()->notice(
             '{method} has been applied to the {site} site.',
             ['method' => $pm->get('label'), 'site' => $site->get('name'),]

@@ -2,17 +2,15 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class CreateCommand
  * @package Pantheon\Terminus\Commands\Backup
  */
-class CreateCommand extends BackupCommand implements ContainerAwareInterface
+class CreateCommand extends BackupCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Creates a backup of a specific site and environment.
@@ -34,7 +32,7 @@ class CreateCommand extends BackupCommand implements ContainerAwareInterface
     {
         list(, $env) = $this->getUnfrozenSiteEnv($site_env);
         $options['element'] = isset($options['element']) ? $this->getElement($options['element']) : null;
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $env->getBackups()->create($options),])->cycle();
+        $this->processWorkflow($env->getBackups()->create($options));
         $this->log()->notice('Created a backup of the {env} environment.', ['env' => $env->id,]);
     }
 }

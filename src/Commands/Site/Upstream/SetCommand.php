@@ -2,19 +2,17 @@
 
 namespace Pantheon\Terminus\Commands\Site\Upstream;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\Site\SiteCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class SetCommand extends SiteCommand implements ContainerAwareInterface
+class SetCommand extends SiteCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Changes a site's upstream.
@@ -50,8 +48,7 @@ class SetCommand extends SiteCommand implements ContainerAwareInterface
             );
         }
 
-        $workflow = $site->setUpstream($upstream->id);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($site->setUpstream($upstream->id));
         $this->log()->notice('Set upstream for {site} to {upstream}', $msg_params);
     }
 }

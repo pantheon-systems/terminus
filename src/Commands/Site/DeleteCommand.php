@@ -2,17 +2,15 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class DeleteCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class DeleteCommand extends SiteCommand implements ContainerAwareInterface
+class DeleteCommand extends SiteCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Deletes a site from Pantheon.
@@ -35,7 +33,7 @@ class DeleteCommand extends SiteCommand implements ContainerAwareInterface
 
         $workflow = $site->delete();
         try {
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $this->processWorkflow($workflow);
             $message = $workflow->getMessage();
         } catch (\Exception $e) {
             if ($e->getCode() !== 404) {

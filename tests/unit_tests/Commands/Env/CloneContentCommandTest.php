@@ -23,6 +23,7 @@ class CloneContentCommandTest extends EnvCommandTest
     {
         parent::setUp();
         $this->command = new CloneContentCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);

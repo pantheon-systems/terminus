@@ -3,6 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Site\DeleteCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
@@ -48,6 +49,7 @@ class DeleteCommandTest extends CommandTestCase
             ->willReturn($this->site_name);
 
         $this->command = new DeleteCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
@@ -111,14 +113,15 @@ class DeleteCommandTest extends CommandTestCase
     public function testDeleteErrs()
     {
         $this->expectConfirmation();
-        $this->expectWorkflowProcessing();
+        $this->expectConfigHTTPRetry();
+        $this->expectContainerRetrieval();
         $this->site->expects($this->once())
             ->method('delete')
             ->with()
             ->willReturn($this->workflow);
         $this->progress_bar->method('cycle')
-            ->will($this->throwException(new \Exception($this->message, 403)));
-        $this->setExpectedException(\Exception::class, $this->message);
+            ->will($this->throwException(new TerminusException($this->message, 403)));
+        $this->setExpectedException(TerminusException::class, $this->message);
         $this->logger->expects($this->never())
             ->method('log');
 

@@ -23,6 +23,7 @@ class EnableCommandTest extends NewRelicCommandTest
         parent::setUp();
 
         $this->command = new EnableCommand();
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();

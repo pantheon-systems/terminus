@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Plan;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Plan
  */
-class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Changes a site's plan.
@@ -36,7 +34,7 @@ class SetCommand extends TerminusCommand implements ContainerAwareInterface, Sit
         $plans = $site->getPlans();
         $workflow = $plans->set($plans->get($plan_id));
         $this->log()->notice('Setting plan of "{site_id}" to "{plan_id}".', compact('site_id', 'plan_id'));
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

@@ -21,6 +21,7 @@ class CommitCommandTest extends EnvCommandTest
     {
         parent::setUp();
         $this->command = new CommitCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environment->id = 'dev';

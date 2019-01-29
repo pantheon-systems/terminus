@@ -28,6 +28,7 @@ class ClearCacheCommandTest extends CommandTestCase
         $this->command = new ClearCacheCommand($this->getConfig());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setContainer($this->getContainer());
         $this->expectWorkflowProcessing();
     }
 

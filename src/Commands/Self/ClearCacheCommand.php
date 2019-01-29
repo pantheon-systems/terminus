@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Self;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
@@ -11,10 +9,8 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
  * Class ClearCacheCommand
  * @package Pantheon\Terminus\Commands\Self
  */
-class ClearCacheCommand extends TerminusCommand implements ContainerAwareInterface
+class ClearCacheCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
-
     /**
      * Clears the local Terminus command cache.
      *

@@ -1,10 +1,11 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Commands\Site;
+namespace Pantheon\Terminus\UnitTests\Commands\Site\Upstream;
 
 use Pantheon\Terminus\Collections\SiteAuthorizations;
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Commands\Site\Upstream\SetCommand;
+use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\SiteAuthorization;
 use Pantheon\Terminus\Models\SiteUpstream;
@@ -28,6 +29,10 @@ class SetCommandTest extends CommandTestCase
      * @var SiteAuthorization
      */
     protected $authorizations;
+    /**
+     * @var TerminusConfig
+     */
+    protected $config;
     /**
      * @var Session
      */
@@ -62,8 +67,6 @@ class SetCommandTest extends CommandTestCase
      */
     protected function setup()
     {
-        parent::setUp();
-
         $this->authorizations = $this->getMockBuilder(SiteAuthorizations::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -85,12 +88,15 @@ class SetCommandTest extends CommandTestCase
         $this->site_upstream->id = 'Site upstream ID';
         $this->upstream_data = ['framework' => 'Framework', 'id' => 'upstream_id', 'label' => 'Upstream Name',];
 
+        parent::setUp();
+
         $this->site->expects($this->once())
             ->method('getAuthorizations')
             ->with()
             ->willReturn($this->authorizations);
 
         $this->command = new SetCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);

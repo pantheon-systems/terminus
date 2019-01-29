@@ -24,6 +24,7 @@ class ApplyCommandTest extends UpdatesCommandTest
         parent::setUp();
 
         $this->command = new ApplyCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();

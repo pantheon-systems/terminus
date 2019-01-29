@@ -23,6 +23,7 @@ class RestoreCommandTest extends BackupCommandTest
     {
         parent::setUp();
         $this->command = new RestoreCommand($this->sites);
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);

@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands\Remote;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
@@ -18,9 +16,8 @@ use Symfony\Component\Process\ProcessUtils;
  * Base class for Terminus commands that deal with sending SSH commands
  * @package Pantheon\Terminus\Commands\Remote
  */
-abstract class SSHBaseCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
 
     /**

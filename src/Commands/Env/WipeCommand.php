@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,10 +12,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Testing class for Pantheon\Terminus\Commands\Env\WipeCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class WipeCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class WipeCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Deletes all files and database content in the environment.
@@ -46,7 +44,7 @@ class WipeCommand extends TerminusCommand implements ContainerAwareInterface, Si
             'Wiping the "{env}" environment of "{site}"',
             ['site' => $site->get('name'), 'env' => $env->id,]
         );
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

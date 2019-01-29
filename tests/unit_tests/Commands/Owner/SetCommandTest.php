@@ -39,6 +39,7 @@ class SetCommandTest extends CommandTestCase
         $this->site->method('getUserMemberships')->willReturn($this->user_memberships);
 
         $this->command = new SetCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();

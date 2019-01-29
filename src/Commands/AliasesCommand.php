@@ -2,14 +2,10 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
-class AliasesCommand extends TerminusCommand implements ContainerAwareInterface
+class AliasesCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
-
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *

@@ -33,6 +33,7 @@ class DatabaseCommandTest extends CommandTestCase
             ->getMock();
 
         $this->command = new DatabaseCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);

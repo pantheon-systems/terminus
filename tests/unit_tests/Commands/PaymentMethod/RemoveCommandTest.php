@@ -23,6 +23,7 @@ class RemoveCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->expectWorkflowProcessing();

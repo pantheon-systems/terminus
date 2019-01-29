@@ -2,18 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Org\People;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class RoleCommand
  * @package Pantheon\Terminus\Commands\Org\People
  */
-class RoleCommand extends TerminusCommand implements ContainerAwareInterface
+class RoleCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Changes a user's role within an organization.
@@ -33,8 +31,7 @@ class RoleCommand extends TerminusCommand implements ContainerAwareInterface
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
-        $workflow = $membership->setRole($role);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($membership->setRole($role));
         $this->log()->notice(
             "{member}'s role has been changed to {role} in the {org} organization.",
             [

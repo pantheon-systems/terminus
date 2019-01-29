@@ -2,11 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -14,10 +12,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class DeployCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class DeployCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class DeployCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Deploys code to the Test or Live environment.
@@ -76,7 +74,7 @@ class DeployCommand extends TerminusCommand implements ContainerAwareInterface, 
         } else {
             $workflow = $env->initializeBindings();
         }
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

@@ -36,6 +36,7 @@ class RemoveCommandTest extends TeamCommandTest
             ->willReturn($this->workflow);
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->expectWorkflowProcessing();

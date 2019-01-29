@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Site\Team;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Site\Team
  */
-class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Removes a user from a site's team.
@@ -35,7 +33,7 @@ class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, 
     {
         $workflow = $this->getSite($site_id)->getUserMemberships()->get($member)->delete();
         try {
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $this->processWorkflow($workflow);
             $message = $workflow->getMessage();
         } catch (\Exception $e) {
             if ($e->getCode() !== 404) {

@@ -106,7 +106,18 @@ abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if (!$this->config) {
-            $this->config = new TerminusConfig();
+            $this->setConfig(
+                $this->getMockBuilder(TerminusConfig::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
+        }
+        if (!$this->container) {
+            $this->setContainer(
+                $this->getMockBuilder(Container::class)
+                    ->disableOriginalConstructor()
+                    ->getMock()
+            );
         }
 
         // These are not used by every test but are useful for SiteAwareInterface commands. Which is a lot of them.

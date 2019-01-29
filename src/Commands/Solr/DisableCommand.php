@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Solr;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class DisableCommand
  * @package Pantheon\Terminus\Commands\Solr
  */
-class DisableCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class DisableCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Disables Solr add-on for a site.
@@ -35,7 +33,7 @@ class DisableCommand extends TerminusCommand implements ContainerAwareInterface,
         $site->getSolr()->disable();
         $this->log()->notice('Solr disabled. Converging bindings.');
         $workflow = $site->converge();
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

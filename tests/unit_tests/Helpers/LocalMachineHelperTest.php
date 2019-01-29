@@ -16,6 +16,10 @@ class LocalMachineHelperTest extends \PHPUnit_Framework_TestCase
      */
     protected $config;
     /**
+     * @var Container
+     */
+    protected $container;
+    /**
      * @var InputInterface
      */
     protected $input;
@@ -96,7 +100,7 @@ class LocalMachineHelperTest extends \PHPUnit_Framework_TestCase
         };
 
         $this->input->method('isInteractive')->willReturn(false);
-        $this->config->expects($this->never())
+        $this->config->expects($this->once())
             ->method('get')
             ->with('timeout')
             ->willReturn(55);
