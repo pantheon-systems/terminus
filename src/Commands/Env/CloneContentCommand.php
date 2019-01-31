@@ -41,17 +41,29 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
      * @param string $site_env Origin site & environment in the format `site-name.env`
      * @param string $target_env Target environment
      * @param array $options
+     * @option bool $cc Whether or not to clear caches
      * @option bool $db-only Only clone database
      * @option bool $files-only Only clone files
+     * @option bool $updatedb Update the Drupal database
      *
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      *
      * @usage <site>.<env> <target_env> Clones database and files from <site>'s <env> environment to <target_env> environment.
+     * @usage <site>.<env> <target_env> --cc Clones from <site>'s <env> environment to <target_env> environment and clears the database.
      * @usage <site>.<env> <target_env> --db-only Clones only the database from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --files-only Clones only files from <site>'s <env> environment to <target_env> environment.
+     * @usage <site>.<env> <target_env> --updatedb Clones from <site>'s <env> environment to <target_env> environment and updates the Drupal database (if applicable).
      */
-    public function cloneContent($site_env, $target_env, array $options = ['db-only' => false, 'files-only' => false,])
-    {
+    public function cloneContent(
+        $site_env,
+        $target_env,
+        array $options = [
+            'cc' => false,
+            'db-only' => false,
+            'files-only' => false,
+            'updatedb' => false,
+        ]
+    ) {
         if (!empty($options['db-only']) && !empty($options['files-only'])) {
             throw new TerminusException('You cannot specify both --db-only and --files-only');
         }
@@ -77,7 +89,7 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
         }
 
         if (empty($options['files-only'])) {
-            $this->cloneDatabase();
+            $this->cloneDatabase($options);
         }
     }
 
@@ -100,11 +112,19 @@ class CloneContentCommand extends TerminusCommand implements ContainerAwareInter
 
     /**
      * Emits the cloning notice and clones runs the database cloning
+     *
+     * @param array $options Options to be sent to the API
+     *    boolean cc Whether or not to clear caches
+     *    boolean updatedb Update the Drupal database
      */
-    private function cloneDatabase()
+    private function cloneDatabase(array $options)
     {
+        $params = [
+            'clear_cache' => $options['cc'],
+            'updatedb' => $options['updatedb'],
+        ];
         $this->emitNotice('database');
-        $this->runClone($this->target_env->cloneDatabase($this->source_env));
+        $this->runClone($this->target_env->cloneDatabase($this->source_env, $params));
     }
 
     /**
