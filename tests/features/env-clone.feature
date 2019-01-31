@@ -12,11 +12,11 @@ Feature: Cloning site content
     When I run "terminus env:clone-content [[test_site_name]].test dev --yes"
     Then I should get:
     """
-    Cloned files from "test" to "dev"
+    Cloning files from "test" to "dev"
     """
     Then I should get:
     """
-    Cloned database from "test" to "dev"
+    Cloning database from "test" to "dev"
     """
 
   @vcr env-clone.yml
@@ -24,7 +24,7 @@ Feature: Cloning site content
     When I run "terminus env:clone-content [[test_site_name]].test dev --files-only --yes"
     Then I should get:
     """
-    Cloned files from "test" to "dev"
+    Cloning files from "test" to "dev"
     """
 
   @vcr env-clone.yml
@@ -32,7 +32,7 @@ Feature: Cloning site content
     When I run "terminus env:clone-content [[test_site_name]].test dev --db-only --yes"
     Then I should get:
     """
-    Cloned database from "test" to "dev"
+    Cloning database from "test" to "dev"
     """
 
   @vcr env-clone-from-uninitialized.yml

@@ -66,6 +66,8 @@ All notable changes to this project will be documented in this file. This projec
 - Added the TerminusConfig::formatDatetime() function in order to use the configuration to format datetimes.  (#1923)
 - Added the --region flag to `site:create`. (#1932)
 - Add site region to site:info and site:list (#1933)
+- Added options array parameter to `Environment::cloneDatabase` accepting `clear_cache` and `updatedb`. (#1940)
+- Added options to `env:clone-content` accepting `cc` and `updatedb` both defaulting to false. (#1940)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)

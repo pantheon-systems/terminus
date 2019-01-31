@@ -119,6 +119,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->expectConfirmation();
         $this->environment->expects($this->once())
             ->method('cloneDatabase')
+            ->with($this->environment, ['clear_cache' => false, 'updatedb' => false,])
             ->willReturn($this->workflow);
         $this->workflow->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $this->logger->expects($this->at(0))
@@ -133,7 +134,7 @@ class CloneContentCommandTest extends EnvCommandTest
                 $this->equalTo('successful workflow')
             );
 
-        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['db-only' => true,]);
+        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['cc' => false, 'db-only' => true, 'updatedb' => false,]);
     }
 
     public function testCloneAll()
@@ -167,6 +168,7 @@ class CloneContentCommandTest extends EnvCommandTest
             ->getMock();
         $this->environment->expects($this->once())
             ->method('cloneDatabase')
+            ->with($this->environment, ['clear_cache' => false, 'updatedb' => false,])
             ->willReturn($worlflow2);
         $worlflow2->expects($this->once())->method('getMessage')->willReturn('successful workflow');
         $this->logger->expects($this->at(0))

@@ -9,7 +9,7 @@ default:
               user_id:                 '11111111-1111-1111-1111-111111111111'
               username:                'devuser@pantheon.io'
               host:                    'onebox'
-              verify_host_cert:        false
+              verifyhost_cert:         false
               dashboard_host:          'dashboard.pantheon.io'
               vcr_mode:                'none'
               test_site_name:          'behat-tests'

@@ -144,11 +144,17 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      * Clones database from this environment to another
      *
      * @param Environment $from_env An object representing the environment to clone
+     * @param array $options Options to be sent to the API
+     *    boolean clear_cache Whether or not to clear caches
+     *    boolean updatedb Update the Drupal database
      * @return Workflow
      */
-    public function cloneDatabase(Environment $from_env)
+    public function cloneDatabase(Environment $from_env, array $options = [])
     {
-        $params = ['from_environment' => $from_env->getName(),];
+        if (isset($options['updatedb'])) {
+            $options['updatedb'] = (integer)$options['updatedb'];
+        }
+        $params = array_merge(['from_environment' => $from_env->getName(),], $options);
         return $this->getWorkflows()->create('clone_database', compact('params'));
     }
 
