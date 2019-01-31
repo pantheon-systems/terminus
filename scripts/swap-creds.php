@@ -28,21 +28,21 @@ if (($_SERVER['argc'] !== 4) || in_array('--help', $args)) {
 
 list($script, $fixture_file, $old_creds_file, $new_creds_file) = $args;
 
-die(str_replace(
-    getConfig($old_creds_file),
+die(swapData(
+    sortList(getConfig($old_creds_file)),
     getConfig($new_creds_file),
     getFile($fixture_file)
 ));
 
 /**
- * Retrieves the config file, parses it, and sorts it for replacement use
+ * Retrieves the config file and parses it for replacement use
  *
  * @param string $file_name Name of the configuration file
  * @return array Context configuration parameters found in the given file
  */
 function getConfig($file_name)
 {
-    return sortList(getConfigData(getFile($file_name)));
+    return getConfigData(getFile($file_name));
 }
 
 /**
@@ -83,8 +83,23 @@ function getFile($file_name)
  */
 function sortList(array $list)
 {
+    $original_list = $list;
     usort($list, function($a, $b) {
         return strlen($b) <=> strlen($a);
     });
-    return $list;
+    $sorted_list = [];
+    foreach ($list as $value) {
+        $sorted_list[array_search($value, $original_list)] = $value;
+    }
+    return $sorted_list;
+}
+
+function swapData(array $old_data, array $new_data, $fixture)
+{
+    foreach($old_data as $key => $value) {
+        if (isset($new_data[$key])) {
+            $fixture = str_replace($value, $new_data[$key], $fixture);
+        }
+    }
+    return $fixture;
 }
