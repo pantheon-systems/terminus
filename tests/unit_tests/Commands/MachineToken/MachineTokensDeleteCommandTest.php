@@ -55,25 +55,6 @@ class MachineTokenDeleteCommandTest extends MachineTokenCommandTest
     }
 
     /**
-     * Tests the machine-token:delete command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testMachineTokenDeleteConfirmationDecline()
-    {
-        $this->machine_tokens->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('123'))
-            ->willReturn($this->token);
-        $this->expectConfirmation(false);
-        $this->token->expects($this->never())
-            ->method('delete');
-
-        $out = $this->command->delete('123');
-        $this->assertNull($out);
-    }
-
-    /**
      * Tests the machine-token:delete command when there are no tokens.
      */
     public function testMachineTokenDeleteNonExistant()

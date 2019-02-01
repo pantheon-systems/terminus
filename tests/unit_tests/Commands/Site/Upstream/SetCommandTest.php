@@ -101,6 +101,7 @@ class SetCommandTest extends CommandTestCase
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
         $this->command->setSession($this->session);
+        $this->command->setOutput($this->output);
         $this->expectWorkflowProcessing();
 
         $this->workflow = $this->getMockBuilder(Workflow::class)
@@ -149,35 +150,6 @@ class SetCommandTest extends CommandTestCase
               $this->equalTo('Set upstream for {site} to {upstream}'),
               $this->equalTo(['site' => $site_name, 'upstream' => $this->upstream_data['label']])
           );
-
-        $out = $this->command->set($site_name, $upstream_id);
-        $this->assertNull($out);
-    }
-
-  /**
-   * Exercises the site:upstream:set command when declining the confirmation
-   *
-   * @todo Remove this when removing TerminusCommand::confirm()
-   */
-    public function testSetConfirmationDecline()
-    {
-        $site_name = 'my-site';
-        $upstream_id = $this->upstream_data['id'];
-
-        $this->expectGetUpstream($upstream_id);
-
-        $this->authorizations->expects($this->once())
-            ->method('can')
-            ->with('switch_upstream')
-            ->willReturn(true);
-        $this->site->expects($this->never())
-            ->method('getUpstream');
-        $this->logger->expects($this->never())
-          ->method('log');
-
-        $this->expectConfirmation(false);
-        $this->site->expects($this->never())
-        ->method('setUpstream');
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);

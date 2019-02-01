@@ -67,39 +67,6 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
     }
 
-    /**
-     * Tests CloneContentCommand::cloneContent when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testCloneFilesConfirmationDecline()
-    {
-        $site_name = 'site-name';
-        $this->environment->id = 'dev';
-        $target_env = 'test';
-
-        $this->environment->expects($this->any())
-            ->method('getName')
-            ->willReturn($this->environment->id);
-        $this->environment->expects($this->exactly(2))
-            ->method('isInitialized')
-            ->with()
-            ->willReturn(true);
-        $this->site->expects($this->once())
-            ->method('getName')
-            ->with()
-            ->willReturn($site_name);
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('cloneFiles');
-        $this->workflow->expects($this->never())
-            ->method('getMessage');
-        $this->logger->expects($this->never())
-            ->method('log');
-
-        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
-    }
-
     public function testCloneDatabase()
     {
         $site_name = 'site-name';

@@ -72,27 +72,4 @@ class FilesCommandTest extends CommandTestCase
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);
     }
-
-    /**
-     * Exercises import:files command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testImportConfirmationDecline()
-    {
-        $site_name = 'site_name';
-        $this->environment->id = 'env_id';
-        $valid_url = 'a_valid_url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('importFiles');
-        $this->site->expects($this->never())
-            ->method('get');
-        $this->logger->expects($this->never())
-            ->method('log');
-
-        $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
-        $this->assertNull($out);
-    }
 }

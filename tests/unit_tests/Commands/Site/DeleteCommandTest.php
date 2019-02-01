@@ -113,32 +113,15 @@ class DeleteCommandTest extends CommandTestCase
     public function testDeleteErrs()
     {
         $this->expectConfirmation();
-        $this->expectConfigHTTPRetry();
+        $this->expectInteractiveInput();
         $this->expectContainerRetrieval();
         $this->site->expects($this->once())
             ->method('delete')
             ->with()
             ->willReturn($this->workflow);
-        $this->progress_bar->method('cycle')
-            ->will($this->throwException(new TerminusException($this->message, 403)));
-        $this->setExpectedException(TerminusException::class, $this->message);
-        $this->logger->expects($this->never())
-            ->method('log');
-
-        $out = $this->command->delete($this->site_name);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Exercises the site:delete command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testDeleteConfirmationDecline()
-    {
-        $this->expectConfirmation(false);
-        $this->site->expects($this->never())
-            ->method('delete');
+        $this->getProgressBar()->method('cycle')
+            ->will($this->throwException(new \Exception($this->message, 403)));
+        $this->setExpectedException(\Exception::class, $this->message);
         $this->logger->expects($this->never())
             ->method('log');
 

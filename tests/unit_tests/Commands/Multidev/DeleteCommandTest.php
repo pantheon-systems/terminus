@@ -25,7 +25,9 @@ class DeleteCommandTest extends MultidevCommandTest
 
         $this->environment->method('delete')->willReturn($this->workflow);
 
-        $this->command = new DeleteCommand($this->getConfig());
+        $this->command = new DeleteCommand();
+        $this->command->setConfig($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);
@@ -50,25 +52,6 @@ class DeleteCommandTest extends MultidevCommandTest
                 $this->equalTo("Deleted the multidev environment {env}."),
                 $this->equalTo(['env' => $this->environment->id,])
             );
-
-        $out = $this->command->deleteMultidev("site.{$this->environment->id}");
-        $this->assertNull($out);
-    }
-
-    /**
-     * Tests the multidev:create command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testMultidevDeleteConfirmationDecline()
-    {
-        $this->environment->id = 'multipass';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('delete');
-        $this->logger->expects($this->never())
-            ->method('log');
 
         $out = $this->command->deleteMultidev("site.{$this->environment->id}");
         $this->assertNull($out);

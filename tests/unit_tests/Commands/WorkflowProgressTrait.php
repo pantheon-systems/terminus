@@ -2,9 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands;
 
-use League\Container\Container;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\TerminusProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
@@ -43,6 +41,26 @@ trait WorkflowProgressTrait
     }
 
     /**
+     * Sets the test up to expect interactivity
+     */
+    public function expectInteractiveInput()
+    {
+        $this->input->method('isInteractive')
+            ->with()
+            ->willReturn(true);
+    }
+
+    /**
+     * Sets the test up to expect non-interactivity
+     */
+    public function expectNonInteractiveInput()
+    {
+        $this->input->method('isInteractive')
+            ->with()
+            ->willReturn(false);
+    }
+
+    /**
      * Sets the test up to expect the progress bar cycling
      */
     public function expectProgressBarCycling()
@@ -53,13 +71,44 @@ trait WorkflowProgressTrait
     }
 
     /**
+     * Sets the test up to expect the workflow to fetch
+     */
+    public function expectWorkflowFetching()
+    {
+        $this->workflow->method('fetch')
+            ->with()
+            ->willReturn($this->workflow);
+    }
+
+    /**
+     * Sets the test up to expect the workflow to say it is finished
+     */
+    public function expectWorkflowFinishing()
+    {
+        $this->workflow->method('isFinished')
+            ->with()
+            ->willReturn(true);
+    }
+
+    /**
      * Sets the test up to expect the usual set of processes involved with workflow cycling
      */
     public function expectWorkflowProcessing()
     {
-        $this->expectConfigHTTPRetry();
+        $this->expectInteractiveInput();
         $this->expectContainerRetrieval();
         $this->expectProgressBarCycling();
+    }
+
+    /**
+     * Sets the test up to expect the usual set of processes involved with workflow cycling
+     */
+    public function expectNonInteractiveWorkflowProcessing()
+    {
+        $this->expectNonInteractiveInput();
+        $this->expectConfigHTTPRetry();
+        $this->expectWorkflowFetching();
+        $this->expectWorkflowFinishing();
     }
 
     /**

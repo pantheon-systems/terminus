@@ -65,25 +65,6 @@ class SiteCommandTest extends CommandTestCase
     }
 
     /**
-     * Exercises site:import command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testSiteImportConfirmationDecline()
-    {
-        $url = 'a-valid-url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('import');
-        $this->logger->expects($this->never())
-            ->method('log');
-
-        $out = $this->command->import('dummy-site', $url);
-        $this->assertNull($out);
-    }
-
-    /**
      * Exercises site:import command with an invalid URL
      */
     public function testSiteImportInvalidURL()
