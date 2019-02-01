@@ -116,6 +116,8 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `import:files` by switching from using the `import_files` workflow to `do_import`. (#1909)
 - Fixed `site:upstream:set` to appropriately reject attempted changes by unauthorized users. (#1913)
 - Fixed `site:team:remove` when removing oneself from the team an error is no longer thrown upon success. (#1914)
+- Fixed `TERMINUS_ENV` environment var. (#1917)
+- Fixed `TERMINUS_SITE` environment var. (#1917)
 
 ### Removed
 - Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
