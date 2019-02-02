@@ -2,18 +2,15 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
 
-class ViewCommand extends TerminusCommand implements SiteAwareInterface, ContainerAwareInterface
+class ViewCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
-    use ContainerAwareTrait;
 
     /**
      * Displays the URL for the environment or opens the environment in a browser.

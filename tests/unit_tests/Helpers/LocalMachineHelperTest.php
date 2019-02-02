@@ -16,6 +16,10 @@ class LocalMachineHelperTest extends \PHPUnit_Framework_TestCase
      */
     protected $config;
     /**
+     * @var Container
+     */
+    protected $container;
+    /**
      * @var InputInterface
      */
     protected $input;
@@ -66,7 +70,47 @@ class LocalMachineHelperTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests the LocalMachineHelper::execInteractive($command) function
+     * Tests the LocalMachineHelper::execute($command, $callback) function when interactive
+     */
+    public function testExecuteWhenInteractive()
+    {
+        $command = 'ls';
+        $callback = function () {
+            return null;
+        };
+
+        $this->input->method('isInteractive')->willReturn(true);
+        $this->config->expects($this->once())
+            ->method('get')
+            ->with('timeout')
+            ->willReturn(55);
+
+        $output = $this->local_machine->execute($command, $callback);
+        $this->assertEquals(0, $output['exit_code']);
+    }
+
+    /**
+     * Tests the LocalMachineHelper::execute($command, $callback) function when not interactive
+     */
+    public function testExecuteWhenNotInteractive()
+    {
+        $command = 'ls';
+        $callback = function () {
+            return null;
+        };
+
+        $this->input->method('isInteractive')->willReturn(false);
+        $this->config->expects($this->once())
+            ->method('get')
+            ->with('timeout')
+            ->willReturn(55);
+
+        $output = $this->local_machine->execute($command, $callback);
+        $this->assertEquals(0, $output['exit_code']);
+    }
+
+    /**
+     * Tests the LocalMachineHelper::execInteractive($command, $callback) function
      */
     public function testExecInteractive()
     {

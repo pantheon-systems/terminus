@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Owner;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
@@ -14,10 +12,10 @@ use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Owner
  */
-class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Change the owner of a site
@@ -41,8 +39,7 @@ class SetCommand extends TerminusCommand implements ContainerAwareInterface, Sit
                 'The new owner must be added with "terminus site:team:add" before promoting.'
             );
         }
-        $workflow = $site->setOwner($user->id);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($site->setOwner($user->id));
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
             ['user' => $user->getName(), 'site' => $site->getName(),]

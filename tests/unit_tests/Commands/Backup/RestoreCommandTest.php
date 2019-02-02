@@ -23,6 +23,7 @@ class RestoreCommandTest extends BackupCommandTest
     {
         parent::setUp();
         $this->command = new RestoreCommand($this->sites);
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->command->setInput($this->input);
@@ -204,36 +205,6 @@ class RestoreCommandTest extends BackupCommandTest
         );
 
         $out = $this->command->restoreBackup("$site_name.{$this->environment->id}", compact('element'));
-        $this->assertNull($out);
-    }
-
-
-    /**
-     * Tests the backup:restore command when the confirmation is declined
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testRestoreBackupConfirmationDecline()
-    {
-        $this->environment->id = 'env_id';
-        $test_filename = 'test.tar.gz';
-
-        $this->backups->expects($this->once())
-            ->method('getBackupByFileName')
-            ->with($test_filename)
-            ->willReturn($this->backup);
-        $this->expectConfirmation(false);
-
-        $this->backup->expects($this->never())
-            ->method('restore');
-        $this->workflow->expects($this->never())
-            ->method('wait');
-        $this->workflow->expects($this->never())
-            ->method('isSuccessful');
-        $this->logger->expects($this->never())
-            ->method('log');
-
-        $out = $this->command->restoreBackup("mysite.{$this->environment->id}", ['file' => $test_filename,]);
         $this->assertNull($out);
     }
 }

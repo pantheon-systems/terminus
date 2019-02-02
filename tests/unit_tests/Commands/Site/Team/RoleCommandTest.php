@@ -24,6 +24,7 @@ class RoleCommandTest extends TeamCommandTest
         $this->command = new RoleCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
+        $this->command->setContainer($this->getContainer());
         $this->expectWorkflowProcessing();
     }
 

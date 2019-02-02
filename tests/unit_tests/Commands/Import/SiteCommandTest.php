@@ -34,6 +34,7 @@ class SiteCommandTest extends CommandTestCase
             ->getMock();
 
         $this->command = new SiteCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
@@ -58,25 +59,6 @@ class SiteCommandTest extends CommandTestCase
                 $this->equalTo('notice'),
                 $this->equalTo('Imported site onto Pantheon')
             );
-
-        $out = $this->command->import('dummy-site', $url);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Exercises site:import command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testSiteImportConfirmationDecline()
-    {
-        $url = 'a-valid-url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-            ->method('import');
-        $this->logger->expects($this->never())
-            ->method('log');
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);

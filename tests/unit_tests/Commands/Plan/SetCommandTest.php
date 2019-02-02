@@ -28,6 +28,7 @@ class SetCommandTest extends CommandTestCase
         $this->command = new SetCommand();
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
+        $this->command->setContainer($this->getContainer());
         $this->expectWorkflowProcessing();
     }
 

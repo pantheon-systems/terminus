@@ -22,6 +22,7 @@ class DeployCommandTest extends EnvCommandTest
     {
         parent::setUp();
         $this->command = new DeployCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->expectWorkflowProcessing();

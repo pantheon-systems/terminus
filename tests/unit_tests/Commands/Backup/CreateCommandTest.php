@@ -22,6 +22,7 @@ class CreateCommandTest extends BackupCommandTest
     {
         parent::setUp();
         $this->command = new CreateCommand($this->sites);
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->expectWorkflowProcessing();

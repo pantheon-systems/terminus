@@ -2,18 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Org\People;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class AddCommand
  * @package Pantheon\Terminus\Commands\Org\People
  */
-class AddCommand extends TerminusCommand implements ContainerAwareInterface
+class AddCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Adds a user to an organization.
@@ -32,8 +30,7 @@ class AddCommand extends TerminusCommand implements ContainerAwareInterface
     public function add($organization, $email, $role)
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
-        $workflow = $org->getUserMemberships()->create($email, $role);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($org->getUserMemberships()->create($email, $role));
         $this->log()->notice(
             '{email} has been added to the {org} organization as a(n) {role}.',
             ['email' => $email, 'org' => $org->getName(), 'role' => $role,]

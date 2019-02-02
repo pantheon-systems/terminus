@@ -38,8 +38,23 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     public function exec($cmd)
     {
         $process = $this->getProcess($cmd);
-        $this->getProgressBar($process)->cycle();
+        $process->run();
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
+    }
+
+    /**
+     * Executes the given command on the local machine either interactively or not based on config.
+     *
+     * @param string $cmd The command to execute
+     * @param callable $callback A function to run while waiting for the process to complete
+     * @return array The command output and exit_code
+     */
+    public function execute($cmd, $callback = null)
+    {
+        if ($this->input()->isInteractive()) {
+            return $this->execInteractive($cmd, $callback);
+        }
+        return $this->exec($cmd);
     }
 
     /**

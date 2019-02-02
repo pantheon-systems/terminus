@@ -33,6 +33,7 @@ class DatabaseCommandTest extends CommandTestCase
             ->getMock();
 
         $this->command = new DatabaseCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setInput($this->input);
@@ -61,30 +62,6 @@ class DatabaseCommandTest extends CommandTestCase
               $this->equalTo('notice'),
               $this->equalTo('Imported database to {site}.{env}.')
           );
-
-        $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
-        $this->assertNull($out);
-    }
-
-    /**
-     * Exercises import:database command when declining the confirmation
-     *
-     * @todo Remove this when removing TerminusCommand::confirm()
-     */
-    public function testImportConfirmationDecline()
-    {
-        $site_name = 'site_name';
-        $this->environment->id = 'env_id';
-        $valid_url = 'a_valid_url';
-
-        $this->expectConfirmation(false);
-        $this->environment->expects($this->never())
-          ->method('importDatabase');
-        $this->site->expects($this->once())
-            ->method('isFrozen')
-            ->willReturn(false);
-        $this->logger->expects($this->never())
-          ->method('log');
 
         $out = $this->command->import("$site_name.{$this->environment->id}", $valid_url);
         $this->assertNull($out);

@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
@@ -11,10 +9,8 @@ use Pantheon\Terminus\Helpers\LocalMachineHelper;
  * Class ArtCommand
  * @package Pantheon\Terminus\Commands
  */
-class ArtCommand extends TerminusCommand implements ContainerAwareInterface
+class ArtCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
-
     /**
      * @var array
      */

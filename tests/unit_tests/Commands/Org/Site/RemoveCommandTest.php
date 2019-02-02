@@ -54,6 +54,7 @@ class RemoveCommandTest extends OrgSiteCommandTest
             ->willReturn($this->org_site_memberships);
 
         $this->command = new RemoveCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);

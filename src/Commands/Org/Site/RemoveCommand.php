@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Org\Site;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Org\Site
  */
-class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Removes a site from an organization.
@@ -35,8 +33,7 @@ class RemoveCommand extends TerminusCommand implements ContainerAwareInterface, 
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getSiteMemberships()->get($site);
-        $workflow = $membership->delete();
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($membership->delete());
         $this->log()->notice(
             '{site} has been removed from the {org} organization.',
             ['site' => $membership->getSite()->getName(), 'org' => $org->getName(),]

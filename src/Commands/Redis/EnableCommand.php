@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Redis;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class EnableCommand
  * @package Pantheon\Terminus\Commands\Redis
  */
-class EnableCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class EnableCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Enables Redis add-on for a site.
@@ -35,7 +33,7 @@ class EnableCommand extends TerminusCommand implements ContainerAwareInterface, 
         $site->getRedis()->enable();
         $this->log()->notice('Redis enabled. Converging bindings.');
         $workflow = $site->converge();
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
     }
 }

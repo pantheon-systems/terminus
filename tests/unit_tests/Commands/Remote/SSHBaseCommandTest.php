@@ -122,7 +122,7 @@ class SSHBaseCommandTest extends CommandTestCase
             ->with()
             ->willReturn($sftp_info);
         $this->local_machine_helper->expects($this->once())
-            ->method('execInteractive')
+            ->method('execute')
             ->willReturn($return_data);
         $this->logger->expects($this->once())
             ->method('log')

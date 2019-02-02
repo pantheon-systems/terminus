@@ -22,6 +22,7 @@ class CreateCommandTest extends MultidevCommandTest
         parent::setUp();
 
         $this->command = new CreateCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
         $this->environments->method('create')->willReturn($this->workflow);

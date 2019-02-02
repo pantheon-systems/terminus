@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Env;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 
@@ -13,10 +11,10 @@ use Pantheon\Terminus\Site\SiteAwareTrait;
  * Class CommitCommand
  * @package Pantheon\Terminus\Commands\Env
  */
-class CommitCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class CommitCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Commits code changes on a development environment.
@@ -50,8 +48,7 @@ class CommitCommand extends TerminusCommand implements ContainerAwareInterface, 
             return;
         }
 
-        $workflow = $env->commitChanges($options['message']);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($env->commitChanges($options['message']));
         $this->log()->notice('Your code was committed.');
     }
 }

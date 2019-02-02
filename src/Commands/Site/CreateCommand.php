@@ -2,18 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Site;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**
  * Class CreateCommand
  * @package Pantheon\Terminus\Commands\Site
  */
-class CreateCommand extends SiteCommand implements ContainerAwareInterface
+class CreateCommand extends SiteCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Creates a new site.
@@ -64,13 +62,12 @@ class CreateCommand extends SiteCommand implements ContainerAwareInterface
         // Create the site
         $this->log()->notice('Creating a new site...');
         $workflow = $this->sites()->create($workflow_options);
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($workflow);
 
         // Deploy the upstream
         if ($site = $this->getSite($workflow->get('waiting_for_task')->site_id)) {
             $this->log()->notice('Deploying CMS...');
-            $workflow = $site->deployProduct($upstream->id);
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $this->processWorkflow($site->deployProduct($upstream->id));
             $this->log()->notice('Deployed CMS');
         }
     }

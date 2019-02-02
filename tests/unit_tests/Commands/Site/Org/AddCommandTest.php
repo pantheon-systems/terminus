@@ -40,6 +40,7 @@ class AddCommandTest extends OrgSiteCommandTest
             ->willReturn('my-site');
 
         $this->command = new AddCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);

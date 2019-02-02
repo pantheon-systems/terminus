@@ -25,8 +25,7 @@ class SetCommandTest extends CommandTestCase
         parent::setUp();
 
         $this->command = new SetCommand($this->getConfig());
-
-        // use the basic mocks from CommandTestCase
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();

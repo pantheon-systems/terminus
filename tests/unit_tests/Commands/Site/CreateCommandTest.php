@@ -78,8 +78,8 @@ class CreateCommandTest extends CommandTestCase
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->command->setSession($this->session);
-        $this->command->setConfig($this->config);
-        $this->expectWorkflowProcessing();
+        $this->command->setConfig($this->getConfig());
+        $this->command->setContainer($this->getContainer());
     }
 
     /**
@@ -113,6 +113,7 @@ class CreateCommandTest extends CommandTestCase
                 $this->equalTo('Creating a new site...')
             );
 
+        $this->expectWorkflowProcessing();
         $workflow->expects($this->once())
             ->method('get')
             ->with($this->equalTo('waiting_for_task'))
@@ -150,6 +151,7 @@ class CreateCommandTest extends CommandTestCase
             ->with($this->equalTo($site_name))
             ->willReturn(true);
 
+        $this->expectWorkflowProcessing();
         $this->setExpectedException(TerminusException::class, "The site name $site_name is already taken.");
 
         $out = $this->command->create($site_name, $site_name, 'upstream');
@@ -214,6 +216,13 @@ class CreateCommandTest extends CommandTestCase
                 $this->equalTo('notice'),
                 $this->equalTo('Creating a new site...')
             );
+
+        $this->config->expects($this->at(0))
+            ->method('get')
+            ->with('command_site_options_region')
+            ->willReturn(null);
+        $this->expectContainerRetrieval();
+        $this->expectProgressBarCycling();
 
         $workflow->expects($this->once())
             ->method('get')

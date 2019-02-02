@@ -24,6 +24,7 @@ class ClearCacheCommandTest extends EnvCommandTest
         parent::setUp();
 
         $this->command = new ClearCacheCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSites($this->sites);
         $this->command->setLogger($this->logger);
         $this->expectWorkflowProcessing();

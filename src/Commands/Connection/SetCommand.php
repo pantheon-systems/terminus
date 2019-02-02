@@ -2,10 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Connection;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Pantheon\Terminus\Exceptions\TerminusException;
@@ -14,10 +12,10 @@ use Pantheon\Terminus\Exceptions\TerminusException;
  * Class SetCommand
  * @package Pantheon\Terminus\Commands\Connection
  */
-class SetCommand extends TerminusCommand implements ContainerAwareInterface, SiteAwareInterface
+class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
-    use ContainerAwareTrait;
     use SiteAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).
@@ -48,7 +46,7 @@ class SetCommand extends TerminusCommand implements ContainerAwareInterface, Sit
         if (is_string($workflow)) {
             $this->log()->notice($workflow);
         } else {
-            $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+            $this->processWorkflow($workflow);
             $this->log()->notice($workflow->getMessage());
         }
     }

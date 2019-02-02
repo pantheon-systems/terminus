@@ -72,6 +72,7 @@ class AddCommandTest extends CommandTestCase
             ->willReturn($this->payment_methods);
 
         $this->command = new AddCommand($this->getConfig());
+        $this->command->setContainer($this->getContainer());
         $this->command->setSession($this->session);
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);

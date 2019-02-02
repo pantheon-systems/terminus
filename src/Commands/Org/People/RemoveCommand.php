@@ -2,18 +2,16 @@
 
 namespace Pantheon\Terminus\Commands\Org\People;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
+use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
 
 /**
  * Class RemoveCommand
  * @package Pantheon\Terminus\Commands\Org\People
  */
-class RemoveCommand extends TerminusCommand implements ContainerAwareInterface
+class RemoveCommand extends TerminusCommand
 {
-    use ContainerAwareTrait;
+    use WorkflowProcessingTrait;
 
     /**
      * Removes a user from an organization.
@@ -32,8 +30,7 @@ class RemoveCommand extends TerminusCommand implements ContainerAwareInterface
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $membership = $org->getUserMemberships()->fetch()->get($member);
-        $workflow = $membership->delete();
-        $this->getContainer()->get(WorkflowProgressBar::class, [$this->output, $workflow,])->cycle();
+        $this->processWorkflow($membership->delete());
         $this->log()->notice(
             '{member} has been removed from the {org} organization.',
             ['member' => $membership->getUser()->getName(), 'org' => $org->getName(),]
