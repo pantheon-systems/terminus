@@ -297,6 +297,46 @@ class ListCommandTest extends CommandTestCase
     }
 
     /**
+     * Tests the site:list command when filtering for plan name
+     */
+    public function testListByPlanName()
+    {
+        $dummy_info = [
+            'name' => 'my-site',
+            'id' => 'site_id',
+            'plan_name' => 'Basic',
+            'framework' => 'cms',
+            'owner' => 'user_id',
+            'created' => '1984-07-28 16:40',
+            'memberships' => 'org_id: org_url',
+        ];
+        $plan_name = 'Sandbox';
+
+        $this->sites->expects($this->once())
+            ->method('fetch')
+            ->with($this->equalTo(['org_id' => null, 'team_only' => false,]))
+            ->willReturn($this->sites);
+        $this->sites->expects($this->once())
+            ->method('filterByPlanName')
+            ->with($this->equalTo($plan_name))
+            ->willReturn($this->sites);
+        $this->sites->expects($this->never())
+            ->method('filterByName');
+        $this->sites->expects($this->never())
+            ->method('filterByOwner');
+        $this->sites->expects($this->once())
+            ->method('serialize')
+            ->with()
+            ->willReturn(['a' => $dummy_info, 'b' =>  $dummy_info,]);
+        $this->logger->expects($this->never())
+            ->method('log');
+
+        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'plan' => $plan_name,]);
+        $this->assertInstanceOf(RowsOfFields::class, $out);
+        $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
+    }
+
+    /**
      * Tests the site:list command when the user has no sites
      */
     public function testListNoSites()

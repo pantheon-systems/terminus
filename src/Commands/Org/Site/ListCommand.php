@@ -37,15 +37,20 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @return RowsOfFields
      *
      * @param string $organization Organization name, label, or ID
+     * @option plan Plan filter; filter by the plan's label
      * @option string $tag Tag name to filter
      *
      * @usage <organization> Displays the list of sites associated with <organization>.
+     * @usage <organization> --plan=<plan> Displays the list of sites associated with <organization> having the plan named <plan>.
      * @usage <organization> --tag=<tag> Displays the list of sites associated with <organization> that have the <tag> tag.
      */
-    public function listSites($organization, $options = ['tag' => null,])
+    public function listSites($organization, $options = ['plan' => null, 'tag' => null,])
     {
         $org = $this->session()->getUser()->getOrganizationMemberships()->get($organization)->getOrganization();
         $this->sites->fetch(['org_id' => $org->id,]);
+        if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
+            $this->sites->filterByPlanName($plan);
+        }
         if (!is_null($tag = $options['tag'])) {
             $this->sites->filterByTag($tag);
         }

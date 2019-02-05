@@ -68,6 +68,9 @@ All notable changes to this project will be documented in this file. This projec
 - Add site region to site:info and site:list (#1933)
 - Added options array parameter to `Environment::cloneDatabase` accepting `clear_cache` and `updatedb`. (#1940)
 - Added options to `env:clone-content` accepting `cc` and `updatedb` both defaulting to false. (#1940)
+- Added `--plan` option to `site:list` to filter the site list by plan name. (#1944)
+- Added `--plan` option to `org:site:list` to filter the organizational site list by plan name. (#1944)
+- Added `Sites::filterByPlanName(string)` function to filter the site models by their `plan_name` attribute. (#1944)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
