@@ -32,7 +32,7 @@ class Upstream extends TerminusModel implements OrganizationInterface
      */
     public function getReferences()
     {
-        return [$this->id, $this->get('label'), $this->get('machine_name'),];
+        return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
     }
 
     /**
