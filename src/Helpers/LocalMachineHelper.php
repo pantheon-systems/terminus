@@ -10,6 +10,7 @@ use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
@@ -35,10 +36,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $cmd The command to execute
      * @return array The command output and exit_code
      */
-    public function exec($cmd)
+    public function exec($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
-        $process->run();
+        $process->run($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
     }
 
@@ -54,7 +55,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         if ($this->input()->isInteractive()) {
             return $this->execInteractive($cmd, $callback);
         }
-        return $this->exec($cmd);
+        return $this->exec($cmd, $callback);
     }
 
     /**
