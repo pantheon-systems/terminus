@@ -222,3 +222,14 @@ To deploy a new version of Terminus:
 - If you are getting `cURL error 60: SSL certificate problem: ...`, download a [cacert.pem](https://curl.haxx.se/ca/cacert.pem)
 file and add `curl.cainfo = "[path_to_file]\cacert.pem"` to your `php.ini`. If using XAMPP, you can add this to your
 `xampp\php\extras\ssl` directory.
+
+## Pull Request Guidelines
+- The code must be PSR-2 formatted.
+- The files must be appropriately namespaced so they are automatically found.
+- All new lines must be unit tested with PHPUnit. Ideally, all lines should be reached at least once while running the unit testing suite.
+- Functions should be as simple as possible so as to not require a great number of tests per function.
+- All reasonable states of any given command should have a Behat feature test. If fixing for a scenario not previously imagined or once considered unreasonable also test it.
+- Add changes to `CHANGELOG.md` and include the pull request number. (You will have to push a second time once you have one.)
+- All functions get comment markup consisting of at least all parameters, returned values, and exceptions thrown. An explanation should be included if it is not apparent.
+- Explain why you did what you did in the commit messages.
+- Pantheors: Add your Jira ticket number if it is available.
