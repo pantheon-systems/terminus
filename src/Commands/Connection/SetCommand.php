@@ -17,6 +17,9 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
+    const COMMIT_ADVICE = 'If you wish to save these changes, use `terminus env:commit {site_env}`.';
+    const UNCOMMITTED_CHANGE_WARNING = 'This environment has uncommitted changes. Switching the connection mode will discard this work.';
+
     /**
      * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).
      *
@@ -41,13 +44,32 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
                 ['env' => $env->id,]
             );
         }
-
-        $workflow = $env->changeConnectionMode($mode);
-        if (is_string($workflow)) {
-            $this->log()->notice($workflow);
-        } else {
-            $this->processWorkflow($workflow);
-            $this->log()->notice($workflow->getMessage());
+        if ($env->hasUncommittedChanges()) {
+            $this->log()->warning(
+                self::UNCOMMITTED_CHANGE_WARNING . ' ' . self::COMMIT_ADVICE,
+                compact('site_env')
+            );
+            if (!$this->confirm(
+                'Are you sure you want to change the connection mode of {env}?',
+                ['env' => $env->id,]
+            )) {
+                return;
+            }
         }
+
+        try {
+            $mode = strtolower($mode);
+            $workflow = $env->changeConnectionMode($mode);
+        } catch (TerminusException $e) {
+            $message = $e->getMessage();
+            if (strpos($message, $mode) !== false) {
+                $this->log()->notice($message);
+                return;
+            }
+            throw $e;
+        }
+
+        $this->processWorkflow($workflow);
+        $this->log()->notice($workflow->getMessage());
     }
 }

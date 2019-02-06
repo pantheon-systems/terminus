@@ -71,6 +71,10 @@ All notable changes to this project will be documented in this file. This projec
 - Added `--plan` option to `site:list` to filter the site list by plan name. (#1944)
 - Added `--plan` option to `org:site:list` to filter the organizational site list by plan name. (#1944)
 - Added `Sites::filterByPlanName(string)` function to filter the site models by their `plan_name` attribute. (#1944)
+- Added `Environment::hasUncommittedChanges()` to determine whether SFTP-mode environments have changes which have not been committed. (#1948)
+- Added `--upstream` option to `site:list` to filter the site list by their upstream UUID. (#1946)
+- Added `--upstream` option to `org:site:list` to filter the organizational site list by their upstream UUID. (#1946)
+- Added `Sites::filterByUpstream(string)` function to filter the site models by their `product_id` attribute. (#1946)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -107,9 +111,12 @@ All notable changes to this project will be documented in this file. This projec
 - Changed Environment::cloneFiles() to accept an Environment object. (#1930)
 - The target environment used in `env:clone-content` is now checked for initialization prior to cloning. (#1930)
 - Updated Plans collection URL `accounts/site-account-forwarding/{site_id}/plans`. (#1936)
-- Added `--upstream` option to `site:list` to filter the site list by their upstream UUID. (#1946)
-- Added `--upstream` option to `org:site:list` to filter the organizational site list by their upstream UUID. (#1946)
-- Added `Sites::filterByUpstream(string)` function to filter the site models by their `product_id` attribute. (#1946)
+- `connection:set` will emit a warning if you are attempting to switch out of SFTP mode while the environment has uncommitted changes. (#1948)
+- `connection:set` will ask for confirmation before switching out of SFTP mode with uncommitted changes as it destroys those changes. (#1948)
+- `connection:set` will emit an error if the requested mode is invalid. (#1948)
+- `Environment::changeConnectionMode(string)` never returns a string, only a Workflow. (#1948)
+- `Environment::changeConnectionMode(string)` will throw a TerminusException if the mode is neither "git" nor "sftp". (#1948)
+- `Environment::changeConnectionMode(string)` will throw a TerminusException if the requested mode is the current one. (#1948)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

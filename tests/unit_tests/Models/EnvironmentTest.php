@@ -154,7 +154,7 @@ class EnvironmentTest extends ModelTestCase
         $this->assertEquals([], $out);
     }
 
-    public function testChangeConnectionMode()
+    public function testChangeConnectionModeToGit()
     {
         $this->setUpWorkflowOperationTest(
             'changeConnectionMode',
@@ -163,7 +163,10 @@ class EnvironmentTest extends ModelTestCase
             null,
             ['id' => 'dev', 'on_server_development' => true]
         );
+    }
 
+    public function testChangeConnectionModeToSFTP()
+    {
         $this->setUpWorkflowOperationTest(
             'changeConnectionMode',
             ['sftp'],
@@ -171,14 +174,26 @@ class EnvironmentTest extends ModelTestCase
             null,
             ['id' => 'dev']
         );
+    }
 
+    public function testChangeConnectionModeToSame()
+    {
         $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
-        $return = $model->changeConnectionMode('sftp');
-        $this->assertEquals('The connection mode is already set to sftp.', $return);
+        $this->setExpectedException(
+            TerminusException::class,
+            'The connection mode is already set to sftp.'
+        );
+        $this->assertNull($model->changeConnectionMode('sftp'));
+    }
 
-        $model = $this->createModel(['id' => 'dev']);
-        $return = $model->changeConnectionMode('git');
-        $this->assertEquals('The connection mode is already set to git.', $return);
+    public function testChangeConnectionModeToInvalid()
+    {
+        $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
+        $this->setExpectedException(
+            TerminusException::class,
+            'You must specify the mode as either sftp or git.'
+        );
+        $this->assertNull($model->changeConnectionMode('doggo'));
     }
 
     public function testClearCache()
