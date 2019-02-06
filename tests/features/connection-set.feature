@@ -17,6 +17,12 @@ Feature: Set a site's connection mode
     When I run "terminus connection:set [[test_site_name]].dev sftp"
     Then I should see a notice message: Enabling on-server development via SFTP for "dev"
 
+  @vcr connection-set-sftp-uncommitted-changes.yml
+  Scenario: Setting connection mode to sftp
+    When I run "terminus connection:set [[test_site_name]].dev git -y"
+    Then I should get: "This environment has uncommitted changes which will be lost by changing its connection mode. If you wish to save these changes, use `terminus env:commit [[test_site_name]].dev`."
+    And I should see a notice message: Enabling on-server development via SFTP for "dev"
+
   @vcr connection-set-git.yml
   Scenario: Failing to set the connection mode to the current sftp mode
     # Note: The VCR fixture has the environment in sftp mode to start. Want a given like:
@@ -31,7 +37,7 @@ Feature: Set a site's connection mode
     When I run "terminus connection:set [[test_site_name]].dev git"
     Then I should see a notice message: The connection mode is already set to git.
 
+  @vcr connection-set-sftp.yml
   Scenario: Attempting to set connection mode to an invalid mode
-    When This step is implemented I will test: setting invalid connection modes
     When I run "terminus connection:set [[test_site_name]].dev invalid"
     Then I should see an error message: You must specify the mode as either sftp or git.

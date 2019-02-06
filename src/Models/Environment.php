@@ -109,22 +109,26 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      * Changes connection mode
      *
      * @param string $value Connection mode, "git" or "sftp"
-     * @return Workflow|string
+     * @return Workflow
+     * @throws TerminusException Thrown when the requested or the mode is already set or is not either "git" or "sftp".
      */
-    public function changeConnectionMode($value)
+    public function changeConnectionMode($mode)
     {
-        $current_mode = $this->serialize()['connection_mode'];
-        if ($value == $current_mode) {
-            $reply = "The connection mode is already set to $value.";
-            return $reply;
+        if ($mode === $this->get('connection_mode')) {
+            throw new TerminusException(
+                'The connection mode is already set to {mode}.',
+                compact('mode')
+            );
         }
-        switch ($value) {
+        switch ($mode) {
             case 'git':
                 $workflow_name = 'enable_git_mode';
                 break;
             case 'sftp':
                 $workflow_name = 'enable_on_server_development';
                 break;
+            default:
+                throw new TerminusException('You must specify the mode as either sftp or git.');
         }
 
         return $this->getWorkflows()->create($workflow_name);
@@ -581,6 +585,16 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     public function hasDeployableCode()
     {
         return (boolean)$this->countDeployableCommits();
+    }
+
+    /**
+     * Determines whether there is uncommitted code on the environment.
+     *
+     * @return bool
+     */
+    public function hasUncommittedChanges()
+    {
+        return ($this->get('connection_mode') === 'sftp') && (count((array)$this->get('diffstat')) !== 0);
     }
 
     /**
