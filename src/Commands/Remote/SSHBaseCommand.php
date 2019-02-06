@@ -3,12 +3,14 @@
 namespace Pantheon\Terminus\Commands\Remote;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusProcessException;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessUtils;
 
 /**
@@ -196,12 +198,28 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         if ($this->getContainer()->get(LocalMachineHelper::class)->useTty() === false) {
             $output = $this->output();
-            return function ($type, $buffer) use ($output) {
-                $output->write($buffer);
+            $stderr = $this->stdErr();
+
+            return function ($type, $buffer) use ($output, $stderr) {
+                if (Process::ERR === $type) {
+                    $stderr->write($buffer);
+                }
+                else {
+                    $output->write($buffer);
+                }
             };
         }
         return function ($type, $buffer) {
         };
+    }
+
+    private function stdErr()
+    {
+        $output = $this->output();
+        if ($output instanceof ConsoleOutputInterface) {
+            $output = $output->getErrorOutput();
+        }
+        return $output;
     }
 
     /**

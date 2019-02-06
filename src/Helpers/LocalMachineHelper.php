@@ -52,10 +52,9 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     public function execute($cmd, $callback = null)
     {
-        if ($this->input()->isInteractive()) {
-            return $this->execInteractive($cmd, $callback);
-        }
-        return $this->exec($cmd, $callback);
+        // This function was checking $this->input()->isInteractive(),
+        // but that was insufficient. See expanded checks in execInteractive.
+        return $this->execInteractive($cmd, $callback);
     }
 
     /**
@@ -79,7 +78,14 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             }
         }
         $process->setTty($useTty);
-        $this->getProgressBar($process)->cycle($callback);
+        // Use '$useTty' as a sort of 'isInteractive' indicator.
+        if ($useTty) {
+            $this->getProgressBar($process)->cycle($callback);
+        }
+        else {
+            $process->start();
+            $process->wait($callback);
+        }
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
     }
 
