@@ -18,6 +18,7 @@ class UpstreamTest extends \PHPUnit_Framework_TestCase
     {
         $data = [
             'id' => 'upstream id',
+            'product_id' => 'also an upstream id',
             'label' => 'upstream label',
             'machine_name' => 'upstream machine name',
         ];

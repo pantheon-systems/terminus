@@ -45,6 +45,16 @@ Feature: Listing sites
     And I should get: "------------- -------------------------------------- --------- ----------- -------- -------------------------------------- --------------------- -------------------------------------------- ------------"
 
   @vcr site-list.yml
+  Scenario: Filter sites list by name
+    Given a site named "[[test_site_name]]"
+    When I run "terminus site:list --upstream=e8fe8550-1ab9-4964-8838-2b9abdccf4bf"
+    Then I should get: "------------- -------------------------------------- --------- ----------- -------- -------------------------------------- --------------------- -------------------------------------------- ------------"
+    And I should get: "Name          ID                                     Plan      Framework   Region   Owner                                  Created               Memberships                                  Is Frozen?"
+    Then I should get: "------------- -------------------------------------- --------- ----------- -------- -------------------------------------- --------------------- -------------------------------------------- ------------"
+    And I should get: "behat-tests   11111111-1111-1111-1111-111111111111   Sandbox   wordpress   chios    11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team   false"
+    Then I should get: "------------- -------------------------------------- --------- ----------- -------- -------------------------------------- --------------------- -------------------------------------------- ------------"
+
+  @vcr site-list.yml
   Scenario: Filter sites list by name, excluding the test site
     Given a site named "[[test_site_name]]"
     When I run "terminus site:list --name=missing --fields=name,id,plan_name,framework,owner,created,memberships,frozen"

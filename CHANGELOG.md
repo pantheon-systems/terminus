@@ -107,6 +107,9 @@ All notable changes to this project will be documented in this file. This projec
 - Changed Environment::cloneFiles() to accept an Environment object. (#1930)
 - The target environment used in `env:clone-content` is now checked for initialization prior to cloning. (#1930)
 - Updated Plans collection URL `accounts/site-account-forwarding/{site_id}/plans`. (#1936)
+- Added `--upstream` option to `site:list` to filter the site list by their upstream UUID. (#1946)
+- Added `--upstream` option to `org:site:list` to filter the organizational site list by their upstream UUID. (#1946)
+- Added `Sites::filterByUpstream(string)` function to filter the site models by their `product_id` attribute. (#1946)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)

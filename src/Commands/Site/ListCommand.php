@@ -36,6 +36,7 @@ class ListCommand extends SiteCommand
      * @option owner Owner filter; "me" or user UUID
      * @option plan Plan filter; filter by the plan's label
      * @option team Team-only filter
+     * @option string $upstream Upstream name to filter
      *
      * @usage Displays the list of all sites accessible to the currently logged-in user.
      * @usage --name=<regex> Displays a list of accessible sites with a name that matches <regex>.
@@ -45,8 +46,9 @@ class ListCommand extends SiteCommand
      * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
      * @usage --plan=<plan> Displays the list of sites with a plan of this name
      * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
+     * @usage --upstream=<upstream> Displays the list of sites with the upstream having UUID <upstream>.
      */
-    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'team' => false,])
+    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'team' => false, 'upstream' => null,])
     {
         $user = $this->session()->getUser();
         $this->sites()->fetch(
@@ -61,6 +63,9 @@ class ListCommand extends SiteCommand
         }
         if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
             $this->sites->filterByPlanName($plan);
+        }
+        if (!is_null($upstream = $options['upstream'])) {
+            $this->sites->filterByUpstream($upstream);
         }
         if (isset($options['owner']) && !is_null($owner = $options['owner'])) {
             if ($owner == 'me') {
