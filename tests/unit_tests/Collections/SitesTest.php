@@ -184,6 +184,27 @@ class SitesTest extends CollectionTestCase
         $this->assertEquals($this->collection->all(), ['22222222-2222-2222-2222-222222222222' => $this->site2,]);
     }
 
+    public function testFilterByPlanName()
+    {
+        $this->collection = $this->makeSitesFetchable($this->collection);
+
+        $this->site1->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('plan_name'))
+            ->willReturn('Basic');
+        $this->site2->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('plan_name'))
+            ->willReturn('Sandbox');
+
+        $this->assertEquals($this->collection->all(), [
+            '11111111-1111-1111-1111-111111111111' => $this->site1,
+            '22222222-2222-2222-2222-222222222222' => $this->site2,
+        ]);
+        $this->collection->filterByPlanName('basic');
+        $this->assertEquals($this->collection->all(), ['11111111-1111-1111-1111-111111111111' => $this->site1,]);
+    }
+
     public function testFilterByTag()
     {
         $this->collection = $this->makeSitesFetchable($this->collection);
