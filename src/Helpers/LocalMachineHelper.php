@@ -81,8 +81,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         // Use '$useTty' as a sort of 'isInteractive' indicator.
         if ($useTty) {
             $this->getProgressBar($process)->cycle($callback);
-        }
-        else {
+        } else {
             $process->start();
             $process->wait($callback);
         }

@@ -203,8 +203,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
             return function ($type, $buffer) use ($output, $stderr) {
                 if (Process::ERR === $type) {
                     $stderr->write($buffer);
-                }
-                else {
+                } else {
                     $output->write($buffer);
                 }
             };
