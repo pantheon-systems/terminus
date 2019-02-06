@@ -107,16 +107,52 @@ class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests the SiteUserMembership::isOwner() function when the user is not the site owner.
+     */
+    public function testIsNotOwner()
+    {
+        $site = $this->expectGetSite();
+        $this->expectGetUser();
+
+        $site->expects($this->once())
+            ->method('get')
+            ->with('owner')
+            ->willReturn('nope');
+        $this->assertFalse($this->model->isOwner());
+    }
+
+    /**
+     * Tests the SiteUserMembership::isOwner() function when the user is the site owner.
+     */
+    public function testIsOwner()
+    {
+        $site = $this->expectGetSite();
+        $user = $this->expectGetUser();
+
+        $site->expects($this->once())
+            ->method('get')
+            ->with('owner')
+            ->willReturn($user->id);
+        $this->assertTrue($this->model->isOwner());
+    }
+
+    /**
      * Tests the SiteUserMembership::serialize() function.
      */
     public function testSerialize()
     {
+        $site = $this->expectGetSite();
         $user = $this->expectGetUser();
+
+        $site->expects($this->once())
+            ->method('get')
+            ->with('owner')
+            ->willReturn($user->id);
         $user->expects($this->once())
             ->method('serialize')
             ->with()
             ->willReturn($this->user_data);
-        $expected = array_merge($this->user_data, ['role' => $this->role,]);
+        $expected = array_merge($this->user_data, ['is_owner' => true, 'role' => $this->role,]);
         $out = $this->model->serialize();
         $this->assertEquals($expected, $out);
     }

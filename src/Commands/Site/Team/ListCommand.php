@@ -30,6 +30,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *     email: Email
      *     role: Role
      *     id: User ID
+     *     is_owner: Is owner?
      * @return RowsOfFields
      *
      * @param string $site_id Site name
