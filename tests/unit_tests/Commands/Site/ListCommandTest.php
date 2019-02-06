@@ -373,7 +373,7 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'plan' => $plan_name,]);
+        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'plan' => $plan_name, 'upstream' => null,]);
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
