@@ -105,7 +105,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
             $ssh_command,
             $this->getOutputCallback(),
-            $this->progressAllowed,
+            $this->progressAllowed
         );
     }
 
