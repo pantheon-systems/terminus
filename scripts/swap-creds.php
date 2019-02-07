@@ -4,6 +4,8 @@
  * This script exists to anonymize the account information involved in the recording of API testing
  * fixtures on production. It will exchange the credentials in the testing fixture for those in the
  * file describing the credentials to be used when running the testing suite in CI.
+ *
+ * Note: For this to work properly there can be no repeated values in the old data configuration.
  */
 
 if (file_exists($path = __DIR__ . '/vendor/autoload.php')
@@ -94,6 +96,14 @@ function sortList(array $list)
     return $sorted_list;
 }
 
+/**
+ * Swaps the data from the first array for the data from the second within the string thirdly given.
+ *
+ * @param array $old_data Data to be removed from the fixture
+ * @param array $new_data Data to replace the old data
+ * @param string $fixture The target of the data replacement
+ * @return string The fixture with replaced data
+ */
 function swapData(array $old_data, array $new_data, $fixture)
 {
     foreach($old_data as $key => $value) {
