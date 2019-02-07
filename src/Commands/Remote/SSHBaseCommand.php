@@ -34,6 +34,10 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
      * @var Site
      */
     private $site;
+    /**
+     * @var bool
+     */
+    protected $progressAllowed;
 
     /**
      * Define the environment and site properties
@@ -43,6 +47,20 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     protected function prepareEnvironment($site_env_id)
     {
         list($this->site, $this->environment) = $this->getSiteEnv($site_env_id);
+    }
+
+    /**
+     * progressAllowed sets the field that controls whether a progress bar
+     * may be displayed when a program is executed. If allowed, a progress
+     * bar will be used in tty mode.
+     *
+     * @param type|bool $allowed
+     * @return $this
+     */
+    protected function setProgressAllowed($allowed = true)
+    {
+        $this->progressAllowed = $allowed;
+        return $this;
     }
 
     /**
@@ -86,7 +104,8 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
         return $this->getContainer()->get(LocalMachineHelper::class)->execute(
             $ssh_command,
-            $this->getOutputCallback()
+            $this->getOutputCallback(),
+            $this->progressAllowed,
         );
     }
 

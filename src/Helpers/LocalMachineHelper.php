@@ -44,27 +44,14 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     }
 
     /**
-     * Executes the given command on the local machine either interactively or not based on config.
-     *
-     * @param string $cmd The command to execute
-     * @param callable $callback A function to run while waiting for the process to complete
-     * @return array The command output and exit_code
-     */
-    public function execute($cmd, $callback = null)
-    {
-        // This function was checking $this->input()->isInteractive(),
-        // but that was insufficient. See expanded checks in execInteractive.
-        return $this->execInteractive($cmd, $callback);
-    }
-
-    /**
      * Executes a buffered command.
      *
      * @param string $cmd The command to execute
      * @param callable $callback A function to run while waiting for the process to complete
+     * @param bool $progressIndicatorAllowed Allow the progress bar to be used (if in tty mode only)
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback = null)
+    public function execute($cmd, $callback = null, $progressIndicatorAllowed = false)
     {
         $process = $this->getProcess($cmd);
         $useTty = $this->useTty();
@@ -79,7 +66,7 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
         }
         $process->setTty($useTty);
         // Use '$useTty' as a sort of 'isInteractive' indicator.
-        if ($useTty) {
+        if ($useTty && $progressIndicatorAllowed) {
             $this->getProgressBar($process)->cycle($callback);
         } else {
             $process->start();

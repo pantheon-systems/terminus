@@ -28,9 +28,10 @@ class DrushCommand extends SSHBaseCommand
      *
      * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
      */
-    public function drushCommand($site_env, array $drush_command)
+    public function drushCommand($site_env, array $drush_command, array $options = ['progress' => false])
     {
         $this->prepareEnvironment($site_env);
+        $this->setProgressAllowed($options['progress']);
         return $this->executeCommand($drush_command);
     }
 }
