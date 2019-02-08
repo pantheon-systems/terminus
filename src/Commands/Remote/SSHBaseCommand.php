@@ -217,7 +217,7 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
     {
         if ($this->getContainer()->get(LocalMachineHelper::class)->useTty() === false) {
             $output = $this->output();
-            $stderr = $this->stdErr();
+            $stderr = $this->stderr();
 
             return function ($type, $buffer) use ($output, $stderr) {
                 if (Process::ERR === $type) {
@@ -229,15 +229,6 @@ abstract class SSHBaseCommand extends TerminusCommand implements SiteAwareInterf
         }
         return function ($type, $buffer) {
         };
-    }
-
-    private function stdErr()
-    {
-        $output = $this->output();
-        if ($output instanceof ConsoleOutputInterface) {
-            $output = $output->getErrorOutput();
-        }
-        return $output;
     }
 
     /**
