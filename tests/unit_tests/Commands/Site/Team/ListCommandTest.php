@@ -35,6 +35,7 @@ class ListCommandTest extends TeamCommandTest
                 'email' => 'daisy@duck.com',
                 'user_id' => 'abc',
                 'role' => 'team_member',
+                'is_owner' => false,
             ],
             'def' => [
                 'firstname' => 'Mickey',
@@ -42,7 +43,8 @@ class ListCommandTest extends TeamCommandTest
                 'email' => 'mickey@mouse.com',
                 'user_id' => 'def',
                 'role' => 'team_member',
-            ]
+                'is_owner' => true,
+            ],
         ];
 
         $this->user_memberships->expects($this->once())

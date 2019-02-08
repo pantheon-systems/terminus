@@ -34,10 +34,26 @@ class SiteUserMembership extends TerminusModel implements ContainerAwareInterfac
         );
     }
 
+    /**
+     * Determines whether this user is the owner of the site.
+     *
+     * @return bool
+     */
+    public function isOwner()
+    {
+        return $this->getUser()->id === $this->getSite()->get('owner');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function serialize()
     {
         $user = $this->getUser()->serialize();
-        return $user + ['role'  => $this->get('role'),];
+        return $user + [
+            'is_owner' => $this->isOwner(),
+            'role'  => $this->get('role'),
+        ];
     }
 
     /**

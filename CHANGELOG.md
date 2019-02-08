@@ -75,6 +75,9 @@ All notable changes to this project will be documented in this file. This projec
 - Added `--upstream` option to `site:list` to filter the site list by their upstream UUID. (#1946)
 - Added `--upstream` option to `org:site:list` to filter the organizational site list by their upstream UUID. (#1946)
 - Added `Sites::filterByUpstream(string)` function to filter the site models by their `product_id` attribute. (#1946)
+- Added `is_owner` field to the output of `site:team:list` in order to indicate which user is the site owner. (#1949)
+- Added boolean `is_owner` field to the output of `SiteUserMemberships::serialize()` in order to indicate which user is the site owner. (#1949)
+- Added `SiteUserMemberships::isOwner()` function in order to ascertain whether the user is the site's owner. (#1949)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
