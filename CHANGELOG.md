@@ -119,6 +119,7 @@ All notable changes to this project will be documented in this file. This projec
 - `Environment::changeConnectionMode(string)` never returns a string, only a Workflow. (#1948)
 - `Environment::changeConnectionMode(string)` will throw a TerminusException if the mode is neither "git" nor "sftp". (#1948)
 - `Environment::changeConnectionMode(string)` will throw a TerminusException if the requested mode is the current one. (#1948)
+- The help text for `upstream:updates:status` now litanizes the possible results. (#1951)
 
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
