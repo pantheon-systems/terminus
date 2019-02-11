@@ -242,16 +242,6 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     }
 
     /**
-     * Returns the PHP version of this site.
-     *
-     * @return null|string
-     */
-    public function getPHPVersion()
-    {
-        return !is_null($php_ver = $this->get('php_version')) ? substr($php_ver, 0, 1) . '.' . substr($php_ver, 1) : null;
-    }
-
-    /**
      * @return Plan
      */
     public function getPlan()
@@ -390,7 +380,6 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'plan_name' => $this->get('plan_name'),
             'max_num_cdes' => $settings ? $settings->max_num_cdes : 0,
             'upstream' => (string)$this->getUpstream(),
-            'php_version' => $this->getPHPVersion(),
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),

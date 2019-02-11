@@ -21,7 +21,6 @@ Feature: View site information
       Organization
       Plan
       Upstream
-      PHP Version
       Holder Type
       Holder ID
       Owner
@@ -43,7 +42,6 @@ Feature: View site information
       Organization
       Plan
       Upstream
-      PHP Version
       Holder Type
       Holder ID
       Owner
