@@ -31,7 +31,6 @@ class InfoCommand extends SiteCommand
      *     plan_name: Plan
      *     max_num_cdes: Max Multidevs
      *     upstream: Upstream
-     *     php_version: PHP Version
      *     holder_type: Holder Type
      *     holder_id: Holder ID
      *     owner: Owner

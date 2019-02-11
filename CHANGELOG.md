@@ -94,7 +94,6 @@ All notable changes to this project will be documented in this file. This projec
 - Moved the `useTty` function from `SSHBaseCommand` to `LocalMachineHelper`. (#1910)
 - `site:delete` now uses a workflow. (#1922)
 - `Site::delete()` now returns a Workflow object. (#1922)
-- Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
 - `upstream:updates:list` now orders the pending updates in chronological order. (#1852)
 - TerminusConfig::setSource() changed from public to now protected. (#1923)
 - The `started_at` data returned by `workflow:list` is now formatted using TERMINUS_DATE_FORMAT. (#1923)
@@ -136,11 +135,15 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `TERMINUS_SITE` environment var. (#1917)
 
 ### Removed
+- Removed final, redundant 'Applied upstream updates to "dev"' notice from `upstream:updates:apply`. (#1851)
 - Removed `TerminusConfig::fromArray()`. Use the inherited `TerminusConfig::combine()`. (#1923)
 - Removed `TerminusConfig::toArray()`. Use the inherited `TerminusConfig::export()`. (#1923)
 - Removed `Pantheon\Terminus\Friends\RowsOfFieldsInterface` (#1923)
 - Removed deprecated `Workflow::wait` (#1937)
 - Removed const `Workflow::POLLING_PERIOD`. Please use `TERMINUS_HTTP_RETRY_DELAY_MS` (#1937)
+- Removed the often-inaccurate `php_version`/`PHP Version` info from the result of `site:info`. (#1952)
+- Removed the often-inaccurate `php_version` property from the hash returned by `Site::serialize(). (#1952)
+- Removed `Site::getPHPVersion()`. It is preferrable to use `Environment::getPHPVersion()` for more accurate info. (#1952)
 
 ## 1.9.0 - 2018-09-11
 ### Added

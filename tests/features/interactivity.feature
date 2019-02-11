@@ -27,7 +27,6 @@ Feature: Terminus Command-Line Interaction
       Organization
       Service Level
       Upstream
-      PHP Version
       Holder Type
       Holder ID
       Owner
@@ -53,7 +52,6 @@ Feature: Terminus Command-Line Interaction
       Organization
       Service Level
       Upstream
-      PHP Version
       Holder Type
       Holder ID
       Owner
@@ -83,7 +81,6 @@ Feature: Terminus Command-Line Interaction
       Locked
       Initialized
       Connection Mode
-      PHP Version
     """
 
   Scenario: Responding to a prompt for the environment argument using a name
@@ -107,7 +104,6 @@ Feature: Terminus Command-Line Interaction
       Locked
       Initialized
       Connection Mode
-      PHP Version
     """
 
 
