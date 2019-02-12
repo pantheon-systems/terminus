@@ -16,9 +16,9 @@ class StatusCommand extends UpdatesCommand
      * @command upstream:updates:status
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @return string
+     * @return string Either 'outdated' or 'current'
      *
-     * @usage <site>.<env> Displays the status of updates available from the upstream for <site>'s <env> environment.
+     * @usage <site>.<env> Displays either "outdated" if <site>'s <env> environment has upstream updates or "current" if not.
      */
     public function status($site_env)
     {
