@@ -28,7 +28,8 @@ class DrushCommand extends SSHBaseCommand
      * @option progress Allow progress bar to be used (tty mode only)
      * @return string Command output
      *
-     * @usage <site>.<env> [--progress] -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> -- <command> Runs the Drush command <command> remotely on <site>'s <env> environment.
+     * @usage <site>.<env> --progress -- <command> Runs a Drush command with a progress bar
      */
     public function drushCommand($site_env, array $drush_command, array $options = ['progress' => false])
     {
