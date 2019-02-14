@@ -78,6 +78,7 @@ All notable changes to this project will be documented in this file. This projec
 - Added `is_owner` field to the output of `site:team:list` in order to indicate which user is the site owner. (#1949)
 - Added boolean `is_owner` field to the output of `SiteUserMemberships::serialize()` in order to indicate which user is the site owner. (#1949)
 - Added `SiteUserMemberships::isOwner()` function in order to ascertain whether the user is the site's owner. (#1949)
+- A `--progress` option has been added to `remote:drush` and `remote:wp` to enable progress for remote commands. (#1947)
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)

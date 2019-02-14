@@ -10,6 +10,7 @@ use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Robo\Common\IO;
 use Robo\Contract\ConfigAwareInterface;
 use Robo\Contract\IOAwareInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
@@ -35,26 +36,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      * @param string $cmd The command to execute
      * @return array The command output and exit_code
      */
-    public function exec($cmd)
+    public function exec($cmd, $callback = null)
     {
         $process = $this->getProcess($cmd);
-        $process->run();
+        $process->run($callback);
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
-    }
-
-    /**
-     * Executes the given command on the local machine either interactively or not based on config.
-     *
-     * @param string $cmd The command to execute
-     * @param callable $callback A function to run while waiting for the process to complete
-     * @return array The command output and exit_code
-     */
-    public function execute($cmd, $callback = null)
-    {
-        if ($this->input()->isInteractive()) {
-            return $this->execInteractive($cmd, $callback);
-        }
-        return $this->exec($cmd);
     }
 
     /**
@@ -62,9 +48,10 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      *
      * @param string $cmd The command to execute
      * @param callable $callback A function to run while waiting for the process to complete
+     * @param bool $progressIndicatorAllowed Allow the progress bar to be used (if in tty mode only)
      * @return array The command output and exit_code
      */
-    public function execInteractive($cmd, $callback = null)
+    public function execute($cmd, $callback = null, $progressIndicatorAllowed = false)
     {
         $process = $this->getProcess($cmd);
         $useTty = $this->useTty();
@@ -78,7 +65,13 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
             }
         }
         $process->setTty($useTty);
-        $this->getProgressBar($process)->cycle($callback);
+        // Use '$useTty' as a sort of 'isInteractive' indicator.
+        if ($useTty && $progressIndicatorAllowed) {
+            $this->getProgressBar($process)->cycle($callback);
+        } else {
+            $process->start();
+            $process->wait($callback);
+        }
         return ['output' => $process->getOutput(), 'exit_code' => $process->getExitCode(),];
     }
 
