@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+
 ## 2.0.0 - 2019-02-20
 ### Added
 - New `plan:list` command lists the plans available to a site. (#1901)
@@ -60,8 +62,8 @@ All notable changes to this project will be documented in this file. This projec
 - A progress bar has been added to the workflow processing portion of `solr:enable`. (#1907)
 - A progress bar has been added to the workflow processing portion of `upstream:updates:apply`. (#1907)
 - New const `TERMINUS_TIMEOUT` added to extend the timeout maximum for remote commands. (#1908)
-- A progess bar has been added to the process portion of `remote:drush`. (#1910)
-- A progess bar has been added to the process portion of `remote:wp`. (#1910)
+- A progress bar has been added to the process portion of `remote:drush`. (#1910)
+- A progress bar has been added to the process portion of `remote:wp`. (#1910)
 - A progress bar has been added to the workflow processing portion of `site:delete`. (#1922)
 - Added the TerminusConfig::formatDatetime() function in order to use the configuration to format datetimes.  (#1923)
 - Added the --region flag to `site:create`. (#1932)
@@ -145,7 +147,7 @@ All notable changes to this project will be documented in this file. This projec
 - Removed const `Workflow::POLLING_PERIOD`. Please use `TERMINUS_HTTP_RETRY_DELAY_MS` (#1937)
 - Removed the often-inaccurate `php_version`/`PHP Version` info from the result of `site:info`. (#1952)
 - Removed the often-inaccurate `php_version` property from the hash returned by `Site::serialize(). (#1952)
-- Removed `Site::getPHPVersion()`. It is preferrable to use `Environment::getPHPVersion()` for more accurate info. (#1952)
+- Removed `Site::getPHPVersion()`. It is preferable to use `Environment::getPHPVersion()` for more accurate info. (#1952)
 
 ## 1.9.0 - 2018-09-11
 ### Added
