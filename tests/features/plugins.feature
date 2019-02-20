@@ -53,5 +53,11 @@ Feature: Plugin Commands
     [notice] Hello, yd!
      """
 
-
+  Scenario: Running an outdated plugin not compatible with the presently running version of Terminus
+    When I am using "outdated" plugins
+    And I run "terminus global:hello"
+    Then I should get:
+    """
+    [warning] Could not load plugin pantheon-systems/terminus-plugin-example because it is not compatible with this version of Terminus.
+    """
 

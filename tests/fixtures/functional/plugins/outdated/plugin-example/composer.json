@@ -3,15 +3,9 @@
     "description": "An example Terminus command",
     "type": "terminus-plugin",
     "license": "MIT",
-    "autoload": {
-        "psr-4": { "Pantheon\\TerminusHello\\": "src" }
-    },
     "extra": {
         "terminus": {
-            "compatible-version": "^1|^2"
+            "compatible-version": "0.x"
         }
-    },
-    "require": {
-        "example/trivial": "^0.2.4"
     }
 }

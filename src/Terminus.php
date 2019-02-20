@@ -75,6 +75,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         $this->configureContainer();
 
+        $this->setLogger($container->get('logger'));
+
         $this->addBuiltInCommandsAndHooks();
         $this->addPluginsCommandsAndHooks();
 
@@ -85,8 +87,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
 
         $this->runner = new RoboRunner();
         $this->runner->setContainer($container);
-
-        $this->setLogger($container->get('logger'));
 
         date_default_timezone_set($config->get('time_zone'));
         setlocale(LC_MONETARY, $config->get('monetary_locale'));
