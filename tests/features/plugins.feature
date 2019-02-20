@@ -53,5 +53,12 @@ Feature: Plugin Commands
     [notice] Hello, yd!
      """
 
+  Scenario: Running a simple plugin command that needs autoloading for its base class
+    When I am using "outdated" plugins
+    And I run "terminus global:hello"
+    Then I should get:
+    """
+    [warning] Could not load plugin pantheon-systems/terminus-plugin-example because it is not compatible with this version of Terminus.
+    """
 
 
