@@ -4,6 +4,7 @@ branches:
   # Only test the master branch and semantic version tags.
   only:
     - master
+    - 1.x
     - /^[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+.*$/
 
 php:
