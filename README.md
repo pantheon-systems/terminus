@@ -20,6 +20,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 - PHP version 5.5.38 or later
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
+- [PHP-XML](http://php.net/manual/en/book.xml.php)
 
 Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
