@@ -42,18 +42,4 @@ class SiteOrganizationMemberships extends SiteOwnedCollection
             ['params' => ['organization_name' => $organization->getLabel(), 'role' => $role,],]
         );
     }
-
-
-    /**
-     * @return array|void
-     */
-    public function serialize()
-    {
-        return array_map(
-            function ($member) {
-                return $member->getOrganization()->serialize();
-            },
-            $this->all()
-        );
-    }
 }

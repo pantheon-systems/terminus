@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Fixed
+- Fixed `site:org:list` so that it no longer ends without returning anything. (#1964)
 
 ## 2.0.0 - 2019-02-20
 ### Added

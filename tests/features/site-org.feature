@@ -32,14 +32,17 @@ Feature: Managing site organizational memberships
     Removed supporting organization
     """
 
-  @vcr site-org-list.yml
+  @vcr site-org-remove.yml
   Scenario: Listing the supporting organizations of a site
     When I run "terminus site:org:list [[test_site_name]]"
-    Then I should see a table with rows like:
+    Then I should not see a warning
+    And I should see a table with rows like:
     """
         Name
         ID
     """
+    And that table should have 1 row
+    And I should get: "[[organization_name]]"
 
   @vcr site-org-list-empty.yml
   Scenario: Listing the supporting organizations of a site
@@ -50,3 +53,4 @@ Feature: Managing site organizational memberships
         Name
         ID
     """
+    And that table should have no rows
