@@ -28,9 +28,17 @@ Feature: Site Deployment
     When I run "terminus env:deploy [[test_site_name]].test --note='Deploy test' --sync-content"
     Then I should get: "There is nothing to deploy."
 
-  @vcr env-deploy-init.yml
+  @vcr env-deploy-init-with-message.yml
   Scenario: Initializing test when it has not been previously initialized
     When I run "terminus env:deploy [[test_site_name]].test --note='First deploy to live' --sync-content"
+    Then I should get:
+    """
+    Deploying code to "test", and cloning files from "live", and cloning database from "live"
+    """
+
+  @vcr env-deploy-init.yml
+  Scenario: Initializing test when it has not been previously initialized and no note is provided
+    When I run "terminus env:deploy [[test_site_name]].test"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
