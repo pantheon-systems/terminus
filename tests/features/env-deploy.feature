@@ -30,7 +30,7 @@ Feature: Site Deployment
 
   @vcr env-deploy-init-with-message.yml
   Scenario: Initializing test when it has not been previously initialized
-    When I run "terminus env:deploy [[test_site_name]].test --note='First deploy to live' --sync-content"
+    When I run "terminus env:deploy [[test_site_name]].test --note='Shes the one named Sailor Moon!' --sync-content"
     Then I should get:
     """
     Deploying code to "test", and cloning files from "live", and cloning database from "live"
