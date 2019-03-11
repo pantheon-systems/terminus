@@ -120,7 +120,7 @@ class DeployCommandTest extends EnvCommandTest
     public function testDeployUninitializedWithMessage()
     {
         $this->environment->id = 'uninitialized';
-        $note = 'This is the deploy message';
+        $note = 'Never running from a real fight';
 
         $this->environment->expects($this->once())
             ->method('isInitialized')

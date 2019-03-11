@@ -731,27 +731,64 @@ class EnvironmentTest extends ModelTestCase
         );
     }
 
+    /**
+     * Exercises the initializeBindings function
+     */
     public function testInitializeBindings()
     {
+        $live_copies_from = ['from_environment' => 'test',];
+        $test_copies_from = ['from_environment' => 'dev',];
+
+        // Test environment, no message supplied
         $this->setUpWorkflowOperationTest(
             'initializeBindings',
             [],
             'create_environment',
             [
                 'annotation' => 'Create the test environment',
-                'clone_database' => ['from_environment' => 'dev',],
-                'clone_files' => ['from_environment' => 'dev',],
+                'clone_database' => $test_copies_from,
+                'clone_files' => $test_copies_from,
             ],
             ['id' => 'test',]
         );
+
+        // Live environment, no message supplied
         $this->setUpWorkflowOperationTest(
             'initializeBindings',
             [],
             'create_environment',
             [
                 'annotation' => 'Create the live environment',
-                'clone_database' => ['from_environment' => 'test',],
-                'clone_files' => ['from_environment' => 'test',],
+                'clone_database' => $live_copies_from,
+                'clone_files' => $live_copies_from,
+            ],
+            ['id' => 'live',]
+        );
+
+        // Test environment, message supplied
+        $message_for_test = 'Fighting evil by moonlight';
+        $this->setUpWorkflowOperationTest(
+            'initializeBindings',
+            [['annotation' => $message_for_test,],],
+            'create_environment',
+            [
+                'annotation' => $message_for_test,
+                'clone_database' => $test_copies_from,
+                'clone_files' => $test_copies_from,
+            ],
+            ['id' => 'test',]
+        );
+
+        // Live environment, message supplied
+        $message_for_live = 'Winning love by daylight';
+        $this->setUpWorkflowOperationTest(
+            'initializeBindings',
+            [['annotation' => $message_for_live,],],
+            'create_environment',
+            [
+                'annotation' => $message_for_live,
+                'clone_database' => $live_copies_from,
+                'clone_files' => $live_copies_from,
             ],
             ['id' => 'live',]
         );
