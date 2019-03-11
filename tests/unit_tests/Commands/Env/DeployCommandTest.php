@@ -115,9 +115,29 @@ class DeployCommandTest extends EnvCommandTest
     }
 
     /**
-     * Tests the env:deploy command when the environment is uninitialized
+     * Tests the env:deploy command when the environment is uninitialized and a deploy message is supplied
      */
-    public function testDeployUninitialized()
+    public function testDeployUninitializedWithMessage()
+    {
+        $this->environment->id = 'uninitialized';
+        $note = 'This is the deploy message';
+
+        $this->environment->expects($this->once())
+            ->method('isInitialized')
+            ->willReturn(false);
+        $this->environment->expects($this->once())
+            ->method('initializeBindings')
+            ->with(['annotation' => $note,])
+            ->willReturn($this->workflow);
+
+        // Run the deploy.
+        $this->command->deploy("mysite.{$this->environment->id}", compact('note'));
+    }
+
+    /**
+     * Tests the env:deploy command when the environment is uninitialized and no deploy message is given
+     */
+    public function testDeployUninitializedWithoutMessage()
     {
         $this->environment->id = 'uninitialized';
 
@@ -126,8 +146,8 @@ class DeployCommandTest extends EnvCommandTest
             ->willReturn(false);
         $this->environment->expects($this->once())
             ->method('initializeBindings')
-            ->willReturn($this->workflow)
-            ->with();
+            ->with()
+            ->willReturn($this->workflow);
 
         // Run the deploy.
         $this->command->deploy("mysite.{$this->environment->id}");
