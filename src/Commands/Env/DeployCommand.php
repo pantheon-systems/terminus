@@ -49,6 +49,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
     ) {
         list($site, $env) = $this->getUnfrozenSiteEnv($site_env, 'dev');
 
+        $annotation = $options['note'];
         if ($env->isInitialized()) {
             if (!$env->hasDeployableCode()) {
                 $this->log()->notice('There is nothing to deploy.');
@@ -58,7 +59,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
             $params = [
               'updatedb'    => (integer)$options['updatedb'],
               'clear_cache' => (integer)$options['cc'],
-              'annotation'  => $options['note'],
+              'annotation'  => $annotation,
             ];
             if ($env->id == 'test' && isset($options['sync-content']) && $options['sync-content']) {
                 $live_env = 'live';
@@ -72,7 +73,7 @@ class DeployCommand extends TerminusCommand implements SiteAwareInterface
             }
             $workflow = $env->deploy($params);
         } else {
-            $workflow = $env->initializeBindings();
+            $workflow = $env->initializeBindings(compact('annotation'));
         }
         $this->processWorkflow($workflow);
         $this->log()->notice($workflow->getMessage());
