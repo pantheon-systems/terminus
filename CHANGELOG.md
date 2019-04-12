@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 - Fixed `site:org:list` so that it no longer ends without returning anything. (#1964)
 - Fixed `env:deploy` so the `--note` option is used when initializing the test or live environments. (#1965)
 - "Deploy from Terminus" is the default message used by `env:deploy` when initializing the test or live environments. (#1965)
+- Fixed issue wherein any list command using datetime filters' first item was a formatted Unix datetime 0. (#1970)
 
 ## 2.0.0 - 2019-02-20
 ### Added
