@@ -31,7 +31,7 @@ curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/ma
 EOT;
     const UPDATE_COMMAND_PHAR = <<<EOT
 You can update Terminus by running:
-curl -L -o terminus https://github.com/pantheon-systems/terminus/releases/download/{latest_version}/terminus.phar && chmod +x terminus && sudo mv terminus /usr/local/bin
+terminus self:update
 EOT;
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
@@ -70,16 +70,10 @@ EOT;
         $update_exists = version_compare($latest_version, $running_version, '>');
         $should_hide_update = (bool) $this->getConfig()->get('hide_update_message');
         if ($update_exists && !$should_hide_update) {
-            $update_command = self::UPDATE_VARS_COLOR;
-            if (\Phar::running()) {
-                $update_command .= str_replace('{latest_version}', $latest_version, self::UPDATE_COMMAND_PHAR);
-            } else {
-                $update_command .= self::UPDATE_COMMAND;
-            }
             $this->logger->notice($this->getUpdateNotice(), [
                 'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
                 'running_version' => self::UPDATE_VARS_COLOR . $running_version,
-                'update_command' => $update_command,
+                'update_command' => self::UPDATE_VARS_COLOR . (\Phar::running() ? self::UPDATE_COMMAND_PHAR : self::UPDATE_COMMAND),
             ]);
         }
     }
