@@ -655,9 +655,11 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
      * content from previous environment (e.g. test clones dev content, live
      * clones test content.)
      *
+     * @param array $params Parameters for the environment-creation workflow
+     *      string annotation Use to overwrite the default deploy message
      * @return Workflow In-progress workflow
      */
-    public function initializeBindings()
+    public function initializeBindings(array $params = [])
     {
         if ($this->id == 'test') {
             $from_env_id = 'dev';
@@ -665,13 +667,16 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
             $from_env_id = 'test';
         }
 
-        $params = [
-            'annotation' => "Create the {$this->id} environment",
-            'clone_database' => ['from_environment' => $from_env_id,],
-            'clone_files' => ['from_environment' => $from_env_id,],
-        ];
+        $parameters = array_merge(
+            [
+                'annotation' => "Create the {$this->id} environment",
+                'clone_database' => ['from_environment' => $from_env_id,],
+                'clone_files' => ['from_environment' => $from_env_id,],
+            ],
+            $params
+        );
 
-        return $this->getWorkflows()->create('create_environment', compact('params'));
+        return $this->getWorkflows()->create('create_environment', ['params' => $parameters,]);
     }
 
     /**
