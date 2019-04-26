@@ -25,11 +25,17 @@ class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, Da
     use LoggerAwareTrait;
 
     const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update';
+    const UPDATE_COMMAND = <<<EOT
+You can update Terminus by running `composer update` or using the Terminus installer:
+curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update
+EOT;
+    const UPDATE_COMMAND_PHAR = <<<EOT
+You can update Terminus by running:
+terminus self:update
+EOT;
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
 You are currently using version v{running_version}.
-You can update Terminus by running `composer update` or using the Terminus installer:
 {update_command}
 EOT;
     const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
@@ -67,7 +73,7 @@ EOT;
             $this->logger->notice($this->getUpdateNotice(), [
                 'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
                 'running_version' => self::UPDATE_VARS_COLOR . $running_version,
-                'update_command' => self::UPDATE_VARS_COLOR . self::UPDATE_COMMAND,
+                'update_command' => self::UPDATE_VARS_COLOR . (\Phar::running() ? self::UPDATE_COMMAND_PHAR : self::UPDATE_COMMAND),
             ]);
         }
     }
