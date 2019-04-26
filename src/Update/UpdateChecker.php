@@ -25,11 +25,17 @@ class UpdateChecker implements ConfigAwareInterface, ContainerAwareInterface, Da
     use LoggerAwareTrait;
 
     const DEFAULT_COLOR = "\e[0m";
-    const UPDATE_COMMAND = 'curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update';
+    const UPDATE_COMMAND = <<<EOT
+You can update Terminus by running `composer update` or using the Terminus installer:
+curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar && php installer.phar update
+EOT;
+    const UPDATE_COMMAND_PHAR = <<<EOT
+You can update Terminus by running:
+curl -L -o terminus https://github.com/pantheon-systems/terminus/releases/download/{latest_version}/terminus.phar && chmod +x terminus && sudo mv terminus /usr/local/bin
+EOT;
     const UPDATE_NOTICE = <<<EOT
 A new Terminus version v{latest_version} is available.
 You are currently using version v{running_version}.
-You can update Terminus by running `composer update` or using the Terminus installer:
 {update_command}
 EOT;
     const UPDATE_NOTICE_COLOR = "\e[38;5;33m";
@@ -64,10 +70,16 @@ EOT;
         $update_exists = version_compare($latest_version, $running_version, '>');
         $should_hide_update = (bool) $this->getConfig()->get('hide_update_message');
         if ($update_exists && !$should_hide_update) {
+            $update_command = self::UPDATE_VARS_COLOR;
+            if (\Phar::running()) {
+                $update_command .= str_replace('{latest_version}', $latest_version, self::UPDATE_COMMAND_PHAR);
+            } else {
+                $update_command .= self::UPDATE_COMMAND;
+            }
             $this->logger->notice($this->getUpdateNotice(), [
                 'latest_version' => self::UPDATE_VARS_COLOR . $latest_version,
                 'running_version' => self::UPDATE_VARS_COLOR . $running_version,
-                'update_command' => self::UPDATE_VARS_COLOR . self::UPDATE_COMMAND,
+                'update_command' => $update_command,
             ]);
         }
     }
