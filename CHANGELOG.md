@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 2.0.1 - 2019-04-26
 ### Fixed
 - Fixed `site:org:list` so that it no longer ends without returning anything. (#1964)
 - Fixed `env:deploy` so the `--note` option is used when initializing the test or live environments. (#1965)
