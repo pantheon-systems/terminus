@@ -33,8 +33,8 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command alpha:env:metrics
-     * @aliases alpha:metrics
+     * @command env:metrics
+     * @aliases metrics,alpha:env:metrics,alpha:metrics
      *
      * @field-labels
      *     datetime: Period
@@ -126,7 +126,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Ensure that the user did not supply an invalid value for 'period'.
      *
-     * @hook validate alpha:env:metrics
+     * @hook validate env:metrics
      * @param CommandData $commandData
      */
     public function validateOptions(CommandData $commandData)
