@@ -210,9 +210,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 $this->logger->debug(
                     self::DEBUG_RESPONSE_STRING,
                     [
-                    'data' => json_encode($this->stripSensitiveInfo((array)$body)),
-                    'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
-                    'status_code' => $data['status_code'],
+                        'data' => json_encode($this->stripSensitiveInfo((array)$body)),
+                        'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
+                        'status_code' => $data['status_code'],
                     ]
                 );
 
