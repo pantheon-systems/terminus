@@ -27,6 +27,18 @@ trait OrganizationTrait
     }
 
     /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return str_replace(
+            ['{org_id}', '{id}',],
+            [$this->getOrganization()->id, $this->id,],
+            parent::getUrl()
+        );
+    }
+
+    /**
      * @param Organization $organization
      */
     public function setOrganization(Organization $organization)

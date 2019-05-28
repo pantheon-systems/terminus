@@ -2,6 +2,8 @@
 
 namespace Pantheon\Terminus\Models;
 
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Friends\SiteInterface;
 use Pantheon\Terminus\Friends\SiteTrait;
 
@@ -9,8 +11,9 @@ use Pantheon\Terminus\Friends\SiteTrait;
  * Class SiteUpstream
  * @package Pantheon\Terminus\Models
  */
-class SiteUpstream extends TerminusModel implements SiteInterface
+class SiteUpstream extends TerminusModel implements ContainerAwareInterface, SiteInterface
 {
+    use ContainerAwareTrait;
     use SiteTrait;
 
     const PRETTY_NAME = 'upstream';
@@ -31,6 +34,17 @@ class SiteUpstream extends TerminusModel implements SiteInterface
     public function clearCache()
     {
         return $this->getSite()->getWorkflows()->create('clear_code_cache');
+    }
+
+    /**
+     * @return Repository
+     */
+    public function getRepository()
+    {
+        if (empty($this->repository)) {
+            $this->repository = $this->getContainer()->get(Repository::class, [null, ['upstream' => $this,],]);
+        }
+        return $this->repository;
     }
 
     /**
