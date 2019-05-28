@@ -17,7 +17,6 @@ use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
-use Pantheon\Terminus\Request\GraphQLRequest;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Request\RequestAwareInterface;
 use Pantheon\Terminus\Session\Session;
@@ -223,7 +222,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Site\\Team\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Site\\Team\\RoleCommand',
             'Pantheon\\Terminus\\Commands\\Site\\Upstream\\ClearCacheCommand',
-            'Pantheon\\Terminus\\Commands\\Site\\Upstream\\RepositoryInfoCommand',
             'Pantheon\\Terminus\\Commands\\Site\\Upstream\\SetCommand',
             'Pantheon\\Terminus\\Commands\\Solr\\DisableCommand',
             'Pantheon\\Terminus\\Commands\\Solr\\EnableCommand',
@@ -234,7 +232,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\TerminusCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\InfoCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\ListCommand',
-            'Pantheon\\Terminus\\Commands\\Upstream\\RepositoryInfoCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\ApplyCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Upstream\\Updates\\StatusCommand',
@@ -295,10 +292,9 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         // Request
         $container->add(Client::class);
         $container->add(HttpRequest::class);
-        $container->add(GraphQLRequest::class);
         $container->share('request', Request::class);
         $container->inflector(RequestAwareInterface::class)
-            ->invokeMethod('setRequest', ['request',]);
+            ->invokeMethod('setRequest', ['request']);
 
         // Session
         $session_store = new FileStore($this->getConfig()->get('cache_dir'));
@@ -372,7 +368,6 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(\Pantheon\Terminus\Models\Plan::class);
         $container->add(\Pantheon\Terminus\Models\Profile::class);
         $container->add(\Pantheon\Terminus\Models\Redis::class);
-        $container->add(\Pantheon\Terminus\Models\Repository::class);
         $container->add(\Pantheon\Terminus\Models\SSHKey::class);
         $container->add(\Pantheon\Terminus\Models\SavedToken::class);
         $container->add(\Pantheon\Terminus\Models\Site::class);

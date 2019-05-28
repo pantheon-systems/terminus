@@ -2,8 +2,6 @@
 
 namespace Pantheon\Terminus\Models;
 
-use League\Container\ContainerAwareInterface;
-use League\Container\ContainerAwareTrait;
 use Pantheon\Terminus\Friends\OrganizationInterface;
 use Pantheon\Terminus\Friends\OrganizationTrait;
 
@@ -11,16 +9,15 @@ use Pantheon\Terminus\Friends\OrganizationTrait;
  * Class Upstream
  * @package Pantheon\Terminus\Models
  */
-class Upstream extends TerminusModel implements ContainerAwareInterface, OrganizationInterface
+class Upstream extends TerminusModel implements OrganizationInterface
 {
-    use ContainerAwareTrait;
     use OrganizationTrait;
 
     const PRETTY_NAME = 'upstream';
     /**
      * @var string
      */
-    protected $url = 'organizations/{org_id}/upstreams/{id}';
+    protected $url = 'upstreams/{id}';
 
     /**
      * @return Organization|null Returns a Organization-type object
@@ -36,17 +33,6 @@ class Upstream extends TerminusModel implements ContainerAwareInterface, Organiz
     public function getReferences()
     {
         return [$this->id, $this->get('product_id'), $this->get('label'), $this->get('machine_name'),];
-    }
-
-    /**
-     * @return Repository
-     */
-    public function getRepository()
-    {
-        if (empty($this->repository)) {
-            $this->repository = $this->getContainer()->get(Repository::class, [null, ['upstream' => $this,],]);
-        }
-        return $this->repository;
     }
 
     /**
