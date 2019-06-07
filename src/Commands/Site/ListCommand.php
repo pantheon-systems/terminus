@@ -32,9 +32,12 @@ class ListCommand extends SiteCommand
      * @return RowsOfFields
      *
      * @option name Name filter
+     * @option hide_frozen Hide frozen toggle; Do not return frozen sites.
+     * @option framework Framework filter; filter by site's framework
      * @option org Organization filter; "all" or an organization's name, label, or ID
      * @option owner Owner filter; "me" or user UUID
      * @option plan Plan filter; filter by the plan's label
+     * @option plan_not Plan NOT filter; filter by site's NOT of a given plan
      * @option team Team-only filter
      * @option string $upstream Upstream name to filter
      *
@@ -44,11 +47,13 @@ class ListCommand extends SiteCommand
      * @usage --org=all Displays a list of accessible sites associated with any organization of which the currently logged-in is a member.
      * @usage --owner=<user> Displays the list of accessible sites owned by the user with UUID <user>.
      * @usage --owner=me Displays the list of sites owned by the currently logged-in user.
-     * @usage --plan=<plan> Displays the list of sites with a plan of this name
+     * @usage --plan=<plan> Displays the list of sites with a plan of this name.
+     * @usage --plan_not=<plan> Displays the list of sites WITHOUT the plan named <plan>.
      * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
      * @usage --upstream=<upstream> Displays the list of sites with the upstream having UUID <upstream>.
+     * @usage <organization> --framework=wordpress Displays a list of accessible sites with the WordPress framework.
      */
-    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'team' => false, 'upstream' => null,])
+    public function index($options = ['name' => null, 'hide_frozen' => true, 'framework' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'plan_not' => null, 'team' => false, 'upstream' => null,])
     {
         $user = $this->session()->getUser();
         $this->sites()->fetch(
@@ -61,8 +66,18 @@ class ListCommand extends SiteCommand
         if (isset($options['name']) && !is_null($name = $options['name'])) {
             $this->sites->filterByName($name);
         }
+        if (isset($options['hide_frozen'])) {
+            $frozen_status = ! boolval($options['hide_frozen']);
+            $this->sites->filterByFrozenStatus($frozen_status);
+        }
+        if (isset($options['framework']) && !is_null($framework = $options['framework'])) {
+            $this->sites->filterByFramework($framework);
+        }
         if (isset($options['plan']) && !is_null($plan = $options['plan'])) {
             $this->sites->filterByPlanName($plan);
+        }
+        if (isset($options['plan_not']) && !is_null($plan_not = $options['plan_not'])) {
+            $this->sites->filterByPlanNameNot($plan_not);
         }
         if (!is_null($upstream = $options['upstream'])) {
             $this->sites->filterByUpstream($upstream);

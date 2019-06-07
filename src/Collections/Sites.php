@@ -129,6 +129,46 @@ class Sites extends APICollection implements SessionAwareInterface
     }
 
     /**
+     * Filters an array of sites by excluding the specified plan name
+     *
+     * @param string $plan_not Name of the plan to omit
+     * @return Sites
+     */
+    public function filterByPlanNameNot($plan_not)
+    {
+        $plan_not = strtolower($plan_not);
+        return $this->filter(function ($model) use ($plan_not) {
+            return (strtolower($model->get('plan_name')) !== $plan_not);
+        });
+    }
+
+    /**
+     * Filters an array of sites by frozen status
+     *
+     * @param bool $frozen
+     * @return Sites
+     */
+    public function filterByFrozenStatus(bool $frozen)
+    {
+        return $this->filter(function ($model) use ($frozen) {
+            return (!empty($model->get('frozen')) === $frozen);
+        });
+    }
+
+    /**
+     * Filters an array of sites by framework
+     *
+     * @param bool $framework
+     * @return Sites
+     */
+    public function filterByFramework($framework)
+    {
+        return $this->filter(function ($model) use ($framework) {
+            return (strtolower($model->get('framework')) === strtolower($framework));
+        });
+    }
+
+    /**
      * Filters an array of sites by whether the user is an organizational member
      *
      * @param string $owner_uuid UUID of the owning user to filter by
