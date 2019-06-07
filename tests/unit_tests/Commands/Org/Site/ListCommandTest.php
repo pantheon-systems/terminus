@@ -40,7 +40,7 @@ class ListCommandTest extends OrgSiteCommandTest
 
         $this->logger->expects($this->once())
             ->method('log')
-            ->with($this->equalTo('warning'), $this->equalTo('This organization has no sites.'));
+            ->with($this->equalTo('warning'), $this->equalTo('This organization has no sites matching the given parameters.'));
 
         $out = $this->command->listSites($this->organization->id);
         $this->assertInstanceOf('Consolidation\OutputFormatters\StructuredData\RowsOfFields', $out);
