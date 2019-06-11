@@ -73,7 +73,7 @@ Feature: Listing sites
         Memberships
     """
     And that table should have 1 row
-    And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   Sandbox   wordpress   chios    11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team   false"
+    And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   Sandbox   wordpress   United States    11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team   false"
 
   @vcr site-list.yml
   Scenario: Filter sites list by name
@@ -91,7 +91,7 @@ Feature: Listing sites
         Memberships
     """
     And that table should have 1 row
-    And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   Sandbox   wordpress   chios    11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team   false"
+    And I should get: "[[test_site_name]]   11111111-1111-1111-1111-111111111111   Sandbox   wordpress   United States    11111111-1111-1111-1111-111111111111   2016-08-16 22:09:01   11111111-1111-1111-1111-111111111111: Team   false"
 
   @vcr site-list.yml
   Scenario: Filter sites list by name, excluding the test site
