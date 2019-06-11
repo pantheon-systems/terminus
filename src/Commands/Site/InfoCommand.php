@@ -26,7 +26,7 @@ class InfoCommand extends SiteCommand
      *     label: Label
      *     created: Created
      *     framework: Framework
-     *     region: Region
+     *     region: Region Code
      *     region_label: Region
      *     organization: Organization
      *     plan_name: Plan
@@ -37,7 +37,7 @@ class InfoCommand extends SiteCommand
      *     owner: Owner
      *     frozen: Is Frozen?
      *     last_frozen_at: Date Last Frozen
-     * @default-fields id,name,label,created,framework,region_label,organization,plan_name,max_num_cdes,upstream,holder_type,holder_id,owner,frozen,last_frozen_at
+     * @default-table-fields id,name,label,created,framework,region_label,organization,plan_name,max_num_cdes,upstream,holder_type,holder_id,owner,frozen,last_frozen_at
      * @return PropertyList
      *
      * @param string $site The name or UUID of a site to retrieve information on

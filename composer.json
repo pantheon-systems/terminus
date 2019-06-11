@@ -9,7 +9,7 @@
   "require": {
     "php": ">=5.5.38",
     "composer/semver": "^1.4",
-    "consolidation/output-formatters": "^3.2",
+    "consolidation/output-formatters": "^3.5",
     "consolidation/robo": "^1.4.4",
     "guzzlehttp/guzzle": "^6.2",
     "psy/psysh": "^0.8",

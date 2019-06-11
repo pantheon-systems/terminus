@@ -22,7 +22,7 @@ class ListCommand extends SiteCommand
      *     id: ID
      *     plan_name: Plan
      *     framework: Framework
-     *     region: Region
+     *     region: Region Code
      *     region_label: Region
      *     owner: Owner
      *     created: Created
