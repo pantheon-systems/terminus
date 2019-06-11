@@ -23,12 +23,13 @@ class ListCommand extends SiteCommand
      *     plan_name: Plan
      *     framework: Framework
      *     region: Region
+     *     region_label: Region
      *     owner: Owner
      *     created: Created
      *     memberships: Memberships
      *     frozen: Is Frozen?
      *     last_frozen_at: Date frozen
-     * @default-fields name,id,plan_name,framework,region,owner,created,memberships,frozen
+     * @default-fields name,id,plan_name,framework,region_label,owner,created,memberships,frozen
      * @return RowsOfFields
      *
      * @option name Name filter
