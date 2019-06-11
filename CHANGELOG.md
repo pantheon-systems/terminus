@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
-- Fixed `site:info` and `site:list` to use human-readable region names in table output. (#1982)
+- Fixed `site:info` and `site:list` to use human-readable region names in table output. Renamed machine "Region" field to "Region Code" and introduced new "Region" field to hold human-readable region name. (#1982)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed
