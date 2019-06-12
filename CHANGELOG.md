@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
-- Fixed `site:info` and `site:list` to use human-readable region names in table output. Renamed machine "Region" field to "Region Code" and introduced new "Region" field to hold human-readable region name. (#1982)
+### Added
+- Added `region_label` field to the output of `site:info`, labeled "Region". (#1982)
+- Added `region_label` field to the output of `site:list`, labeled "Region". (#1982)
+- Added `region_label` field to the output of `Site::serialize()`. (#1982)
+
+### Changed
+- `site:info`'s label of the `region` field has been changed from "Region" to "Region Code". (#1982)
+- `site:list`'s label of the `region` field has been changed from "Region" to "Region Code". (#1982)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed
