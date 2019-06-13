@@ -3,8 +3,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 ### Changed
-- `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1982)
-- `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1982)
+- `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
+- `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed
