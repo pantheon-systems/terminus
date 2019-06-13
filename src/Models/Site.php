@@ -383,8 +383,7 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
             'holder_type' => $this->get('holder_type'),
             'holder_id' => $this->get('holder_id'),
             'owner' => $this->get('owner'),
-            'region' => $this->get('preferred_zone'),
-            'region_label' => $this->get('preferred_zone_label'),
+            'region' => $this->get('preferred_zone_label'),
             'frozen' => $this->isFrozen(),
             'last_frozen_at' => $this->get('last_frozen_at'),
         ];
