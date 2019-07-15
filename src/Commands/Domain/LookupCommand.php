@@ -22,6 +22,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
+     *
      * @command domain:lookup
      *
      * @field-labels
