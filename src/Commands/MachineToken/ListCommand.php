@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Lists the currently logged-in user's machine tokens.
      *
      * @authorize
+     * @filter-output
      *
      * @command machine-token:list
      * @aliases machine-tokens mt:list mts
