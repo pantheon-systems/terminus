@@ -13,6 +13,7 @@ class ListCommand extends SiteCommand
      * Displays the list of sites accessible to the currently logged-in user.
      *
      * @authorize
+     * @filter-output
      *
      * @command site:list
      * @aliases sites
