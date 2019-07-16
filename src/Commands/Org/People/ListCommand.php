@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Displays the list of users associated with an organization.
      *
      * @authorize
+     * @filter-output
      *
      * @command org:people:list
      * @aliases org:ppl:list
