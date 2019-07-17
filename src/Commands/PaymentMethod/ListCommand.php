@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Displays the list of payment methods for the currently logged-in user.
      *
      * @authorize
+     * @filter-output
      *
      * @command payment-method:list
      * @aliases payment-methods pm:list pms
