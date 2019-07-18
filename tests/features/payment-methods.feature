@@ -7,6 +7,18 @@ Feature: Payment method command
     Given I am authenticated
 
   @vcr payment-method-list.yml
+  Scenario: Listing a user's payment methods and filtering
+    When I run:
+    """
+    terminus payment-method:list --filter="label=[[payment_method_label]]"
+    """
+    Then I should get: "------------- --------------------------------------"
+    And I should get: "Label         ID"
+    And I should get: "------------- --------------------------------------"
+    And I should get: "[[payment_method_label]]   8558e04f-3674-481e-b448-bccff73cb430"
+    And I should get: "------------- --------------------------------------"
+
+  @vcr payment-method-list.yml
   Scenario: Listing a user's payment methods
     When I run "terminus payment-method:list"
     Then I should get: "------------- --------------------------------------"
@@ -14,6 +26,16 @@ Feature: Payment method command
     And I should get: "------------- --------------------------------------"
     And I should get: "[[payment_method_label]]   8558e04f-3674-481e-b448-bccff73cb430"
     And I should get: "------------- --------------------------------------"
+
+  @vcr payment-method-list.yml
+  Scenario: Listing a user's payment methods and filtering when they don't have any matches
+    When I run:
+    """
+    terminus payment-method:list --filter="label=invalid"
+    """
+    Then I should get: "------- ----"
+    And I should get: "Label   ID"
+    And I should get: "------- ----"
 
   @vcr payment-method-site-list-empty.yml
   Scenario: Listing a user's payment methods when they don't have any
