@@ -247,9 +247,6 @@ class CloneContentCommandTest extends EnvCommandTest
         $site_name = 'site-name';
         $this->environment->id = 'dev';
 
-        $this->environment->expects($this->any())
-            ->method('getName')
-            ->willReturn($this->environment->id);
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
