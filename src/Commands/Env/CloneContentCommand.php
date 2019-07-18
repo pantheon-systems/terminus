@@ -70,8 +70,8 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
         $this->target_env = $site->getEnvironments()->get($target_env);
 
         if ($this->source_env->id === $target_env) {
-          $this->log()->notice('Skipping clone since environments are the same.');
-          return;
+            $this->log()->notice('Skipping clone since environments are the same.');
+            return;
         }
 
         $this->checkForInitialization($this->source_env, 'from');
