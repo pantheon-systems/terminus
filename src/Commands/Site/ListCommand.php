@@ -32,10 +32,10 @@ class ListCommand extends SiteCommand
      * @default-fields name,id,plan_name,framework,region,owner,created,memberships,frozen
      * @return RowsOfFields
      *
-     * @option name Name filter
-     * @option org Organization filter; "all" or an organization's name, label, or ID
+     * @option name DEPRECATED Name filter
+     * @option org DEPRECATED Organization filter; "all" or an organization's name, label, or ID
      * @option owner Owner filter; "me" or user UUID
-     * @option plan Plan filter; filter by the plan's label
+     * @option plan DEPRECATED Plan filter; filter by the plan's label
      * @option team Team-only filter
      * @option string $upstream Upstream name to filter
      *
