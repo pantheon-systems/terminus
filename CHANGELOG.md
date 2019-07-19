@@ -124,9 +124,6 @@ All notable changes to this project will be documented in this file. This projec
 - Added `SiteUserMemberships::isOwner()` function in order to ascertain whether the user is the site's owner. (#1949)
 - A `--progress` option has been added to `remote:drush` and `remote:wp` to enable progress for remote commands. (#1947)
 
-
-
-
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
 - `site:info` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -172,7 +169,6 @@ All notable changes to this project will be documented in this file. This projec
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
 - `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
-
 
 ### Fixed
 - Fixed `Environment::importDatabase()` by switching from using the `import_database` workflow to `do_import`. (#1909)
