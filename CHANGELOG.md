@@ -91,7 +91,24 @@ All notable changes to this project will be documented in this file. This projec
 - Added `is_owner` field to the output of `site:team:list` in order to indicate which user is the site owner. (#1949)
 - Added boolean `is_owner` field to the output of `SiteUserMemberships::serialize()` in order to indicate which user is the site owner. (#1949)
 - Added `SiteUserMemberships::isOwner()` function in order to ascertain whether the user is the site's owner. (#1949)
-- A `--progress` option has been added to `remote:drush` and `remote:wp` to enable progress for remote commands. (#1947)
+- A `--progress` option has been added to `remote:drush` and `remote:wp` to enable progress for remote commands. (#1947)\- Added --filter option to `backup:list` command (#1992)
+- Added --filter option to `org:list` command (#1992)
+- Added --filter option to `branch:list` command (#1992)
+- Added --filter option to `domain:list` command (#1992)
+- Added --filter option to `env:list` command (#1992)
+- Added --filter option to `multidev:list` command (#1992)
+- Added --filter option to `org:people:list` command (#1992)
+- Added --filter option to `org:site:list` command (#1992)
+- Added --filter option to `org:upstream:list` command (#1992)
+- Added --filter option to `payment-method:list` command (#1992)
+- Added --filter option to `plan:list` command (#1992)
+- Added --filter option to `site:list` command (#1992)
+- Added --filter option to `site:org:list` command (#1992)
+- Added --filter option to `site:team:list` command (#1992)
+- Added --filter option to `ssh-key:list` command (#1992)
+- Added --filter option to `upstream:list` command (#1992)
+- Added --filter option to `upstream:updates:list` command (#1992)
+
 
 ### Changed
 - `org:site:list` now displays a `Plan`/`plan_name` field to replace `Service Level`/`service_level`. (#1901)
@@ -138,6 +155,12 @@ All notable changes to this project will be documented in this file. This projec
 ### Deprecated
 - `service-level:set` is now deprecated. Please use `plan:set`. (#1901)
 - `Site::updateServiceLevel()` is now deprecated. Please use `Plans::set()`. (#1901)
+- `backup:list` `--element=VALUE` option is deprecated. Use `--filter="type=VALUE"` instead. (#1992)
+- `org:upstream:list` `--framework=VALUE`  options is deprecated. Use `--filter="id=VALUE" instead. (#1992)
+- `org:upstream:list` `--name=VALUE` option is deprecated. Use `--filter="id=VALUE" instead. (#1992) 
+- `site:list` `--name=VALUE` option is deprecated. Use `--filter="id=VALUE" instead.(#1992) 
+- `site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE" instead.(#1992) 
+- `site:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE" instead. (#1992
 
 ### Fixed
 - Fixed `Environment::importDatabase()` by switching from using the `import_database` workflow to `do_import`. (#1909)
