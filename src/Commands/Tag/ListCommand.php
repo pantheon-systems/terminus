@@ -14,7 +14,6 @@ class ListCommand extends TagCommand
      * Displays the list of tags for a site within an organization.
      *
      * @authorize
-     * 
      *
      * @command tag:list
      * @aliases tags
