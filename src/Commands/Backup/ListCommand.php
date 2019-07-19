@@ -17,6 +17,7 @@ class ListCommand extends BackupCommand
      * Lists backups for a specific site and environment.
      *
      * @authorize
+     * @filter-output
      *
      * @command backup:list
      * @aliases backups
@@ -30,7 +31,7 @@ class ListCommand extends BackupCommand
      * @return RowsOfFields
      *
      * @param string $site_env Site & environment in the format `site-name.env`
-     * @option string $element [all|code|files|database|db] Backup element filter
+     * @option string $element [all|code|files|database|db] DEPRECATED Backup element filter
      *
      * @usage <site>.<env> Lists all backups made of <site>'s <env> environment.
      * @usage <site>.<env> --element=<element> Lists all <element> backups made of <site>'s <env> environment.

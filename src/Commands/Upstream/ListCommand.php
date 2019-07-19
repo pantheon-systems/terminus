@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Displays the list of upstreams accessible to the currently logged-in user.
      *
      * @authorize
+     * @filter-output
      *
      * @command upstream:list
      * @aliases upstreams
@@ -31,8 +32,8 @@ class ListCommand extends TerminusCommand
      *     framework: Framework
      *     organization: Organization
      * @option all Show all upstreams
-     * @option framework Framework filter
-     * @option name Name filter
+     * @option framework DEPRECATED Framework filter
+     * @option name DEPRECATED Name filter
      * @option org Organization filter; "all" or an organization's name, label, or ID
      * @return RowsOfFields
      *

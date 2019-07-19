@@ -18,6 +18,7 @@ class ListCommand extends SiteCommand
      * Displays the list of available site plans.
      *
      * @authorize
+     * @filter-output
      *
      * @command plan:list
      * @aliases plans

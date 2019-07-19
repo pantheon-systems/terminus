@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the list of supporting organizations associated with a site.
      *
      * @authorize
+     * @filter-output
      *
      * @command site:org:list
      * @aliases site:orgs

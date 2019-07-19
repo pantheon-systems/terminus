@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Displays the list of SSH public keys associated with the currently logged-in user.
      *
      * @authorize
+     * @filter-output
      *
      * @command ssh-key:list
      * @aliases ssh-keys
