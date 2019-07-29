@@ -16,6 +16,13 @@ class PluginDiscovery implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
+     * List of all Terminus plugins that have been rolled into Terminus core.
+     */
+    const BLACKLIST = [
+        'pantheon-systems/terminus-aliases-plugin'
+    ];
+
+    /**
      * @var string The path to the directory to search for plugins.
      */
     protected $directory_path;
@@ -49,7 +56,9 @@ class PluginDiscovery implements LoggerAwareInterface
             if ($dir->isDir() && !$dir->isDot() && $dir->isReadable()) {
                 try {
                     $plugin = new PluginInfo($dir->getPathname());
-                    $out[] = $plugin;
+                    if (!in_array($plugin->getName(), self::BLACKLIST)) {
+                        $out[] = $plugin;
+                    }
                 } catch (TerminusException $e) {
                     $this->logger->warning(
                         'Plugin Discovery: Ignoring directory {dir} because: {msg}.',
