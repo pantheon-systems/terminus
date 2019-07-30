@@ -87,7 +87,6 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function getSites($options)
     {
-        $this->fetch();
         if (!empty($options['only'])) {
             return $this->getSpecifiedSites(explode(',', $options['only']));
         }
@@ -115,16 +114,17 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function getAllSites($options)
     {
+        $this->fetch(false);
         return $this->sites->ids();
     }
 
-    protected function fetch()
+    protected function fetch($team_only)
     {
         $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
                 'org_id' => null,
-                'team_only' => false,
+                'team_only' => $team_only,
             ]
         );
     }
@@ -135,8 +135,8 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function getSitesWithDirectMembership()
     {
+        $this->fetch(true);
         $user = $this->session()->getUser();
-        $this->sites->filterByOwner($user->id);
         return $this->sites->ids();
     }
 
