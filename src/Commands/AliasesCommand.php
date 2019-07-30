@@ -2,38 +2,200 @@
 
 namespace Pantheon\Terminus\Commands;
 
+use Pantheon\Terminus\Commands\TerminusCommand;
+
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
+
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasCollection;
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasData;
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
+use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
+use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
+
+use Symfony\Component\Console\Helper\ProgressBar;
+
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 
-class AliasesCommand extends TerminusCommand
+/**
+ * Generate lots of aliases
+ */
+class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
+
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
-     * @authorize
+     * @authenticated
      *
      * @command aliases
-     * @aliases drush:aliases
+     * @aliases alpha:aliases
      *
-     * @option boolean $print Print aliases only
-     * @option string $location Path and filename; default: ~/.drush/pantheon.aliases.drushrc.php will be used
+     * @option boolean $print Print aliases only (Drush 8 format)
+     * @option string $location Path and filename for php aliases.
+     * @option boolean $all Include all sites available, including team memberships.
+     * @option string $only Only generate aliases for sites in the specified comma-separated list. This option is only recommended for use in CI scripts.
+     * @option string $type Type of aliases to create: 'php', 'yml' or 'all'.
+     * @option string $base Base directory to write .yml aliases.
+     * @option string $target Base name to use to generate path to alias files.
+     * @option boolean $db-url Obsolete option included to preserve backwards compatibility. No longer needed.
      *
      * @return string|null
      *
      * @usage Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
-     * @usage --print Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
-     * @usage --location=<full_path> Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
+     * @usage --print Displays Pantheon Drush 8 aliases for sites on which the currently logged-in user is on the team.
+     * @usage --location=<full_path> Saves Pantheon Drush 8 aliases for sites on which the currently logged-in user is on the team to <full_path>.
      */
-    public function aliases($options = ['print' => false, 'location' => null,])
+    public function aliases($options = [
+        'print' => false,
+        'location' => null,
+        'all' => false,
+        'only' => '',
+        'type' => 'all',
+        'base' => '~/.drush',
+        'db-url' => true,
+        'target' => 'pantheon',
+    ])
     {
-        $aliases = $this->session()->getUser()->getAliases();
-        if (isset($options['print']) && $options['print']) {
-            return $aliases;
-        }
-        if (is_null($location = $options['location'])) {
-            $location = '~/.drush/pantheon.aliases.drushrc.php';
+        // Be forgiving about the spelling of 'yaml'
+        if ($options['type'] == 'yaml') {
+            $options['type'] = 'yml';
         }
 
-        $this->getContainer()->get(LocalMachineHelper::class)->writeFile($location, $aliases);
-        $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
+        $this->log()->notice("Fetching information to build Drush aliases...");
+        $site_ids = $this->getSites($options);
+
+        // Collect information on the requested sites
+        $collection = $this->getAliasCollection($site_ids);
+
+        // Write the alias files (only of the type requested)
+        $emitters = $this->getAliasEmitters($options);
+        if (empty($emitters)) {
+            throw new \Exception('No emitters; nothing to do.');
+        }
+        foreach ($emitters as $emitter) {
+            $this->log()->debug("Emitting aliases via {emitter}", ['emitter' => get_class($emitter)]);
+            $this->log()->notice($emitter->notificationMessage());
+            $emitter->write($collection);
+        }
+    }
+
+    /**
+     * Fetch those sites indicated by the commandline options.
+     */
+    protected function getSites($options)
+    {
+        $this->fetch();
+        if (!empty($options['only'])) {
+            return $this->getSpecifiedSites(explode(',', $options['only']));
+        }
+        if (!$options['all']) {
+            return $this->getSitesWithDirectMembership();
+        }
+        return $this->getAllSites($options);
+    }
+
+    /**
+     * Fetch the sites listed on the command line.
+     */
+    protected function getSpecifiedSites($siteList)
+    {
+        $result = [];
+        foreach ($siteList as $siteName) {
+            $site = $this->sites()->get($siteName);
+            $result[] = $site->id;
+        }
+        return $result;
+    }
+
+    /**
+     * Look up all available sites, as filtered by --org and --team
+     */
+    protected function getAllSites($options)
+    {
+        return $this->sites->ids();
+    }
+
+    protected function fetch()
+    {
+        $user = $this->session()->getUser();
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => false,
+            ]
+        );
+    }
+
+    /**
+     * Look up those sites that the user has a direct membership in
+     * (excluding sites )
+     */
+    protected function getSitesWithDirectMembership()
+    {
+        $user = $this->session()->getUser();
+        $this->sites->filterByOwner($user->id);
+        return $this->sites->ids();
+    }
+
+    /**
+     * getAliasEmitters returns a list of emitters based on the provided options.
+     */
+    protected function getAliasEmitters($options)
+    {
+        $config = $this->getConfig();
+        $home = $config->get('user_home');
+        $base_dir = preg_replace('#^~#', $home, $options['base']);
+        $target_name = $options['target'];
+        $emitterType = $options['type'];
+        if ($options['print']) {
+            $emitterType = 'print';
+        }
+        $location = !empty($options['location']) ? $options['location'] : "$base_dir/$target_name.aliases.drushrc.php";
+        $emitters = [];
+
+        if ($this->emitterTypeMatches($emitterType, 'print', false)) {
+            $emitters[] = new PrintingEmitter($this->output());
+        }
+        if ($this->emitterTypeMatches($emitterType, 'php')) {
+            $emitters[] = new AliasesDrushRcEmitter($location, $base_dir);
+        }
+        if ($this->emitterTypeMatches($emitterType, 'yml')) {
+            $emitters[] = new DrushSitesYmlEmitter($base_dir, $home, $target_name);
+        }
+
+        return $emitters;
+    }
+
+    protected function emitterTypeMatches($emitterType, $checkType, $default = true)
+    {
+        if (!$emitterType || ($emitterType === 'all')) {
+            return $default;
+        }
+        return $emitterType === $checkType;
+    }
+
+    protected function getAliasCollection($site_ids)
+    {
+        $collection = new AliasCollection();
+
+        $this->log()->notice("Collecting information about Pantheon sites and environments...");
+        $out = $this->output()->getErrorOutput();
+        $progressBar = new ProgressBar($out, count($site_ids));
+
+        foreach ($site_ids as $site_id) {
+            $site = $this->sites->get($site_id);
+            $site_name = $site->get('name');
+
+            $alias = new AliasData($site_name, '*', $site_id);
+            $collection->add($alias);
+            $progressBar->advance();
+        }
+        $progressBar->finish();
+        $out->writeln('');
+
+        return $collection;
     }
 }
