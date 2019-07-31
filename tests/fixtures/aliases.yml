@@ -2,7 +2,7 @@
 -
     request:
         method: POST
-        url: 'https://terminus.pantheon.io:443/api/authorize/machine-token'
+        url: 'https://onebox/api/authorize/machine-token'
         headers:
             Host: 'terminus.pantheon.io:443'
             Expect: null
@@ -35,7 +35,7 @@
 -
     request:
         method: GET
-        url: 'https://terminus.pantheon.io:443/api/users/b3a42ba5-755d-42ca-9109-21bde32809d0/memberships/sites?limit=100'
+        url: 'https://onebox/api/users/b3a42ba5-755d-42ca-9109-21bde32809d0/memberships/sites?limit=100'
         headers:
             Host: 'terminus.pantheon.io:443'
             Accept-Encoding: null
