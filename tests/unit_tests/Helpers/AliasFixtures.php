@@ -119,5 +119,3 @@ class AliasFixtures
         return $collection;
     }
 }
-
-
