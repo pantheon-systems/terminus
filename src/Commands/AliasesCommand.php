@@ -14,10 +14,6 @@ use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
 use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
-
 /**
  * Generate lots of aliases
  */
@@ -64,11 +60,13 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
             $options['type'] = 'yml';
         }
 
-        $this->log()->notice("Fetching information to build Drush aliases...");
+        $this->log()->notice("Fetching site information to build Drush aliases...");
         $site_ids = $this->getSites($options);
 
         // Collect information on the requested sites
         $collection = $this->getAliasCollection($site_ids);
+
+        $this->log()->notice("{count} sites found.", ['count' => count($site_ids)]);
 
         // Write the alias files (only of the type requested)
         $emitters = $this->getAliasEmitters($options);
@@ -77,9 +75,14 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         }
         foreach ($emitters as $emitter) {
             $this->log()->debug("Emitting aliases via {emitter}", ['emitter' => get_class($emitter)]);
-            $this->log()->notice($emitter->notificationMessage());
+            $this->log()->notice($this->shortenHomePath($emitter->notificationMessage()));
             $emitter->write($collection);
         }
+    }
+
+    protected function shortenHomePath($message)
+    {
+        return str_replace($this->getConfig()->get('user_home'), '~', $message);
     }
 
     /**
@@ -104,7 +107,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         $result = [];
         foreach ($siteList as $siteName) {
             $site = $this->sites()->get($siteName);
-            $result[] = $site->id;
+            $result[$site->id] = $siteName;
         }
         return $result;
     }
@@ -114,30 +117,41 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function getAllSites($options)
     {
-        $this->fetch(false);
-        return $this->sites->ids();
-    }
-
-    protected function fetch($team_only)
-    {
-        $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
                 'org_id' => null,
-                'team_only' => $team_only,
+                'team_only' => false,
             ]
         );
+        return $this->getSiteNames($this->sites->ids());
     }
 
     /**
      * Look up those sites that the user has a direct membership in
-     * (excluding sites )
      */
     protected function getSitesWithDirectMembership()
     {
-        $this->fetch(true);
-        $user = $this->session()->getUser();
-        return $this->sites->ids();
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => true,
+            ]
+        );
+        return $this->getSiteNames($this->sites->ids());
+    }
+
+    /**
+     * Given a set of site ids, return an id=>name mapping.
+     */
+    protected function getSiteNames($site_ids)
+    {
+        $result = [];
+        foreach ($site_ids as $site_id) {
+            $site = $this->sites->get($site_id);
+            $site_name = $site->get('name');
+            $result[$site_id] = $site_name;
+        }
+        return $result;
     }
 
     /**
@@ -145,8 +159,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      */
     protected function getAliasEmitters($options)
     {
-        $config = $this->getConfig();
-        $home = $config->get('user_home');
+        $home = $this->getConfig()->get('user_home');
         $base_dir = preg_replace('#^~#', $home, $options['base']);
         $target_name = $options['target'];
         $emitterType = $options['type'];
@@ -181,20 +194,10 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     {
         $collection = new AliasCollection();
 
-        $this->log()->notice("Collecting information about Pantheon sites and environments...");
-        $out = $this->output()->getErrorOutput();
-        $progressBar = new ProgressBar($out, count($site_ids));
-
-        foreach ($site_ids as $site_id) {
-            $site = $this->sites->get($site_id);
-            $site_name = $site->get('name');
-
+        foreach ($site_ids as $site_id => $site_name) {
             $alias = new AliasData($site_name, '*', $site_id);
             $collection->add($alias);
-            $progressBar->advance();
         }
-        $progressBar->finish();
-        $out->writeln('');
 
         return $collection;
     }

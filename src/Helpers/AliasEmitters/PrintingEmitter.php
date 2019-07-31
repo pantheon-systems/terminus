@@ -15,7 +15,7 @@ class PrintingEmitter extends AliasesDrushRcBase
 
     public function notificationMessage()
     {
-        return 'Displaying Drush 8 alias file contents';
+        return 'Displaying Drush 8 alias file contents.';
     }
 
     public function write(AliasCollection $collection)
