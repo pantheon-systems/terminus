@@ -80,6 +80,13 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         }
     }
 
+    /**
+     * Utility function to convert references to the home path to simply '~'
+     *
+     * @param string $message
+     *
+     * @return string
+     */
     protected function shortenHomePath($message)
     {
         return str_replace($this->getConfig()->get('user_home'), '~', $message);
@@ -87,6 +94,13 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Fetch those sites indicated by the commandline options.
+     *
+     * @param array $options
+     *   Full set of commanline options, some of which may affect selected set
+     *   of sites returned.
+     *
+     * @return array
+     *   Associative array of site id => site name
      */
     protected function getSites($options)
     {
@@ -101,6 +115,12 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Fetch the sites listed on the command line.
+     *
+     * @param array $siteList
+     *   List of site names
+     *
+     * @return array
+     *   Associative array of site id => site name
      */
     protected function getSpecifiedSites($siteList)
     {
@@ -114,6 +134,13 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Look up all available sites, as filtered by --org and --team
+     *
+     * @param array $options
+     *   Full set of commanline options, some of which may affect selected set
+     *   of sites returned.
+     *
+     * @return array
+     *   Associative array of site id => site name
      */
     protected function getAllSites($options)
     {
@@ -128,6 +155,9 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Look up those sites that the user has a direct membership in
+     *
+     * @return array
+     *   Associative array of site id => site name
      */
     protected function getSitesWithDirectMembership()
     {
@@ -142,6 +172,12 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * Given a set of site ids, return an id=>name mapping.
+     *
+     * @param array $site_ids
+     *   List of site ids
+     *
+     * @return array
+     *   Associative array of site id => site name
      */
     protected function getSiteNames($site_ids)
     {
@@ -156,6 +192,12 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 
     /**
      * getAliasEmitters returns a list of emitters based on the provided options.
+     *
+     * @param array $options
+     *   Full set of commanline options, some of which may affect the
+     *   emitters returned
+     *
+     * @return AliasEmitterInterface[]
      */
     protected function getAliasEmitters($options)
     {
@@ -182,6 +224,19 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         return $emitters;
     }
 
+    /**
+     * Determine whether the provided emitter type matches the desired emitter
+     * type or types
+     *
+     * @param string $emitterType
+     *   The type of emitter(s) desired
+     * @param string $checkType
+     *   The type of emitter we are testing for
+     * @param bool $default
+     *   Whether the emitter we are testing for belongs in 'all' or not.
+     *
+     * @return bool
+     */
     protected function emitterTypeMatches($emitterType, $checkType, $default = true)
     {
         if (!$emitterType || ($emitterType === 'all')) {
@@ -190,6 +245,14 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         return $emitterType === $checkType;
     }
 
+    /**
+     * Get a collection of aliases from the set of site ids provided.
+     *
+     * @param array $site_ids
+     *   Associative array of site id => site name
+     *
+     * @return AliasCollection
+     */
     protected function getAliasCollection($site_ids)
     {
         $collection = new AliasCollection();
