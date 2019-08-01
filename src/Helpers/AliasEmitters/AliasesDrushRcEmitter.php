@@ -8,17 +8,29 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase
 {
     protected $location;
 
+    /**
+     * AliasesDrushRcEmitter consturctor
+     *
+     * @param string $location
+     * @param string $base_dir
+     */
     public function __construct($location, $base_dir)
     {
         $this->location = $location;
         $this->base_dir = $base_dir;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function notificationMessage()
     {
         return 'Writing Drush 8 alias file to ' . $this->location;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function write(AliasCollection $collection)
     {
         $alias_file_contents = $this->getAliasContents($collection);
@@ -46,6 +58,11 @@ class AliasesDrushRcEmitter extends AliasesDrushRcBase
         $copied = $policyTemplate->copy($policyFromPath, $policyToPath);
     }
 
+    /**
+     * Determine which lines should be removed when re-writing Drush config file.
+     *
+     * @return bool
+     */
     protected function filterForPantheon($line)
     {
         if (strpos($line, '.drush/pantheon/drush8') !== false) {

@@ -133,13 +133,17 @@ class AliasesCommandTest extends CommandTestCase
         $out = $this->command->aliases();
         $this->assertNull($out);
 
-        $expected_drush_8_alias_path = str_replace(DIRECTORY_SEPARATOR, '/', $this->home_dir) . '/.drush/pantheon.aliases.drushrc.php';
+        if (substr(PHP_OS, 0, 3) == 'WIN') {
+          $this->MarkTestSkipped("Temp file handling on Windows is not working correctly in this test.");
+        }
+
+        $expected_drush_8_alias_path = $this->home_dir . '/.drush/pantheon.aliases.drushrc.php';
         $this->assertFileExists($expected_drush_8_alias_path);
         $drush_8_aliases = file_get_contents($expected_drush_8_alias_path);
 
         $this->assertEquals($this->expectedDrush8AliasOutput(), trim($drush_8_aliases));
 
-        $expected_drush_9_alias_path = str_replace(DIRECTORY_SEPARATOR, '/', $this->home_dir) . '/.drush/sites/pantheon/site1.site.yml';
+        $expected_drush_9_alias_path = $this->home_dir . '/.drush/sites/pantheon/site1.site.yml';
         $this->assertFileExists($expected_drush_9_alias_path);
         $drush_9_aliases = file_get_contents($expected_drush_9_alias_path);
         $expected = <<<__EOT__

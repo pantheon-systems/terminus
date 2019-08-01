@@ -10,6 +10,8 @@ class PrintingEmitterTest extends TestCase
 {
     /**
      * printingEmitterValues provides the expected results and inputs for testPrintingEmitter
+     *
+     * @return array
      */
     public function printingEmitterValues()
     {
@@ -31,6 +33,13 @@ class PrintingEmitterTest extends TestCase
     /**
      * testPrintingEmitter confirms that the alias collection sorts
      * its inputs correctly
+     *
+     * @param string $expectedPath
+     *   Relative path to fixture file containing the expected test result.
+     * @param array $rawAliasData
+     *   Fixture data to use to generate a test alias.
+     * @param bool $withDbUrl
+     *   Whether or not to include database information.
      *
      * @dataProvider printingEmitterValues
      */

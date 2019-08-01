@@ -15,6 +15,11 @@ class DrushRCEditor
     protected $dir;
     protected $comments;
 
+    /**
+     * DrushRCEditor constructor
+     *
+     * @param string $dir
+     */
     public function __construct($dir)
     {
         $this->dir = $dir;
@@ -22,6 +27,8 @@ class DrushRCEditor
 
     /**
      * Return the path to the drushrc.php file.
+     *
+     * @return string
      */
     public function getDrushRCPath()
     {
@@ -30,6 +37,8 @@ class DrushRCEditor
 
     /**
      * Load the drushrc.php file and return its parsed contents.
+     *
+     * @return string
      */
     public function getDrushConfig()
     {

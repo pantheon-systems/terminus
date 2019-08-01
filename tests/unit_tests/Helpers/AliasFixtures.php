@@ -12,6 +12,8 @@ class AliasFixtures
 
     /**
      * Return the path to the fixture
+     *
+     * @return string
      */
     public static function path($filename)
     {
@@ -19,7 +21,13 @@ class AliasFixtures
     }
 
     /**
-     * Load the fixture
+     * Load a fixture file
+     *
+     * @param string $filename
+     *   Relative path to fixture file
+     *
+     * @return string
+     *   Fixture contents.
      */
     public static function load($filename)
     {
@@ -30,7 +38,7 @@ class AliasFixtures
     }
 
     /**
-     * Clean up any temporary directories that may have been created
+     * Clean up any temporary directories that may have been created.
      */
     public function cleanup()
     {
@@ -58,6 +66,12 @@ class AliasFixtures
         return $tempfile;
     }
 
+    /**
+     * Alias fixture representing a few sites, some with simulated multidev
+     * environments.
+     *
+     * @return array
+     */
     public static function standardAliasFixture()
     {
         return [
@@ -73,6 +87,11 @@ class AliasFixtures
         ];
     }
 
+    /**
+     * A few more site alias fixtures.
+     *
+     * @return array
+     */
     public static function additionalAliasFixtures()
     {
         return [
@@ -91,6 +110,16 @@ class AliasFixtures
         ];
     }
 
+    /**
+     * Returns an alias collection fixture
+     *
+     * @param array $aliasData
+     *   Basic data to inject into each alias fixture.
+     * @param bool $includeDbUrl
+     *   Inject the database information as well.
+     *
+     * @return AliasCollection
+     */
     public static function aliasCollection($aliasData = [], $includeDbUrl = true)
     {
         if (empty($aliasData)) {

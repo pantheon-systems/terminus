@@ -2,12 +2,16 @@
 
 namespace Pantheon\Terminus\UnitTests\Helpers;
 
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasCollection;
 use PHPUnit\Framework\TestCase;
 
 class AliasCollectionTest extends TestCase
 {
     /**
-     * aliasCollectionSortingValues provides the expected results and inputs for testAliasCollectionSorting
+     * aliasCollectionSortingValues provides the expected results and inputs
+     * for testAliasCollectionSorting.
+     *
+     * @return array
      */
     public function aliasCollectionSortingValues()
     {
@@ -39,6 +43,9 @@ class AliasCollectionTest extends TestCase
     /**
      * testAliasCollectionSorting confirms that the alias collection sorts
      * its inputs correctly
+     *
+     * @param string $expected
+     * @param AliasCollection $aliasCollection
      *
      * @dataProvider aliasCollectionSortingValues
      */

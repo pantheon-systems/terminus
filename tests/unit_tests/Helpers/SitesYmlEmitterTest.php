@@ -44,6 +44,15 @@ class SitesYmlEmitterTest extends TestCase
      * testSitesYmlEmitter confirms that the alias collection sorts
      * its inputs correctly
      *
+     * @param string $expectedBaseDir
+     *   Relative path to a directory with expected result files.
+     * @param string[] $expectedPathList
+     *   List of files in the base directory that shoudl be produced.
+     * @param array $rawAliasData
+     *   Alias data for test.
+     * @param bool $withDbUrl
+     *   Whether to include database information in the fixture we build.
+     *
      * @dataProvider sitesYmlEmitterValues
      */
     public function testSitesYmlEmitter($expectedBaseDir, $expectedPathList, $rawAliasData, $withDbUrl)

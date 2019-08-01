@@ -10,6 +10,8 @@ class DrushRcEmitterTest extends TestCase
 {
     /**
      * drushrcEmitterValues provides the expected results and inputs for testDrushrcEmitter
+     *
+     * @return array
      */
     public function drushrcEmitterValues()
     {
@@ -31,6 +33,13 @@ class DrushRcEmitterTest extends TestCase
     /**
      * testDrushrcEmitter confirms that the alias collection sorts
      * its inputs correctly
+     *
+     * @param string $expectedPath
+     *   Relative path to fixture file containing the expected test result.
+     * @param array $rawAliasData
+     *   Fixture data to use to generate a test alias.
+     * @param bool $withDbUrl
+     *   Whether or not to include database information.
      *
      * @dataProvider drushrcEmitterValues
      */

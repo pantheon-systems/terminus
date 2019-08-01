@@ -16,6 +16,9 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         $this->target_name = $target_name;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function notificationMessage()
     {
         $pantheon_sites_dir = $this->pantheonSitesDir();
@@ -23,6 +26,9 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         return 'Writing Drush 9 alias files to ' . $pantheon_sites_dir;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function write(AliasCollection $collection)
     {
         $pantheon_sites_dir = $this->pantheonSitesDir();
@@ -65,6 +71,13 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         $copied = $policyTemplate->copy($policyFromPath, $policyToPath);
     }
 
+    /**
+     * Determine which lines should be removed when rewriting Drush config file.
+     *
+     * @param string $line
+     *
+     * @return bool
+     */
     protected function filterForSites($line)
     {
         if ((strpos($line, 'pantheon') !== false) || (strpos($line, '/.drush/sites') !== false)) {
@@ -73,11 +86,23 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
         return true;
     }
 
+    /**
+     * Return the data for one alias record, and run the replacements on it.
+     *
+     * @param AliasData $alias
+     *
+     * @return string
+     */
     protected function getAliasFragment($alias)
     {
         return Template::process('fragment.site.yml.tmpl', $alias->replacements());
     }
 
+    /**
+     * Return the path to the sites aliases directory.
+     *
+     * @return string
+     */
     protected function pantheonSitesDir()
     {
         return $this->base_dir . '/sites/' . $this->target_name;

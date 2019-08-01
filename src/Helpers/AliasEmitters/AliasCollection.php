@@ -14,30 +14,47 @@ namespace Pantheon\Terminus\Helpers\AliasEmitters;
 class AliasCollection
 {
     /** @var EnvironmentCollection[] */
-    protected $aliases;
+    protected $aliases = [];
 
-    public function __construct()
-    {
-        $this->aliases = [];
-    }
-
+    /**
+     * Add an alias to the collection.
+     *
+     * @param AliasData $alias
+     *   Alias to add.
+     * @return $this
+     */
     public function add(AliasData $alias)
     {
         $environmentCollection = $this->getCollection($alias->siteName());
         $environmentCollection->add($alias);
+
+        return $this;
     }
 
+    /**
+     * Return a sorted list of aliases.
+     *
+     * @return EnvironmentCollection[]
+     */
     public function all()
     {
         uksort($this->aliases, 'strnatcmp');
         return $this->aliases;
     }
 
+    /**
+     * Return the number of aliases in the collection.
+     *
+     * @return int
+     */
     public function count()
     {
         return count($this->aliases);
     }
 
+    /**
+     * Create a collection of environments and attaches it to the specified alias.
+     */
     protected function getCollection($name)
     {
         if (!isset($this->aliases[$name])) {
