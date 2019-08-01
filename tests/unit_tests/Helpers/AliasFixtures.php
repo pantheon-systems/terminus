@@ -50,7 +50,8 @@ class AliasFixtures
      */
     public static function mktmpdir($basedir = false, $name = false)
     {
-        $tempfile = tempnam($basedir ?: sys_get_temp_dir(), $name ?: 'terminus-alias-tests');
+        $tmp_parent = realpath($basedir ?: sys_get_temp_dir());
+        $tempfile = tempnam($tmp_parent, $name ?: 'terminus-alias-tests');
         unlink($tempfile);
         mkdir($tempfile);
         static::$tmpDirs[] = $tempfile;
