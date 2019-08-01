@@ -50,7 +50,7 @@ class AliasesCommandTest extends CommandTestCase
         $this->fixtures = new AliasFixtures();
         $this->output = new BufferedOutput();
 
-        $this->home_dir = $this->fixtures->mktmpdir();
+        $this->home_dir = realpath($this->fixtures->mktmpdir());
 
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
