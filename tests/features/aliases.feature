@@ -27,7 +27,7 @@ Feature: Gathering sites' aliases
     """
     And I should get:
     """
-     $aliases['a-far-off-site-with-no-org.***'] = array(
+     $aliases['a-far-off-site-with-no-org.*'] = array(
        'uri' => '${env-name}-a-far-off-site-with-no-org.pantheonsite.io',
        'remote-host' => 'appserver.${env-name}.8a5311d2-162a-4a88-8561-ebf8706568cb.drush.in',
        'remote-user' => '${env-name}.8a5311d2-162a-4a88-8561-ebf8706568cb',

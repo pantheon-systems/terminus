@@ -4,14 +4,14 @@
         method: POST
         url: 'https://onebox/api/authorize/machine-token'
         headers:
-            Host: 'terminus.pantheon.io:443'
+            Host: onebox
             Expect: null
             Accept-Encoding: null
+            User-Agent: 'Terminus/0.11.4 (php_version=7.0.6&script=boot-fs.php)'
             Content-type: application/json
-            User-Agent: 'Terminus/2.0.1 (php_version=7.3.5&script=bin/terminus)'
-            Authorization: 'Bearer b3a42ba5-755d-42ca-9109-21bde32809d0:9d6c6e22-b3df-11e9-97dd-42010a800117:E7NOTlN31yApCSmSu5n6s'
+            Authorization: 'Bearer 11111111-1111-1111-1111-111111111111:fcaa74c6-6403-11e6-bf57-bc764e105ecb:vYnPJtXqYYhv09Cso9gD4'
             Accept: null
-        body: '{"machine_token":"nfUWQcB1VKk7UpaveYD5v136mcb165Ttzio5v7gC3ciy8","client":"terminus"}'
+        body: '{"machine_token":"111111111111111111111111111111111111111111111","client":"terminus"}'
     response:
         status:
             http_version: '1.1'
@@ -19,29 +19,28 @@
             message: OK
         headers:
             Server: nginx
-            Date: 'Wed, 31 Jul 2019 22:38:20 GMT'
+            Date: 'Tue, 16 Aug 2016 22:51:39 GMT'
             Content-Type: 'application/json; charset=utf-8'
             Content-Length: '182'
             Connection: keep-alive
-            X-Pantheon-Trace-Id: e55f58d0-b3e3-11e9-8b6c-d167c4113662
+            X-Pantheon-Trace-Id: fd68eb90-6403-11e6-9844-1524ed28772c
             X-Frame-Options: deny
             Access-Control-Allow-Methods: GET
             Access-Control-Allow-Headers: 'Origin, Content-Type, Accept'
-            Cache-Control: 'private, max-age=0, no-cache, no-store'
+            Cache-Control: no-cache
             Pragma: no-cache
             Vary: Accept-Encoding
             Strict-Transport-Security: max-age=31536000
-        body: '{"session":"b3a42ba5-755d-42ca-9109-21bde32809d0:e59fadea-b3e3-11e9-bdaa-42010a8001a3:BeFbTdSc6U69MeBOQNe7D","expires_at":1567031900,"user_id":"b3a42ba5-755d-42ca-9109-21bde32809d0"}'
+        body: '{"session":"11111111-1111-1111-1111-111111111111:fe4dfe1a-6403-11e6-acba-bc764e11bdd3:ss5YnpXhEIFMKE4CqSLIN","expires_at":1473807099,"user_id":"11111111-1111-1111-1111-111111111111"}'
 -
     request:
         method: GET
-        url: 'https://onebox/api/users/b3a42ba5-755d-42ca-9109-21bde32809d0/memberships/sites?limit=100'
+        url: 'https://onebox/api/users/11111111-1111-1111-1111-111111111111/memberships/sites?limit=100'
         headers:
             Host: 'terminus.pantheon.io:443'
             Accept-Encoding: null
             Content-type: application/json
             User-Agent: 'Terminus/2.0.1 (php_version=7.3.5&script=bin/terminus)'
-            Authorization: 'Bearer b3a42ba5-755d-42ca-9109-21bde32809d0:e59fadea-b3e3-11e9-bdaa-42010a8001a3:BeFbTdSc6U69MeBOQNe7D'
             Accept: null
     response:
         status:
