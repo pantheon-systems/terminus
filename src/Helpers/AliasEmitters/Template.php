@@ -13,6 +13,8 @@ class Template
 {
     /**
      * Return the path to the template
+     *
+     * @return string
      */
     public static function path($filename)
     {
@@ -21,6 +23,12 @@ class Template
 
     /**
      * Load the template
+     *
+     * @param string $filename
+     *   Relative path to template to load
+     *
+     * @return string
+     *   Template contents
      */
     public static function load($filename)
     {
@@ -32,6 +40,13 @@ class Template
 
     /**
      * Load and makes replacements in the template
+     *
+     * @param string $filename
+     *   Relative path to template
+     * @param array $replacements
+     *   Associative array of replacements => values
+     *
+     * @return string
      */
     public static function replace($filename, $replacements)
     {
@@ -43,6 +58,11 @@ class Template
 
     /**
      * Copy a file from one place to another
+     *
+     * @param string $copyfrom
+     *   Relative path to a template file
+     * @param string $target_dir
+     *   Absolute path of directory to write target file into.
      */
     public static function copy($copyfrom, $target_dir)
     {
@@ -55,6 +75,11 @@ class Template
      * Template::process loads a template, makes all of the provided
      * replacements, and then removes the unwanted parts that are left
      * over per the rules below.
+     *
+     * @param string $filename
+     *   Relative path to template
+     * @param array $replacements
+     *   Associative array of replacements => values
      */
     public static function process($filename, $replacements)
     {
@@ -71,6 +96,12 @@ class Template
      * on a line that begins with '##', then remove all lines that
      * begin with '##'.  Otherwise, replace '##' at the beginning of
      * lines with '  '.
+     *
+     * @param string $contents
+     *   Data to process.
+     *
+     * @return string
+     *   Processed data.
      */
     protected static function removeUnwantedParts($contents)
     {
