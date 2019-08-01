@@ -93,6 +93,12 @@ class AliasesCommandTest extends CommandTestCase
         $default_8_location = '~/.drush/pantheon.aliases.drushrc.php';
         $default_9_location = '~/.drush/sites/pantheon';
 
+        // Check for a longer path on Windows
+        if (DIRECTORY_SEPARATOR != '/') {
+          $default_8_location = str_replace('~', $this->home_dir, $default_8_location);
+          $default_9_location = str_replace('~', $this->home_dir, $default_9_location);
+        }
+
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
