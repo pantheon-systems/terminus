@@ -90,15 +90,6 @@ class AliasesCommandTest extends CommandTestCase
      */
     public function testAliases()
     {
-        $default_8_location = '~/.drush/pantheon.aliases.drushrc.php';
-        $default_9_location = '~/.drush/sites/pantheon';
-
-        // Check for a longer path on Windows
-        if (DIRECTORY_SEPARATOR != '/') {
-          $default_8_location = str_replace('~', $this->home_dir, $default_8_location);
-          $default_9_location = str_replace('~', $this->home_dir, $default_9_location);
-        }
-
         $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
@@ -123,7 +114,7 @@ class AliasesCommandTest extends CommandTestCase
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo("Writing Drush 8 alias file to $default_8_location")
+                $this->stringContains(".drush/pantheon.aliases.drushrc.php")
             );
         $this->logger->expects($this->at(4))
             ->method('log')
@@ -136,7 +127,7 @@ class AliasesCommandTest extends CommandTestCase
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
-                $this->equalTo("Writing Drush 9 alias files to $default_9_location")
+                $this->stringContains(".drush/sites/pantheon")
             );
 
         $out = $this->command->aliases();
