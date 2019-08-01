@@ -15,18 +15,24 @@ namespace Pantheon\Terminus\Helpers\AliasEmitters;
 class EnvironmentCollection
 {
     /** @var AliasData[] */
-    protected $environments;
+    protected $environments = [];
 
-    public function __construct()
-    {
-        $this->environments = [];
-    }
-
+    /**
+     * Add alias data for one site environment
+     *
+     * @param AliasData $alias
+     *   Data for environment.
+     */
     public function add(AliasData $alias)
     {
         $this->environments[$alias->envName()] = $alias;
     }
 
+    /**
+     * Return sorted list of alias environments
+     *
+     * @return  AliasData[]
+     */
     public function all()
     {
         uasort(

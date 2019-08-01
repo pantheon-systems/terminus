@@ -134,7 +134,7 @@ class AliasesCommandTest extends CommandTestCase
         $this->assertNull($out);
 
         if (substr(PHP_OS, 0, 3) == 'WIN') {
-          $this->MarkTestSkipped("Temp file handling on Windows is not working correctly in this test.");
+            $this->MarkTestSkipped("Temp file handling on Windows is not working correctly in this test.");
         }
 
         $expected_drush_8_alias_path = $this->home_dir . '/.drush/pantheon.aliases.drushrc.php';

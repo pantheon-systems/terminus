@@ -14,6 +14,12 @@ class DrushYmlEditor
     protected $dir;
     protected $comments;
 
+    /**
+     * DrushYmlEditor constructor
+     *
+     * @param string $dir
+     *   Location where yml config file is located.
+     */
     public function __construct($dir)
     {
         $this->dir = $dir;
@@ -21,6 +27,8 @@ class DrushYmlEditor
 
     /**
      * Return the path to the drush.yml file.
+     *
+     * @return string
      */
     public function getDrushYmlPath()
     {
@@ -29,6 +37,8 @@ class DrushYmlEditor
 
     /**
      * Load the drush.yml file and return its parsed contents.
+     *
+     * @return string
      */
     public function getDrushConfig()
     {
@@ -48,6 +58,9 @@ class DrushYmlEditor
 
     /**
      * Write a modified drush.yml file back to disk.
+     *
+     * @param array $drushYml
+     *   Structured content to write into yml file.
      */
     public function writeDrushConfig($drushYml)
     {
