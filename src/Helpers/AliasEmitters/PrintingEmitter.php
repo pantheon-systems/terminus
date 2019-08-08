@@ -29,9 +29,9 @@ class PrintingEmitter extends AliasesDrushRcBase
     /**
      * {@inheritdoc}
      */
-    public function write(AliasCollection $collection)
+    public function write(array $alias_replacements)
     {
-        $alias_file_contents = $this->getAliasContents($collection);
+        $alias_file_contents = $this->getAliasContents($alias_replacements);
         $this->output->writeln($alias_file_contents);
     }
 }

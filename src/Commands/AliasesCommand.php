@@ -24,10 +24,10 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
-     * @authenticated
+     * @authorize
      *
      * @command aliases
-     * @aliases alpha:aliases
+     * @aliases drush:aliases
      *
      * @option boolean $print Print aliases only (Drush 8 format)
      * @option string $location Path and filename for php aliases.
@@ -61,12 +61,9 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         }
 
         $this->log()->notice("Fetching site information to build Drush aliases...");
-        $site_ids = $this->getSites($options);
+        $alias_replacements = $this->getSites($options);
 
-        // Collect information on the requested sites
-        $collection = $this->getAliasCollection($site_ids);
-
-        $this->log()->notice("{count} sites found.", ['count' => count($site_ids)]);
+        $this->log()->notice("{count} sites found.", ['count' => count($alias_replacements)]);
 
         // Write the alias files (only of the type requested)
         $emitters = $this->getAliasEmitters($options);
@@ -76,127 +73,15 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
         foreach ($emitters as $emitter) {
             $this->log()->debug("Emitting aliases via {emitter}", ['emitter' => get_class($emitter)]);
             $this->log()->notice($this->shortenHomePath($emitter->notificationMessage()));
-            $emitter->write($collection);
+            $emitter->write($alias_replacements);
         }
-    }
-
-    /**
-     * Utility function to convert references to the home path to simply '~'
-     *
-     * @param string $message
-     *
-     * @return string
-     */
-    protected function shortenHomePath($message)
-    {
-        return str_replace($this->getConfig()->get('user_home'), '~', $message);
-    }
-
-    /**
-     * Fetch those sites indicated by the commandline options.
-     *
-     * @param array $options
-     *   Full set of commanline options, some of which may affect selected set
-     *   of sites returned.
-     *
-     * @return array
-     *   Associative array of site id => site name
-     */
-    protected function getSites($options)
-    {
-        if (!empty($options['only'])) {
-            return $this->getSpecifiedSites(explode(',', $options['only']));
-        }
-        if (!$options['all']) {
-            return $this->getSitesWithDirectMembership();
-        }
-        return $this->getAllSites($options);
-    }
-
-    /**
-     * Fetch the sites listed on the command line.
-     *
-     * @param array $siteList
-     *   List of site names
-     *
-     * @return array
-     *   Associative array of site id => site name
-     */
-    protected function getSpecifiedSites($siteList)
-    {
-        $result = [];
-        foreach ($siteList as $siteName) {
-            $site = $this->sites()->get($siteName);
-            $result[$site->id] = $siteName;
-        }
-        return $result;
-    }
-
-    /**
-     * Look up all available sites, as filtered by --org and --team
-     *
-     * @param array $options
-     *   Full set of commanline options, some of which may affect selected set
-     *   of sites returned.
-     *
-     * @return array
-     *   Associative array of site id => site name
-     */
-    protected function getAllSites($options)
-    {
-        $this->sites()->fetch(
-            [
-                'org_id' => null,
-                'team_only' => false,
-            ]
-        );
-        return $this->getSiteNames($this->sites->ids());
-    }
-
-    /**
-     * Look up those sites that the user has a direct membership in
-     *
-     * @return array
-     *   Associative array of site id => site name
-     */
-    protected function getSitesWithDirectMembership()
-    {
-        $this->sites()->fetch(
-            [
-                'org_id' => null,
-                'team_only' => true,
-            ]
-        );
-        return $this->getSiteNames($this->sites->ids());
-    }
-
-    /**
-     * Given a set of site ids, return an id=>name mapping.
-     *
-     * @param array $site_ids
-     *   List of site ids
-     *
-     * @return array
-     *   Associative array of site id => site name
-     */
-    protected function getSiteNames($site_ids)
-    {
-        $result = [];
-        foreach ($site_ids as $site_id) {
-            $site = $this->sites->get($site_id);
-            $site_name = $site->get('name');
-            $result[$site_id] = $site_name;
-        }
-        return $result;
     }
 
     /**
      * getAliasEmitters returns a list of emitters based on the provided options.
      *
-     * @param array $options
-     *   Full set of commanline options, some of which may affect the
-     *   emitters returned
-     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect the emitters returned
      * @return AliasEmitterInterface[]
      */
     protected function getAliasEmitters($options)
@@ -225,15 +110,113 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
+     * Look up all available sites, as filtered by --org and --team
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect selected set of sites returned.
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getAllSites($options)
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => false,
+            ]
+        );
+        return $this->getAliasReplacements($this->sites->serialize());
+    }
+
+    /**
+     * Given a set of site ids, return an id=>name mapping.
+     *
+     * @param array $site_data Serialized site data
+     * @return array Associative array of site name => alias replacement data
+     */
+    protected function getAliasReplacements($site_data)
+    {
+        // Convert the array key from site id to site name.
+        $site_data = array_combine(
+            array_map(function ($siteInfo) {
+                return $siteInfo['name'];
+            }, $site_data),
+            array_values($site_data),
+        );
+
+        // Put the data in alphabetical order by site name.
+        ksort($site_data);
+
+        return array_map(function ($siteInfo) {
+            return [
+                '{{site_name}}' => $siteInfo['name'],
+                '{{env_name}}' => '*',
+                '{{env_label}}' => '${env-name}',
+                '{{site_id}}' => $siteInfo['id'],
+            ];
+        }, $site_data);
+    }
+
+    /**
+     * Fetch those sites indicated by the commandline options.
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect selected set of sites returned.
+     * @return array
+     *   Associative array of site id => site name
+     */
+    protected function getSites($options)
+    {
+        if (!empty($options['only'])) {
+            return $this->getSpecifiedSites(explode(',', $options['only']));
+        }
+        if (!$options['all']) {
+            return $this->getSitesWithDirectMembership();
+        }
+        return $this->getAllSites($options);
+    }
+
+    /**
+     * Look up those sites that the user has a direct membership in
+     *
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getSitesWithDirectMembership()
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => true,
+            ]
+        );
+        return $this->getAliasReplacements($this->sites->serialize());
+    }
+
+    /**
+     * Fetch the sites listed on the command line.
+     *
+     * @param array $siteList List of site names
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getSpecifiedSites($siteList)
+    {
+        $site_data = [];
+        foreach ($siteList as $siteName) {
+            $site = $this->sites()->get($siteName);
+            $site_data[$site->id] = [
+                'id' => $site->id,
+                'name' => $siteName,
+            ];
+        }
+        return $this->getAliasReplacements($site_data);
+    }
+
+    /**
      * Determine whether the provided emitter type matches the desired emitter
      * type or types
      *
-     * @param string $emitterType
-     *   The type of emitter(s) desired
-     * @param string $checkType
-     *   The type of emitter we are testing for
-     * @param bool $default
-     *   Whether the emitter we are testing for belongs in 'all' or not.
+     * @param string $emitterType The type of emitter(s) desired
+     * @param string $checkType The type of emitter we are testing for
+     * @param bool $default Whether the emitter we are testing for belongs in 'all' or not.
      *
      * @return bool
      */
@@ -246,22 +229,13 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
-     * Get a collection of aliases from the set of site ids provided.
+     * Utility function to convert references to the home path to simply '~'
      *
-     * @param array $site_ids
-     *   Associative array of site id => site name
-     *
-     * @return AliasCollection
+     * @param string $message
+     * @return string
      */
-    protected function getAliasCollection($site_ids)
+    protected function shortenHomePath($message)
     {
-        $collection = new AliasCollection();
-
-        foreach ($site_ids as $site_id => $site_name) {
-            $alias = new AliasData($site_name, '*', $site_id);
-            $collection->add($alias);
-        }
-
-        return $collection;
+        return str_replace($this->getConfig()->get('user_home'), '~', $message);
     }
 }

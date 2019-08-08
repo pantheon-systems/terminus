@@ -29,20 +29,15 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
     /**
      * {@inheritdoc}
      */
-    public function write(AliasCollection $collection)
+    public function write(array $alias_replacements)
     {
         $pantheon_sites_dir = $this->pantheonSitesDir();
 
         $fs = new Filesystem();
         $fs->mkdir($pantheon_sites_dir);
 
-        foreach ($collection->all() as $name => $envs) {
-            $alias_file_contents = '';
-            foreach ($envs->all() as $alias) {
-                $alias_fragment = $this->getAliasFragment($alias);
-
-                $alias_file_contents .= $alias_fragment . "\n";
-            }
+        foreach ($alias_replacements as $name => $replacements) {
+            $alias_file_contents = $this->getAliasFragment($replacements);
             file_put_contents("{$pantheon_sites_dir}/{$name}.site.yml", $alias_file_contents);
         }
 
@@ -75,7 +70,6 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
      * Determine which lines should be removed when rewriting Drush config file.
      *
      * @param string $line
-     *
      * @return bool
      */
     protected function filterForSites($line)
@@ -89,13 +83,12 @@ class DrushSitesYmlEmitter implements AliasEmitterInterface
     /**
      * Return the data for one alias record, and run the replacements on it.
      *
-     * @param AliasData $alias
-     *
+     * @param array $replacements
      * @return string
      */
-    protected function getAliasFragment($alias)
+    protected function getAliasFragment(array $replacements)
     {
-        return Template::process('fragment.site.yml.tmpl', $alias->replacements());
+        return Template::process('fragment.site.yml.tmpl', $replacements);
     }
 
     /**

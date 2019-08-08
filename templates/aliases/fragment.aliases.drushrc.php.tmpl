@@ -1,7 +1,5 @@
   $aliases['{{site_name}}.{{env_name}}'] = array(
     'uri' => '{{env_label}}-{{site_name}}.pantheonsite.io',
-##  'db-url' => 'mysql://pantheon:{{db_password}}@dbserver.{{env_label}}.{{site_id}}.drush.in:{{db_port}}/pantheon',
-##  'db-allows-remote' => TRUE,
     'remote-host' => 'appserver.{{env_label}}.{{site_id}}.drush.in',
     'remote-user' => '{{env_label}}.{{site_id}}',
     'ssh-options' => '-p 2222 -o "AddressFamily inet"',

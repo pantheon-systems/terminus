@@ -13,6 +13,8 @@ interface AliasEmitterInterface
 
     /**
      * Given an alias collection, write records for all aliases via this emitter.
+     *
+     * @param array $alias_replacements Associative array of site id => alias replacement data
      */
-    public function write(AliasCollection $collection);
+    public function write(array $alias_replacements);
 }

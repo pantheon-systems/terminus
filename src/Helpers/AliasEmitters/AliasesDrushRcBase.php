@@ -9,19 +9,16 @@ abstract class AliasesDrushRcBase implements AliasEmitterInterface
     /**
      * Generate the contents for an aliases.drushrc.php file.
      *
-     * @param AliasCollection $collection
-     *
+     * @param array $alias_replacements
      * @return string
      */
-    protected function getAliasContents(AliasCollection $collection)
+    protected function getAliasContents(array $alias_replacements)
     {
         $alias_file_contents = $this->getAliasHeader();
 
-        foreach ($collection->all() as $name => $envs) {
-            foreach ($envs->all() as $alias) {
-                $alias_fragment = $this->getAliasFragment($alias);
-                $alias_file_contents .= $alias_fragment . "\n";
-            }
+        foreach ($alias_replacements as $name => $replacements) {
+            $alias_fragment = $this->getAliasFragment($replacements);
+            $alias_file_contents .= $alias_fragment . "\n";
         }
 
         return $alias_file_contents;
@@ -42,8 +39,8 @@ abstract class AliasesDrushRcBase implements AliasEmitterInterface
      *
      * @return string
      */
-    protected function getAliasFragment($alias)
+    protected function getAliasFragment($replacements)
     {
-        return Template::process('fragment.aliases.drushrc.php.tmpl', $alias->replacements());
+        return Template::process('fragment.aliases.drushrc.php.tmpl', $replacements);
     }
 }
