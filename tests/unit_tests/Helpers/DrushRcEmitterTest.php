@@ -9,28 +9,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 class DrushRcEmitterTest extends TestCase
 {
     /**
-     * drushrcEmitterValues provides the expected results and inputs for testDrushrcEmitter
-     *
-     * @return array
-     */
-    public function drushrcEmitterValues()
-    {
-        return [
-            [
-                'standardAliasFixtureWithDbUrl.out',
-                AliasFixtures::standardAliasFixture(),
-                true,
-            ],
-
-            [
-                'standardAliasFixtureWithoutDbUrl.out',
-                AliasFixtures::standardAliasFixture(),
-                false,
-            ],
-        ];
-    }
-
-    /**
      * testDrushrcEmitter confirms that the alias collection sorts
      * its inputs correctly
      *
@@ -40,20 +18,19 @@ class DrushRcEmitterTest extends TestCase
      *   Fixture data to use to generate a test alias.
      * @param bool $withDbUrl
      *   Whether or not to include database information.
-     *
-     * @dataProvider drushrcEmitterValues
      */
-    public function testDrushrcEmitter($expectedPath, $rawAliasData, $withDbUrl)
+    public function testDrushrcEmitter()
     {
-        $aliasCollection = AliasFixtures::aliasCollection($rawAliasData, $withDbUrl);
+        $alias_replacements = AliasFixtures::aliasReplacementsFixture();
         $base_dir = AliasFixtures::mktmpdir() . '/.drush/';
         $location = $base_dir . '/pantheon.aliases.drushrc.php';
 
         $emitter = new AliasesDrushRcEmitter($location, $base_dir);
-        $emitter->write($aliasCollection);
+        $emitter->write($alias_replacements);
         $this->assertFileExists($location);
         $actual = file_get_contents($location);
-        $expected = AliasFixtures::load('drushrcEmitter/' . $expectedPath);
+
+        $expected = AliasFixtures::load('drushrcEmitter/standardAliasFixtureWithoutDbUrl.out');
 
         $this->assertEquals(trim($expected), trim($actual));
     }

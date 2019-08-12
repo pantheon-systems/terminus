@@ -9,68 +9,29 @@ use Symfony\Component\Console\Output\BufferedOutput;
 class SitesYmlEmitterTest extends TestCase
 {
     /**
-     * sitesYmlEmitterValues provides the expected results and inputs for testSitesYmlEmitter
+     * Test Drush 9 alias emitter
      */
-    public function sitesYmlEmitterValues()
+    public function testSitesYmlEmitter()
     {
-        return [
-            [
-                'standardWithDbUrl',
-                [
-                    'drush.yml',
-                    'sites/pantheon/agency.site.yml',
-                    'sites/pantheon/demo.site.yml',
-                    'sites/pantheon/personalsite.site.yml',
-                ],
-                AliasFixtures::standardAliasFixture(),
-                true,
-            ],
-
-            [
-                'standardWithoutDbUrl',
-                [
-                    'drush.yml',
-                    'sites/pantheon/agency.site.yml',
-                    'sites/pantheon/demo.site.yml',
-                    'sites/pantheon/personalsite.site.yml',
-                ],
-                AliasFixtures::standardAliasFixture(),
-                false,
-            ],
-        ];
-    }
-
-    /**
-     * testSitesYmlEmitter confirms that the alias collection sorts
-     * its inputs correctly
-     *
-     * @param string $expectedBaseDir
-     *   Relative path to a directory with expected result files.
-     * @param string[] $expectedPathList
-     *   List of files in the base directory that shoudl be produced.
-     * @param array $rawAliasData
-     *   Alias data for test.
-     * @param bool $withDbUrl
-     *   Whether to include database information in the fixture we build.
-     *
-     * @dataProvider sitesYmlEmitterValues
-     */
-    public function testSitesYmlEmitter($expectedBaseDir, $expectedPathList, $rawAliasData, $withDbUrl)
-    {
-        $aliasCollection = AliasFixtures::aliasCollection($rawAliasData, $withDbUrl);
+        $alias_replacements = AliasFixtures::aliasReplacementsFixture();
         $home = AliasFixtures::mktmpdir();
         $base = $home . '/drush';
 
         $emitter = new DrushSitesYmlEmitter($base, $home);
-        $emitter->write($aliasCollection);
+        $emitter->write($alias_replacements);
 
-        $this->assertNotEmpty($expectedPathList);
+        $expectedPathList = [
+            'drush.yml',
+            'sites/pantheon/agency.site.yml',
+            'sites/pantheon/demo.site.yml',
+            'sites/pantheon/personalsite.site.yml',
+        ];
         foreach ($expectedPathList as $path) {
             $location = "$base/$path";
             $this->assertFileExists($location);
             $actual = file_get_contents($location);
 
-            $expected = AliasFixtures::load("sitesYmlEmitter/$expectedBaseDir/$path");
+            $expected = AliasFixtures::load("sitesYmlEmitter/standardWithoutDbUrl/$path");
             $this->assertEquals("$path:\n" . trim($expected), "$path:\n" . trim($actual));
         }
     }

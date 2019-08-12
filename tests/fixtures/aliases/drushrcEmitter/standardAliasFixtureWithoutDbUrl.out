@@ -11,10 +11,10 @@
    *
    * See http://helpdesk.getpantheon.com/customer/portal/articles/411388 for details.
    */
-  $aliases['agency.live'] = array(
-    'uri' => 'live-agency.pantheonsite.io',
-    'remote-host' => 'appserver.live.00000000-0000-0000-0000-000000000000.drush.in',
-    'remote-user' => 'live.00000000-0000-0000-0000-000000000000',
+  $aliases['personalsite.*'] = array(
+    'uri' => '${env-name}-personalsite.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.33333333-3333-3333-3333-333333333333.drush.in',
+    'remote-user' => '${env-name}.33333333-3333-3333-3333-333333333333',
     'ssh-options' => '-p 2222 -o "AddressFamily inet"',
     'path-aliases' => array(
       '%files' => 'files',
@@ -22,10 +22,10 @@
      ),
   );
 
-  $aliases['agency.test'] = array(
-    'uri' => 'test-agency.pantheonsite.io',
-    'remote-host' => 'appserver.test.11111111-1111-1111-1111-111111111111.drush.in',
-    'remote-user' => 'test.11111111-1111-1111-1111-111111111111',
+  $aliases['demo.*'] = array(
+    'uri' => '${env-name}-demo.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.44444444-4444-4444-4444-444444444444.drush.in',
+    'remote-user' => '${env-name}.44444444-4444-4444-4444-444444444444',
     'ssh-options' => '-p 2222 -o "AddressFamily inet"',
     'path-aliases' => array(
       '%files' => 'files',
@@ -33,120 +33,10 @@
      ),
   );
 
-  $aliases['agency.dev'] = array(
-    'uri' => 'dev-agency.pantheonsite.io',
-    'remote-host' => 'appserver.dev.22222222-2222-2222-2222-222222222222.drush.in',
-    'remote-user' => 'dev.22222222-2222-2222-2222-222222222222',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['agency.feature8'] = array(
-    'uri' => 'feature8-agency.pantheonsite.io',
-    'remote-host' => 'appserver.feature8.33333333-3333-3333-3333-333333333333.drush.in',
-    'remote-user' => 'feature8.33333333-3333-3333-3333-333333333333',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['agency.feature24'] = array(
-    'uri' => 'feature24-agency.pantheonsite.io',
-    'remote-host' => 'appserver.feature24.44444444-4444-4444-4444-444444444444.drush.in',
-    'remote-user' => 'feature24.44444444-4444-4444-4444-444444444444',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['agency.feature101'] = array(
-    'uri' => 'feature101-agency.pantheonsite.io',
-    'remote-host' => 'appserver.feature101.55555555-5555-5555-5555-555555555555.drush.in',
-    'remote-user' => 'feature101.55555555-5555-5555-5555-555555555555',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['demo.live'] = array(
-    'uri' => 'live-demo.pantheonsite.io',
-    'remote-host' => 'appserver.live.00000000-0000-0000-0000-000000000000.drush.in',
-    'remote-user' => 'live.00000000-0000-0000-0000-000000000000',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['demo.test'] = array(
-    'uri' => 'test-demo.pantheonsite.io',
-    'remote-host' => 'appserver.test.11111111-1111-1111-1111-111111111111.drush.in',
-    'remote-user' => 'test.11111111-1111-1111-1111-111111111111',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['demo.dev'] = array(
-    'uri' => 'dev-demo.pantheonsite.io',
-    'remote-host' => 'appserver.dev.22222222-2222-2222-2222-222222222222.drush.in',
-    'remote-user' => 'dev.22222222-2222-2222-2222-222222222222',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['demo.multidev'] = array(
-    'uri' => 'multidev-demo.pantheonsite.io',
-    'remote-host' => 'appserver.multidev.33333333-3333-3333-3333-333333333333.drush.in',
-    'remote-user' => 'multidev.33333333-3333-3333-3333-333333333333',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['personalsite.live'] = array(
-    'uri' => 'live-personalsite.pantheonsite.io',
-    'remote-host' => 'appserver.live.00000000-0000-0000-0000-000000000000.drush.in',
-    'remote-user' => 'live.00000000-0000-0000-0000-000000000000',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['personalsite.test'] = array(
-    'uri' => 'test-personalsite.pantheonsite.io',
-    'remote-host' => 'appserver.test.11111111-1111-1111-1111-111111111111.drush.in',
-    'remote-user' => 'test.11111111-1111-1111-1111-111111111111',
-    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
-    'path-aliases' => array(
-      '%files' => 'files',
-      '%drush-script' => 'drush',
-     ),
-  );
-
-  $aliases['personalsite.dev'] = array(
-    'uri' => 'dev-personalsite.pantheonsite.io',
-    'remote-host' => 'appserver.dev.22222222-2222-2222-2222-222222222222.drush.in',
-    'remote-user' => 'dev.22222222-2222-2222-2222-222222222222',
+  $aliases['agency.*'] = array(
+    'uri' => '${env-name}-agency.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.55555555-5555-5555-5555-555555555555.drush.in',
+    'remote-user' => '${env-name}.55555555-5555-5555-5555-555555555555',
     'ssh-options' => '-p 2222 -o "AddressFamily inet"',
     'path-aliases' => array(
       '%files' => 'files',

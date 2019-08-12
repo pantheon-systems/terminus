@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Pantheon\Terminus\Helpers\AliasEmitters;
 
 use Consolidation\Comments\Comments;

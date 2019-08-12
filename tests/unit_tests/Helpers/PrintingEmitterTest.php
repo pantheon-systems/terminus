@@ -9,28 +9,6 @@ use Symfony\Component\Console\Output\BufferedOutput;
 class PrintingEmitterTest extends TestCase
 {
     /**
-     * printingEmitterValues provides the expected results and inputs for testPrintingEmitter
-     *
-     * @return array
-     */
-    public function printingEmitterValues()
-    {
-        return [
-            [
-                'standardAliasFixtureWithDbUrl.out',
-                AliasFixtures::standardAliasFixture(),
-                true,
-            ],
-
-            [
-                'standardAliasFixtureWithoutDbUrl.out',
-                AliasFixtures::standardAliasFixture(),
-                false,
-            ],
-        ];
-    }
-
-    /**
      * testPrintingEmitter confirms that the alias collection sorts
      * its inputs correctly
      *
@@ -40,18 +18,17 @@ class PrintingEmitterTest extends TestCase
      *   Fixture data to use to generate a test alias.
      * @param bool $withDbUrl
      *   Whether or not to include database information.
-     *
-     * @dataProvider printingEmitterValues
      */
-    public function testPrintingEmitter($expectedPath, $rawAliasData, $withDbUrl)
+    public function testPrintingEmitter()
     {
-        $aliasCollection = AliasFixtures::aliasCollection($rawAliasData, $withDbUrl);
+        $alias_replacements = AliasFixtures::aliasReplacementsFixture();
         $buffer = new BufferedOutput();
 
         $emitter = new PrintingEmitter($buffer);
-        $emitter->write($aliasCollection);
+        $emitter->write($alias_replacements);
         $actual = $buffer->fetch();
-        $expected = AliasFixtures::load('drushrcEmitter/' . $expectedPath);
+
+        $expected = AliasFixtures::load('drushrcEmitter/standardAliasFixtureWithoutDbUrl.out');
 
         $this->assertEquals(trim($expected), trim($actual));
     }

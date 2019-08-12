@@ -65,6 +65,8 @@ class AliasesCommandTest extends CommandTestCase
             ->willReturn(null);
         $this->sites->method('ids')
             ->willReturn([$this->site->id]);
+        $this->sites->method('serialize')
+            ->willReturn([$this->site->id => ['id' => $this->site->id, 'name' => 'site1']]);
         $this->site->method('get')
             ->willReturn('site1');
 
