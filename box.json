@@ -2,7 +2,7 @@
   "alias": "terminus.phar",
   "chmod": "0755",
   "compactors": [],
-  "directories": ["assets", "bin", "config", "docs", "src"],
+  "directories": ["assets", "bin", "config", "docs", "src", "templates"],
   "files": ["README.md"],
   "finder": [
     {
