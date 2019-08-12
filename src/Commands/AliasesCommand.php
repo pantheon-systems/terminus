@@ -140,7 +140,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
             array_map(function ($siteInfo) {
                 return $siteInfo['name'];
             }, $site_data),
-            array_values($site_data),
+            array_values($site_data)
         );
 
         // Put the data in alphabetical order by site name.
