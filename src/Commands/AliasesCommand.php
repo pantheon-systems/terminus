@@ -110,24 +110,6 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
-     * Look up all available sites, as filtered by --org and --team
-     *
-     * @param array $options Full set of commanline options, some of which may
-     *   affect selected set of sites returned.
-     * @return array Associative array of site id => alias replacement data
-     */
-    protected function getAllSites($options)
-    {
-        $this->sites()->fetch(
-            [
-                'org_id' => null,
-                'team_only' => false,
-            ]
-        );
-        return $this->getAliasReplacements($this->sites->serialize());
-    }
-
-    /**
      * Given a set of site ids, return an id=>name mapping.
      *
      * @param array $site_data Serialized site data
@@ -154,6 +136,24 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
                 '{{site_id}}' => $siteInfo['id'],
             ];
         }, $site_data);
+    }
+
+    /**
+     * Look up all available sites, as filtered by --org and --team
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect selected set of sites returned.
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getAllSites($options)
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => false,
+            ]
+        );
+        return $this->getAliasReplacements($this->sites->serialize());
     }
 
     /**

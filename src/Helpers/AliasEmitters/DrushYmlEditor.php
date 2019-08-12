@@ -22,16 +22,6 @@ class DrushYmlEditor
     }
 
     /**
-     * Return the path to the drush.yml file.
-     *
-     * @return string
-     */
-    public function getDrushYmlPath()
-    {
-        return $this->dir . "/drush.yml";
-    }
-
-    /**
      * Load the drush.yml file and return its parsed contents.
      *
      * @return string
@@ -50,6 +40,16 @@ class DrushYmlEditor
         $this->comments = new Comments();
         $this->comments->collect(explode("\n", $drushYmlContents));
         return $drushYml;
+    }
+
+    /**
+     * Return the path to the drush.yml file.
+     *
+     * @return string
+     */
+    public function getDrushYmlPath()
+    {
+        return $this->dir . "/drush.yml";
     }
 
     /**

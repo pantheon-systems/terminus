@@ -21,16 +21,6 @@ class DrushRCEditor
     }
 
     /**
-     * Return the path to the drushrc.php file.
-     *
-     * @return string
-     */
-    public function getDrushRCPath()
-    {
-        return $this->dir . "/drushrc.php";
-    }
-
-    /**
      * Load the drushrc.php file and return its parsed contents.
      *
      * @return string
@@ -46,6 +36,16 @@ class DrushRCEditor
         }
         $drushRCContents = explode("\n", $drushRCContents);
         return $drushRCContents;
+    }
+
+    /**
+     * Return the path to the drushrc.php file.
+     *
+     * @return string
+     */
+    public function getDrushRCPath()
+    {
+        return $this->dir . "/drushrc.php";
     }
 
     /**
