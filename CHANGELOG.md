@@ -35,6 +35,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Obsolete
 - 'pantheon-systems/terminus-aliases-plugin' ignored as load time, as its functionality is now provided in Terminus core. (#1994)
+- PHP 5.5 no longer actively supported, as it is EOL, and no longer testable on Travis.
 
 ### Changed 
 - `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
