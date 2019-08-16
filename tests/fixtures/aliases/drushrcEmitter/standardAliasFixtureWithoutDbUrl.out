@@ -1,0 +1,45 @@
+<?php
+  /**
+   * Pantheon drush alias file, to be placed in your ~/.drush directory or the aliases
+   * directory of your local Drush home. Once it's in place, clear drush cache:
+   *
+   * drush cc drush
+   *
+   * To see all your available aliases:
+   *
+   * drush sa
+   *
+   * See http://helpdesk.getpantheon.com/customer/portal/articles/411388 for details.
+   */
+  $aliases['personalsite.*'] = array(
+    'uri' => '${env-name}-personalsite.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.33333333-3333-3333-3333-333333333333.drush.in',
+    'remote-user' => '${env-name}.33333333-3333-3333-3333-333333333333',
+    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
+    'path-aliases' => array(
+      '%files' => 'files',
+      '%drush-script' => 'drush',
+     ),
+  );
+
+  $aliases['demo.*'] = array(
+    'uri' => '${env-name}-demo.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.44444444-4444-4444-4444-444444444444.drush.in',
+    'remote-user' => '${env-name}.44444444-4444-4444-4444-444444444444',
+    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
+    'path-aliases' => array(
+      '%files' => 'files',
+      '%drush-script' => 'drush',
+     ),
+  );
+
+  $aliases['agency.*'] = array(
+    'uri' => '${env-name}-agency.pantheonsite.io',
+    'remote-host' => 'appserver.${env-name}.55555555-5555-5555-5555-555555555555.drush.in',
+    'remote-user' => '${env-name}.55555555-5555-5555-5555-555555555555',
+    'ssh-options' => '-p 2222 -o "AddressFamily inet"',
+    'path-aliases' => array(
+      '%files' => 'files',
+      '%drush-script' => 'drush',
+     ),
+  );

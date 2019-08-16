@@ -17,7 +17,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 ## Dependencies
 ### Required
 - A command-line client
-- PHP version 5.5.38 or later
+- PHP version 5.6.40 or later recommended (5.5.38 minimum)
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
