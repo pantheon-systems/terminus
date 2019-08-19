@@ -250,7 +250,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->logger->expects($this->at(0))
             ->method('log')->with(
                 $this->equalTo('notice'),
-                $this->equalTo('Skipping clone since environments are the same.')
+                $this->equalTo('The clone has been skipped because the source and target environments are the same.')
             );
 
         $this->command->cloneContent("$site_name.{$this->environment->id}", $this->environment->id);
