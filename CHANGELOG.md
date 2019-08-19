@@ -2,7 +2,43 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
-### Changed
+### Added 
+- Added `--filter` option to `backup:list` command (#1992)
+- Added `--filter` option to `branch:list` command (#1992)
+- Added `--filter` option to `domain:list` command (#1992)
+- Added `--filter` option to `env:list` command (#1992)
+- Added `--filter` option to `multidev:list` command (#1992)
+- Added `--filter` option to `org:list` command (#1992)
+- Added `--filter` option to `org:people:list` command (#1992)
+- Added `--filter` option to `org:site:list` command (#1992)
+- Added `--filter` option to `org:upstream:list` command (#1992)
+- Added `--filter` option to `payment-method:list` command (#1992)
+- Added `--filter` option to `plan:list` command (#1992)
+- Added `--filter` option to `site:list` command (#1992)
+- Added `--filter` option to `site:org:list` command (#1992)
+- Added `--filter` option to `site:team:list` command (#1992)
+- Added `--filter` option to `ssh-key:list` command (#1992)
+- Added `--filter` option to `upstream:list` command (#1992)
+- Added `--filter` option to `upstream:updates:list` command (#1992)
+
+### Deprecated
+- `backup:list` `--element=VALUE` option is deprecated. Use `--filter="type=VALUE"` instead. (#1992)
+- `site:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `site:list` `--name=VALUE` option is deprecated. Use `--filter="name=VALUE"` instead. (#1992) 
+- `site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992) 
+- `org:site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992)
+- `org:site:list` `--tags=VALUE` option is deprecated. Use `--filter="tags=VALUE"` instead. (#1992)
+- `org:upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `org:upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+- `upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+
+### Obsolete
+- 'pantheon-systems/terminus-aliases-plugin' ignored as load time, as its functionality is now provided in Terminus core. (#1994)
+- PHP 5.5 no longer actively supported, as it is EOL, and no longer testable on Travis.
+
+### Changed 
+- `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
 - `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 - `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 

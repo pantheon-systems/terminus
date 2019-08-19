@@ -17,6 +17,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Lists a site's Multidev environments.
      *
      * @authorize
+     * @filter-output
      *
      * @command multidev:list
      * @aliases multidevs

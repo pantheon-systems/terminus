@@ -18,6 +18,7 @@ class ListCommand extends TerminusCommand
      * Displays the list of organizations.
      *
      * @authorize
+     * @filter-output
      *
      * @command org:list
      * @aliases orgs

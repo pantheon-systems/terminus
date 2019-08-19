@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the list of sites associated with an organization.
      *
      * @authorize
+     * @filter-output
      *
      * @command org:site:list
      * @aliases org:sites
@@ -37,8 +38,8 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @return RowsOfFields
      *
      * @param string $organization Organization name, label, or ID
-     * @option plan Plan filter; filter by the plan's label
-     * @option string $tag Tag name to filter
+     * @option plan DEPRECATED Plan filter; filter by the plan's label
+     * @option string $tag DEPRECATED Tag name to filter
      * @option string $upstream Upstream name to filter
      *
      * @usage <organization> Displays the list of sites associated with <organization>.

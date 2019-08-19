@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays a list of the site's environments.
      *
      * @authorize
+     * @filter-output
      *
      * @command env:list
      * @aliases envs

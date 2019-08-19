@@ -204,6 +204,7 @@ class BackupTest extends ModelTestCase
             'date' => 1479742685,
             'expiry' => 1479742685,
             'initiator' => 'automated',
+            'type' => 'type',
             'url' => null,
         ];
 
