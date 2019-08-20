@@ -238,4 +238,21 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->setExpectedException(TerminusException::class, 'You cannot specify both --db-only and --files-only');
         $this->command->cloneContent('mysite.dev', 'test', ['db-only' => true, 'files-only' => true,]);
     }
+
+    /**
+     * Tests env:clone command when attempting to clone an environment to itself
+     */
+    public function testCloneSelf()
+    {
+        $site_name = 'site-name';
+        $this->environment->id = 'dev';
+
+        $this->logger->expects($this->at(0))
+            ->method('log')->with(
+                $this->equalTo('notice'),
+                $this->equalTo('The clone has been skipped because the source and target environments are the same.')
+            );
+
+        $this->command->cloneContent("$site_name.{$this->environment->id}", $this->environment->id);
+    }
 }
