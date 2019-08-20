@@ -25,6 +25,8 @@ class ProductionContext implements Context
     private $environment_variables = [];
 
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
+    const MACHINE_TOKEN_ENV_VAR = 'TERMINUS_MACHINE_TOKEN';
+    const VERIFY_CERT_ENV_VAR = 'TERMINUS_VERIFY_HOST_CERT';
 
     /**
      * Initializes context
@@ -34,9 +36,28 @@ class ProductionContext implements Context
      */
     public function __construct($parameters)
     {
-        var_dump($parameters);
-        die();
         date_default_timezone_set('UTC');
+
+        if (isset($parameters['machine_token'])) {
+            $machine_token = $parameters['machine_token'];
+        } else if (getenv(self::MACHINE_TOKEN_ENV_VAR) !== false) {
+            $machine_token = getenv(self::MACHINE_TOKEN_ENV_VAR);
+        } else {
+            throw new \Exception(
+                'A machine token must be indicated by setting the environment variable '
+                . self::MACHINE_TOKEN_ENV_VAR
+                . ' or by setting the machine_token parameter in the Behat configuration file.'
+            );
+        }
+
+        if (isset($parameters['verify_host_vert'])) {
+            $should_verify_host_cert = $parameters['verify_host_cert'];
+        } else if (getenv(self::VERIFY_CERT_ENV_VAR) !== false) {
+            $should_verify_host_cert = getenv(self::VERIFY_CERT_ENV_VAR);
+        } else {
+            $should_verify_host_cert = true;
+        }
+
         $tests_root            = dirname(dirname(__DIR__));
         $this->fixtures_dir    = $tests_root . '/fixtures/functional';
         $this->cliroot         = dirname($tests_root);
@@ -44,8 +65,8 @@ class ProductionContext implements Context
         $this->start_time      = time();
         $this->connection_info = [
             'host' => $parameters['host'],
-            'machine_token' => $parameters['machine_token'],
-            'verify_host_cert' => $parameters['verify_host_cert']
+            'machine_token' => $machine_token,
+            'verify_host_cert' => $should_verify_host_cert,
         ];
 
         $this->cache_dir = $parameters['cache_dir'];
@@ -629,8 +650,8 @@ class ProductionContext implements Context
         if (isset($this->cassette_name)) {
             $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
         }
-        if (!empty($mode = $this->parameters['vcr_mode'])) {
-            $command = "TERMINUS_VCR_MODE=$mode $command";
+        if (isset($this->parameters['vcr_mode'])) {
+            $command = "TERMINUS_VCR_MODE={$this->parameters['vcr_mode']} $command";
         }
 
         // Determine which plugin dir we should use
