@@ -4,20 +4,8 @@ default:
     default:
       paths: [ %paths.base%/../features ]
       contexts:
-        - Pantheon\Terminus\FeatureTests\FeatureContext:
+        - Pantheon\Terminus\FeatureTests\ProductionContext:
             parameters:
-              user_id:                 '11111111-1111-1111-1111-111111111111'
-              username:                'devuser@pantheon.io'
-              host:                    'onebox'
-              verify_host_cert:         false
-              dashboard_host:          'dashboard.pantheon.io'
-              vcr_mode:                'none'
+              host:                    'terminus.pantheon.io'
               test_site_name:          'behat-tests'
-              other_user:              'otheruser@pantheon.io'
-              php_site_domain:         'pantheonsite.io'
-              payment_method_label:    'Visa - 1111'
-              organization_name:       'organization-name'
-              machine_token:           '111111111111111111111111111111111111111111111'
-              machine_token_device:    'Behat Testing Token'
-              machine_token_id:        'dcr_q4tFMiYiK9DfJO15'
               cache_dir:               '/tmp/.terminus/cache'
