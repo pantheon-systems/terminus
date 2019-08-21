@@ -27,7 +27,7 @@ class AliasesCommand extends TerminusCommand implements SiteAwareInterface
      * @authorize
      *
      * @command aliases
-     * @aliases drush:aliases
+     * @aliases drush:aliases,alpha:aliases
      *
      * @option boolean $print Print aliases only (Drush 8 format)
      * @option string $location Path and filename for php aliases.
