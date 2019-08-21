@@ -51,5 +51,4 @@ Feature: View site information
   @vcr site-info-owner.yml
   Scenario: Site info for a specific field
     When I run "terminus site:info [[test_site_name]] --field=id"
-    Then I should get: "11111111-1111-1111-1111-111111111111"
-
+    Then I should get a valid UUID

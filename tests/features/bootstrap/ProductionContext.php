@@ -23,6 +23,7 @@ class ProductionContext implements Context
     private $output;
     private $start_time;
 
+    const DEFAULT_NEW_SITE_FRAMEWORK = 'WordPress';
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
     const MACHINE_TOKEN_ENV_VAR = 'TERMINUS_MACHINE_TOKEN';
     const USERNAME_ENV_VAR = 'TERMINUS_USERNAME';
@@ -87,6 +88,7 @@ class ProductionContext implements Context
      *
      * @Given /^a site named "([^"]*)"$/
      * @Given /^a site named: (.*)$/
+     * @Given /^I have a site named: (.*)$/
      *
      * @param string $site Name of site to ensure exists
      * @return boolean Always true, else errs
@@ -96,8 +98,16 @@ class ProductionContext implements Context
     {
         try {
             $this->iRun("terminus site:lookup $site");
-        } catch (TerminusException $e) {
-            throw new \Exception("Your user does not have a site named $site.");
+            $this->iShouldNotGet("Could not locate a site your user may access identified by");
+        } catch (\Exception $e) {
+            $this->iRun("terminus site:create $site $site " . self::DEFAULT_NEW_SITE_FRAMEWORK);
+            try {
+                $this->iShouldNotGet("The site name $site is already taken.");
+            } catch (\Exception $e) {
+                throw new \Exception(
+                    "Please change your test_site_name parameter. Your selection is taken on this host."
+                );
+            }
         }
         return true;
     }
@@ -431,6 +441,18 @@ class ProductionContext implements Context
     protected function iGetMyLoginInformation()
     {
         return json_decode($this->iRun("terminus auth:whoami --format=json"));
+    }
+
+    /**
+     * @When I set the environment variable :arg1 to :arg2
+     *
+     * @param string $var  Environment variable name
+     * @param string $value Environment variable value
+     * @return void
+     */
+    public function iSetTheEnvironmentVariableTo($var, $value)
+    {
+        $this->environment_variables[$var] = $value;
     }
 
     /**
