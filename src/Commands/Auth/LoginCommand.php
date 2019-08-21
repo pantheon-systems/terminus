@@ -38,8 +38,7 @@ class LoginCommand extends TerminusCommand
         } elseif (isset($options['email']) && !is_null($email = $options['email'])) {
             $token = $tokens->get($email);
         } elseif (count($all_tokens = $tokens->all()) == 1) {
-            print_r($tokens->ids());
-            die();
+            $token = array_shift($all_tokens);
             $this->log()->notice('Found a machine token for {email}.', ['email' => $token->get('email'),]);
         } else {
             if (count($all_tokens) > 1) {

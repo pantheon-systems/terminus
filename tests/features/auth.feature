@@ -31,6 +31,13 @@ Feature: Authorization command
     When I run "terminus auth:login --email=invalid"
     Then I should get the error "Could not find a saved token identified by invalid."
 
+  @vcr auth-login.yml
+  Scenario: Logging in automatically when a single machine tokens has been saved
+    Given I have exactly "1" saved machine token
+    When I run "terminus auth:login"
+    Then I should get the notice "Found a machine token for [[username]]."
+    And I should get the notice "Logging in via machine token."
+
   Scenario: Failing to log in automatically when multiple machine tokens have been saved
     Given I have at least "2" saved machine tokens
     When I run "terminus auth:login"

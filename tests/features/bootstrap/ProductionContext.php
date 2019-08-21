@@ -14,7 +14,6 @@ use Pantheon\Terminus\Exceptions\TerminusException;
 class ProductionContext implements Context
 {
     public $cliroot = '';
-    private $cache_file_name;
     private $cache_token_dir;
     private $environment_variables = [];
     private $fixtures_dir;
@@ -243,12 +242,13 @@ class ProductionContext implements Context
 
     /**
      * Ensures at least X machine tokens exist in the tokens directory
+     * @Given I have at least :num_tokens saved machine token
      * @Given I have at least :num_tokens saved machine tokens
      *
      * @param integer $num_tokens Number of tokens to ensure exist
      * @return boolean
      */
-    public function iHaveSavedMachineTokens($num_tokens)
+    public function iHaveAtLeastSavedMachineTokens($num_tokens)
     {
         switch ($num_tokens) {
             case 0:
@@ -270,6 +270,20 @@ class ProductionContext implements Context
                 break;
         }
         return true;
+    }
+
+    /**
+     * Ensures at least X machine tokens exist in the tokens directory
+     * @Given I have exactly :num_tokens saved machine token
+     * @Given I have exactly :num_tokens saved machine tokens
+     *
+     * @param integer $num_tokens Number of tokens to ensure exist
+     * @return boolean
+     */
+    public function iHaveExactlySavedMachineTokens($num_tokens)
+    {
+        $this->iHaveNoSavedMachineTokens();
+        return $this->iHaveAtLeastSavedMachineTokens($num_tokens);
     }
 
     /**
