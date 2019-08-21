@@ -6,6 +6,6 @@ default:
       contexts:
         - Pantheon\Terminus\FeatureTests\ProductionContext:
             parameters:
+              cache_dir:               '/tmp/.terminus/cache'
               host:                    'terminus.pantheon.io'
               test_site_name:          'behat-tests'
-              cache_dir:               '/tmp/.terminus/cache'

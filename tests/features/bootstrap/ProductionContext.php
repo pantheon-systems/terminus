@@ -16,46 +16,54 @@ class ProductionContext implements Context
     public $cliroot = '';
     private $cache_file_name;
     private $cache_token_dir;
+    private $environment_variables = [];
     private $fixtures_dir;
     private $plugin_dir;
     private $plugin_dir_name;
     private $parameters;
     private $output;
     private $start_time;
-    private $environment_variables = [];
 
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
     const MACHINE_TOKEN_ENV_VAR = 'TERMINUS_MACHINE_TOKEN';
+    const USERNAME_ENV_VAR = 'TERMINUS_USERNAME';
     const VERIFY_CERT_ENV_VAR = 'TERMINUS_VERIFY_HOST_CERT';
 
     /**
      * Initializes context
      *
-     * @param [array] $parameters Parameters from the Behat YAML config file
-     * @return [void]
+     * @param array $parameters Parameters from the Behat YAML config file
+     * @return
      */
     public function __construct($parameters)
     {
         date_default_timezone_set('UTC');
 
-        if (isset($parameters['machine_token'])) {
-            $machine_token = $parameters['machine_token'];
-        } else if (getenv(self::MACHINE_TOKEN_ENV_VAR) !== false) {
-            $machine_token = getenv(self::MACHINE_TOKEN_ENV_VAR);
-        } else {
-            throw new \Exception(
-                'A machine token must be indicated by setting the environment variable '
-                . self::MACHINE_TOKEN_ENV_VAR
-                . ' or by setting the machine_token parameter in the Behat configuration file.'
-            );
+        if (!isset($parameters['machine_token'])) {
+            if (getenv(self::MACHINE_TOKEN_ENV_VAR) === false) {
+                throw new \Exception(
+                    'A machine token must be indicated by setting the environment variable '
+                    . self::MACHINE_TOKEN_ENV_VAR
+                    . ' or by setting the machine_token parameter in the Behat configuration file.'
+                );
+            }
+            $parameters['machine_token'] = getenv(self::MACHINE_TOKEN_ENV_VAR);
         }
 
-        if (isset($parameters['verify_host_vert'])) {
-            $should_verify_host_cert = $parameters['verify_host_cert'];
-        } else if (getenv(self::VERIFY_CERT_ENV_VAR) !== false) {
+        if (!isset($parameters['username'])) {
+            if (getenv(self::USERNAME_ENV_VAR) === false) {
+                throw new \Exception(
+                    'A user email must be indicated by setting the environment variable '
+                    . self::USERNAME_ENV_VAR
+                    . ' or by setting the username parameter in the Behat configuration file.'
+                );
+            }
+            $parameters['username'] = getenv(self::USERNAME_ENV_VAR);
+        }
+
+        if (!isset($parameters['verify_host_vert'])) {
             $should_verify_host_cert = getenv(self::VERIFY_CERT_ENV_VAR);
-        } else {
-            $should_verify_host_cert = true;
+            $parameters['verify_host_cert'] = ($should_verify_host_cert === false) || $should_verify_host_cert;
         }
 
         $tests_root            = dirname(dirname(__DIR__));
@@ -65,8 +73,8 @@ class ProductionContext implements Context
         $this->start_time      = time();
         $this->connection_info = [
             'host' => $parameters['host'],
-            'machine_token' => $machine_token,
-            'verify_host_cert' => $should_verify_host_cert,
+            'machine_token' => $parameters['machine_token'],
+            'verify_host_cert' => $parameters['verify_host_cert'],
         ];
 
         $this->cache_dir = $parameters['cache_dir'];
@@ -99,9 +107,9 @@ class ProductionContext implements Context
      * Ensures a site of the given name exists and belongs to given org
      * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
      *
-     * @param [string] $site Name of site to ensure exists
-     * @param [string] $org  Name or UUID of organization to ensure ownership
-     * @return [boolean] Always true, else errs
+     * @param string $site Name of site to ensure exists
+     * @param string $org  Name or UUID of organization to ensure ownership
+     * @return boolean Always true, else errs
      */
     public function aSiteNamedBelongingTo($site, $org)
     {
@@ -119,7 +127,7 @@ class ProductionContext implements Context
      * Runs before each scenario
      *
      * @param [ScenarioEvent] $event Feature information from Behat
-     * @return [void]
+     * @return
      */
     public function before($event)
     {
@@ -140,45 +148,12 @@ class ProductionContext implements Context
     }
 
     /**
-     * Changes or displays mode, given or not, of given site
-     * @Given /^the connection mode of "([^"]*)" is "([^"]*)"$/
-     * @When /^I set the connection mode on "([^"]*)" to "([^"]*)"$/
-     * @When /^I check the connection mode on "([^"]*)"$/
-     *
-     * @param [string] $site Site to change or view connection mode of
-     * @param [string] $mode If set, changes mode to given. Else, displays mode
-     * @return [void]
-     */
-    public function connectionMode($site, $mode = null)
-    {
-        if (is_null($mode)) {
-            $command = "terminus site env:info dev --site=$site --field=connection_mode";
-        } else {
-            $command = "terminus connection:set $mode --site=$site --env=dev";
-        }
-        $this->iRun($command);
-    }
-
-    /**
-     * Adds $email user from $site
-     * @When /^I add "([^"]*)" to the team on "([^"]*)"$/
-     *
-     * @param [string] $email Email address of user to add
-     * @param [string] $site  Name of the site on which to operate
-     * @return [void]
-     */
-    public function iAddToTheTeamOn($email, $site)
-    {
-        $this->iRun("terminus site:team:add $site $email");
-    }
-
-    /**
      * @When /^I am prompted to "([^"]*)" on "([^"]*)" at "([^"]*)"$/
      *
-     * @param [string] $prompt To be output before entering any key
-     * @param [string] $site   Site about which prompt is regarding
-     * @param [string] $url    URL to open after prompt
-     * @return [void]
+     * @param string $prompt To be output before entering any key
+     * @param string $site   Site about which prompt is regarding
+     * @param string $url    URL to open after prompt
+     * @return
      */
     public function iAmPrompted(
         $prompt,
@@ -197,9 +172,8 @@ class ProductionContext implements Context
     /**
      * Logs in user with username and password set in behat.yml
      * And a blank slate cache
-     * @Given /^I am authenticated$/
-     *
-     * @return [void]
+     * @Given I am authenticated
+     * @When I log in
      */
     public function iAmAuthenticated()
     {
@@ -207,91 +181,13 @@ class ProductionContext implements Context
     }
 
     /**
-     * @Given /^I check the list of environments on "([^"]*)"$/
-     *
-     * @param [string] $site Site to check environments of
-     * @return [string] $environments Environment list
-     */
-    public function iCheckTheListOfEnvironmentsOn($site)
-    {
-        $environments = $this->iRun("terminus env:list --site=$site");
-        return $environments;
-    }
-
-    /**
-     * Checks to see if a URL is valid
-     * @Then /^I check the URL "([^"]*)" for validity$/
-     *
-     * @param [string] $url URL to check for validity
-     * @return [void]
-     */
-    public function iCheckTheUrlForValidity($url)
-    {
-        $url = $this->replacePlaceholders($url);
-        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
-            throw new \Exception("$url URL is not valid.");
-        }
-    }
-
-    /**
-     * Checks which user Terminus is operating as
-     * @Given /^I check the user I am logged in as$/
-     *
-     * @return [void]
-     */
-    public function iCheckTheUserAmLoggedInAs()
-    {
-        $this->iRun('terminus auth:whoami');
-    }
-
-    /**
-     * Clears site caches
-     * @When /^I clear the caches on the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $env  Environment on which to clear caches
-     * @param [string] $site Site on which to clear caches
-     * @return [void]
-     */
-    public function iClearTheCaches($env, $site)
-    {
-        $this->iRun("terminus env:clear-cache $env --site=$site");
-    }
-
-    /**
-     * @When /^I clone the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
-     *
-     * @param [string] $from_env Environment to clone from
-     * @param [string] $to_env   Environment to clone into
-     * @param [string] $site     Site on which to clone an environment
-     * @return [void]
-     */
-    public function iCloneTheEnvironment($from_env, $to_env, $site)
-    {
-        $this->iRun("terminus env:clone --site=$site --from-env=$from_env --to-env=$to_env --yes");
-    }
-
-    /**
-     * Commits changes to given site's given env with given message
-     * @When /^I commit changes to the "([^"]*)" environment of "([^"]*)" with message "([^"]*)"$/
-     *
-     * @param [string] $env     Name of environment on which to commit
-     * @param [string] $site    Name of site on which to commit
-     * @param [string] $message Message for commit
-     * @return [void]
-     */
-    public function iCommitChanges($env, $site, $message)
-    {
-        $this->iRun("terminus env:commit $env --site=$site --message=" . '"' . $message . '" --yes');
-    }
-
-    /**
      * Creates a site for the given name
      * @When /^I create a "([^"]*)" site named "([^"]*)"$/
      *
-     * @param [string] $upstream Which upstream to use as new site's source
-     * @param [string] $name     Name of site to create
-     * @param [string] $org      Name or UUID of organization to own the new site
-     * @return [void]
+     * @param string $upstream Which upstream to use as new site's source
+     * @param string $name     Name of site to create
+     * @param string $org      Name or UUID of organization to own the new site
+     * @return
      */
     public function iCreateSiteNamed($upstream, $name, $org = false)
     {
@@ -303,78 +199,11 @@ class ProductionContext implements Context
     }
 
     /**
-     * Creates a multidev env of given name on given site cloning given env
-     * @When /^I create multidev environment "([^"]*)" from "([^"]*)" on "([^"]*)"$/
-     *
-     * @param [string] $multidev Name of new multidev environment
-     * @param [string] $env      Name of environment to copy
-     * @param [string] $site     Name of site on which to create multidev env
-     * @return [void]
-     */
-    public function iCreateMultidevEnv($multidev, $env, $site)
-    {
-        $this->iRun("terminus multidev:create --site=$site --to-env=$multidev --from-env=$env");
-    }
-
-    /**
-     * Deletes a site of the given name
-     * @When /^I delete the site named "([^"]*)"$/
-     *
-     * @param [string] $site Name of site to delete
-     * @return [void]
-     */
-    public function iDeleteTheSiteNamed($site)
-    {
-        $this->iRun("terminus site:delete $site --yes");
-    }
-
-    /**
-     * @Given /^I deploy the "([^"]*)" environment from "([^"]*)" of "([^"]*)" with the message "([^"]*)"$/
-     *
-     * @param [string] $env     Name of environment to deploy
-     * @param [string] $from    Name of environment to deploy from
-     * @param [string] $site    Name of site on which to deploy environment
-     * @param [string] $message Commit message for the log
-     * @return [void]
-     */
-    public function iDeployTheEnvironmentOf($env, $from, $site, $message)
-    {
-        $this->iRun("terminus env:deploy --site=$site --to-env=$env --from-env=$from --note=$message");
-    }
-
-    /**
-     * Intentionally expires the user's session
-     * @When /^I expire my session$/
-     *
-     * @return [void]
-     */
-    public function iExpireMySession()
-    {
-        $session = json_decode(file_get_contents($this->cache_file_name));
-        $session->session_expire_time = -386299860;
-        file_put_contents($this->cache_file_name, $session);
-    }
-
-    /**
-     * Queries for info for a given site
-     * @Given /^I get info for the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $env  Environment to get info on
-     * @param [string] $site Site to get info on
-     * @return [string] Output from command run
-     */
-    public function iGetInfoForTheEnvironmentOf($env, $site)
-    {
-        $return = json_decode($this->iRun("terminus env:info $env --site=$site --env=$env --format=json"));
-        return $return;
-    }
-
-    /**
      * Queries for info for a given site
      * @Given /^I get info for the site "([^"]*)"$/
      *
-     * @param [string] $site Site to get info on
-     * @return [string] Output from command run
+     * @param string $site Site to get info on
+     * @return string Output from command run
      */
     public function iGetInfoForTheSite($site)
     {
@@ -387,8 +216,8 @@ class ProductionContext implements Context
      * @Given /^I have at least "([^"]*)" site$/
      * @Given /^I have at least "([^"]*)" sites$/
      *
-     * @param [integer] $min The minimum number of sites to have
-     * @return [boolean] $has_the_min
+     * @param integer $min The minimum number of sites to have
+     * @return boolean $has_the_min
      */
     public function iHaveAtLeastSite($min)
     {
@@ -429,8 +258,14 @@ class ProductionContext implements Context
                 break;
             default:
                 $this->iLogIn();
+                $original_name = '[[username]]';
+                $original_file = "{$this->cache_token_dir}/$original_name";
                 for ($i = 1; $i <= $num_tokens; $i++) {
-                    $this->iRun("cp {$this->cache_token_dir}/[[username]]$i");
+                    $altered_name = $original_name . $i;
+                    $altered_file = "{$this->cache_token_dir}/$altered_name";
+
+                    $this->iRun("cp $original_file $altered_file");
+                    $this->iRun("sed -i '.bak' 's/$original_name/$altered_name/' $altered_file");
                 }
                 break;
         }
@@ -443,8 +278,8 @@ class ProductionContext implements Context
      * @Given /^I have "([^"]*)" sites$/
      * @Given /^I have no sites$/
      *
-     * @param [integer] $num The number of sites to have
-     * @return [boolean] $has_amount
+     * @param integer $num The number of sites to have
+     * @return boolean $has_amount
      */
     public function iHaveSites($num = 0)
     {
@@ -457,65 +292,16 @@ class ProductionContext implements Context
     }
 
     /**
-     * @When /^I initialize the "([^"]*)" environment on "([^"]*)"$/
-     *
-     * @param [string] $env  Name of environment to initialize
-     * @param [string] $site Name of site on which to initialize environment
-     * @return [void]
-     */
-    public function iInitializeTheEnvironmentOn($env, $site)
-    {
-        $this->iRun("terminus env:deploy $env --site=$site");
-    }
-
-    /**
      * Installs given module to given Drupal site
      * @When /^I install the module "([^"]*)" to "([^"]*)"$/
      *
-     * @param [string] $module Name of Drupal module to install
-     * @param [string] $site   Name of the site to which to install
-     * @return [void]
+     * @param string $module Name of Drupal module to install
+     * @param string $site   Name of the site to which to install
+     * @return
      */
     public function iInstallTheModuleTo($module, $site)
     {
         $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
-    }
-
-    /**
-     * Lists all sites user is on the team of
-     * @When /^I list the sites$/
-     *
-     * @return [void]
-     */
-    public function iListTheSites()
-    {
-        $this->iRun('terminus site:list');
-    }
-
-    /**
-     * Lists team members
-     * @Given /^I list the team members on "([^"]*)"$/
-     *
-     * @param [string] $site Name of site of which to retrieve team members
-     * @return [void]
-     */
-    public function iListTheTeamMembersOn($site)
-    {
-        $this->iRun("terminus site:team:list $site");
-    }
-
-    /**
-     * List the backups of the given environment of the given site
-     * @When /^I list the backups of the "([^"]*)" environment of "([^"]*)"$/
-     *
-     * @param [string] $env  Environment of which to list the backups
-     * @param [string] $site Site of which to list the backups
-     * @return [string] Output to the CL
-     */
-    public function iListTheBackupsOf($env, $site)
-    {
-        $return = $this->iRun("terminus backup:list --site=$site --env=$env");
-        return $return;
     }
 
     /**
@@ -524,8 +310,8 @@ class ProductionContext implements Context
      * @When /^I log in via machine token$/
      * @When /^I log in$/
      *
-     * @param [string] $token A Pantheon machine token
-     * @return [void]
+     * @param string $token A Pantheon machine token
+     * @return
      */
     public function iLogIn($token = '[[machine_token]]')
     {
@@ -536,8 +322,8 @@ class ProductionContext implements Context
      * Logs in a user with a locally saved machine token
      * @When /^I log in as "([^"]*)"$/
      *
-     * @param [string] $email An email address
-     * @return [void]
+     * @param string $email An email address
+     * @return
      */
     public function iLogInAs($email = '[[username]]')
     {
@@ -546,83 +332,15 @@ class ProductionContext implements Context
 
     /**
      * Logs user out
-     * @When /^I log out$/
-     * @Given /^I am not authenticated$/
+     * @When I log out
+     * @Given I am not authenticated
      *
-     * @return [void]
+     * @return
      */
     public function iLogOut()
     {
         $this->iRun("terminus auth:logout");
-    }
-
-    /**
-     * Makes a backup of given elements of given site's given environment
-     * @When /^I back up "([^"]*)" elements of the "([^"]*)" environment of "([^"]*)"/
-     * @When /^I back up the "([^"]*)" element of the "([^"]*)" environment of "([^"]*)"/
-     *
-     * @param [string] $elements Elements to back up
-     * @param [string] $env      Environment to back up
-     * @param [string] $site     Name of the site to back up
-     * @return [void]
-     */
-    public function iMakeBackupElementsOfTheEnvironment($elements, $env, $site)
-    {
-        $this->iRun("terminus backup:create --site=$site --env=$env --element=$elements");
-    }
-
-    /**
-     * @When /^I merge the "([^"]*)" environment into the "([^"]*)" environment on "([^"]*)"$/
-     *
-     * @param [string] $from_env Environment to merge from
-     * @param [string] $to_env   Environment to merge into
-     * @param [string] $site     Name of site on which to merge environments
-     * @return [void]
-     */
-    public function iMergeTheEnvironment($from_env, $to_env, $site)
-    {
-        if ($to_env ==='dev') {
-            $this->iRun("terminus env:merge-to-dev $site.$from_env");
-        } else {
-            $this->iRun("terminus env:merge-from-dev $site.$to_env");
-        }
-    }
-
-    /**
-     * Removes $email user from $site
-     * @When /^I remove "([^"]*)" from the team on "([^"]*)"$/
-     *
-     * @param [string] $email Email address of user to add
-     * @param [string] $site  Name of the site on which to operate
-     * @return [void]
-     */
-    public function iRemoveFromTheTeamOn($email, $site)
-    {
-        $this->iRun("terminus site:team:remove $site $email");
-    }
-
-    /**
-     * @Given /^I restore the "([^"]*)" environment of "([^"]*)" from backup$/
-     *
-     * @param [string] $env  Environment to restore from backup
-     * @param [string] $site Site to restore from backup
-     * @return [void]
-     */
-    public function iRestoreTheEnvironmentOfFromBackup($env, $site)
-    {
-        $this->iRun("terminus backup:restore $site.$env");
-    }
-
-    /**
-     * @When I set the environment variable :arg1 to :arg2
-     *
-     * @param [string] $var  Environment variable name
-     * @param [string] $value Environment variable value
-     * @return [void]
-     */
-    public function iSetTheEnvironmentVariableTo($var, $value)
-    {
-        $this->environment_variables[$var] = $value;
+        $this->iShouldBeLoggedOut();
     }
 
     /**
@@ -631,8 +349,8 @@ class ProductionContext implements Context
      * @When /^I run:$/
      * Runs command and saves output
      *
-     * @param [string] $command To be entered as CL stdin
-     * @return [string] Returns output of command run
+     * @param string $command To be entered as CL stdin
+     * @return string Returns output of command run
      */
     public function iRun($command)
     {
@@ -640,18 +358,24 @@ class ProductionContext implements Context
         $command = preg_replace($regex, sprintf('bin/terminus', $this->cliroot), $command);
         $command = $this->replacePlaceholders($command);
 
+        // Direct Terminus to run the suite commands on the specified host
         if (isset($this->connection_info['host'])) {
             $command = "TERMINUS_HOST={$this->connection_info['host']} $command";
         }
+
+        // Instruct Terminus whether it is appropriate to verify host cert
         if (isset($this->connection_info['verify_host_cert'])) {
             $verify = $this->connection_info['verify_host_cert'] ? '1' : '0';
             $command = "TERMINUS_VERIFY_HOST_CERT=$verify $command";
         }
-        if (isset($this->cassette_name)) {
-            $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
-        }
+
+        // If there is a VCR mode, include it.
         if (isset($this->parameters['vcr_mode'])) {
             $command = "TERMINUS_VCR_MODE={$this->parameters['vcr_mode']} $command";
+            // If there is a fixture indicated by the test, give its information to Terminus.
+            if (isset($this->cassette_name)) {
+                $command = "TERMINUS_VCR_CASSETTE={$this->cassette_name} $command";
+            }
         }
 
         // Determine which plugin dir we should use
@@ -659,19 +383,22 @@ class ProductionContext implements Context
         // Pass the cache directory to the command so that tests don't poison the user's cache.
         $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
 
-        // Insert any envrionment variables defined for this scenario
+        // Insert any environment variables defined for this scenario
         foreach ($this->environment_variables as $var => $value) {
             $var = $this->replacePlaceholders($var);
             $value = $this->replacePlaceholders($value);
             $command = "{$var}={$value} $command";
         }
 
+        // Execute the command
+        //var_dump($command);
         ob_start();
         passthru($command . ' 2>&1');
         $this->output = ob_get_clean();
+        //var_dump($this->output);
 
-        // Terminus commands might complete their tasks even with PHP warnings
-        // or notices. But those should still trigger test failures.
+        // While Terminus commands might complete their tasks even with PHP warnings
+        // or notices, those should still trigger test failures.
         if ($this->checkResult("PHP Warning:", $this->output)) {
             throw new \Exception("The Terminus command generated a PHP Warning:\n{$this->output}\n");
         }
@@ -683,13 +410,71 @@ class ProductionContext implements Context
     }
 
     /**
+     * Checks login information
+     *
+     * @return null|array
+     */
+    protected function iGetMyLoginInformation()
+    {
+        return json_decode($this->iRun("terminus auth:whoami --format=json"));
+    }
+
+    /**
+     * Checks whether the user is logged in or not
+     * @Then I should be logged in
+     *
+     * @throws \Exception If the user is not logged in
+     */
+    public function iShouldBeLoggedIn()
+    {
+        if ($this->iGetMyLoginInformation() === null) {
+            throw new \Exception('You are logged out.');
+        }
+    }
+
+    /**
+     * Checks whether the user is logged in or not
+     * @When /^I should be logged in as (.*)$/
+     *
+     * @param string $email Email address of the user you should be logged in as
+     * @throws \Exception If the user is not logged in, has no email address, or is not logged in with the desired account
+     */
+    public function iShouldBeLoggedInAs($email)
+    {
+        $login_info = $this->iGetMyLoginInformation();
+        if ($login_info === null) {
+            throw new \Exception('You are logged out.');
+        }
+        if (!isset($login_info['email'])) {
+            throw new \Exception('The logged in user does not have an email address.');
+        }
+        if ($login_info['email'] !== $email) {
+            throw new \Exception("The logged in user is {$login_info['email']}, not $email.");
+        }
+    }
+
+    /**
+     * Checks whether the user is logged out
+     * @Then I should not be logged in
+     * @Then I should be logged out
+     *
+     * @throws \Exception If the Terminus user is not logged out
+     */
+    public function iShouldBeLoggedOut()
+    {
+        if ($this->iGetMyLoginInformation() !== null) {
+            throw new \Exception('You are logged in.');
+        }
+    }
+
+    /**
      * @Then /^I should get:$/
      * @Then /^I should get "([^"]*)"$/
      * @Then /^I should get: "([^"]*)"$/
      * Checks the output for the given string
      *
-     * @param [string] $string Content which ought not be in the output
-     * @return [boolean] $i_have_this True if $string exists in output
+     * @param string $string Content which ought not be in the output
+     * @return boolean $i_have_this True if $string exists in output
      * @throws Exception
      */
     public function iShouldGet($string)
@@ -699,18 +484,61 @@ class ProductionContext implements Context
     }
 
     /**
+     * Checks the output for the given string that it is of the given log level and with the given string
+     *
+     * @param string $level The log level expected in output
+     * @param string $string Content which ought not be in the output
+     * @return boolean If the string was found in the given level of log
+     * @throws \Exception
+     */
+    public function iShouldGetTheLog($level, $string)
+    {
+        return $this->iShouldGet("[$level] $string");
+    }
+
+    /**
+     * @Then /^I should get the error:$/
+     * @Then /^I should get the error "([^"]*)"$/
+     * @Then /^I should get the error: "([^"]*)"$/
+     * Checks the output for the given string that it is a error with the given string
+     *
+     * @param string $string Content which ought not be in the output
+     * @return boolean True if $string exists in error output
+     * @throws \Exception
+     */
+    public function iShouldGetTheError($string)
+    {
+        return $this->iShouldGetTheLog('error', " $string");
+    }
+
+    /**
+     * @Then /^I should get the notice:$/
+     * @Then /^I should get the notice "([^"]*)"$/
+     * @Then /^I should get the notice: "([^"]*)"$/
+     * Checks the output for the given string that it is a notice with the given string
+     *
+     * @param string $string Content which ought not be in the output
+     * @return boolean True if $string exists in notice output
+     * @throws \Exception
+     */
+    public function iShouldGetTheNotice($string)
+    {
+        return $this->iShouldGetTheLog('notice', $string);
+    }
+
+    /**
      * @Then /^I should get the warning:$/
      * @Then /^I should get the warning "([^"]*)"$/
      * @Then /^I should get the warning: "([^"]*)"$/
      * Checks the output for the given string that it is a warning with the given string
      *
-     * @param [string] $string Content which ought not be in the output
-     * @return [boolean] $i_have_this True if $string exists in output
-     * @throws Exception
+     * @param string $string Content which ought not be in the output
+     * @return boolean True if $string exists in warning output
+     * @throws \Exception
      */
     public function iShouldGetTheWarning($string)
     {
-        return $this->iShouldGet("[warning] $string");
+        return $this->iShouldGetTheLog('warning', $string);
     }
 
     /**
@@ -844,8 +672,8 @@ class ProductionContext implements Context
      * @Then /^I should get one of the following: "([^"]*)"$/
      * Checks the output for the given substrings, comma-separated
      *
-     * @param [array] $list_string Content which ought to be in the output
-     * @return [boolean] True if a $string exists in output
+     * @param array $list_string Content which ought to be in the output
+     * @return boolean True if a $string exists in output
      * @throws Exception
       */
     public function iShouldGetOneOfTheFollowing($list_string)
@@ -865,8 +693,8 @@ class ProductionContext implements Context
      * @Then /^I should not get one of the following: "([^"]*)"$/
      * Checks the output for the given substrings, comma-separated
      *
-     * @param [array] $list_string Content which ought not be in the output
-     * @return [boolean] True if a $string does not exist in output
+     * @param array $list_string Content which ought not be in the output
+     * @return boolean True if a $string does not exist in output
       */
     public function iShouldNotGetOneOfTheFollowing($list_string)
     {
@@ -882,7 +710,7 @@ class ProductionContext implements Context
      * Checks for backups made since the test started running
      * @Then /^I should have a new backup$/
      *
-     * @return [boolean] True if new backup exists
+     * @return boolean True if new backup exists
      */
     public function iShouldHaveNewBackup()
     {
@@ -900,8 +728,8 @@ class ProductionContext implements Context
      * Checks the number of records returned against a given quantity
      * @Then /^I should have "([^"]*)" records$/
      *
-     * @param [integer] $number Number of records to check for
-     * @return [void]
+     * @param integer $number Number of records to check for
+     * @return
      */
     public function iShouldHaveRecords($number)
     {
@@ -916,9 +744,10 @@ class ProductionContext implements Context
      * Ensures that you do not recieve param $string as result
      * @Then /^I should not get:$/
      * @Then /^I should not get: "([^"]*)"$/
+     * @Then I should not get :string
      *
-     * @param [string] $string Content which ought not be in the output
-     * @return [boolean] True if $string does not exist in output
+     * @param string $string Content which ought not be in the output
+     * @return boolean True if $string does not exist in output
      */
     public function iShouldNotGet($string)
     {
@@ -956,9 +785,9 @@ class ProductionContext implements Context
      * Ensures that a user is not on a site's team
      * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
      *
-     * @param [string] $member Email address of the member on the team of
-     * @param [string] $site   Site which the member should be on the team of
-     * @return [boolean] True if $member does exists in output
+     * @param string $member Email address of the member on the team of
+     * @param string $site   Site which the member should be on the team of
+     * @return boolean True if $member does exists in output
      */
     public function isMemberOfTheTeamOn($member, $site)
     {
@@ -971,9 +800,9 @@ class ProductionContext implements Context
      * Ensures that a user is not on a site's team
      * @Given /^"([^"]*)" is not a member of the team on "([^"]*)"$/
      *
-     * @param [string] $member Email address of the member not on the team
-     * @param [string] $site   Site which the member should not be on the team of
-     * @return [boolean] True if $member does not exist in output
+     * @param string $member Email address of the member not on the team
+     * @param string $site   Site which the member should not be on the team of
+     * @return boolean True if $member does not exist in output
      */
     public function isNotMemberOfTheTeamOn($member, $site)
     {
@@ -986,8 +815,8 @@ class ProductionContext implements Context
      * Ensures there is no site with the given name. Loops until this is so
      * @Given /^no site named "([^"]*)"$/
      *
-     * @param [string] $site Name of site to ensure does not exist
-     * @return [boolean] Always returns true
+     * @param string $site Name of site to ensure does not exist
+     * @return boolean Always returns true
      */
     public function noSiteNamed($site)
     {
@@ -1005,9 +834,9 @@ class ProductionContext implements Context
      * @Given /^I check the service level of "([^"]*)"$/
      * @Given /^the service level of "([^"]*)" is "([^"]*)"$/
      *
-     * @param [string] $site          Name of site to work on
-     * @param [string] $service_level If not false, will set service level to this
-     * @return [void]
+     * @param string $site          Name of site to work on
+     * @param string $service_level If not false, will set service level to this
+     * @return
      */
     public function serviceLevel($site, $service_level = null)
     {
@@ -1023,8 +852,8 @@ class ProductionContext implements Context
      * Automatically assigns pass/fail/skip to the test result
      * @Then /^I "([^"]*)" the test$/
      *
-     * @param [string] $status Status to assign to the test
-     * @return [boolean] Always true, else errs
+     * @param string $status Status to assign to the test
+     * @return boolean Always true, else errs
      */
     public function setTestStatus($status)
     {
@@ -1037,22 +866,20 @@ class ProductionContext implements Context
     /**
      * Checks the the haystack for the needle
      *
-     * @param [string] $needle   That which is searched for
-     * @param [string] $haystack That which is searched inside
-     * @return [boolean] $result True if $nededle was found in $haystack
+     * @param string $needle   That which is searched for
+     * @param string $haystack That which is searched inside
+     * @return boolean $result True if $nededle was found in $haystack
      */
     private function checkResult($needle, $haystack)
     {
-        $needle = $this->replacePlaceholders($needle);
-        $result = preg_match("#" . preg_quote($needle, '#') . '#s', $haystack);
-        return $result;
+        return strstr($haystack, $this->replacePlaceholders($needle)) !== false;
     }
 
     /**
      * Returns tags in easy-to-use array format.
      *
      * @param [ScenarioEvent] $event Feature information from Behat
-     * @return $tags [array] An array of strings corresponding to tags
+     * @return $tags array An array of strings corresponding to tags
      */
     private function getTags($event)
     {
@@ -1074,8 +901,8 @@ class ProductionContext implements Context
     /**
      * Opens param $url in the default browser
      *
-     * @param [string] $url URL to open in browser
-     * @return [void]
+     * @param string $url URL to open in browser
+     * @return
      */
     private function openInBrowser($url)
     {
@@ -1118,11 +945,11 @@ class ProductionContext implements Context
      * Exchanges values in given string with square brackets for values
      * in $this->parameters
      *
-     * @param [string] $string       The string to perform replacements on
-     * @param [array]  $replacements Used to replace with non-parameters
-     * @return [string] $string The modified param string
+     * @param string $string       The string to perform replacements on
+     * @param array  $replacements Used to replace with non-parameters
+     * @return string $string The modified param string
      */
-    private function replacePlaceholders($string, $replacements = array())
+    protected function replacePlaceholders($string, $replacements = array())
     {
         $regex = '~\[\[(.*?)\]\]~';
         preg_match_all($regex, $string, $matches);
@@ -1146,8 +973,8 @@ class ProductionContext implements Context
     /**
      * Sets $this->cassette_name and returns name of the cassette to be used.
      *
-     * @param [array] $event Feature information from Behat
-     * @return [string] Of scneario name, lowercase, with underscores and suffix
+     * @param array $event Feature information from Behat
+     * @return string Of scneario name, lowercase, with underscores and suffix
      */
     private function setCassetteName($event)
     {
@@ -1157,6 +984,17 @@ class ProductionContext implements Context
             $this->cassette_name = $tags['vcr'];
         }
         return $this->cassette_name;
+    }
+
+    /**
+     * Queries for info for a given site
+     *
+     * @param string $site Site to get info on
+     * @return array Output from command run
+     */
+    protected function getSiteInfo($site)
+    {
+        return json_decode($this->iRun("terminus site:info $site --format=json"));
     }
 
     /**
