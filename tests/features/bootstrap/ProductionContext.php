@@ -88,7 +88,7 @@ class ProductionContext implements Context
      *
      * @Given /^a site named "([^"]*)"$/
      * @Given /^a site named: (.*)$/
-     * @Given /^I have a site named: (.*)$/
+     * @Given I have a site named :site
      *
      * @param string $site Name of site to ensure exists
      * @return boolean Always true, else errs
@@ -689,17 +689,10 @@ class ProductionContext implements Context
      */
     public function iShouldGetValidUuid()
     {
-        preg_match(
-            '/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/',
-            $this->output,
-            $matches
-        );
-        if (empty($matches)
-        && ($this->output != '11111111-1111-1111-1111-111111111111')
-        ) {
-            throw new \Exception($this->output . ' is not a valid UUID.');
+        if (!empty($this->searchOutputForValidUuid())) {
+            return true;
         }
-        return true;
+        throw new \Exception($this->output . ' does not include a valid UUID.');
     }
 
     /**
@@ -721,6 +714,21 @@ class ProductionContext implements Context
             }
         }
         throw new \Exception("Actual output:\n" . $this->output);
+    }
+
+    /**
+     * @Then /^I should not get a valid UUID/
+     * Checks the output for the lack of a valid UUID
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function iShouldNotGetValidUuid()
+    {
+        if (empty($this->searchOutputForValidUuid())) {
+            return true;
+        }
+        throw new \Exception($this->output . ' does not include a valid UUID.');
     }
 
     /**
@@ -850,6 +858,7 @@ class ProductionContext implements Context
     /**
      * Ensures there is no site with the given name. Loops until this is so
      * @Given /^no site named "([^"]*)"$/
+     * @Given I have no site named :site
      *
      * @param string $site Name of site to ensure does not exist
      * @return boolean Always returns true
@@ -857,11 +866,12 @@ class ProductionContext implements Context
     public function noSiteNamed($site)
     {
         try {
-            $this->aSiteNamed($site);
+            $this->iRun("terminus site:lookup $site");
+            $this->iShouldGet("Could not locate a site your user may access identified by");
         } catch (\Exception $e) {
-            return true;
+            throw new \Exception("A site named $site was found.");
         }
-        throw new \Exception("A site named $site was found.");
+        return true;
     }
 
     /**
@@ -1004,6 +1014,18 @@ class ProductionContext implements Context
         }
 
         return $string;
+    }
+
+    /**
+     * @return mixed Returns matches from regex executed on the output. Empty if there weren't any
+     */
+    private function searchOutputForValidUuid() {
+        preg_match(
+            '/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/',
+            $this->output,
+            $matches
+        );
+        return $matches;
     }
 
     /**
