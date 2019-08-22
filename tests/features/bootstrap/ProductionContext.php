@@ -22,6 +22,7 @@ class ProductionContext implements Context
     private $parameters;
     private $output;
     private $start_time;
+    private $terminus_config;
 
     const DEFAULT_NEW_SITE_FRAMEWORK = 'WordPress';
     const DEFAULT_PLUGIN_DIR_NAME = 'default';
@@ -143,6 +144,7 @@ class ProductionContext implements Context
         $this->setCassetteName($event);
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
         $this->environment_variables = [];
+        $this->terminus_config = json_decode($this->iRun('terminus self:config:dump --format=json'));
     }
 
     /**
@@ -576,6 +578,40 @@ class ProductionContext implements Context
     {
         return $this->iShouldGetTheLog('warning', $string);
     }
+     
+    /**
+     * Checks if command cache cleared
+     * 
+     * @Then I should have no cached commands
+     */
+    public function iShouldHaveNoCachedCommands()
+    {
+        $cache_dir = $this->retrieveTerminusConfig('command_cache_dir');
+        $cache_content = $this->iRun("ls $cache_dir");
+        if (!empty($cache_content)) {
+            throw new \Exception('The command cache is not empty.');
+        }
+    }
+    
+    /**
+     * Retrieves terminus configuration
+     * 
+     * @param string $key Optional key to return a single value
+     * @return array|string Either the full config or a single key's value
+     */
+    private function retrieveTerminusConfig($key = null)
+    {
+       $config = $this->terminus_config;
+       if ($key === null) {
+           return $config;
+       }
+       $key_config_array = array_filter($config, function($info) use ($key) {
+           return $info->key === $key;
+       });
+
+       $key_config = array_shift($key_config_array);
+       return $key_config->value;
+    } 
 
     /**
      * Checks the output for a table with the given headers
