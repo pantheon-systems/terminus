@@ -38,6 +38,7 @@ Feature: Authorization command
     Then I should get the notice "Found a machine token for [[username]]."
     And I should get the notice "Logging in via machine token."
 
+  @vcr auth-login.yml
   Scenario: Failing to log in automatically when multiple machine tokens have been saved
     Given I have at least "2" saved machine tokens
     When I run "terminus auth:login"
