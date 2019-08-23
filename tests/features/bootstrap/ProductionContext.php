@@ -3,8 +3,6 @@
 namespace Pantheon\Terminus\FeatureTests;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
-use Pantheon\Terminus\Exceptions\TerminusException;
 
 /**
  * Class ProductionContext
@@ -114,29 +112,10 @@ class ProductionContext implements Context
     }
 
     /**
-     * Ensures a site of the given name exists and belongs to given org
-     * @Given /^a site named "([^"]*)" belonging to "([^"]*)"$/
-     *
-     * @param string $site Name of site to ensure exists
-     * @param string $org  Name or UUID of organization to ensure ownership
-     * @return boolean Always true, else errs
-     */
-    public function aSiteNamedBelongingTo($site, $org)
-    {
-        $output = $this->iGetInfoForTheSite($site);
-        if (!$this->checkResult($site, $output)) {
-            $this->iCreateSiteNamed('Drupal 7', $site, $org);
-            $recurse = $this->aSiteNamedBelongingTo($site, $org);
-            return $recurse;
-        }
-        return true;
-    }
-
-    /**
      * @BeforeScenario
      * Runs before each scenario
      *
-     * @param [ScenarioEvent] $event Feature information from Behat
+     * @param ScenarioEvent $event Feature information from Behat
      * @return
      */
     public function before($event)
@@ -145,50 +124,6 @@ class ProductionContext implements Context
         $this->plugin_dir_name = self::DEFAULT_PLUGIN_DIR_NAME;
         $this->environment_variables = [];
         $this->terminus_config = json_decode($this->iRun('terminus self:config:dump --format=json'));
-    }
-
-    /**
-     * Select which plugin directory will be used for the
-     * rest of the statements in the current scenario.
-     * @When /^I am using "([^"]*)" plugins/
-     * @param string $dir_name
-     */
-    public function selectPluginDir($dir_name)
-    {
-        $this->plugin_dir_name = $dir_name;
-    }
-
-    /**
-     * @When /^I am prompted to "([^"]*)" on "([^"]*)" at "([^"]*)"$/
-     *
-     * @param string $prompt To be output before entering any key
-     * @param string $site   Site about which prompt is regarding
-     * @param string $url    URL to open after prompt
-     * @return
-     */
-    public function iAmPrompted(
-        $prompt,
-        $site,
-        $url = "https://[[dashboard_host]]/"
-    ) {
-        echo $prompt . PHP_EOL;
-        echo 'Then press any key.';
-        $site      = $this->replacePlaceholders($site);
-        $site_info = $this->iGetInfoForTheSite($site);
-        $url       = $this->replacePlaceholders($url, $site_info);
-        $this->openInBrowser($url);
-        $line = trim(fgets(STDIN));
-    }
-
-    /**
-     * Logs in user with username and password set in behat.yml
-     * And a blank slate cache
-     * @Given I am authenticated
-     * @When I log in
-     */
-    public function iAmAuthenticated()
-    {
-        $this->iLogIn();
     }
 
     /**
@@ -220,36 +155,6 @@ class ProductionContext implements Context
     {
         $return = $this->iRun("terminus site:info $site");
         return $return;
-    }
-
-    /**
-     * Checks which user Terminus is operating as
-     * @Given /^I have at least "([^"]*)" site$/
-     * @Given /^I have at least "([^"]*)" sites$/
-     *
-     * @param integer $min The minimum number of sites to have
-     * @return boolean $has_the_min
-     */
-    public function iHaveAtLeastSite($min)
-    {
-        $sites       = json_decode($this->iRun('terminus site:list --format=json'));
-        $has_the_min = ($min <= count($sites));
-        if (!$has_the_min) {
-            throw new \Exception(count($sites) . ' sites found.');
-        }
-        return $has_the_min;
-    }
-
-    /**
-     * Removes all machine tokens from the running machine
-     * @Given I have no saved machine tokens
-     *
-     * @return boolean
-     */
-    public function iHaveNoSavedMachineTokens()
-    {
-        $this->iRun("rm {$this->cache_token_dir}/*");
-        return true;
     }
 
     /**
@@ -285,6 +190,24 @@ class ProductionContext implements Context
     }
 
     /**
+     * Checks which user Terminus is operating as
+     * @Given /^I have at least "([^"]*)" site$/
+     * @Given /^I have at least "([^"]*)" sites$/
+     *
+     * @param integer $min The minimum number of sites to have
+     * @return boolean $has_the_min
+     */
+    public function iHaveAtLeastSite($min)
+    {
+        $sites       = json_decode($this->iRun('terminus site:list --format=json'));
+        $has_the_min = ($min <= count($sites));
+        if (!$has_the_min) {
+            throw new \Exception(count($sites) . ' sites found.');
+        }
+        return $has_the_min;
+    }
+
+    /**
      * Ensures at least X machine tokens exist in the tokens directory
      * @Given I have exactly :num_tokens saved machine token
      * @Given I have exactly :num_tokens saved machine tokens
@@ -296,6 +219,37 @@ class ProductionContext implements Context
     {
         $this->iHaveNoSavedMachineTokens();
         return $this->iHaveAtLeastSavedMachineTokens($num_tokens);
+    }
+
+    /**
+     * Removes all machine tokens from the running machine
+     * @Given I have no saved machine tokens
+     *
+     * @return boolean
+     */
+    public function iHaveNoSavedMachineTokens()
+    {
+        $this->iRun("rm {$this->cache_token_dir}/*");
+        return true;
+    }
+
+    /**
+     * Ensures there is no site with the given name. Loops until this is so
+     * @Given /^no site named "([^"]*)"$/
+     * @Given I have no site named :site
+     *
+     * @param string $site Name of site to ensure does not exist
+     * @return boolean Always returns true
+     */
+    public function iHaveNoSiteNamed($site)
+    {
+        try {
+            $this->iRun("terminus site:lookup $site");
+            $this->iShouldGet("Could not locate a site your user may access identified by");
+        } catch (\Exception $e) {
+            throw new \Exception("A site named $site was found.");
+        }
+        return true;
     }
 
     /**
@@ -318,26 +272,14 @@ class ProductionContext implements Context
     }
 
     /**
-     * Installs given module to given Drupal site
-     * @When /^I install the module "([^"]*)" to "([^"]*)"$/
-     *
-     * @param string $module Name of Drupal module to install
-     * @param string $site   Name of the site to which to install
-     * @return
-     */
-    public function iInstallTheModuleTo($module, $site)
-    {
-        $this->iRun("terminus drush --command='dl $module -y' --site=$site --env=dev");
-    }
-
-    /**
      * Logs in user
+     * @Given I am authenticated
      * @When /^I log in via machine token "([^"]*)"$/
      * @When /^I log in via machine token$/
      * @When /^I log in$/
+     * @When I log in
      *
      * @param string $token A Pantheon machine token
-     * @return
      */
     public function iLogIn($token = '[[machine_token]]')
     {
@@ -349,7 +291,6 @@ class ProductionContext implements Context
      * @When /^I log in as "([^"]*)"$/
      *
      * @param string $email An email address
-     * @return
      */
     public function iLogInAs($email = '[[username]]')
     {
@@ -405,7 +346,7 @@ class ProductionContext implements Context
         }
 
         // Determine which plugin dir we should use
-        $plugins = $this->plugin_dir . DIRECTORY_SEPARATOR . $this->plugin_dir_name;
+        $plugins = $this->plugin_dir;
         // Pass the cache directory to the command so that tests don't poison the user's cache.
         $command = "TERMINUS_TEST_MODE=1 TERMINUS_CACHE_DIR=$this->cache_dir TERMINUS_TOKENS_DIR=$this->cache_token_dir TERMINUS_PLUGINS_DIR=$plugins $command";
 
@@ -436,16 +377,6 @@ class ProductionContext implements Context
     }
 
     /**
-     * Checks login information
-     *
-     * @return null|array
-     */
-    protected function iGetMyLoginInformation()
-    {
-        return json_decode($this->iRun("terminus auth:whoami --format=json"));
-    }
-
-    /**
      * @When I set the environment variable :arg1 to :arg2
      *
      * @param string $var  Environment variable name
@@ -465,7 +396,7 @@ class ProductionContext implements Context
      */
     public function iShouldBeLoggedIn()
     {
-        if ($this->iGetMyLoginInformation() === null) {
+        if ($this->getMyLoginInformation() === null) {
             throw new \Exception('You are logged out.');
         }
     }
@@ -479,7 +410,7 @@ class ProductionContext implements Context
      */
     public function iShouldBeLoggedInAs($email)
     {
-        $login_info = $this->iGetMyLoginInformation();
+        $login_info = $this->getMyLoginInformation();
         if ($login_info === null) {
             throw new \Exception('You are logged out.');
         }
@@ -500,16 +431,16 @@ class ProductionContext implements Context
      */
     public function iShouldBeLoggedOut()
     {
-        if ($this->iGetMyLoginInformation() !== null) {
+        if ($this->getMyLoginInformation() !== null) {
             throw new \Exception('You are logged in.');
         }
     }
 
     /**
+     * Checks the output for the given string
      * @Then /^I should get:$/
      * @Then /^I should get "([^"]*)"$/
      * @Then /^I should get: "([^"]*)"$/
-     * Checks the output for the given string
      *
      * @param string $string Content which ought not be in the output
      * @return boolean $i_have_this True if $string exists in output
@@ -522,16 +453,72 @@ class ProductionContext implements Context
     }
 
     /**
-     * Checks the output for the given string that it is of the given log level and with the given string
+     * @Then /^I should get one of the following:$/
+     * @Then /^I should get one of the following "([^"]*)"$/
+     * @Then /^I should get one of the following: "([^"]*)"$/
+     * Checks the output for the given substrings, comma-separated
      *
-     * @param string $level The log level expected in output
-     * @param string $string Content which ought not be in the output
-     * @return boolean If the string was found in the given level of log
-     * @throws \Exception
+     * @param array $list_string Content which ought to be in the output
+     * @return boolean True if a $string exists in output
+     * @throws Exception
      */
-    public function iShouldGetTheLog($level, $string)
+    public function iShouldGetOneOfTheFollowing($list_string)
     {
-        return $this->iShouldGet("[$level] $string");
+        $strings  = explode(',', $list_string);
+        foreach ($strings as $string) {
+            if ($this->checkResult(trim((string)$string), $this->output)) {
+                return true;
+            }
+        }
+        throw new \Exception("Actual output:\n" . $this->output);
+    }
+
+    /**
+     * Checks for backups made since the test started running
+     * @Then /^I should have a new backup$/
+     *
+     * @return boolean True if new backup exists
+     */
+    public function iShouldHaveNewBackup()
+    {
+        $regex = "/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/";
+        preg_match_all($regex, $this->output, $matches);
+        foreach ($matches[0] as $date) {
+            if ($this->start_time < strtotime($date)) {
+                return true;
+            }
+        }
+        throw new \Exception('No new backups were created.' . PHP_EOL);
+    }
+
+    /**
+     * Checks if command cache cleared
+     *
+     * @Then I should have no cached commands
+     */
+    public function iShouldHaveNoCachedCommands()
+    {
+        $cache_dir = $this->retrieveTerminusConfig('command_cache_dir');
+        $cache_content = $this->iRun("ls $cache_dir");
+        if (!empty($cache_content)) {
+            throw new \Exception('The command cache is not empty.');
+        }
+    }
+
+    /**
+     * Checks the number of records returned against a given quantity
+     * @Then /^I should have "([^"]*)" records$/
+     *
+     * @param integer $number Number of records to check for
+     * @return
+     */
+    public function iShouldHaveRecords($number)
+    {
+        $record_count = count((array)json_decode($this->output));
+        if ((integer)$number != $record_count) {
+            throw new \Exception("Wanted $number records, got " . $record_count . '.');
+        }
+        return true;
     }
 
     /**
@@ -546,7 +533,7 @@ class ProductionContext implements Context
      */
     public function iShouldGetTheError($string)
     {
-        return $this->iShouldGetTheLog('error', " $string");
+        return $this->shouldGetTheLog('error', " $string");
     }
 
     /**
@@ -561,7 +548,7 @@ class ProductionContext implements Context
      */
     public function iShouldGetTheNotice($string)
     {
-        return $this->iShouldGetTheLog('notice', $string);
+        return $this->shouldGetTheLog('notice', $string);
     }
 
     /**
@@ -576,46 +563,114 @@ class ProductionContext implements Context
      */
     public function iShouldGetTheWarning($string)
     {
-        return $this->iShouldGetTheLog('warning', $string);
+        return $this->shouldGetTheLog('warning', $string);
     }
-     
-    /**
-     * Checks if command cache cleared
-     * 
-     * @Then I should have no cached commands
-     */
-    public function iShouldHaveNoCachedCommands()
-    {
-        $cache_dir = $this->retrieveTerminusConfig('command_cache_dir');
-        $cache_content = $this->iRun("ls $cache_dir");
-        if (!empty($cache_content)) {
-            throw new \Exception('The command cache is not empty.');
-        }
-    }
-    
-    /**
-     * Retrieves terminus configuration
-     * 
-     * @param string $key Optional key to return a single value
-     * @return array|string Either the full config or a single key's value
-     */
-    private function retrieveTerminusConfig($key = null)
-    {
-       $config = $this->terminus_config;
-       if ($key === null) {
-           return $config;
-       }
-       $key_config_array = array_filter($config, function($info) use ($key) {
-           return $info->key === $key;
-       });
 
-       $key_config = array_shift($key_config_array);
-       return $key_config->value;
-    } 
+    /**
+     * @Then /^I should get a valid UUID/
+     * Checks the output for a valid UUID
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function iShouldGetValidUuid()
+    {
+        preg_match(
+            '/^([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/',
+            $this->output,
+            $matches
+        );
+        if (empty($matches)
+            && ($this->output != '11111111-1111-1111-1111-111111111111')
+        ) {
+            throw new \Exception($this->output . ' is not a valid UUID.');
+        }
+        return true;
+    }
+
+    /**
+     * Ensures that you do not recieve param $string as result
+     * @Then /^I should not get:$/
+     * @Then /^I should not get: "([^"]*)"$/
+     * @Then I should not get :string
+     *
+     * @param string $string Content which ought not be in the output
+     * @return boolean True if $string does not exist in output
+     */
+    public function iShouldNotGet($string)
+    {
+        if ($this->checkResult((string)$string, $this->output)) {
+            throw new \Exception("Actual output:\n" . $this->output);
+        }
+        return true;
+    }
+
+    /**
+     * @Then /^I should not get one of the following:$/
+     * @Then /^I should not get one of the following "([^"]*)"$/
+     * @Then /^I should not get one of the following: "([^"]*)"$/
+     * Checks the output for the given substrings, comma-separated
+     *
+     * @param array $list_string Content which ought not be in the output
+     * @return boolean True if a $string does not exist in output
+     */
+    public function iShouldNotGetOneOfTheFollowing($list_string)
+    {
+        try {
+            $this->iShouldGetOneOfTheFollowing($list_string);
+        } catch (\Exception $e) {
+            return true;
+        }
+        throw new \Exception("Actual output:\n" . $this->output);
+    }
+
+    /**
+     * Checks the output against a a type of message.
+     *
+     * @Then /^I should not see a (notice|warning)$/
+     * @Then /^I should not see an (error)$/
+     *
+     * @param $type string One of the standard logging levels
+     * @return bool True if message is the expected type in output is not given
+     * @throws \Exception
+     */
+    public function iShouldNotSeeATypeOfMessage($type, $message = null)
+    {
+        try {
+            $this->iShouldSeeATypeOfMessage($type, $message);
+        } catch (\Exception $e) {
+            $exception_message = $e->getMessage();
+            if ((strpos($exception_message, $type) !== false)) {
+                return true;
+            }
+            throw $e;
+        }
+        throw new \Exception("Expected no $type in message: $this->output");
+    }
+
+    /**
+     * @Then I should see a progress bar with the message: :message
+     */
+    public function iShouldSeeAProgressBarWithTheMessage($message)
+    {
+        mb_substr_count(
+            $this->output,
+            $message
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%'
+        ) == 1
+        &&
+        mb_substr_count(
+            $this->output,
+            'Progress: ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%'
+        ) == 1;
+    }
 
     /**
      * Checks the output for a table with the given headers
-     *
      * @Then /^I should see a table with the headers$/
      * @Then /^I should see a table with the headers: ([^"]*)$/
      * @Then /^I should see a table with the headers: "([^"]*)"$/
@@ -625,7 +680,7 @@ class ProductionContext implements Context
      *
      * @throws \Exception
      */
-    public function shouldSeeATableWithHeaders($headers)
+    public function iShouldSeeATableWithHeaders($headers)
     {
         $table_headers = explode(',', $headers);
         foreach ($table_headers as $column) {
@@ -639,7 +694,6 @@ class ProductionContext implements Context
 
     /**
      * Checks the output for a table with the given row values
-     *
      * @Then /^I should see a table with rows like:$/
      * @Then /^I should see a table with rows like"([^"]*)"$/
      * @Then /^I should see a table with rows like: "([^"]*)"$/
@@ -662,7 +716,6 @@ class ProductionContext implements Context
 
     /**
      * Checks the output for a table with the given number of rows
-     *
      * @Then I should see a table with :num_rows row
      * @Then I should see a table with :num_rows rows
      * @Then that table should have :num_rows row
@@ -691,68 +744,6 @@ class ProductionContext implements Context
     }
 
     /**
-     * Checks the output for a type of message. Message to match is optional.
-     *
-     * @Then /^I should see a[n]? (notice|warning|error) message$/
-     * @Then /^I should see a[n]? (notice|warning|error) message: (.*)$/
-     *
-     * @param $type string One of the standard logging levels
-     * @param $message string Optional message to match in the output
-     * @return bool True if message is the correct type and exists in output if given
-     * @throws \Exception
-     */
-    public function iShouldSeeATypeOfMessage($type, $message = null)
-    {
-        $expected_message = "[$type]";
-        if (!empty($message)) {
-            $expected_message .= " {$message}";
-        }
-
-        $compressed_output = preg_replace('/\s+/', ' ', $this->output);
-        if (strpos($compressed_output, $expected_message) === false) {
-            throw new \Exception("Expected $expected_message in message: $this->output");
-        }
-
-        return true;
-    }
-
-    /**
-     * @Then /^I should get a valid UUID/
-     * Checks the output for a valid UUID
-     *
-     * @return bool
-     * @throws Exception
-     */
-    public function iShouldGetValidUuid()
-    {
-        if (!empty($this->searchOutputForValidUuid())) {
-            return true;
-        }
-        throw new \Exception($this->output . ' does not include a valid UUID.');
-    }
-
-    /**
-     * @Then /^I should get one of the following:$/
-     * @Then /^I should get one of the following "([^"]*)"$/
-     * @Then /^I should get one of the following: "([^"]*)"$/
-     * Checks the output for the given substrings, comma-separated
-     *
-     * @param array $list_string Content which ought to be in the output
-     * @return boolean True if a $string exists in output
-     * @throws Exception
-      */
-    public function iShouldGetOneOfTheFollowing($list_string)
-    {
-        $strings  = explode(',', $list_string);
-        foreach ($strings as $string) {
-            if ($this->checkResult(trim((string)$string), $this->output)) {
-                return true;
-            }
-        }
-        throw new \Exception("Actual output:\n" . $this->output);
-    }
-
-    /**
      * @Then /^I should not get a valid UUID/
      * Checks the output for the lack of a valid UUID
      *
@@ -768,184 +759,6 @@ class ProductionContext implements Context
     }
 
     /**
-     * @Then /^I should not get one of the following:$/
-     * @Then /^I should not get one of the following "([^"]*)"$/
-     * @Then /^I should not get one of the following: "([^"]*)"$/
-     * Checks the output for the given substrings, comma-separated
-     *
-     * @param array $list_string Content which ought not be in the output
-     * @return boolean True if a $string does not exist in output
-      */
-    public function iShouldNotGetOneOfTheFollowing($list_string)
-    {
-        try {
-            $this->iShouldGetOneOfTheFollowing($list_string);
-        } catch (\Exception $e) {
-            return true;
-        }
-        throw new \Exception("Actual output:\n" . $this->output);
-    }
-
-    /**
-     * Checks for backups made since the test started running
-     * @Then /^I should have a new backup$/
-     *
-     * @return boolean True if new backup exists
-     */
-    public function iShouldHaveNewBackup()
-    {
-        $regex = "/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/";
-        preg_match_all($regex, $this->output, $matches);
-        foreach ($matches[0] as $date) {
-            if ($this->start_time < strtotime($date)) {
-                return true;
-            }
-        }
-        throw new \Exception('No new backups were created.' . PHP_EOL);
-    }
-
-    /**
-     * Checks the number of records returned against a given quantity
-     * @Then /^I should have "([^"]*)" records$/
-     *
-     * @param integer $number Number of records to check for
-     * @return
-     */
-    public function iShouldHaveRecords($number)
-    {
-        $record_count = count((array)json_decode($this->output));
-        if ((integer)$number != $record_count) {
-            throw new \Exception("Wanted $number records, got " . $record_count . '.');
-        }
-        return true;
-    }
-
-    /**
-     * Ensures that you do not recieve param $string as result
-     * @Then /^I should not get:$/
-     * @Then /^I should not get: "([^"]*)"$/
-     * @Then I should not get :string
-     *
-     * @param string $string Content which ought not be in the output
-     * @return boolean True if $string does not exist in output
-     */
-    public function iShouldNotGet($string)
-    {
-        if ($this->checkResult((string)$string, $this->output)) {
-            throw new \Exception("Actual output:\n" . $this->output);
-        }
-        return true;
-    }
-
-    /**
-     * Checks the output against a a type of message.
-     *
-     * @Then /^I should not see a (notice|warning)$/
-     * @Then /^I should not see an (error)$/
-     *
-     * @param $type string One of the standard logging levels
-     * @return bool True if message is the expected type in output is not given
-     * @throws \Exception
-     */
-    public function iShouldNotSeeATypeOfMessage($type, $message = null)
-    {
-        try {
-            $this->iShouldSeeATypeOfMessage($type, $message);
-        } catch (\Exception $e) {
-            $exception_message = $e->getMessage();
-            if ((strpos($exception_message, $type) !== false)) {
-                return true;
-            }
-            throw $e;
-        }
-        throw new \Exception("Expected no $type in message: $this->output");
-    }
-
-    /**
-     * Ensures that a user is not on a site's team
-     * @Given /^"([^"]*)" is a member of the team on "([^"]*)"$/
-     *
-     * @param string $member Email address of the member on the team of
-     * @param string $site   Site which the member should be on the team of
-     * @return boolean True if $member does exists in output
-     */
-    public function isMemberOfTheTeamOn($member, $site)
-    {
-        $this->iRun("terminus site:team:list $site");
-        $is_member = $this->iShouldGet($member);
-        return $is_member;
-    }
-
-    /**
-     * Ensures that a user is not on a site's team
-     * @Given /^"([^"]*)" is not a member of the team on "([^"]*)"$/
-     *
-     * @param string $member Email address of the member not on the team
-     * @param string $site   Site which the member should not be on the team of
-     * @return boolean True if $member does not exist in output
-     */
-    public function isNotMemberOfTheTeamOn($member, $site)
-    {
-        $this->iRun("terminus site:team:list $site");
-        $is_not_member = $this->iShouldNotGet($member);
-        return $is_not_member;
-    }
-
-    /**
-     * Ensures there is no site with the given name. Loops until this is so
-     * @Given /^no site named "([^"]*)"$/
-     * @Given I have no site named :site
-     *
-     * @param string $site Name of site to ensure does not exist
-     * @return boolean Always returns true
-     */
-    public function noSiteNamed($site)
-    {
-        try {
-            $this->iRun("terminus site:lookup $site");
-            $this->iShouldGet("Could not locate a site your user may access identified by");
-        } catch (\Exception $e) {
-            throw new \Exception("A site named $site was found.");
-        }
-        return true;
-    }
-
-    /**
-     * Gets or sets service level
-     * @When /^I set the service level of "([^"]*)" to "([^"]*)"$/
-     * @Given /^I check the service level of "([^"]*)"$/
-     * @Given /^the service level of "([^"]*)" is "([^"]*)"$/
-     *
-     * @param string $site          Name of site to work on
-     * @param string $service_level If not false, will set service level to this
-     * @return
-     */
-    public function serviceLevel($site, $service_level = null)
-    {
-        if (is_null($service_level)) {
-            $command = "terminus site:info $site --field=service_level";
-        } else {
-            $command = "terminus service-level:set $service_level --site=$site";
-        }
-        $this->iRun($command);
-    }
-
-    /**
-     * Automatically assigns pass/fail/skip to the test result
-     * @Then /^I "([^"]*)" the test$/
-     *
-     * @param string $status Status to assign to the test
-     * @return boolean Always true, else errs
-     */
-    public function setTestStatus($status)
-    {
-        if ($status == 'pending') {
-            throw new \Exception("Implementation of this functionality is pending.");
-        }
-        throw new \Exception("Test explicitly set to $status");
-    }
-
-    /**
      * Checks the the haystack for the needle
      *
      * @param string $needle   That which is searched for
@@ -958,9 +771,30 @@ class ProductionContext implements Context
     }
 
     /**
+     * Checks login information
+     *
+     * @return null|array
+     */
+    protected function getMyLoginInformation()
+    {
+        return json_decode($this->iRun("terminus auth:whoami --format=json"));
+    }
+
+    /**
+     * Queries for info for a given site
+     *
+     * @param string $site Site to get info on
+     * @return array Output from command run
+     */
+    private function getSiteInfo($site)
+    {
+        return json_decode($this->iRun("terminus site:info $site --format=json"));
+    }
+
+    /**
      * Returns tags in easy-to-use array format.
      *
-     * @param [ScenarioEvent] $event Feature information from Behat
+     * @param ScenarioEvent $event Feature information from Behat
      * @return $tags array An array of strings corresponding to tags
      */
     private function getTags($event)
@@ -981,49 +815,6 @@ class ProductionContext implements Context
     }
 
     /**
-     * Opens param $url in the default browser
-     *
-     * @param string $url URL to open in browser
-     * @return
-     */
-    private function openInBrowser($url)
-    {
-        $url = $this->replacePlaceholders($url);
-        switch (php_uname('s')) {
-            case "Darwin":
-                $cmd = "open";
-                break;
-            case "Windows NT":
-                $cmd = "start";
-                break;
-            case "Linux":
-            default:
-                $cmd = "xdg-open";
-                break;
-        }
-        exec("$cmd $url");
-    }
-
-    /**
-     * @When /^This step is implemented I will test: (.*)$/
-     * @When /^this step is implemented I will test: (.*)$/
-     *
-     * @param string $description feature description of what is still pending
-     */
-    public function thisStepIsPending($description)
-    {
-        throw new PendingException("Testing $description is pending");
-    }
-
-    /**
-     * @When /^I enter: (.*)$/
-     */
-    public function iEnterInput()
-    {
-        throw new PendingException("Interactivity is not yet implemented");
-    }
-
-    /**
      * Exchanges values in given string with square brackets for values
      * in $this->parameters
      *
@@ -1031,7 +822,7 @@ class ProductionContext implements Context
      * @param array  $replacements Used to replace with non-parameters
      * @return string $string The modified param string
      */
-    protected function replacePlaceholders($string, $replacements = array())
+    private function replacePlaceholders($string, $replacements = [])
     {
         $regex = '~\[\[(.*?)\]\]~';
         preg_match_all($regex, $string, $matches);
@@ -1050,6 +841,26 @@ class ProductionContext implements Context
         }
 
         return $string;
+    }
+
+    /**
+     * Retrieves terminus configuration
+     *
+     * @param string $key Optional key to return a single value
+     * @return array|string Either the full config or a single key's value
+     */
+    private function retrieveTerminusConfig($key = null)
+    {
+        $config = $this->terminus_config;
+        if ($key === null) {
+            return $config;
+        }
+        $key_config_array = array_filter($config, function($info) use ($key) {
+            return $info->key === $key;
+        });
+
+        $key_config = array_shift($key_config_array);
+        return $key_config->value;
     }
 
     /**
@@ -1081,34 +892,15 @@ class ProductionContext implements Context
     }
 
     /**
-     * Queries for info for a given site
+     * Checks the output for the given string that it is of the given log level and with the given string
      *
-     * @param string $site Site to get info on
-     * @return array Output from command run
+     * @param string $level The log level expected in output
+     * @param string $string Content which ought not be in the output
+     * @return boolean If the string was found in the given level of log
+     * @throws \Exception
      */
-    protected function getSiteInfo($site)
+    public function shouldGetTheLog($level, $string)
     {
-        return json_decode($this->iRun("terminus site:info $site --format=json"));
-    }
-
-    /**
-     * @Then I should see a progress bar with the message: :message
-     */
-    public function iShouldSeeAProgressBarWithTheMessage($message)
-    {
-        mb_substr_count(
-            $this->output,
-            $message
-        ) == 1
-        &&
-        mb_substr_count(
-            $this->output,
-            'Progress: ░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%'
-        ) == 1
-        &&
-        mb_substr_count(
-            $this->output,
-            'Progress: ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%'
-        ) == 1;
+        return $this->iShouldGet("[$level] $string");
     }
 }
