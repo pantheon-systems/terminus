@@ -1,0 +1,10 @@
+{
+  "name": "pantheon-systems/terminus-with-namespace-plugin",
+  "description": "Testing Tools - A Terminus plugin that contains just enough to pass Behat tests",
+  "type": "terminus-plugin",
+  "extra": {
+    "terminus": {
+      "compatible-version": "^2"
+    }
+  }
+}
