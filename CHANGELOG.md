@@ -41,6 +41,11 @@ All notable changes to this project will be documented in this file. This projec
 - `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
 - `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 - `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)
+- Owner parameter displayed in the success notice of  `owner:set` instead of the user's first and last names. (#2007)
+
+### Removed
+- Users' first and last names removed from the list provided by `site:team:list`. (#2007)
+- Users' first and last names removed from the list provided by `org:people:list`. (#2007)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed

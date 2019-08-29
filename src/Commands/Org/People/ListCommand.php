@@ -25,8 +25,6 @@ class ListCommand extends TerminusCommand
      *
      * @field-labels
      *     id: ID
-     *     firstname: First Name
-     *     lastname: Last Name
      *     email: Email
      *     role: Role
      * @return RowsOfFields
