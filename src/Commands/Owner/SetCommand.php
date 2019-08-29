@@ -42,7 +42,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
         $this->processWorkflow($site->setOwner($user->id));
         $this->log()->notice(
             'Promoted {user} to owner of {site}',
-            ['user' => $user->getName(), 'site' => $site->getName(),]
+            ['user' => $owner, 'site' => $site->getName(),]
         );
     }
 }
