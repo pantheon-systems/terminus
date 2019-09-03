@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## MASTER
+## 2.1.0 - 2019-09-03
 ### Added 
 - Added `--filter` option to `backup:list` command (#1992)
 - Added `--filter` option to `branch:list` command (#1992)
