@@ -60,7 +60,6 @@
     "php-vcr/php-vcr": "^1.4",
     "phpunit/phpunit": "^4.8.36",
     "php-coveralls/php-coveralls": "^2.1",
-    "sebastian/phpcpd": "^2.0",
     "squizlabs/php_codesniffer": "^2.7"
   },
   "config": {
