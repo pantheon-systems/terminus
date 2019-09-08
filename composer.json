@@ -8,6 +8,7 @@
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.38",
+    "ext-xml": "*",
     "composer/semver": "^1.4",
     "consolidation/comments": "^1.0.2",
     "consolidation/filter-via-dot-access-data": "^1.0",

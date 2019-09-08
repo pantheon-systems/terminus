@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73159373e760344d19f0d07481f66f2e",
+    "content-hash": "c1af0b85156269ffde5f132a55aad87b",
     "packages": [
         {
             "name": "composer/semver",
@@ -2502,9 +2502,9 @@
             "authors": [
                 {
                     "name": "Kitamura Satoshi",
+                    "role": "Original creator",
                     "email": "with.no.parachute@gmail.com",
-                    "homepage": "https://www.facebook.com/satooshi.jp",
-                    "role": "Original creator"
+                    "homepage": "https://www.facebook.com/satooshi.jp"
                 },
                 {
                     "name": "Takashi Matsuo",
@@ -3986,7 +3986,8 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.38"
+        "php": ">=5.5.38",
+        "ext-xml": "*"
     },
     "platform-dev": [],
     "platform-overrides": {
