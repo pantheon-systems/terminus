@@ -148,6 +148,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Domain\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\LookupCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\RemoveCommand',
+            'Pantheon\\Terminus\\Commands\\Domain\\SetPrimaryCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CloneContentCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CodeLogCommand',
