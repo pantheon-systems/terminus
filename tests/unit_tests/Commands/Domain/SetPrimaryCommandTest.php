@@ -3,7 +3,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
-
 use Pantheon\Terminus\Commands\Domain\SetPrimaryCommand;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
