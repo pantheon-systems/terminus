@@ -93,17 +93,11 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
              * @var $env Environment
              */
             list($site, $env) = $this->getSiteEnv($input->getArgument('site_env'));
-            $domains = $env->getDomains()->ids();
-            // Put pantheonsite.io domains at the bottom.
-            usort($domains, function ($a, $b) {
-                if (preg_match('|\.pantheonsite\.io$|', $a)) {
-                    $a = chr(255) . $a;
-                }
-                if (preg_match('|\.pantheonsite\.io$|', $b)) {
-                    $b = chr(255) . $b;
-                }
-                return strcmp($a, $b);
+            $domains = array_filter($env->getDomains()->ids(), function ($domain) {
+                return !preg_match('|\.pantheonsite\.io$|', $domain);
             });
+            sort($domains);
+
             if (!empty($domains)) {
                 $domain = $this->io()->choice('Select the primary domain for this site', $domains);
                 $input->setArgument('domain', $domain);
