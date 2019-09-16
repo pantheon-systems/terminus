@@ -731,6 +731,25 @@ class EnvironmentTest extends ModelTestCase
         );
     }
 
+    public function testSetPrimaryDomain()
+    {
+        $domain = 'some.domain';
+        $expected_workflow_name = 'set_primary_domain';
+        $expected_workflow_create_params = [
+            'environment' => 'dev',
+            'params'      => ['primary_domain' => $domain],
+        ];
+
+        $model = $this->createModel(['id' => 'dev']);
+        $this->workflows->expects($this->any())
+            ->method('create')
+            ->with($expected_workflow_name, $expected_workflow_create_params)
+            ->willReturn($this->workflow);
+
+        $wf = $model->setPrimaryDomain($domain);
+        $this->assertEquals($this->workflow, $wf);
+    }
+
     /**
      * Exercises the initializeBindings function
      */
