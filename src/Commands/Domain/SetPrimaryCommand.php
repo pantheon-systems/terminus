@@ -51,11 +51,11 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
-     * Unsets the primary domain for a site and environment.
+     * Removes the primary domain for a site and environment.
      *
      * @authorize
      *
-     * @command domain:primary:unset
+     * @command domain:primary:reset
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      */
