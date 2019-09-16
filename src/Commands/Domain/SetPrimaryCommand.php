@@ -47,7 +47,8 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
 
         // The primary domain is set via a workflow so as to use workflow logging to track changes.
         $this->log()->notice('Setting primary domain to {domain}...', ['domain' => $domain]);
-        $this->runWorkflowForEnvironmentAndDomain($env, $domain);
+        $workflow = $env->setPrimaryDomain($domain);
+        $this->processWorkflow($workflow);
     }
 
     /**
@@ -68,19 +69,7 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
         list(, $env) = $this->getSiteEnv($site_env);
 
         $this->log()->notice('Unsetting primary domain...');
-        $this->runWorkflowForEnvironmentAndDomain($env, null);
-    }
-
-    protected function runWorkflowForEnvironmentAndDomain(Environment $env, $domain)
-    {
-        /** @var Workflow */
-        $workflow = $env->getWorkflows()->create(
-            'set_primary_domain',
-            [
-                'environment' => $env->id,
-                'params'      => ['primary_domain' => $domain]
-            ]
-        );
+        $workflow = $env->setPrimaryDomain(null);
         $this->processWorkflow($workflow);
     }
 

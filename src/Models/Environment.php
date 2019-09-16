@@ -651,6 +651,26 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * Builds a Workflow to set the primary domain for this environment.
+     *
+     * @param string $domain A domain name attached to this environment.
+     *
+     * @return Workflow
+     */
+    public function setPrimaryDomain($domain)
+    {
+        /** @var Workflow */
+        $workflow = $this->getWorkflows()->create(
+            'set_primary_domain',
+            [
+                'environment' => $this->id,
+                'params'      => ['primary_domain' => $domain]
+            ]
+        );
+        return $workflow;
+    }
+
+    /**
      * Initializes the test/live environments on a newly created site  and clones
      * content from previous environment (e.g. test clones dev content, live
      * clones test content.)
