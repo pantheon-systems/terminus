@@ -6,15 +6,12 @@ namespace Pantheon\Terminus\Commands\Domain;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Class SetPrimaryCommand
