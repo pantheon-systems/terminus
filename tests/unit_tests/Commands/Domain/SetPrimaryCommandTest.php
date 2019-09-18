@@ -82,12 +82,21 @@ class SetPrimaryCommandTest extends CommandTestCase
 
         $this->expectWorkflowProcessing();
 
-        $this->logger->expects($this->once())
+        $this->logger->expects($this->at(0))
             ->method('log')
             ->with(
                 $this->equalTo('notice'),
                 $this->equalTo($logTemplate),
                 $this->equalTo($logParams)
+            );
+        $this->logger->expects($this->at(1))
+            ->method('log')
+            ->with(
+                $this->equalTo('notice'),
+                $this->matchesRegularExpression('|has been (un)?set|'),
+                $this->callback(function () {
+                    return true;
+                })
             );
     }
 }

@@ -46,6 +46,7 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice('Setting primary domain to {domain}...', ['domain' => $domain]);
         $workflow = $env->setPrimaryDomain($domain);
         $this->processWorkflow($workflow);
+        $this->log()->notice('Primary domain has been set to {domain}.', ['domain' => $domain]);
     }
 
     /**
@@ -53,7 +54,7 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @authorize
      *
-     * @command domain:primary:reset
+     * @command domain:primary:unset
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      */
@@ -68,6 +69,7 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
         $this->log()->notice('Unsetting primary domain...');
         $workflow = $env->setPrimaryDomain(null);
         $this->processWorkflow($workflow);
+        $this->log()->notice('Primary domain has been unset.');
     }
 
     /**
