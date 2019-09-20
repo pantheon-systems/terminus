@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Pantheon\Terminus\Commands\Domain;
+namespace Pantheon\Terminus\Commands\Domain\Primary;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Pantheon\Terminus\Commands\TerminusCommand;
@@ -14,10 +14,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SetPrimaryCommand
- * @package Pantheon\Terminus\Commands\Domain
+ * Class SetCommand
+ * @package Pantheon\Terminus\Commands\Domain\Primary
  */
-class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
+class SetCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
@@ -40,36 +40,15 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
          * @var $site Site
          * @var $env Environment
          */
-        list(, $env) = $this->getSiteEnv($site_env);
+        list($site, $env) = $this->getSiteEnv($site_env);
 
-        // The primary domain is set via a workflow so as to use workflow logging to track changes.
-        $this->log()->notice('Setting primary domain to {domain}...', ['domain' => $domain]);
+        // The primary domain is set via a workflow so as to use workflow logging to track changes & update policy docs.
         $workflow = $env->setPrimaryDomain($domain);
         $this->processWorkflow($workflow);
-        $this->log()->notice('Primary domain has been set to {domain}.', ['domain' => $domain]);
-    }
-
-    /**
-     * Removes the primary domain for a site and environment.
-     *
-     * @authorize
-     *
-     * @command domain:primary:unset
-     *
-     * @param string $site_env Site & environment in the format `site-name.env`
-     */
-    public function reset($site_env)
-    {
-        /**
-         * @var $site Site
-         * @var $env Environment
-         */
-        list(, $env) = $this->getSiteEnv($site_env);
-
-        $this->log()->notice('Unsetting primary domain...');
-        $workflow = $env->setPrimaryDomain(null);
-        $this->processWorkflow($workflow);
-        $this->log()->notice('Primary domain has been unset.');
+        $this->log()->notice(
+            'Set {domain} as primary for {site}.{env}',
+            ['domain' => $domain, 'site' => $site->get('name'), 'env' => $env->id,]
+        );
     }
 
     /**
@@ -83,7 +62,7 @@ class SetPrimaryCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @hook interact domain:primary:set
      */
-    public function setInteract(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
+    public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
     {
         $domain = $input->getArgument('domain');
         if (empty($domain)) {
