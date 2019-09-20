@@ -1,24 +1,24 @@
 <?php
 
 
-namespace Pantheon\Terminus\UnitTests\Commands\Domain;
+namespace Pantheon\Terminus\UnitTests\Commands\Domain\Primary;
 
-use Pantheon\Terminus\Commands\Domain\Primary\SetCommand;
+use Pantheon\Terminus\Commands\Domain\Primary\AddCommand;
 use Pantheon\Terminus\UnitTests\Commands\Domain\Primary\PrimaryDomainCommandsTestBase;
 
 /**
- * Class SetCommandTest
- * Test suite class for Pantheon\Terminus\Commands\Domain\Primary\SetCommand
+ * Class AddCommandTest
+ * Test suite class for Pantheon\Terminus\Commands\Domain\Primary\AddCommand
  * @package Pantheon\Terminus\UnitTests\Commands\Domain\Primary
  */
-class SetCommandTest extends PrimaryDomainCommandsTestBase
+class AddCommandTest extends PrimaryDomainCommandsTestBase
 {
     protected function getSystemUnderTest()
     {
-        return new SetCommand();
+        return new AddCommand();
     }
 
-    public function testSet()
+    public function testAdd()
     {
         $site_name = 'site_name';
         $domain = 'some.domain';
@@ -28,7 +28,7 @@ class SetCommandTest extends PrimaryDomainCommandsTestBase
             ['domain' => $domain, 'site' => $this->site->get('name'), 'env' => $this->environment->id]
         );
 
-        $out = $this->command->set("$site_name.{$this->environment->id}", $domain);
+        $out = $this->command->add("$site_name.{$this->environment->id}", $domain);
         $this->assertNull($out);
     }
 }

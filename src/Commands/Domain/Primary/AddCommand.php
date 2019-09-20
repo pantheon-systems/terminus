@@ -14,27 +14,27 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SetCommand
+ * Class AddCommand
  * @package Pantheon\Terminus\Commands\Domain\Primary
  */
-class SetCommand extends TerminusCommand implements SiteAwareInterface
+class AddCommand extends TerminusCommand implements SiteAwareInterface
 {
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
     /**
-     * Sets the primary domain for a site and environment, causing all traffic to redirect to the primary domain.
+     * Sets a domain associated to the environment as primary, causing all traffic to redirect to it.
      *
      * @authorize
      *
-     * @command domain:primary:set
+     * @command domain:primary:add
      *
      * @param string $site_env Site & environment in the format `site-name.env`
      * @param string $domain A domain that has been associated to your site. Optional when running interactively.
      *
-     * @usage domain:primary:set <site_env>
+     * @usage domain:primary:add <site_env>
      */
-    public function set($site_env, $domain)
+    public function add($site_env, $domain)
     {
         /**
          * @var $site Site
@@ -60,7 +60,7 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param OutputInterface $output
      * @param AnnotationData $annotationData
      *
-     * @hook interact domain:primary:set
+     * @hook interact domain:primary:add
      */
     public function interact(InputInterface $input, OutputInterface $output, AnnotationData $annotationData)
     {
