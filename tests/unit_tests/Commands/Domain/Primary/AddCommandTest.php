@@ -37,14 +37,12 @@ class AddCommandTest extends PrimaryDomainCommandsTestBase
         $sys_under_test = new AddCommand();
         $this->assertEquals(
             array_values([
-                '',
                 'x',
                 'something.com',
                 'averylong.domain.ofsomeosrt.tld',
             ]),
             array_values($sys_under_test->filterPlatformDomains(
                 [
-                    '',
                     'x',
                     'something.com',
                     'dev-mikes-testsite.pantheonsite.io',
