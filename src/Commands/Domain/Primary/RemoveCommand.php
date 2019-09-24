@@ -33,7 +33,7 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
          */
         list($site, $env) = $this->getSiteEnv($site_env);
 
-        $workflow = $env->setPrimaryDomain(null);
+        $workflow = $env->getPrimaryDomainModel()->removePrimaryDomain();
         $this->processWorkflow($workflow);
         $this->log()->notice(
             'Primary domain has been removed from {site}.{env}',

@@ -31,4 +31,26 @@ class AddCommandTest extends PrimaryDomainCommandsTestBase
         $out = $this->command->add("$site_name.{$this->environment->id}", $domain);
         $this->assertNull($out);
     }
+
+    public function testFilterPlatformDomains()
+    {
+        $sys_under_test = new AddCommand();
+        $this->assertEquals(
+            array_values([
+                '',
+                'x',
+                'something.com',
+                'averylong.domain.ofsomeosrt.tld',
+            ]),
+            array_values($sys_under_test->filterPlatformDomains(
+                [
+                    '',
+                    'x',
+                    'something.com',
+                    'dev-mikes-testsite.pantheonsite.io',
+                    'averylong.domain.ofsomeosrt.tld',
+                ]
+            ))
+        );
+    }
 }

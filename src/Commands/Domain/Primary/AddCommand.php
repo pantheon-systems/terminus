@@ -22,6 +22,8 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
     use SiteAwareTrait;
     use WorkflowProcessingTrait;
 
+    const PLATFORM_DOMAIN = '.pantheonsite.io';
+
     /**
      * Sets a domain associated to the environment as primary, causing all traffic to redirect to it.
      *
@@ -43,7 +45,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
         list($site, $env) = $this->getSiteEnv($site_env);
 
         // The primary domain is set via a workflow so as to use workflow logging to track changes & update policy docs.
-        $workflow = $env->setPrimaryDomain($domain);
+        $workflow = $env->getPrimaryDomainModel()->setPrimaryDomain($domain);
         $this->processWorkflow($workflow);
         $this->log()->notice(
             'Set {domain} as primary for {site}.{env}',
@@ -71,9 +73,7 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
              * @var $env Environment
              */
             list($site, $env) = $this->getSiteEnv($input->getArgument('site_env'));
-            $domains = array_filter($env->getDomains()->ids(), function ($domain) {
-                return !preg_match('|\.pantheonsite\.io$|', $domain);
-            });
+            $domains = $this->filterPlatformDomains($env->getDomains()->ids());
             sort($domains);
 
             if (!empty($domains)) {
@@ -81,5 +81,18 @@ class AddCommand extends TerminusCommand implements SiteAwareInterface
                 $input->setArgument('domain', $domain);
             }
         }
+    }
+
+    /**
+     * Filters strings ending in the platform domain from an array.
+     *
+     * @param $domains
+     * @return array
+     */
+    public function filterPlatformDomains($domains)
+    {
+        return array_filter($domains, function ($domain) {
+            return substr_compare($domain, self::PLATFORM_DOMAIN, -strlen(self::PLATFORM_DOMAIN)) !== 0;
+        });
     }
 }

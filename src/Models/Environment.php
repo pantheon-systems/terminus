@@ -470,6 +470,14 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * @return PrimaryDomain
+     */
+    public function getPrimaryDomainModel()
+    {
+        return $this->getContainer()->get(PrimaryDomain::class, [$this]);
+    }
+
+    /**
      * Gets the Drush version of this environment
      *
      * @return string
@@ -648,26 +656,6 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
                 ],
             ]
         );
-    }
-
-    /**
-     * Builds a Workflow to set the primary domain for this environment.
-     *
-     * @param string $domain A domain name attached to this environment.
-     *
-     * @return Workflow
-     */
-    public function setPrimaryDomain($domain)
-    {
-        /** @var Workflow */
-        $workflow = $this->getWorkflows()->create(
-            'set_primary_domain',
-            [
-                'environment' => $this->id,
-                'params'      => ['primary_domain' => $domain]
-            ]
-        );
-        return $workflow;
     }
 
     /**

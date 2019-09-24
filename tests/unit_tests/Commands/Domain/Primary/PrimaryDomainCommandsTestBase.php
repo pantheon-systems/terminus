@@ -4,6 +4,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\Domain\SetCommand;
+use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\Models\PrimaryDomain;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
@@ -44,10 +46,27 @@ abstract class PrimaryDomainCommandsTestBase extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $primaryDomainModel = $this->getMockBuilder(PrimaryDomain::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['setPrimaryDomain', 'removePrimaryDomain'])
+            ->getMock();
+
+        if ($domain != null) {
+            $primaryDomainModel
+                ->expects($this->once())
+                ->method('setPrimaryDomain')
+                ->with($this->equalTo($domain))
+                ->willReturn($workflow);
+        } else {
+            $primaryDomainModel
+                ->expects($this->once())
+                ->method('removePrimaryDomain')
+                ->willReturn($workflow);
+        }
+
         $this->environment->expects($this->once())
-            ->method('setPrimaryDomain')
-            ->with($this->equalTo($domain))
-            ->willReturn($workflow);
+            ->method('getPrimaryDomainModel')
+            ->willReturn($primaryDomainModel);
 
         $this->expectWorkflowProcessing();
 
