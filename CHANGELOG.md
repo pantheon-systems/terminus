@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
-## 2.2.0 - 2019-09-26
+## MASTER
 ### Added
 - Added `primary` field to the output of `domain:list`. (#2011)
 - Added `domain:primary:add` command to set a domain as primary, causing traffic to redirect to it. (#2011)
