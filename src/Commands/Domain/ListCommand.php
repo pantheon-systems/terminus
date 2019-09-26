@@ -29,6 +29,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @field-labels
      *     id: Domain/ID
      *     type: Type
+     *     primary: Is Primary
      *     deletable: Is Deletable
      *     status: status
      * @return RowsOfFields

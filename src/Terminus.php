@@ -147,6 +147,8 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Commands\\Domain\\DNSCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\ListCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\LookupCommand',
+            'Pantheon\\Terminus\\Commands\\Domain\\Primary\\AddCommand',
+            'Pantheon\\Terminus\\Commands\\Domain\\Primary\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Domain\\RemoveCommand',
             'Pantheon\\Terminus\\Commands\\Env\\ClearCacheCommand',
             'Pantheon\\Terminus\\Commands\\Env\\CloneContentCommand',
@@ -367,6 +369,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $container->add(\Pantheon\Terminus\Models\OrganizationUserMembership::class);
         $container->add(\Pantheon\Terminus\Models\PaymentMethod::class);
         $container->add(\Pantheon\Terminus\Models\Plan::class);
+        $container->add(\Pantheon\Terminus\Models\PrimaryDomain::class);
         $container->add(\Pantheon\Terminus\Models\Profile::class);
         $container->add(\Pantheon\Terminus\Models\Redis::class);
         $container->add(\Pantheon\Terminus\Models\SSHKey::class);

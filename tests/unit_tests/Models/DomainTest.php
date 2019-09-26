@@ -122,7 +122,7 @@ class DomainTest extends ModelTestCase
 
         $this->assertEquals($records, $domain->getDNSRecords());
     }
-    
+
     public function testSerialize()
     {
         $data = [
@@ -131,6 +131,7 @@ class DomainTest extends ModelTestCase
             'status' => 'status',
             'status_message' => 'status message',
             'deletable' => false,
+            'primary' => true,
             'extraneous' => 'info',
         ];
         $expected = [
@@ -139,6 +140,30 @@ class DomainTest extends ModelTestCase
             'status' => 'status',
             'status_message' => 'status message',
             'deletable' => false,
+            'primary' => true,
+        ];
+
+        $domain = $this->_createDomain($data);
+        $actual = $domain->serialize();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSerializeSparse()
+    {
+        $data = [
+            'type' => 'platform',
+            'id' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
+            'extraneous' => 'info',
+        ];
+        $expected = [
+            'type' => 'platform',
+            'id' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
+            'deletable' => false,
+            'primary' => false,
         ];
 
         $domain = $this->_createDomain($data);

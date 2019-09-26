@@ -470,6 +470,14 @@ class Environment extends TerminusModel implements ContainerAwareInterface, Site
     }
 
     /**
+     * @return PrimaryDomain
+     */
+    public function getPrimaryDomainModel()
+    {
+        return $this->getContainer()->get(PrimaryDomain::class, [$this]);
+    }
+
+    /**
      * Gets the Drush version of this environment
      *
      * @return string
