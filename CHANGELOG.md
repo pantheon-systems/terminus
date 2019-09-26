@@ -1,6 +1,8 @@
 # Change Log
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
+## MASTER
+
 ## 2.2.0 - 2019-09-26
 ### Added
 - Added `primary` field to the output of `domain:list`. (#2011)
