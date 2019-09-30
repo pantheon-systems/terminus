@@ -125,6 +125,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
             'Pantheon\\Terminus\\Hooks\\Authorizer',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
             'Pantheon\\Terminus\\Commands\\AliasesCommand',
+            'Pantheon\\Terminus\\Commands\\AutocompleteCommand',
             'Pantheon\\Terminus\\Commands\\ArtCommand',
             'Pantheon\\Terminus\\Commands\\Auth\\LoginCommand',
             'Pantheon\\Terminus\\Commands\\Auth\\LogoutCommand',

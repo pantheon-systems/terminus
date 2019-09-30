@@ -16,6 +16,7 @@ jobs:
       # Install without dev components to build a smaller phar
       - run: composer install --no-dev --no-interaction --prefer-dist
       - run: composer phar:install-tools
+      - run: composer global require bamarni/symfony-console-autocomplete
       - run: composer phar:build
       # Re-install with dev components so that we can run phpunit
       - run: composer install --no-interaction --prefer-dist
