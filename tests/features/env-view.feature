@@ -12,6 +12,6 @@ Feature: Getting an environment's URL
     When I run "terminus env:view [[test_site_name]].dev --print"
     Then I should get:
     """
-    http://dev-[[test_site_name]].onebox.pantheonsite.io/
+    https://dev-[[test_site_name]].onebox.pantheonsite.io/
     """
 
