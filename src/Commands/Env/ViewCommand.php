@@ -36,7 +36,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
         list(, $env) = $this->getUnfrozenSiteEnv($site_env);
 
         $domain = $env->domain();
-        $protocol = 'http';
+        $protocol = 'https';
 
         if ($lock = $env->get('lock')) {
             if ($lock->locked) {
