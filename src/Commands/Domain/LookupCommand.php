@@ -36,6 +36,7 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      * @throws TerminusNotFoundException
      *
      * @usage <domain_name> Returns the site and environment associated with <domain_name> or displays not found.
+     * @usage <domain_name> --rebuild Rebuilds the cache and returns the site and environment associated with <domain_name> or displays not found.
      */
     public function lookup($domain, $options = ['rebuild' => false])
     {
