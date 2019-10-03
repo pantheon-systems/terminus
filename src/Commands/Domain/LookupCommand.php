@@ -25,6 +25,8 @@ class LookupCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @command domain:lookup
      *
+     * @option rebuild Force the domain cache to be rebuilt before doing lookup
+     *
      * @field-labels
      *     site_id: Site ID
      *     site_name: Site Name
