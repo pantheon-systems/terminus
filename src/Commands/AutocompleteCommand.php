@@ -19,7 +19,7 @@ class AutocompleteCommand extends TerminusCommand
      *
      * @usage Returns the shell autocomplete config.
      */
-    public function autocomplete() 
+    public function autocomplete()
     {
         return $this->retrieveList();
     }
