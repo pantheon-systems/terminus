@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
+
 ### Changed
 - Terminus will now load plugin files ending in `Hook.php` in addition to those ending with `Command.php` (#2025)
 

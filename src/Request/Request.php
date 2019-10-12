@@ -43,6 +43,11 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     const DEBUG_RESPONSE_STRING =  "#### RESPONSE ####\nHeaders: {headers}\nData: {data}\nStatus Code: {status_code}";
 
     /**
+     * @var array Names of the values to strip from debug output
+     */
+    protected $sensitive_data = ['machine_token', 'Authorization', 'session',];
+
+    /**
      * Download file from target URL
      *
      * @param string $url URL to download from
@@ -56,11 +61,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         }
 
         $parsed_url = parse_url($url);
-        $client = $this->getContainer()->get(Client::class, [[
-            'base_uri' => $parsed_url['host'],
-            RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
-        ],]);
-        $client->request('GET', $url, ['sink' => $target,]);
+        $this->getClient($parsed_url['host'])->request('GET', $url, ['sink' => $target,]);
     }
 
     /**
@@ -132,10 +133,8 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
             $headers = array_merge($headers, $options['headers']);
         }
 
-        $base_uri = $this->getBaseURI();
-
         if (strpos($path, '://') === false) {
-            $uri = "$base_uri/api/$path";
+            $uri = "{$this->getBaseURI()}/api/$path";
             if ($session = $this->session()->get('session', false)) {
                 $headers['Authorization'] = "Bearer $session";
             }
@@ -155,11 +154,6 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
 
         $method = isset($options['method']) ? strtoupper($options['method']) : 'GET';
 
-        $client = $this->getContainer()->get(Client::class, [[
-           'base_uri' => $base_uri,
-           RequestOptions::VERIFY => (boolean)$this->getConfig()->get('verify_host_cert', true),
-        ]]);
-
         $this->logger->debug(
             self::DEBUG_REQUEST_STRING,
             [
@@ -174,7 +168,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
         error_reporting(E_ALL ^ E_WARNING);
         $request = $this->getContainer()->get(HttpRequest::class, [$method, $uri, $headers, $body,]);
         error_reporting(E_ALL);
-        $response = $this->sendWithRetry($client, $request);
+        $response = $this->sendWithRetry($request);
 
         return $response;
     }
@@ -182,18 +176,19 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     /**
      * Send the request using the Guzzle client. Retry the request if a server or network error occurs.
      *
-     * @param Client $client
      * @param HttpRequest $request
      * @return array
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
      */
-    private function sendWithRetry($client, $request)
+    private function sendWithRetry($request)
     {
+        $config = $this->getConfig();
+        $retry_interval = $config->get('http_retry_delay_ms', 100);
+        $retry_multiplier = $config->get('http_retry_backoff_multiplier', 2);
+        $retry_jitter = $config->get('http_retry_jitter_ms', 100);
+        $retry_max = $config->get('http_max_retries', 5);
 
-        $retry_interval = $this->getConfig()->get('http_retry_delay_ms', 100);
-        $retry_multiplier = $this->getConfig()->get('http_retry_backoff_multiplier', 2);
-        $retry_jitter = $this->getConfig()->get('http_retry_jitter_ms', 100);
-        $retry_max = $this->getConfig()->get('http_max_retries', 5);
+        $client = $this->getClient();
 
         $tries = 0;
         while (true) {
@@ -203,16 +198,16 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
                 $response = $client->send($request);
                 $body = json_decode($response->getBody()->getContents());
                 $data = [
-                  'data' => $body,
-                  'headers' => $response->getHeaders(),
-                  'status_code' => $response->getStatusCode(),
+                    'data' => $body,
+                    'headers' => $response->getHeaders(),
+                    'status_code' => $response->getStatusCode(),
                 ];
                 $this->logger->debug(
                     self::DEBUG_RESPONSE_STRING,
                     [
-                    'data' => json_encode($this->stripSensitiveInfo((array)$body)),
-                    'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
-                    'status_code' => $data['status_code'],
+                        'data' => json_encode($this->stripSensitiveInfo((array)$body)),
+                        'headers' => json_encode($this->stripSensitiveInfo((array)$data['headers'])),
+                        'status_code' => $data['status_code'],
                     ]
                 );
 
@@ -259,6 +254,27 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     }
 
     /**
+     * Returns a configured Client object
+     *
+     * @param string $base_uri Defaults to the getBaseURI() value
+     */
+    private function getClient($base_uri = null)
+    {
+        $config = $this->getConfig();
+        $params = [
+            'base_uri' => ($base_uri === null) ? $this->getBaseURI() : $base_uri,
+            RequestOptions::VERIFY => (boolean)$config->get('verify_host_cert', true),
+        ];
+
+        $host_cert = $config->get('host_cert');
+        if ($host_cert !== null) {
+            $params[RequestOptions::CERT] = $host_cert;
+        }
+
+        return $this->getContainer()->get(Client::class, [$params]);
+    }
+
+    /**
      * Gives the default headers for requests
      *
      * @return array
@@ -278,8 +294,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     private function stripSensitiveInfo($data = [])
     {
         if (is_array($data)) {
-            $do_not_permit = ['machine_token', 'Authorization', 'session',];
-            foreach ($do_not_permit as $verboten) {
+            foreach ($this->sensitive_data as $verboten) {
                 if (isset($data[$verboten])) {
                     $data[$verboten] = self::HIDDEN_VALUE_REPLACEMENT;
                 }
