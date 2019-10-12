@@ -60,7 +60,9 @@ class PluginInfo
         $path = $this->getCommandFileDirectory();
         $namespace = $this->getCommandNamespace();
         $discovery = new CommandFileDiscovery();
-        $discovery->setSearchPattern('*Command.php')->setSearchLocations([])->setSearchDepth(self::MAX_COMMAND_DEPTH);
+        $discovery->setSearchPattern('/[a-zA-Z0-9]*(Command|Hook).php$/')
+            ->setSearchLocations([])
+            ->setSearchDepth(self::MAX_COMMAND_DEPTH);
         $command_files = $discovery->discover($path, $namespace);
 
         // If this plugin uses autoloading, then its autoloader will
