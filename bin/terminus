@@ -27,12 +27,12 @@ use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Config\DotEnvConfig;
 use Pantheon\Terminus\Config\EnvConfig;
 use Pantheon\Terminus\Config\YamlConfig;
+use Pantheon\Terminus\Output\TerminusOutput;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 // Create the input and output objects for Terminus to run against.
 $input = new ArgvInput($_SERVER['argv']);
-$output = new ConsoleOutput();
+$output = new TerminusOutput();
 
 // Create a config object.
 $config = new DefaultsConfig();
