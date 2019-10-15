@@ -15,7 +15,6 @@ class TerminusOutput extends ConsoleOutput
         '<site_env>' => '<site>.<env>',
         '[<drush_command>]...' => '-- <command>',
         '[<wp_command>]...' => '-- <command>',
-        'site_env' => 'site.env',
     ];
 
     protected function doWrite($message, $newline)
