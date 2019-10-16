@@ -63,7 +63,7 @@ Feature: Plugin Commands
 
   Scenario: Running a simple plugin command that uses autoloading to include a hook which adds an option
     When I am using "with-hooks" plugins
-    And I run "terminus hello:again --new"
+    And I run "terminus hello --new"
     Then I should get:
     """
     [notice] Ohai!
