@@ -15,7 +15,7 @@ class HelloCommand extends TerminusCommand
     /**
      * Print the classic message to the log.
      *
-     * @command hello
+     * @command hello:again
      */
     function sayHello()
     {
