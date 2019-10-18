@@ -393,7 +393,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testRequestHostCert()
     {
-        $file_path = str_replace('\/', DIRECTORY_SEPARATOR, '/location/on/my/computer.pem');
+        $file_path = str_replace('/', DIRECTORY_SEPARATOR, '/location/on/my/computer.pem');
         $this->config->set('host_cert', $file_path);
         $this->session->method('get')->with('session')->willReturn(false);
 
