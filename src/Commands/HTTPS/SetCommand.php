@@ -29,10 +29,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
      * @param string $private_key File containing the private key
      * @option string $intermediate-certificate File containing the CA intermediate certificate(s)
      *
-     * @usage https:set <site>.<env> <cert_file> <key_file>
-     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
-     * @usage https:set <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file>
-     *    Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
+     * @usage https:set <site>.<env> <cert_file> <key_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file> and private key at <key_file>.
+     * @usage https:set <site>.<env> <cert> <key> --intermediate-certificate=<int_cert_file> Enables HTTPS for <site>'s <env> environment using the SSL certificate at <cert_file>, private key at <key_file> and intermediate certificate(s) at <int_cert_file>.
      */
     public function set($site_env, $certificate, $private_key, $options = ['intermediate-certificate' => null,])
     {
