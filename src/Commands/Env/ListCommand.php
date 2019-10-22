@@ -37,7 +37,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage env:list <site> Displays a list of <site>'s environments.
+     * @usage <site> Displays a list of <site>'s environments.
      */
     public function listEnvs($site_id)
     {
