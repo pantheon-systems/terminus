@@ -10,10 +10,11 @@
 TERMINUS_VERSION: '2.2.1-dev'
 
 # Connectivity
-TERMINUS_HOST:     'terminus.pantheon.io'
-TERMINUS_PORT:     443
-TERMINUS_PROTOCOL: 'https'
-TERMINUS_SSH_HOST: null
+TERMINUS_HOST:      'terminus.pantheon.io'
+TERMINUS_HOST_CERT: null
+TERMINUS_PORT:      443
+TERMINUS_PROTOCOL:  'https'
+TERMINUS_SSH_HOST:  null
 
 # Settings
 TERMINUS_TIMEOUT: 86400
