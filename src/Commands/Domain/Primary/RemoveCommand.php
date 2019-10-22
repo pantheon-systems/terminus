@@ -24,6 +24,8 @@ class RemoveCommand extends TerminusCommand implements SiteAwareInterface
      * @aliases domain:primary:rm
      *
      * @param string $site_env Site & environment in the format `site-name.env`
+     *
+     * @usage <site>.<env> Un-designates the primary domain of <site>'s <env> environment.
      */
     public function remove($site_env)
     {
