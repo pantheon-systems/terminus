@@ -50,8 +50,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
      * @usage <site> Displays the combined metrics for all of <site>'s environments.
-     * @usage <site> --fields=datetime,pages_served Displays only the pages
-     *   served for each date period.
+     * @usage <site> --fields=datetime,pages_served Displays only the pages served for each date period.
      */
     public function metrics(
         $site_env,

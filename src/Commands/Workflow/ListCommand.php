@@ -38,8 +38,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @param string $site_id Site name
      *
-     * @usage <site>
-     *   Displays the list of the workflows for <site>.
+     * @usage <site> Displays the list of the workflows for <site>.
      */
     public function wfList($site_id)
     {
