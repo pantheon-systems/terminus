@@ -43,10 +43,10 @@ class DomainTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = $this->_createDomain(['id' => 'dev.example.com',]);
+        $this->model = $this->createDomain(['id' => 'dev.example.com',]);
     }
 
-    protected function _createDomain($attr)
+    protected function createDomain($attr)
     {
         $collection = $this->getMockBuilder(Domains::class)
             ->disableOriginalConstructor()
@@ -83,7 +83,10 @@ class DomainTest extends ModelTestCase
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/site id/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'delete',]);
+            ->with(
+                "sites/site id/environments/{$this->environment->id}/domains/dev.example.com",
+                ['method' => 'delete',]
+            );
         $this->model->delete();
     }
 
@@ -107,7 +110,7 @@ class DomainTest extends ModelTestCase
                 ]
             ]
         ];
-        $domain = $this->_createDomain($data);
+        $domain = $this->createDomain($data);
 
         $records = $this->getMockBuilder(DNSRecords::class)
             ->disableOriginalConstructor()
@@ -143,7 +146,7 @@ class DomainTest extends ModelTestCase
             'primary' => true,
         ];
 
-        $domain = $this->_createDomain($data);
+        $domain = $this->createDomain($data);
         $actual = $domain->serialize();
         $this->assertEquals($expected, $actual);
     }
@@ -166,7 +169,7 @@ class DomainTest extends ModelTestCase
             'primary' => false,
         ];
 
-        $domain = $this->_createDomain($data);
+        $domain = $this->createDomain($data);
         $actual = $domain->serialize();
         $this->assertEquals($expected, $actual);
     }

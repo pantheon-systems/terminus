@@ -158,7 +158,11 @@ class SiteEnvLookup implements ConfigAwareInterface, SiteAwareInterface
     protected function siteAndEnvFromRepo()
     {
         $repo_url = exec('git config --get remote.origin.url');
-        if (!preg_match('#ssh://[^@]*@codeserver\.[^.]*\.([^.]*)\.drush\.in:2222/~/repository\.git#', $repo_url, $matches)) {
+        if (!preg_match(
+            '#ssh://[^@]*@codeserver\.[^.]*\.([^.]*)\.drush\.in:2222/~/repository\.git#',
+            $repo_url,
+            $matches
+        )) {
             return ['',''];
         }
 

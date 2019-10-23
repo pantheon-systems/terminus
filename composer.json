@@ -45,10 +45,10 @@
       "phar:build": "env PATH=tools:$PATH box build",
       "update-class-lists": ["\\Terminus\\UpdateClassLists::update"],
       "behat": "SHELL_INTERACTIVE=true behat --colors --config tests/config/behat.yml --suite=default",
-      "cbf": "phpcbf --standard=PSR2 -n tests/unit_tests/* bin/terminus src/*",
+      "cbf": "phpcbf --standard=tests/linting/TerminusStandard.xml tests/unit_tests/* bin/terminus src/*",
       "clover": "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml",
       "coveralls": "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml",
-      "cs": "phpcs --standard=PSR2 --severity=1 -n tests/unit_tests bin/terminus src",
+      "cs": "phpcs --standard=tests/linting/TerminusStandard.xml tests/unit_tests bin/terminus src",
       "docs": "php scripts/make-docs.php",
       "lint": "@cs",
       "phpunit": "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug",
@@ -60,7 +60,7 @@
     "php-vcr/php-vcr": "^1.4",
     "phpunit/phpunit": "^4.8.36",
     "php-coveralls/php-coveralls": "^2.1",
-    "squizlabs/php_codesniffer": "^2.7"
+    "squizlabs/php_codesniffer": "^3.5"
   },
   "config": {
     "process-timeout": 3600,
