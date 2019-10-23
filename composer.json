@@ -22,7 +22,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Pantheon\\Terminus\\": "src/"
+      "Pantheon\\Terminus\\": "src/",
+      "Pantheon\\Terminus\\Linting\\": "tests/linting"
     }
   },
   "autoload-dev": {

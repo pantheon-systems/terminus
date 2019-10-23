@@ -1,11 +1,16 @@
 <?php
 
+namespace Pantheon\Terminus\Linting\Sniffs\Files;
+
+use PHP_CodeSniffer\Files\File;
+use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff as GenericLineLengthSniff;
+
 /**
  * Class Linting_Sniffs_Files_LineLengthSniff
  * This class extends the linter turned off by TerminusStandard.xml.
  * It is changed to ignore the length of lines within comment blocks.
  */
-class Linting_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLengthSniff
+class LineLengthSniff extends GenericLineLengthSniff
 {
     /**
      * Notes the types of tokens which are comments so their lines can be skipped.
@@ -29,7 +34,7 @@ class Linting_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLeng
      *
      * @var int
      */
-    public $absoluteLineLimit = 0;
+    public $absoluteLineLimit = 120;
 
     /**
      * The limit that the length of a line should not exceed.
@@ -41,7 +46,7 @@ class Linting_Sniffs_Files_LineLengthSniff extends Generic_Sniffs_Files_LineLeng
     /**
      * @inheritDoc
      */
-    public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
+    public function process(File $phpcsFile, $stackPtr)
     {
         $tokens = $phpcsFile->getTokens();
         for ($i = 1; $i < $phpcsFile->numTokens; $i++) {
