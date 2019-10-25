@@ -46,10 +46,34 @@ abstract class UpstreamCommandTest extends CommandTestCase
     public function setUp()
     {
         $this->data = [
-            'upstream_id' => ['framework' => 'backdrop', 'id' => 'upstream_id', 'label' => 'Upstream Name', 'type' => 'core', 'organization_id' => '',],
-            'upstream_id2' => ['framework' => 'wordpress', 'id' => 'upstream_id2', 'label' => 'Name Upstream', 'type' => 'core', 'organization_id' => '',],
-            'upstream_id3' => ['framework' => 'drupal', 'id' => 'upstream_id3', 'label' => 'Something Else', 'type' => 'project', 'organization_id' => '',],
-            'upstream_id4' => ['framework' => 'drupal', 'id' => 'upstream_id4', 'label' => 'Not even', 'type' => 'custom', 'organization_id' => '',],
+            'upstream_id' => [
+                'framework' => 'backdrop',
+                'id' => 'upstream_id',
+                'label' => 'Upstream Name',
+                'type' => 'core',
+                'organization_id' => '',
+            ],
+            'upstream_id2' => [
+                'framework' => 'wordpress',
+                'id' => 'upstream_id2',
+                'label' => 'Name Upstream',
+                'type' => 'core',
+                'organization_id' => '',
+            ],
+            'upstream_id3' => [
+                'framework' => 'drupal',
+                'id' => 'upstream_id3',
+                'label' => 'Something Else',
+                'type' => 'project',
+                'organization_id' => '',
+            ],
+            'upstream_id4' => [
+                'framework' => 'drupal',
+                'id' => 'upstream_id4',
+                'label' => 'Not even',
+                'type' => 'custom',
+                'organization_id' => '',
+            ],
         ];
         $this->organization = $this->getMockBuilder(Organization::class)
             ->disableOriginalConstructor()

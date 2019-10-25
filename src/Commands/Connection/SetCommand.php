@@ -18,7 +18,8 @@ class SetCommand extends TerminusCommand implements SiteAwareInterface
     use WorkflowProcessingTrait;
 
     const COMMIT_ADVICE = 'If you wish to save these changes, use `terminus env:commit {site_env}`.';
-    const UNCOMMITTED_CHANGE_WARNING = 'This environment has uncommitted changes. Switching the connection mode will discard this work.';
+    const UNCOMMITTED_CHANGE_WARNING =
+        'This environment has uncommitted changes. Switching the connection mode will discard this work.';
 
     /**
      * Sets Git or SFTP connection mode on a development environment (excludes Test and Live).

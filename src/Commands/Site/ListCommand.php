@@ -49,12 +49,21 @@ class ListCommand extends SiteCommand
      * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
      * @usage --upstream=<upstream> Displays the list of sites with the upstream having UUID <upstream>.
      */
-    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'team' => false, 'upstream' => null,])
+    public function index($options = [
+        'name' => null,
+        'org' => 'all',
+        'owner' => null,
+        'plan' => null,
+        'team' => false,
+        'upstream' => null,
+    ])
     {
         $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
-                'org_id' => (isset($options['org']) && ($options['org'] !== 'all')) ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id : null,
+                'org_id' => (isset($options['org']) && ($options['org'] !== 'all'))
+                    ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id
+                    : null,
                 'team_only' => isset($options['team']) ? $options['team'] : false,
             ]
         );

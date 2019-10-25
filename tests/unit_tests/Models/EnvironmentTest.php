@@ -581,7 +581,10 @@ class EnvironmentTest extends ModelTestCase
             )
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(TerminusException::class, 'There was an problem disabling https for this environment.');
+        $this->setExpectedException(
+            TerminusException::class,
+            'There was an problem disabling https for this environment.'
+        );
         $this->model->disableHttpsCertificate();
     }
 

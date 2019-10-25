@@ -210,7 +210,10 @@ class SiteTest extends ModelTestCase
     public function testDashboardUrl()
     {
         $this->configSet(['dashboard_protocol' => 'https', 'dashboard_host' => 'dashboard.pantheon.io',]);
-        $this->assertEquals("https://dashboard.pantheon.io/sites/" . $this->site_data->id, $this->model->dashboardUrl());
+        $this->assertEquals(
+            "https://dashboard.pantheon.io/sites/" . $this->site_data->id,
+            $this->model->dashboardUrl()
+        );
     }
 
     /**
