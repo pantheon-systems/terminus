@@ -1,8 +1,7 @@
 <?php
 
-namespace Pantheon\Terminus;
+namespace Pantheon\Terminus\UnitTests;
 
-use Consolidation\OutputFormatters\Formatters\FormatterInterface;
 use League\Container\ContainerInterface;
 use Robo\Config;
 use Symfony\Component\Console\Input\InputInterface;
