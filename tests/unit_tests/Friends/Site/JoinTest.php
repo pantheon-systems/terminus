@@ -4,13 +4,14 @@ namespace Pantheon\Terminus\UnitTests\Friends\Site;
 
 use League\Container\Container;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class JoinTest
  * Testing class for Pantheon\Terminus\Friends\SiteJoinTrait & Pantheon\Terminus\Friends\SiteJoinInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Site
  */
-class JoinTest extends \PHPUnit_Framework_TestCase
+class JoinTest extends TerminusTestCase
 {
     /**
      * @var Container

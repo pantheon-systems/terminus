@@ -9,13 +9,14 @@ use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteUserMembership;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SiteUserMembershipTest
  * Testing class for Pantheon\Terminus\Models\SiteUserMembership
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class SiteUserMembershipTest extends \PHPUnit_Framework_TestCase
+class SiteUserMembershipTest extends TerminusTestCase
 {
     /**
      * @var SiteUserMemberships

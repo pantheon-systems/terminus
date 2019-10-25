@@ -4,13 +4,14 @@ namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\DefaultsConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class DefaultsConfigTest
  * Testing class for Pantheon\Terminus\Config\DefaultsConfig
  * @package Pantheon\Terminus\UnitTests\Config
  */
-class DefaultsConfigTest extends \PHPUnit_Framework_TestCase
+class DefaultsConfigTest extends TerminusTestCase
 {
     /**
      * @var Config

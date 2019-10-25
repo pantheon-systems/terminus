@@ -3,12 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
 use League\Container\Container;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
-use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\NullLogger;
 
-class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
+class PluginDiscoveryTest extends TerminusTestCase
 {
     /**
      * @var Container

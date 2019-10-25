@@ -5,9 +5,9 @@ namespace Pantheon\Terminus\UnitTests\Hooks;
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\SiteEnvLookup;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -15,7 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Testing class for Pantheon\Terminus\Hooks\SiteEnvLookup
  * @package Pantheon\Terminus\UnitTests\Hooks
  */
-class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
+class SiteEnvLookupTest extends TerminusTestCase
 {
     const SITE_ID_FIXTURE = 'abc';
 

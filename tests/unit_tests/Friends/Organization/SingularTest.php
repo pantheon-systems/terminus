@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\Organization;
 
 use Pantheon\Terminus\Models\Organization;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SingularTest
  * Testing class for Pantheon\Terminus\Friends\OrganizationTrait & Pantheon\Terminus\Friends\OrganizationInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Organization
  */
-class SingularTest extends \PHPUnit_Framework_TestCase
+class SingularTest extends TerminusTestCase
 {
     /**
      * @var SingularDummyClass

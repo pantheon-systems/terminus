@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
-use Symfony\Component\Console\Input\Input;
 
 /**
  * Class DeleteCommandTest

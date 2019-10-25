@@ -3,8 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\YamlConfig;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class YamlConfigTest extends \PHPUnit_Framework_TestCase
+class YamlConfigTest extends TerminusTestCase
 {
     protected $config;
 

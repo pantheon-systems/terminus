@@ -5,12 +5,13 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use League\Container\Container;
 use Robo\Config;
 use Pantheon\Terminus\Request\Request;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class CollectionTestCase
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-abstract class CollectionTestCase extends \PHPUnit_Framework_TestCase
+abstract class CollectionTestCase extends TerminusTestCase
 {
     /**
      * @var TerminusCollection

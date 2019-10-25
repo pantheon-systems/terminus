@@ -2,9 +2,6 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use Pantheon\Terminus\Commands\Site\Team\RemoveCommand;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

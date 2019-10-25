@@ -9,13 +9,14 @@ use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationUserMembership;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class OrganizationUserMembershipTest
  * Testing class for Pantheon\Terminus\Models\OrganizationUserMembership
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class OrganizationUserMembershipTest extends \PHPUnit_Framework_TestCase
+class OrganizationUserMembershipTest extends TerminusTestCase
 {
     /**
      * @var OrganizationUserMemberships

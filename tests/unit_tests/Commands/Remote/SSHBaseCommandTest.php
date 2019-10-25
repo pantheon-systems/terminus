@@ -6,8 +6,6 @@ use League\Container\Container;
 use Pantheon\Terminus\Exceptions\TerminusProcessException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Process\ProcessUtils;
 
 /**
  * SSHBaseCommand Test Suite

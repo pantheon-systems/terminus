@@ -1,4 +1,5 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Collections\SavedTokens;

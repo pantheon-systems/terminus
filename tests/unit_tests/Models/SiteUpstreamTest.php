@@ -6,13 +6,14 @@ use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\SiteUpstream;
 use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SiteUpstreamTest
  * Tests the Pantheon\Terminus\Models\SiteUpstream class
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class SiteUpstreamTest extends \PHPUnit_Framework_TestCase
+class SiteUpstreamTest extends TerminusTestCase
 {
     /**
      * Tests the Upstream::clearCache() function

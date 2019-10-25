@@ -3,10 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Helpers;
 
 use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class SitesYmlEmitterTest extends TestCase
+class SitesYmlEmitterTest extends TerminusTestCase
 {
     /**
      * Test Drush 9 alias emitter

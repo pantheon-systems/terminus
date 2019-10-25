@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\Domain;
 
 use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SingularTest
  * Testing class for Pantheon\Terminus\Friends\DomainTrait & Pantheon\Terminus\Friends\DomainInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Domain
  */
-class SingularTest extends \PHPUnit_Framework_TestCase
+class SingularTest extends TerminusTestCase
 {
     /**
      * @var Domain

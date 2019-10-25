@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;

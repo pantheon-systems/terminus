@@ -1,11 +1,11 @@
 <?php
+
 namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Robo\Config;
 use Pantheon\Terminus\Models\MachineToken;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Console\Input\Input;
 
 /**
  * Class MachineTokenDeleteCommandTest

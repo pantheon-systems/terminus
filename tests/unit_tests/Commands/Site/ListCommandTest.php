@@ -6,7 +6,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Site\ListCommand;
 use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\UserOrganizationMembership;
 use Pantheon\Terminus\Session\Session;

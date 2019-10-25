@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\WorkflowOperations;
-use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Models\Workflow;

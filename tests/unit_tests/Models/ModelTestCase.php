@@ -4,12 +4,13 @@ namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Request\Request;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class ModelTestCase
  * @package Pantheon\Terminus\UnitTests\Models
  */
-abstract class ModelTestCase extends \PHPUnit_Framework_TestCase
+abstract class ModelTestCase extends TerminusTestCase
 {
     /**
      * @var TerminusCollection

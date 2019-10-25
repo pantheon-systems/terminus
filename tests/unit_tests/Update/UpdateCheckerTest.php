@@ -7,6 +7,7 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\DataStore\DataStoreInterface;
 use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Pantheon\Terminus\Update\LatestRelease;
 use Pantheon\Terminus\Update\UpdateChecker;
 
@@ -15,7 +16,7 @@ use Pantheon\Terminus\Update\UpdateChecker;
  * Testing class for Pantheon\Terminus\Update\UpdateChecker
  * @package Pantheon\Terminus\UnitTests\Update
  */
-class UpdateCheckerTest extends \PHPUnit_Framework_TestCase
+class UpdateCheckerTest extends TerminusTestCase
 {
     /**
      * @var TerminusConfig
