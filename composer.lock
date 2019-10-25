@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73159373e760344d19f0d07481f66f2e",
+    "content-hash": "f5dbc7680a88c2bddb6083b814de70f4",
     "packages": [
         {
             "name": "composer/semver",
@@ -2160,6 +2160,56 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "bamarni/symfony-console-autocomplete",
+            "version": "v1.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bamarni/symfony-console-autocomplete.git",
+                "reference": "0fb747e5fdad1f4a028ef42a02bc4a3c4ef8fc12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bamarni/symfony-console-autocomplete/zipball/0fb747e5fdad1f4a028ef42a02bc4a3c4ef8fc12",
+                "reference": "0fb747e5fdad1f4a028ef42a02bc4a3c4ef8fc12",
+                "shasum": ""
+            },
+            "require": {
+                "ext-simplexml": "*",
+                "symfony/console": "^2.5|^3|^4",
+                "symfony/process": "^2.5|^3|^4"
+            },
+            "require-dev": {
+                "symfony/console": "2.8.*"
+            },
+            "bin": [
+                "bin/symfony-autocomplete"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bamarni\\Symfony\\Console\\Autocomplete\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bilal Amarni",
+                    "email": "bilal.amarni@gmail.com",
+                    "role": "Lead developer"
+                },
+                {
+                    "name": "Richard Quadling",
+                    "email": "RQuadling@gmail.com",
+                    "role": "Contributing developer"
+                }
+            ],
+            "description": "Shell completion for Symfony Console based scripts",
+            "time": "2019-08-02T15:22:55+00:00"
+        },
         {
             "name": "beberlei/assert",
             "version": "v2.9.9",
