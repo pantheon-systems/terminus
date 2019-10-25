@@ -123,6 +123,7 @@ class Terminus implements ConfigAwareInterface, ContainerAwareInterface, LoggerA
         $this->commands = [
             'Consolidation\\Filter\\Hooks\\FilterHooks',
             'Pantheon\\Terminus\\Hooks\\Authorizer',
+            'Pantheon\\Terminus\\Hooks\\RoleValidator',
             'Pantheon\\Terminus\\Hooks\\SiteEnvLookup',
             'Pantheon\\Terminus\\Commands\\AliasesCommand',
             'Pantheon\\Terminus\\Commands\\ArtCommand',

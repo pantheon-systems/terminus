@@ -92,24 +92,30 @@ class WorkflowTest extends ModelTestCase
         $workflow = new Workflow((object)$data, ['environment' => $env,]);
         $this->request->expects($this->at(0))
             ->method('request')
-            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
-            ->willReturn(['data' => ['baz' => '123',],]);
+            ->with(
+                'sites/site_id/workflows/workflow_id',
+                ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],]
+            )->willReturn(['data' => ['baz' => '123',],]);
         $workflow->setRequest($this->request);
         $workflow->fetchWithLogs();
 
         $workflow = new Workflow((object)$data, ['site' => $site,]);
         $this->request->expects($this->at(0))
             ->method('request')
-            ->with('sites/site_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
-            ->willReturn(['data' => ['baz' => '123',],]);
+            ->with(
+                'sites/site_id/workflows/workflow_id',
+                ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],]
+            )->willReturn(['data' => ['baz' => '123',],]);
         $workflow->setRequest($this->request);
         $workflow->fetchWithLogs();
 
         $workflow = new Workflow((object)$data, ['user' => $user,]);
         $this->request->expects($this->at(0))
             ->method('request')
-            ->with('users/user_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
-            ->willReturn(['data' => ['baz' => '123',],]);
+            ->with(
+                'users/user_id/workflows/workflow_id',
+                ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],]
+            )->willReturn(['data' => ['baz' => '123',],]);
         $workflow->setRequest($this->request);
         $workflow->fetchWithLogs();
 
@@ -122,8 +128,10 @@ class WorkflowTest extends ModelTestCase
         $workflow = new Workflow((object)$data, ['organization' => $org,]);
         $this->request->expects($this->at(0))
             ->method('request')
-            ->with('users/user_id/organizations/org_id/workflows/workflow_id', ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],])
-            ->willReturn(['data' => ['baz' => '123',],]);
+            ->with(
+                'users/user_id/organizations/org_id/workflows/workflow_id',
+                ['options' => ['method' => 'get',], 'query' => ['hydrate' => 'operations_with_logs',],]
+            )->willReturn(['data' => ['baz' => '123',],]);
         $workflow->setSession($session);
         $workflow->setRequest($this->request);
         $workflow->fetchWithLogs();
@@ -210,7 +218,12 @@ class WorkflowTest extends ModelTestCase
         $operations = [
             (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
             (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
-            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)[
+                'type' => 'Taipkaan',
+                'result' => 'Keputusan',
+                'duration' => 'Tempoh',
+                'description' => 'Penerangan',
+            ],
             (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
             (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
         ];
@@ -259,7 +272,12 @@ class WorkflowTest extends ModelTestCase
         $operations = [
             (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
             (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
-            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)[
+                'type' => 'Taipkaan',
+                'result' => 'Keputusan',
+                'duration' => 'Tempoh',
+                'description' => 'Penerangan',
+            ],
             (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
             (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
         ];
@@ -304,7 +322,12 @@ class WorkflowTest extends ModelTestCase
         $operations = [
             (object)['type' => 'Type', 'result' => 'Result', 'duration' => 'Duration', 'description' => 'Description'],
             (object)['type' => 'Art', 'result' => 'Ergebnis', 'duration' => 'Dauer', 'description' => 'Beschreibung'],
-            (object)['type' => 'Taipkaan', 'result' => 'Keputusan', 'duration' => 'Tempoh', 'description' => 'Penerangan'],
+            (object)[
+                'type' => 'Taipkaan',
+                'result' => 'Keputusan',
+                'duration' => 'Tempoh',
+                'description' => 'Penerangan',
+            ],
             (object)['type' => 'tipe', 'result' => 'gevolg', 'duration' => 'duur', 'description' => 'beskrywing'],
             (object)['type' => 'Turi', 'result' => 'Natija', 'duration' => 'Muddati', 'description' => 'Ta\'rif'],
         ];

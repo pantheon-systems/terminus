@@ -41,8 +41,10 @@ $config->extend(new YamlConfig($config->get('user_home') . '/.terminus/config.ym
 $config->extend(new DotEnvConfig(getcwd()));
 $config->extend(new EnvConfig());
 
-// Running Terminus
-// @TODO: Figure out if and why we need to pass input/output twice and define what happens if we use different objects for each call.
+/**
+ * Running Terminus
+ * @TODO: Figure out if and why we need to pass input/output twice and define what happens if we use different objects for each call.
+ */
 $terminus = new Terminus($config, $input, $output);
 $status_code = $terminus->run($input, $output);
 exit($status_code);

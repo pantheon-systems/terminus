@@ -70,7 +70,7 @@ trait StructuredListTrait
             function ($key, $cell_data) {
                 if ($cell_data === true) {
                     return 'true';
-                } else if ($cell_data === false) {
+                } elseif ($cell_data === false) {
                     return 'false';
                 }
                 return $cell_data;

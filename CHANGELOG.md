@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 - Terminus will now load plugin files ending in `Hook.php` in addition to those ending with `Command.php` (#2025)
+- The role parameter in `org:people:add` is now being validated before sending the request. (#2033)
+- The role parameter in `org:people:role` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:add` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:role` is now being validated before attempting the change. (#2033)
 
 ### Deprecated
 - Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)

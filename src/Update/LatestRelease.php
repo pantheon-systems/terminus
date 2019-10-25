@@ -17,7 +17,11 @@ use Psr\Log\LoggerAwareTrait;
  * Class LatestRelease
  * @package Pantheon\Terminus\Update
  */
-class LatestRelease implements ContainerAwareInterface, DataStoreAwareInterface, LoggerAwareInterface, RequestAwareInterface
+class LatestRelease implements
+    ContainerAwareInterface,
+    DataStoreAwareInterface,
+    LoggerAwareInterface,
+    RequestAwareInterface
 {
     use ContainerAwareTrait;
     use DataStoreAwareTrait;

@@ -100,7 +100,8 @@ class RequestTest extends TerminusTestCase
         $platformScript = str_replace('/', DIRECTORY_SEPARATOR, $script);
         $this->client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true,];
         $this->request_headers = $this->response_headers = ['Content-type' => 'application/json',];
-        $this->request_headers['User-Agent'] = "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
+        $this->request_headers['User-Agent'] =
+            "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
         $this->response_data = ['abc' => '123',];
 
         $this->config = new TerminusConfig();
@@ -253,7 +254,10 @@ class RequestTest extends TerminusTestCase
                 );
         }
 
-        $this->setExpectedException(TerminusException::class, "HTTPS request failed with error Something bad happened. Maximum retry attempts reached.");
+        $this->setExpectedException(
+            TerminusException::class,
+            "HTTPS request failed with error Something bad happened. Maximum retry attempts reached."
+        );
 
         $this->request->request($uri, $request_options);
     }

@@ -118,7 +118,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => true, 'owner' => null, 'org' => 'all', 'name' => null, 'upstream' => null,]);
+        $out = $this->command->index(
+            ['team' => true, 'owner' => null, 'org' => 'all', 'name' => null, 'upstream' => null,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -176,7 +178,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => $org->id, 'name' => null, 'upstream' => null,]);
+        $out = $this->command->index(
+            ['team' => false, 'owner' => null, 'org' => $org->id, 'name' => null, 'upstream' => null,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -214,7 +218,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => $regex, 'upstream' => null,]);
+        $out = $this->command->index(
+            ['team' => false, 'owner' => null, 'org' => 'all', 'name' => $regex, 'upstream' => null,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -253,7 +259,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => $user_id, 'org' => 'all', 'name' => null, 'upstream' => null,]);
+        $out = $this->command->index(
+            ['team' => false, 'owner' => $user_id, 'org' => 'all', 'name' => null, 'upstream' => null,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -295,7 +303,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'upstream' => $product_id,]);
+        $out = $this->command->index(
+            ['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'upstream' => $product_id,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -332,7 +342,9 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => 'me', 'org' => 'all', 'name' => null, 'upstream' => null,]);
+        $out = $this->command->index(
+            ['team' => false, 'owner' => 'me', 'org' => 'all', 'name' => null, 'upstream' => null,]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }
@@ -372,7 +384,16 @@ class ListCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $out = $this->command->index(['team' => false, 'owner' => null, 'org' => 'all', 'name' => null, 'plan' => $plan_name, 'upstream' => null,]);
+        $out = $this->command->index(
+            [
+                'team' => false,
+                'owner' => null,
+                'org' => 'all',
+                'name' => null,
+                'plan' => $plan_name,
+                'upstream' => null,
+            ]
+        );
         $this->assertInstanceOf(RowsOfFields::class, $out);
         $this->assertEquals(['a' => $dummy_info, 'b' =>  $dummy_info,], $out->getArrayCopy());
     }

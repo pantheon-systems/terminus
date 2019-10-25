@@ -58,7 +58,12 @@ class ComposerDependencyValidator
         // If the plugin's lock file contains a project that is also in
         // Terminus' lock file, require them to be at exactly the same
         // version number.
-        $this->validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock, $plugin_vendor_dir);
+        $this->validateLockFilesCompatible(
+            $plugin_composer_json,
+            $plugin_composer_lock,
+            $terminus_composer_lock,
+            $plugin_vendor_dir
+        );
     }
 
     /**
@@ -82,7 +87,12 @@ class ComposerDependencyValidator
 
         foreach ($plugin_requirements as $project => $version_constraints) {
             if (array_key_exists($project, $terminus_packages)) {
-                throw new TerminusException("The plugin {name} requires the project {dependency}, which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer remove {dependency}' in the {name} plugin directory.", ['name' => $plugin_name, 'dependency' => $project]);
+                throw new TerminusException(
+                    'The plugin {name} requires the project {dependency}, which is already provided by Terminus. '
+                    . "Please remove this dependency from the plugin by running 'composer remove {dependency}' "
+                    . 'in the {name} plugin directory.',
+                    ['dependency' => $project, 'name' => $plugin_name,]
+                );
             }
         }
     }
@@ -93,8 +103,12 @@ class ComposerDependencyValidator
      * or
      *  b) anything that does appear in both places exists as exactly the same version.
      */
-    protected function validateLockFilesCompatible($plugin_composer_json, $plugin_composer_lock, $terminus_composer_lock, $plugin_vendor_dir)
-    {
+    protected function validateLockFilesCompatible(
+        $plugin_composer_json,
+        $plugin_composer_lock,
+        $terminus_composer_lock,
+        $plugin_vendor_dir
+    ) {
         $plugin_name = $plugin_composer_json['name'];
         $plugin_packages = $this->getLockFilePackages($plugin_composer_lock);
         $terminus_packages = $this->getLockFilePackages($terminus_composer_lock);
@@ -103,7 +117,17 @@ class ComposerDependencyValidator
             if (array_key_exists($project, $terminus_packages)) {
                 if ($version != $terminus_packages[$project]) {
                     if (is_dir("$plugin_vendor_dir/$project")) {
-                        throw new TerminusException("The plugin {name} has installed the project {dependency}: {version}, but Terminus has installed {dependency}: {otherversion}. To resolve this, try running 'composer update' in both the plugin directory, and the terminus directory.", ['name' => $plugin_name, 'dependency' => $project, 'version' => $version, 'otherversion' => $terminus_packages[$project]]);
+                        throw new TerminusException(
+                            'The plugin {name} has installed the project {dependency}: {version}, but Terminus has '
+                            . "installed {dependency}: {otherversion}. To resolve this, try running 'composer update' "
+                            . 'in both the plugin directory, and the terminus directory.',
+                            [
+                                'dependency' => $project,
+                                'name' => $plugin_name,
+                                'otherversion' => $terminus_packages[$project],
+                                'version' => $version,
+                            ]
+                        );
                     }
                 }
             }
@@ -119,7 +143,8 @@ class ComposerDependencyValidator
     {
         $composer_lock += ['packages' => [], 'packages-dev' => []];
 
-        return $this->collectLockFilePackages($composer_lock['packages']) + $this->collectLockFilePackages($composer_lock['packages-dev']);
+        return $this->collectLockFilePackages($composer_lock['packages'])
+            + $this->collectLockFilePackages($composer_lock['packages-dev']);
     }
 
     /**
