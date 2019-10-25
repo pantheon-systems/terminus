@@ -29,6 +29,11 @@ Feature: Organizational users
     When I run "terminus org:people:add '[[organization_name]]' [[other_user]] team_member"
     Then I should get: "[[other_user]] has been added to the [[organization_name]] organization as a(n) team_member."
 
+  @vcr org-people-add.yml
+  Scenario: Failing to add an org member role because the given role is invalid
+    When I run "terminus org:people:add '[[organization_name]]' [[other_user]] invalid"
+    Then I should get: "invalid is not a valid role selection. Please enter admin, developer, team_member, or unprivileged."
+
   @vcr org-people-remove.yml
   Scenario: Removing a member from an organization
     When I run "terminus org:people:remove '[[organization_name]]' [[other_user]]"
@@ -38,3 +43,8 @@ Feature: Organizational users
   Scenario: Changing a org member's role
     When I run "terminus org:people:role '[[organization_name]]' [[other_user]] developer"
     Then I should get: "Dev User's role has been changed to developer in the [[organization_name]] organization."
+
+  @vcr org-people-role.yml
+  Scenario: Failing to change a org member's role because the given role is invalid
+    When I run "terminus org:people:role '[[organization_name]]' [[other_user]] invalid"
+    Then I should get: "invalid is not a valid role selection. Please enter admin, developer, team_member, or unprivileged."

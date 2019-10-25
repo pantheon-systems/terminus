@@ -18,6 +18,11 @@ Feature: Managing a site's team
     And I should get: "[[other_user]]   developer     3a1d2042-cca3-432e-94c4-12a8f2b6a950   false"
     And I should get: "----------------------- ------------- -------------------------------------- -----------"
 
+  @vcr site-team-add.yml
+  Scenario: Failing to add a team member because the given role is invalid
+    When I run "terminus site:team:add [[test_site_name]] [[other_user]] admin"
+    Then I should get: "admin is not a valid role selection. Please enter developer or team_member."
+
   @vcr site-team-add-no-change-mgmt.yml
   Scenario: Adding a team member without change management enabled
     When I run "terminus site:team:add [[test_site_name]] [[other_user]] developer"
@@ -32,8 +37,13 @@ Feature: Managing a site's team
 
   @vcr site-team-role.yml
   Scenario: Changing a team member's role
-    When I run "terminus site:team:role [[test_site_name]] [[other_user]] admin"
+    When I run "terminus site:team:role [[test_site_name]] [[other_user]] developer"
     Then I should get one of the following: "This site does not have its change-management option enabled., Changed a user role"
+
+  @vcr site-team-role.yml
+  Scenario: Failing to change a team member's role because it's invalid
+    When I run "terminus site:team:add [[test_site_name]] [[other_user]] admin"
+    Then I should get: "admin is not a valid role selection. Please enter developer or team_member."
 
   @vcr site-team-list.yml
   Scenario: Listing team members
