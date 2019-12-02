@@ -3,8 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\TerminusConfig;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class TerminusConfigTest extends \PHPUnit_Framework_TestCase
+class TerminusConfigTest extends TerminusTestCase
 {
     protected $config;
 

@@ -1,10 +1,8 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\Domain\Primary\AddCommand;
-use Pantheon\Terminus\UnitTests\Commands\Domain\Primary\PrimaryDomainCommandsTestBase;
 
 /**
  * Class AddCommandTest

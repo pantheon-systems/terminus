@@ -4,13 +4,14 @@ namespace Pantheon\Terminus\UnitTests\Plugins;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class PluginInfoTest
  * Testing class for Pantheon\Terminus\Plugins\PluginInfo
  * @package Pantheon\Terminus\UnitTests\Plugins
  */
-class PluginInfoTest extends \PHPUnit_Framework_TestCase
+class PluginInfoTest extends TerminusTestCase
 {
     /**
      * @inheritdoc

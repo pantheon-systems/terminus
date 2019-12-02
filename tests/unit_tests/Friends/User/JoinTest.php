@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\User;
 
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class JoinTest
  * Testing class for Pantheon\Terminus\Friends\UserJoinTrait & Pantheon\Terminus\Friends\UserJoinInterface
  * @package Pantheon\Terminus\UnitTests\Friends\User
  */
-class JoinTest extends \PHPUnit_Framework_TestCase
+class JoinTest extends TerminusTestCase
 {
     /**
      * @var JoinDummyClass

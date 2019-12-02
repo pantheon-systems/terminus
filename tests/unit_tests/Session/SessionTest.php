@@ -2,21 +2,20 @@
 
 namespace Pantheon\Terminus\UnitTests\Session;
 
-use Behat\Gherkin\Cache\FileCache;
 use League\Container\Container;
 use Pantheon\Terminus\Collections\SavedTokens;
-use Pantheon\Terminus\Models\SavedToken;
 use Robo\Config;
 use Pantheon\Terminus\DataStore\FileStore;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SessionTest
  * Testing class for Pantheon\Terminus\Session\Session
  * @package Pantheon\Terminus\UnitTests\Session
  */
-class SessionTest extends \PHPUnit_Framework_TestCase
+class SessionTest extends TerminusTestCase
 {
     /**
      * @var Config

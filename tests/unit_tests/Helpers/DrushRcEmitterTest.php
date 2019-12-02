@@ -3,10 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Helpers;
 
 use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class DrushRcEmitterTest extends TestCase
+class DrushRcEmitterTest extends TerminusTestCase
 {
     /**
      * testDrushrcEmitter confirms that the alias collection sorts

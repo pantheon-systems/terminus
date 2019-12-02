@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\Commands\Lock\DisableCommand;

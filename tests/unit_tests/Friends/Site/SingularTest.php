@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\Site;
 
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SingularTest
  * Testing class for Pantheon\Terminus\Friends\SiteTrait & Pantheon\Terminus\Friends\SiteInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Site
  */
-class SingularTest extends \PHPUnit_Framework_TestCase
+class SingularTest extends TerminusTestCase
 {
     /**
      * @var SingularDummyClass

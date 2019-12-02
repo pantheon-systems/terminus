@@ -7,7 +7,6 @@ use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationSiteMembership;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Collections\Tags;
-use Pantheon\Terminus\Models\Tag;
 
 /**
  * Class TagsTest

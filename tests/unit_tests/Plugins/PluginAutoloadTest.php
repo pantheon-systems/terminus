@@ -4,13 +4,10 @@ namespace Pantheon\Terminus\UnitTests\Plugins;
 
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 
-use League\Container\Container;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Plugins\PluginDiscovery;
-use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\NullLogger;
 
-class PluginAutoloadTest extends \PHPUnit_Framework_TestCase
+class PluginAutoloadTest extends TerminusTestCase
 {
     /**
      * @var PluginAutoloadDependencies

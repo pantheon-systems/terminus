@@ -1,10 +1,8 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\Domain\SetCommand;
-use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\PrimaryDomain;
 use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Session\Session;

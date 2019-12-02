@@ -3,8 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Config;
 
 use Pantheon\Terminus\Config\DotEnvConfig;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class DotEnvConfigTest extends \PHPUnit_Framework_TestCase
+class DotEnvConfigTest extends TerminusTestCase
 {
     public function testReadDotEnv()
     {

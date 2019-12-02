@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Upstream;
 
 use Pantheon\Terminus\Commands\Site\Upstream\ClearCacheCommand;

@@ -19,8 +19,6 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class EnvironmentTest

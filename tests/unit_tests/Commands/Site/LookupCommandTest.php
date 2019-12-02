@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\LookupCommand;
-use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

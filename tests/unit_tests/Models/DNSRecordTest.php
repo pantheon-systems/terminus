@@ -5,13 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Collections\DNSRecords;
 use Pantheon\Terminus\Models\DNSRecord;
 use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class DNSRecordTest
  * Testing class for Pantheon\Terminus\Models\DNSRecord
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class DNSRecordTest extends \PHPUnit_Framework_TestCase
+class DNSRecordTest extends TerminusTestCase
 {
     /**
      * @var DNSRecord

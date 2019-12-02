@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Models\Upstream;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class UpstreamTest
  * Tests the Pantheon\Terminus\Models\Upstream class
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class UpstreamTest extends \PHPUnit_Framework_TestCase
+class UpstreamTest extends TerminusTestCase
 {
     /**
      * Tests the Upstream::getReferences() function

@@ -5,7 +5,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 use Pantheon\Terminus\Collections\Upstreams;
 use Pantheon\Terminus\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Site\CreateCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\Upstream;

@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\UnitTests\Helpers;
 
 use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
-use PHPUnit\Framework\TestCase;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class PrintingEmitterTest extends TestCase
+class PrintingEmitterTest extends TerminusTestCase
 {
     /**
      * testPrintingEmitter confirms that the alias collection sorts

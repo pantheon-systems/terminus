@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Exceptions;
 
 use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class TerminusExceptionTest
  * Testing class for Pantheon\Terminus\Exceptions\TerminusException
  * @package Pantheon\Terminus\UnitTests\Exceptions
  */
-class TerminusExceptionTest extends \PHPUnit_Framework_TestCase
+class TerminusExceptionTest extends TerminusTestCase
 {
     /**
      * Tests the getReplacements function

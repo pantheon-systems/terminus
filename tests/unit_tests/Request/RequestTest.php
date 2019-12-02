@@ -13,10 +13,9 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Request\Request;
 use Pantheon\Terminus\Session\Session;
-use Pantheon\Terminus\Terminus;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -25,7 +24,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Testing class for Pantheon\Terminus\Request\Request
  * @package Pantheon\Terminus\UnitTests\Request
  */
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends TerminusTestCase
 {
     /**
      * @var Client
