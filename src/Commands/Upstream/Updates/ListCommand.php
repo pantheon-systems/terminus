@@ -15,6 +15,7 @@ class ListCommand extends UpdatesCommand
      * Note: To refresh the cache you will need to run site:upstream:clear-cache before running this command.
      *
      * @authorize
+     * @filter-output
      *
      * @command upstream:updates:list
      *

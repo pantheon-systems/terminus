@@ -64,7 +64,11 @@ class CloneContentCommandTest extends EnvCommandTest
                 $this->equalTo('successful workflow')
             );
 
-        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
+        $this->command->cloneContent(
+            "$site_name.{$this->environment->id}",
+            $target_env,
+            ['files-only' => true,]
+        );
     }
 
     public function testCloneDatabase()
@@ -102,7 +106,11 @@ class CloneContentCommandTest extends EnvCommandTest
                 $this->equalTo('successful workflow')
             );
 
-        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['cc' => false, 'db-only' => true, 'updatedb' => false,]);
+        $this->command->cloneContent(
+            "$site_name.{$this->environment->id}",
+            $target_env,
+            ['cc' => false, 'db-only' => true, 'updatedb' => false,]
+        );
     }
 
     public function testCloneAll()
@@ -195,10 +203,15 @@ class CloneContentCommandTest extends EnvCommandTest
 
         $this->setExpectedException(
             TerminusException::class,
-            "$site_name's {$this->environment->id} environment cannot be cloned into because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
+            "$site_name's {$this->environment->id} environment cannot be cloned into because it has not been "
+            . "initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
         );
 
-        $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
+        $this->command->cloneContent(
+            "$site_name.{$this->environment->id}",
+            $target_env,
+            ['files-only' => true,]
+        );
     }
 
     /**
@@ -227,7 +240,8 @@ class CloneContentCommandTest extends EnvCommandTest
 
         $this->setExpectedException(
             TerminusException::class,
-            "$site_name's {$this->environment->id} environment cannot be cloned from because it has not been initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
+            "$site_name's {$this->environment->id} environment cannot be cloned from because it has not been "
+            . "initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
         );
 
         $this->command->cloneContent("$site_name.{$this->environment->id}", $target_env, ['files-only' => true,]);
@@ -237,5 +251,24 @@ class CloneContentCommandTest extends EnvCommandTest
     {
         $this->setExpectedException(TerminusException::class, 'You cannot specify both --db-only and --files-only');
         $this->command->cloneContent('mysite.dev', 'test', ['db-only' => true, 'files-only' => true,]);
+    }
+
+    /**
+     * Tests env:clone command when attempting to clone an environment to itself
+     */
+    public function testCloneSelf()
+    {
+        $site_name = 'site-name';
+        $this->environment->id = 'dev';
+
+        $this->logger->expects($this->at(0))
+            ->method('log')->with(
+                $this->equalTo('notice'),
+                $this->equalTo(
+                    'The clone has been skipped because the source and target environments are the same.'
+                )
+            );
+
+        $this->command->cloneContent("$site_name.{$this->environment->id}", $this->environment->id);
     }
 }

@@ -13,6 +13,7 @@ class ListCommand extends SiteCommand
      * Displays the list of sites accessible to the currently logged-in user.
      *
      * @authorize
+     * @filter-output
      *
      * @command site:list
      * @aliases sites
@@ -31,10 +32,10 @@ class ListCommand extends SiteCommand
      * @default-fields name,id,plan_name,framework,region,owner,created,memberships,frozen
      * @return RowsOfFields
      *
-     * @option name Name filter
-     * @option org Organization filter; "all" or an organization's name, label, or ID
+     * @option name DEPRECATED Name filter
+     * @option org DEPRECATED Organization filter; "all" or an organization's name, label, or ID
      * @option owner Owner filter; "me" or user UUID
-     * @option plan Plan filter; filter by the plan's label
+     * @option plan DEPRECATED Plan filter; filter by the plan's label
      * @option team Team-only filter
      * @option string $upstream Upstream name to filter
      *
@@ -48,12 +49,21 @@ class ListCommand extends SiteCommand
      * @usage --team Displays the list of sites of which the currently logged-in user is a member of the team.
      * @usage --upstream=<upstream> Displays the list of sites with the upstream having UUID <upstream>.
      */
-    public function index($options = ['name' => null, 'org' => 'all', 'owner' => null, 'plan' => null, 'team' => false, 'upstream' => null,])
+    public function index($options = [
+        'name' => null,
+        'org' => 'all',
+        'owner' => null,
+        'plan' => null,
+        'team' => false,
+        'upstream' => null,
+    ])
     {
         $user = $this->session()->getUser();
         $this->sites()->fetch(
             [
-                'org_id' => (isset($options['org']) && ($options['org'] !== 'all')) ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id : null,
+                'org_id' => (isset($options['org']) && ($options['org'] !== 'all'))
+                    ? $user->getOrganizationMemberships()->get($options['org'])->getOrganization()->id
+                    : null,
                 'team_only' => isset($options['team']) ? $options['team'] : false,
             ]
         );

@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays domains associated with the environment.
      *
      * @authorize
+     * @filter-output
      *
      * @command domain:list
      * @aliases domains
@@ -28,6 +29,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * @field-labels
      *     id: Domain/ID
      *     type: Type
+     *     primary: Is Primary
      *     deletable: Is Deletable
      *     status: status
      * @return RowsOfFields

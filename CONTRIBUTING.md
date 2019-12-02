@@ -81,11 +81,11 @@ The functional test files are in the `tests/features` directory. Any test which 
 
 To run the entire test suite for Terminus 0.x:
 
-  `vendor/bin/behat -c=tests/config/behat.yml`
+  `vendor/bin/behat --config tests/config/behat.yml`
 
 Or to test a single feature:
 
-  `vendor/bin/behat -c=tests/config/behat.yml tests/features/core.feature`
+  `vendor/bin/behat --config tests/config/behat.yml tests/features/core.feature`
 
 The functional test files for the new version of Terminus are in the `tests/active-features` directory. The complete behat suite for Terminus 1.x can be run via:
 

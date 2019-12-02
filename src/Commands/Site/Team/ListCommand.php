@@ -21,12 +21,11 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays the list of team members for a site.
      *
      * @authorize
+     * @filter-output
      *
      * @command site:team:list
      *
      * @field-labels
-     *     firstname: First name
-     *     lastname: Last name
      *     email: Email
      *     role: Role
      *     id: User ID

@@ -14,6 +14,7 @@ class ListCommand extends UserListCommand
     /**
      * Displays the list of upstreams belonging to an organization.
      *
+     * @filter-output
      * @command org:upstream:list
      * @aliases org:upstreams
      *
@@ -26,8 +27,8 @@ class ListCommand extends UserListCommand
      *     framework: Framework
      * @param string $organization Organization name, label, or ID
      * @option all Show all upstreams
-     * @option framework Framework filter
-     * @option name Name filter
+     * @option framework DEPRECATED Framework filter
+     * @option name DEPRECATED Name filter
      * @return RowsOfFields
      *
      * @usage Displays the list of upstreams accessible to the currently logged-in user.

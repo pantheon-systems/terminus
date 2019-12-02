@@ -47,7 +47,7 @@ class ViewCommandTest extends EnvCommandTest
             ->method('get');
 
         $url = $this->command->view('my-site.dev', ['print' => true]);
-        $this->assertEquals('http://dev-my-site.example.com/', $url);
+        $this->assertEquals('https://dev-my-site.example.com/', $url);
     }
 
     /**
@@ -69,7 +69,7 @@ class ViewCommandTest extends EnvCommandTest
             ->method('get');
 
         $url = $this->command->view('my-site.dev', ['print' => true]);
-        $this->assertEquals('http://user:pass@dev-my-site.example.com/', $url);
+        $this->assertEquals('https://user:pass@dev-my-site.example.com/', $url);
     }
 
     /**
@@ -77,7 +77,7 @@ class ViewCommandTest extends EnvCommandTest
      */
     public function testViewOpen()
     {
-        $expected_url = 'http://dev-my-site.example.com/';
+        $expected_url = 'https://dev-my-site.example.com/';
 
         $local_machine_helper = $this->getMockBuilder(LocalMachineHelper::class)
             ->disableOriginalConstructor()

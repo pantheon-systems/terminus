@@ -2,38 +2,240 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\Commands\TerminusCommand;
 
-class AliasesCommand extends TerminusCommand
+use Pantheon\Terminus\Collections\Sites;
+use Pantheon\Terminus\Site\SiteAwareInterface;
+use Pantheon\Terminus\Site\SiteAwareTrait;
+
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasCollection;
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasData;
+use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
+use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
+use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
+
+/**
+ * Generate lots of aliases
+ */
+class AliasesCommand extends TerminusCommand implements SiteAwareInterface
 {
+    use SiteAwareTrait;
+
     /**
      * Generates Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
      *
      * @authorize
      *
      * @command aliases
-     * @aliases drush:aliases
+     * @aliases drush:aliases alpha:aliases
      *
-     * @option boolean $print Print aliases only
-     * @option string $location Path and filename; default: ~/.drush/pantheon.aliases.drushrc.php will be used
+     * @option boolean $print Print aliases only (Drush 8 format)
+     * @option string $location Path and filename for php aliases.
+     * @option boolean $all Include all sites available, including team memberships.
+     * @option string $only Only generate aliases for sites in the specified comma-separated list. This option is only recommended for use in CI scripts.
+     * @option string $type Type of aliases to create: 'php', 'yml' or 'all'.
+     * @option string $base Base directory to write .yml aliases.
+     * @option string $target Base name to use to generate path to alias files.
+     * @option boolean $db-url Obsolete option included to preserve backwards compatibility. No longer needed.
      *
      * @return string|null
      *
      * @usage Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to ~/.drush/pantheon.aliases.drushrc.php.
-     * @usage --print Displays Pantheon Drush aliases for sites on which the currently logged-in user is on the team.
-     * @usage --location=<full_path> Saves Pantheon Drush aliases for sites on which the currently logged-in user is on the team to <full_path>.
+     * @usage --print Displays Pantheon Drush 8 aliases for sites on which the currently logged-in user is on the team.
+     * @usage --location=<full_path> Saves Pantheon Drush 8 aliases for sites on which the currently logged-in user is on the team to <full_path>.
      */
-    public function aliases($options = ['print' => false, 'location' => null,])
+    public function aliases($options = [
+        'print' => false,
+        'location' => null,
+        'all' => false,
+        'only' => '',
+        'type' => 'all',
+        'base' => '~/.drush',
+        'db-url' => true,
+        'target' => 'pantheon',
+    ])
     {
-        $aliases = $this->session()->getUser()->getAliases();
-        if (isset($options['print']) && $options['print']) {
-            return $aliases;
-        }
-        if (is_null($location = $options['location'])) {
-            $location = '~/.drush/pantheon.aliases.drushrc.php';
+        // Be forgiving about the spelling of 'yaml'
+        if ($options['type'] == 'yaml') {
+            $options['type'] = 'yml';
         }
 
-        $this->getContainer()->get(LocalMachineHelper::class)->writeFile($location, $aliases);
-        $this->log()->notice('Aliases file written to {location}.', ['location' => $location,]);
+        $this->log()->notice("Fetching site information to build Drush aliases...");
+        $alias_replacements = $this->getSites($options);
+
+        $this->log()->notice("{count} sites found.", ['count' => count($alias_replacements)]);
+
+        // Write the alias files (only of the type requested)
+        $emitters = $this->getAliasEmitters($options);
+        if (empty($emitters)) {
+            throw new \Exception('No emitters; nothing to do.');
+        }
+        foreach ($emitters as $emitter) {
+            $this->log()->debug("Emitting aliases via {emitter}", ['emitter' => get_class($emitter)]);
+            $this->log()->notice($this->shortenHomePath($emitter->notificationMessage()));
+            $emitter->write($alias_replacements);
+        }
+    }
+
+    /**
+     * getAliasEmitters returns a list of emitters based on the provided options.
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect the emitters returned
+     * @return AliasEmitterInterface[]
+     */
+    protected function getAliasEmitters($options)
+    {
+        $home = $this->getConfig()->get('user_home');
+        $base_dir = preg_replace('#^~#', $home, $options['base']);
+        $target_name = $options['target'];
+        $emitterType = $options['type'];
+        if ($options['print']) {
+            $emitterType = 'print';
+        }
+        $location = !empty($options['location']) ? $options['location'] : "$base_dir/$target_name.aliases.drushrc.php";
+        $emitters = [];
+
+        if ($this->emitterTypeMatches($emitterType, 'print', false)) {
+            $emitters[] = new PrintingEmitter($this->output());
+        }
+        if ($this->emitterTypeMatches($emitterType, 'php')) {
+            $emitters[] = new AliasesDrushRcEmitter($location, $base_dir);
+        }
+        if ($this->emitterTypeMatches($emitterType, 'yml')) {
+            $emitters[] = new DrushSitesYmlEmitter($base_dir, $home, $target_name);
+        }
+
+        return $emitters;
+    }
+
+    /**
+     * Given a set of site ids, return an id=>name mapping.
+     *
+     * @param array $site_data Serialized site data
+     * @return array Associative array of site name => alias replacement data
+     */
+    protected function getAliasReplacements($site_data)
+    {
+        // Convert the array key from site id to site name.
+        $site_data = array_combine(
+            array_map(function ($siteInfo) {
+                return $siteInfo['name'];
+            }, $site_data),
+            array_values($site_data)
+        );
+
+        // Put the data in alphabetical order by site name.
+        ksort($site_data);
+
+        return array_map(function ($siteInfo) {
+            return [
+                '{{site_name}}' => $siteInfo['name'],
+                '{{env_name}}' => '*',
+                '{{env_label}}' => '${env-name}',
+                '{{site_id}}' => $siteInfo['id'],
+            ];
+        }, $site_data);
+    }
+
+    /**
+     * Look up all available sites, as filtered by --org and --team
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect selected set of sites returned.
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getAllSites($options)
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => false,
+            ]
+        );
+        return $this->getAliasReplacements($this->sites->serialize());
+    }
+
+    /**
+     * Fetch those sites indicated by the commandline options.
+     *
+     * @param array $options Full set of commanline options, some of which may
+     *   affect selected set of sites returned.
+     * @return array
+     *   Associative array of site id => site name
+     */
+    protected function getSites($options)
+    {
+        if (!empty($options['only'])) {
+            return $this->getSpecifiedSites(explode(',', $options['only']));
+        }
+        if (!$options['all']) {
+            return $this->getSitesWithDirectMembership();
+        }
+        return $this->getAllSites($options);
+    }
+
+    /**
+     * Look up those sites that the user has a direct membership in
+     *
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getSitesWithDirectMembership()
+    {
+        $this->sites()->fetch(
+            [
+                'org_id' => null,
+                'team_only' => true,
+            ]
+        );
+        return $this->getAliasReplacements($this->sites->serialize());
+    }
+
+    /**
+     * Fetch the sites listed on the command line.
+     *
+     * @param array $siteList List of site names
+     * @return array Associative array of site id => alias replacement data
+     */
+    protected function getSpecifiedSites($siteList)
+    {
+        $site_data = [];
+        foreach ($siteList as $siteName) {
+            $site = $this->sites()->get($siteName);
+            $site_data[$site->id] = [
+                'id' => $site->id,
+                'name' => $siteName,
+            ];
+        }
+        return $this->getAliasReplacements($site_data);
+    }
+
+    /**
+     * Determine whether the provided emitter type matches the desired emitter
+     * type or types
+     *
+     * @param string $emitterType The type of emitter(s) desired
+     * @param string $checkType The type of emitter we are testing for
+     * @param bool $default Whether the emitter we are testing for belongs in 'all' or not.
+     *
+     * @return bool
+     */
+    protected function emitterTypeMatches($emitterType, $checkType, $default = true)
+    {
+        if (!$emitterType || ($emitterType === 'all')) {
+            return $default;
+        }
+        return $emitterType === $checkType;
+    }
+
+    /**
+     * Utility function to convert references to the home path to simply '~'
+     *
+     * @param string $message
+     * @return string
+     */
+    protected function shortenHomePath($message)
+    {
+        return str_replace($this->getConfig()->get('user_home'), '~', $message);
     }
 }

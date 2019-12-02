@@ -45,7 +45,10 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
     {
         $commandArg = new \Symfony\Component\Console\Input\InputArgument('command');
         $siteEnvArg = new \Symfony\Component\Console\Input\InputArgument('site_env');
-        $arrayArg = new \Symfony\Component\Console\Input\InputArgument('list', \Symfony\Component\Console\Input\InputArgument::IS_ARRAY);
+        $arrayArg = new \Symfony\Component\Console\Input\InputArgument(
+            'list',
+            \Symfony\Component\Console\Input\InputArgument::IS_ARRAY
+        );
 
         return new \Symfony\Component\Console\Input\InputDefinition([$commandArg, $siteEnvArg, $arrayArg]);
     }
@@ -210,8 +213,12 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider siteEnvLookupParameters
      */
-    public function testEnsureSiteEnvInjected(array $expected, array $args, \Symfony\Component\Console\Input\InputDefinition $def, array $configData)
-    {
+    public function testEnsureSiteEnvInjected(
+        array $expected,
+        array $args,
+        \Symfony\Component\Console\Input\InputDefinition $def,
+        array $configData
+    ) {
         $this->config->replace($configData);
 
         $input = new \Symfony\Component\Console\Input\ArgvInput($args, $def);
@@ -259,7 +266,10 @@ class SiteEnvLookupTest extends \PHPUnit_Framework_TestCase
         passthru("git -C $tmp init");
         passthru("git -C $tmp config user.email 'ci@example.com'");
         passthru("git -C $tmp config user.name 'CI Bot'");
-        passthru("git -C $tmp remote add origin 'ssh://codeserver.dev.{$site_id}@codeserver.dev.${site_id}.drush.in:2222/~/repository.git'");
+        passthru(
+            "git -C $tmp remote add origin "
+            . "'ssh://codeserver.dev.{$site_id}@codeserver.dev.${site_id}.drush.in:2222/~/repository.git'"
+        );
         file_put_contents("$tmp/file", 'placeholder');
         passthru("git -C $tmp add file");
         passthru("git -C $tmp commit -m Testing");

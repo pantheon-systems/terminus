@@ -24,10 +24,8 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
      * @option boolean $print Print URL only
      * @return string
      *
-     * @usage terminus env:view <site>.<env>
-     *    Opens the browser to <site>'s <env> environment.
-     * @usage terminus env:view <site>.<env> --print
-     *    Prints the URL for <site>'s <env> environment.
+     * @usage <site>.<env> Opens the browser to <site>'s <env> environment.
+     * @usage <site>.<env> --print Prints the URL for <site>'s <env> environment.
      *
      * @throws TerminusException
      */
@@ -36,7 +34,7 @@ class ViewCommand extends TerminusCommand implements SiteAwareInterface
         list(, $env) = $this->getUnfrozenSiteEnv($site_env);
 
         $domain = $env->domain();
-        $protocol = 'http';
+        $protocol = 'https';
 
         if ($lock = $env->get('lock')) {
             if ($lock->locked) {

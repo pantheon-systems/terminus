@@ -114,6 +114,7 @@ class FeatureContext implements Context
     public function selectPluginDir($dir_name)
     {
         $this->plugin_dir_name = $dir_name;
+        $this->iRun('terminus self:clear-cache');
     }
 
     /**
@@ -605,6 +606,7 @@ class FeatureContext implements Context
     /**
      * @When /^I run "([^"]*)"$/
      * @When /^I run: (.*)$/
+     * @When /^I run:$/
      * Runs command and saves output
      *
      * @param [string] $command To be entered as CL stdin

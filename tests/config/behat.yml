@@ -1,8 +1,8 @@
 default:
-  autoload: [ %paths.base%/../features/bootstrap ]
+  autoload: [ '%paths.base%/../features/bootstrap' ]
   suites:
     default:
-      paths: [ %paths.base%/../features ]
+      paths: [ '%paths.base%/../features' ]
       contexts:
         - Pantheon\Terminus\FeatureTests\FeatureContext:
             parameters:

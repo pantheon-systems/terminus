@@ -23,19 +23,19 @@ class BackupTest extends ModelTestCase
 
     public function testBackupIsFinished()
     {
-        $backup = $this->_getBackup(['size' => 12345, 'finish_time' => 123456,]);
+        $backup = $this->getBackup(['size' => 12345, 'finish_time' => 123456,]);
         $this->assertTrue($backup->backupIsFinished());
 
-        $backup = $this->_getBackup(['size' => 12345, 'timestamp' => 123456,]);
+        $backup = $this->getBackup(['size' => 12345, 'timestamp' => 123456,]);
         $this->assertTrue($backup->backupIsFinished());
 
-        $backup = $this->_getBackup(['size' => 12345,]);
+        $backup = $this->getBackup(['size' => 12345,]);
         $this->assertFalse($backup->backupIsFinished());
 
-        $backup = $this->_getBackup(['finish_time' => 12345,]);
+        $backup = $this->getBackup(['finish_time' => 12345,]);
         $this->assertFalse($backup->backupIsFinished());
 
-        $backup = $this->_getBackup(['timestamp' => 12345,]);
+        $backup = $this->getBackup(['timestamp' => 12345,]);
         $this->assertFalse($backup->backupIsFinished());
     }
 
@@ -51,13 +51,13 @@ class BackupTest extends ModelTestCase
             )
             ->willReturn(['data' => (object)['url' => $expected,],]);
 
-        $backup = $this->_getBackup(compact('folder'));
+        $backup = $this->getBackup(compact('folder'));
         $this->assertEquals($expected, $backup->getArchiveURL());
     }
 
     public function testGetBucket()
     {
-        $backup = $this->_getBackup();
+        $backup = $this->getBackup();
 
         $expected = 'pantheon-backups';
         $actual = $backup->getBucket();
@@ -73,13 +73,13 @@ class BackupTest extends ModelTestCase
     {
         $stamp = 1479742685;
 
-        $backup = $this->_getBackup(['finish_time' => $stamp,]);
+        $backup = $this->getBackup(['finish_time' => $stamp,]);
         $this->assertEquals($stamp, $backup->getDate());
 
-        $backup = $this->_getBackup(['timestamp' => $stamp,]);
+        $backup = $this->getBackup(['timestamp' => $stamp,]);
         $this->assertEquals($stamp, $backup->getDate());
 
-        $backup = $this->_getBackup([]);
+        $backup = $this->getBackup([]);
         $this->assertEquals('Pending', $backup->getDate());
     }
 
@@ -89,24 +89,24 @@ class BackupTest extends ModelTestCase
         $ttl = 12345;
         $expected = $stamp + $ttl;
 
-        $backup = $this->_getBackup(['finish_time' => $stamp, 'ttl' => $ttl,]);
+        $backup = $this->getBackup(['finish_time' => $stamp, 'ttl' => $ttl,]);
         $this->assertEquals($expected, $backup->getExpiry());
 
-        $backup = $this->_getBackup(['timestamp' => $stamp, 'ttl' => $ttl,]);
+        $backup = $this->getBackup(['timestamp' => $stamp, 'ttl' => $ttl,]);
         $this->assertEquals($expected, $backup->getExpiry());
 
-        $backup = $this->_getBackup([]);
+        $backup = $this->getBackup([]);
         $this->assertNull($backup->getExpiry());
     }
 
     public function testGetInitiator()
     {
-        $backup = $this->_getBackup(['folder' => 'xyz_automated',]);
+        $backup = $this->getBackup(['folder' => 'xyz_automated',]);
         $expected = 'automated';
         $actual = $backup->getInitiator();
         $this->assertEquals($expected, $actual);
 
-        $backup = $this->_getBackup(['folder' => 'xyz_manual',]);
+        $backup = $this->getBackup(['folder' => 'xyz_manual',]);
         $expected = 'manual';
         $actual = $backup->getInitiator();
         $this->assertEquals($expected, $actual);
@@ -114,19 +114,19 @@ class BackupTest extends ModelTestCase
 
     public function testGetSizeInMb()
     {
-        $backup = $this->_getBackup(['size' => 0,]);
+        $backup = $this->getBackup(['size' => 0,]);
         $expected = '0';
         $actual = $backup->getSizeInMb();
         $this->assertEquals($expected, $actual);
 
 
-        $backup = $this->_getBackup(['size' => 200,]);
+        $backup = $this->getBackup(['size' => 200,]);
         $expected = '0.1MB';
         $actual = $backup->getSizeInMb();
         $this->assertEquals($expected, $actual);
 
 
-        $backup = $this->_getBackup(['size' => 4508876,]);
+        $backup = $this->getBackup(['size' => 4508876,]);
         $expected = '4.3MB';
         $actual = $backup->getSizeInMb();
         $this->assertEquals($expected, $actual);
@@ -138,7 +138,7 @@ class BackupTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $backup = $this->_getBackup(['id' => 'scheduledfor_archivetype_code', 'filename' => 'def.tgz',]);
+        $backup = $this->getBackup(['id' => 'scheduledfor_archivetype_code', 'filename' => 'def.tgz',]);
 
         $this->workflows->expects($this->once())
             ->method('create')
@@ -154,7 +154,7 @@ class BackupTest extends ModelTestCase
             ->willReturn($workflow);
         $this->assertEquals($workflow, $backup->restore());
 
-        $backup = $this->_getBackup(['id' => 'scheduledfor_archivetype_files', 'filename' => 'def.tgz',]);
+        $backup = $this->getBackup(['id' => 'scheduledfor_archivetype_files', 'filename' => 'def.tgz',]);
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -169,7 +169,7 @@ class BackupTest extends ModelTestCase
             ->willReturn($workflow);
         $this->assertEquals($workflow, $backup->restore());
 
-        $backup = $this->_getBackup(['id' => 'scheduledfor_archivetype_database', 'filename' => 'def.tgz',]);
+        $backup = $this->getBackup(['id' => 'scheduledfor_archivetype_database', 'filename' => 'def.tgz',]);
         $this->workflows->expects($this->once())
             ->method('create')
             ->with(
@@ -184,7 +184,7 @@ class BackupTest extends ModelTestCase
             ->willReturn($workflow);
         $this->assertEquals($workflow, $backup->restore());
 
-        $backup = $this->_getBackup(['id' => 'scheduledfor_archivetype_xyz', 'filename' => 'def.tgz',]);
+        $backup = $this->getBackup(['id' => 'scheduledfor_archivetype_xyz', 'filename' => 'def.tgz',]);
         $this->setExpectedException(TerminusException::class, 'This backup has no archive to restore.');
         $this->assertNull($backup->restore());
     }
@@ -204,17 +204,18 @@ class BackupTest extends ModelTestCase
             'date' => 1479742685,
             'expiry' => 1479742685,
             'initiator' => 'automated',
+            'type' => 'type',
             'url' => null,
         ];
 
         $this->configSet(['date_format' => 'Y-m-d',]);
-        $backup = $this->_getBackup($backup_data);
+        $backup = $this->getBackup($backup_data);
 
         $actual = $backup->serialize();
         $this->assertEquals($expected, $actual);
     }
 
-    protected function _getBackup($attr = [])
+    protected function getBackup($attr = [])
     {
         if (empty($attr['id'])) {
             $attr['id'] = 'scheduledfor_archivetype_type';

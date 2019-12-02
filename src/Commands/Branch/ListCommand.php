@@ -21,6 +21,7 @@ class ListCommand extends TerminusCommand implements SiteAwareInterface
      * Displays list of git branches for a site.
      *
      * @authorize
+     * @filter-output
      *
      * @command branch:list
      * @aliases branches

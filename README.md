@@ -17,7 +17,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 ## Dependencies
 ### Required
 - A command-line client
-- PHP version 5.5.38 or later
+- PHP version 5.6.40 or later recommended (5.5.38 minimum)
 - [PHP-CLI](http://www.php-cli.com/)
 - [PHP-CURL](http://php.net/manual/en/curl.setup.php)
 
@@ -40,6 +40,7 @@ curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/ma
 For more information on installation options or to report an issue with this method, please see the [Terminus Installer README.md file](https://github.com/pantheon-systems/terminus-installer).
 
 ### Installing with Composer
+
 Run this in your terminal client:
 ```bash
 cd /install/location ; composer require pantheon-systems/terminus
@@ -49,6 +50,8 @@ If you are having issues installing, please see to it that any old versions of T
 composer remove pantheon-systems/terminus
 ```
 before requiring it.
+
+Do not install Terminus via `composer global require`. [`composer global require` should not be used to install php applications](https://pantheon.io/blog/fixing-composer-global-command). If you need to globally install something using `composer`, use the [`cgr` utility](https://github.com/consolidation/cgr) as a replacement instead.
 
 ### Installing with Git
 To install with Git and use Terminus HEAD, you should clone this repository and run Terminus directly. If you would

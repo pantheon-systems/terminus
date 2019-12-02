@@ -13,8 +13,7 @@ class DeleteAllCommand extends TerminusCommand
    * @command machine-token:delete-all
    * @aliases mt:delete-all
    **
-   * @usage terminus machine-token:delete-all
-   *   Deletes all of the stored machine tokens the current user out.
+   * @usage Deletes all of the stored machine tokens belonging to the current user.
    */
     public function deleteAll()
     {

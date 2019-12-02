@@ -57,7 +57,10 @@ class TerminusConfigTest extends \PHPUnit_Framework_TestCase
         $this->config->set('TERMINUS_ANOTHER_VAR', '[[ TERMINUS_SOME_VAR ]]/123');
         $this->config->set('third_var', '[[ TERMINUS_ANOTHER_VAR ]]\321');
         $this->assertEquals('abc' . DIRECTORY_SEPARATOR . '123', $this->config->get('another_var'));
-        $this->assertEquals('abc' . DIRECTORY_SEPARATOR . '123' . DIRECTORY_SEPARATOR . '321', $this->config->get('third_var'));
+        $this->assertEquals(
+            'abc' . DIRECTORY_SEPARATOR . '123' . DIRECTORY_SEPARATOR . '321',
+            $this->config->get('third_var')
+        );
     }
 
     public function testKeys()

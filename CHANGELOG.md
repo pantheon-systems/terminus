@@ -2,9 +2,70 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
+
 ### Changed
+- Terminus will now load plugin files ending in `Hook.php` in addition to those ending with `Command.php` (#2025)
+- The role parameter in `org:people:add` is now being validated before sending the request. (#2033)
+- The role parameter in `org:people:role` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:add` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:role` is now being validated before attempting the change. (#2033)
+
+### Deprecated
+- Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)
+
+## 2.2.0 - 2019-09-26
+### Added
+- Added `primary` field to the output of `domain:list`. (#2011)
+- Added `domain:primary:add` command to set a domain as primary, causing traffic to redirect to it. (#2011)
+- Added `domain:primary:remove` command to remove a domain's primary designation. (#2011)
+
+## 2.1.0 - 2019-09-03
+### Added 
+- Added `--filter` option to `backup:list` command (#1992)
+- Added `--filter` option to `branch:list` command (#1992)
+- Added `--filter` option to `domain:list` command (#1992)
+- Added `--filter` option to `env:list` command (#1992)
+- Added `--filter` option to `multidev:list` command (#1992)
+- Added `--filter` option to `org:list` command (#1992)
+- Added `--filter` option to `org:people:list` command (#1992)
+- Added `--filter` option to `org:site:list` command (#1992)
+- Added `--filter` option to `org:upstream:list` command (#1992)
+- Added `--filter` option to `payment-method:list` command (#1992)
+- Added `--filter` option to `plan:list` command (#1992)
+- Added `--filter` option to `site:list` command (#1992)
+- Added `--filter` option to `site:org:list` command (#1992)
+- Added `--filter` option to `site:team:list` command (#1992)
+- Added `--filter` option to `ssh-key:list` command (#1992)
+- Added `--filter` option to `upstream:list` command (#1992)
+- Added `--filter` option to `upstream:updates:list` command (#1992)
+
+### Deprecated
+- `backup:list` `--element=VALUE` option is deprecated. Use `--filter="type=VALUE"` instead. (#1992)
+- `site:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `site:list` `--name=VALUE` option is deprecated. Use `--filter="name=VALUE"` instead. (#1992) 
+- `site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992) 
+- `org:site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992)
+- `org:site:list` `--tags=VALUE` option is deprecated. Use `--filter="tags=VALUE"` instead. (#1992)
+- `org:upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `org:upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+- `upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
+- `upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+
+### Obsolete
+- 'pantheon-systems/terminus-aliases-plugin' ignored as load time, as its functionality is now provided in Terminus core. (#1994)
+- PHP 5.5 no longer actively supported, as it is EOL, and no longer testable on Travis.
+
+### Changed 
+- `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
 - `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 - `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)
+- Owner parameter displayed in the success notice of  `owner:set` instead of the user's first and last names. (#2007)
+
+### Removed
+- Users' first and last names removed from the list provided by `site:team:list`. (#2007)
+- Users' first and last names removed from the list provided by `org:people:list`. (#2007)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed

@@ -101,7 +101,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $platformScript = str_replace('/', DIRECTORY_SEPARATOR, $script);
         $this->client_options = ['base_uri' => 'https://example.com:443', RequestOptions::VERIFY => true,];
         $this->request_headers = $this->response_headers = ['Content-type' => 'application/json',];
-        $this->request_headers['User-Agent'] = "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
+        $this->request_headers['User-Agent'] =
+            "Terminus/$terminusVersion (php_version=$phpVersion&script=$platformScript)";
         $this->response_data = ['abc' => '123',];
 
         $this->config = new TerminusConfig();
@@ -111,7 +112,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->config->set('version', $terminusVersion);
         $this->config->set('script', $script);
         $this->config->set('php_version', $phpVersion);
-
 
         $this->config->set('http_retry_delay_ms', 10);
         $this->config->set('http_retry_backoff_multiplier', 2);
@@ -228,34 +228,37 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request_options = [$method, $uri, $this->request_headers, null,];
 
         $this->container->expects($this->at(0))
-          ->method('get')
-          ->with(Client::class, [$this->client_options,])
-          ->willReturn($this->client);
+            ->method('get')
+            ->with(HttpRequest::class, $request_options)
+            ->willReturn($this->http_request);
         $this->container->expects($this->at(1))
-          ->method('get')
-          ->with(HttpRequest::class, $request_options)
-          ->willReturn($this->http_request);
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $e = new ServerException('Something bad happened', $this->http_request);
 
         $this->client->expects($this->exactly(4))
-          ->method('send')
-          ->with($this->http_request)
-          ->will($this->throwException($e));
+            ->method('send')
+            ->with($this->http_request)
+            ->will($this->throwException($e));
 
         foreach ([1 => 10, 2 => 20, 3 => 40] as $at => $sleep) {
             $this->logger->expects($this->at($at))
-              ->method('warning')
-              ->with(
-                  'HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..',
-                  [
-                  'error' => 'Something bad happened',
-                  'sleep' => $sleep
-                  ]
-              );
+                ->method('warning')
+                ->with(
+                    'HTTPS request failed with error {error}. Retrying in {sleep} milliseconds..',
+                    [
+                        'error' => 'Something bad happened',
+                        'sleep' => $sleep
+                    ]
+                );
         }
 
-        $this->setExpectedException(TerminusException::class, "HTTPS request failed with error Something bad happened. Maximum retry attempts reached.");
+        $this->setExpectedException(
+            TerminusException::class,
+            "HTTPS request failed with error Something bad happened. Maximum retry attempts reached."
+        );
 
         $this->request->request($uri, $request_options);
     }
@@ -270,20 +273,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request_options = [$method, $uri, $this->request_headers, null,];
 
         $this->container->expects($this->at(0))
-          ->method('get')
-          ->with(Client::class, [$this->client_options,])
-          ->willReturn($this->client);
+            ->method('get')
+            ->with(HttpRequest::class, $request_options)
+            ->willReturn($this->http_request);
         $this->container->expects($this->at(1))
-          ->method('get')
-          ->with(HttpRequest::class, $request_options)
-          ->willReturn($this->http_request);
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $e = new ClientException('Something bad happened. And it is your fault.', $this->http_request);
 
         $this->client->expects($this->exactly(1))
-          ->method('send')
-          ->with($this->http_request)
-          ->will($this->throwException($e));
+            ->method('send')
+            ->with($this->http_request)
+            ->will($this->throwException($e));
 
         $this->setExpectedException(ClientException::class, "Something bad happened. And it is your fault.");
 
@@ -301,50 +304,50 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $request_options = [$method, $uri, $this->request_headers, null,];
 
         $this->container->expects($this->at(0))
-          ->method('get')
-          ->with(Client::class, [$this->client_options,])
-          ->willReturn($this->client);
+            ->method('get')
+            ->with(HttpRequest::class, $request_options)
+            ->willReturn($this->http_request);
         $this->container->expects($this->at(1))
-          ->method('get')
-          ->with(HttpRequest::class, $request_options)
-          ->willReturn($this->http_request);
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $e = new ServerException('Something bad happened', $this->http_request);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
-          ->disableOriginalConstructor()
-          ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
         $body->method('getContents')->willReturn(json_encode($this->response_data));
         $message->expects($this->once())
-          ->method('getBody')
-          ->willReturn($body);
+            ->method('getBody')
+            ->willReturn($body);
         $message->expects($this->once())
-          ->method('getHeaders')
-          ->willReturn($this->response_headers);
+            ->method('getHeaders')
+            ->willReturn($this->response_headers);
         $message->expects($this->once())
-          ->method('getStatusCode')
-          ->willReturn(200);
+            ->method('getStatusCode')
+            ->willReturn(200);
 
 
         // Fail the first time
         $this->client->expects($this->at(0))
-          ->method('send')
-          ->with($this->http_request)
-          ->will($this->throwException($e));
+            ->method('send')
+            ->with($this->http_request)
+            ->will($this->throwException($e));
 
         // Succeed on retry
         $this->client->expects($this->at(1))
-          ->method('send')
-          ->with($this->http_request)
-          ->willReturn($message);
+            ->method('send')
+            ->with($this->http_request)
+            ->willReturn($message);
 
         $actual = $this->request->request($uri, $request_options);
 
         $expected = [
-          'data' => (object)$this->response_data,
-          'headers' => $this->response_headers,
-          'status_code' => 200,
+            'data' => (object)$this->response_data,
+            'headers' => $this->response_headers,
+            'status_code' => 200,
         ];
         $this->assertEquals($expected, $actual);
     }
@@ -392,6 +395,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->makeRequest($request_options, 'http://foo.bar/a/b/c');
     }
 
+    public function testRequestHostCert()
+    {
+        $file_path = str_replace('/', DIRECTORY_SEPARATOR, '/location/on/my/computer.pem');
+        $this->config->set('host_cert', $file_path);
+        $this->session->method('get')->with('session')->willReturn(false);
+
+        $this->client_options[RequestOptions::CERT] = $file_path;
+
+        $method = 'GET';
+        $uri = 'https://example.com:443/api/foo/bar';
+        $request_options = [$method, $uri, $this->request_headers, null,];
+        $this->makeRequest($request_options, 'foo/bar');
+    }
+
     public function testRequestNoVerify()
     {
         $this->config->set('verify_host_cert', false);
@@ -421,7 +438,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-
     /**
      * Test Request::pagedRequest() when the second query's data comes back empty
      */
@@ -446,20 +462,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$this->client_options,])
-            ->willReturn($this->client);
-        $this->container->expects($this->at(1))
-            ->method('get')
             ->with(HttpRequest::class, $expected_options)
             ->willReturn($this->http_request);
-        $this->container->expects($this->at(2))
+        $this->container->expects($this->at(1))
             ->method('get')
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
-        $this->container->expects($this->at(3))
+        $this->container->expects($this->at(2))
             ->method('get')
             ->with(HttpRequest::class, $expected_options_2)
             ->willReturn($this->http_request);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
@@ -519,20 +535,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$this->client_options,])
-            ->willReturn($this->client);
-        $this->container->expects($this->at(1))
-            ->method('get')
             ->with(HttpRequest::class, $expected_options)
             ->willReturn($this->http_request);
-        $this->container->expects($this->at(2))
+        $this->container->expects($this->at(1))
             ->method('get')
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
-        $this->container->expects($this->at(3))
+        $this->container->expects($this->at(2))
             ->method('get')
             ->with(HttpRequest::class, $expected_options_2)
             ->willReturn($this->http_request);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
@@ -587,20 +603,20 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$this->client_options,])
-            ->willReturn($this->client);
-        $this->container->expects($this->at(1))
-            ->method('get')
             ->with(HttpRequest::class, $expected_options)
             ->willReturn($this->http_request);
-        $this->container->expects($this->at(2))
+        $this->container->expects($this->at(1))
             ->method('get')
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
-        $this->container->expects($this->at(3))
+        $this->container->expects($this->at(2))
             ->method('get')
             ->with(HttpRequest::class, $expected_options_2)
             ->willReturn($this->http_request);
+        $this->container->expects($this->at(3))
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
@@ -641,12 +657,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->container->expects($this->at(0))
             ->method('get')
-            ->with(Client::class, [$this->client_options,])
-            ->willReturn($this->client);
-        $this->container->expects($this->at(1))
-            ->method('get')
             ->with(HttpRequest::class, $request_options)
             ->willReturn($this->http_request);
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with(Client::class, [$this->client_options,])
+            ->willReturn($this->client);
 
         $message = $this->getMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
