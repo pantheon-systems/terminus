@@ -15,6 +15,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Deprecated
 - Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)
 
+### Fixed
+- PHP Deprecated warnings seen in PHP ≥ 7.4.0 (#2043)
+
 ## 2.2.0 - 2019-09-26
 ### Added
 - Added `primary` field to the output of `domain:list`. (#2011)

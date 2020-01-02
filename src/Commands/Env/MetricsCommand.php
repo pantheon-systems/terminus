@@ -188,7 +188,10 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
         if (in_array($value, $exceptional_values)) {
             return;
         }
-        $or_one_of = (count($exceptional_values) == 0) ? '' : (count($exceptional_values) == 1) ? 'or ' : 'or one of ';
+        $or_one_of = '';
+        if (count($exceptional_values) != 0) {
+            $or_one_of = (count($exceptional_values) == 1) ? 'or ' : 'or one of ';
+        }
         if (($value < $minimum) || ($value > $maximum)) {
             throw new TerminusException(
                 "'{value}' is an invalid value for {option_name}: "
