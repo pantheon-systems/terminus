@@ -17,7 +17,7 @@ class SiteAwareTraitTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -41,7 +41,7 @@ class SiteAwareTraitTest extends CommandTestCase
      */
     public function testGetSiteEnvWrongFormat()
     {
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'The environment argument must be given as <site_name>.<environment>'
         );
@@ -77,7 +77,7 @@ class SiteAwareTraitTest extends CommandTestCase
             ->method('isFrozen')
             ->willReturn(true);
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'This site is frozen. Its test and live environments and many commands will be '
             . 'unavailable while it remains frozen.'

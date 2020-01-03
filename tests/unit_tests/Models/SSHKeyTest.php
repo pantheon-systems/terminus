@@ -34,7 +34,7 @@ class SSHKeyTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -74,7 +74,7 @@ class SSHKeyTest extends ModelTestCase
             ->with("users/{$this->user->id}/keys/{$this->model->id}", ['method' => 'delete',])
             ->willReturn(['status_code' => 404,]);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->model->delete();
         $this->assertNull($out);

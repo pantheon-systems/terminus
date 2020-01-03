@@ -16,13 +16,8 @@ class SiteUserMembershipsTest extends TerminusTestCase
 {
     public function testCreate()
     {
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $workflows = $this->createMock(Workflows::class);
+        $site = $this->createMock(Site::class);
 
         $site->expects($this->once())
             ->method('getWorkflows')

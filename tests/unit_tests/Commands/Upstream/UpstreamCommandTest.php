@@ -43,7 +43,7 @@ abstract class UpstreamCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->data = [
             'upstream_id' => [

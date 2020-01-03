@@ -31,23 +31,15 @@ class BranchTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->workflow = $this->createMock(Workflow::class);
+        $this->workflows = $this->createMock(Workflows::class);
+        $site = $this->createMock(Site::class);
         $site->id = 'site_id';
         $site->method('getWorkflows')->willReturn($this->workflows);
-        $this->collection = $this->getMockBuilder(Branches::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->collection = $this->createMock(Branches::class);
         $this->collection->method('getSite')->willReturn($site);
 
         $this->model = new Branch((object)['id' => 'branch_id', 'sha' => 'sha',], ['collection' => $this->collection,]);
@@ -76,6 +68,9 @@ class BranchTest extends ModelTestCase
      */
     public function testSerialize()
     {
+        $this->request->expects($this->once())
+            ->method('request')
+            ->willReturn(['data' => null,]);
         $data = $this->model->fetch()->serialize();
         $this->assertEquals(['id' => $this->model->id, 'sha' => 'sha',], $data);
     }

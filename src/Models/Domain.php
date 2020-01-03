@@ -35,7 +35,10 @@ class Domain extends TerminusModel implements ContainerAwareInterface, Environme
      */
     public function delete()
     {
-        return $this->request->request($this->getUrl(), ['method' => 'delete',])['data'];
+        return $this->request->request(
+            $this->getUrl(),
+            ['method' => 'delete',]
+        )['data'];
     }
 
     /**

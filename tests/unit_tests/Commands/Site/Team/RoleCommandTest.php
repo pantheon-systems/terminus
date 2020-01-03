@@ -18,7 +18,7 @@ class RoleCommandTest extends TeamCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new RoleCommand($this->getConfig());
@@ -73,7 +73,7 @@ class RoleCommandTest extends TeamCommandTest
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'This site does not have its change-management option enabled.'
         );

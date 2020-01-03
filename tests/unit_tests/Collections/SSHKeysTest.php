@@ -36,23 +36,29 @@ class SSHKeysTest extends UserOwnedCollectionTest
                     'form_params' => $key,
                     'method' => 'post',
                 ]
-            );
+            )
+            ->willReturn(['data' => $key,]);
         $this->collection->addKey($file);
         unlink($file);
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         $this->collection->addKey($file);
     }
 
     public function testDeleteAll()
     {
+        $data = [
+            'a' => 'ssh-rsa AAAAB3xxx0uj+Q== dev@example.com',
+            'b' => 'ssh-rsa AAAAB3xxx000+Q== dev2@example.com',
+        ];
         $this->request->expects($this->at(0))
             ->method('request')
-            ->with($this->url, ['method' => 'delete']);
+            ->with($this->url, ['method' => 'delete'])
+            ->willReturn(compact('data'));
 
         $this->collection->deleteAll();
     }
-    
+
     public function testFetch()
     {
         $data = [

@@ -24,13 +24,11 @@ class BranchesTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->site = $this->getMockBuilder(Site::class)
-          ->disableOriginalConstructor()
-          ->getMock();
+        $this->site = $this->createMock(Site::class);
         $this->collection_data = ['a' => 'sha1', 'b' => 'sha2', 'c' => 'sha3',];
         $this->collection = $this->getMockBuilder(Branches::class)
             ->setMethods(['getData', 'add',])

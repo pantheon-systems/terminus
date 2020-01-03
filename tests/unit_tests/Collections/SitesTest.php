@@ -52,28 +52,16 @@ class SitesTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->session = $this->createMock(Session::class);
+        $this->user = $this->createMock(User::class);
+        $this->workflows = $this->createMock(Workflows::class);
+        $this->workflow = $this->createMock(Workflow::class);
+        $this->request = $this->createMock(Request::class);
+        $this->container = $this->createMock(Container::class);
 
         $this->session->method('getUser')
             ->with()
@@ -209,12 +197,8 @@ class SitesTest extends CollectionTestCase
         $this->collection = $this->makeSitesFetchable($this->collection);
         $tag = 'this tag';
 
-        $this->site1->tags = $this->getMockBuilder(Tags::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site2->tags = $this->getMockBuilder(Tags::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->site1->tags = $this->createMock(Tags::class);
+        $this->site2->tags = $this->createMock(Tags::class);
 
         $this->site1->tags->expects($this->once())
             ->method('has')
@@ -337,7 +321,7 @@ class SitesTest extends CollectionTestCase
             ->with()
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "Could not locate a site your user may access identified by $uuid."
         );
@@ -418,9 +402,7 @@ class SitesTest extends CollectionTestCase
                 ['collection' => $sites,]
             ])
             ->getMock();
-        $site_org_membership = $this->getMockBuilder(SiteOrganizationMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $site_org_membership = $this->createMock(SiteOrganizationMembership::class);
         $this->site1->memberships = [$site_org_membership, $site_org_membership,];
         $this->site1->method('getReferences')->with()->willReturn([$id1, $name1,]);
         $id2 = '22222222-2222-2222-2222-222222222222';
@@ -432,20 +414,12 @@ class SitesTest extends CollectionTestCase
                 ['collection' => $sites,]
             ])
             ->getMock();
-        $site_user_membership = $this->getMockBuilder(SiteUserMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $site_user_membership = $this->createMock(SiteUserMembership::class);
         $this->site2->memberships = [$site_user_membership,];
         $this->site2->method('getReferences')->with()->willReturn([$id2, $name2,]);
-        $org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $org_membership = $this->getMockBuilder(SiteOrganizationMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $org = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $org_memberships = $this->createMock(SiteOrganizationMemberships::class);
+        $org_membership = $this->createMock(SiteOrganizationMembership::class);
+        $org = $this->createMock(Organization::class);
 
         $this->user->expects($this->any())
             ->method('getSites')
@@ -507,9 +481,7 @@ class SitesTest extends CollectionTestCase
             ->getMock();
         $this->site2->memberships = ['usermembership',];
         $this->site2->method('getReferences')->with()->willReturn([$id2, $name2,]);
-        $org_memberships = $this->getMockBuilder(SiteOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $org_memberships = $this->createMock(SiteOrganizationMemberships::class);
 
         $this->user->expects($this->any())
             ->method('getSites')

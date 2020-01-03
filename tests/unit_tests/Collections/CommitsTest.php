@@ -15,13 +15,9 @@ class CommitsTest extends CollectionTestCase
 {
     public function testGetURL()
     {
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->environment = $this->createMock(Environment::class);
         $this->environment->id = 'dev';
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $site = $this->createMock(Site::class);
         $site->id = 'site id';
         $this->environment->method('getSite')->willReturn($site);
 

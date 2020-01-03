@@ -86,7 +86,7 @@ class SiteEnvLookupTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->config = new TerminusConfig();
 
@@ -105,11 +105,8 @@ class SiteEnvLookupTest extends TerminusTestCase
         $this->sites->method('get')
             ->willReturn($this->site);
 
-        $this->sites->expects($this->never())
-            ->method('someMethod');
-
         $this->sites->expects($this->any())
-            ->method('getSite')
+            ->method('get')
             ->with(self::SITE_ID_FIXTURE)
             ->willReturn($this->site);
 

@@ -19,7 +19,7 @@ class CloneContentCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new CloneContentCommand();
@@ -201,7 +201,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->method('getSite')->willReturn($this->site);
         $this->site->method('getName')->willReturn($site_name);
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "$site_name's {$this->environment->id} environment cannot be cloned into because it has not been "
             . "initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
@@ -238,7 +238,7 @@ class CloneContentCommandTest extends EnvCommandTest
         $this->environment->method('getSite')->willReturn($this->site);
         $this->site->method('getName')->willReturn($site_name);
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "$site_name's {$this->environment->id} environment cannot be cloned from because it has not been "
             . "initialized. Please run `env:deploy $site_name.{$this->environment->id}` to initialize it."
@@ -249,7 +249,7 @@ class CloneContentCommandTest extends EnvCommandTest
 
     public function testCloneNone()
     {
-        $this->setExpectedException(TerminusException::class, 'You cannot specify both --db-only and --files-only');
+        $this->expectException(TerminusException::class, 'You cannot specify both --db-only and --files-only');
         $this->command->cloneContent('mysite.dev', 'test', ['db-only' => true, 'files-only' => true,]);
     }
 

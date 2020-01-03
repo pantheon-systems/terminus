@@ -20,7 +20,7 @@ class LookupCommandTest extends DomainTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -87,7 +87,7 @@ class LookupCommandTest extends DomainTest
             ->with($this->equalTo($domain))
             ->willReturn(false);
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->lookup($domain);
         $this->assertNull($out);

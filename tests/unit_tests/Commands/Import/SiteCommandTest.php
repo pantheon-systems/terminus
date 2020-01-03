@@ -25,7 +25,7 @@ class SiteCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -82,7 +82,7 @@ class SiteCommandTest extends CommandTestCase
             ->with()
             ->will($this->throwException(new \Exception('Successfully queued import_site')));
 
-        $this->setExpectedException(TerminusException::class, 'Site import failed');
+        $this->expectException(TerminusException::class, 'Site import failed');
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);
@@ -107,7 +107,7 @@ class SiteCommandTest extends CommandTestCase
             ->with()
             ->will($this->throwException(new \Exception($message)));
 
-        $this->setExpectedException(\Exception::class, $message);
+        $this->expectException(\Exception::class, $message);
 
         $out = $this->command->import('dummy-site', $url);
         $this->assertNull($out);

@@ -19,7 +19,7 @@ class RestoreCommandTest extends BackupCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new RestoreCommand($this->sites);
@@ -92,7 +92,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class, $better_message);
 
         $out = $this->command->restoreBackup("mysite.{$this->environment->id}", ['file' => $test_filename,]);
         $this->assertNull($out);
@@ -110,7 +110,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with($this->equalTo($bad_file_name))
             ->will($this->throwException(new TerminusNotFoundException()));
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->restoreBackup('mysite.dev', ['file' => $bad_file_name,]);
         $this->assertNull($out);
@@ -173,7 +173,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->with()
             ->willReturn($message);
 
-        $this->setExpectedException(TerminusException::class, $better_message);
+        $this->expectException(TerminusException::class, $better_message);
 
         $out = $this->command->restoreBackup('mysite.dev', ['element' => 'db',]);
         $this->assertNull($out);
@@ -199,7 +199,7 @@ class RestoreCommandTest extends BackupCommandTest
             ->method('get')
             ->with($this->equalTo('name'))
             ->willReturn($site_name);
-        $this->setExpectedException(
+        $this->expectException(
             TerminusNotFoundException::class,
             "No backups available. Create one with `terminus backup:create $site_name.{$this->environment->id}`"
         );

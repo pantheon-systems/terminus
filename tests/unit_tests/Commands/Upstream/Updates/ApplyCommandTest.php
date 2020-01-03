@@ -19,7 +19,7 @@ class ApplyCommandTest extends UpdatesCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -154,7 +154,7 @@ class ApplyCommandTest extends UpdatesCommandTest
         $this->environment->expects($this->never())
             ->method('applyUpstreamUpdates');
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "Upstream updates cannot be applied to the {$this->environment->id} environment"
         );

@@ -3,6 +3,7 @@
 /builds
 /tools
 /tests/logs
+/tests/config/.phpunit.result.cache
 
 .DS_Store
 *.sw*

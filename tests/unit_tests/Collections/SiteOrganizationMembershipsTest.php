@@ -32,16 +32,12 @@ class SiteOrganizationMembershipsTest extends TerminusTestCase
     /**
      * @var inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->organization = $this->createMock(Organization::class);
+        $this->site = $this->createMock(Site::class);
 
         $this->collection = new SiteOrganizationMemberships(['site' => $this->site,]);
     }
@@ -51,12 +47,8 @@ class SiteOrganizationMembershipsTest extends TerminusTestCase
         $org_name = 'Organization Name';
         $role = 'some role';
         $this->site->id = 'site id';
-        $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $workflow = $this->createMock(Workflow::class);
+        $workflows = $this->createMock(Workflows::class);
 
         $this->site->expects($this->once())
             ->method('getWorkflows')

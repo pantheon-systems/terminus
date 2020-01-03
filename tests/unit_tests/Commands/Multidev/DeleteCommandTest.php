@@ -18,7 +18,7 @@ class DeleteCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -82,15 +82,12 @@ class DeleteCommandTest extends MultidevCommandTest
 
     /**
      * Tests to ensure the multidev:create throws an error when the environment-creation operation fails
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The {env} environment could not be deleted.
      */
     public function testMultidevDeleteFailure()
     {
         $message = 'The {env} environment could not be deleted.';
         $this->environment->id = 'env id';
-        $expected_message = "The {$this->environment->id} environment could not be deleted.";
+        $expected_message = "The {env} environment could not be deleted.";
 
         $this->expectConfirmation();
         $this->environment->expects($this->once())
@@ -101,7 +98,7 @@ class DeleteCommandTest extends MultidevCommandTest
             ->with()
             ->will($this->throwException(new TerminusException($message, ['env' => $this->environment->id,])));
 
-        $this->setExpectedException(TerminusException::class, $expected_message);
+        $this->expectException(TerminusException::class, $expected_message);
 
         $out = $this->command->deleteMultidev("site.{$this->environment->id}");
         $this->assertNull($out);

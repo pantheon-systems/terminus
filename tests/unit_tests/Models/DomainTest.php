@@ -39,7 +39,7 @@ class DomainTest extends ModelTestCase
      */
     protected $workflows;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -48,26 +48,14 @@ class DomainTest extends ModelTestCase
 
     protected function createDomain($attr)
     {
-        $collection = $this->getMockBuilder(Domains::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $collection = $this->createMock(Domains::class);
+        $this->container = $this->createMock(Container::class);
+        $this->workflow = $this->createMock(Workflow::class);
+        $this->workflows = $this->createMock(Workflows::class);
+        $this->environment = $this->createMock(Environment::class);
         $this->environment->method('getWorkflows')->willReturn($this->workflows);
         $this->environment->id = 'dev';
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $site = $this->createMock(Site::class);
         $site->id = 'site id';
 
         $this->environment->method('getSite')->willReturn($site);
@@ -86,7 +74,8 @@ class DomainTest extends ModelTestCase
             ->with(
                 "sites/site id/environments/{$this->environment->id}/domains/dev.example.com",
                 ['method' => 'delete',]
-            );
+            )
+            ->willReturn(['data' => null,]);
         $this->model->delete();
     }
 

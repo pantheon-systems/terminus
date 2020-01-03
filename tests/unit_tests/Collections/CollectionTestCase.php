@@ -41,17 +41,11 @@ abstract class CollectionTestCase extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->config = $this->createMock(Config::class);
+        $this->request = $this->createMock(Request::class);
         $this->request->method('getConfig')->willReturn($this->getConfig());
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->container = $this->createMock(Container::class);
     }
 }

@@ -11,7 +11,7 @@ use Pantheon\Terminus\Commands\Env\DiffStatCommand;
  */
 class DiffStatCommandTest extends EnvCommandTest
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

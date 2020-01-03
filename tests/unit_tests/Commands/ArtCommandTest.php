@@ -45,7 +45,7 @@ class ArtCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -103,7 +103,7 @@ class ArtCommandTest extends CommandTestCase
             ->willReturn($artwork);
 
         $out = $this->command->art($name);
-        $this->assertInternalType('string', $out);
+        $this->assertIsString($out);
     }
 
     /**
@@ -123,7 +123,7 @@ class ArtCommandTest extends CommandTestCase
             ->willReturn($artwork);
 
         $out = $this->command->art();
-        $this->assertInternalType('string', $out);
+        $this->assertIsString($out);
     }
 
     /**
@@ -140,7 +140,7 @@ class ArtCommandTest extends CommandTestCase
         $this->local_machine_helper->expects($this->never())
             ->method('readFile');
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusNotFoundException::class,
             "There is no source for the requested $name artwork."
         );

@@ -18,7 +18,7 @@ class DeployCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new DeployCommand($this->getConfig());
@@ -177,7 +177,7 @@ class DeployCommandTest extends EnvCommandTest
             ->method('isFrozen')
             ->willReturn(false);
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "$site_name's live environment cannot be cloned because it has not been initialized."
         );

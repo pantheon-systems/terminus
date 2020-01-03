@@ -21,12 +21,10 @@ class OrganizationUpstreamsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->organization = $this->createMock(Organization::class);
         $this->organization->id = 'org id';
 
         $this->collection = new OrganizationUpstreams(['organization' => $this->organization,]);

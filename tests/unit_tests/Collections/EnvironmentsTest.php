@@ -41,20 +41,14 @@ class EnvironmentsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->request = $this->createMock(Request::class);
+        $this->site = $this->createMock(Site::class);
         $this->site->id = 'site id';
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->container = $this->createMock(Container::class);
 
         $this->collection = new Environments(['site' => $this->site,]);
         $this->collection->setRequest($this->request);
@@ -67,16 +61,10 @@ class EnvironmentsTest extends CollectionTestCase
     public function testCreate()
     {
         $to_env_string = 'to env';
-        $from_env = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $from_env = $this->createMock(Environment::class);
         $from_env->id = 'from env id';
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $workflows = $this->createMock(Workflows::class);
+        $workflow = $this->createMock(Workflow::class);
 
         $this->site->expects($this->once())
             ->method('getWorkflows')
@@ -181,9 +169,7 @@ class EnvironmentsTest extends CollectionTestCase
             ->willReturn(['data' => $this->env_data,]);
         $i = 0;
         foreach ($this->env_data as $id => $attributes) {
-            $env = $this->getMockBuilder(Environment::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $env = $this->createMock(Environment::class);
             $env->id = $id;
             $env->method('isMultidev')
                 ->willReturn(!in_array($env->id, ['dev', 'test', 'live',]));

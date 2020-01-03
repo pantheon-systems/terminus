@@ -65,7 +65,7 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function setUp(): void
     {
         $this->authorizations = $this->getMockBuilder(SiteAuthorizations::class)
             ->disableOriginalConstructor()
@@ -186,7 +186,7 @@ class SetCommandTest extends CommandTestCase
         ->with()
         ->will($this->throwException(new \Exception($exception_message)));
 
-        $this->setExpectedException(\Exception::class, $exception_message);
+        $this->expectException(\Exception::class, $exception_message);
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);
@@ -208,7 +208,7 @@ class SetCommandTest extends CommandTestCase
             ->method('getUpstream');
         $this->site->expects($this->never())
             ->method('setUpstream');
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'You do not have permission to change the upstream of this site.'
         );
@@ -282,7 +282,7 @@ class SetCommandTest extends CommandTestCase
         $this->site->expects($this->never())
             ->method('setUpstream');
 
-        $this->setExpectedException(\Exception::class, $exception_message);
+        $this->expectException(\Exception::class, $exception_message);
 
         $out = $this->command->set($site_name, $upstream_id);
         $this->assertNull($out);

@@ -37,21 +37,13 @@ class UpstreamsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user_org_membership = $this->getMockBuilder(UserOrganizationMembership::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->user_org_memberships = $this->getMockBuilder(UserOrganizationMemberships::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->organization = $this->createMock(Organization::class);
+        $this->user = $this->createMock(User::class);
+        $this->user_org_membership = $this->createMock(UserOrganizationMembership::class);
+        $this->user_org_memberships = $this->createMock(UserOrganizationMemberships::class);
 
         $this->user->method('getOrganizationMemberships')
             ->with()
@@ -73,9 +65,7 @@ class UpstreamsTest extends CollectionTestCase
             'b' => (object)['id' => 'b', 'organization_id' => 'DNE',],
             'c' => (object)['id' => 'c', 'organization_id' => 'orgID',],
         ];
-        $org = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $org = $this->createMock(Organization::class);
 
         $i = 0;
         foreach ($data as $model_data) {

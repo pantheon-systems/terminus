@@ -22,21 +22,17 @@ class SSHBaseCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->local_machine_helper = $this->getMockBuilder(LocalMachineHelper::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->container = $this->createMock(Container::class);
+        $this->local_machine_helper = $this->createMock(LocalMachineHelper::class);
 
         $this->container->method('get')
             ->with(LocalMachineHelper::class)
             ->willReturn($this->local_machine_helper);
-        $this->local_machine_helper->method('exec_interactive')
+        $this->local_machine_helper->method('exec')
             ->willReturn(['output' => 'output', 'exit_code' => 0,]);
 
         $this->command = new DummyCommand();
@@ -51,9 +47,12 @@ class SSHBaseCommandTest extends CommandTestCase
      */
     public function testExecuteCommand()
     {
+        $dummy_output = 'dummy output';
+        $mode = 'sftp';
         $options = ['arg1', 'arg2', '<escape me>',];
         $site_name = 'site name';
-        $mode = 'sftp';
+        $status_code = 0;
+        $return_data = ['output' => $dummy_output, 'exit_code' => $status_code,];
 
         $this->environment->expects($this->once())
             ->method('isDevelopment')
@@ -68,6 +67,9 @@ class SSHBaseCommandTest extends CommandTestCase
                 [$this->equalTo('name'),]
             )
             ->willReturnOnConsecutiveCalls($site_name, $site_name);
+        $this->local_machine_helper->expects($this->once())
+            ->method('execute')
+            ->willReturn($return_data);
         $this->logger->expects($this->once())
             ->method('log')
             ->with(
@@ -135,7 +137,7 @@ class SSHBaseCommandTest extends CommandTestCase
                 ])
             );
 
-        $this->setExpectedException(TerminusProcessException::class, $dummy_output);
+        $this->expectException(TerminusProcessException::class, $dummy_output);
 
         $out = $this->command->dummyCommand("$site_name.{$this->environment->id}", $options);
         $this->assertNull($out);
@@ -146,6 +148,7 @@ class SSHBaseCommandTest extends CommandTestCase
      */
     public function testExecuteCommandInGitMode()
     {
+        $dummy_output = 'dummy output';
         $options = ['arg1', 'arg2', '--secret', 'somesecret'];
         $site_name = 'site name';
         $mode = 'git';
@@ -155,6 +158,7 @@ class SSHBaseCommandTest extends CommandTestCase
             'port' => 'THE PORT',
             'username' => 'THE USER NAME',
         ];
+        $return_data = ['output' => $dummy_output, 'exit_code' => $status_code,];
 
         $expectedLoggedCommand = 'dummy arg1 arg2';
 
@@ -181,6 +185,9 @@ class SSHBaseCommandTest extends CommandTestCase
                 [$this->equalTo('name'),]
             )
             ->willReturnOnConsecutiveCalls($site_name, $site_name);
+        $this->local_machine_helper->expects($this->once())
+            ->method('execute')
+            ->willReturn($return_data);
         $this->logger->expects($this->at(1))
             ->method('log')
             ->with(

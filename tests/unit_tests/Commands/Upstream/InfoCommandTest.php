@@ -15,7 +15,7 @@ class InfoCommandTest extends UpstreamCommandTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

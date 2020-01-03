@@ -28,7 +28,7 @@ class SavedTokenTest extends ModelTestCase
      */
     protected $token_data;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -114,7 +114,7 @@ class SavedTokenTest extends ModelTestCase
         $this->data_store->expects($this->never())
             ->method('remove');
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'Could not save the machine token because it is missing an ID'
         );

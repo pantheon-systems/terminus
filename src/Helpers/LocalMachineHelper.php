@@ -31,6 +31,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     }
 
     /**
+     * @var Process
+     */
+    protected $process;
+
+    /**
      * Executes the given command on the local machine and return the exit code and output.
      *
      * @param string $cmd The command to execute
@@ -148,6 +153,16 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
     }
 
     /**
+     * Sets the process property to the given Process
+     *
+     * @param Process $process
+     */
+    public function setProcess(Process $process): void
+    {
+        $this->process = $process;
+    }
+
+    /**
      * Determine whether the use of a tty is appropriate.
      *
      * @return bool|null
@@ -196,9 +211,11 @@ class LocalMachineHelper implements ConfigAwareInterface, ContainerAwareInterfac
      */
     protected function getProcess($cmd)
     {
-        $process = new Process($cmd);
+        if (empty($this->process)) {
+            $this->setProcess(new Process($cmd));
+        }
         $config = $this->getConfig();
-        $process->setTimeout($config->get('timeout'));
-        return $process;
+        $this->process->setTimeout($config->get('timeout'));
+        return $this->process;
     }
 }

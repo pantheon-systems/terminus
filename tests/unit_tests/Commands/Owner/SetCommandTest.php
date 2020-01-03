@@ -28,7 +28,7 @@ class SetCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -94,8 +94,6 @@ class SetCommandTest extends CommandTestCase
 
     /**
      * Exercises owner:set when the proposed owner is not a team member
-     *
-     * @expectedExceptionMessage The new owner must be added with "terminus site:team:add" before promoting.
      */
     public function testOwnerSetInvalidOwner()
     {
@@ -105,13 +103,16 @@ class SetCommandTest extends CommandTestCase
             ->method('get')
             ->with($this->equalTo($email))
             ->will($this->throwException(new TerminusNotFoundException));
+        $this->expectException(new TerminusNotFoundException(
+            'The new owner must be added with "terminus site:team:add" before promoting.'
+        ));
 
         $this->site->expects($this->never())
             ->method('setOwner');
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(TerminusNotFoundException::class);
+        $this->expectException(TerminusNotFoundException::class);
 
         $out = $this->command->setOwner('dummy-site', $email);
         $this->assertNull($out);
@@ -135,7 +136,7 @@ class SetCommandTest extends CommandTestCase
         $this->logger->expects($this->never())
             ->method('log');
 
-        $this->setExpectedException(\Exception::class);
+        $this->expectException(\Exception::class);
 
         $out = $this->command->setOwner('dummy-site', $email);
         $this->assertNull($out);

@@ -26,9 +26,7 @@ class UserSiteMembershipsTest extends UserOwnedCollectionTest
      */
     public function testFetch()
     {
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $request = $this->createMock(Request::class);
         $user = $this->getMockBuilder(User::class)
             ->enableOriginalConstructor()
             ->setConstructorArgs(['id' => 'user id',])

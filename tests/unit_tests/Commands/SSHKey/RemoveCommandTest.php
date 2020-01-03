@@ -16,7 +16,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -73,7 +73,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
             ->will($this->throwException(new TerminusException));
 
 
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
 
         $out = $this->command->delete('123');
         $this->assertNull($out);
@@ -100,7 +100,7 @@ class RemoveCommandTest extends SSHKeyCommandTest
                 $token
             );
         
-        $this->setExpectedException(
+        $this->expectException(
             \Exception::class,
             'There was an problem deleting the SSH key.'
         );

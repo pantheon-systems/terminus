@@ -26,13 +26,11 @@ class OrganizationUserMembershipsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->organization = $this->createMock(Organization::class);
 
         $this->model = new OrganizationUserMemberships(['organization' => $this->organization,]);
     }
@@ -44,12 +42,8 @@ class OrganizationUserMembershipsTest extends CollectionTestCase
     {
         $params = ['user_email' => 'dev@example.com', 'role' => 'team_member',];
         $this->organization->id = '123';
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $workflows = $this->createMock(Workflows::class);
+        $workflow = $this->createMock(Workflow::class);
 
         $this->organization->expects($this->once())
             ->method('getWorkflows')

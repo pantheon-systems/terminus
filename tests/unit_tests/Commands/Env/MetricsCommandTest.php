@@ -16,22 +16,18 @@ class MetricsCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new MetricsCommand($this->getConfig());
         $this->command->setLogger($this->logger);
         $this->command->setSites($this->sites);
 
-        $this->metrics = $this->getMockBuilder(EnvironmentMetrics::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->metrics = $this->createMock(EnvironmentMetrics::class);
 
         // Ignore the calls to the fluid initializers in the EnvironmentMetrics class.
-        $this->metrics->method('setSeriesId')->willReturn($this->metrics);
         $this->metrics->method('setPeriod')->willReturn($this->metrics);
         $this->metrics->method('setDatapoints')->willReturn($this->metrics);
-        $this->metrics->method('selectDatapoints')->willReturn(2);
 
         $this->environment->method('getEnvironmentMetrics')->willReturn($this->metrics);
         $this->environment->method('getName')->willReturn('live');

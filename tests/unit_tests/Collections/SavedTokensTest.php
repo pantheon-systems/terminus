@@ -31,22 +31,14 @@ class SavedTokensTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->config = $this->getMockBuilder(TerminusConfig::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->data_store = $this->getMockBuilder(FileStore::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->token = $this->getMockBuilder(SavedToken::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->config = $this->createMock(TerminusConfig::class);
+        $this->container = $this->createMock(Container::class);
+        $this->data_store = $this->createMock(FileStore::class);
+        $this->token = $this->createMock(SavedToken::class);
 
         $this->collection = new SavedTokens();
         $this->collection->setConfig($this->config);
@@ -78,9 +70,7 @@ class SavedTokensTest extends CollectionTestCase
     {
         $token_string = 'token string';
         $email = 'some@email.ext';
-        $user = $this->getMockBuilder(User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $user = $this->createMock(User::class);
         $this->token->id = $email;
 
         $this->container->expects($this->once())

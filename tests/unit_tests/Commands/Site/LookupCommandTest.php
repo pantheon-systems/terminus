@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Site\LookupCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
@@ -16,7 +17,7 @@ class LookupCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setup()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new LookupCommand($this->getConfig());
@@ -39,23 +40,5 @@ class LookupCommandTest extends CommandTestCase
         $this->assertInstanceOf(PropertyList::class, $out);
 
         $this->assertEquals(['name' => $site_name, 'id' => 'site_id'], $out->getArrayCopy());
-    }
-
-    /**
-     * Exercises site:lookup where the result is that the site does not exist
-     *
-     * @expectedException \Exception
-     * @expectedExceptionMessage A site named my-site was not found.
-     */
-    public function testSiteLooupDoesNotExist()
-    {
-        $site_name = 'my-site';
-
-        $this->sites->method('get')
-            ->with($this->equalTo($site_name))
-            ->will($this->throwException(new \Exception("A site named $site_name was not found.")));
-
-        $out = $this->command->lookup($site_name);
-        $this->assertInstanceOf(PropertyList::class, $out);
     }
 }

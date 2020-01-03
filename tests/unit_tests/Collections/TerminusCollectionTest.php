@@ -18,7 +18,7 @@ class TerminusCollectionTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -152,7 +152,7 @@ class TerminusCollectionTest extends CollectionTestCase
         $this->assertInstanceOf(PaymentMethod::class, $out);
         $this->assertEquals($model_data['id1']->foo, $out->get('foo'));
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusNotFoundException::class,
             'Could not find a ' . PaymentMethod::PRETTY_NAME . ' identified by invalid.'
         );

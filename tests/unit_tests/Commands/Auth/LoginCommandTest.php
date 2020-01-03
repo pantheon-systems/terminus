@@ -4,6 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Pantheon\Terminus\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\Auth\LoginCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Models\SavedToken;
 
 /**
@@ -22,7 +23,7 @@ class LoginCommandTest extends AuthTest
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -135,14 +136,13 @@ class LoginCommandTest extends AuthTest
 
     /**
      * Tests the auth:login command when no data was given and there are no saved machine tokens
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage Please visit the dashboard to generate a machine token:
      */
     public function testCannotLogInWithoutTokens()
     {
         $this->tokens->expects($this->once())
             ->method('all')->willReturn([]);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Please visit the dashboard to generate a machine token:');
 
         $out = $this->command->logIn();
         $this->assertNull($out);
@@ -150,9 +150,6 @@ class LoginCommandTest extends AuthTest
 
     /**
      * Tests the auth:login command when no data was given and there are multiple saved machine tokens
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage Tokens were saved for the following email addresses:
      */
     public function testCannotLogInWithoutIndicatingWhichToken()
     {
@@ -162,6 +159,8 @@ class LoginCommandTest extends AuthTest
         $this->tokens->expects($this->once())
             ->method('ids')
             ->willReturn(['token1', 'token2',]);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Tokens were saved for the following email addresses:');
 
         $out = $this->command->logIn();
         $this->assertNull($out);

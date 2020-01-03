@@ -35,22 +35,14 @@ class PlansTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->plan = $this->getMockBuilder(Plan::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->plan = $this->createMock(Plan::class);
+        $this->site = $this->createMock(Site::class);
+        $this->workflows = $this->createMock(Workflows::class);
+        $this->workflow = $this->createMock(Workflow::class);
         $this->collection = new Plans(['site' => $this->site,]);
     }
 

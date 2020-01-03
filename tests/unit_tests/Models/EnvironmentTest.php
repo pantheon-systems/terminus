@@ -75,7 +75,7 @@ class EnvironmentTest extends ModelTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -177,7 +177,7 @@ class EnvironmentTest extends ModelTestCase
     public function testChangeConnectionModeToSame()
     {
         $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'The connection mode is already set to sftp.'
         );
@@ -187,7 +187,7 @@ class EnvironmentTest extends ModelTestCase
     public function testChangeConnectionModeToInvalid()
     {
         $model = $this->createModel(['id' => 'dev', 'on_server_development' => true,]);
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'You must specify the mode as either sftp or git.'
         );
@@ -579,7 +579,7 @@ class EnvironmentTest extends ModelTestCase
             )
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'There was an problem disabling https for this environment.'
         );
@@ -596,7 +596,7 @@ class EnvironmentTest extends ModelTestCase
             )
             ->willReturn(['data' => (object)['ssl_enabled' => false,],]);
 
-        $this->setExpectedException(TerminusException::class, 'The dev environment does not have https enabled.');
+        $this->expectException(TerminusException::class, 'The dev environment does not have https enabled.');
         $this->model->disableHttpsCertificate();
     }
 
@@ -867,7 +867,7 @@ class EnvironmentTest extends ModelTestCase
             ['id' => 'mymulti',]
         );
 
-        $this->setExpectedException(TerminusException::class, 'The dev environment is not a multidev environment');
+        $this->expectException(TerminusException::class, 'The dev environment is not a multidev environment');
         $model = $this->createModel(['id' => 'dev',]);
         $model->mergeFromDev();
     }
@@ -889,7 +889,7 @@ class EnvironmentTest extends ModelTestCase
             ['updatedb' => true, 'from_environment' => 'mymulti',]
         );
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'Environment::mergeToDev() may only be run on the dev environment.'
         );

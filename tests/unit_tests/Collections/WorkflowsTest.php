@@ -20,7 +20,7 @@ class WorkflowsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
     }
@@ -244,9 +244,7 @@ class WorkflowsTest extends CollectionTestCase
         $this->assertEquals($user, $workflows->getOwnerObject());
         $this->assertEquals('users/user_id/workflows', $workflows->getUrl());
 
-        $session = $this->getMockBuilder(Session::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $session = $this->createMock(Session::class);
         $session->expects($this->once())
             ->method('getUser')
             ->willReturn($user);

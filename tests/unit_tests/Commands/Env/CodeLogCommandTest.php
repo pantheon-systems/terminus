@@ -16,7 +16,7 @@ class CodeLogCommandTest extends EnvCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->command = new CodeLogCommand($this->getConfig());

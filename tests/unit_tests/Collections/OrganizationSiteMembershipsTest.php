@@ -15,13 +15,8 @@ class OrganizationSiteMembershipsTest extends CollectionTestCase
 {
     public function testCreate()
     {
-        $workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $workflows = $this->createMock(Workflows::class);
+        $organization = $this->createMock(Organization::class);
 
         $organization->expects($this->once())
             ->method('getWorkflows')

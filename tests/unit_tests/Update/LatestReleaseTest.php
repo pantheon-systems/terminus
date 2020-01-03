@@ -36,7 +36,7 @@ class LatestReleaseTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -158,7 +158,7 @@ class LatestReleaseTest extends TerminusTestCase
         $this->logger->expects($this->never())
             ->method('debug');
 
-        $this->setExpectedException(TerminusNotFoundException::class, 'There is no attribute called invalid.');
+        $this->expectException(TerminusNotFoundException::class, 'There is no attribute called invalid.');
 
         $out = $this->latest_release->get('invalid');
         $this->assertNull($out);

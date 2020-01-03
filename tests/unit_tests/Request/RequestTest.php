@@ -78,7 +78,7 @@ class RequestTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -86,7 +86,7 @@ class RequestTest extends TerminusTestCase
         $this->http_request = $this->getMockBuilder(HttpRequest::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->client = $this->getMock(Client::class);
+        $this->client = $this->createMock(Client::class);
         $this->local_machine_helper = $this->getMockBuilder(LocalMachineHelper::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -118,11 +118,11 @@ class RequestTest extends TerminusTestCase
         $this->config->set('http_retry_jitter_ms', 0);
         $this->config->set('http_max_retries', 3);
 
-        $this->container = $this->getMock(Container::class);
+        $this->container = $this->createMock(Container::class);
         $this->session = $this->getMockBuilder(Session::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->logger = $this->getMock(LoggerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->request->setContainer($this->container);
         $this->request->setConfig($this->config);
@@ -194,7 +194,7 @@ class RequestTest extends TerminusTestCase
         $this->client->expects($this->never())
             ->method('request');
 
-        $this->setExpectedException(TerminusException::class, "Target file $target already exists.");
+        $this->expectException(TerminusException::class, "Target file $target already exists.");
 
         $out = $this->request->download($url, $target);
         $this->assertNull($out);
@@ -254,7 +254,7 @@ class RequestTest extends TerminusTestCase
                 );
         }
 
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             "HTTPS request failed with error Something bad happened. Maximum retry attempts reached."
         );
@@ -287,7 +287,7 @@ class RequestTest extends TerminusTestCase
             ->with($this->http_request)
             ->will($this->throwException($e));
 
-        $this->setExpectedException(ClientException::class, "Something bad happened. And it is your fault.");
+        $this->expectException(ClientException::class, "Something bad happened. And it is your fault.");
 
         $this->request->request($uri, $request_options);
     }
@@ -313,7 +313,7 @@ class RequestTest extends TerminusTestCase
 
         $e = new ServerException('Something bad happened', $this->http_request);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -476,7 +476,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -549,7 +549,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -617,7 +617,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -663,7 +663,7 @@ class RequestTest extends TerminusTestCase
             ->with(Client::class, [$this->client_options,])
             ->willReturn($this->client);
 
-        $message = $this->getMock(Response::class);
+        $message = $this->createMock(Response::class);
         $body = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->getMock();

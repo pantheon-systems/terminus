@@ -2,6 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
@@ -25,7 +26,7 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -92,14 +93,14 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * Test to see what happens when we try to validate a plugin when
      * the Terminus installation folder is missing composer.json &/or composer.lock.
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage Could not load Terminus composer data.
      */
     public function testMissingTerminusComposerData()
     {
         $path = $this->plugins_dir . 'with-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
         $misconfigured = new PluginAutoloadDependencies(__DIR__);
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage('Could not load Terminus composer data.');
+
         $actual = $this->callProtected($misconfigured, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);
     }
@@ -107,13 +108,17 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * Test to see what happens when we try to validate a plugin that
      * directly requires a component already (indirectly) provided by Terminus.
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The plugin org/conflicting-dependencies-plugin requires the project consolidation/log, which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer remove consolidation/log' in the org/conflicting-dependencies-plugin plugin directory.
      */
     public function testPluginWithConflictingDependency()
     {
         $path = $this->plugins_dir . 'conflicting-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage(
+            'The plugin org/conflicting-dependencies-plugin requires the project consolidation/log, which is already '
+            . 'provided by Terminus. Please remove this dependency from the plugin by running \'composer remove '
+            . 'consolidation/log\' in the org/conflicting-dependencies-plugin plugin directory.'
+        );
+
         $actual = $this->callProtected($this->autoload, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);
     }
@@ -121,13 +126,15 @@ class PluginAutoloadTest extends TerminusTestCase
     /**
      * Test to see what happens when we try to validate a plugin that
      * indirectly requires a component already provided by Terminus.
-     *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
-     * @expectedExceptionMessage The plugin org/nested-dependencies-plugin has installed the project consolidation/log: 1.0.0, but Terminus has installed
      */
     public function testPluginWithConflictingNestedDependency()
     {
         $path = $this->plugins_dir . 'nested-dependencies/src/Commands/OptionalCommandGroup/NullCommand.php';
+        $this->expectException(TerminusException::class);
+        $this->expectExceptionMessage(
+            'The plugin org/nested-dependencies-plugin has installed the project consolidation/log: 1.0.0, but '
+            . 'Terminus has installed'
+        );
         $actual = $this->callProtected($this->autoload, 'findAutoloadFile', [$path]);
         $this->assertEquals("Never reached -- above call will throw.", $actual);
     }
@@ -141,7 +148,7 @@ class PluginAutoloadTest extends TerminusTestCase
 
     /**
      * Determine whether the provided path is inside Terminus itself.
-     */
+/     */
     protected function findTerminusSrcDir()
     {
         // The Terminus class is located at the root of our 'src'

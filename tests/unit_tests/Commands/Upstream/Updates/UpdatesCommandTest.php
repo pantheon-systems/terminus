@@ -24,16 +24,12 @@ abstract class UpdatesCommandTest extends CommandTestCase
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->upstream = $this->getMockBuilder(Upstream::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->upstream_status = $this->getMockBuilder(UpstreamStatus::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->upstream = $this->createMock(Upstream::class);
+        $this->upstream_status = $this->createMock(UpstreamStatus::class);
 
         $this->environment->method('getUpstreamStatus')
             ->with()

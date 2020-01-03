@@ -34,7 +34,7 @@ class UpstreamStatus extends TerminusModel implements EnvironmentInterface
     }
 
     /**
-     * Retrives upstream updates
+     * Retrieves upstream updates
      *
      * @return object
      */

@@ -17,7 +17,7 @@ class CreateCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -54,8 +54,6 @@ class CreateCommandTest extends MultidevCommandTest
 
     /**
      * Tests to ensure the multidev:create throws an error when the environment-creation operation errs
-     *
-     * @expectedExceptionMessage The environment "multipass" already exists.
      */
     public function testCreateFailure()
     {

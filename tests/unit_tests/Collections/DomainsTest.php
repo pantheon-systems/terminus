@@ -39,25 +39,17 @@ class DomainsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->environment = $this->createMock(Environment::class);
         $this->environment->id = 'dev';
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->site = $this->createMock(Site::class);
         $this->site->id = 'site id';
         $this->url = "sites/{$this->site->id}/environments/{$this->environment->id}/domains";
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->workflow = $this->createMock(Workflow::class);
+        $this->workflows = $this->createMock(Workflows::class);
 
         $this->environment->method('getSite')
             ->willReturn($this->site);

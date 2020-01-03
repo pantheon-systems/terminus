@@ -35,7 +35,7 @@ class TerminusTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = $this->getMockBuilder(ContainerInterface::class)
             ->disableOriginalConstructor()

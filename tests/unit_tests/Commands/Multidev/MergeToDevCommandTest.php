@@ -17,7 +17,7 @@ class MergeToDevCommandTest extends MultidevCommandTest
     /**
      * @inheritdoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -77,8 +77,6 @@ class MergeToDevCommandTest extends MultidevCommandTest
 
     /**
      * Tests to ensure the multidev:merge-to-dev throws an error when the environment-creation operation fails
-     *
-     * @expectedExceptionMessage The {env} environment could not be merged into dev.
      */
     public function testMergeToDevFailure()
     {

@@ -35,23 +35,15 @@ class TagsTest extends CollectionTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
-        $container = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->org_site_membership = $this->getMockBuilder(OrganizationSiteMembership::class)
-          ->disableOriginalConstructor()
-          ->getMock();
-        $this->organization = $this->getMockBuilder(Organization::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $container = $this->createMock(Container::class);
+        $this->org_site_membership = $this->createMock(OrganizationSiteMembership::class);
+        $this->organization = $this->createMock(Organization::class);
         $this->organization->id = 'org uuid';
-        $this->site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->site = $this->createMock(Site::class);
         $this->site->id = 'site_uuid';
 
         $this->org_site_membership->method('getOrganization')->willReturn($this->organization);
@@ -89,6 +81,7 @@ class TagsTest extends CollectionTestCase
     {
         $data = ['tag1',];
         $this->collection->fetch($data);
+        $this->assertEquals($this->collection->ids(), $data);
     }
 
     /**

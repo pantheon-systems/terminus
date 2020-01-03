@@ -16,7 +16,7 @@ class PluginInfoTest extends TerminusTestCase
     /**
      * @inheritdoc
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -55,7 +55,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailCompatibleVersionlessComposer()
     {
         $dir = $this->paths[6];
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'The composer.json must contain a "compatible-version" field in "extras/terminus"'
         );
@@ -68,7 +68,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailDirDNE()
     {
         $dir = '/i/definitely/do/not/exist';
-        $this->setExpectedException(TerminusException::class, 'The directory "' . $dir . '" does not exist');
+        $this->expectException(TerminusException::class, 'The directory "' . $dir . '" does not exist');
         new PluginInfo($dir);
     }
 
@@ -78,7 +78,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailExtralessComposer()
     {
         $dir = $this->paths[5];
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'The composer.json must contain a "terminus" section in "extras"'
         );
@@ -91,7 +91,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailInvalidJSON()
     {
         $dir = $this->paths[4];
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($dir);
     }
 
@@ -101,7 +101,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailInvalidNamespace()
     {
         $dir = $this->paths[7];
-        $this->setExpectedException(
+        $this->expectException(
             TerminusException::class,
             'The namespace "OrgName\\\\PluginName" in the composer.json autoload psr-4 section must end with '
             . 'a namespace separator. Should be "OrgName\\\\PluginName\\\\"'
@@ -114,7 +114,7 @@ class PluginInfoTest extends TerminusTestCase
      */
     public function testFailInvalidType()
     {
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($this->paths[0]);
     }
 
@@ -124,7 +124,7 @@ class PluginInfoTest extends TerminusTestCase
     public function testFailIsFile()
     {
         $file = __FILE__;
-        $this->setExpectedException(TerminusException::class, 'The file "' . $file . '" is not a directory');
+        $this->expectException(TerminusException::class, 'The file "' . $file . '" is not a directory');
         new PluginInfo($file);
     }
 
@@ -133,7 +133,7 @@ class PluginInfoTest extends TerminusTestCase
      */
     public function testFailNoDir()
     {
-        $this->setExpectedException(TerminusException::class, 'No plugin directory was specified');
+        $this->expectException(TerminusException::class, 'No plugin directory was specified');
         new PluginInfo(false);
     }
 
@@ -142,7 +142,7 @@ class PluginInfoTest extends TerminusTestCase
      */
     public function testFailNoComposer()
     {
-        $this->setExpectedException(TerminusException::class);
+        $this->expectException(TerminusException::class);
         new PluginInfo($this->paths[0]);
     }
 

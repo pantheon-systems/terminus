@@ -29,9 +29,8 @@ class APICollectionTest extends CollectionTestCase
             ->willReturn(['data' => $data]);
 
         $collection = $this->getMockBuilder(APICollection::class)
-            ->setMethods(['getUrl',])
-            ->disableOriginalConstructor()
-            ->getMock();
+            ->setMethods(['get', 'getUrl',])
+            ->getMockForAbstractClass();
         $collection->expects($this->once())
             ->method('getUrl')
             ->willReturn('TESTURL');
@@ -40,13 +39,17 @@ class APICollectionTest extends CollectionTestCase
         $options = ['collection' => $collection,];
         $i = 0;
         foreach ($data as $key => $model_data) {
-            $models[$model_data->id] = $this->getMockForAbstractClass(TerminusModel::class, [$model_data, $options,]);
+            $model = $this->createMock(
+                TerminusModel::class,
+                [$model_data, $options,]
+            );
             $options['id'] = $model_data->id;
             $this->container->expects($this->at($i++))
                 ->method('get')
                 ->with(TerminusModel::class, [$model_data, $options,])
-                ->willReturn($models[$key]);
-            $models[$model_data->id]->method('serialize')->willReturn((array)$model_data);
+                ->willReturn($model);
+            $model->method('serialize')->willReturn((array)$model_data);
+            $models[$model_data->id] = $model;
         }
 
         $collection->setRequest($this->request);
@@ -54,11 +57,7 @@ class APICollectionTest extends CollectionTestCase
 
         $collection->fetch();
 
-        $this->assertEquals(array_keys($models), $collection->ids());
         $this->assertEquals($models, $collection->all());
-        foreach ($models as $id => $model) {
-            $this->assertEquals($model, $collection->get($id));
-        }
 
         $expected = array_map(function ($d) {
             return (array)$d;

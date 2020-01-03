@@ -30,7 +30,7 @@ class BackupsTest extends CollectionTestCase
      */
     protected $environment;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -273,7 +273,7 @@ class BackupsTest extends CollectionTestCase
         $this->assertEquals($out->get('task_id'), $data->task_id);
         $this->assertEquals($out->get('filename'), $data->filename);
 
-        $this->setExpectedException(TerminusException::class, "Could not find a backup identified by not-there.");
+        $this->expectException(TerminusException::class, "Could not find a backup identified by not-there.");
         $out = $backups->getBackupByFileName('not-there');
         $this->assertNull($out);
     }
@@ -442,19 +442,11 @@ class BackupsTest extends CollectionTestCase
 
     protected function createBackups()
     {
-        $site = $this->getMockBuilder(Site::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $site = $this->createMock(Site::class);
         $site->id = 'abc';
-        $this->workflow = $this->getMockBuilder(Workflow::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->workflows = $this->getMockBuilder(Workflows::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->environment = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->workflow = $this->createMock(Workflow::class);
+        $this->workflows = $this->createMock(Workflows::class);
+        $this->environment = $this->createMock(Environment::class);
         $this->environment->id = 'dev';
         $this->environment->method('getWorkflows')->willReturn($this->workflows);
         $this->environment->method('getSite')->willReturn($site);
