@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 
-## 2.3.0 - 2020-01-09
+## 2.3.0 - 2020-01-10
 ### Added
 - New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
 
