@@ -59,8 +59,9 @@ class Workflow extends TerminusModel implements ContainerAwareInterface, Session
 
 
     /**
-     * Check on the progress of a workflow. This can be called repeatedly and will apply a polling
-     * period to prevent flooding the API with requests.
+     * Check on the progress of a workflow. There is no check to prevent API flooding.
+     * @DEPRECATED 2.3.1-dev Will be removed at next major release.
+     *  Please use the constituent logic or the WorkflowProcessingTrait
      *
      * @return bool Whether the workflow is finished or not
      * @throws \Pantheon\Terminus\Exceptions\TerminusException
