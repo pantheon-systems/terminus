@@ -14,3 +14,19 @@ Feature: Working with multidev environments
     """
     Creating Multidev environment "multidev"
     """
+
+  @vcr multidev-create-no-db.yml
+  Scenario: Create a multidev environment
+    When I run "terminus multidev:create [[test_site_name]].dev multidev --no-db"
+    Then I should get:
+    """
+    Creating Multidev environment "multidev"
+    """
+
+  @vcr multidev-create-no-files.yml
+  Scenario: Create a multidev environment
+    When I run "terminus multidev:create [[test_site_name]].dev multidev --no-files"
+    Then I should get:
+    """
+    Creating Multidev environment "multidev"
+    """
