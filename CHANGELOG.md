@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
+- New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
 
 ## 2.3.0 - 2020-01-10
 ### Added
