@@ -4,22 +4,22 @@
   "keywords": [ "cli", "pantheon", "terminus", "drupal", "wordpress" ],
   "homepage": "https://pantheon.io",
   "license": "MIT",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
     "php": ">=5.5.38",
-    "composer/semver": "^1.4",
-    "consolidation/comments": "^1.0.2",
     "consolidation/filter-via-dot-access-data": "^1.0",
     "consolidation/output-formatters": "^3.5",
-    "consolidation/robo": "^1.4.4",
-    "guzzlehttp/guzzle": "^6.2",
-    "psy/psysh": "^0.8",
+    "pantheon-systems/terminus-api": "^2.0@dev",
     "symfony/console": "^3.3",
-    "symfony/finder": "~2.7|^3.2",
-    "symfony/process": "~2.7|^3.2",
-    "symfony/yaml": "~2.1|^3.2"
+    "symfony/process": "~2.7|^3.2"
   },
+  "repositories":[
+    {
+      "type": "vcs",
+      "url": "git@github.com:pantheon-systems/terminus-api.git"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "Pantheon\\Terminus\\": "src/"

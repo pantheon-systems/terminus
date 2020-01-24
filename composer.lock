@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b037bd29b71faac17cc9e2f28b76dd0c",
+    "content-hash": "9ecba5b2db524e62c940f7ba2119eb42",
     "packages": [
         {
             "name": "composer/semver",
@@ -1319,6 +1319,102 @@
                 "php"
             ],
             "time": "2018-02-28T20:30:58+00:00"
+        },
+        {
+            "name": "pantheon-systems/terminus-api",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:pantheon-systems/terminus-api.git",
+                "reference": "958b45ec1d1801113c0529949669c53e7a051c10"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pantheon-systems/terminus-api/zipball/958b45ec1d1801113c0529949669c53e7a051c10",
+                "reference": "958b45ec1d1801113c0529949669c53e7a051c10",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^1.4",
+                "consolidation/comments": "^1.0",
+                "consolidation/robo": "^1.4.4",
+                "guzzlehttp/guzzle": "^6.2",
+                "php": ">=5.5.38",
+                "psy/psysh": "^0.8",
+                "symfony/finder": "~2.7|^3.2",
+                "symfony/yaml": "~2.1|^3.2"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^4.8.36",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pantheon\\Terminus\\API\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Pantheon\\Terminus\\API\\Scripts\\": "scripts/",
+                    "Pantheon\\Terminus\\API\\Tests\\Unit\\": "tests/unit/"
+                },
+                "classmap": [
+                    "scripts/UpdateClassLists.php"
+                ]
+            },
+            "scripts": {
+                "docs": [
+                    "php scripts/make-docs.php"
+                ],
+                "lint": [
+                    "@lint:cs"
+                ],
+                "lint:cbf": [
+                    "phpcbf --standard=tests/config/linting_ruleset.xml scripts/* src/* tests/unit/*"
+                ],
+                "lint:cs": [
+                    "phpcs --standard=tests/config/linting_ruleset.xml scripts/* src/* tests/unit/*"
+                ],
+                "test": [
+                    "set -ex ; composer lint ; composer test:unit"
+                ],
+                "test:clover": [
+                    "phpunit -c tests/config/phpunit.xml.dist --coverage-clover tests/logs/clover.xml"
+                ],
+                "test:coveralls": [
+                    "php vendor/bin/php-coveralls -v -c tests/config/coveralls.yml"
+                ],
+                "test:unit": [
+                    "SHELL_INTERACTIVE=true phpunit --colors=always  -c tests/config/phpunit.xml.dist --debug"
+                ],
+                "update-class-lists": [
+                    "Pantheon\\Terminus\\API\\Scripts\\UpdateClassLists::update"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "An API for interacting with the Pantheon platform",
+            "homepage": "https://pantheon.io",
+            "keywords": [
+                "api",
+                "drupal",
+                "pantheon",
+                "terminus",
+                "wordpress"
+            ],
+            "support": {
+                "source": "https://github.com/pantheon-systems/terminus-api/tree/master",
+                "issues": "https://github.com/pantheon-systems/terminus-api/issues"
+            },
+            "time": "2020-01-24T22:22:02+00:00"
         },
         {
             "name": "psr/container",
@@ -3956,8 +4052,10 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "pantheon-systems/terminus-api": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
