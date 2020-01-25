@@ -2,9 +2,6 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Commands\TerminusCommand;
-
-use Pantheon\Terminus\API\Collections\Sites;
 use Pantheon\Terminus\API\Site\SiteAwareInterface;
 use Pantheon\Terminus\API\Site\SiteAwareTrait;
 

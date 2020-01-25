@@ -6,7 +6,6 @@ use League\Container\Container;
 use Pantheon\Terminus\Commands\AliasesCommand;
 use Robo\Config;
 use Pantheon\Terminus\API\Session\Session;
-use Pantheon\Terminus\UnitTests\Helpers\AliasFixtures;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
