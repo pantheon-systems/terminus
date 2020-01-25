@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Plan;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Plan\InfoCommand;
-use Pantheon\Terminus\Models\Plan;
+use Pantheon\Terminus\API\Models\Plan;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

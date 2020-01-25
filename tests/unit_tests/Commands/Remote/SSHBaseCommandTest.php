@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use League\Container\Container;
-use Pantheon\Terminus\Exceptions\TerminusProcessException;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Exceptions\TerminusProcessException;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

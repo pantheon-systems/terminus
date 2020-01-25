@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\Org\People\ListCommand;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\API\Models\UserOrganizationMembership;
 
 /**
  * Class ListCommandTest

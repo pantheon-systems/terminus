@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site;
 
 use Pantheon\Terminus\Commands\Import\CompleteCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

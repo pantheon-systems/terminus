@@ -3,12 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Owner;
 
 use Pantheon\Terminus\Commands\Owner\SetCommand;
-use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\API\Models\User;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\SiteUserMemberships;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Models\SiteUserMembership;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Collections\SiteUserMemberships;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Models\SiteUserMembership;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

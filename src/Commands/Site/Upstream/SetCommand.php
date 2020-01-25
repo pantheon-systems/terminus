@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Commands\Site\Upstream;
 
 use Pantheon\Terminus\Commands\Site\SiteCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class SetCommand
@@ -23,7 +23,7 @@ class SetCommand extends SiteCommand
      *
      * @param string $site_name Site name
      * @param string $upstream_id Upstream name or UUID
-     * @throws \Pantheon\Terminus\Exceptions\TerminusNotFoundException
+     * @throws \Pantheon\Terminus\API\Exceptions\TerminusNotFoundException
      *
      * @usage <site> <upstream_id> Updates <site>'s upstream to <upstream_id>.
      */

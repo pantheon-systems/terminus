@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
-use Pantheon\Terminus\Collections\SSHKeys;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Collections\SSHKeys;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

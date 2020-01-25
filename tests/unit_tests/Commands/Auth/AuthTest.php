@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

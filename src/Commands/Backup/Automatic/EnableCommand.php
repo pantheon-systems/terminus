@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\Commands\Backup\Automatic;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 
 /**
  * Class SetCommand

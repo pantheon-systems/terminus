@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\DeployCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

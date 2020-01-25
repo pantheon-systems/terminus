@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Connection;
 
 use Pantheon\Terminus\Commands\Connection\SetCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

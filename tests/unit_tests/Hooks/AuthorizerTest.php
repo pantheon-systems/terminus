@@ -2,12 +2,12 @@
 
 namespace Pantheon\Terminus\UnitTests\Hooks;
 
-use Pantheon\Terminus\Collections\SavedTokens;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Collections\SavedTokens;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\Authorizer;
-use Pantheon\Terminus\Models\SavedToken;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\SavedToken;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**

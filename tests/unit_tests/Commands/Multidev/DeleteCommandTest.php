@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Multidev;
 
 use Pantheon\Terminus\Commands\Multidev\DeleteCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**
@@ -83,7 +83,7 @@ class DeleteCommandTest extends MultidevCommandTest
     /**
      * Tests to ensure the multidev:create throws an error when the environment-creation operation fails
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage The {env} environment could not be deleted.
      */
     public function testMultidevDeleteFailure()

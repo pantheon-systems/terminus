@@ -23,10 +23,10 @@ if ($pharPath) {
 
 
 use Pantheon\Terminus\Terminus;
-use Pantheon\Terminus\Config\DefaultsConfig;
-use Pantheon\Terminus\Config\DotEnvConfig;
-use Pantheon\Terminus\Config\EnvConfig;
-use Pantheon\Terminus\Config\YamlConfig;
+use Pantheon\Terminus\API\Config\DefaultsConfig;
+use Pantheon\Terminus\API\Config\DotEnvConfig;
+use Pantheon\Terminus\API\Config\EnvConfig;
+use Pantheon\Terminus\API\Config\YamlConfig;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 

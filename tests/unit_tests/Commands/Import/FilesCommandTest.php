@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Import;
 
 use Pantheon\Terminus\Commands\Import\FilesCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

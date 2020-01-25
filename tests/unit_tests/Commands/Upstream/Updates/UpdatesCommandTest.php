@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\UpstreamStatus;
+use Pantheon\Terminus\API\Models\Upstream;
+use Pantheon\Terminus\API\Models\UpstreamStatus;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

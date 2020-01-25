@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Hooks;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
 use Consolidation\AnnotatedCommand\CommandData;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\Hooks\RoleValidator;
 use Symfony\Component\Console\Input\InputInterface;
 

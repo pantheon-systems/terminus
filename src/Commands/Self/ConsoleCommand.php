@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\Commands\Self;
 
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 use Pantheon\Terminus\Commands\TerminusCommand;
 
 /**

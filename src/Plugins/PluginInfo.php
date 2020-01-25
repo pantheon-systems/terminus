@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Plugins;
 
 use Consolidation\AnnotatedCommand\CommandFileDiscovery;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class PluginInfo
@@ -152,7 +152,7 @@ class PluginInfo
      * Each check has an error message so that a plugin author gets the specific message needed if the plugin is malformed.
      *
      * @return array|string
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\API\Exceptions\TerminusException
      */
     protected function parsePluginInfo()
     {

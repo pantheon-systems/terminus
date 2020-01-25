@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\SSHKey\ListCommand;
-use Pantheon\Terminus\Models\SSHKey;
+use Pantheon\Terminus\API\Models\SSHKey;
 
 /**
  * Class ListCommandTest

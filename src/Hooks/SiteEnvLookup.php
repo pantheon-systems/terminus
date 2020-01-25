@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\Hooks;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Config\ConfigAwareTrait;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

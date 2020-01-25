@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 
 use Pantheon\Terminus\Commands\PaymentMethod\RemoveCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

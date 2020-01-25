@@ -1,9 +1,13 @@
 <?php
 
-namespace Pantheon\Terminus\UnitTests\Helpers;
+namespace Pantheon\Terminus\UnitTests\Commands;
 
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Class AliasFixtures
+ * @package Pantheon\Terminus\UnitTests\Commands
+ */
 class AliasFixtures
 {
     protected static $tmpDirs = [];

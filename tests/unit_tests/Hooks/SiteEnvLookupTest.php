@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\UnitTests\Hooks;
 
 use Consolidation\AnnotatedCommand\AnnotationData;
-use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Config\TerminusConfig;
+use Pantheon\Terminus\API\Collections\Sites;
+use Pantheon\Terminus\API\Config\TerminusConfig;
 use Pantheon\Terminus\Hooks\SiteEnvLookup;
-use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\API\Models\Site;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 

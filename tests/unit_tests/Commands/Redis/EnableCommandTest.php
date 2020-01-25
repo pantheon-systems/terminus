@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Redis;
 
 use Pantheon\Terminus\Commands\Redis\EnableCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Models\Redis;
+use Pantheon\Terminus\API\Models\Redis;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

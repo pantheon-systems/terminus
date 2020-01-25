@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\Self;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 
 /**
  * Class ClearCacheCommand

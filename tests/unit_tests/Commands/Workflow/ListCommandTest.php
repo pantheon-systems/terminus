@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Workflow\ListCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 
 /**
  * Class ListCommandTest

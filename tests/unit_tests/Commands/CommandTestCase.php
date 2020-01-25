@@ -3,11 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Collections\Environments;
-use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Collections\Environments;
+use Pantheon\Terminus\API\Collections\Sites;
+use Pantheon\Terminus\API\Models\Environment;
+use Pantheon\Terminus\API\Models\Site;
 use Pantheon\Terminus\Style\TerminusStyle;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\NullLogger;

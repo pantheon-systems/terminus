@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\API\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\Auth\LogoutCommand;
-use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\API\Models\SavedToken;
 
 /**
  * Class LogoutCommandTest

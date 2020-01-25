@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\NewRelic;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Models\NewRelic;
+use Pantheon\Terminus\API\Models\NewRelic;
 
 /**
  * Class NewRelicCommandTest

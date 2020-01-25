@@ -93,7 +93,7 @@ class PluginAutoloadTest extends TerminusTestCase
      * Test to see what happens when we try to validate a plugin when
      * the Terminus installation folder is missing composer.json &/or composer.lock.
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage Could not load Terminus composer data.
      */
     public function testMissingTerminusComposerData()
@@ -108,7 +108,7 @@ class PluginAutoloadTest extends TerminusTestCase
      * Test to see what happens when we try to validate a plugin that
      * directly requires a component already (indirectly) provided by Terminus.
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage The plugin org/conflicting-dependencies-plugin requires the project consolidation/log, which is already provided by Terminus. Please remove this dependency from the plugin by running 'composer remove consolidation/log' in the org/conflicting-dependencies-plugin plugin directory.
      */
     public function testPluginWithConflictingDependency()
@@ -122,7 +122,7 @@ class PluginAutoloadTest extends TerminusTestCase
      * Test to see what happens when we try to validate a plugin that
      * indirectly requires a component already provided by Terminus.
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage The plugin org/nested-dependencies-plugin has installed the project consolidation/log: 1.0.0, but Terminus has installed
      */
     public function testPluginWithConflictingNestedDependency()

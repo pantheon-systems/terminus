@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Domains;
-use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\API\Collections\Domains;
+use Pantheon\Terminus\API\Models\Domain;
 
 /**
  * Class DomainTest

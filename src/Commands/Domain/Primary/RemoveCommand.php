@@ -1,14 +1,13 @@
 <?php
 
-
 namespace Pantheon\Terminus\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Models\Environment;
+use Pantheon\Terminus\API\Models\Site;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 
 class RemoveCommand extends TerminusCommand implements SiteAwareInterface
 {

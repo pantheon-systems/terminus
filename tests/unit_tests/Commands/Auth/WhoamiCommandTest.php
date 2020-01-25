@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Pantheon\Terminus\Commands\Auth\WhoamiCommand;
-use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\API\Models\User;
 
 /**
  * Class WhoamiCommandTest

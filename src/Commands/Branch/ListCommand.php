@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\Commands\Branch;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\StructuredListTrait;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 
 /**
  * Class ListCommand

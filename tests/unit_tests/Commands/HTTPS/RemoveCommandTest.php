@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\HTTPS;
 
 use Pantheon\Terminus\Commands\HTTPS\RemoveCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

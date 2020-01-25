@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Commands\Site\Org;
 
 use Pantheon\Terminus\Commands\Site\Org\ListCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
-use Pantheon\Terminus\Models\SiteOrganizationMembership;
+use Pantheon\Terminus\API\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\API\Models\SiteOrganizationMembership;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 
 /**

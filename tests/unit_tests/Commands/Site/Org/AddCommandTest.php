@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Org;
 
 use Pantheon\Terminus\Commands\Site\Org\AddCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\Org\Site\OrgSiteCommandTest;
-use Pantheon\Terminus\Collections\SiteOrganizationMemberships;
+use Pantheon\Terminus\API\Collections\SiteOrganizationMemberships;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

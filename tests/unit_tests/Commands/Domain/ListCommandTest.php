@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Domain\ListCommand;
-use Pantheon\Terminus\Models\Domain;
+use Pantheon\Terminus\API\Models\Domain;
 
 /**
  * Class ListCommandTest

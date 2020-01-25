@@ -3,12 +3,12 @@
 namespace Pantheon\Terminus\Commands\Remote;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
-use Pantheon\Terminus\Exceptions\TerminusProcessException;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Exceptions\TerminusProcessException;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Models\Environment;
+use Pantheon\Terminus\API\Models\Site;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessUtils;

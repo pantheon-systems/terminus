@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Backup\Automatic;
 
 use Pantheon\Terminus\Commands\Backup\Automatic\EnableCommand;
 use Pantheon\Terminus\UnitTests\Commands\Backup\BackupCommandTest;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 
 /**
  * Class EnableCommandTest

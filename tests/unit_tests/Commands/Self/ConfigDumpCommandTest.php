@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Pantheon\Terminus\Commands\Self\ConfigDumpCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
+use Pantheon\Terminus\API\Config\TerminusConfig;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

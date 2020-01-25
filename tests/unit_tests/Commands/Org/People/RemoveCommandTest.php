@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
 use Pantheon\Terminus\Commands\Org\People\RemoveCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

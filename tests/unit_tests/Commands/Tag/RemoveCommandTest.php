@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Tag;
 
 use Pantheon\Terminus\Commands\Tag\RemoveCommand;
-use Pantheon\Terminus\Models\Tag;
+use Pantheon\Terminus\API\Models\Tag;
 
 /**
  * Class RemoveCommandTest

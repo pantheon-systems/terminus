@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ListCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class ListCommandTest

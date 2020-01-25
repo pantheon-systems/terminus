@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\GetCommand;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Request\Request;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Request\Request;
 
 /**
  * Class GetCommandTest

@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\Plugins;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

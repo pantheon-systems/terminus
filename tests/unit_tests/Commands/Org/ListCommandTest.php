@@ -2,12 +2,12 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Org;
 
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
+use Pantheon\Terminus\API\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Org\ListCommand;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\Organization;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Models\UserOrganizationMembership;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**
