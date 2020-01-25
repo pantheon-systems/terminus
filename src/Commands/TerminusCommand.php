@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\Commands;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Session\SessionAwareInterface;
-use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\API\Config\ConfigAwareTrait;
+use Pantheon\Terminus\API\Session\SessionAwareInterface;
+use Pantheon\Terminus\API\Session\SessionAwareTrait;
 use Pantheon\Terminus\Style\TerminusStyle;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;

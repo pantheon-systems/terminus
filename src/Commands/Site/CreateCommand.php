@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Commands\Site;
 
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class CreateCommand

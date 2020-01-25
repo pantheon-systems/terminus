@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\MetricsCommand;
-use Pantheon\Terminus\Collections\EnvironmentMetrics;
-use Pantheon\Terminus\Models\Metric;
+use Pantheon\Terminus\API\Collections\EnvironmentMetrics;
+use Pantheon\Terminus\API\Models\Metric;
 
 /**
  * Class MetricsCommandTest

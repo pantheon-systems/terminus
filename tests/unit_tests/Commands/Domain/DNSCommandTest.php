@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Domain;
 
-use Pantheon\Terminus\Collections\DNSRecords;
+use Pantheon\Terminus\API\Collections\DNSRecords;
 use Pantheon\Terminus\Commands\Domain\DNSCommand;
-use Pantheon\Terminus\Models\DNSRecord;
+use Pantheon\Terminus\API\Models\DNSRecord;
 
 /**
  * Class DNSCommandTest

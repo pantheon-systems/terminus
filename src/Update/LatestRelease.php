@@ -4,12 +4,12 @@ namespace Pantheon\Terminus\Update;
 
 use League\Container\ContainerAwareInterface;
 use League\Container\ContainerAwareTrait;
-use Pantheon\Terminus\DataStore\DataStoreAwareInterface;
-use Pantheon\Terminus\DataStore\DataStoreAwareTrait;
-use Pantheon\Terminus\DataStore\DataStoreInterface;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Request\RequestAwareInterface;
-use Pantheon\Terminus\Request\RequestAwareTrait;
+use Pantheon\Terminus\API\DataStore\DataStoreAwareInterface;
+use Pantheon\Terminus\API\DataStore\DataStoreAwareTrait;
+use Pantheon\Terminus\API\DataStore\DataStoreInterface;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Request\RequestAwareInterface;
+use Pantheon\Terminus\API\Request\RequestAwareTrait;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 

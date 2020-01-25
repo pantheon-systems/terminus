@@ -2,11 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream;
 
-use Pantheon\Terminus\Collections\Upstreams;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Collections\Upstreams;
+use Pantheon\Terminus\API\Models\Organization;
+use Pantheon\Terminus\API\Models\Upstream;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\UnitTests\Commands\Dashboard;
 
 use League\Container\Container;
 use Pantheon\Terminus\Commands\Dashboard\ViewCommand;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Solr;
 
 use Pantheon\Terminus\Commands\Solr\EnableCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Models\Solr;
+use Pantheon\Terminus\API\Models\Solr;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

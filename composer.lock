@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ecba5b2db524e62c940f7ba2119eb42",
+    "content-hash": "56ea1b370695d8b749201ed3c1ebdf74",
     "packages": [
         {
             "name": "composer/semver",
@@ -1326,12 +1326,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:pantheon-systems/terminus-api.git",
-                "reference": "958b45ec1d1801113c0529949669c53e7a051c10"
+                "reference": "1868ab8411d172b626ba4762f20d0bdc8139c65a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pantheon-systems/terminus-api/zipball/958b45ec1d1801113c0529949669c53e7a051c10",
-                "reference": "958b45ec1d1801113c0529949669c53e7a051c10",
+                "url": "https://api.github.com/repos/pantheon-systems/terminus-api/zipball/1868ab8411d172b626ba4762f20d0bdc8139c65a",
+                "reference": "1868ab8411d172b626ba4762f20d0bdc8139c65a",
                 "shasum": ""
             },
             "require": {
@@ -1414,7 +1414,7 @@
                 "source": "https://github.com/pantheon-systems/terminus-api/tree/master",
                 "issues": "https://github.com/pantheon-systems/terminus-api/issues"
             },
-            "time": "2020-01-24T22:22:02+00:00"
+            "time": "2020-01-25T00:25:52+00:00"
         },
         {
             "name": "psr/container",

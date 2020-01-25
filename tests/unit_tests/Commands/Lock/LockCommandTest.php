@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\UnitTests\Commands\Env\EnvCommandTest;
-use Pantheon\Terminus\Models\Lock;
+use Pantheon\Terminus\API\Models\Lock;
 
 /**
  * Class LockCommandTest

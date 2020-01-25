@@ -4,15 +4,15 @@ namespace Pantheon\Terminus\Commands;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 
-use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Collections\Sites;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 
-use Pantheon\Terminus\Helpers\AliasEmitters\AliasCollection;
-use Pantheon\Terminus\Helpers\AliasEmitters\AliasData;
-use Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter;
-use Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter;
-use Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter;
+use Pantheon\Terminus\API\Helpers\AliasEmitters\AliasCollection;
+use Pantheon\Terminus\API\Helpers\AliasEmitters\AliasData;
+use Pantheon\Terminus\API\Helpers\AliasEmitters\AliasesDrushRcEmitter;
+use Pantheon\Terminus\API\Helpers\AliasEmitters\PrintingEmitter;
+use Pantheon\Terminus\API\Helpers\AliasEmitters\DrushSitesYmlEmitter;
 
 /**
  * Generate lots of aliases

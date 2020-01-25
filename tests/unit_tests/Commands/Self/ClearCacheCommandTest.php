@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Commands\Self;
 
 use League\Container\Container;
 use Pantheon\Terminus\Commands\Self\ClearCacheCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;

@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginInfo;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 

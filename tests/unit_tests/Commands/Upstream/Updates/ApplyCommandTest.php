@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Upstream\Updates;
 
 use Pantheon\Terminus\Commands\Upstream\Updates\ApplyCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

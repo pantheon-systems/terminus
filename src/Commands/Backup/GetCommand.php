@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Request\RequestAwareInterface;
-use Pantheon\Terminus\Request\RequestAwareTrait;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Request\RequestAwareInterface;
+use Pantheon\Terminus\API\Request\RequestAwareTrait;
 
 /**
  * Class GetCommand

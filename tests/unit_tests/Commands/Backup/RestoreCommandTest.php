@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\Commands\Backup\RestoreCommand;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

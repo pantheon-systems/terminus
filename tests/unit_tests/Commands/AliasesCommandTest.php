@@ -5,7 +5,7 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 use League\Container\Container;
 use Pantheon\Terminus\Commands\AliasesCommand;
 use Robo\Config;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Helpers\AliasFixtures;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -107,7 +107,7 @@ class AliasesCommandTest extends CommandTestCase
             ->with(
                 $this->equalTo('debug'),
                 $this->equalTo("Emitting aliases via {emitter}"),
-                $this->equalTo(['emitter' => 'Pantheon\Terminus\Helpers\AliasEmitters\AliasesDrushRcEmitter'])
+                $this->equalTo(['emitter' => 'Pantheon\Terminus\API\Helpers\AliasEmitters\AliasesDrushRcEmitter'])
             );
         $this->logger->expects($this->at(3))
             ->method('log')
@@ -120,7 +120,7 @@ class AliasesCommandTest extends CommandTestCase
             ->with(
                 $this->equalTo('debug'),
                 $this->equalTo("Emitting aliases via {emitter}"),
-                $this->equalTo(['emitter' => 'Pantheon\Terminus\Helpers\AliasEmitters\DrushSitesYmlEmitter'])
+                $this->equalTo(['emitter' => 'Pantheon\Terminus\API\Helpers\AliasEmitters\DrushSitesYmlEmitter'])
             );
         $this->logger->expects($this->at(5))
             ->method('log')
@@ -183,7 +183,7 @@ __EOT__;
             ->with(
                 $this->equalTo('debug'),
                 $this->equalTo("Emitting aliases via {emitter}"),
-                $this->equalTo(['emitter' => 'Pantheon\Terminus\Helpers\AliasEmitters\PrintingEmitter'])
+                $this->equalTo(['emitter' => 'Pantheon\Terminus\API\Helpers\AliasEmitters\PrintingEmitter'])
             );
         $this->logger->expects($this->at(3))
             ->method('log')

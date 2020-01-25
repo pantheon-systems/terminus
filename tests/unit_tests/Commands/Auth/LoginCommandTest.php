@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Auth;
 
-use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\API\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\Auth\LoginCommand;
-use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\API\Models\SavedToken;
 
 /**
  * Class LoginCommandTest
@@ -136,7 +136,7 @@ class LoginCommandTest extends AuthTest
     /**
      * Tests the auth:login command when no data was given and there are no saved machine tokens
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage Please visit the dashboard to generate a machine token:
      */
     public function testCannotLogInWithoutTokens()
@@ -151,7 +151,7 @@ class LoginCommandTest extends AuthTest
     /**
      * Tests the auth:login command when no data was given and there are multiple saved machine tokens
      *
-     * @expectedException \Pantheon\Terminus\Exceptions\TerminusException
+     * @expectedException \Pantheon\Terminus\API\Exceptions\TerminusException
      * @expectedExceptionMessage Tokens were saved for the following email addresses:
      */
     public function testCannotLogInWithoutIndicatingWhichToken()

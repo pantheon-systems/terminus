@@ -2,10 +2,10 @@
 
 namespace Pantheon\Terminus\Hooks;
 
-use Pantheon\Terminus\Config\ConfigAwareTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Session\SessionAwareInterface;
-use Pantheon\Terminus\Session\SessionAwareTrait;
+use Pantheon\Terminus\API\Config\ConfigAwareTrait;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Session\SessionAwareInterface;
+use Pantheon\Terminus\API\Session\SessionAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

@@ -2,10 +2,10 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Org\Site;
 
-use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
+use Pantheon\Terminus\API\Collections\OrganizationSiteMemberships;
 use Pantheon\Terminus\Commands\Org\Site\RemoveCommand;
-use Pantheon\Terminus\Models\OrganizationSiteMembership;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

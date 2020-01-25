@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\SSHKey;
 
 use Pantheon\Terminus\Commands\SSHKey\RemoveCommand;
-use Pantheon\Terminus\Models\SSHKey;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Models\SSHKey;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class RemoveCommandTest

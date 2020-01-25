@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands\Backup;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
 
 abstract class SingleBackupCommand extends BackupCommand
 {

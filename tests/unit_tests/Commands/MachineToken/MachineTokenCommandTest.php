@@ -2,11 +2,11 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Psr\Log\NullLogger;
-use Pantheon\Terminus\Collections\MachineTokens;
+use Pantheon\Terminus\API\Collections\MachineTokens;
 
 /**
  * Class MachineTokenCommandTest

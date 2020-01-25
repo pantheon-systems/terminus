@@ -2,12 +2,12 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 
-use Pantheon\Terminus\Collections\PaymentMethods;
+use Pantheon\Terminus\API\Collections\PaymentMethods;
 use Pantheon\Terminus\Commands\PaymentMethod\AddCommand;
-use Pantheon\Terminus\Models\PaymentMethod;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\PaymentMethod;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

@@ -4,11 +4,11 @@ namespace Pantheon\Terminus\Commands\Env;
 
 use Pantheon\Terminus\Commands\TerminusCommand;
 use Pantheon\Terminus\Commands\WorkflowProcessingTrait;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Models\Environment;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Site\SiteAwareInterface;
-use Pantheon\Terminus\Site\SiteAwareTrait;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Models\Environment;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Site\SiteAwareInterface;
+use Pantheon\Terminus\API\Site\SiteAwareTrait;
 
 /**
  * Class CloneContentCommand
@@ -44,7 +44,7 @@ class CloneContentCommand extends TerminusCommand implements SiteAwareInterface
      * @option bool $files-only Only clone files
      * @option bool $updatedb Update the Drupal database
      *
-     * @throws \Pantheon\Terminus\Exceptions\TerminusException
+     * @throws \Pantheon\Terminus\API\Exceptions\TerminusException
      *
      * @usage <site>.<env> <target_env> Clones database and files from <site>'s <env> environment to <target_env> environment.
      * @usage <site>.<env> <target_env> --cc Clones from <site>'s <env> environment to <target_env> environment and clears the database.

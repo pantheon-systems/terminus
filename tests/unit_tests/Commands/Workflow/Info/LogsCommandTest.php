@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow\Info;
 
-use Pantheon\Terminus\Models\WorkflowOperation;
+use Pantheon\Terminus\API\Models\WorkflowOperation;
 use Pantheon\Terminus\Commands\Workflow\Info\LogsCommand;
 
 /**

@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Commands\Branch;
 
 use Pantheon\Terminus\Commands\Branch\ListCommand;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Branches;
-use Pantheon\Terminus\Models\Branch;
+use Pantheon\Terminus\API\Collections\Branches;
+use Pantheon\Terminus\API\Models\Branch;
 
 /**
  * Class ListCommandTest

@@ -2,8 +2,8 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 
 /**
  * Class ArtCommand

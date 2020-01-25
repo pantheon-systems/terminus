@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\Hooks;
 
 use Consolidation\AnnotatedCommand\CommandData;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 class RoleValidator
 {

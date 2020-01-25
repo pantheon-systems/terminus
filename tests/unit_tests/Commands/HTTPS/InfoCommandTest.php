@@ -3,10 +3,10 @@
 namespace Pantheon\Terminus\UnitTests\HTTPS;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\Domains;
+use Pantheon\Terminus\API\Collections\Domains;
 use Pantheon\Terminus\Commands\HTTPS\InfoCommand;
-use Pantheon\Terminus\Models\Domain;
-use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\API\Models\Domain;
+use Pantheon\Terminus\API\Models\Environment;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

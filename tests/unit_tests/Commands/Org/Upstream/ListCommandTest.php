@@ -3,12 +3,12 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Org\Upstream;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\OrganizationUpstreams;
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
+use Pantheon\Terminus\API\Collections\OrganizationUpstreams;
+use Pantheon\Terminus\API\Collections\UserOrganizationMemberships;
 use Pantheon\Terminus\Commands\Org\Upstream\ListCommand;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
+use Pantheon\Terminus\API\Models\Organization;
+use Pantheon\Terminus\API\Models\Upstream;
+use Pantheon\Terminus\API\Models\UserOrganizationMembership;
 use Pantheon\Terminus\UnitTests\Commands\Upstream\UpstreamCommandTest;
 
 /**

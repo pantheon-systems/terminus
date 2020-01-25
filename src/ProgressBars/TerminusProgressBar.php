@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\ProgressBars;
 
-use Pantheon\Terminus\Config\ConfigAwareTrait;
+use Pantheon\Terminus\API\Config\ConfigAwareTrait;
 use Robo\Contract\ConfigAwareInterface;
 
 /**

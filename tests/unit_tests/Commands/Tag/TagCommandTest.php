@@ -2,15 +2,15 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Tag;
 
-use Pantheon\Terminus\Collections\OrganizationSiteMemberships;
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\OrganizationSiteMembership;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Collections\OrganizationSiteMemberships;
+use Pantheon\Terminus\API\Collections\UserOrganizationMemberships;
+use Pantheon\Terminus\API\Models\Organization;
+use Pantheon\Terminus\API\Models\OrganizationSiteMembership;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Models\UserOrganizationMembership;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Tags;
+use Pantheon\Terminus\API\Collections\Tags;
 
 /**
  * Class TagCommandTest

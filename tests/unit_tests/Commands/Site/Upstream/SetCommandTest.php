@@ -2,17 +2,17 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Upstream;
 
-use Pantheon\Terminus\Collections\SiteAuthorizations;
-use Pantheon\Terminus\Collections\Upstreams;
+use Pantheon\Terminus\API\Collections\SiteAuthorizations;
+use Pantheon\Terminus\API\Collections\Upstreams;
 use Pantheon\Terminus\Commands\Site\Upstream\SetCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Exceptions\TerminusException;
-use Pantheon\Terminus\Models\SiteAuthorization;
-use Pantheon\Terminus\Models\SiteUpstream;
-use Pantheon\Terminus\Models\Upstream;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Models\SiteAuthorization;
+use Pantheon\Terminus\API\Models\SiteUpstream;
+use Pantheon\Terminus\API\Models\Upstream;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

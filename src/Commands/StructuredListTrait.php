@@ -5,8 +5,8 @@ namespace Pantheon\Terminus\Commands;
 use Consolidation\OutputFormatters\StructuredData\AbstractStructuredList;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\TerminusCollection;
-use Pantheon\Terminus\Models\TerminusModel;
+use Pantheon\Terminus\API\Collections\TerminusCollection;
+use Pantheon\Terminus\API\Models\TerminusModel;
 
 /**
  * Class StructuredListTrait

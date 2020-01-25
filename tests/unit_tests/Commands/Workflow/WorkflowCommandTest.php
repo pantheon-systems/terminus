@@ -2,10 +2,10 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
-use Pantheon\Terminus\Collections\WorkflowOperations;
+use Pantheon\Terminus\API\Collections\WorkflowOperations;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Collections\Workflows;
 
 /**
  * Class WorkflowCommandTest

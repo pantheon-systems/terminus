@@ -2,13 +2,13 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Org\People;
 
-use Pantheon\Terminus\Collections\OrganizationUserMemberships;
-use Pantheon\Terminus\Collections\UserOrganizationMemberships;
-use Pantheon\Terminus\Models\Organization;
-use Pantheon\Terminus\Models\OrganizationUserMembership;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Models\UserOrganizationMembership;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Collections\OrganizationUserMemberships;
+use Pantheon\Terminus\API\Collections\UserOrganizationMemberships;
+use Pantheon\Terminus\API\Models\Organization;
+use Pantheon\Terminus\API\Models\OrganizationUserMembership;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Models\UserOrganizationMembership;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

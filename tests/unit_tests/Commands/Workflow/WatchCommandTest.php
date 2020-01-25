@@ -2,13 +2,13 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\Workflow;
 
-use Pantheon\Terminus\Collections\Sites;
-use Pantheon\Terminus\Collections\Workflows;
+use Pantheon\Terminus\API\Collections\Sites;
+use Pantheon\Terminus\API\Collections\Workflows;
 use Pantheon\Terminus\Commands\Workflow\WatchCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Models\Site;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Models\WorkflowOperation;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Models\Site;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Models\WorkflowOperation;
 
 /**
  * Class WatchCommandTest

@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
 use Pantheon\Terminus\Commands\ArtCommand;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 

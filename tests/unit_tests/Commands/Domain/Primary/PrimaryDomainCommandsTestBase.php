@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Domain\Primary;
 
 use Pantheon\Terminus\Commands\Domain\SetCommand;
-use Pantheon\Terminus\Models\PrimaryDomain;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\PrimaryDomain;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

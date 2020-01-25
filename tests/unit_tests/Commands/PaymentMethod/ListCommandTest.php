@@ -3,11 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Commands\PaymentMethod;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
-use Pantheon\Terminus\Collections\PaymentMethods;
+use Pantheon\Terminus\API\Collections\PaymentMethods;
 use Pantheon\Terminus\Commands\PaymentMethod\ListCommand;
-use Pantheon\Terminus\Models\PaymentMethod;
-use Pantheon\Terminus\Models\User;
-use Pantheon\Terminus\Session\Session;
+use Pantheon\Terminus\API\Models\PaymentMethod;
+use Pantheon\Terminus\API\Models\User;
+use Pantheon\Terminus\API\Session\Session;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
 /**

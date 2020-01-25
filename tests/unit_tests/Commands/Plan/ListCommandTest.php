@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Plan;
 
 use Pantheon\Terminus\Commands\Plan\ListCommand;
-use Pantheon\Terminus\Models\Plan;
+use Pantheon\Terminus\API\Models\Plan;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Plans;
+use Pantheon\Terminus\API\Collections\Plans;
 
 /**
  * Class ListCommandTest

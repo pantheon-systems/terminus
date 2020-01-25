@@ -2,7 +2,7 @@
 
 namespace Pantheon\Terminus\Commands;
 
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\ProgressBars\WorkflowProgressBar;
 
 /**

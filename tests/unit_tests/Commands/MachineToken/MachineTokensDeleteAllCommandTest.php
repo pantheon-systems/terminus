@@ -2,9 +2,9 @@
 
 namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
-use Pantheon\Terminus\Collections\SavedTokens;
+use Pantheon\Terminus\API\Collections\SavedTokens;
 use Pantheon\Terminus\Commands\MachineToken\DeleteAllCommand;
-use Pantheon\Terminus\Models\SavedToken;
+use Pantheon\Terminus\API\Models\SavedToken;
 use Robo\Config;
 
 /**

@@ -4,9 +4,9 @@ namespace Pantheon\Terminus\UnitTests\Update;
 
 use Consolidation\Log\Logger;
 use League\Container\Container;
-use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\DataStore\DataStoreInterface;
-use Pantheon\Terminus\Exceptions\TerminusNotFoundException;
+use Pantheon\Terminus\API\Config\TerminusConfig;
+use Pantheon\Terminus\API\DataStore\DataStoreInterface;
+use Pantheon\Terminus\API\Exceptions\TerminusNotFoundException;
 use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Pantheon\Terminus\Update\LatestRelease;
 use Pantheon\Terminus\Update\UpdateChecker;

@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Team;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\SiteUserMemberships;
-use Pantheon\Terminus\Models\Workflow;
-use Pantheon\Terminus\Models\SiteUserMembership;
+use Pantheon\Terminus\API\Collections\SiteUserMemberships;
+use Pantheon\Terminus\API\Models\Workflow;
+use Pantheon\Terminus\API\Models\SiteUserMembership;
 
 /**
  * Class TeamCommandTest

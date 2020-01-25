@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\CodeLogCommand;
-use Pantheon\Terminus\Collections\Commits;
-use Pantheon\Terminus\Models\Commit;
+use Pantheon\Terminus\API\Collections\Commits;
+use Pantheon\Terminus\API\Models\Commit;
 
 /**
  * Class CodeLogCommandTest

@@ -3,8 +3,8 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Site\Upstream;
 
 use Pantheon\Terminus\Commands\Site\Upstream\ClearCacheCommand;
-use Pantheon\Terminus\Models\SiteUpstream;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\SiteUpstream;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 

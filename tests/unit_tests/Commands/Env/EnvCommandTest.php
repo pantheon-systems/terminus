@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
 
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 
 /**
  * Class EnvCommandTest

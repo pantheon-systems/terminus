@@ -3,7 +3,7 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Lock;
 
 use Pantheon\Terminus\Commands\Lock\DisableCommand;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Models\Workflow;
 use Pantheon\Terminus\UnitTests\Commands\WorkflowProgressTrait;
 
 /**

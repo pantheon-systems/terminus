@@ -4,8 +4,8 @@ namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\DeleteCommand;
 use Robo\Config;
-use Pantheon\Terminus\Models\MachineToken;
-use Pantheon\Terminus\Exceptions\TerminusException;
+use Pantheon\Terminus\API\Models\MachineToken;
+use Pantheon\Terminus\API\Exceptions\TerminusException;
 
 /**
  * Class MachineTokenDeleteCommandTest

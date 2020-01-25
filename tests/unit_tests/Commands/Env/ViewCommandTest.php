@@ -4,7 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use League\Container\Container;
 use Pantheon\Terminus\Commands\Env\ViewCommand;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
+use Pantheon\Terminus\API\Helpers\LocalMachineHelper;
 
 /**
  * Class ViewCommandTest

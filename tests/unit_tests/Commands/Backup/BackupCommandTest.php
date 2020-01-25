@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-use Pantheon\Terminus\Collections\Backups;
-use Pantheon\Terminus\Models\Backup;
-use Pantheon\Terminus\Models\Workflow;
+use Pantheon\Terminus\API\Collections\Backups;
+use Pantheon\Terminus\API\Models\Backup;
+use Pantheon\Terminus\API\Models\Workflow;
 
 /**
  * Class BackupCommandTest
