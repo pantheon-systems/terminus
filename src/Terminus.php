@@ -6,7 +6,7 @@ use Composer\Autoload\ClassLoader;
 use Composer\Semver\Semver;
 use League\Container\Container;
 use Pantheon\Terminus\API\API;
-use Pantheon\Terminus\DataStore\FileStore;
+use Pantheon\Terminus\API\DataStore\FileStore;
 use Pantheon\Terminus\Plugins\PluginAutoloadDependencies;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
@@ -65,7 +65,7 @@ class Terminus extends API implements LoggerAwareInterface
             $cmd = new SelfUpdateCommand('Terminus', $config->get('version'), 'pantheon-systems/terminus');
             $application->add($cmd);
         }
-        $this->runner = new RoboRunner();
+        $this->runner = new Runner();
         $this->runner->setContainer($container);
 
         date_default_timezone_set($config->get('time_zone'));
@@ -97,7 +97,7 @@ class Terminus extends API implements LoggerAwareInterface
     /**
      * {@inheritDoc}
      */
-    protected static function configureContainer(Container $container, Config $config)
+    protected function configureContainer(Container $container, Config $config)
     {
         $container = parent::configureContainer($container, $config);
 
@@ -109,14 +109,14 @@ class Terminus extends API implements LoggerAwareInterface
         $container->share('pluginAutoloadDependencies', PluginAutoloadDependencies::class)
             ->withArgument(__DIR__);
         $container->add(PluginDiscovery::class)
-            ->withArgument($this->getConfig()->get('plugins_dir'));
+            ->withArgument($config->get('plugins_dir'));
 
         // Update checker
         $container->add(LatestRelease::class);
         $container->add(UpdateChecker::class);
 
         // Install our command cache into the command factory
-        $commandCacheDir = $this->getConfig()->get('command_cache_dir');
+        $commandCacheDir = $config->get('command_cache_dir');
         $commandCacheDataStore = new FileStore($commandCacheDir);
 
         $factory = $container->get('commandFactory');

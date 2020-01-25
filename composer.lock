@@ -1326,12 +1326,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:pantheon-systems/terminus-api.git",
-                "reference": "1868ab8411d172b626ba4762f20d0bdc8139c65a"
+                "reference": "6e696823b2b190e0b919fdf3d47c90f147694280"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pantheon-systems/terminus-api/zipball/1868ab8411d172b626ba4762f20d0bdc8139c65a",
-                "reference": "1868ab8411d172b626ba4762f20d0bdc8139c65a",
+                "url": "https://api.github.com/repos/pantheon-systems/terminus-api/zipball/6e696823b2b190e0b919fdf3d47c90f147694280",
+                "reference": "6e696823b2b190e0b919fdf3d47c90f147694280",
                 "shasum": ""
             },
             "require": {
@@ -1414,7 +1414,7 @@
                 "source": "https://github.com/pantheon-systems/terminus-api/tree/master",
                 "issues": "https://github.com/pantheon-systems/terminus-api/issues"
             },
-            "time": "2020-01-25T00:25:52+00:00"
+            "time": "2020-01-25T01:30:03+00:00"
         },
         {
             "name": "psr/container",
