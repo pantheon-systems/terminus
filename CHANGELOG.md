@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file. This projec
 
 ## MASTER
 ### Added
+- New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
+- New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+
+## 2.3.0 - 2020-01-10
+### Added
 - New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
 
 ### Changed
@@ -14,6 +21,9 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Deprecated
 - Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)
+
+### Fixed
+- PHP Deprecated warnings seen in PHP ≥ 7.4.0 (#2043)
 
 ## 2.2.0 - 2019-09-26
 ### Added
