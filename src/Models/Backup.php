@@ -192,17 +192,6 @@ class Backup extends TerminusModel implements EnvironmentInterface
     }
 
     /**
-     * Formats the object into an associative array for output
-     *
-     * @return array Associative array of data for output
-     */
-    public function serializeWithURL()
-    {
-        return array_merge($this->serialize(), ['url' => $this->getUrl()]);
-    }
-
-
-    /**
      * @inheritdoc
      */
     protected function parseAttributes($data)
