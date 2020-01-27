@@ -60,7 +60,9 @@ class WatchCommand extends TerminusCommand implements SiteAwareInterface
                     $this->emitStartedNotice($workflow);
                 }
 
-                if ($workflow->wasFinishedAfter($last_wf_finished_at) && !$this->finishedNoticeAlreadyEmitted($workflow)) {
+                if ($workflow->wasFinishedAfter($last_wf_finished_at)
+                    && !$this->finishedNoticeAlreadyEmitted($workflow)
+                ) {
                     $this->emitFinishedNotice($workflow);
                     if ($workflow->get('has_operation_log_output')) {
                         $this->emitOperationLogs($workflow);

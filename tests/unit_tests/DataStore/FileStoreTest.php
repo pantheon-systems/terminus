@@ -3,8 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\DataStore;
 
 use Pantheon\Terminus\DataStore\FileStore;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class FileStoreTest extends \PHPUnit_Framework_TestCase
+class FileStoreTest extends TerminusTestCase
 {
     public function setUp()
     {

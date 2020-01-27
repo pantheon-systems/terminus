@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Commands\Env;
 
 use Pantheon\Terminus\Commands\Env\ClearCacheCommand;

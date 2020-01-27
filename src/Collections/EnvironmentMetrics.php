@@ -23,7 +23,8 @@ class EnvironmentMetrics extends EnvironmentOwnedCollection
     /**
      * @var string base URL to fetch
      */
-    protected $url = 'sites/{site_id}/environments/{environment_id}/{series}?granularity={period}&datapoints={datapoints}';
+    protected $url =
+        'sites/{site_id}/environments/{environment_id}/{series}?granularity={period}&datapoints={datapoints}';
 
     /**
      * EnvironmentMetrics constructor

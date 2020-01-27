@@ -19,8 +19,6 @@ use Pantheon\Terminus\Models\Workflow;
 use Pantheon\Terminus\Collections\Commits;
 use Pantheon\Terminus\Models\Commit;
 use Pantheon\Terminus\Exceptions\TerminusException;
-use Symfony\Component\Console\Output\Output;
-use Symfony\Component\Process\ProcessUtils;
 
 /**
  * Class EnvironmentTest
@@ -581,7 +579,10 @@ class EnvironmentTest extends ModelTestCase
             )
             ->will($this->throwException(new \Exception()));
 
-        $this->setExpectedException(TerminusException::class, 'There was an problem disabling https for this environment.');
+        $this->setExpectedException(
+            TerminusException::class,
+            'There was an problem disabling https for this environment.'
+        );
         $this->model->disableHttpsCertificate();
     }
 

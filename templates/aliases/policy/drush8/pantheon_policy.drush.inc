@@ -19,7 +19,7 @@ function pantheon_policy_drush_sitealias_alter(&$alias_record) {
   // alias record to a local alias.
   if (isset($alias_record['remote-host'])) {
     $host = $alias_record['remote-host'];
-    if (!(preg_match('#^appserver\..*\.drush\.in$#', $host))) {
+    if (!(preg_match('#^appserver\..*\.drush\.in$#', $host)) || (strpos($host, '{env-name}') !== FALSE)) {
       return;
     }
     $ip = gethostbyname($host);

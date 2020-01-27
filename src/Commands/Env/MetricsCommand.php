@@ -7,6 +7,7 @@ use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\OutputFormatters\StructuredData\NumericCellRenderer;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFieldsWithMetadata;
 use Pantheon\Terminus\Commands\TerminusCommand;
+use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Site\SiteAwareInterface;
 use Pantheon\Terminus\Site\SiteAwareTrait;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,8 +51,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
      *
      * @usage <site>.<env> Displays metrics for <site>'s <env> environment.
      * @usage <site> Displays the combined metrics for all of <site>'s environments.
-     * @usage <site> --fields=datetime,pages_served Displays only the pages
-     *   served for each date period.
+     * @usage <site> --fields=datetime,pages_served Displays only the pages served for each date period.
      */
     public function metrics(
         $site_env,
@@ -139,45 +139,77 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
 
         $input = $commandData->input();
         $this->validateOptionValue($input, 'period', $validGranularities);
-        $this->validateItemWithinRange($input, 'datapoints', 1, $this->datapointsMaximum($input->getOption('period')), ['auto']);
+        $this->validateItemWithinRange(
+            $input,
+            'datapoints',
+            1,
+            $this->datapointsMaximum($input->getOption('period')),
+            ['auto']
+        );
     }
 
     /**
      * Test to see if an option value is one of the provided values
      * @param InputInterface $input
-     * @param string $optionName
-     * @param string[] $validValues
+     * @param string $option_name
+     * @param string[] $valid_values
      */
-    protected function validateOptionValue(InputInterface $input, $optionName, array $validValues)
+    protected function validateOptionValue(InputInterface $input, $option_name, array $valid_values)
     {
-        $value = $input->getOption($optionName);
-        if (!in_array($value, $validValues)) {
-            throw new \Exception("'{$value}' is an invalid value for {$optionName}: must be one of " . implode(', ', $validValues));
+        $value = $input->getOption($option_name);
+        if (!in_array($value, $valid_values)) {
+            throw new TerminusException(
+                "'{value}' is an invalid value for {option_name}: must be one of {values}",
+                [
+                    'option_name' => $option_name,
+                    'value' => $value,
+                    'values' => implode(', ', $valid_values),
+                ]
+            );
         }
     }
 
     /**
      * Check to see if the specified item is within the specified minimum/maximum range.
      * @param InputInterface $input
-     * @param string $optionName
+     * @param string $option_name
      * @param string $minimum
      * @param string $maximum
-     * @param string $exceptionalValues
+     * @param string $exceptional_values
      */
-    protected function validateItemWithinRange(InputInterface $input, $optionName, $minimum, $maximum, $exceptionalValues = [])
-    {
-        $value = $input->getOption($optionName);
-        if (in_array($value, $exceptionalValues)) {
+    protected function validateItemWithinRange(
+        InputInterface $input,
+        $option_name,
+        $minimum,
+        $maximum,
+        $exceptional_values = []
+    ) {
+        $value = $input->getOption($option_name);
+        if (in_array($value, $exceptional_values)) {
             return;
         }
-        $orOneOf = (count($exceptionalValues) == 0) ? '' : (count($exceptionalValues) == 1) ? 'or ' : 'or one of ';
+        $or_one_of = '';
+        if (count($exceptional_values) != 0) {
+            $or_one_of = (count($exceptional_values) == 1) ? 'or ' : 'or one of ';
+        }
         if (($value < $minimum) || ($value > $maximum)) {
-            throw new \Exception("'{$value}' is an invalid value for {$optionName}: must be between {$minimum} and {$maximum} (inclusive) {$orOneOf}" . implode(', ', $exceptionalValues));
+            throw new TerminusException(
+                "'{value}' is an invalid value for {option_name}: "
+                . 'it must be between {minimum} and {maximum} (inclusive) {or_one_of} {values}',
+                [
+                    'maximum' => $maximum,
+                    'minimum' => $minimum,
+                    'option_name' => $option_name,
+                    'or_one_of' => $or_one_of,
+                    'value' => $value,
+                    'values' => implode(', ', $exceptional_values),
+                ]
+            );
         }
     }
 
     /**
-     * Default datapoints to 12 / 28 if 'auto' is specified
+     * Default data points to 12 / 28 if 'auto' is specified
      * @param string $period
      * @return string
      */
@@ -189,7 +221,7 @@ class MetricsCommand extends TerminusCommand implements SiteAwareInterface
     }
 
     /**
-     * Return the maximum datapoint value for the provided period.
+     * Return the maximum data point value for the provided period.
      * @param string $period
      * @return string
      */

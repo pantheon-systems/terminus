@@ -7,13 +7,14 @@ use Pantheon\Terminus\Collections\UserSiteMemberships;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\UserSiteMembership;
 use Pantheon\Terminus\Models\User;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class UserSiteMembershipTest
  * Testing class for Pantheon\Terminus\Models\UserSiteMembership
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class UserSiteMembershipTest extends \PHPUnit_Framework_TestCase
+class UserSiteMembershipTest extends TerminusTestCase
 {
     /**
      * @var UserSiteMemberships

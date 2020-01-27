@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Backup;
 
 use Pantheon\Terminus\UnitTests\Commands\CommandTestCase;
-
 use Pantheon\Terminus\Collections\Backups;
 use Pantheon\Terminus\Models\Backup;
 use Pantheon\Terminus\Models\Workflow;

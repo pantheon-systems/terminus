@@ -6,10 +6,11 @@ use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
 use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Pantheon\Terminus\ProgressBars\ProcessProgressBar;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class LocalMachineHelperTest extends \PHPUnit_Framework_TestCase
+class LocalMachineHelperTest extends TerminusTestCase
 {
     /**
      * @var TerminusConfig

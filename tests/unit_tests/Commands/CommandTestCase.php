@@ -4,21 +4,22 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
 use Pantheon\Terminus\Config\TerminusConfig;
-use Pantheon\Terminus\Style\TerminusStyle;
-use Psr\Log\NullLogger;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\Input;
-use Symfony\Component\Console\Output\OutputInterface;
 use Pantheon\Terminus\Collections\Environments;
 use Pantheon\Terminus\Collections\Sites;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\Style\TerminusStyle;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
+use Psr\Log\NullLogger;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class CommandTestCase
  * @package Pantheon\Terminus\UnitTests\Commands
  */
-abstract class CommandTestCase extends \PHPUnit_Framework_TestCase
+abstract class CommandTestCase extends TerminusTestCase
 {
     /**
      * @var TerminusConfig

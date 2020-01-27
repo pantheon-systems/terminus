@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\Profile;
 
 use Pantheon\Terminus\Models\Profile;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class TraitTest
  * Testing class for Pantheon\Terminus\Friends\ProfileTrait & Pantheon\Terminus\Friends\UserInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Profile
  */
-class TraitTest extends \PHPUnit_Framework_TestCase
+class TraitTest extends TerminusTestCase
 {
     /**
      * @var DummyClass

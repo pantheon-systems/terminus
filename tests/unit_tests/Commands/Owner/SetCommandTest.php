@@ -52,7 +52,6 @@ class SetCommandTest extends CommandTestCase
     {
         $site_name = 'site_name';
         $email = 'a-valid-email';
-        $full_name = 'Dev User';
 
         $workflow = $this->getMockBuilder(Workflow::class)
             ->disableOriginalConstructor()
@@ -79,15 +78,14 @@ class SetCommandTest extends CommandTestCase
         $this->site->expects($this->once())
             ->method('getName')
             ->willReturn($site_name);
-        $user->expects($this->once())
-            ->method('getName')
-            ->willReturn($full_name);
+        $user->expects($this->never())
+            ->method('getName');
 
         $this->logger->expects($this->once())
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('Promoted {user} to owner of {site}'),
-                $this->equalTo(['user' => $full_name, 'site' => $site_name,])
+                $this->equalTo(['user' => $email, 'site' => $site_name,])
             );
 
         $out = $this->command->setOwner($site_name, $email);

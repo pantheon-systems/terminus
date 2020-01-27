@@ -3,7 +3,6 @@
 namespace Pantheon\Terminus\UnitTests\Commands\Remote;
 
 use Pantheon\Terminus\Commands\Remote\SSHBaseCommand;
-use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Class DummyCommand

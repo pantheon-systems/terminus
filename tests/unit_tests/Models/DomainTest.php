@@ -43,10 +43,10 @@ class DomainTest extends ModelTestCase
     {
         parent::setUp();
 
-        $this->model = $this->_createDomain(['id' => 'dev.example.com',]);
+        $this->model = $this->createDomain(['id' => 'dev.example.com',]);
     }
 
-    protected function _createDomain($attr)
+    protected function createDomain($attr)
     {
         $collection = $this->getMockBuilder(Domains::class)
             ->disableOriginalConstructor()
@@ -83,7 +83,10 @@ class DomainTest extends ModelTestCase
     {
         $this->request->expects($this->once())
             ->method('request')
-            ->with("sites/site id/environments/{$this->environment->id}/domains/dev.example.com", ['method' => 'delete',]);
+            ->with(
+                "sites/site id/environments/{$this->environment->id}/domains/dev.example.com",
+                ['method' => 'delete',]
+            );
         $this->model->delete();
     }
 
@@ -107,7 +110,7 @@ class DomainTest extends ModelTestCase
                 ]
             ]
         ];
-        $domain = $this->_createDomain($data);
+        $domain = $this->createDomain($data);
 
         $records = $this->getMockBuilder(DNSRecords::class)
             ->disableOriginalConstructor()
@@ -122,7 +125,7 @@ class DomainTest extends ModelTestCase
 
         $this->assertEquals($records, $domain->getDNSRecords());
     }
-    
+
     public function testSerialize()
     {
         $data = [
@@ -131,6 +134,7 @@ class DomainTest extends ModelTestCase
             'status' => 'status',
             'status_message' => 'status message',
             'deletable' => false,
+            'primary' => true,
             'extraneous' => 'info',
         ];
         $expected = [
@@ -139,9 +143,33 @@ class DomainTest extends ModelTestCase
             'status' => 'status',
             'status_message' => 'status message',
             'deletable' => false,
+            'primary' => true,
         ];
 
-        $domain = $this->_createDomain($data);
+        $domain = $this->createDomain($data);
+        $actual = $domain->serialize();
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function testSerializeSparse()
+    {
+        $data = [
+            'type' => 'platform',
+            'id' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
+            'extraneous' => 'info',
+        ];
+        $expected = [
+            'type' => 'platform',
+            'id' => 'live-mysite.pantheonsite.io',
+            'status' => 'status',
+            'status_message' => 'status message',
+            'deletable' => false,
+            'primary' => false,
+        ];
+
+        $domain = $this->createDomain($data);
         $actual = $domain->serialize();
         $this->assertEquals($expected, $actual);
     }

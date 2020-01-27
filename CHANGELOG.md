@@ -2,6 +2,36 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org)
 
 ## MASTER
+### Added
+- New option `--no-db` added to `multidev:create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `--no-files` added to `multidev:create` which will skip the duplication of files from the source environment. (#2050)
+- New option `no-db` added to `Environments::create` which will skip the duplication of the database from the source environment. (#2050)
+- New option `no-files` added to `Environments::create` which will skip the duplication of files from the source environment. (#2050)
+
+## 2.3.0 - 2020-01-10
+### Added
+- New const `TERMINUS_HOST_CERT` added to permit use of SSL certificates while making requests. (#2024)
+
+### Changed
+- Terminus will now load plugin files ending in `Hook.php` in addition to those ending with `Command.php` (#2025)
+- The role parameter in `org:people:add` is now being validated before sending the request. (#2033)
+- The role parameter in `org:people:role` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:add` is now being validated before attempting the change. (#2033)
+- The role parameter in `site:team:role` is now being validated before attempting the change. (#2033)
+
+### Deprecated
+- Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)
+
+### Fixed
+- PHP Deprecated warnings seen in PHP ≥ 7.4.0 (#2043)
+
+## 2.2.0 - 2019-09-26
+### Added
+- Added `primary` field to the output of `domain:list`. (#2011)
+- Added `domain:primary:add` command to set a domain as primary, causing traffic to redirect to it. (#2011)
+- Added `domain:primary:remove` command to remove a domain's primary designation. (#2011)
+
+## 2.1.0 - 2019-09-03
 ### Added 
 - Added `--filter` option to `backup:list` command (#1992)
 - Added `--filter` option to `branch:list` command (#1992)
@@ -41,6 +71,11 @@ All notable changes to this project will be documented in this file. This projec
 - `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
 - `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 - `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)
+- Owner parameter displayed in the success notice of  `owner:set` instead of the user's first and last names. (#2007)
+
+### Removed
+- Users' first and last names removed from the list provided by `site:team:list`. (#2007)
+- Users' first and last names removed from the list provided by `org:people:list`. (#2007)
 
 ## 2.0.1 - 2019-04-28
 ### Fixed

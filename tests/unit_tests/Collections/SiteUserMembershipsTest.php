@@ -5,13 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 use Pantheon\Terminus\Collections\SiteUserMemberships;
 use Pantheon\Terminus\Collections\Workflows;
 use Pantheon\Terminus\Models\Site;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SiteUserMembershipsTest
  * Testing class for Pantheon\Terminus\Collections\SiteUserMemberships
  * @package Pantheon\Terminus\UnitTests\Collections
  */
-class SiteUserMembershipsTest extends \PHPUnit_Framework_TestCase
+class SiteUserMembershipsTest extends TerminusTestCase
 {
     public function testCreate()
     {

@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Commands\MachineToken;
 
 use Pantheon\Terminus\Commands\MachineToken\ListCommand;
 use Robo\Config;
-use Pantheon\Terminus\Collections\MachineTokens;
 use Pantheon\Terminus\Models\MachineToken;
 
 /**

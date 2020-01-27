@@ -4,7 +4,6 @@ namespace Pantheon\Terminus\UnitTests\Collections;
 
 use Pantheon\Terminus\Collections\Domains;
 use Pantheon\Terminus\Collections\Workflows;
-use Pantheon\Terminus\Models\Domain;
 use Pantheon\Terminus\Models\Environment;
 use Pantheon\Terminus\Models\Site;
 use Pantheon\Terminus\Models\Workflow;

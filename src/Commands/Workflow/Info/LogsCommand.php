@@ -35,7 +35,7 @@ class LogsCommand extends InfoBaseCommand
 
         if (empty($operations)) {
             $this->log()->notice('Workflow does not contain any operations.');
-        } else if (empty($log_operations)) {
+        } elseif (empty($log_operations)) {
             $this->log()->notice('Workflow operations did not contain any logs.');
         }
 

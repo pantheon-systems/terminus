@@ -3,12 +3,11 @@
 namespace Pantheon\Terminus\UnitTests\Plugins;
 
 use League\Container\Container;
-use Pantheon\Terminus\Exceptions\TerminusException;
 use Pantheon\Terminus\Plugins\PluginDiscovery;
-use Pantheon\Terminus\Plugins\PluginInfo;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 use Psr\Log\NullLogger;
 
-class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
+class PluginDiscoveryTest extends TerminusTestCase
 {
     /**
      * @var Container
@@ -56,12 +55,16 @@ class PluginDiscoveryTest extends \PHPUnit_Framework_TestCase
         }
 
         $invalid_paths = [
-            'invalid-compat-versionless-composer' => 'The composer.json must contain a "compatible-version" field in "extras/terminus"',
+            'invalid-compat-versionless-composer' =>
+                'The composer.json must contain a "compatible-version" field in "extras/terminus"',
             'invalid-composer-json' => 'The file "{path}/composer.json" does not contain valid JSON',
-            'invalid-composer-namespace' => 'The namespace "{namespace}" in the composer.json autoload psr-4 section must end with a namespace separator. Should be "{correct}"',
+            'invalid-composer-namespace' =>
+                'The namespace "{namespace}" in the composer.json autoload psr-4 section must end with a '
+                . 'namespace separator. Should be "{correct}"',
             'invalid-extraless-composer' => 'The composer.json must contain a "terminus" section in "extras"',
             'invalid-no-composer-json' => 'The file "{path}/composer.json" does not exist',
-            'invalid-wrong-composer-type' => 'The composer.json must contain a "type" attribute with the value "terminus-plugin"',
+            'invalid-wrong-composer-type' =>
+                'The composer.json must contain a "type" attribute with the value "terminus-plugin"',
         ];
         $valid_paths = [
             'without-namespace',

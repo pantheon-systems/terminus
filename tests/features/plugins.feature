@@ -61,4 +61,12 @@ Feature: Plugin Commands
     [warning] Could not load plugin pantheon-systems/terminus-plugin-example because it is not compatible with this version of Terminus.
     """
 
+  Scenario: Running a simple plugin command that uses autoloading to include a hook which adds an option
+    When I am using "with-hooks" plugins
+    And I run "terminus hello:again --new"
+    Then I should get:
+    """
+    [notice] Ohai!
+    """
+    And I should not see an error
 

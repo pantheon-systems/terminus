@@ -236,7 +236,10 @@ class Site extends TerminusModel implements ContainerAwareInterface, Organizatio
     public function getOrganizationMemberships()
     {
         if (empty($this->user_memberships)) {
-            $this->org_memberships = $this->getContainer()->get(SiteOrganizationMemberships::class, [['site' => $this,],]);
+            $this->org_memberships = $this->getContainer()->get(
+                SiteOrganizationMemberships::class,
+                [['site' => $this,],]
+            );
         }
         return $this->org_memberships;
     }

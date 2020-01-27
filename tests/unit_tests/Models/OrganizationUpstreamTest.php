@@ -5,13 +5,14 @@ namespace Pantheon\Terminus\UnitTests\Models;
 use Pantheon\Terminus\Collections\OrganizationUpstreams;
 use Pantheon\Terminus\Models\Organization;
 use Pantheon\Terminus\Models\OrganizationUpstream;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class OrganizationUpstreamTest
  * Tests the Pantheon\Terminus\Models\OrganizationUpstream class
  * @package Pantheon\Terminus\UnitTests\Models
  */
-class OrganizationUpstreamTest extends \PHPUnit_Framework_TestCase
+class OrganizationUpstreamTest extends TerminusTestCase
 {
     /**
      * @var OrganizationUpstreams

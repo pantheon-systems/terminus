@@ -4,9 +4,7 @@ namespace Pantheon\Terminus\UnitTests\Commands;
 
 use League\Container\Container;
 use Pantheon\Terminus\Commands\AliasesCommand;
-use Pantheon\Terminus\Helpers\LocalMachineHelper;
 use Robo\Config;
-use Pantheon\Terminus\Models\User;
 use Pantheon\Terminus\Session\Session;
 use Pantheon\Terminus\UnitTests\Helpers\AliasFixtures;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -38,7 +36,6 @@ class AliasesCommandTest extends CommandTestCase
      * @var BufferedOutput
      */
     protected $output;
-
 
     /**
      * @inheritdoc

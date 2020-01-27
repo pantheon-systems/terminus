@@ -1,11 +1,11 @@
 <?php
 
-
 namespace Pantheon\Terminus\UnitTests\Models;
 
 use Pantheon\Terminus\Models\Commit;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class CommitTest extends \PHPUnit_Framework_TestCase
+class CommitTest extends TerminusTestCase
 {
     public function testSerialize()
     {

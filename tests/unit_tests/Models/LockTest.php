@@ -26,10 +26,10 @@ class LockTest extends ModelTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->lock = $this->_getLock(['locked' => false]);
+        $this->lock = $this->getLock(['locked' => false]);
     }
 
-    protected function _getLock($attr)
+    protected function getLock($attr)
     {
         $this->workflows = $this->getMockBuilder(Workflows::class)
             ->disableOriginalConstructor()
@@ -59,7 +59,7 @@ class LockTest extends ModelTestCase
     {
         $this->assertFalse($this->lock->isLocked());
 
-        $lock = $this->_getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
+        $lock = $this->getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
         $this->assertTrue($lock->isLocked());
     }
 
@@ -73,7 +73,7 @@ class LockTest extends ModelTestCase
         $actual = $this->lock->serialize();
         $this->assertEquals($expected, $actual);
 
-        $lock = $this->_getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
+        $lock = $this->getLock(['locked' => true, 'username' => 'abc', 'password' => '123']);
         $actual = $lock->serialize();
         $expected = [
             'locked' => true,

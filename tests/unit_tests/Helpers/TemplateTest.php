@@ -3,9 +3,9 @@
 namespace Pantheon\Terminus\UnitTests\Helpers;
 
 use Pantheon\Terminus\Helpers\AliasEmitters\Template;
-use PHPUnit\Framework\TestCase;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
-class TemplateTest extends TestCase
+class TemplateTest extends TerminusTestCase
 {
     /**
      * processTestValues provides the expected results and inputs for testProcess

@@ -3,13 +3,14 @@
 namespace Pantheon\Terminus\UnitTests\Friends\Environment;
 
 use Pantheon\Terminus\Models\Environment;
+use Pantheon\Terminus\UnitTests\TerminusTestCase;
 
 /**
  * Class SingularTest
  * Testing class for Pantheon\Terminus\Friends\EnvironmentTrait & Pantheon\Terminus\Friends\EnvironmentInterface
  * @package Pantheon\Terminus\UnitTests\Friends\Environment
  */
-class SingularTest extends \PHPUnit_Framework_TestCase
+class SingularTest extends TerminusTestCase
 {
     /**
      * @var SingularDummyClass
