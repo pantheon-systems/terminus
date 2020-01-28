@@ -58,9 +58,9 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
     {
         if (is_dir($target)) {
             if (substr($target, -1) == DIRECTORY_SEPARATOR) {
-                $target = $target . basename($url);
+                $target = $target . strtok(basename($url), '?');
             } else {
-                $target = $target . DIRECTORY_SEPARATOR . basename($url);
+                $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
             }
         }
 
