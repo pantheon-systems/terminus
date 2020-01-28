@@ -13,7 +13,7 @@ use Pantheon\Terminus\Plugins\PluginDiscovery;
 class InfoCommand extends TerminusCommand
 {
     /**
-     * Displays info about currently installed plugins.
+     * Displays info about currently installed Terminus plugins.
      *
      * @command plugin:info
      *
