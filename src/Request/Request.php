@@ -51,7 +51,7 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      * Download file from target URL
      *
      * @param string $url URL to download from
-     * @param string $target Target file's name
+     * @param string $target Target file or directory's name
      * @throws TerminusException
      */
     public function download($url, $target)
