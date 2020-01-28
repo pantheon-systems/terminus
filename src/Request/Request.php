@@ -56,6 +56,14 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      */
     public function download($url, $target)
     {
+        if (is_dir($target)) {
+            if (substr($target, -1) == DIRECTORY_SEPARATOR) {
+                $target = $target . basename($url);
+            } else {
+                $target = $target . DIRECTORY_SEPARATOR . basename($url);
+            }
+        }
+
         if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
