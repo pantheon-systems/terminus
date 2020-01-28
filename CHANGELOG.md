@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file. This projec
 - The role parameter in `org:people:role` is now being validated before attempting the change. (#2033)
 - The role parameter in `site:team:add` is now being validated before attempting the change. (#2033)
 - The role parameter in `site:team:role` is now being validated before attempting the change. (#2033)
+- `Request::download($url, $target)` now accepts directories in addition to files as its `$target` parameter. (#2053)
+- The `backup:get` command's `--to` option now accepts directories in addition to files. (#2053)
 
 ### Deprecated
 - Deprecated the `--cc` option on `env:deploy`. Please use `env:clear-cache` instead. (#2022)
@@ -32,7 +34,7 @@ All notable changes to this project will be documented in this file. This projec
 - Added `domain:primary:remove` command to remove a domain's primary designation. (#2011)
 
 ## 2.1.0 - 2019-09-03
-### Added 
+### Added
 - Added `--filter` option to `backup:list` command (#1992)
 - Added `--filter` option to `branch:list` command (#1992)
 - Added `--filter` option to `domain:list` command (#1992)
@@ -54,20 +56,20 @@ All notable changes to this project will be documented in this file. This projec
 ### Deprecated
 - `backup:list` `--element=VALUE` option is deprecated. Use `--filter="type=VALUE"` instead. (#1992)
 - `site:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
-- `site:list` `--name=VALUE` option is deprecated. Use `--filter="name=VALUE"` instead. (#1992) 
-- `site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992) 
+- `site:list` `--name=VALUE` option is deprecated. Use `--filter="name=VALUE"` instead. (#1992)
+- `site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992)
 - `org:site:list` `--plan=VALUE` option is deprecated. Use `--filter="plan_name=VALUE"` instead. (#1992)
 - `org:site:list` `--tags=VALUE` option is deprecated. Use `--filter="tags=VALUE"` instead. (#1992)
 - `org:upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
-- `org:upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+- `org:upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992)
 - `upstream:list` `--framework=VALUE` option is deprecated. Use `--filter="framework=VALUE"` instead. (#1992)
-- `upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992) 
+- `upstream:list` `--name=VALUE` option is deprecated. Use `--filter="label=VALUE"` instead. (#1992)
 
 ### Obsolete
 - 'pantheon-systems/terminus-aliases-plugin' ignored as load time, as its functionality is now provided in Terminus core. (#1994)
 - PHP 5.5 no longer actively supported, as it is EOL, and no longer testable on Travis.
 
-### Changed 
+### Changed
 - `drush:aliases` now produces both Drush 8 and Drush 9 aliases. Wildcard alias records always used (requires Drush 8.3.0 or later). (#1994)
 - `site:info`'s value of the `region` field has been changed to use human-readable region names. (#1985)
 - `site:list`'s value of the `region` field has been changed to use human-readable region names. (#1985)

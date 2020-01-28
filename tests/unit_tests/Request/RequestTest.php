@@ -200,6 +200,47 @@ class RequestTest extends TerminusTestCase
         $this->assertNull($out);
     }
 
+    /**
+     * Tests a successful download with the target being a directory
+     */
+    public function testDownloadTargetDirectory()
+    {
+        $domain = 'pantheon.io';
+        $url = "http://$domain/somefile.tar.gz";
+        $target = './';
+        $target_with_file = './somefile.tar.gz';
+
+        $this->container->expects($this->at(0))
+            ->method('get')
+            ->with($this->equalTo(LocalMachineHelper::class))
+            ->willReturn($this->local_machine_helper);
+        $this->local_machine_helper->expects($this->once())
+            ->method('getFilesystem')
+            ->with()
+            ->willReturn($this->filesystem);
+        $this->filesystem->expects($this->once())
+            ->method('exists')
+            ->with($target_with_file)
+            ->willReturn(false);
+        $this->container->expects($this->at(1))
+            ->method('get')
+            ->with(
+                $this->equalTo(Client::class),
+                $this->equalTo([['base_uri' => $domain, RequestOptions::VERIFY => true,],])
+            )
+            ->willReturn($this->client);
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with(
+                $this->equalTo('GET'),
+                $this->equalTo($url),
+                $this->equalTo(['sink' => $target_with_file,])
+            );
+
+        $out = $this->request->download($url, $target);
+        $this->assertNull($out);
+    }
+
     public function testRequest()
     {
         $this->session->method('get')->with('session')->willReturn(false);

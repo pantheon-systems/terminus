@@ -51,11 +51,19 @@ class Request implements ConfigAwareInterface, ContainerAwareInterface, LoggerAw
      * Download file from target URL
      *
      * @param string $url URL to download from
-     * @param string $target Target file's name
+     * @param string $target Target file or directory's name
      * @throws TerminusException
      */
     public function download($url, $target)
     {
+        if (is_dir($target)) {
+            if (substr($target, -1) == DIRECTORY_SEPARATOR) {
+                $target = $target . strtok(basename($url), '?');
+            } else {
+                $target = $target . DIRECTORY_SEPARATOR . strtok(basename($url), '?');
+            }
+        }
+
         if ($this->getContainer()->get(LocalMachineHelper::class)->getFilesystem()->exists($target)) {
             throw new TerminusException('Target file {target} already exists.', compact('target'));
         }
