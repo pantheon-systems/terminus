@@ -26,7 +26,7 @@ Our documentation is kept in the Terminus Manual, located here: https://pantheon
 Once you have at least the requirements installed, you can install Terminus via Composer or Git. Additionally, you may want to install the optional software below to enhance your use of Terminus:
 
 ### Recommended
-- [Composer](https://getcomposer.org/doc/00-intro.md)
+- [Composer](https://getcomposer.org/doc/00-intro.md) (Needed to use the `self:plugin` commands.)
 - [Drush](http://docs.drush.org/en/master/install/) (Useful to run incompatible-with-Terminus Drush commands)
 - [WP-CLI](http://wp-cli.org/) (Useful to run incompatible-with-Terminus WP-CLI commands)
 - [Git](https://help.github.com/articles/set-up-git/)
