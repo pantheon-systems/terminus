@@ -32,18 +32,11 @@ class EnableCommandTest extends CommandTestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->solr->expects($this->once())
-            ->method('enable');
-        $this->site->expects($this->once())
-            ->method('converge')
+            ->method('enable')
             ->willReturn($workflow);
         $this->site->method('getSolr')->willReturn($this->solr);
 
         $this->logger->expects($this->at(0))
-            ->method('log')->with(
-                $this->equalTo('notice'),
-                $this->equalTo('Solr enabled. Converging bindings.')
-            );
-        $this->logger->expects($this->at(1))
             ->method('log')->with(
                 $this->equalTo('notice'),
                 $this->equalTo('successful workflow')

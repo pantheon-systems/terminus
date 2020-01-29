@@ -191,20 +191,6 @@ class SiteTest extends ModelTestCase
     }
 
     /**
-     * Tests Site::converge()
-     */
-    public function testConverge()
-    {
-        $this->workflows->expects($this->once())
-            ->method('create')
-            ->with($this->equalTo('converge_site'))
-            ->willReturn($this->workflow);
-
-        $workflow = $this->model->converge();
-        $this->assertEquals($workflow, $this->workflow);
-    }
-
-    /**
      * Tests Site::dashboardUrl()
      */
     public function testDashboardUrl()
